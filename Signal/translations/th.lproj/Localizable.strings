@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ข้อความเสียง";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "โทรเสียง";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ลำโพง";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "โทรอีกครั้ง";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 สายโทรเสียงขาเข้า…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 สายโทรเสียงที่ไม่ได้รับตอน %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 สายโทรเสียงที่ไม่ได้รับ";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 สายโทรเสียงที่ไม่ได้รับเมื่อ %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 สายโทรเสียงที่ไม่ได้รับเมื่อ %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "คุณสามารถเปิดการเข้าถึงไมโครโฟน ได้ในการตั้งค่าของ iOS เพื่อให้สามารถโทรและอัดข้อความเสียงได้ใน Signal";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "เปลี่ยนทิศทางกล้อง";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "สลับไปโทรด้วยเสียง";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "สลับไปโทรวิดีโอ";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "ใส่รหัส PIN สำหรับหมายเลขโทรศัพท์ใหม่ รหัสนี้จะไม่เหมือนกับรหัสตรวจยืนยันทาง SMS";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "นี่คือตัวอย่างสีแชต";
+"CHAT_COLOR_INCOMING_MESSAGE" = "นี่คือตัวอย่างสีแชท";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "นี่คือตัวอย่างสีแชต";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "นี่คือตัวอย่างสีแชท";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "กล่องคำพูดอีกกล่อง";
@@ -926,7 +926,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "ลบสี";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "สีแชต";
+"CHAT_COLOR_SETTINGS_TITLE" = "สีแชท";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "แก้สี";
@@ -935,16 +935,16 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "จับคู่สีกับภาพพื้นหลังโดยอัตโนมัติ";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "การสนทนา";
+"CHAT_LIST_TITLE_INBOX" = "แชท";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "สีและภาพพื้นหลังแชต";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "สีและภาพพื้นหลังแชท";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "เทียบกับคลิปบอร์ด";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "เลือกหรือค้นหาผู้ใช้ Signal เพื่อเริ่มต้นการแชตด้วย";
+"COMPOSE_BUTTON_HINT" = "เลือกหรือค้นหาผู้ใช้ Signal เพื่อเริ่มต้นการแชทด้วย";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "เขียน";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "องค์กร";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "เพื่อดูชื่อผู้ติดต่อและรูปภาพในการสนทนาของคุณ:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "เพื่อดูชื่อผู้ติดต่อและรูปภาพในแชทของคุณ:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "แตะ \"ไปยังการตั้งค่า\" ด้านล่าง";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "เปิด";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "ดูชื่อผู้ติดต่อและรูปภาพในแชตของคุณ";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "ดูชื่อผู้ติดต่อและรูปภาพในแชทของคุณ";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "เปิดผู้ติดต่อ?";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "กลุ่ม";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "การสนทนาล่าสุด";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "แชทล่าสุด";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "ผู้คน";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "ไม่ตรงกับอะไรเลย";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "ตั้งค่าแชต";
+"CONVERSATION_SETTINGS" = "การตั้งค่าแชท";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "เพิ่มสมาชิก";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "ข้อความที่ลบตัวเองได้";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ข้อความในแชตนี้จะหายไปหลังจาก %1$@";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ข้อความในแชทนี้จะหายไปหลังจาก %1$@";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "เวลากำหนดเอง";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "วัน";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "เมื่อเปิดใช้งาน ข้อความใหม่ที่ส่งและได้รับในแชตนี้จะหายไปหลังจากที่ได้เห็นแล้ว";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "เมื่อเปิดใช้งาน ข้อความใหม่ที่ส่งและได้รับในแชทนี้จะหายไปหลังจากที่ได้เห็นแล้ว";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "ปัจจุบันข้อความจะหายไปหลังจาก %1$@";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "คัดลอก";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "สวัสดี\n\nเมื่อไม่นานนี้ ฉันได้ใช้ Signal เพื่อรักษาการสนทนาบน iPhone ของฉันให้เป็นส่วนตัว ฉันอยากให้คุณติดตั้งเหมือนกัน เพื่อให้เรามั่นใจได้ว่ามีแค่คุณและฉันที่สามารถอ่านข้อความของเราหรือได้ยินเสียงคุยของเรา\n\nSignal ใช้งานได้บน iPhone และ Android โหลดเลยที่นี่: %1$@\n\nSignal ทำงานเหมือนแอปส่งข้อความที่คุณมีอยู่ เราสามารถส่งรูปและวิดีโอ โทรออก และเริ่มแชตกลุ่ม สิ่งที่ดีที่สุดคือไม่มีใครคนอื่นเห็นสิ่งเหล่านี้ แม้แต่ผู้คนที่สร้าง Signal ก็จะไม่เห็น!\n\nคุณสามารถอ่านเพิ่มเติมเกี่ยวกับ Open Whisper Systems  และผู้สร้าง Signal ได้ที่นี่: %2$@";
+"EMAIL_INVITE_BODY" = "สวัสดี!\n\nหลังจากที่ฉันได้เริ่มใช้ Signal เพื่อรักษาความเป็นส่วนตัวของแชทบน iPhone ฉันอยากแนะนำให้คุณติดตั้งแอปนี้เช่นกัน เพื่อให้มั่นใจได้ว่ามีแค่เราสองคนเท่านั้นที่สามารถอ่านข้อความหรือได้ยินเสียงพูดคุยของเรา\n\nSignal ใช้งานได้ทั้งบน iPhone และ Android ดาวน์โหลดเลยที่นี่: %1$@\n\nSignal ทำงานเหมือนแอปส่งข้อความที่คุณใช้อยู่ เราสามารถส่งรูปและวิดีโอ โทรออก และเริ่มแชทกลุ่ม แต่ที่มากไปกว่านั้นก็คือจะไม่มีใครเห็นข้อมูลเหล่านี้ แม้แต่ทีมงานที่สร้าง Signal ก็ตาม!\n\nอ่านเพิ่มเติมเกี่ยวกับ Open Whisper Systems และผู้สร้าง Signal ได้ที่นี่: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "เปลี่ยนมาใช้ Signal กันเถอะ";
@@ -2264,7 +2264,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "หมายเลขความปลอดภัยของคุณกับ %1$@ ได้เปลี่ยนไป";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "สมัยสนทนาถูกเรียกขึ้นใหม่";
+"ERROR_MESSAGE_SESSION_REFRESH" = "รีเฟรชแชทเซสชันใหม่แล้ว";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "เกิดข้อผิดพลาดที่ไม่รู้จัก";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "ส่งต่อไปยัง";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "คุณไม่มีสื่อข้อมูลใดในแชตนี้";
+"GALLERY_TILES_EMPTY_GALLERY" = "คุณไม่มีไฟล์สื่อในแชทนี้";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "กำลังโหลดสื่อที่ใหม่กว่า…";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "คุณถูกลบออกจากกลุ่ม";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "คำขอเข้ากลุ่มของคุณได้รับการอนุมัติแล้ว";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ ได้อนุมัติคำขอเพื่อเข้าร่วมกลุ่มของคุณ";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "ศูนย์ความช่วยเหลือ";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "แชตที่ถูกเก็บในที่เก็บถาวร";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "แชทที่ถูกเก็บในที่เก็บถาวร";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "ถูกบล็อก";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "ผู้ติดต่อบางคนของคุณอยู่บน Signal อยู่แล้ว รวมถึง %1$@, %2$@ และ %3$@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "เริ่มการแชตแรกของคุณที่นี่";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "เริ่มแชทแรกของคุณที่นี่";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ เพิ่มคุณเข้ากลุ่ม";
@@ -3347,7 +3347,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "ที่เก็บถาวร";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "เลือกแชต";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "เลือกแชท";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "อ่านทั้งหมด";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "กำลังเรียกสาย…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "โทรด้วยเสียง…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "วิดีโอคอล…";
@@ -3410,10 +3410,10 @@
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "แชทที่ปิดเสียงไว้ในที่เก็บถาวรจะยังคงเก็บถาวรอยู่เมื่อมีข้อความใหม่มาถึง";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "แชตที่เก็บถาวรไว้จะย้ายไปอยู่กล่องข้อความขาเข้าเมื่อมีข้อความใหม่เข้ามา";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "แชทที่เก็บถาวรไว้จะย้ายไปยังกล่องข้อความขาเข้าเมื่อมีข้อความใหม่เข้ามา";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "ยังไม่มีข้อความเข้า\nเริ่มต้นด้วยการส่งข้อความหาเพื่อนสักคน";
+"INBOX_VIEW_EMPTY_INBOX" = "ยังไม่มีแชท\nเริ่มต้นด้วยการส่งข้อความหาเพื่อนสักคน";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "การโทรด้วยเสียงขาเข้า";
@@ -3479,13 +3479,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "ไปที่สื่อทั้งหมด";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "จัดเก็บแชตในที่เก็บถาวร";
+"KEY_COMMAND_ARCHIVE" = "จัดเก็บแชทในที่เก็บถาวร";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "แสดงแฟ้มแนบ";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "ไปที่ข้อมูลการแชต";
+"KEY_COMMAND_CONVERSATION_INFO" = "ไปที่ข้อมูลการแชท";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "แป้นโฟกัสอินพุต";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "ข้อความใหม่";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "ไปที่แชตถัดไป";
+"KEY_COMMAND_NEXT_CONVERSATION" = "ไปที่แชทถัดไป";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "ไปที่แชตก่อนหน้า";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "ไปที่แชทก่อนหน้า";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "ค้นหา";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "แสดงสติกเกอร์";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "นำแชตออกจากที่เก็บถาวร";
+"KEY_COMMAND_UNARCHIVE" = "นำแชทออกจากที่เก็บถาวร";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "เรียนรู้เพิ่มเติม";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "การเชื่อมโยงอุปกรณ์ไม่สำเร็จ";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "อุปกรณ์เครื่องนี้จะสามารถเห็นกลุ่ม รายชื่อผู้ติดต่อ เข้าถึงแชตของคุณ และส่งข้อความด้วยชื่อของคุณ";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "อุปกรณ์เครื่องนี้จะสามารถเห็นกลุ่ม รายชื่อผู้ติดต่อ เข้าถึงแชทของคุณ และส่งข้อความด้วยชื่อของคุณ";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "เชื่อมโยงอุปกรณ์นี้ใช่หรือไม่ฦ";
@@ -3887,10 +3887,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "ลบ";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "ต้องการสนทนากับ %1$@ ต่อและเปิดเผยชื่อและรูปภาพให้พวกเขาเห็นหรือไม่?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "ต้องการแชทกับ %1$@ ต่อไปและแชร์ชื่อกับรูปภาพให้ผู้ใช้คนนี้เห็นหรือไม่";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "ต้องการแชตภายในกลุ่มนี้ต่อไปและเปิดเผยชื่อกับรูปภาพให้สมาชิกในกลุ่มเห็นหรือไม่?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "ต้องการแชทกับกลุ่มนี้ต่อไปและแชร์ชื่อกับรูปภาพให้สมาชิกในกลุ่มเห็นหรือไม่";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "อนุญาตให้ %1$@ ส่งข้อความและเห็นชื่อและรูปถ่ายของคุณหรือไม่? พวกเขาจะไม่รู้ว่าคุณเห็นข้อความของพวกเขาจนกว่าคุณจะตอบรับ";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "กำลังดาวน์โหลด";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "แก้ไข";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "การส่งล้มเหลว";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "รหัส PIN ต้องมีอย่างน้อย 4 หลัก";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "คุณปักหมุดแชตได้ 4 อันเท่านั้น";
+"PINNED_CONVERSATION_LIMIT" = "คุณปักหมุดแชทได้ 4 รายการเท่านั้น";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "ปักหมุด";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "นี่ดูเหมือนจะไม่ใช่หมายเลขความปลอดภัยของคุณกับ %1$@ คุณกำลังตรวจยืนยันกับผู้ติดต่อที่ถูกต้องหรือไม่?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "หมายเลขในคลิปบอร์ดของคุณดูเหมือนจะไม่ใช่หมายเลขความปลอดภัยที่ถูกต้องสำหรับแชตนี้";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "หมายเลขในคลิปบอร์ดของคุณดูเหมือนจะไม่ใช่หมายเลขความปลอดภัยที่ถูกต้องสำหรับแชทนี้";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ไม่พบหมายเลขความปลอดภัยใดๆ ในคลิปบอร์ดของคุณ คุณได้คัดลอกมาถูกต้องหรือไม่?";
@@ -5156,7 +5156,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "ปรับปรุงโปรไฟล์ได้เมื่อเชื่อมต่อกับอินเทอร์เน็ตอยู่เท่านั้น";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "โปรไฟล์ของคุณถูกเข้ารหัสลับจากต้นทางถึงปลายทาง ผู้ติดต่อของคุณจะมองเห็นโปรไฟล์และความเปลี่ยนแปลงที่เกิดขึ้นกับโปรไฟล์ของคุณเมื่อคุณเริ่มต้นหรือตอบรับการสนทนาใหม่";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "โปรไฟล์ของคุณถูกเข้ารหัสตั้งแต่ต้นทางถึงปลายทาง ผู้ติดต่อและผู้ใช้ที่คุณเริ่มต้นหรือตอบรับแชทใหม่จะเห็นโปรไฟล์และการเปลี่ยนแปลงในโปรไฟล์ของคุณ";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "บันทึก";
@@ -5591,7 +5591,7 @@
 "SEARCH_SECTION_CONTACTS" = "ผู้ติดต่ออื่น";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "การพูดคุย";
+"SEARCH_SECTION_CONVERSATIONS" = "แชท";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "กลุ่ม";
@@ -5702,10 +5702,10 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "มาตรฐาน";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal เข้ารหัสลับจากต้นทางถึงปลายทางและมันอาจต้องเรียกสมัยการสนทนาของคุณใหม่เป็นบางครั้ง สิ่งนี้ไม่ส่งผลต่อความปลอดภัยของการสนทนา แต่เป็นได้ว่าคุณอาจพลาดข้อความหนึ่งข้อความจากผู้ติดต่อรายนี้ คุณสามารถขอให้เขาส่งข้อความอีกครั้งได้";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal ใช้การเข้ารหัสตั้งแต่ต้นทางถึงปลายทางและอาจต้องเริ่มต้นแชทเซสชันใหม่ให้คุณในบางครั้ง กระบวนการนี้ไม่มีผลต่อความปลอดภัยของแชทคุณ แต่อาจทำให้คุณไม่ได้รับข้อความบางข้อความจากผู้ติดต่อคนนี้ โดยคุณสามารถขอให้ผู้ติดต่อส่งข้อความอีกครั้ง";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "เริ่มสมัยสนทนาใหม่";
+"SESSION_REFRESH_ALERT_TITLE" = "รีเฟรชแชทเซสชันใหม่แล้ว";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "เลือกจากอัลบั้มภาพ";
@@ -5846,7 +5846,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "เปลี่ยนหมายเลขโทรศัพท์";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "การสนทนา";
+"SETTINGS_CHATS" = "แชท";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "ล้างประวัติแชท";
@@ -5915,7 +5915,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "ข้อความที่ลบตัวเองได้";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "ตั้งค่าเริ่มต้นของตัวจับเวลาข้อความหายไปสำหรับแชตใหม่ที่คุณเริ่มต้น";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "ตั้งค่าเริ่มต้นของตัวจับเวลาข้อความที่จะหายไปสำหรับแชทใหม่ทั้งหมดที่คุณเป็นคนเริ่ม";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "บริจาคให้ Signal";
@@ -5927,7 +5927,7 @@
 "SETTINGS_INVITE_TITLE" = "ชวนเพื่อนของคุณ";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "สีและภาพพื้นหลังแชต";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "สีและภาพพื้นหลังแชท";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "เสียงข้อความเรียกเข้า";
@@ -6584,10 +6584,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "แชร์รายชื่อผู้ติดต่อด้วย iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "อนุญาตให้ iOS เข้าถึงรายชื่อผู้ติดต่อ Signal และแชตสำหรับฟีเจอร์ เช่น การแชร์คำแนะนำ";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "อนุญาตให้ iOS เข้าถึงรายชื่อผู้ติดต่อและแชทของ Signal สำหรับฟีเจอร์ต่างๆ เช่น การแชร์คำแนะนำ";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "อนุญาตให้ iOS เข้าถึงรายชื่อผู้ติดต่อ Signal และแชตสำหรับฟีเจอร์ เช่น การแชร์คำแนะนำและการแจ้งเตือน";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "อนุญาตให้ iOS เข้าถึงรายชื่อผู้ติดต่อและแชทของ Signal สำหรับฟีเจอร์ต่างๆ เช่น การแชร์คำแนะนำและการแจ้งเตือน";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "กุญแจลงทะเบียน";
@@ -6659,7 +6659,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "แสดงหมายเลขความปลอดภัย";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "แสดงแชต";
+"SHOW_THREAD_BUTTON_TITLE" = "แสดงแชท";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "ฉันกำลังชวนคุณให้ติดตั้ง Signal! นี่คือลิงก์:";
@@ -6761,7 +6761,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "ส่งต่อ";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "ไปที่แชต";
+"STORIES_GO_TO_CHAT_ACTION" = "ไปที่แชท";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
 "STORIES_GROUP_REPLY_NOT_A_MEMBER" = "คุณไม่สามารถตอบกลับสตอรี่นี้ได้ เนื่องจากคุณไม่ได้เป็นสมาชิกในกลุ่มนี้แล้ว";
@@ -7160,7 +7160,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "สมาชิกของ %1$@, %2$@, และอีก %3$lu กลุ่ม";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "คุณสามารถเพิ่มบันทึกสำหรับตัวคุณเองในแชตนี้ ถ้าบัญชีของคุณมีอุปกรณ์ที่เชื่อมโยงอยู่ บันทึกใหม่ทุกอันจะถูกปรับประสานถึงกัน";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "คุณสามารถเพิ่มบันทึกถึงตัวเองได้ในแชทนี้ และหากบัญชีของคุณมีอุปกรณ์ที่เชื่อมโยงอยู่ บันทึกใหม่ก็จะถูกซิงค์ด้วยเช่นกัน";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "สมาชิกของ %1$@";
@@ -7286,7 +7286,7 @@
 "UNPIN_ACTION" = "เลิกปักหมุด";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "การพูดคุย";
+"UNPINNED_SECTION_TITLE" = "แชท";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "ตั้งเป็นยังไม่อ่าน";
@@ -7331,7 +7331,7 @@
 "USERNAME_EDUCATION_TITLE" = "ตั้งค่าชื่อผู้ใช้ Signal ของคุณ";
 
 /* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "ชื่อผู้ใช้แต่ละชื่อจะมีลิงก์เฉพาะที่คุณสามารถแชร์เพื่อให้เพื่อนเริ่มการสนทนากับคุณได้";
+"USERNAME_LINK_DESCRIPTION" = "ชื่อผู้ใช้แต่ละชื่อจะมีลิงก์เฉพาะที่คุณสามารถแชร์เพื่อให้เพื่อนเริ่มแชทกับคุณได้";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "เกิดข้อผิดพลาดขณะค้นหาชื่อผู้ใช้ โปรดลองอีกครั้งในภายหลัง";
@@ -7463,7 +7463,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "ปัดเพื่อดูภาพตัวอย่างของภาพพื้นหลังเพิ่มเติม";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "ตั้งภาพพื้นหลังให้ทุกแชต";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "ตั้งภาพพื้นหลังให้ทุกแชท";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "ตั้งภาพพื้นหลังให้ %1$@";
@@ -7472,16 +7472,16 @@
 "WALLPAPER_PREVIEW_TITLE" = "ภาพตัวอย่าง";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "ล้างสีแชต";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "ล้างสีแชท";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "ล้างสีแชตสำหรับแชตนี้หรือไม่?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "ล้างสีแชทสำหรับแชทนี้หรือไม่";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "ล้างภาพพื้นหลัง";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "ล้างภาพพื้นหลังสำหรับแชตนี้หรือไม่?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "ล้างภาพพื้นหลังสำหรับแชทนี้หรือไม่";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "ภาพพื้นหลังธีมมืดสลัว";
@@ -7499,13 +7499,13 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "รีเซ็ตภาพพื้นหลังทั้งหมด";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "คุณต้องการยกเลิกสีแชตทั้งหมดใช่หรือไม่?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "คุณต้องการยกเลิกสีแชททั้งหมดใช่หรือไม่";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "รีเซ็ตสีแชต";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "รีเซ็ตสีแชท";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "รีเซ็ตสีแชต";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "รีเซ็ตสีแชท";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "รีเซ็ตภาพพื้นหลัง";
@@ -7514,7 +7514,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "รีเซ็ตสีเริ่มต้น";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "รีเซ็ตสีแชต";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "รีเซ็ตสีแชท";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "รีเซ็ตภาพพื้นหลังเริ่มต้น";
@@ -7529,7 +7529,7 @@
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "รีเซ็ตภาพพื้นหลัง";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "สีแชต";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "สีแชท";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "ตั้งภาพพื้นหลัง";

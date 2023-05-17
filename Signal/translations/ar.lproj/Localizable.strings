@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "عُلم";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "لم يتمكن %1$@ من توصيل رسالة أو ملصق أو رد فعل أو وصل القراءة إليك في هذه الدردشة.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "لم يتمكّن %1$@ من توصيل رسالة أو ملصق أو رد فعل أو وصل القراءة إليك في هذه الدردشة.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "هناك مشكل في التوصيل";
@@ -380,7 +380,7 @@
 "ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "منح حق الوصول";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "الموقع الجغرافي";
+"ATTACHMENT_KEYBOARD_LOCATION" = "الموقع";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "يحتاج Signal إلى إذن لإظهار الصور ومقاطع الفيديو الخاصة بك.";
@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "رسالة سمعية";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "مكالمة صوتية";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "مكبر الصوت";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "مُعاودة الاتصال";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 مكالمة صوتية واردة…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞مكالمة صوتية فائتة على الساعة %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 مكالمة صوتية فائتة";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞مكالمة صوتية فائتة بتاريخ %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞مكالمة صوتية فائتة يوم %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "يُمكِنُك تفعيل الوصول للميكروفون من خلال ‫تطبيق إعدادات iOS‬، للتمكن من إجراء مكالمات وإرسال رسائل صوتية في Signal.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "تغيير اتجاه الكاميرا";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "التبديل إلى مكالمة صوتية";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "التبديل إلى مكالمة بالصورة";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "أَدخل رقم التعريف الشخصي لرقم الهاتف الجديد. هذا مختلف عن رمز التحقق عبر الرسالة القصيرة.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "إليك معاينة لون المحادثة.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "إليك معاينة للون الدردشة.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "إليك معاينة لون المحادثة.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "إليك معاينة للون الدردشة.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "فقاعة أخرى للرسالة";
@@ -926,7 +926,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "حذف اللون";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "لون المحادثة";
+"CHAT_COLOR_SETTINGS_TITLE" = "لون الدردشة";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "تحرير الألوان";
@@ -935,16 +935,16 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "وافِق تلقائيا اللون مع الخلفية";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "المُحادثات";
+"CHAT_LIST_TITLE_INBOX" = "الدردشات";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "لون المحادثة والخلفية";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "لون الدردشة والخلفية";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "المُقارنة مع الحافظة";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "حَدِّد أو ابِحث عَن مُستخدِم Signal لِبدء مُحادَثة مَعه.";
+"COMPOSE_BUTTON_HINT" = "حَدِّد أو ابِحث عَن مُستخدِم Signal لِبدء دردشة مَعه.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "تَحرِير";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "المُنظمة";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "لِرُؤية اَسماء وَصُّور جِهات الاِتِّصال في مُحادثاتك:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "لِرُؤية اَسماء وَصُور جِهات الاِتِّصال في دردشتك:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "يجب لمس  \"اذهب إلى الإعدادات\" في الأسفل";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "فعِّل";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "اطَّلِع على اَسماء وصُّور جِهات الاِتصال في مُحادثاتك.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "اطَّلِع على اَسماء وصُور جِهات الاِتصال في دردشتك.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "تفعيل جهات الاتصال؟";
@@ -1199,13 +1199,13 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "توقّف";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "ستُحذَف هذه المحادثة من هذا الجهاز.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "ستُحذَف هذه الدردشة من هذا الجهاز.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "حذف المحادثة ؟";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "حذف الدردشة؟";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "كتم المحادثة لمدة…";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "كتم الدردشة لمدة…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "يوم واحد";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "المجموعات";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "المُحادثات الأخيرة";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "الدردشات الأخيرة";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "الأشخاص";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "لا يوجد توافُق";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "إعدادات المُحادثة";
+"CONVERSATION_SETTINGS" = "إعدادات الدردشة";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "إضافة أعضاء";
@@ -1325,7 +1325,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "لا تُخطِرني إذا كَانَ مَكتُوم";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "تلقي الإشعارات عندما تُذكر بالاسم في المحادثات المكتومة؟";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "تلقي الإشعارات عندما تُذكر بالاسم في الدردشات المكتومة؟";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "الذِّكر";
@@ -1334,7 +1334,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "رسالة";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "كتم المحادثة لمدة…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "كتم الدردشة لمدة…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "دائمًا";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "الرسائل المختفية";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ستختفي الرسائل في هذه المحادثة بعد %1$@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ستختفي الرسائل في هذه الدردشة بعد %1$@.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "وَقتٌ مُخَصَّص";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "أيام";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "عند التفعيل، ستختفي الرسائل الجديدة المرسلة والمستلمة في هذه المحادثة بعد رؤيتها.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "عند التفعيل، ستختفي الرسائل الجديدة المرسلة والمستلمة في هذه الدردشة بعد رؤيتها.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "حالياً الرسائل تختفي بعد %1$@";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "نسخ";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "مرحباً,\n\nمؤخرًا، أصبحتُ اَستخدِم Signal عَلى الـiPhone الخاصّ بي لِجعل مُحادَثاتي خُصُوصيَّة. أودُ لو تُثبِّته أنتَ كَذَلِك، حَتّى يَتَسنى لَنا التَّأكُّد أنَنا الوَحيدان اللَّذان يُمكِنُهُما قِراءة رَسائلنا أو سَماع مُكالماتنا.\n\nSignal مُتاحٌ على الآيفون والأندرويد. احصُل عَليه مِن هُنا: %1$@\n\nيَعملُ Signal مِثل تَطبيق تَراسُلَك الحالي. نَستَطيع إرسال الصُّوَر والمَقاطِع المَرئية, إجراءُ مُكالمات, وبدءُ مُحادثة جَماعية. أفضلُ شيء فيه هُو أنَّ لا أحد آخَر قادِر عَلى رُؤية أي شَيء مِن ذَلك، بِما في ذَلك مُصَمِّمو Signal عَينَهُم\n\nتَستطيعُ قِراءة المَزيد عَن Open Whisper Systems، مُصمّمو Signal، هُنا: %2$@";
+"EMAIL_INVITE_BODY" = "مرحباً,\n\nمؤخرًا، أصبحتُ أستخدِم Signal عَلى الـiPhone الخاصّ بي لِجعل دردشاتي خُصُوصيَّة. أودُ لو تُثبِّته أنتَ كَذَلِك، حَتّى يَتَسنى لَنا التَّأكُّد أنَنا الوَحيدان اللَّذان يُمكِنُهُما قِراءة رَسائلنا أو سَماع مُكالماتنا.\n\nSignal مُتاحٌ على الآيفون والأندرويد. احصل عَليه مِن هُنا: %1$@\n\nيَعملُ Signal مِثل تَطبيق تَراسُلَك الحالي. نَستَطيع إرسال الصُوَر والمَقاطِع المَرئية، إجراء مُكالمات، وبدء دردشة جَماعية. أفضلُ شيء فيه هو أنَّ لا أحد آخَر قادِر على رُؤية أي شَيء مِن ذَلك، بِما في ذَلك مُصَمِّمو Signal عَينَهُم\n\nتَستطيعُ قِراءة المَزيد عَن Open Whisper Systems، مُصمّمو Signal، هُنا: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "لننتقل إلى Signal";
@@ -2264,7 +2264,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "رقم الأمان الخاص بك أنت و%1$@ قد تغير.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "تمَّ إنعاش جلسة المحادثة";
+"ERROR_MESSAGE_SESSION_REFRESH" = "تمَّ إنعاش جلسة الدردشة";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "حدث خطأ مجهول.";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "إعادة التوجيه نحو";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "ليس لديك أي وسائط في هذه المُحادثة.";
+"GALLERY_TILES_EMPTY_GALLERY" = "ليس لديك أي وسائط في هذه الدردشة.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "جارٍ تحميل وسائط أحدث…";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "أُزلتَ من المجموعة.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "تمت الموافقة على طلب انضمامك إلى المجموعة.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "لَقَد وافق %1$@ على طلب انضمامك إلى المجموعة.";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "مَركَزُ الدَّعم";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "المُحادثات المؤرشفة";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "الدردشات المؤرشفة";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "تم الحظر";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %1$@، %2$@ و%3$@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "اِبدأ أوَّلَ مُحادثةٍ لكَ مِن هُنا.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "اِبدأ أوَّلَ دردشة لكَ مِن هُنا.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "لَقَد أضافكَ %1$@ إلى المجموعة";
@@ -3347,7 +3347,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "الأرشيف";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "تحديد المحادثات";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "تحديد الدردشات";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "قراءة الكل";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "رنين…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "مكالمة صوتية";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "مُكالمة فيديو…";
@@ -3407,13 +3407,13 @@
 "IN_CALL_TERMINATED" = "انتهت المكالمة.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "المحادثات المكتومة مؤرشفة وستبقى كذلك عند وصول رسائل جديدة.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "الدردشات المكتومة المؤرشفة سَتبقى كذلك عند وصول رسالة جديدة.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "سيتم تحويل المحادثات المؤرشفة إلى البريد الوارد عند وصول رسائل جديدة.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "سيتم تحويل الدردشات المؤرشفة إلى البريد الوارد عند وصول رسائل جديدة.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "لا تُوجَدُ أيُّ مُحَادَثاتٍ حَتَّى الآن.\nإبدأ بِمُراسَلةِ أحدِ الأصدِقاء.";
+"INBOX_VIEW_EMPTY_INBOX" = "لا تُوجَدُ أيُّ دردشات حَتى الآن.\nإبدأ بِمُراسَلةِ أحدِ الأصدِقاء.";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "مكالمة صوتية واردة";
@@ -3479,13 +3479,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "اذهب إلى جميع الوسائط";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "أرشفة المُحادثة";
+"KEY_COMMAND_ARCHIVE" = "أرشفة الدردشة";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "أظهر المُرفقات";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "الذهاب إلى معلومات المُحادثة";
+"KEY_COMMAND_CONVERSATION_INFO" = "انتقل إلى معلومات الدردشة";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "التركيز على شريط الإدخال";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "رِسالة جديدة";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "انتقل إلى المُحادثة التالية";
+"KEY_COMMAND_NEXT_CONVERSATION" = "انتقل إلى الدردشة التالية";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "انتقل إلى المُحادثة السابقة";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "انتقل إلى الدردشة السابقة";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "البحث";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "أظهر المُلصقات";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "إلغاء أرشفة المُحادثة";
+"KEY_COMMAND_UNARCHIVE" = "إلغاء أرشفة الدردشة";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "أعرف المزيد";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "فشل ربط الجهاز";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "سيتمكن هذا الجهاز من رؤية مجموعاتك وجهات اتصالك، والوصول إلى محادثاتك، وإرسال الرسائل باسمك.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "سيتمكن هذا الجهاز من رؤية مجموعاتك وجهات اتصالك، والوصول إلى دردشاتك، وإرسال الرسائل باسمك.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "ربط هذا الجهاز؟";
@@ -3662,7 +3662,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "حذف للجميع";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "ستُحذَف هذه الرسالة لأياً كان في هذه المحادثة إن كانوا يستخدمون إصدار حديث مِن Signal. سيكون بمقدرتهم رؤية أنك قد حذفت رسالة.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "ستُحذَف هذه الرسالة لأياً كان في هذه الدردشة إن كانوا يستخدمون إصدار حديث مِن Signal. سيكون بمقدرتهم رؤية أنك قد حذفت رسالة.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "من هم الأشخاص الذين تريد حذف هذه الرسالة لديهم؟";
@@ -3827,10 +3827,10 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "حذف";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "ستُحذَف هذه المُحادثة من جميع أجهزتك.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "ستُحذَف هذه الدردشة من جميع أجهزتك.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "حذف المُحادثة؟";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "حذف الدردشة؟";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "الحذف والمُغادرة";
@@ -3887,10 +3887,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "حذف";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "مُواصلة هذه المُحادثة مع %1$@ ومُشاركة اسمك وصورتك معه؟";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "مُواصلة هذه الدردشة مع %1$@ ومُشاركة اسمك وصورتك معه؟";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "مُواصلة مُحادثتك مع هذه المجموعة ومُشاركة اسمك وصورتك مع أعضاءها؟";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "مُواصلة دردشتك مع هذه المجموعة ومُشاركة اسمك وصورتك مع أعضاءها؟";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "السماح لـ %1$@ بمُراسلتك ومُشاركة اسمك وصورتك معه؟ لن يعلم أنك قد قرأت رسائله حتى تقوم بالقبول.";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "يَجري التَّنزيل";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "تم التعديل";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "فشل الإرسال.";
@@ -4778,7 +4778,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "الجميع";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "كُل شخص يملك رقم هاتفك في جهات اتصاله سيعثُر عليك كجهة اتصال في Signal. سَيتمكن الآخرون من العثور عليك باستخدام رقم هاتفك عند بدء محادثة أو مجموعة جديدة.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "كُل شخص يملك رقم هاتفك في جهات اتصاله سيعثُر عليك كجهة اتصال في Signal. سَيتمكن الآخرون من العثور عليك باستخدام رقم هاتفك عند بدء دردشة أو مجموعة جديدة.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "لا أحد";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "الـPIN يجب أن يحوي اربعة ارقام على الأقل.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "يُمكنك تثبيت ما يصل إلى 4 مُحادثات فقط.";
+"PINNED_CONVERSATION_LIMIT" = "يُمكنك تثبيت ما يصل إلى 4 دردشات فقط.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "المُثبَّتة";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "لا يبدو هذا رقم أمانك مع %1$@. هل تتحقق من جهة الاتصال الصحيحة؟";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "لا يبدو الرقم الذي في حافظتك أنه رقم الأمان الصحيح لهذه المحادثة.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "لا يبدو الرقم الذي في حافظتك أنه رقم الأمان الصحيح لهذه الدردشة.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "لم يجد Signal أي رقم أمان في حافظتك. هل نسخته بشكل صحيح ؟";
@@ -5102,7 +5102,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "مُعمّى";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "مُتفرِّغٌ لِلمُحادَثة";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "مُتفرِّغٌ لِلدردشة";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "ما عليك إلا التحدث بكل حرية";
@@ -5156,7 +5156,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "يُمكنكَ تحديث ملفك الشخصي فقط إذا كُنتَ متصلاً بالانترنت.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "ملفُّك الشَّخصيّ مُعمّى مِنَ النِهاية إلى النِهاية. إنَّ ملفُّك الشَّخصيّ وأي تغييرات تطرأ عليه ستكون مرئية لِجهات إتصالك وعندما تبدأ أو تقبل مُحادثة جديدة.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "حسابك الشَّخصيّ مُعمّى مِنَ النِهاية إلى النِهاية. إنَّ حسابك الشَّخصي وأي تغييرات تطرأ عليه ستكون مرئية لِجهات اتصالك وعندما تبدأ أو تقبل دردشة جديدة.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "حفظ";
@@ -5423,7 +5423,7 @@
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "الاسم الأول";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
-"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "سَيظهر اسمك والصورة والتغييرات التي أحدثت لها لجهات اتصالك عندما تبدأ محادثة جديدة أو تقبلها.";
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "سَيظهر اسمك والصورة والتغييرات التي أحدِثت لها لِجهات اتصالك عندما تبدأ دردشة جديدة أو تقبلها.";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
 "REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "عن خصوصية الحساب الشخصي";
@@ -5591,7 +5591,7 @@
 "SEARCH_SECTION_CONTACTS" = "جهات اتصال أُخرى";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "المحادثات";
+"SEARCH_SECTION_CONVERSATIONS" = "الدردشات";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "المجموعات";
@@ -5702,10 +5702,10 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "قياسي";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "يستخدم Signal تعمية النهاية-إلى-النهاية وقد يحتاج إلى إنعاش جلسة المُحادثة الخاصة بك في بعض الأحيان. لا يؤثر هذا على أمان المُحادثة ولكن أنت رُبما تكون قد فوّتَ رسالة من جهة الاتصال هذه، يُمكِنُك سؤاله لإعادة إرسالها.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "يستخدم Signal تعمية النهاية-إلى-النهاية وقد يحتاج إلى إنعاش جلسة الدردشة الخاصة بك في بعض الأحيان. لا يُؤثر هذا على أمان الدردشة ولكن أنت رُبما تكون قد فوّتَ رسالة من جهة الاتصال هذه، يُمكِنُك سؤاله لإعادة إرسالها.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "تمَّ إنعاش جلسة المُحادثة";
+"SESSION_REFRESH_ALERT_TITLE" = "تمَّ إنعاش جلسة الدردشة";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "الاختيار من الصور";
@@ -5846,10 +5846,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "تغيير الرقم";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "المُحادثات";
+"SETTINGS_CHATS" = "الدردشات";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "مسح تاريخ المحادثات";
+"SETTINGS_CLEAR_HISTORY" = "مسح تاريخ الدردشات";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "حقوق النشر محفوظة لـ Signal Messenger\nمُرخص بموجب AGPLv3";
@@ -5915,7 +5915,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "الرسائل المُختفية";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "تحديد مدة افتراضية لمؤقت اختفاء الرسائل، لجميع المحادثات الجديدة التي قمت ببدئها.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "تحديد مدة افتراضية لمؤقت اختفاء الرسائل، لجميع الدردشات الجديدة التي قمت ببدئها.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "تبرَّع لـ Signal";
@@ -5927,16 +5927,16 @@
 "SETTINGS_INVITE_TITLE" = "اُدعُ أصدقائك";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "لون المحادثة والخلفية";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "لون الدردشة والخلفية";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "صوت الرسالة";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "المحادثات المكتومة المؤرشفة سَتبقى كذلك عند وصول رسالة جديدة.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "الدردشات المكتومة المؤرشفة سَتبقى كذلك عند وصول رسالة جديدة.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "إبقاء المحادثات المكتومة مُؤرشفة";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "إبقاء الدردشات المكتومة مُؤرشفة";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "الشُروط وَسياسة الخُصُوصِية";
@@ -5975,7 +5975,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "الإعدادات";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "تَضمين المُحادثاتِ المَكتومة";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "تَضمين الدردشاتِ المَكتومة";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "شارة التعداد";
@@ -6584,10 +6584,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "مشاركة جهات الاتصال مع ‫نظام iOS‬";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "السماح لنظام iOS‬ بالوصول إلى جهات الاتصال Signal وإلى المحادثات لاستخدام ميزات مثل مشاركة الاقتراحات.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "السماح لنظام iOS‬ بالوصول إلى جهات الاتصال Signal وإلى الدردشات لاستخدام ميزات مثل مشاركة الاقتراحات.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "السماح لنظام iOS‬ بالوصول إلى جهات الاتصال Signal وإلى المحادثات لاستخدام ميزات مثل مشاركة الاقتراحات والإشعارات.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "السماح لنظام iOS‬ بالوصول إلى جهات الاتصال Signal وإلى الدردشات لاستخدام ميزات مثل مشاركة الاقتراحات والإشعارات.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "قفل التسجيل";
@@ -6659,7 +6659,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "عرض رقم الأمان";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "إظهار المُحادثة";
+"SHOW_THREAD_BUTTON_TITLE" = "إظهار الدردشة";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "أنا أدعوك لتثبيت تطبيق Signal! ها هو الرابط:";
@@ -6761,7 +6761,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "إعادة التوجيه";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "الذهاب إلى المحادثة";
+"STORIES_GO_TO_CHAT_ACTION" = "الذهاب إلى الدردشة";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
 "STORIES_GROUP_REPLY_NOT_A_MEMBER" = "لا تستطيع الردّ على هذه المجموعة لأنك لم تعد عضواً فيها.";
@@ -7160,7 +7160,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "عضو في %1$@، %2$@، وعدد %3$lu مِن المجموعات الأُخرى";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "يُمكِنُك إضافة مُلاحظات لنفسك في هذه المُحادثة. إذا كان حسابك يحتوي على أي أجهزة مُرتبطة، ستتم مُزامنة المُلاحظات.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "يُمكِنُك إضافة مُلاحظات لنفسك في هذه الدردشة. إذا كان حسابك يحتوي على أي أجهزة مُرتبطة، ستتم مُزامنة المُلاحظات.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "عضو في %1$@";
@@ -7286,7 +7286,7 @@
 "UNPIN_ACTION" = "فَكّ التَّثبيت";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "المُحادثات";
+"UNPINNED_SECTION_TITLE" = "الدردشات";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "غير مقروءة";
@@ -7463,7 +7463,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "اِسحب لِمُعاينة المَزيد مِنَ الخلفيَّات.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "تعيِّين خَلفيَّة لِجَميع المُحادثات.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "تعيِّين خَلفيَّة لِجَميع الدردشات.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "تعيِّين خَلفيَّة لـ %1$@.";
@@ -7472,16 +7472,16 @@
 "WALLPAPER_PREVIEW_TITLE" = "مُعاينة";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "محو لون المحادثة";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "محو لون الدردشة";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "محو لون هذه المحادثة ؟";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "محو لون هذه الدردشة؟";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "محو الخلفية";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "محو الخلفية لهذه المُحادثة؟";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "محو الخلفية لهذه الدردشة؟";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "النَّمط الدَّاكِن يعتِّم الخلفيَّة";
@@ -7499,7 +7499,7 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "إعادة تعيِّين جميع الخلفيَّات";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "أ لديك الرغبة في إلغاء جميع ألوان المحادثات ؟";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "هل لديك الرغبة في إلغاء جميع ألوان الدردشات؟";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "إعادة تعيين الألوان";
@@ -7529,7 +7529,7 @@
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "إعادة تعيين الخلفية";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "لون المحادثة";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "لون الدردشة";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "تَعيِّين خلفيَّة";

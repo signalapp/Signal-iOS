@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Missatge d'àudio";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "Trucada de veu";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Altaveu";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Torna a trucar";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Trucada entrant…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Trucada perduda: %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Trucada perduda";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Trucada perduda: %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Trucada perduda: %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Podeu activar l'accés al micròfon a la Configuració de l'iOS per poder trucar i enviar missatges de veu al Signal.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Canvia l'orientació de la càmera";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Canvia a trucada de veu";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Canvia a trucada de vídeo";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Marqueu el PIN del número de telèfon nou. És diferent del codi de verificació per SMS.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Aquí teniu una previsualització del color de la conversa.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "Aquí tens una previsualització del color del xat.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Aquí teniu una previsualització del color de la conversa.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "Aquí tens una previsualització del color del xat.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Una altra bafarada";
@@ -926,7 +926,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Suprimeix el color";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "Color de la conversa";
+"CHAT_COLOR_SETTINGS_TITLE" = "Color del xat";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Edita el color";
@@ -935,16 +935,16 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Coincidència automàtica del color amb el fons";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "Converses";
+"CHAT_LIST_TITLE_INBOX" = "Xats";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Color i fons de la conversa";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Color i fons del xat";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compara amb el porta-retalls";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Seleccioneu o cerqueu un usuari del Signal per començar-hi una conversa.";
+"COMPOSE_BUTTON_HINT" = "Selecciona o cerca un usuari del Signal per iniciar un xat.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Redacta";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organització";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Per a veure els noms i les fotografies a les converses:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Per a veure els noms i les fotografies als xats:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Toqueu «Vés a la configuració»";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Activa";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Vegeu els noms i les fotografies a les converses.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Veure noms i fotografies als xats.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Voleu activar els contactes?";
@@ -1199,13 +1199,13 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Aturar";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Aquesta conversa se suprimirà del dispositiu.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Aquest xat s'eliminarà del dispositiu.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Vols suprimir la conversa?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Vols eliminar el xat?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Silencia aquesta conversa durant…";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Silencia aquest xat durant…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 dia";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grups";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Converses recents";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Xats recents";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Persones";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "Sense coincidències";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Configuració de la conversa";
+"CONVERSATION_SETTINGS" = "Ajustos del xat";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Addició de membres";
@@ -1325,7 +1325,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "No m'ho notifiquis si està silenciat";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Vols rebre notificacions quan se't mencioni en converses silenciades?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Vols rebre notificacions quan se't mencioni en xats silenciats?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mencions";
@@ -1334,7 +1334,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "missatge";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silencia aquesta conversa durant…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silencia aquest xat durant…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Sempre";
@@ -1658,7 +1658,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "El número de telèfon introduït no coincideix amb el del compte.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Vols suprimir tots els missatges de la conversa?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Vols eliminar tots els missatges del xat?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Suprimeix tots els missatges";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "Missatges efímers";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Els missatges d'aquesta conversa desapareixeran al cap de %1$@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Els missatges d'aquest xat desapareixeran al cap de %1$@.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Hora personalitzada";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "dies";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Quan s'activa, els missatges nous enviats i rebuts en aquesta conversa desapareixeran després de veure'ls.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Quan s'activa, els missatges nous enviats i rebuts en aquest xat desapareixeran després de veure'ls.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Els missatges desapareixen en %1$@";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Copia";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Ep,\n\nÚltimament he estat usant el Signal per mantenir privades les meves converses a l'iPhone. M'agradaria que també te l'instal·lessis, perquè puguem estar segurs que som els únics que podem llegir els missatges que ens enviem.\n\nEl Signal està disponible per a Android i iPhones. Baixa'l d'aquí: %1$@\n\nEl Signal funciona com la resta d'aplicacions de missatgeria. Podem enviar-nos fotografies i vídeos, fer trucades i crear grups. El millor és que ningú més pot veure res d'això, ni tan sols la gent que ha creat el Signal!\n\nPots obtenir més informació sobre Open Whisper Systems, la gent que ha creat el Signal, aquí: %2$@";
+"EMAIL_INVITE_BODY" = "Ep,\n\nÚltimament he estat utilitzant Signal per mantenir les meves converses d'iPhone privades. M'agradaria que també l'instal·lessis, per poder estar segurs que som els únics que llegim els missatges que ens enviem.\n\nSignal està disponible per a Android i iPhone. El pots baixar aquí: %1$@\n\nSignal funciona com la resta d'aplicacions de missatgeria instantània. Podem enviar-nos fotografies i vídeos, fer trucades i crear grups. El millor és que ningú més pot veure res d'això, ni tan sols la gent que ha creat Signal!\n\nPots obtenir més informació sobre Open Whisper Systems, la gent que ha creat Signal, aquí: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Canviem-nos al Signal";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "Reenvia a";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "No teniu contingut en aquesta conversa.";
+"GALLERY_TILES_EMPTY_GALLERY" = "No tens arxius multimèdia en aquest xat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Carregant arxius recents…";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "T'han esborrat del grup.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "S'ha aprovat la teva sol·licitud per afegir-te al grup.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ ha aprovat la sol·licitud per afegir-vos al grup.";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "Centre d'assistència";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Converses arxivades";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Xats arxivats";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Bloquejat";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Alguns dels vostres contactes ja són al Signal, inclosos %1$@, %2$@i %3$@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Comenceu la primera conversa aquí.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Comença el teu primer xat aquí.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ us ha afegit al grup.";
@@ -3347,7 +3347,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Arxiu";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Seleccioneu converses";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Seleccionar xats";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Llegir-ho tot";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "Sonant…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "Trucada de veu…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "Trucada de video…";
@@ -3407,13 +3407,13 @@
 "IN_CALL_TERMINATED" = "Trucada acabada";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Les converses silenciades que estiguin arxivades romandran arxivades quan arribi un missatge nou.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Els xats silenciats que estiguin arxivats romandran arxivats quan arribi un missatge nou.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Les converses arxivades es mouran a la safata d'entrada quan arribi un missatge nou.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Els xats arxivats es mouran a la safata d'entrada quan arribi un missatge nou.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Encara no teniu cap conversa.\nComenceu enviant un missatge a algú.";
+"INBOX_VIEW_EMPTY_INBOX" = "Encara no tens cap xat.\nComença enviant un missatge a algú.";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "Trucada entrant";
@@ -3479,13 +3479,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "Ves a tot el contingut";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "Arxiva la conversa";
+"KEY_COMMAND_ARCHIVE" = "Arxiva el xat";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "Mostra els adjunts";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Ves a la informació de la conversa";
+"KEY_COMMAND_CONVERSATION_INFO" = "Ves a la informació del xat";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "Focalitza la barra d'entrada";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Missatge nou";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Ves a la conversa següent";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Ves al xat següent";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Ves a la conversa anterior";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Ves al xat anterior";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Cerca";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "Mostra els adhesius";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "Restaura la conversa";
+"KEY_COMMAND_UNARCHIVE" = "Restaura el xat";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Més informació";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "No s'ha pogut enllaçar el dispositiu";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Aquest dispositiu podrà veure els vostres grups i contactes, accedir a les converses i enviar missatges amb el vostre nom.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Aquest dispositiu podrà veure els teus grups i contactes, accedir als xats i enviar missatges en nom teu.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Voleu enllaçar aquest dispositiu?";
@@ -3662,7 +3662,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Suprimeix-lo per a tothom";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Aquest missatge se suprimirà per a tots els usuaris del xat si usen una versió recent del Signal. Podran veure que heu suprimit un missatge.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Aquest missatge s'eliminarà per a tots els usuaris del xat si utilitzen una versió recent de Signal. Podran veure que has eliminat un missatge.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Per a qui voleu suprimir aquest missatge?";
@@ -3827,10 +3827,10 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Suprimeix";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Aquesta conversa s'esborrarà de tots els dispositius.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Aquest xat s'eliminarà de tots els dispositius.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Vols esborrar la conversa?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Vols eliminar el xat?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Esborrar i sortir";
@@ -3887,10 +3887,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Suprimeix";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Voleu continuar aquesta conversa amb %1$@ i compartir-hi el nom i la fotografia?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Vols continuar aquest xat amb %1$@ i compartir-hi el nom i la fotografia?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Voleu continuar la conversa amb aquest grup i compartir-hi el nom i la fotografia?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Vols continuar xatejant amb aquest grup i compartir-hi el nom i la fotografia?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Voleu permetre que %1$@ us envii missatges i compartir-hi el nom i la fotografia? No sabran que heu vist el missatge fins que no ho accepteu.";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Es baixa";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "editat";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Ha fallat l'enviament.";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "El PIN ha de tenir un mínim de 4 dígits.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Només podeu fixar fins a 4 converses.";
+"PINNED_CONVERSATION_LIMIT" = "Només pots fixar fins a 4 xats.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Fixat";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Aquests no semblen els números de seguretat de %1$@. Esteu verificant el contacte correcte?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "El número del porta-retalls no sembla el número de seguretat correcte per a aquesta conversa.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "El número del porta-retalls no sembla el número de seguretat correcte per a aquest xat.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "El Signal no ha pogut trobar cap número de seguretat al porta-retalls. L'heu copiat correctament?";
@@ -5102,7 +5102,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Encriptat";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Lliure per conversar-hi";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Lliure per xatejar-hi";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Parleu lliurement";
@@ -5156,7 +5156,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Només es pot actualitzar el perfil quan s'estigui connectat a Internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "El perfil està encriptat d'extrem a extrem. El perfil i els canvis seran visibles per als vostres contactes quan inicieu o accepteu converses noves.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "El perfil està xifrat d'extrem a extrem. El perfil i els canvis seran visibles per als teus contactes quan comencis o acceptis xats nous.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Desa";
@@ -5591,7 +5591,7 @@
 "SEARCH_SECTION_CONTACTS" = "Altres contactes";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "Converses";
+"SEARCH_SECTION_CONVERSATIONS" = "Xats";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "Grups";
@@ -5702,7 +5702,7 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "Estàndard";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "El Signal usa encriptació d'extrem a extrem i és possible que de vegades hagi d’actualitzar la sessió de conversa. Això no n'afecta la seguretat, però és possible que perdeu algun missatge d’aquest contacte. Podeu demanar que el torni a enviar.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal utilitza xifratge d'extrem a extrem i és possible que de vegades hagis d’actualitzar la sessió del xat. Això no n'afecta la seguretat, però és possible que perdis algun missatge d’aquest contacte. Sempre pots demanar-li que te'l torni a enviar.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "S'ha refrescat la sessió.";
@@ -5846,10 +5846,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Canvia el número";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "Converses";
+"SETTINGS_CHATS" = "Xats";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Neteja l'historial de la conversa";
+"SETTINGS_CLEAR_HISTORY" = "Neteja l'historial del xat";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nAmb llicència de AGPLv3";
@@ -5915,7 +5915,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Missatges efímers";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Establiu un temporitzador per defecte de desaparició de missatges per a totes les converses noves que hàgiu iniciat.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Estableix un temporitzador per defecte de desaparició de missatges per a tots els xats nous que hagis iniciat.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Feu una donació a Signal";
@@ -5927,16 +5927,16 @@
 "SETTINGS_INVITE_TITLE" = "Convida els amics";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Color i fons de la conversa";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Color i fons del xat";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "So de missatge";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Les converses silenciades que estiguin arxivades romandran arxivades quan arribi un missatge nou.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Els xats silenciats que estiguin arxivats romandran arxivats quan arribi un missatge nou.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Mantenir arxivades les converses silenciades";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Mantenir arxivats els xats silenciats";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Condicions de servei i política de privadesa";
@@ -5975,7 +5975,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Configuració";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inclou les converses silenciades";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Incloure els xats silenciats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Recompte d'insígnies";
@@ -6584,10 +6584,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Comparteix els contactes amb iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Permet a l'iOS d'accedir als contactes i xats del Signal per a funcionalitats com ara els suggeriments de compartició.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Permet a iOS d'accedir als contactes i xats de Signal per a funcionalitats com ara els suggeriments per a compartir.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Permet a l'iOS d'accedir als contactes i xats del Signal per a funcionalitats com ara els suggeriments de compartició i les notificacions.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Permet a iOS d'accedir als contactes i xats de Signal per a funcionalitats com ara els suggeriments per a compartir i les notificacions.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blocatge de registre";
@@ -6659,7 +6659,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Mostra el número de seguretat";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Mostra la conversa";
+"SHOW_THREAD_BUTTON_TITLE" = "Mostrar el xat";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Et convide a instal·lar el Signal! Ací tens l'enllaç:";
@@ -6761,7 +6761,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "Reenvia";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Ves a la conversa";
+"STORIES_GO_TO_CHAT_ACTION" = "Ves al xat";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
 "STORIES_GROUP_REPLY_NOT_A_MEMBER" = "No pots respondre a aquesta història perquè ja no pertanys a aquest grup.";
@@ -7160,7 +7160,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Membre de %1$@, %2$@, i %3$lu grups addicionals";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Podeu afegir notes per a vosaltres mateixos en aquesta conversa. Si hi ha algun dispositiu enllaçat, s'hi sincronitzaran les notes noves.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "En aquest xat, pots afegir notes per a tu mateix. Si hi ha algun dispositiu enllaçat, s'hi sincronitzaran les notes noves.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Membre de %1$@";
@@ -7286,7 +7286,7 @@
 "UNPIN_ACTION" = "No ho fixis";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "Converses";
+"UNPINNED_SECTION_TITLE" = "Xats";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Per llegir";
@@ -7463,7 +7463,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Llisqueu per previsualitzar més fons.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Estableix el fons per a totes les converses.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Estableix el fons per a tots els xats.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Estableix el fons per a %1$@.";
@@ -7472,16 +7472,16 @@
 "WALLPAPER_PREVIEW_TITLE" = "Previsualitza";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Neteja el color de la conversa";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Neteja el color del xat";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Voleu netejar el color d'aquesta conversa?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Vols netejar el color d'aquest xat?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Neteja el fons";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Voleu netejar el fons per a aquesta conversa?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Vols netejar el fons per a aquest xat?";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "El tema fosc enfosqueix el fons.";
@@ -7499,13 +7499,13 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Restableix tots els fons";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Voleu substituir tots els colors de la conversa?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Vols substituir tots els colors del xat?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Restableix els colors de la conversa";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Restableix els colors del xat";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Restableix el color de la conversa";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Restableix el color del xat";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Restableix el fons";
@@ -7514,7 +7514,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Restableix els colors per defecte";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Restableix els colors de la conversa";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Restableix els colors del xat";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Restableix el fons per defecte";
@@ -7529,7 +7529,7 @@
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Restableix el fons";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Color de la conversa";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Color del xat";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Estableix el fons";

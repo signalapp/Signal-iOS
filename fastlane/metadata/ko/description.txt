@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+Signal은 개인정보 보호를 핵심 가치로 삼는 메시지 앱입니다. 무료이고, 사용이 간편하며, 강력한 엔드투엔드 암호화를 통해 커뮤니케이션 프라이버시를 확실히 보장합니다.
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• 문자, 음성 메시지, 사진, 동영상, GIF, 파일을 무료로 전송하세요. Signal은 휴대폰 데이터 연결을 사용하여 SMS와 MMS 요금이 발생하는 걸 방지합니다.
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• 친구와 암호화된 고품질 음성 및 영상 통화를 즐기세요. 그룹 통화는 최대 40명까지 지원됩니다.
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• 최대 1,000명이 참여할 수 있는 대화 기능으로 관계를 유지하세요. 관리자 권한 설정을 통해 그룹 멤버의 게시 및 관리 권한을 제어하세요.
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• 24시간이 지나면 자동으로 사라지는 이미지, 문자, 동영상 스토리를 공유하세요. 개인정보보호 설정에서 각 스토리를 볼 수 있는 사용자를 직접 관리하세요.
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• Signal은 개인정보 보호를 위해 설계되었습니다. Signal은 사용자나 사용자가 대화하는 대상에 관해 전혀 알지 못합니다. 당사의 오픈 소스 Signal 프로토콜에 따라 Signal은 사용자의 메시지를 읽거나 통화를 들을 수 없습니다. Signal뿐 아니라 그 누구도 할 수 없죠. Signal에는 백도어도, 데이터 수집도, 타협도 없습니다. 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• Signal은 독립적인 비영리 조직으로, 여느 조직과는 다른 종류의 테크 회사입니다. 501c3 비영리 조직인 Signal은 광고주나 투자자가 아닌 사용자의 기부를 통해 운영됩니다. 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• 기부나 질문, 자세한 정보는 https://support.signal.org/를 방문해 주세요.
 
-To check out our source code, visit https://github.com/signalapp 
+Signal의 소스 코드를 보려면 https://github.com/signalapp을 방문하세요. 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+Twitter의 @signalapp과 Instagram의 @signal_app을 팔로우하세요.

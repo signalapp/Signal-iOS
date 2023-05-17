@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Anladım";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Bu konuşmada %1$@ tarafından gönderilen bir ileti, çıkartma, tepki, okundu bilgisi veya içerik sana teslim edilemedi.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Bu konuşmada %1$@ tarafından gönderilen bir mesaj, çıkartma, tepki, okundu bilgisi veya içerik sana teslim edilemedi.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Teslim Sıkıntısı";
@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Ses İletisi";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "Sesli arama";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Hoparlör";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Tekrar Ara";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Gelen sesli arama…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 %1$@ saatinde cevapsız sesli arama";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Cevapsız sesli arama";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 %1$@ tarihinde cevapsız sesli arama";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 %1$@ gününde cevapsız sesli arama";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal'de sesli iletiler kaydetmek ve aramalar yapmak için iOS Ayarlar uygulamasından mikrofon erişimini etkinleştirebilirsiniz.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Kamera Yönünü Değştir";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Sesli aramaya geç";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Görüntülü aramaya geç";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Yeni telefon numarası için PIN'i girin. Bu, SMS doğrulama kodunuzdan farklıdır.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Konuşma renginin önizlemesi.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "Sohbet renginin ön izlemesi.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Konuşma renginin önizlemesi.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "Sohbet renginin ön izlemesi.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Diğer baloncuk";
@@ -926,7 +926,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Rengi Sil";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "Konuşma Rengi";
+"CHAT_COLOR_SETTINGS_TITLE" = "Sohbet Rengi";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Rengi Düzenle";
@@ -935,16 +935,16 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Arkaplana bağlı otomatik olarak renk eşleştirir";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "Konuşmalar";
+"CHAT_LIST_TITLE_INBOX" = "Sohbetler";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Konuşma Rengi ve Arkaplan";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Sohbet Rengi ve Duvar Kâğıdı";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Panodaki ile Karşılaştır";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Konuşma başlatmak için Signal kullanıcısını seçin veya arayın.";
+"COMPOSE_BUTTON_HINT" = "Sohbet başlatmak için bir Signal kullanıcısı seç veya ara.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "İleti oluştur";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Kuruluş";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Konuşmalarınızdaki kişi adlarını ve fotoğrafları görmek için:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Sohbetlerindeki kişi adlarını ve fotoğrafları görmek için:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Aşağıdan \"Ayarlara git\" seçeneğine dokunun";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Aç";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Konuşmalarınızdaki kişi adlarını ve fotoğrafları görün.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Sohbetlerindeki kişi adlarını ve fotoğrafları gör.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Kişiler açılsın mı?";
@@ -1199,13 +1199,13 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Durdur";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Bu konuşma bu cihazdan silinecektir.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Bu sohbet bu cihazdan silinecektir.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Konuşmayı Sil?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Sohbet silinsin mi?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Bu konuşmayı sessize al…";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Bu sohbeti sessize al…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 gün";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Gruplar";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Son Konuşmalar";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Son Sohbetler";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Kişiler";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "Eşleşme yok";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Konuşma Ayarları";
+"CONVERSATION_SETTINGS" = "Sohbet Ayarları";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Üye Ekle";
@@ -1325,7 +1325,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Sessizdeyse Haber Verme";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Sessize alınan konuşmalarda senden bahsedildiğinde bildirim gönderilsin mi?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Sessize alınan sohbetlerde senden bahsedildiğinde bildirim gönderilsin mi?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Bahsedilmeler";
@@ -1334,7 +1334,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "ileti";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Bu konuşmayı sessize al…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Bu sohbeti sessize al…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Her zaman";
@@ -1658,7 +1658,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Girdiğiniz telefon numarası hesabınızla eşleşmemektedir.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Konuşmadaki tüm iletiler silinsin mi?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Sohbetteki tüm mesajlar silinsin mi?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Tüm İletileri Sil";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "Kaybolan İletiler";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Bu konumşadaki iletiler %1$@ geçtikten sonra kaybolacaktır.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Bu sohbetteki mesajlar %1$@ geçtikten sonra kaybolacaktır.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Özel Zaman";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "gün";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Etkinleştirildiğinde, bu konuşmada gönderilen ve alınan yeni iletiler görüldükten sonra kaybolur.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Etkinleştirildiğinde, bu sohbette gönderilen ve alınan yeni mesajlar görüldükten sonra kaybolur.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Şu anda iletiler %1$@ sonra kayboluyor";
@@ -1931,7 +1931,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Bağışı onayla";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Kaybolan mesajlar bu konuşma için açıldı. Bağış mesajın %1$@ içinde kaybolacak.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Kaybolan mesajlar bu sohbet için açıldı. Bağış mesajın %1$@ içinde kaybolacak.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Bağış yapılamıyor. Bağlantını kontrol edip tekrar dene.";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopyala";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Merhaba,\n\nSon zamanlarda iPhone'umdaki konuşmalarımı gizli tutmak için Signal kullanıyorum. Size de kurmanızı öneririm, böylelikle iletilerimizin ve aramalarımızın aramızda kaldığından emin olabiliriz.\n\nSignal, iPhone ve Android için kullanılabilir. Şu adresten edinebilirsiniz: %1$@ \n\nSignal mevcut ileti uygulaması gibi çalışır. Görüntü ve video gönderebilir, arama yapabilir ve grup konuşmalarına başlayabiliriz. En iyi yanı ise yapımcıları dahil hiç kimsenin göremeyecek olması!\n\nSignal'i yapan Open Whisper Systems hakkında daha fazla bilgi için şu adresi ziyaret edebilirsin: %2$@";
+"EMAIL_INVITE_BODY" = "Merhaba,\n\nSon zamanlarda iPhone'umdaki konuşmalarımı gizli tutmak için Signal kullanıyorum. Signal kullanmanı sana da öneririm, böylece iletilerimizin ve aramalarımızın aramızda kaldığından emin olabiliriz.\n\nSignal, iPhone ve Android için kullanılabilir. Uygulamanı bu adresten indirebilirsin: %1$@ \n\nSignal tıpkı diğer ileti uygulamaları gibi çalışır. Görüntü ve video gönderebilir, arama yapabilir ve grup konuşmalarına başlayabiliriz. En iyi yanı ise yapımcıları dâhil hiç kimsenin ne yazdığımızı göremeyecek olması!\n\nSignal'i ortaya çıkaran insan topluluğu Open Whisper Systems hakkında daha fazla bilgi için şu adresi ziyaret edebilirsin: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Haydi Signal'e geçelim";
@@ -2264,7 +2264,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%1$@ ile olan güvenlik numaranız değişti.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Konuşma oturumu yenilendi";
+"ERROR_MESSAGE_SESSION_REFRESH" = "Sohbet oturumu yenilendi";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Bilinmeyen bir hata oluştu.";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "Nereye yönlendirilecek";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "Bu konuşmada hiçbir içeriğiniz yok.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Bu sohbette hiçbir içeriğin yok.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Daha Yeni Medyalar Yükleniyor…";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Gruptan çıkartıldın.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Gruba katılma isteğin onaylandı.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ gruba katılma isteğinizi onayladı.";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "Destek Merkezi";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arşivlenmiş Konuşmalar";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arşivlenmiş Sohbetler";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Engellendi";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Bazı kişileriniz zaten Signal kullanıyor, örneğin %1$@, %2$@ ve %3$@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "İlk konuşmanızı buradan başlatın.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "İlk sohbetini buradan başlat.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ sizi gruba ekledi";
@@ -3347,7 +3347,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Arşiv";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Konuşmaları Seç";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Sohbetleri Seç";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Tümünü Oku";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "Çalıyor…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "Sesli Arama…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "Görüntülü Arama…";
@@ -3413,7 +3413,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Arşivlenmiş sohbetler, yeni bir mesaj geldiğinde Gelen Kutusuna taşınır.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Henüz konuşma yok.\nBir arkadaşına ileti göndererek başlayabilirsin.";
+"INBOX_VIEW_EMPTY_INBOX" = "Henüz konuşma yok.\nBir arkadaşına mesaj göndererek başlayabilirsin.";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "Gelen sesli arama";
@@ -3479,13 +3479,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "Tüm İçeriği Görüntüle";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "Konuşmayı Arşivle";
+"KEY_COMMAND_ARCHIVE" = "Sohbeti Arşivle";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "Eklentileri Göster";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Konuşma Bilgilerine Git";
+"KEY_COMMAND_CONVERSATION_INFO" = "Sohbet Bilgilerine Git";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "Girdi Çubuğuna Odaklan";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Yeni İleti";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Sonraki Konuşmaya Git";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Sonraki Sohbete Git";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Önceki Konuşmaya Git";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Önceki Sohbete Git";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Konuşmada Ara";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "Çıkartmaları Göster";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "Konuşmayı Arşivden Çıkart";
+"KEY_COMMAND_UNARCHIVE" = "Sohbeti Arşivden Çıkart";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Daha Fazlasını Öğren";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Cihaz Bağlanması Başarısız Oldu";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Bu cihaz gruplarınızı ve kişilerinizi görebilir, konuşmalarınıza erişebilir ve adınıza ileti gönderebilir.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Bu cihaz gruplarını ve kişilerini görebilir, sohbetlerine erişebilir ve adına mesaj gönderebilir.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Bu cihazı bağla?";
@@ -3662,7 +3662,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Herkesten Sil";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Bu ileti konuşmadaki güncel bir Signal sürümü kullanan herkesten silinecektir. Üyeler bir ileti sildiğinizi göreceklerdir.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Bu mesaj sohbette güncel bir Signal sürümü kullanan herkesten silinecektir. Üyeler bir ileti sildiğinizi göreceklerdir.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Bu iletiyi kimin cihazından silmek istiyorsun?";
@@ -3827,10 +3827,10 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Sil";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Bu konuşma tüm cihazlarından silinecektir.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Bu sohbet tüm cihazlarından silinecektir.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Konuşmayı Sil?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Sohbet silinsin mi?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Sil ve Ayrıl";
@@ -3887,10 +3887,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Sil";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%1$@ile bu konuşmaya devam etmek ve adınızı ve fotoğrafınızı onunla paylaşmak ister misiniz?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%1$@ ile bu sohbete devam etmek ve adını ve fotoğrafını onunla paylaşmak ister misin?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Bu grupla konuşmaya devam etmek ve adınızı ve fotoğrafınızı üyeleriyle paylaşmak ister misiniz?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Bu grupla sohbete devam etmek ve adını ve fotoğrafını üyeleriyle paylaşmak ister misin?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%1$@ kişisinin sizinle yazışmasına ve adınızla fotoğrafınızı görmesine izin vermek istiyor musunuz? Kabul edene kadar iletilerini gördüğünüzü bilmeyecekler.";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "İndiriliyor";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "düzenlendi";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Gönderme başarısız oldu.";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN en az 4 haneli olmalı";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Yalnızca 4 konuşmayı sabitleyebilirsiniz";
+"PINNED_CONVERSATION_LIMIT" = "Yalnızca 4 sohbete kadar sabitleyebilirsin.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Sabitlendi";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Bu numara %1$@ ile olan güvenlik numaranıza benzemiyor. Doğru kişi olduğundan emin misiniz?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Panonuzdaki sayı, bu konuşmanın doğru güvenlik numarasına benzemiyor.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Panondaki sayı, bu sohbetin doğru güvenlik numarasına benzemiyor.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal, panonuzda herhangi bir güvenlik numarası bulamadı. Doğru şekilde kopyaladınız mı?";
@@ -5102,7 +5102,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Şifreli";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Konuşmaya açık";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Sohbete açık";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Özgürce Konuşun";
@@ -5156,7 +5156,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profiliniz yalnızca internete bağlıyken güncellenebilir.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profiliniz uçtan uca şifrelidir. Profiliniz ve profilinizdeki değişiklikler, yeni konuşmalar başlattığınızda veya kabul ettiğinizde kişileriniz tarafından görülecektir.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profilin uçtan uca şifrelidir. Profilin ve profilindeki değişiklikler, yeni sohbetler başlattığında veya kabul ettiğinde kişilerin tarafından görülecektir.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Kaydet";
@@ -5591,7 +5591,7 @@
 "SEARCH_SECTION_CONTACTS" = "Diğer Kişiler";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "Konuşmalar";
+"SEARCH_SECTION_CONVERSATIONS" = "Sohbetler";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "Gruplar";
@@ -5702,10 +5702,10 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "Standart";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uçtan uca şifreleme kullanır ve bazen konuşma oturumunuzu yenilemesi gerekebilir. Bu, konuşmanızın güvenliğini etkilemez, ancak bu kişiden gelen bir iletiyi kaçırmış olabilirsiniz ve ondan tekrar göndermesini isteyebilirsiniz.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uçtan uca şifreleme kullanır ve bazen sohbet oturumunu yenilemesi gerekebilir. Bu, konuşmanın güvenliğini etkilemez ancak bu kişiden gelen bir mesajı kaçırmış olabilirsin ve ondan tekrar göndermesini isteyebilirsin.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Konuşma oturumu yenilendi";
+"SESSION_REFRESH_ALERT_TITLE" = "Sohbet oturumu yenilendi";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Fotoğraflardan seç";
@@ -5846,10 +5846,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Numarayı Değiştir";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "Konuşmalar";
+"SETTINGS_CHATS" = "Sohbetler";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Konuşma Geçmişini Temizle";
+"SETTINGS_CLEAR_HISTORY" = "Sohbet Geçmişini Temizle";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Telif Hakkı Signal Messenger\n AGPLv3 altında lisanslanmıştır";
@@ -5915,7 +5915,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Kaybolan İletiler";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Tarafınızca başlatılan tüm yeni iletiler için varsayılan kaybolan ileti zamanlayıcısı ayarlayın.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Tarafınca başlatılan tüm yeni sohbetler için varsayılan kaybolan mesaj zamanlayıcısı ayarla.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Signal'e Bağış Yap";
@@ -5927,7 +5927,7 @@
 "SETTINGS_INVITE_TITLE" = "Arkadaşlarınızı Davet Edin";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Konuşma Rengi ve Arkaplan";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Sohbet Rengi ve Duvar Kâğıdı";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "İleti Sesi";
@@ -5975,7 +5975,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Ayarlar";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Sessize Alınan Konuşmalar Sayılsın";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Sessize Alınan Sohbetler Sayılsın";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Rozet Sayımı";
@@ -6584,10 +6584,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Kişileri iOS ile paylaş";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Paylaşma önerileri gibi özellikler için iOS'un Signal kişilerine ve konuşmalarına erişmesine izin verin.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Paylaşma önerileri gibi özellikler için iOS'un Signal kişilerine ve sohbetlerine erişimine izin ver.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Paylaşma önerileri ve bildirimleri gibi özellikler için iOS'un Signal kişilerine ve konuşmalarına erişmesine izin verin.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Paylaşma önerileri ve bildirimleri gibi özellikler için iOS'un Signal kişilerine ve sohbetlerine erişimine izin ver.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Kayıt Kilidi";
@@ -6659,7 +6659,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Güvenlik Numarasını Göster";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Konuşmayı Göster";
+"SHOW_THREAD_BUTTON_TITLE" = "Sohbeti Göster";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Seni Signal kullanmaya davet ediyorum! İşte link:";
@@ -7160,7 +7160,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%1$@, %2$@, ve %3$lu diğer gruba üye";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Bu konuşmada kendinize notlar ekleyebilirsiniz. Eğer hesabınıza bağlı cihaz varsa, yeni notlar eşzamanlanacaktır.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Bu sohbette kendine notlar ekleyebilirsin. Eğer hesabına bağlı cihaz bulunuyorsa yeni notlar senkronize edilir.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%1$@ grubuna üye";
@@ -7286,7 +7286,7 @@
 "UNPIN_ACTION" = "Sabitlenenlerden kaldır";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "Konuşmalar";
+"UNPINNED_SECTION_TITLE" = "Sohbetler";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Okunmamış";
@@ -7463,7 +7463,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Daha fazla duvar kağıdını önizlemek için kaydırın.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Tüm konuşmalar için duvar kağıdını ayarlayın.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Tüm sohbetler için duvar kâğıdını ayarla.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%1$@ için duvar kağıdını ayarlayın.";
@@ -7472,16 +7472,16 @@
 "WALLPAPER_PREVIEW_TITLE" = "Ön izleme";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Konuşma Rengini Temizle";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Sohbet Rengini Temizle";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Bu konuşma için renk temizlensin mi?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Bu sohbet için sohbet rengi temizlensin mi?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Duvar Kağıdını Kaldır";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Bu konuşma için duvar kağıdı kaldırılsın mi?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Bu sohbet için duvar kâğıdı kaldırılsın mı?";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Koyu Tema, Duvar Kağıdını Karartır";
@@ -7499,13 +7499,13 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Tüm Duvar Kağıtlarını Sıfırla";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Tüm konuşma renklerini değiştirmek ister misiniz?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Tüm sohbet renklerini değiştirmek ister misin?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Konuşma Renklerini Sıfırla";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Sohbet Renklerini Sıfırla";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Konuşma Rengini Sıfırla";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Sohbet Rengini Sıfırla";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Arkaplanı Sıfırla";
@@ -7514,7 +7514,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Varsayılan Renkleri Sıfırla";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Konuşma Renklerini Sıfırla";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Sohbet Renklerini Sıfırla";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Varsayılan Arkaplanı Sıfırla";
@@ -7529,7 +7529,7 @@
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Arkaplanı Sıfırla";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Konuşma Rengi";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Sohbet Rengi";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Duvar kağıdı ayarla";

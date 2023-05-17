@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Message audio";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "Appel vocal";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Haut-parleur";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Rappeler";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Appel vocal entrant…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Appel vocal manqué à %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Appel vocal manqué";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Appel vocal manqué le %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Appel vocal manqué le %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Vous pouvez accorder l’accès au microphone dans l’appli Réglages d’iOS pour passer des appels et enregistrer des messages vocaux avec Signal.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Intervertir les appareils photos";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Passer à un appel vocal";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Passer en appel vidéo";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Vous avez été retiré du groupe.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Votre demande d’adhésion au groupe a été validée.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ a approuvé votre demande de vous joindre au groupe.";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "Sonnerie…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "Appel vocal…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "Appel vidéo…";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Téléchargement";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "modifié";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Échec d’envoi.";

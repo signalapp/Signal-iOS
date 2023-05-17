@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "明白";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "系統冇辦法喺呢個聊天度傳送 %1$@ 俾你嘅訊息、貼圖、心情回應、已讀標記或者媒體檔案。";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "系統冇辦法喺呢個聊天度將 %1$@ 嘅訊息、貼圖、心情回應、已讀標記同媒體傳送俾你。";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "送遞有問題";
@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "語音訊息";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "語音通話";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "喇叭";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "再打一次";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 語音通話來電…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 未接語音通話 (%1$@)";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 未接語音通話";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 未接語音通話 (%1$@)";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 未接語音通話 (%1$@)";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "您可以喺 iOS 設定 app 度啟用咪高峰存取，以便喺 Signal 入面進行通話同錄製語音訊息。";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "轉換前後鏡頭";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "轉用語音通話";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "改做視像通話";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "請輸入新電話冧把嘅 PIN 碼。咪搞錯呀吓，呢處唔係講緊您收到嘅短訊驗證碼。";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "傾偈顏色望落就係咁樣樣。";
+"CHAT_COLOR_INCOMING_MESSAGE" = "聊天顏色望落就係咁樣樣。";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "傾偈顏色望落就係咁樣樣。";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "聊天顏色望落就係咁樣樣。";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "又一個傾偈氣泡";
@@ -926,7 +926,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "刪除顏色";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "傾偈顏色";
+"CHAT_COLOR_SETTINGS_TITLE" = "聊天顏色";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "改過隻顏色";
@@ -935,16 +935,16 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "根據背景自動襯色";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "傾偈";
+"CHAT_LIST_TITLE_INBOX" = "聊天";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "傾偈顏色同背景";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "聊天顏色同背景";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "同剪貼簿比較下";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "揀選或搜尋一個 Signal 使用者去開始傾偈。";
+"COMPOSE_BUTTON_HINT" = "揀選或者搜尋 Signal 用戶嚟開始聊天。";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "撰寫";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "機構";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "若要喺您嘅傾偈度見到聯絡人嘅名同相：";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "如果想喺聊天入面見到聯絡人嘅名同相：";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "喺下面撳一下「跳去設定」";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "開啟";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "喺您嘅傾偈度見到聯絡人嘅名同相。";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "喺聊天入面見到聯絡人嘅名同相。";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "係咪要開啟「聯絡人」？";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "谷";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "最近傾過嘅偈";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "最近嘅聊天";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "人";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "得個吉";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "傾偈設定";
+"CONVERSATION_SETTINGS" = "聊天設定";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "加成員";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "過眼雲煙訊息";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "呢個傾偈入面嘅訊息會喺 %1$@ 過後化為雲煙。";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "呢個聊天入面嘅訊息會喺 %1$@ 後自動銷毀。";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "自訂時間";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "日";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "啟用嘅時候，喺呢個對話入面收發嘅新訊息，過目之後就會開始倒數，夠鐘就會化為雲煙。";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "啟用嘅時候，呢個聊天入面收發嘅新訊息，喺對方睇咗之後就會開始倒數，夠鐘就會自動銷毀。";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "現時訊息會喺 %1$@ 過後化為雲煙";
@@ -1931,7 +1931,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "確認捐款";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "呢個聊天已經開咗「自動銷毀訊息」功能。你嘅捐款訊息會喺 %1$@ 之後消失。";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "呢個聊天已經開咗「自動銷毀訊息」功能。你嘅捐款訊息會喺 %1$@ 之後自動銷毀。";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "捐款失敗。請檢查你嘅連線，然後再試一次。";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "複製";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "喂，\n\n我最近轉咗用 Signal 喇，確保我喺部 iPhone 入面傾嘅偈安全保密。我都想你裝埋 Signal 呀，咁我哋就可以放心：得你同我先可以睇到我哋嘅訊息，或者聽到我哋嘅通話。\n\nSignal 喺 iPhone 同 Android 都用到㗎，可以喺呢度下載：%1$@\n\nSignal 就好似你而家用緊嘅通訊 app 咁樣。我哋可以傳送相同片、通話，仲可以開谷傾偈。而最正嘅係：其他人邊個都睇唔到我哋嘅嘢，就連 Signal 嘅開發者都唔得！\n\n你可以去呢度睇多啲關於 Signal 開發者 Open Whisper Systems 嘅資料：%2$@";
+"EMAIL_INVITE_BODY" = "Hi！\n\n為咗確保 iPhone 入面嘅聊天內容安全保密，我最近轉咗用 Signal。邀請你同我一齊用呢個 App，等我哋以後可以放心傾偈：得你同我先睇到我哋嘅訊息，同聽到我哋嘅通話內容。\n\nSignal 喺 iPhone 同 Android 都用到㗎，可以喺呢度下載：%1$@\n\nSignal 嘅用法同你用緊嘅通訊應用程式一樣，可以傳送相片同影片、打電話，同埋開始群組聊天。最正嘅係：其他人唔會睇到入面嘅內容，就連 Signal 嘅開發者都唔得！\n\n你可以去呢度睇多啲關於 Signal 開發者 Open Whisper Systems 嘅資料：%2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "不如我哋齊齊轉會 Signal";
@@ -2264,7 +2264,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "您同 %1$@ 之間嘅安全碼已經郁動過。";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "傾偈階段已經重新整理";
+"ERROR_MESSAGE_SESSION_REFRESH" = "聊天階段已經重新整理";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "發生未知嘅錯誤。";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "轉寄畀";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "喺呢個傾偈入面，您未有任何多媒體。";
+"GALLERY_TILES_EMPTY_GALLERY" = "聊天入面未有任何媒體。";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "載入緊較近期嘅多媒體…";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "你已經喺群組度被移除。";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "你加入群組嘅請求已經批准咗。";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ 已批准您加入呢個谷嘅請求。";
@@ -3038,7 +3038,7 @@
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "你係咪確定要移除「%1$@」？";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%1$@” can view and reply to this story. You can update the membership for this chat in the group.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "「%1$@」群組聊天嘅成員可以瀏覽同埋回覆呢個限時動態。你可以更新呢個聊天嘅群組成員資格。";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "支援中心";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "封印嘅傾偈";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "封存咗嘅聊天";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "封鎖咗";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "您有啲聯絡人已經開咗 Signal 喇，譬如話 %1$@、%2$@ 同 %3$@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "喺呢處開始您第一個傾偈啦。";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "喺呢度開始第一個聊天啦。";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ 已加咗您入谷";
@@ -3347,7 +3347,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "封印";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "揀選傾偈";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "揀選聊天";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "通通睇咗";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "電話響緊…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "語音通話...";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "視像通話…";
@@ -3410,10 +3410,10 @@
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "當收到新訊息嘅時候，封存咗嘅靜音聊天會繼續封存。";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "收到新訊息嘅時候，已經存檔嘅聊天記錄會移到收件匣。";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "當收到新訊息嘅時候，封存咗嘅聊天會移去收件匣。";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "身在獨家村。\n發個訊息畀好友撩下佢傾偈啦。";
+"INBOX_VIEW_EMPTY_INBOX" = "未有任何聊天。\n傳送訊息俾好友，撩下佢傾偈啦。";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "語音通話來電";
@@ -3479,13 +3479,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "跳去所有多媒體";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "封印傾偈";
+"KEY_COMMAND_ARCHIVE" = "封存聊天";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "顯示附件";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "跳去個谷嘅資訊";
+"KEY_COMMAND_CONVERSATION_INFO" = "跳去聊天資訊";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "聚焦輸入列";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "新訊息";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "跳去下一個傾偈";
+"KEY_COMMAND_NEXT_CONVERSATION" = "跳去下一個聊天";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "跳去上一個傾偈";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "跳去上一個聊天";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "搜尋";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "顯示貼圖";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "解除封印傾偈";
+"KEY_COMMAND_UNARCHIVE" = "取消封存聊天";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "講多啲俾我聽";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "部機連結失敗";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "呢部裝置將會睇到你有份參與嘅谷、聯絡人、聊天內容，同埋以你名義傳送嘅訊息。";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "呢部裝置會睇到你嘅群組、聯絡人同埋聊天內容，仲可以用你嘅名義傳送訊息。";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "係咪要連結呢部裝置呀？";
@@ -3887,10 +3887,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "刪除";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "係咪要繼續同 %1$@ 傾偈，並同佢分享您嘅名同相？";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "係咪要繼續同 %1$@ 傾偈，同埋同佢分享你嘅名同相？";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "係咪要繼續同呢個谷傾偈，並向個谷嘅所有成員分享您嘅名同相？";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "係咪要繼續同呢個群組傾偈，同埋同入面嘅成員分享你嘅名同相？";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "您肯唔肯俾 %1$@ 發訊息畀您，並同佢分享您嘅名同相？您話䎺之前，佢都唔會知您睇過佢個訊息嘅。";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "下載緊";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "編輯咗";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "傳送失敗。";
@@ -4778,7 +4778,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "全世界";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "只要對方喺佢嘅手機通訊錄入面有你嘅手機號碼，你同樣會出現喺佢嘅 Signal 聯絡人入面。而其他人喺開始新聊天或者新群組時，先可以用你嘅手機號碼搵到你。";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "只要對方喺手機通訊錄入面有你嘅手機號碼，佢都會喺 Signal 聯絡人度見到你。其他人亦都可以喺開始新聊天或者新群組嘅時候，用你嘅手機號碼搵到你。";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "邊個都唔得";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN 碼至少要係 4 個位數字。";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "您淨係可以將最多 4 個傾偈置頂。";
+"PINNED_CONVERSATION_LIMIT" = "你最多只可以將 4 個聊天置頂。";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "置頂";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "呢個望落唔多似係您同 %1$@ 之間嘅安全碼。您係咪驗證緊啱嘅聯絡人？";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "您嘅剪貼簿入面嘅數字，望落唔多似係呢個傾偈啱嘅安全碼。";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "你嘅剪貼簿入面嘅數字，望落唔多似係呢個聊天嘅正確安全碼。";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal 摷勻您嘅剪貼簿都搵唔到安全碼。您係咪真係有複製到？";
@@ -5102,7 +5102,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "誰人如常 問我今天驚心度";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "以咪高風大預言一個十年";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "隨時搵我傾偈吖";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "從不想作假 只活這☝️次";
@@ -5156,7 +5156,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "個人資料要連咗上網先可以更新。";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "您嘅個人資料係受到端對端加密。您嘅個人資料 (以及您之後所作嘅變化) 會俾您嘅聯絡人睇到，亦會喺您發起或接受新傾偈嘅時候向對方展示。";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "你嘅個人檔案受到端對端加密。當你開始或者接受新聊天嘅時候，聯絡人就會見到你嘅個人檔案同埋相關變更。";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "儲存";
@@ -5423,7 +5423,7 @@
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "名";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
-"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "你嘅聯絡人同埋當你開始或者接受新聊天嘅時候，對方就會睇到你嘅名、相同埋有關嘅轉變。";
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "你嘅聯絡人會睇到你嘅名、相同埋相關變更。當你開始或者接受新聊天嘅時候，佢哋都會見到。";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
 "REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "關於個人資料私隱";
@@ -5591,7 +5591,7 @@
 "SEARCH_SECTION_CONTACTS" = "其他聯絡人";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "傾偈";
+"SEARCH_SECTION_CONVERSATIONS" = "聊天";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "谷";
@@ -5702,10 +5702,10 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "標準";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal 採用端對端加密，間唔中都需要重新整理下您嘅傾偈階段嘅。咁唔會影響您傾偈嘅安全性，只不過就話，您可能錯失咗呢位聯絡人畀您嘅一個訊息，您可以請佢再傳送一次畀您。";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal 採用端對端加密，間中可能要重新整理吓你嘅聊天階段。呢個過程唔會影響聊天嘅安全性，但可能會令你錯失咗呢位聯絡人俾你嘅訊息。你可以請佢再傳送多次。";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "傾偈階段已經重新整理";
+"SESSION_REFRESH_ALERT_TITLE" = "聊天階段已經重新整理";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "喺啲相度揀";
@@ -5846,10 +5846,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "轉冧把";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "傾偈";
+"SETTINGS_CHATS" = "聊天";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "清除聊天記錄";
+"SETTINGS_CLEAR_HISTORY" = "清除聊天紀錄";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Signal Messenger 版權所有\n由 AGPLv3 許可";
@@ -5915,7 +5915,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "過眼雲煙訊息";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "幫您發起嘅所有新對話，都預先設定一個過眼雲煙訊息倒數限期。";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "為所有由你發起嘅新聊天設定「自動銷毀訊息」預設時限。";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "課金 Signal";
@@ -5927,7 +5927,7 @@
 "SETTINGS_INVITE_TITLE" = "邀請您嘅好友";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "傾偈顏色同背景";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "聊天顏色同背景";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "訊息音效";
@@ -6584,10 +6584,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "同 iOS 分享聯絡人";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "俾 iOS 存取 Signal 聯絡人同傾偈，以便提供分享建議等功能。";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "俾 iOS 存取 Signal 聯絡人同聊天，以便提供分享建議等功能。";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "俾 iOS 存取 Signal 聯絡人同傾偈，以便提供分享建議同通知等功能。";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "俾 iOS 存取 Signal 聯絡人同聊天，以便提供分享建議同通知等功能。";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "註冊鎖";
@@ -6659,7 +6659,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "顯示安全碼";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "顯示傾偈";
+"SHOW_THREAD_BUTTON_TITLE" = "顯示聊天";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "見字裝 Signal！條 Link 喺度：";
@@ -6761,7 +6761,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "轉寄";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "去聊天";
+"STORIES_GO_TO_CHAT_ACTION" = "跳去聊天";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
 "STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
@@ -7160,7 +7160,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "係 %1$@、%2$@ 同其餘 %3$lu 個谷嘅成員";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "喺呢度，您可以札低一啲提示畀自己。如果您嘅帳戶有其他連結咗嘅機，新嘅筆記會自動同步處理。";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "你可以喺聊天入面新增一啲俾自己嘅筆記。如果你嘅帳戶連結咗其他裝置，新嘅筆記會自動同步。";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "係 %1$@ 嘅成員";
@@ -7286,7 +7286,7 @@
 "UNPIN_ACTION" = "唔使置頂";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "傾偈";
+"UNPINNED_SECTION_TITLE" = "聊天";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "未睇";
@@ -7463,7 +7463,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "左右滑去預覽多啲背景。";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "為所有傾偈設定背景。";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "為所有聊天設定背景。";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "為 %1$@ 設定背景。";
@@ -7472,16 +7472,16 @@
 "WALLPAPER_PREVIEW_TITLE" = "試嚟睇下";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "清除傾偈顏色";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "清除聊天顏色";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "係咪要為呢個傾偈清除傾偈顏色？";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "係咪要為呢個聊天清除聊天顏色？";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "清除背景";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "係咪要為呢個傾偈清除背景？";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "係咪要為呢個聊天清除背景？";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "深色色系嘅時候，將背景校暗";
@@ -7499,13 +7499,13 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "重設晒所有背景";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "您係咪想冚過晒所有傾偈顏色？";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "你係咪想冚過晒所有聊天顏色？";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "重設所有傾偈顏色";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "重設所有聊天顏色";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "重設傾偈顏色";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "重設聊天顏色";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "重設背景";
@@ -7514,7 +7514,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "重設預設嘅顏色";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "重設所有傾偈顏色";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "重設聊天顏色";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "重設預設嘅背景";
@@ -7529,7 +7529,7 @@
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "重設背景";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "傾偈顏色";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "聊天顏色";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "設定背景";

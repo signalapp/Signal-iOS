@@ -205,17 +205,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>ستُحذَف هذه المحادثة من هذا الجهاز.</string>
+			<string>ستُحذَف هذه الدردشة من هذا الجهاز.</string>
 			<key>one</key>
-			<string>ستُحذَف هذه المحادثة من هذا الجهاز.</string>
+			<string>ستُحذَف هذه الدردشة من هذا الجهاز.</string>
 			<key>two</key>
-			<string>ستُحذَف هاتان المحادثتان من هذا الجهاز.</string>
+			<string>ستُحذَف هاتيْن الدردشتين من هذا الجهاز.</string>
 			<key>few</key>
-			<string>ستُحذَف هذه المحادثات من هذا الجهاز.</string>
+			<string>ستُحذَف هذه الدردشات من هذا الجهاز.</string>
 			<key>many</key>
-			<string>ستُحذَف هذه المحادثات من هذا الجهاز.</string>
+			<string>ستُحذَف هذه الدردشات من هذا الجهاز.</string>
 			<key>other</key>
-			<string>ستُحذَف هذه المحادثات من هذا الجهاز.</string>
+			<string>ستُحذَف هذه الدردشات من هذا الجهاز.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

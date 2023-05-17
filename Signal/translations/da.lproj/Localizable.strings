@@ -122,7 +122,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Forstået";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "En besked, et klistermærke, en reaktion, en kvittering for læsning eller en mediefil kunne ikke leveres til dig fra %1$@ i denne samtale.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "En besked, et klistermærke, en reaktion, en kvittering for læsning eller en mediefil kunne ikke leveres til dig fra %1$@ i denne chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Leveringsproblem";
@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Lydbesked";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "Taleopkald";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Højttaler";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Ring igen";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Indgående taleopkald…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Ubesvaret taleopkald kl. %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Ubesvaret taleopkald";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Ubesvaret taleopkald den %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Ubesvaret taleopkald den %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Du kan aktivere mikrofonadgang i iOS Indstillinger-appen for at foretage opkald og optage talebeskeder i Signal.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Skift kamera retning";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Skift til taleopkald";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Skift til videoopkald";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Indtast pinkoden for det nye telefonnummer. Denne er forskellig fra din SMS-verifikationskode.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Her er et smugkig af samtalefarven.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "Her er et smugkig på chatfarven.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Her er et smugkig på samtalefarven.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "Her er et smugkig på chatfarven.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "En anden boble";
@@ -926,7 +926,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Slet farve";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "Samtalefarve";
+"CHAT_COLOR_SETTINGS_TITLE" = "Chatfarve";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Rediger farve";
@@ -935,16 +935,16 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Auto-tilstanden matcher farven til baggrunden";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "Samtaler";
+"CHAT_LIST_TITLE_INBOX" = "Chats";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Samtalefarve og baggrund";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chatfarve og baggrund";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Sammenlign med udklipsholder";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Vælg eller søg efter en Signal-bruger for at starte en samtale.";
+"COMPOSE_BUTTON_HINT" = "Vælg, eller søg efter en Signal-bruger for at starte en chat.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Skriv";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organistation";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "For at se kontaktnavne og billeder i dine samtaler:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "For at se kontaktnavne og billeder i dine chats:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tryk på “Gå til indstillinger” nedenfor";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Aktivér";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Se kontaktnavne og billeder i dine samtaler.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Se kontaktnavne og billeder i dine chats.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Slå kontakter til?";
@@ -1199,13 +1199,13 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stop";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Samtale vil blive slettet fra denne enhed.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Chat vil blive slettet fra denne enhed.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Slet samtale?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Slet chat?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Ignorer denne samtale i…";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Ignorer denne chat i…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 dag";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grupper";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Seneste samtaler";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Seneste chats";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Personer";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "Ingen resultater";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Samtaleindstillinger";
+"CONVERSATION_SETTINGS" = "Chatindstillinger";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Tilføj medlemmer";
@@ -1325,7 +1325,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Underret ikke hvis ignoreret";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Vil du modtage notifikationer, når du bliver tagget i ignorerede samtaler?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Vil du modtage notifikationer, når du bliver tagget i ignorerede chats?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Omtaler";
@@ -1334,7 +1334,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "besked";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Ignorer denne samtale i…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Ignorer denne chat i…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Altid";
@@ -1658,7 +1658,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Det indtastede telefonnummer matcher ikke med kontoen.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Slet alle beskeder i samtalen?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Slet alle beskeder i chatten?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Slet alle beskeder";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "Forsvindende beskeder";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Beskeder i samtalen vil forsvinde efter %1$@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Beskeder i chatten vil forsvinde efter %1$@.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Tilpasset tid";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "dage";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Når funktionen er aktiveret, forsvinder nye sendte og modtagne beskeder i denne samtale, efter de er blevet set.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Når funktionen er aktiveret, forsvinder nye sendte og modtagne beskeder i denne chat, efter de er blevet set.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "I øjeblikket forsvinder beskeder efter %1$@";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopiér";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hej,\n\nJeg er begyndt at bruge Signal for at holde mine samtaler på min iPhone private. Jeg synes også du skal installere den, så vi er de eneste som kan læse vores beskeder og høre vores opkald.\n\nSignal fås til iPhone og Android. Hent den her: %1$@\n\nSignal virker som din eksisterende besked-app. Vi kan sende billeder og video, ringe til hinanden og starte gruppesamtaler. Det bedste er, at ingen andre kan følge med - selv ikke dem som laver Signal!\n\nDu kan læse mere om Open Whisper Systems, som laver Signal, her: %2$@";
+"EMAIL_INVITE_BODY" = "Hej,\n\nJeg er begyndt at bruge Signal for at holde mine chats på min iPhone private. Jeg synes også, at du skal installere den, så vi er de eneste, der kan læse vores beskeder og høre vores opkald.\n\nSignal fås til iPhone og Android. Hent appen her: %1$@\n\nSignal virker som din eksisterende besked-app. Vi kan sende billeder og video, ringe til hinanden og starte gruppechats. Det bedste er, at ingen andre kan følge med – end ikke dem, der udvikler Signal!\n\nDu kan læse mere om Open Whisper Systems, som udvikler Signal, her: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Lad os skifte til Signal";
@@ -2264,7 +2264,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Dit sikkerhedsnummer med %1$@ er ændret";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Samtalesession opdateret";
+"ERROR_MESSAGE_SESSION_REFRESH" = "Chatsession opdateret";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "En ukendt fejl opstod";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "Videresend til";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "Du har ingen mediefiler i denne samtale.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Du har ingen mediefiler i denne chat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Indlæser nyere mediefiler…";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Du er blevet fjernet fra gruppen.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Din anmodning om at blive medlem af gruppen blev godkendt.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ godkendte din anmodning om at deltage i gruppen";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "Hjælpecenter";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkiverede samtaler";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkiverede chats";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Blokeret";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Nogle af dine kontakter er allerede på Signal, blandt andet %1$@, %2$@ og %3$@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Begynd din første samtale her.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start din første chat her.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ tilføjede dig til gruppen";
@@ -3347,7 +3347,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Arkiv";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Vælg samtaler";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Vælg chats";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Læs alle";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "Ringer…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "Taleopkald...";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "Videoopkald…";
@@ -3407,13 +3407,13 @@
 "IN_CALL_TERMINATED" = "Opkald afsluttet.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Ignorerede samtaler, der er arkiveret, forbliver arkiveret, når der kommer en ny besked.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Ignorerede chats, der er arkiverede, forbliver arkiverede, når der kommer en ny besked.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Arkiverede samtaler flytter til indbakken, når en ny besked ankommer.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Arkiverede chats flyttes til indbakken, når en ny besked ankommer.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Ingen samtaler endnu.\nKom i gang - send en besked til en ven.";
+"INBOX_VIEW_EMPTY_INBOX" = "Ingen chats endnu.\nKom i gang – send en besked til en ven.";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "Indgående stemmeopkald";
@@ -3479,13 +3479,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "Gå til alle mediefiler";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "Arkivér samtaler";
+"KEY_COMMAND_ARCHIVE" = "Arkivér chats";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "Vis vedhæftninger";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Gå til samtaleinformation";
+"KEY_COMMAND_CONVERSATION_INFO" = "Gå til chatinformation";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "Fokuser tekst felt";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Ny besked";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Gå til næste samtale";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Gå til næste chat";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Gå til forrige samtale";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Gå til forrige chat";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Søg";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "Vis klistermærker";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "Ophæv arkivering af samtale";
+"KEY_COMMAND_UNARCHIVE" = "Ophæv arkivering af chat";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Få mere at vide";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Tilkobling af enhed mislykkedes";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Denne enhed vil kunne se dine grupper og kontakter, få adgang til dine samtaler og sende beskeder i dit navn.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Denne enhed vil kunne se dine grupper og kontakter, tilgå dine chats og sende beskeder i dit navn.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Tilføj denne enhed?";
@@ -3662,7 +3662,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Slet for alle";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Denne besked slettes for alle i samtalen, hvis de har den seneste version af Signal. De kan se, at du har slettet en besked.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Denne besked slettes for alle i chatten, hvis de har den seneste version af Signal. De kan se, at du har slettet en besked.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Hvem vil du gerne slette denne besked for?";
@@ -3827,10 +3827,10 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Slet";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Samtalen vil blive slettet fra alle dine enheder.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Chatten vil blive slettet fra alle dine enheder.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Slet samtale?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Slet chat?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Slet og forlad";
@@ -3887,10 +3887,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Slet";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Fortsæt samtalen med %1$@ og del dit navn og billede?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Fortsæt chatten med %1$@, og del dit navn og billede?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Vil du fortsætte samtalen med gruppen og dele dit navn og billede med dens medlemmer?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Vil du fortsætte chatten med gruppen og dele dit navn og billede med dens medlemmer?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Lad %1$@ sende dig beskeder og dele dit navn og foto med vedkommende? Personen ved ikke, at du har set deres besked, før du accepterer det.";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Henter";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "redigeret";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Afsendelse mislykkedes.";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "Pinkoden skal være på mindst 4 cifre.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Du kan kun fastgøre op til 4 samtaler.";
+"PINNED_CONVERSATION_LIMIT" = "Du kan kun fastgøre op til 4 chats.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Fastgjort";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dette ligner ikke dit sikkerhedsnummer med %1$@. Verificere du den korrekte kontakt?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Nummeret i din udklipsholder ligner ikke det rigtige sikkerhedsnummer for denne samtale.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Nummeret i din udklipsholder ligner ikke det rigtige sikkerhedsnummer for denne chat.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal kunne ikke finde noget sikkerhedsnummer i din udklipsholder. Har du kopieret det korrekt?";
@@ -5102,7 +5102,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Krypteret";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Ledig til samtale";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Klar til en chat";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Tal frit";
@@ -5156,7 +5156,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profil kan kun opdateres når der er internetforbindelse";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Din profil er end-to-end krypteret. Din profil og dens ændringer vil være synlige for dine kontakter, og når du starter eller accepterer nye samtaler.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Din profil er E2E-krypteret. Din profil og dens ændringer vil være synlige for dine kontakter, og når du starter eller accepterer nye chats.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Gem";
@@ -5591,7 +5591,7 @@
 "SEARCH_SECTION_CONTACTS" = "Andre kontakter";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "Samtaler";
+"SEARCH_SECTION_CONVERSATIONS" = "Chats";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "Grupper";
@@ -5702,10 +5702,10 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "Standard";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal bruger end-to-end kryptering, og det kan undertiden være nødvendigt at opdatere din samtalesession. Dette påvirker ikke din samtales sikkerhed, men du er muligvis gået glip af en besked fra denne kontakt, og du kan bede dem om at sende den igen.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal bruger E2E-kryptering, og det kan undertiden være nødvendigt at opdatere din chatsession. Dette påvirker ikke din chats sikkerhed, men du er muligvis gået glip af en besked fra denne kontakt, og du kan bede dem om at sende den igen.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Samtalesession opdateret";
+"SESSION_REFRESH_ALERT_TITLE" = "Chatsession opdateret";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Vælg fra billeder";
@@ -5846,10 +5846,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Skift nummer";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "Samtaler";
+"SETTINGS_CHATS" = "Chats";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Ryd meddelelseshistorik";
+"SETTINGS_CLEAR_HISTORY" = "Ryd chathistorik";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicenseret under AGPLv3";
@@ -5915,7 +5915,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Forsvindende beskeder";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Indstil en udløbstid for forsvindende beskeder, der skal gælde som standard for alle nye samtaler startet af dig.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Indstil en udløbstid for forsvindende beskeder, der skal gælde som standard for alle nye chats startet af dig.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Donér til Signal";
@@ -5927,16 +5927,16 @@
 "SETTINGS_INVITE_TITLE" = "Invitér dine venner";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Samtalefarve og baggrund";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Chatfarve og baggrund";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Beskedlyd";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Ignorerede samtaler, der er arkiveret, forbliver arkiveret, når der kommer en ny besked.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Ignorerede chats, der er arkiverede, forbliver arkiverede, når der kommer en ny besked.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Lad ignorerede samtaler forblive arkiverede";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Lad ignorerede chats forblive arkiverede";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Vilkår og privatlivspolitik";
@@ -5975,7 +5975,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Indstillinger";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inkluder ignorerede samtaler";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inkluder ignorerede chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Etiket på appsymbol";
@@ -6584,10 +6584,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Del kontakter med iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Giv iOS adgang til Signal-kontakter og -samtaler for at få adgang til funktioner såsom delingsforslag.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Giv iOS adgang til Signal-kontakter og -chats for at få adgang til funktioner såsom delingsforslag.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Giv iOS adgang til Signal-kontakter og samtaler for at få adgang til funktioner såsom delingsforslag og notifikationer.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Giv iOS adgang til Signal-kontakter og chats for at få adgang til funktioner såsom delingsforslag og notifikationer.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registreringslås";
@@ -6659,7 +6659,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Vis sikkerhedsnummer";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Vis samtale";
+"SHOW_THREAD_BUTTON_TITLE" = "Vis chat";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Hermed en invitation til at installere Signal! Her er linket:";
@@ -6761,7 +6761,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "Videresend";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Gå til samtale";
+"STORIES_GO_TO_CHAT_ACTION" = "Gå til chat";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
 "STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Du kan ikke svare på denne historie, da du ikke længere er medlem af gruppen.";
@@ -7160,7 +7160,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Medlem af %1$@, %2$@, og %3$lu andre grupper";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kan tilføje egne notater i denne samtale. Hvis din konto har forbundne enheder, vil notaterne blive synkroniseret.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kan tilføje egne noter i denne chat. Hvis din konto har forbundne enheder, vil noterne blive synkroniseret.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Medlem af %1$@";
@@ -7286,7 +7286,7 @@
 "UNPIN_ACTION" = "Frigør";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "Samtaler";
+"UNPINNED_SECTION_TITLE" = "Chats";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Ulæst";
@@ -7463,7 +7463,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Stryg for at få vist flere baggrunde";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Opsæt baggrund for alle samtaler.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Opsæt baggrund for alle chats.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Opsæt baggrund til %1$@.";
@@ -7472,16 +7472,16 @@
 "WALLPAPER_PREVIEW_TITLE" = "Forhåndsvisning";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Fjern samtalefarve";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Fjern chatfarve";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Fjern farve fra denne samtale?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Fjern farve fra denne chat?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Fjern baggrund";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Fjern baggrund fra denne samtale?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Fjern baggrund fra denne chat?";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Mørkt tema dæmper baggrund";
@@ -7499,13 +7499,13 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Nulstil alle baggrunde";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Vil du tilsidesætte alle samtalefarver?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Vil du tilsidesætte alle chatfarver?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Nulstil samtalefarver";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Nulstil chatfarver";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Nulstil samtalefarve";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Nulstil chatfarver";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Nulstil baggrund";
@@ -7514,7 +7514,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Nulstil standardfarver";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Nulstil samtalefarver";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Nulstil chatfarver";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Nulstil standardbaggrund";
@@ -7529,7 +7529,7 @@
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Nulstil baggrund";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Samtalefarve";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Chatfarve";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Opsæt baggrund";

@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+Signal 是一个以保护隐私为核心要务的消息应用。这是一款简单易用的免费应用，通过强大的端对端加密技术让您百分百畅享私密通信体验。
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• 您可以免费发送文字、语音消息、图片、视频、GIF 和文件。Signal 使用的是您手机的数据流量，因此您可以节省短信和彩信费用。
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• 清晰的加密语音和视频通话让您跟朋友顺畅嗨聊。群组通话支持多达 40 人同时参与。
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• 强大群聊可至多容纳 1000 人，让您轻松与人交际。您可以在管理员权限设置中限定谁可以发帖，并管理群组成员。
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• 您可以尽情分享 24 小时后自动消失的限时图片、文字和视频动态。每一个动态的可见对象均可以在隐私设置中调整。
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• Signal 为保护您的隐私而生。我们不会收集您或您的聊天对象的信息。我们开源的 Signal Protocol 决定了我们无法读取您的消息或窃听您的通话。任何人都不例外。这里没有后门，没有数据采集，也没有妥协。 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• Signal 是一个独立的非盈利平台；不一样的组织缔造不一样的技术。我们是美国国内税收法第 501c3 条定义的非盈利组织，全凭用户捐款维持运营，无广告商或投资商。 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• 如需支持或存有疑问，或想要了解更多信息，请访问： https://support.signal.org/
 
-To check out our source code, visit https://github.com/signalapp 
+如要查看我们的源代码，请访问 https://github.com/signalapp 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+欢迎在 Twitter @signalapp 和 Instagram @signal_app 上关注我们。

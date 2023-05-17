@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "语音消息";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "语音通话";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "扬声器";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "重拨";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 语音来电……";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 %1$@有未接语音来电";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 未接语音来电";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 %1$@ 有未接语音来电";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 %1$@有未接语音来电";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "您可在 iOS 设置中启用麦克风权限，以允许 Signal 拨打电话或录制语音消息。";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "切换前后摄像头";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "转为语音通话";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "转为视频通话";
@@ -1199,10 +1199,10 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "停止";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "此对话会在此设备上删除。";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "此聊天将会在此设备上删除。";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "删除对话？";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "删除聊天？";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "将此聊天静音……";
@@ -1658,7 +1658,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "输入的手机号码与 Signal 帐户的不匹配。";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "是否删除此对话中的所有消息？";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "是否删除此聊天中的所有消息？";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "删除所有消息";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "阅后即焚";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "此对话中的消息将在%1$@后消失。";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "此聊天中的消息将在 %1$@后消失。";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "自定义时间";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "转发给";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "此对话中没有任何媒体。";
+"GALLERY_TILES_EMPTY_GALLERY" = "此聊天中没有任何媒体。";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "正在加载新媒体……";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "你已被移出群组。";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "您的入群申请已通过。";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ 同意了您的入群申请。";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "支持中心";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "已存档对话";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "已存档聊天";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "已屏蔽";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "您的一些联系人已经在使用Signal了，比如%1$@，%2$@，以及%3$@。";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "开始首个对话。";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "开启第一次聊天。";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ 将你加入群组。";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "正在响铃……";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "语音通话……";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "视频通话……";
@@ -3479,13 +3479,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "全部媒体";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "存档对话";
+"KEY_COMMAND_ARCHIVE" = "存档聊天";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "显示附件";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "打开对话信息";
+"KEY_COMMAND_CONVERSATION_INFO" = "打开聊天信息";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "打开输入框";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "新消息";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "前往下一个对话";
+"KEY_COMMAND_NEXT_CONVERSATION" = "前往下一个聊天";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "回到上一个对话";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "前往上一个聊天";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "搜索";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "显示表情包";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "激活对话";
+"KEY_COMMAND_UNARCHIVE" = "激活聊天";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "了解更多";
@@ -3827,10 +3827,10 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "删除";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "将从您的所有设备上删除此对话。";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "此操作将从您的所有设备上删除此聊天。";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "删除对话？";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "删除聊天？";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "删除并离开";
@@ -3890,7 +3890,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "要继续与 %1$@ 聊天并与其分享您的昵称和头像码？";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "要参与此群组对话并向其成员分享您的昵称和头像吗？";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "要参与此群组聊天并向其成员分享您的昵称和头像吗？";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "是否允许 %1$@ 查看您的名称头像并给您发消息？取消屏蔽前其无法知晓您是否阅读了其发来的消息。";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "下载中";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "已编辑";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "发送失败。";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN 最少需要4位数字";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "您最多只能置顶 4 个对话。";
+"PINNED_CONVERSATION_LIMIT" = "您最多只能置顶 4 个聊天。";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "已置顶";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "这看起来不是关于 %1$@ 的安全码. 你在验证正确的联系人吗?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "剪贴板中的数字不是当前对话的正确的安全码。";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "剪贴板中的数字不是当前聊天的正确的安全码。";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal 无法在剪贴板中找到安全码. 你正确的复制了吗?";

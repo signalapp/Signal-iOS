@@ -1,3 +1,3 @@
-• Emoji search improvements make it easier to find the right way to say I love you using whatever heart-shaped emoji best matches the state of your own heart.
-• Photos in the attachment selector are now sorted based on how recently they were added to your device. Go ahead and download an old meme and share it with a new friend. Even if the picture was originally created several years ago, you won't have to scroll forever to spot it in the list anymore.
-• We'd like to express our sincere appreciation to @skjiisa for developing these features and submitting some of the best GitHub Pull Requests we've seen so far.
+• Die verbesserte Suchfunktion sorgt dafür, dass du das perfekte Emoji finden wirst, um »Ich liebe dich« zu sagen – mit dem herzförmigen Emoji, das am besten zu deinem Gefühlszustand passt.
+• Fotos in der Anhang-Auswahl werden jetzt nach dem aktuellsten Datum sortiert, an dem sie zu deinem Gerät hinzugefügt wurden. Lade einfach ein altes Meme herunter und teile es jetzt mit einem*einer neuen Freund*in. Auch wenn das Bild bereits vor einigen Jahren erstellt wurde, musst du nicht mehr ewig scrollen, um es in der Liste zu entdecken.
+• Wir möchten @skjiisa unsere aufrichtige Anerkennung für die Entwicklung dieser Funktionen und die Einreichung einiger der besten GitHub Pull Requests aussprechen, die wir bisher gesehen haben.

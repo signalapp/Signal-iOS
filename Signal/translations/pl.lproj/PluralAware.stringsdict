@@ -113,13 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ten niestandardowy kolor jest używany w %1$d rozmowie. Czy chcesz go usunąć?</string>
+			<string>Ten niestandardowy kolor jest używany w %1$d czacie. Czy chcesz go usunąć?</string>
 			<key>few</key>
-			<string>Ten niestandardowy kolor jest używany w %1$d rozmowach. Czy chcesz usunąć go ze wszystkich rozmów?</string>
+			<string>Ten niestandardowy kolor jest używany w %1$d czatach. Czy chcesz usunąć go ze wszystkich czatów?</string>
 			<key>many</key>
-			<string>Ten niestandardowy kolor jest używany w %1$d rozmowach. Czy chcesz usunąć go ze wszystkich rozmów?</string>
+			<string>Ten niestandardowy kolor jest używany w %1$d czatach. Czy chcesz usunąć go ze wszystkich czatów?</string>
 			<key>other</key>
-			<string>Ten niestandardowy kolor jest używany w %1$d rozmowach. Czy chcesz usunąć go ze wszystkich rozmów?</string>
+			<string>Ten niestandardowy kolor jest używany w %1$d czatach. Czy chcesz usunąć go ze wszystkich czatów?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -133,13 +133,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ten kolor jest używany w %1$d rozmowie. Czy chcesz usunąć go ze wszystkich rozmów?</string>
+			<string>Ten kolor jest używany w %1$d czacie. Czy chcesz zapisać zmiany dla wszystkich czatów?</string>
 			<key>few</key>
-			<string>Ten kolor jest używany w %1$d rozmowach. Czy chcesz zapisać zmiany dla wszystkich rozmów?</string>
+			<string>Ten kolor jest używany w %1$d czatach. Czy chcesz zapisać zmiany dla wszystkich czatów?</string>
 			<key>many</key>
-			<string>Ten kolor jest używany w %1$d rozmowach. Czy chcesz zapisać zmiany dla wszystkich rozmów?</string>
+			<string>Ten kolor jest używany w %1$d czatach. Czy chcesz zapisać zmiany dla wszystkich czatów?</string>
 			<key>other</key>
-			<string>Ten kolor jest używany w %1$d rozmowach. Czy chcesz zapisać zmiany dla wszystkich rozmów?</string>
+			<string>Ten kolor jest używany w %1$d czatach. Czy chcesz zapisać zmiany dla wszystkich czatów?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -153,13 +153,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Usunąć rozmowę?</string>
+			<string>Usunąć czat?</string>
 			<key>few</key>
-			<string>Usunąć %1$d rozmowy?</string>
+			<string>Usunąć %1$d czaty?</string>
 			<key>many</key>
-			<string>Usunąć %1$d rozmów?</string>
+			<string>Usunąć %1$d czatów?</string>
 			<key>other</key>
-			<string>Usunąć %1$d rozmowy?</string>
+			<string>Usunąć %1$d czata?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -173,13 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ta rozmowa zostanie usunięta z tego urządzenia.</string>
+			<string>Ten czat zostanie usunięty z tego urządzenia.</string>
 			<key>few</key>
-			<string>Te rozmowy zostaną usunięte z tego urządzenia.</string>
+			<string>Te czaty zostaną usunięte z tego urządzenia.</string>
 			<key>many</key>
-			<string>Te rozmowy zostaną usunięte z tego urządzenia.</string>
+			<string>Te czaty zostaną usunięte z tego urządzenia.</string>
 			<key>other</key>
-			<string>Te rozmowy zostaną usunięte z tego urządzenia.</string>
+			<string>Te czaty zostaną usunięte z tego urządzenia.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -193,13 +193,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nie możesz wybrać więcej niż %1$d rozmowę.</string>
+			<string>Nie możesz wybrać więcej niż %1$d czat.</string>
 			<key>few</key>
-			<string>Nie możesz wybrać więcej niż %1$d rozmów.</string>
+			<string>Nie możesz wybrać więcej niż %1$d czaty.</string>
 			<key>many</key>
-			<string>Nie możesz wybrać więcej niż %1$d rozmów.</string>
+			<string>Nie możesz wybrać więcej niż %1$d czatów.</string>
 			<key>other</key>
-			<string>Nie możesz wybrać więcej niż %1$d rozmowy.</string>
+			<string>Nie możesz wybrać więcej niż %1$d czata.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>

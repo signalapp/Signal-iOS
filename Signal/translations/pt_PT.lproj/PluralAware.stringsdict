@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Esta cor personalizada é utilizada em %1$d conversa. Deseja eliminá-la?</string>
+			<string>Esta cor personalizada é utilizada em %1$d chat. Deseja eliminá-la?</string>
 			<key>other</key>
-			<string>Esta cor personalizada é utilizada em %1$d conversas. Deseja eliminá-la para todas as conversas?</string>
+			<string>Esta cor personalizada é utilizada em %1$d chats. Deseja eliminá-la para todos os chats?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Esta cor é utilizada em %1$d conversa. Deseja guardar as alterações em todas as conversas?</string>
+			<string>Esta cor é utilizada em %1$d chat. Deseja guardar as alterações em todos os chats?</string>
 			<key>other</key>
-			<string>Esta cor é utilizada em %1$d conversas. Deseja guardar as alterações em todas as conversas?</string>
+			<string>Esta cor é utilizada em %1$d chats. Deseja guardar as alterações em todos os chats?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Eliminar conversa?</string>
+			<string>Eliminar chat?</string>
 			<key>other</key>
-			<string>Eliminar %1$d conversas?</string>
+			<string>Eliminar %1$d chats?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Esta conversa será eliminada deste dispositivo.</string>
+			<string>Este chat será eliminado deste dispositivo.</string>
 			<key>other</key>
-			<string>Estas conversas serão eliminadas deste dispositivo.</string>
+			<string>Estes chats serão eliminados deste dispositivo.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -157,9 +157,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Não pode selecionar mais do que %1$d conversa.</string>
+			<string>Não pode selecionar mais do que %1$d chat.</string>
 			<key>other</key>
-			<string>Não pode selecionar mais do que %1$d conversas.</string>
+			<string>Não pode selecionar mais do que %1$d chats.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>

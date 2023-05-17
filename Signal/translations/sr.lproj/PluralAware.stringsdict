@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Желите ли да избришете ћаскање?</string>
+			<string>Желите ли да избришете ћаскања (%1$d)?</string>
 			<key>other</key>
-			<string>Желите ли да избришете %1$d ћаскања?</string>
+			<string>Желите ли да избришете ћаскања (%1$d)?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>

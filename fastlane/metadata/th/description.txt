@@ -1,19 +1,19 @@
-Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely private.
+Signal เป็นแอปส่งข้อความที่ให้ความสำคัญสูงสุดกับความเป็นส่วนตัว นอกจากจะฟรีและใช้งานง่าย ยังมีการเข้ารหัสอย่างแน่นหนาตั้งแต่ต้นทางถึงปลายทาง ให้คุณอุ่นใจได้ว่าการติดต่อสื่อสารจะเป็นส่วนตัวอย่างแน่นอน
 
-• Send texts, voice messages, photos, videos, GIFs, and files for free. Signal uses your phone’s data connection, so you avoid SMS and MMS fees.
+• ส่งข้อความ ข้อความเสียง รูปภาพ วิดีโอ GIF และไฟล์ต่างๆ ได้ฟรี เพราะ Signal ใช้การเชื่อมต่อกับอินเทอร์เน็ตมือถือของคุณ คุณจึงสามารถเลี่ยงค่าธรรมเนียมจากบริการส่งข้อความและข้อความภาพ (SMS และ MMS) ได้
 
-• Call your friends with crystal-clear encrypted voice and video calls. Group calls supported for up to 40 people.
+• โทรเสียงหรือวิดีโอคอลหาเพื่อนได้ชัดแจ๋วด้วยการโทรแบบเข้ารหัส พร้อมรองรับการโทรกลุ่มสูงสุดถึง 40 คน
 
-• Stay connected with group chats up to 1,000 people. Control who can post and manage group members with admin permission settings.
+• ไม่พลาดทุกการติดต่อด้วยแชทกลุ่มที่รองรับได้สูงสุด 1,000 คน จัดการได้ว่าจะให้ใครมีสิทธิ์โพสต์และควบคุมสมาชิกในกลุ่มด้วยการตั้งค่าสิทธิ์สำหรับผู้ดูแล
 
-• Share image, text, and video Stories that disappear after 24 hours. Privacy settings keep you in charge of exactly who can see each Story.
+• แชร์รูปภาพ ข้อความ หรือวิดีโอในสตอรี่ที่จะหายไปภายใน 24 ชั่วโมง การตั้งค่าความเป็นส่วนตัวช่วยให้คุณกำหนดได้ว่าจะให้ใครเห็นสตอรี่ไหนบ้าง
 
-• Signal is built for your privacy. We know nothing about you or who you’re talking to. Our open source Signal Protocol means that we can’t read your messages or listen to your calls. Neither can anyone else. No back doors, no data collection, no compromises. 
+• Signal ถูกสร้างขึ้นเพื่อรักษาความเป็นส่วนตัวของคุณ เราไม่รู้ข้อมูลใดๆ ของคุณ และไม่รู้ว่าคุณพูดคุยกับใคร โปรโตคอลโอเพ่นซอร์สของ Signal หมายความว่าเราจะไม่สามารถอ่านข้อความหรือแอบฟังการโทรของคุณได้ นั่นหมายรวมถึงบุคคลที่สามและไม่ว่าจะใครก็ตามด้วย ไม่มีการเก็บข้อมูล ไม่มีเจตนาแอบแฝง และไม่มีทางเปลี่ยนแปลง 
 
-• Signal is independent and not for profit; a different kind of tech from a different kind of organization. As a 501c3 nonprofit we are supported by your donations, not by advertisers or investors. 
+• Signal เป็นองค์กรอิสระและไม่แสวงหาผลกำไร ชวนให้คุณมาสัมผัสเทคโนโลยีที่ไม่เหมือนใครจากองค์กรที่แตกต่าง ในฐานะองค์กรที่ไม่แสวงหากำไรประเภท 501c3 เราได้รับการสนับสนุนจากการบริจาคของคุณ ไม่ใช่จากโฆษณาหรือนักลงทุน 
 
-• For support, questions, or more information please visit https://support.signal.org/
+• หากต้องการความช่วยเหลือ มีคำถาม หรืออยากทราบข้อมูลเพิ่มเติม กรุณาไปที่ https://support.signal.org/
 
-To check out our source code, visit https://github.com/signalapp 
+ดูรหัสต้นทาง (source code) ของเราได้ที่ https://github.com/signalapp 
 
-Follow us on Twitter @signalapp and Instagram @signal_app
+ติดตามเราได้บน Twitter @signalapp และ Instagram @signal_app

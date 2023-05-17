@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>चॅट हटवायचे?</string>
+			<string>चॅट हटवायचा?</string>
 			<key>other</key>
 			<string>%1$d चॅट्स हटवायचे?</string>
 		</dict>
@@ -141,7 +141,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>हे चॅट ह्या डिव्हाइस वरून हटवले जाईल.</string>
+			<string>हा चॅट या डिव्हाइस वरून हटवला जाईल.</string>
 			<key>other</key>
 			<string>हे चॅट्स या डिव्हाइसमधून हटवले जातील.</string>
 		</dict>

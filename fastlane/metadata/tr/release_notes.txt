@@ -1,3 +1,3 @@
-• Emoji search improvements make it easier to find the right way to say I love you using whatever heart-shaped emoji best matches the state of your own heart.
-• Photos in the attachment selector are now sorted based on how recently they were added to your device. Go ahead and download an old meme and share it with a new friend. Even if the picture was originally created several years ago, you won't have to scroll forever to spot it in the list anymore.
-• We'd like to express our sincere appreciation to @skjiisa for developing these features and submitting some of the best GitHub Pull Requests we've seen so far.
+• Emoji arama geliştirmeleri, kendi kalbinin durumuna en çok uyan kalp şeklindeki emojiyi kullanarak seni seviyorum demenin doğru yolunu bulmanı kolaylaştırıyor.
+• Eklenti seçicideki fotoğraflar artık cihazına en son ne zaman eklendiklerine göre sıralanıyor. İlerle ve eski bir memeyi indirip yeni bir arkadaşınla paylaş. Resim orijinal olarak birkaç yıl önce oluşturulmuş olsa bile, artık onu listede görmek için sürekli kaydırman gerekmeyecek.
+• Bu özellikleri geliştirdiği ve şimdiye kadar gördüğümüz en iyi GitHub Çekme İstekleri'nden bazılarını gönderdiği için @skjiisa'ya en içten teşekkürlerimizi sunmak isteriz.

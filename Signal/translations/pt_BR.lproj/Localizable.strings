@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Mensagem de voz";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "Chamada de voz";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Caixa de som";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Chamar novamente";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Recebendo chamada de voz…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Chamada de voz perdida à(s) %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Chamada de voz perdida";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Chamada de voz perdida no(a) %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Chamada de voz perdida no(a) %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Você pode permitir o acesso ao microfone no app Ajustes do iOS para fazer chamadas e gravar mensagens de voz no Signal.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Mudar a direção da câmera";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Mudar para chamada de voz";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Mudar para chamada de vídeo";
@@ -902,10 +902,10 @@
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Digite o PIN para o novo número de telefone. Ele é diferente do seu código de verificação por SMS.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Aqui está uma prévia da cor da conversa.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "Aqui está uma prévia da cor do chat.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Aqui está uma prévia da cor da conversa.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "Aqui está uma prévia da cor do chat.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Outra mensagem";
@@ -926,7 +926,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Remover cor";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "Cor da conversa";
+"CHAT_COLOR_SETTINGS_TITLE" = "Cor do chat";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Editar cor";
@@ -935,10 +935,10 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Auto combina a cor com o papel de parede";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "Conversas";
+"CHAT_LIST_TITLE_INBOX" = "Chats";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Cor e papel de parede da conversa";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Cor e papel de parede do chat";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Comparar com Área de Transferência";
@@ -1046,7 +1046,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organização";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Para ver os nomes e fotos dos contatos nas suas conversas:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Para ver os nomes e fotos dos contatos nos seus chats:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Toque em \"Ir para configurações,\" abaixo:";
@@ -1064,7 +1064,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Habilitar";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Veja os nomes e fotos dos contatos nas suas conversas.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Veja os nomes e fotos dos contatos nos seus chats.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Habilitar Contatos?";
@@ -1199,13 +1199,13 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Parar";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Esta conversa será excluída do dispositivo.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Este chat será excluído do dispositivo.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Excluir conversa?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Excluir chat?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Silenciar esta conversa por…";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Silenciar este chat por…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 dia";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grupos";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Conversas recentes";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Chats recentes";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Pessoas";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "Sem resultados";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Configurações da Conversa";
+"CONVERSATION_SETTINGS" = "Configurações do chat";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Adicionar membros";
@@ -1325,7 +1325,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Não notifique se silenciado";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receber notificações quando mencionarem você em conversas silenciadas?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receber notificações quando mencionarem você em chats silenciados?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Menções";
@@ -1334,7 +1334,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "mensagem";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenciar esta conversa por…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenciar este chat por…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Sempre";
@@ -1658,7 +1658,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "O número de telefone que você inseriu não corresponde ao número de telefone da sua conta.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Excluir todas as mensagens na conversa?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Excluir todas as mensagens no chat?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Excluir todas as mensagens";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "Mensagens efêmeras";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "As mensagens nesta conversa desaparecerão após %1$@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "As mensagens neste chat desaparecerão após %1$@.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Tempo personalizado";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "dias";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Quando habilitadas, as mensagens enviadas e recebidas nesta conversa desaparecerão após terem sido lidas.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Quando habilitadas, as mensagens enviadas e recebidas neste chat desaparecerão após terem sido lidas.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Atualmente as mensagens expiram em %1$@";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Copiar";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Olá,\n\nUltimamente tenho usado o Signal para manter as conversas no meu iPhone privadas. Gostaria que você também o instalasse, para que possamos estar seguros de que somente você e eu podemos ler nossas mensagens ou ouvir nossas chamadas.\n\nO Signal está disponível para iPhone e Android. Baixe aqui: %1$@\n\nO Signal funciona como o seu aplicativo de mensagens atual. Nós podemos enviar fotos e vídeos, fazer chamadas e iniciar conversas em grupo. A melhor parte é que ninguém mais pode ver nada disso, nem mesmo as pessoas que desenvolvem o Signal!\n\nVocê pode ler mais sobre a Open Whisper Systems, as pessoas que desenvolvem o Signal, aqui: %2$@";
+"EMAIL_INVITE_BODY" = "Olá,\n\nUltimamente tenho usado o Signal para manter os chats no meu iPhone privados. Gostaria que você também o instalasse, para ficarmos seguros de que somente você e eu poderemos ler nossas mensagens ou ouvir nossas chamadas.\n\nO Signal está disponível para iPhone e Android. Baixe aqui: %1$@\n\nO Signal funciona como o seu app de mensagens atual. Nós podemos enviar fotos e vídeos, fazer chamadas e iniciar chats em grupo. A melhor parte é que ninguém mais pode ver nada disso, nem mesmo as pessoas que desenvolvem o Signal!\n\nVocê pode ler mais sobre a Open Whisper Systems, as pessoas que desenvolvem o Signal, aqui: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Vamos mudar para o Signal!";
@@ -2264,7 +2264,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Seu número de segurança com %1$@ mudou.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "A sessão da conversa foi reiniciada";
+"ERROR_MESSAGE_SESSION_REFRESH" = "A sessão do chat foi reiniciada";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Erro desconhecido.";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "Encaminhar para";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "Não há mídias nesta conversa.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Não há mídias neste chat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Carregando novas mídias…";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Você foi excluído/a do grupo.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Sua solicitação para entrar para o grupo foi aprovada.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ aprovou o seu pedido para entrar no grupo.";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "Central de Suporte";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Conversas arquivadas";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Chats arquivados";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Bloqueada";
@@ -3347,7 +3347,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Arquivo";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Selecionar conversas";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Selecionar chats";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Marcar: lidas";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "Chamando…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "Chamada de voz…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "Chamada de vídeo…";
@@ -3407,13 +3407,13 @@
 "IN_CALL_TERMINATED" = "Chamada encerrada.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Conversas silenciadas que estão arquivadas permanecerão arquivadas quando uma nova mensagem chegar.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Chats silenciados que estão arquivados permanecerão arquivados quando uma nova mensagem chegar.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Conversas arquivadas serão movidas para a Caixa de entrada quando uma nova mensagem chegar.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Chats arquivados serão movidos para a Caixa de entrada quando uma nova mensagem chegar.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Ainda não há conversas.\nComece enviando uma mensagem para uma de suas amizades.";
+"INBOX_VIEW_EMPTY_INBOX" = "Ainda não há chats.\nComece enviando uma mensagem para um de seus contatos.";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "Recebendo chamada de voz";
@@ -3479,13 +3479,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "Ir para Todas as Mídias";
 
 /* A keyboard command to archive the current conversation. */
-"KEY_COMMAND_ARCHIVE" = "Arquivar a Conversa";
+"KEY_COMMAND_ARCHIVE" = "Arquivar o chat";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "Mostrar Anexos";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Ir para as Informações da Conversa";
+"KEY_COMMAND_CONVERSATION_INFO" = "Ir para as informações do chat";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "Focar no campo de texto";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Nova mensagem";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Ir para a Próxima Conversa";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Ir para o próximo chat";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Ir para a Conversa Anterior";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Ir para o chat anterior";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Buscar";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "Mostrar Figurinhas";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "Desarquivar a Conversa";
+"KEY_COMMAND_UNARCHIVE" = "Desarquivar o chat";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Saiba mais";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Falha ao vincular aparelho";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Este dispositivo será capaz de ver seus grupos e contatos, acessar suas conversas e enviar as mensagens em seu nome.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Este dispositivo será capaz de ver seus grupos e contatos, acessar seus chats e enviar as mensagens em seu nome.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Vincular este aparelho?";
@@ -3662,7 +3662,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Apagar para todas as pessoas";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Esta mensagem será apagada para todos os participantes desta conversa, se estiverem usando a versão mais recente do Signal. Eles poderão ver que você apagou uma mensagem.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Esta mensagem será apagada para todos os participantes deste chat, se estiverem usando a versão mais recente do Signal. Eles poderão ver que você apagou uma mensagem.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Para quem você deseja que essa mensagem seja apagada?";
@@ -3827,10 +3827,10 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Apagar";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Esta conversa será apagada de todos os seus dispositivos.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Este chat será apagado de todos os seus dispositivos.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Apagar a conversa?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Excluir chat?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Apagar e sair";
@@ -3887,10 +3887,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Apagar";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continuar esta conversa com %1$@ e exibir seu nome e foto para essa pessoa?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continuar esse chat com %1$@ e exibir seu nome e foto para essa pessoa?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continuar sua conversa com este grupo e exibir seu nome e foto para os membros?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continuar seu chat com este grupo e exibir seu nome e foto para os membros?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Você quer compartilhar seu nome e foto com %1$@ e permitir que essa pessoa inicie uma conversa com você? Ela não saberá que você visualizou a mensagem dela se você não aceitar.";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Baixando";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "editado";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "O envio falhou.";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "O PIN deve ter pelo menos quatro dígitos.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Você só pode fixar até 4 conversas.";
+"PINNED_CONVERSATION_LIMIT" = "Você só pode fixar até 4 chats.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Fixadas";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Este não é o seu número de segurança com %1$@. Você está verificando o contato correto?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "O número na sua área de transferência não corresponde ao número de segurança correto dessa conversa.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "O número na sua área de transferência não corresponde ao número de segurança correto desse chat.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "O Signal não encontrou nenhum número de segurança na sua área de transferência. Você o copiou corretamente?";
@@ -5102,7 +5102,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Criptografado";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Disponível para conversar";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Disponível para chat";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Fale livremente";
@@ -5156,7 +5156,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "O perfil só pode ser atualizado quando conectado à Internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Seu perfil é criptografado de ponta a ponta. Seus contatos poderão ver seu perfil, as mudanças feitas nele e quando você iniciar ou aceitar novas conversas.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Seu perfil é criptografado de ponta a ponta. Seus contatos poderão ver seu perfil, as mudanças feitas nele e quando você iniciar ou aceitar novos chats.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Salvar";
@@ -5591,7 +5591,7 @@
 "SEARCH_SECTION_CONTACTS" = "Outros contatos";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "Conversas";
+"SEARCH_SECTION_CONVERSATIONS" = "Chats";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "Grupos";
@@ -5702,10 +5702,10 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "Padrão";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "O Signal usa criptografia de ponta a ponta e pode precisar reiniciar a sessão da sua conversa, às vezes. Isso não afeta a segurança da sua conversa, mas pode ser que você tenha perdido uma mensagem deste contato e você terá que pedir para ela ser enviada novamente.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Às vezes, o Signal usa criptografia de ponta a ponta e pode precisar reiniciar a sessão do seu chat. Isso não afeta a segurança do chat, mas talvez você perca uma mensagem deste contato e terá que pedir para ela ser enviada novamente.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "A sessão da conversa foi reiniciada";
+"SESSION_REFRESH_ALERT_TITLE" = "A sessão do chat foi reiniciada";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Escolher uma foto";
@@ -5846,10 +5846,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Mudar número";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "Conversas";
+"SETTINGS_CHATS" = "Chats";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Limpar histórico de conversas";
+"SETTINGS_CLEAR_HISTORY" = "Limpar histórico de chats";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Direitos autorais Signal Messenger\nLicenciado nos termos da GPLv3";
@@ -5915,7 +5915,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Mensagens efêmeras";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Defina um cronômetro padrão para o desaparecimento de mensagens em todas as novas conversas iniciadas por você.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Defina um cronômetro padrão para o desaparecimento de mensagens em todos os novos chats iniciados por você.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Doar para o Signal";
@@ -5927,16 +5927,16 @@
 "SETTINGS_INVITE_TITLE" = "Convide sua turma";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Cor e papel de parede da conversa";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Cor e papel de parede do chat";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Som de mensagem";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Conversas silenciadas que estão arquivadas permanecerão arquivadas quando uma nova mensagem chegar.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Chats silenciados que estão arquivados permanecerão arquivados quando uma nova mensagem chegar.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Manter arquivadas as conversas silenciadas";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Manter chats silenciados arquivados";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Termos & Política de Privacidade";
@@ -5975,7 +5975,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Configurações";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Incluir conversas silenciadas";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Incluir chats silenciados";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Número de notificações";
@@ -6584,10 +6584,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Compartilhar seus contatos com iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Autoriza o iOS a acessar sua lista de contatos do Signal, para suas conversas serem exibidas como sugestões ao compartilhar conteúdo a partir de outros aplicativos.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Autoriza o iOS a acessar sua lista de contatos do Signal, para seus chats serem exibidos como sugestões ao compartilhar conteúdo a partir de outros aplicativos.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Autoriza o iOS a acessar sua lista de contatos do Signal, para suas conversas serem exibidas em notificações e como sugestões ao compartilhar conteúdo a partir de outros aplicativos.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Autoriza o iOS a acessar sua lista de contatos do Signal, para seus chats serem exibidos em notificações e como sugestões ao compartilhar conteúdo a partir de outros aplicativos.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueio de Registro";
@@ -6659,7 +6659,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Mostrar Número de Segurança";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Mostrar a Conversa";
+"SHOW_THREAD_BUTTON_TITLE" = "Mostrar chat";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Estou convidando você a instalar Signal. Aqui está o link:";
@@ -6761,7 +6761,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "Encaminhar";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Ir para a conversa";
+"STORIES_GO_TO_CHAT_ACTION" = "Ir para o chat";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
 "STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Você não pode responder a este story porque não faz mais parte do grupo.";
@@ -7160,7 +7160,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Membro de %1$@, %2$@, e %3$lu outros grupos";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Você pode adicionar anotações para si mesma/o nessa conversa. Se sua conta estiver vinculada à algum dispositivo, as novas anotações serão sincronizadas.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Você pode adicionar anotações para si mesma/o nesse chat. Se sua conta estiver vinculada à algum dispositivo, as novas anotações serão sincronizadas.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Membro de %1$@";
@@ -7286,7 +7286,7 @@
 "UNPIN_ACTION" = "Desafixar";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "Conversas";
+"UNPINNED_SECTION_TITLE" = "Chats";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Não lida";
@@ -7331,7 +7331,7 @@
 "USERNAME_EDUCATION_TITLE" = "Configure seu nome de usuário do Signal";
 
 /* Description of username link */
-"USERNAME_LINK_DESCRIPTION" = "Cada nome de usuário tem um link exclusivo que você pode compartilhar com seus amigos para iniciar uma conversa";
+"USERNAME_LINK_DESCRIPTION" = "Cada nome de usuário tem um link exclusivo que você pode compartilhar com seus amigos para iniciar um chat";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Um erro ocorreu na busca pelo nome de usuário. Por favor, tente novamente mais tarde.";
@@ -7463,7 +7463,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Deslize para ver mais papéis de parede.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Definir esse papel de parede para todas as conversas.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Definir esse papel de parede para todos os chats.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Definir papel de parede para %1$@.";
@@ -7472,16 +7472,16 @@
 "WALLPAPER_PREVIEW_TITLE" = "Pré-visualização";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Redefinir a cor da conversa";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Redefinir a cor do chat";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Redefinir a cor dessa conversa?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Redefinir a cor desse chat?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Remover papel de parede";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Remover papel de parede desta conversa?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Remover papel de parede deste chat?";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Escurecer o papel de parede no tema escuro";
@@ -7499,13 +7499,13 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Remover todos os papéis de parede";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Deseja redefinir as cores de todas as conversas?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Deseja redefinir as cores de todos os chats?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Redefinir as cores das conversas";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Redefinir as cores dos chats";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Redefinir a cor da conversa";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Redefinir a cor do chat";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Remover o papel de parede";
@@ -7514,7 +7514,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Redefinir a cor padrão";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Redefinir as cores das conversas";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Redefinir as cores dos chats";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Remover o papel de parede padrão";
@@ -7529,7 +7529,7 @@
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Remover o papel de parede";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Cor da conversa";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Cor do chat";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Definir papel de parede";

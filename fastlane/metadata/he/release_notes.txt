@@ -1,3 +1,3 @@
-• Emoji search improvements make it easier to find the right way to say I love you using whatever heart-shaped emoji best matches the state of your own heart.
-• Photos in the attachment selector are now sorted based on how recently they were added to your device. Go ahead and download an old meme and share it with a new friend. Even if the picture was originally created several years ago, you won't have to scroll forever to spot it in the list anymore.
-• We'd like to express our sincere appreciation to @skjiisa for developing these features and submitting some of the best GitHub Pull Requests we've seen so far.
+• שיפורים בחיפוש אימוג׳ים מקלים על מציאת הדרך הנכונה לומר אני אוהב/ת אותך, באמצעות שימוש באימוג׳י–לב שהכי מתאים למצב הנוכחי של הלב שלך.
+• תמונות בסייר הקבצים המצורפים ממוינות עכשיו על סמך התאריך שבו הן נוספו למכשיר שלך (אלה שנוספו לאחרונה יופיעו קודם). יאללה, עכשיו אפשר להוריד מם ישן ולשתף אותו עם חבר חדש. אפילו אם התמונה נוצרה במקור לפני כמה שנים, לא יהיה יותר צורך לגלול במשך נצח כדי לאתר אותה ברשימה.
+• אנחנו רוצים להביע את הערכתנו הכנה כלפי @skjiisa על פיתוח הפיצ׳רים האלו והגשת כמה מהפול ריווקסטס הכי טובים שראינו ב–GitHub.

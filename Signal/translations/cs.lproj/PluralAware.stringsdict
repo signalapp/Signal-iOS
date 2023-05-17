@@ -113,13 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tato vlastní barva se používá v %1$d konverzaci. Chcete ji odstranit?</string>
+			<string>Tato vlastní barva se používá v %1$d chatu. Chcete ji odstranit?</string>
 			<key>few</key>
-			<string>Tato vlastní barva se používá v %1$d konverzacích. Chcete ji odstranit ze všech konverzací?</string>
+			<string>Tato vlastní barva se používá v %1$d chatech. Chcete ji odstranit ze všech chatů?</string>
 			<key>many</key>
-			<string>Tato vlastní barva se používá v %1$d konverzací. Chcete ji odstranit ze všech konverzací?</string>
+			<string>Tato vlastní barva se používá v %1$d chatů. Chcete ji odstranit ze všech chatů?</string>
 			<key>other</key>
-			<string>Tato vlastní barva se používá v %1$d konverzacích. Chcete ji odstranit ze všech konverzací?</string>
+			<string>Tato vlastní barva se používá v %1$d chatech. Chcete ji odstranit ze všech chatů?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -133,13 +133,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tato barva se používá v %1$d konverzaci. Chcete změny uložit pro všechny konverzace?</string>
+			<string>Tato barva se používá v %1$d chatu. Chcete změny uložit pro všechny chaty?</string>
 			<key>few</key>
-			<string>Tato barva se používá v %1$d konverzacích. Chcete změny uložit ro všechny chaty?</string>
+			<string>Tato barva se používá v %1$d chatech. Chcete změny uložit pro všechny chaty?</string>
 			<key>many</key>
-			<string>Tato barva se používá v %1$d konverzacích. Chcete změny uložit pro všechny chaty?</string>
+			<string>Tato barva se používá v %1$d chatů. Chcete změny uložit pro všechny chaty?</string>
 			<key>other</key>
-			<string>Tato barva se používá v %1$d konverzacích. Chcete změny uložit pro všechny chaty?</string>
+			<string>Tato barva se používá v %1$d chatech. Chcete změny uložit pro všechny chaty?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -153,13 +153,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odstranit konverzaci?</string>
+			<string>Odstranit chat?</string>
 			<key>few</key>
-			<string>Odstranit %1$d konverzace?</string>
+			<string>Odstranit %1$d chaty?</string>
 			<key>many</key>
-			<string>Odstranit %1$d konverzací?</string>
+			<string>Odstranit %1$d chatů?</string>
 			<key>other</key>
-			<string>Odstranit %1$d konverzací?</string>
+			<string>Odstranit %1$d chatů?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -173,13 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tato konverzace bude z tohoto zařízení odstraněna.</string>
+			<string>Tento chat bude z tohoto zařízení odstraněn.</string>
 			<key>few</key>
-			<string>Tyto konverzace budou z tohoto zařízení odstraněny.</string>
+			<string>Tyto chaty budou z tohoto zařízení odstraněny.</string>
 			<key>many</key>
-			<string>Těchto konverzací bude z tohoto zařízení odstraněno.</string>
+			<string>Tyto chaty budou z tohoto zařízení odstraněny.</string>
 			<key>other</key>
-			<string>Těchto konverzací bude z tohoto zařízení odstraněno.</string>
+			<string>Tyto chaty budou z tohoto zařízení odstraněny.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -193,13 +193,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nemůžete vybrat více než %1$d konverzaci.</string>
+			<string>Nemůžete vybrat více než %1$d chat.</string>
 			<key>few</key>
-			<string>Nemůžete vybrat více než %1$d konverzace.</string>
+			<string>Nemůžete vybrat více než %1$d chaty.</string>
 			<key>many</key>
-			<string>Nemůžete vybrat více než %1$d konverzací.</string>
+			<string>Nemůžete vybrat více než %1$d chatů.</string>
 			<key>other</key>
-			<string>Nemůžete vybrat více než %1$d konverzací.</string>
+			<string>Nemůžete vybrat více než %1$d chatů.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>

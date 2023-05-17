@@ -1,3 +1,3 @@
-• Emoji search improvements make it easier to find the right way to say I love you using whatever heart-shaped emoji best matches the state of your own heart.
-• Photos in the attachment selector are now sorted based on how recently they were added to your device. Go ahead and download an old meme and share it with a new friend. Even if the picture was originally created several years ago, you won't have to scroll forever to spot it in the list anymore.
-• We'd like to express our sincere appreciation to @skjiisa for developing these features and submitting some of the best GitHub Pull Requests we've seen so far.
+• 改進表情符號搜索，使你可以更輕鬆地找到合適的表情符號來表達心情。
+• 附件選擇器中的照片現在會根據最近新增至裝置的時間來排序。盡情下載舊的迷因並與新朋友分享。即使圖片是幾年前建立的，你也不必一直捲動才能在列表中找到它。
+• 我們衷心感謝 @skjiisa 開發了這些功能，並提交一些我們到目前為止所看到的最佳 GitHub 拉取請求。

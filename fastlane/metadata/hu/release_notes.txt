@@ -1,3 +1,3 @@
-• Emoji search improvements make it easier to find the right way to say I love you using whatever heart-shaped emoji best matches the state of your own heart.
-• Photos in the attachment selector are now sorted based on how recently they were added to your device. Go ahead and download an old meme and share it with a new friend. Even if the picture was originally created several years ago, you won't have to scroll forever to spot it in the list anymore.
-• We'd like to express our sincere appreciation to @skjiisa for developing these features and submitting some of the best GitHub Pull Requests we've seen so far.
+• A hangulatjel-keresés fejlesztései megkönnyítik a megfelelő mód megtalálását, hogy egy olyan szív alakú hangulatjellel mondhasd ki, hogy szeretlek, amely épp a legjobban illik az érzéseidhez.
+• A mellékletválasztóban lévő fotók aszerint vannak rendezve, hogy mikor adták hozzá őket az eszközhöz. Tölts le egy régi mémet, és oszd meg új barátoddal. Akkor sem kell többé az örökkévalóságig görgetned, hogy megtalálj egy képet a listában, ha eredetileg több éve készült.
+• Szeretnénk kifejezni őszinte elismerésünket @skjiisa-nak, amiért lefejlesztette ezeket a funkciókat, és elküldte az eddig látott legjobb GitHub Pull Request kéréseket.

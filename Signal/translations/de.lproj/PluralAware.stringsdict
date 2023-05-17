@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Diese personalisierte Farbe wird in %1$d Unterhaltung verwendet. Möchtest du sie für alle Unterhaltungen löschen?</string>
+			<string>Diese personalisierte Farbe wird in %1$d Chat verwendet. Möchtest du sie löschen?</string>
 			<key>other</key>
-			<string>Diese personalisierte Farbe wird in %1$d Unterhaltungen verwendet. Möchtest du sie für alle Unterhaltungen löschen?</string>
+			<string>Diese personalisierte Farbe wird in %1$d Chats verwendet. Möchtest du sie für alle Chats löschen?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Diese personalisierte Farbe wird in %1$d Unterhaltung verwendet. Möchtest du sie für alle Unterhaltungen speichern?</string>
+			<string>Diese Farbe wird in %1$d Chat verwendet. Möchtest du Änderungen für alle Chats speichern?</string>
 			<key>other</key>
-			<string>Diese Farbe wird in %1$d Unterhaltungen verwendet. Möchtest du Änderungen für alle Unterhaltungen speichern?</string>
+			<string>Diese Farbe wird in %1$d Chats verwendet. Möchtest du Änderungen für alle Chats speichern?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Unterhaltung löschen?</string>
+			<string>Chat löschen?</string>
 			<key>other</key>
-			<string>%1$d Unterhaltungen löschen?</string>
+			<string>%1$d Chats löschen?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Diese Unterhaltung wird von diesem Gerät gelöscht.</string>
+			<string>Dieser Chat wird von diesem Gerät gelöscht.</string>
 			<key>other</key>
-			<string>Diese Unterhaltungen werden von diesem Gerät gelöscht.</string>
+			<string>Diese Chats werden von diesem Gerät gelöscht.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -157,9 +157,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Du kannst maximal %1$d Unterhaltung auswählen.</string>
+			<string>Du kannst maximal %1$d Chat auswählen.</string>
 			<key>other</key>
-			<string>Du kannst maximal %1$d Unterhaltungen auswählen.</string>
+			<string>Du kannst maximal %1$d Chats auswählen.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>

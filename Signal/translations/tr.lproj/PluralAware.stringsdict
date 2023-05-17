@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bu özel renk %1$d konuşmada kullanılıyor. Silmek istiyor musun?</string>
+			<string>Bu özel renk %1$d sohbette kullanılıyor. Silmek istiyor musun?</string>
 			<key>other</key>
-			<string>Bu özel renk %1$d konuşmada kullanılıyor. Tüm konuşmalar için silmek istiyor musun?</string>
+			<string>Bu özel renk %1$d sohbette kullanılıyor. Tüm sohbetler için silmek istiyor musun?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,7 +109,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bu renk %1$d sohbetinde kullanılıyor. Değişiklikleri kaydetmek istiyor musun?</string>
+			<string>Bu renk %1$d sohbetinde kullanılıyor. Tüm sohbetler için değişiklikleri kaydetmek istiyor musun?</string>
 			<key>other</key>
 			<string>Bu renk %1$d sohbetinde kullanılıyor. Tüm sohbetler için değişiklikleri kaydetmek istiyor musun?</string>
 		</dict>
@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Konuşmayı Sil?</string>
+			<string>Sohbet silinsin mi?</string>
 			<key>other</key>
 			<string>%1$d sohbetleri silinsin mi?</string>
 		</dict>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bu konuşma bu cihazdan silinecektir.</string>
+			<string>Bu sohbet bu cihazdan silinecektir.</string>
 			<key>other</key>
-			<string>Bu sohbetler bu cihazdan silinecek.</string>
+			<string>Bu sohbetler bu cihazdan silinecektir.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

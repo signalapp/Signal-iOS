@@ -1,3 +1,3 @@
-• Emoji search improvements make it easier to find the right way to say I love you using whatever heart-shaped emoji best matches the state of your own heart.
-• Photos in the attachment selector are now sorted based on how recently they were added to your device. Go ahead and download an old meme and share it with a new friend. Even if the picture was originally created several years ago, you won't have to scroll forever to spot it in the list anymore.
-• We'd like to express our sincere appreciation to @skjiisa for developing these features and submitting some of the best GitHub Pull Requests we've seen so far.
+• Díky vylepšenému vyhledávání emoji je snazší najít ten správný způsob, jak říct: „mám tě rád“. Můžete si tak snadno vybrat emoji se srdíčkem, které nejlépe odpovídá tomu, co cítíte u srdce.
+• Fotografie ve výběru přílohy jsou teď uspořádané podle toho, kdy byly do vašeho zařízení přidány. Klidně si stáhněte starý mem a pošlete ho novým přátelům. I když byl obrázek vytvořen před několika lety, už nebudete muset dlouze skrolovat, abyste ho mezi ostatními našli.
+• Chceme poděkovat @skjiisa za vývoj těchto funkcí a podání některých z dosud nejlepších žádostí o změnu kódu GitHub.

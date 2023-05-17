@@ -1,3 +1,3 @@
-• Emoji search improvements make it easier to find the right way to say I love you using whatever heart-shaped emoji best matches the state of your own heart.
-• Photos in the attachment selector are now sorted based on how recently they were added to your device. Go ahead and download an old meme and share it with a new friend. Even if the picture was originally created several years ago, you won't have to scroll forever to spot it in the list anymore.
-• We'd like to express our sincere appreciation to @skjiisa for developing these features and submitting some of the best GitHub Pull Requests we've seen so far.
+• इमोजी सर्च में किया गया सुधार आपको अपने दिल की स्थिति से मेल खाने वाली दिल के आकार की इमोजी इस्तेमाल करके ‘आई लव यू’ कहने का सही तरीका ढूंढना आसान बनाता है।
+• अटैचमेंट चयनकर्ता में फोटो अब इस आधार पर सॉर्ट किए जाते हैं कि उन्हें आपकी डिवाइस में हाल ही में कैसे जोड़ा गया था। आगे बढ़ें और एक पुराना मीम डाउनलोड करें और उसे किसी नए दोस्त के साथ साझा करें। भले ही तस्वीर मूल रूप से कई साल पहले क्यों न बनाई गई हो, आपको इसे सूची में देखने के लिए अब स्क्रॉल नहीं करना पड़ेगा।
+• हम इन फीचर्स को विकसित करने और अब तक के कुछ बेहतरीन गिटहब पुल अनुरोधों को सबमिट करने के लिए @skjiisa की ईमानदारी से सराहना करना चाहते हैं।

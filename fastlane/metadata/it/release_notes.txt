@@ -1,3 +1,3 @@
-• Emoji search improvements make it easier to find the right way to say I love you using whatever heart-shaped emoji best matches the state of your own heart.
-• Photos in the attachment selector are now sorted based on how recently they were added to your device. Go ahead and download an old meme and share it with a new friend. Even if the picture was originally created several years ago, you won't have to scroll forever to spot it in the list anymore.
-• We'd like to express our sincere appreciation to @skjiisa for developing these features and submitting some of the best GitHub Pull Requests we've seen so far.
+• Abbiamo migliorato il sistema di ricerca delle emoji: sappiamo quanto sia importante scegliere il cuore del colore giusto!
+• Quando selezioni le foto da allegare a un messaggio, le foto verranno mostrate in ordine cronologico partendo da quelle aggiunte più recentemente sul tuo dispositivo. Prova a scaricare una vecchia foto e condividila con un contatto… anche se l'immagine è stata creata anni fa, la troverai subito senza dover cercare da una lista interminabile di immagini!
+• Vogliamo ringraziare di cuore @skjiisa per aver sviluppato queste funzioni e averci inviato alcune delle migliori Pull Request che abbiamo mai ricevuto su GitHub.

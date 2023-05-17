@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>આ કસ્ટમ કલરનો ઉપયોગ %1$d ચેટમાં થાય છે. શું તમે તેને બધી ચેટ માટે ડિલીટ કરવા માગો છો?</string>
+			<string>આ કસ્ટમ કલરનો ઉપયોગ %1$d ચેટમાં થયો છે. શું તમે તેને બધી ચેટ માટે ડિલીટ કરવા માગો છો?</string>
 			<key>other</key>
-			<string>આ કસ્ટમ કલરનો %1$d ચેટમાં ઉપયોગ થયો છે. શું તમે તેને બધી ચેટ માટે ડિલીટ કરવા માંગો છો?</string>
+			<string>આ કસ્ટમ કલરનો ઉપયોગ %1$d ચેટમાં થયો છે. શું તમે તેને બધી ચેટ માટે ડિલીટ કરવા માગો છો?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>આ કલરનો ઉપયોગ %1$d ચેટમાં થાય છે. શું તમે બધી ચેટ માટે ફેરફારોને સાચવવા માંગો છો?</string>
+			<string>આ કલરનો ઉપયોગ %1$d ચેટમાં થયો છે. શું તમે બધી ચેટ માટે ફેરફારોને સેવ કરવા માગો છો?</string>
 			<key>other</key>
-			<string>આ કલરનો ઉપયોગ %1$d ચેટમાં થયો છે. શું તમારે બધી ચેટ માટે ફેરફારો સેવ કરવા છે?</string>
+			<string>આ કલરનો ઉપયોગ %1$d ચેટમાં થયો છે. શું તમે બધી ચેટ માટે ફેરફારોને સેવ કરવા માગો છો?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>આ ડિવાઇસમાંથી આ ચેટને ડિલીટ કરવામાં આવશે.</string>
+			<string>આ ચેટને આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.</string>
 			<key>other</key>
-			<string>આ બધી ચેટ આ ડિવાઇસમાંથી ડિલીટ થઈ જશે.</string>
+			<string>આ બધી ચેટને આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -157,9 +157,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>તમે %1$d થી વધુ ચેટ પસંદ નથી કરી શકતા.</string>
+			<string>તમે %1$d થી વધુ ચેટ પસંદ કરી શકતા નથી.</string>
 			<key>other</key>
-			<string>તમે %1$d થી વધુ ચેટ પસંદ નથી કરી શકતા.</string>
+			<string>તમે %1$d થી વધુ ચેટ પસંદ કરી શકતા નથી.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>

@@ -431,7 +431,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Звучна порука";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Voice Call";
+"AUDIO_CALL_LABEL" = "Гласовни позив";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Звучник";
@@ -653,19 +653,19 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Позови поново";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming voice call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Долазни гласовни позив…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call at %1$@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Пропуштени гласовни позив у %1$@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed voice call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Пропуштени гласовни позив";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Пропуштени гласовни позив у %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed voice call on %1$@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Пропуштени гласовни позив у %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Како бисте могли вршити позиве и снимати гласовне поруке, дозволите Signal-у коришћење микрофона у iOS апликацији за подешавања.";
@@ -749,7 +749,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Промени смер камере";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to voice call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Пређи на гласовни позив";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Пређи на видео позив";
@@ -926,7 +926,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Обрисати боју";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "Боја преписке";
+"CHAT_COLOR_SETTINGS_TITLE" = "Боја ћаскања";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Променити боју";
@@ -944,7 +944,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Упореди са оставом";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Изаберите или пронађите Signal корисника како бисте започели разговор.";
+"COMPOSE_BUTTON_HINT" = "Изаберите или потражите корисника Signal-а како бисте започели ћаскање.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Напиши поруку";
@@ -1202,10 +1202,10 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Ћаскање ће бити избрисано са овог уређаја.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Избришите преписку?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Желите ли да избришете ћаскање?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Искључи обавештења за ћаскање на одређено време…";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Искључи обавештења за ово ћаскање на одређено време…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 дан";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Групе";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Скорашњи разговори";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Скорашња ћаскања";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Особе";
@@ -1244,7 +1244,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "Нема резултата";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Поставке ћаскања";
+"CONVERSATION_SETTINGS" = "Подешавања ћаскања";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Додај чланове";
@@ -1334,7 +1334,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "порука";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Искључи обавештења за ћаскање на одређено време…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Искључи обавештења за ово ћаскање на одређено време…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Увек";
@@ -1658,7 +1658,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Унет телефонски број се не подудара са вашим налогом.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Избриши све поруке у ћаскање?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Желите ли да избришете све поруке у ћаскању?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Избриши све поруке";
@@ -1796,7 +1796,7 @@
 "DISAPPEARING_MESSAGES" = "Нестајуће поруке";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Поруке у овој преписци ће нестати након %1$@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Поруке у овом ћаскању ће нестати након %1$@.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Прилагодити време";
@@ -1805,7 +1805,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "дан(а)";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Када је омогућено, послате и примљене поруке у овој преписци ће нестати након што буду приказане.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Када је омогућено, нове поруке послате и примљене у овом ћаскању ће нестати након што буду приказане.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Поруке сада нестају након %1$@";
@@ -2126,7 +2126,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Копирај";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Здраво,\n\nУ последње време користим Signal за заштиту приватности разговора на мом iPhone-у. Волео/ла бих да ми се придружиш, па да будемо сигурни да нам нико не може прислушкивати позиве и читати поруке.\n\nSignal је доступан за iPhone и Android. Преузми га овде: %1$@\n\nSignal је сличан твојој постојећој апликацији за дописивање. Можемо слати фотографије и видео записе, звати и ћаскати у групама. Најбоље је што је потпуно приватно, па нико сем нас не може читати поруке, укључујући и творце Signal-а.\n\nО људима иза Signal-а, Open Whisper Systems-у можеш више прочитати на: %2$@";
+"EMAIL_INVITE_BODY" = "Ћао!\n\nУ последње време користим Signal да би ми ћаскања на iPhone-у била приватна. Било би супер да га и ти инсталираш, па да будемо сигурни да само ти и ја можемо да читамо наше поруке и слушамо наше позиве.\n\nSignal је доступан за iPhone и Android. Преузми га овде: %1$@\n\nSignal ради слично као твоја постојећа апликација за дописивање. Можемо да шаљемо слике и видео снимке, зовемо људе и ћаскамо у групама. Најбоље је што нико осим нас не може ништа да види, укључујући креаторе Signal-а.\n\nО људима који су створили Signal, Open Whisper Systems, можеш више прочитати на: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Пређимо на Signal";
@@ -2264,7 +2264,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Ваш сигурносни број са %1$@ је промењен.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Чет сесија је освежена";
+"ERROR_MESSAGE_SESSION_REFRESH" = "Сесија ћаскања је освежена";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Дошло је до непознате грешке.";
@@ -2366,7 +2366,7 @@
 "FORWARD_MESSAGE_TITLE" = "Проследи ка";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "Нема медија у овој преписци.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Нема медијског садржаја у овом ћаскању.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Учитавамо новије садржаје…";
@@ -2882,7 +2882,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Уклоњени сте из групе.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Ваш захтев за придруживање групи је одобрен.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ је прихватио/ла Ваш захтев за придруживање групи.";
@@ -3038,7 +3038,7 @@
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Желите ли сигурно да уклоните групу „%1$@“?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Чланови групе „%1$@“ могу да виде ову причу и одговоре на њу. Можете да измените чланове овог ћаскања у групи.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Чланови групног ћаскања „%1$@“ могу да виде ову причу и одговоре на њу. Можете да измените чланове овог ћаскања у групи.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Ко може да види ову причу";
@@ -3311,7 +3311,7 @@
 "HELP_SUPPORT_CENTER" = "Центар за подршку";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Архивиране преписке";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Архивирана ћаскања";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Блокирано";
@@ -3332,7 +3332,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Неки контакти из вашег именика већ користе Signal, укључујући %1$@, %2$@ и %3$@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Овде започните ваше прво ћаскање.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Овде започните са прво ћаскање.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ вас је додао/ла у групу";
@@ -3347,7 +3347,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Архива";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Одабрати ћаскања";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Изаберите ћаскања";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Читај све";
@@ -3395,7 +3395,7 @@
 "IN_CALL_RINGING" = "Звони…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Voice Call…";
+"IN_CALL_RINGING_AUDIO" = "Гласовни позив…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "Видео позив…";
@@ -3410,7 +3410,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Ћаскања са искљученим обавештењима која су архивирана остаће архивирана када стигне нова порука.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Arhivirana ćaskanja će se premestiti u prijemno sanduče kada stigne nova poruka.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Архивирана ћаскања ће се преместити у пријемно сандуче када стигне нова порука.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Још нема ћаскања.\nЗапочните слањем поруке пријатељу.";
@@ -3485,7 +3485,7 @@
 "KEY_COMMAND_ATTACHMENTS" = "Прикажи прилоге";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Иди у поставке ћаскања";
+"KEY_COMMAND_CONVERSATION_INFO" = "Иди на информације о ћаскању";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "Фокусирај се на унос";
@@ -3500,10 +3500,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Нова порука";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Иди у следеће ћаскање";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Иди на следеће ћаскање";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Иди у претходно ћаскање";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Иди на претходно ћаскање";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Претрага";
@@ -3515,7 +3515,7 @@
 "KEY_COMMAND_STICKERS" = "Прикажи налепнице";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "Одархивирај ћаскање";
+"KEY_COMMAND_UNARCHIVE" = "Деархивирај ћаскање";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Сазнајте више";
@@ -3536,7 +3536,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Повезивање уређаја није успело";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Овај уређај ће имати приступ вашем именику, групама, препискама и моћи ће да шаље поруке у ваше име.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Овај уређај ће имати приступ вашем именику, групама, ћаскањима и моћи ће да шаље поруке у ваше име.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Повежи уређај?";
@@ -3662,7 +3662,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Избриши за све чланове";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Ова порука ће бити избрисана за све из ћаскања ако користе најновију верзију апликације Signal. Моћи ће да виде да сте избрисали поруку.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Ова порука ће бити избрисана свима у ћаскању ако користе најновију верзију Signal-а. Моћи ће да виде да сте избрисали поруку.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "За кога желите да избришете ову поруку?";
@@ -3827,10 +3827,10 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Избриши";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Преписка ће бити избрисана са ваших свих уређаја.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Ћаскање ће бити избрисано са свих ваших уређаја.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Избришите преписку?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Желите ли да избришете ћаскање?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Избриши и напусти";
@@ -3887,10 +3887,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Избриши";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Наставити разговор са %1$@ и поделите своје име и фоторафију са њима?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Желите ли да ви и %1$@ наставите ћаскање и да поделите своје име и фотографију са том особом?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Наставити ћаскање са овом групом и поделите своје име и фотографију са њеним члановима?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Желите ли да наставите ћаскање са овом групом и поделите своје име и фотографију са њеним члановима?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Да ли дозвољавате да вам %1$@ шаље поруке и да види ваше име и слику? Неће знати да сте прочитали поруке док не прихватите.";
@@ -3920,7 +3920,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Преузима се";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "edited";
+"MESSAGE_STATUS_EDITED" = "измењено";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Слање није успело.";
@@ -4778,7 +4778,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Било ко";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Свако ко има ваш број телефона у својим контактима ће вас видети као контакт у Signal-у. Остали ће моћи да вас добију преко вашег број телефона када започну ново ћаскање или креирају групу.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Свако ко има ваш број телефона у својим контактима ће вас видети као контакт на Signal-у. Остали ће моћи да вас добију преко вашег број телефона када започну ново ћаскање или креирају групу.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "никога";
@@ -5003,7 +5003,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN  мора садржати бар 4 цифре.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Могуће је закачити највише 4 ћаскања.";
+"PINNED_CONVERSATION_LIMIT" = "Можете да закачите највише 4 ћаскања.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Закачено";
@@ -5042,7 +5042,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ово не личи на ваш сигурносни број са %1$@. Да ли оверавате добар контакт?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Број у вашој остави се не подудара са сигурносним бројем за ову преписку.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Број у међумеморији се не подудара са сигурносним бројем за ово ћаскање.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal није успео да пронађе сигурносни број у вашој остави. Да ли сте га добро копирали?";
@@ -5102,7 +5102,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Шифровано";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Доступан за ћаскање";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Можемо да ћаскамо";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Говорите слободно";
@@ -5156,7 +5156,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Профил може бити измењен само када сте повезани на интернет.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профил је потпуно енкриптован. Биће видљив вашим контактима када започнете или прихватите ново ћаскање.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профил је потпуно шифрован. Ваш профил и измене у њему моћи ће да виде ваши контакти када започнете или прихватите нова ћаскања.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Сачувај";
@@ -5702,10 +5702,10 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "Стандардно";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal користи потпуно шифровање и можда ће понекад морати да освежи Вашу сесију ћаскања. Ово не утиче на безбедност вашег ћаскања, али можда сте пропустили поруку овог контакта и можете да затражите да је поново пошаље.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal користи потпуно шифровање и можда ће понекад морати да освежи вашу сесију ћаскања. То не утиче на безбедност ћаскања, али може се десити да пропустите поруку од овог контакта, па можете затражити да вам је поново пошаље.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Чет сесија је освежена";
+"SESSION_REFRESH_ALERT_TITLE" = "Сесија ћаскања је освежена";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Одабери из фотографије";
@@ -5849,7 +5849,7 @@
 "SETTINGS_CHATS" = "Ћаскања";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Очисти историју чета";
+"SETTINGS_CLEAR_HISTORY" = "Избриши историју ћаскања";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Ауторско право Signal Messenger\nЛиценцирано под бројем AGPLv3";
@@ -5915,7 +5915,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Нестајуће поруке";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Подесите подразумевани тајмер нестајања поруке за све нове преписке које сте започели.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Подесите подразумевани тајмер за нестајуће поруке у свим новим ћаскањима која започнете.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Донирајте Signal-у";
@@ -5936,7 +5936,7 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Ћаскања са искљученим обавештењима која су архивирана остаће архивирана када стигне нова порука.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Остави ћаскања са искљученим обавештењима архивирана";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Остави ћаскања са искљученим обавештењима у архиви";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Услови коришћења и правила о приватности";
@@ -6584,10 +6584,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Поделити контакт са iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Дозволи iOS да приступи контактима Signal-а  и разговора за функције као што су предлоге за дељење.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Дозволи iOS-у приступ контактима и ћаскањима на Signal-у код функција као што су предлози за дељење.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Дозволи iOS да приступи контактима Signal-а и разговора за функције као што су предлоге за дељење и нотификације.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Дозволи iOS-у приступ контактима и ћаскањима на Signal-у код функција као што су предлози за дељење и обавештења.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Закључавање регистрације";
@@ -6659,7 +6659,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Прикажи сигурносни број";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Прикажи преписку";
+"SHOW_THREAD_BUTTON_TITLE" = "Прикажи ћаскање";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Pozivam te da instaliraš Signal! U nastavku je link:";
@@ -7160,7 +7160,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Члан %1$@, %2$@ и још %3$lu група";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Можете додати личне белешке у ово ћаскања. Ако имате повезане уређаје на налог, нове белешке ће бити синхронизоване.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Можете додати личне белешке у ово ћаскање. Ако на налогу имате повезане уређаје, нове белешке ће бити синхронизоване.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Члан %1$@";
@@ -7463,7 +7463,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Превуците да бисте прегледали још позадина.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Поставити позадину за све четове.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Подесите позадину за сва ћаскања.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Поставити позадину за %1$@.";
@@ -7472,16 +7472,16 @@
 "WALLPAPER_PREVIEW_TITLE" = "Преглед";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Обриши боју ћаскања";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Избриши боју ћаскања";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Обриши боју ћаскања за ово ћаскање?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Желите ли да избришете боју ћаскања за ово ћаскање?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Уклони позадину";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Уклонити позадину за овај чет?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Желите ли да уклоните позадину за ово ћаскање?";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Тамна тема затамњује позадину";
@@ -7499,13 +7499,13 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Рисетуј све позадине";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Да ли желите да надјачате све боје за ћаскање?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Желите ли да замените све боје ћаскања?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Рисетовати боје ћаскања";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Ресетуј боје ћаскања";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Рисетовати боје ћаскања";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Ресетуј боју ћаскања";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Рисетовати позадину";
@@ -7514,7 +7514,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Рисетовати подразумеване боје";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Рисетовати боје ћаскања";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Ресетуј боје ћаскања";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Рисетовати подразумевану позадину";
@@ -7529,7 +7529,7 @@
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Рисетовати позадину";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Боја преписке";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Боја ћаскања";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Поставити позадину";
