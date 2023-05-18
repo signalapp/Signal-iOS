@@ -415,6 +415,7 @@ class FilenameSenderView: UIView {
             senderNameLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor)
         ])
 
+        middleDotLabel.setContentHuggingHorizontalHigh()
         filenameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 
