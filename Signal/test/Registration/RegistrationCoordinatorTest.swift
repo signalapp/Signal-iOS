@@ -3086,11 +3086,20 @@ public class RegistrationCoordinatorTest: XCTestCase {
             exitConfigOverride: RegistrationVerificationState.ExitConfiguration? = nil
         ) -> RegistrationVerificationState {
 
+            let canChangeE164: Bool
+            switch mode {
+            case .reRegistering:
+                canChangeE164 = false
+            case .registering, .changingNumber:
+                canChangeE164 = true
+            }
+
             return RegistrationVerificationState(
                 e164: e164,
                 nextSMSDate: nextSMS.map { date.addingTimeInterval($0) },
                 nextCallDate: nextCall.map { date.addingTimeInterval($0) },
                 nextVerificationAttemptDate: date.addingTimeInterval(nextVerificationAttempt),
+                canChangeE164: canChangeE164,
                 showHelpText: showHelpText,
                 validationError: validationError,
                 exitConfiguration: exitConfigOverride ?? mode.verificationExitConfig

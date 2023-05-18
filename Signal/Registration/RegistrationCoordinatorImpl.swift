@@ -500,7 +500,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // the current e164.
         var svrAuthCredential: SVRAuthCredential?
         // If we had SVR backups before registration even began.
-        var didHaveKbsBackupsPriorToReg = false
+        var didHaveSVRBackupsPriorToReg = false
 
         // We always require the user to enter the PIN
         // during the in memory app session even if we
@@ -1422,7 +1422,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // If we have a local master key, theres no need to restore after registration.
         // (we will still back up though)
         inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = !deps.svr.hasMasterKey(transaction: tx)
-        inMemoryState.didHaveKbsBackupsPriorToReg = deps.svr.hasBackedUpMasterKey(transaction: tx)
+        inMemoryState.didHaveSVRBackupsPriorToReg = deps.svr.hasBackedUpMasterKey(transaction: tx)
     }
 
     // MARK: - SVR Auth Credential Candidates Pathway
@@ -3281,7 +3281,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                                     aci: whoAmIResponse.aci,
                                     pni: whoAmIResponse.pni,
                                     e164: whoAmIResponse.e164,
-                                    hasPreviouslyUsedSVR: strongSelf.inMemoryState.didHaveKbsBackupsPriorToReg,
+                                    hasPreviouslyUsedSVR: strongSelf.inMemoryState.didHaveSVRBackupsPriorToReg,
                                     authPassword: changeNumberState.oldAuthToken
                                 ),
                                 tx
@@ -3381,6 +3381,26 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func makeAccountAttributes(twoFAMode: AccountAttributes.TwoFactorAuthMode) -> AccountAttributes {
+        let hasSVRBackups: Bool
+        switch getPathway() {
+        case
+                .opening,
+                .registrationRecoveryPassword,
+                .svrAuthCredential,
+                .svrAuthCredentialCandidates,
+                .session:
+            hasSVRBackups = inMemoryState.didHaveSVRBackupsPriorToReg
+        case .profileSetup:
+            if inMemoryState.didHaveSVRBackupsPriorToReg && !inMemoryState.didSkipSVRBackup {
+                hasSVRBackups = true
+            } else if inMemoryState.hasRestoredFromStorageService {
+                hasSVRBackups = true
+            } else if inMemoryState.hasBackedUpToSVR {
+                hasSVRBackups = true
+            } else {
+                hasSVRBackups = false
+            }
+        }
         return AccountAttributes(
             isManualMessageFetchEnabled: inMemoryState.isManualMessageFetchEnabled,
             registrationId: inMemoryState.registrationId,
@@ -3391,7 +3411,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             registrationRecoveryPassword: inMemoryState.regRecoveryPw,
             encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
             discoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber,
-            hasSVRBackups: true // Always true when registering from this class.
+            hasSVRBackups: hasSVRBackups
         )
     }
 
@@ -3501,11 +3521,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } else {
             exitConfiguration = .noExitAllowed
         }
+
+        let canChangeE164: Bool
+        switch mode {
+        case .reRegistering:
+            canChangeE164 = false
+        case .registering, .changingNumber:
+            canChangeE164 = true
+        }
+
         return RegistrationVerificationState(
             e164: session.e164,
             nextSMSDate: session.nextSMSDate,
             nextCallDate: session.nextCallDate,
             nextVerificationAttemptDate: nextVerificationAttemptDate,
+            canChangeE164: canChangeE164,
             // TODO[Registration]: pass up the number directly here, and test for it.
             showHelpText: (persistedState.sessionState?.numVerificationCodeSubmissions ?? 0) >= 3,
             validationError: validationError,

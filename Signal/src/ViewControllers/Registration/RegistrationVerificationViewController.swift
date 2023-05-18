@@ -25,6 +25,8 @@ public struct RegistrationVerificationState: Equatable {
     let nextSMSDate: Date?
     let nextCallDate: Date?
     let nextVerificationAttemptDate: Date
+    // If false, no option to go back and change e164 will be shown.
+    let canChangeE164: Bool
     let showHelpText: Bool
     let validationError: RegistrationVerificationValidationError?
 
@@ -137,14 +139,16 @@ class RegistrationVerificationViewController: OWSViewController {
         return result
     }()
 
-    private lazy var explanationLabel: UILabel = {
+    private var explanationLabelText: String {
         let format = OWSLocalizedString(
             "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT",
             comment: "Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}."
         )
-        let text = String(format: format, state.e164.stringValue.e164FormattedAsPhoneNumberWithoutBreaks)
+        return String(format: format, state.e164.stringValue.e164FormattedAsPhoneNumberWithoutBreaks)
+    }
 
-        let result = UILabel.explanationLabelForRegistration(text: text)
+    private lazy var explanationLabel: UILabel = {
+        let result = UILabel.explanationLabelForRegistration(text: explanationLabelText)
         result.accessibilityIdentifier = "registration.verification.explanationLabel"
         return result
     }()
@@ -353,6 +357,8 @@ class RegistrationVerificationViewController: OWSViewController {
         view.backgroundColor = Theme.backgroundColor
         titleLabel.textColor = .colorForRegistrationTitleLabel
         explanationLabel.textColor = .colorForRegistrationExplanationLabel
+        explanationLabel.text = explanationLabelText
+        wrongNumberButton.isHidden = state.canChangeE164.negated
         helpButton.isHidden = state.showHelpText.negated
 
         verificationCodeView.updateColors()
