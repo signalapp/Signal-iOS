@@ -1376,7 +1376,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         [quoteBuilder setText:quotedMessage.body];
 
         NSArray<SSKProtoBodyRange *> *bodyRanges =
-            [self.bodyRanges toProtoBodyRangesWithBodyLength:(NSInteger)self.quotedMessage.body.length];
+            [self.quotedMessage.bodyRanges toProtoBodyRangesWithBodyLength:(NSInteger)self.quotedMessage.body.length];
         if (bodyRanges.count > 0) {
             [quoteBuilder setBodyRanges:bodyRanges];
         }
