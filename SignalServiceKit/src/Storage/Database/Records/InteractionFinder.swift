@@ -265,6 +265,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
                 LEFT JOIN \(EditRecord.databaseTableName) AS editRecord
                 ON interaction.\(interactionColumn: .id) = editRecord.pastRevisionId
                 WHERE editRecord.latestRevisionId = ?
+                ORDER BY \(interactionColumn: .id) DESC
             """
         let arguments: StatementArguments = [message.grdbId]
 

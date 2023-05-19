@@ -321,6 +321,8 @@ extension MockConversationView: CVComponentDelegate {
 
     func didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {}
 
+    func didTapShowEditHistory(_ itemViewModel: CVItemViewModelImpl) {}
+
     var hasPendingMessageRequest: Bool { false }
 
     func didTapFailedOrPendingDownloads(_ message: TSMessage) {}

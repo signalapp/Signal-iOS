@@ -100,6 +100,8 @@ public protocol CVComponentDelegate: AnyObject {
 
     func didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl)
 
+    func didTapShowEditHistory(_ itemViewModel: CVItemViewModelImpl)
+
     func prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl)
 
     typealias EndCellAnimation = () -> Void

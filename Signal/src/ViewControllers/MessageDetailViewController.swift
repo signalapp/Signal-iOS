@@ -192,6 +192,10 @@ class MessageDetailViewController: OWSTableViewController2 {
 
         contents.addSection(buildMessageSection())
 
+        if let editHistorySection = buildEditHistorySection() {
+            contents.addSection(editHistorySection)
+        }
+
         if isIncoming {
             contents.addSection(buildSenderSection())
         } else {
@@ -360,6 +364,32 @@ class MessageDetailViewController: OWSTableViewController2 {
             for: incomingMessage.authorAddress,
             accessoryText: DateUtil.formatPastTimestampRelativeToNow(incomingMessage.timestamp),
             displayUDIndicator: incomingMessage.wasReceivedByUD
+        ))
+        return section
+    }
+
+    private func buildEditHistorySection() -> OWSTableSection? {
+        if case .none = message.editState {
+            return nil
+        }
+
+        let section = OWSTableSection()
+        section.add(.disclosureItem(
+            icon: .settingsEditGroup,
+            name: OWSLocalizedString(
+                "MESSAGE_DETAILS_EDIT_HISTORY_TITLE",
+                comment: "Title for the 'edit history' section on the 'message details' view."
+            ),
+            accessibilityIdentifier: "view_edit_history",
+            actionBlock: { [weak self] in
+                guard let self else { return }
+                let sheet = EditHistoryTableSheetViewController(
+                    message: self.message,
+                    spoilerReveal: self.spoilerReveal,
+                    database: self.databaseStorage
+                )
+                self.present(sheet, animated: true)
+            }
         ))
         return section
     }
@@ -925,6 +955,10 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
 // MARK: -
 
 extension MessageDetailViewController: CVComponentDelegate {
+
+    func didTapShowEditHistory(_ itemViewModel: CVItemViewModelImpl) {
+        owsFailDebug("Taps are not supported in message details.")
+    }
 
     func enqueueReload() {
         self.refreshContent()

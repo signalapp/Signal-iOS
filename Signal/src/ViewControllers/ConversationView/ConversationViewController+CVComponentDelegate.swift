@@ -173,6 +173,22 @@ extension ConversationViewController: CVComponentDelegate {
         expandTruncatedTextOrPresentLongTextView(itemViewModel)
     }
 
+    public func didTapShowEditHistory(_ itemViewModel: CVItemViewModelImpl) {
+        AssertIsOnMainThread()
+
+        guard let message = itemViewModel.interaction as? TSMessage else {
+            owsFailDebug("Invalid interaction.")
+            return
+        }
+
+        let sheet = EditHistoryTableSheetViewController(
+            message: message,
+            spoilerReveal: viewState.spoilerReveal,
+            database: databaseStorage
+        )
+        self.present(sheet, animated: true)
+    }
+
     public func didTapFailedOrPendingDownloads(_ message: TSMessage) {
         AssertIsOnMainThread()
 

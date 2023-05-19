@@ -1242,13 +1242,14 @@
 		B9439F3DDBE241269273DD6F /* Pods_SignalServiceKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
+		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
 		C13A484729B650BC00BA9005 /* UsernameValidationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */; };
+		C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */; };
 		C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15837EE29A592BA00176927 /* UsernameValidationManager.swift */; };
 		C167387529E8397B0068EA92 /* EditMessageFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167387429E8397B0068EA92 /* EditMessageFinder.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
 		C182BEF629ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */; };
-		C182C4BF29E45D80007F7A7C /* EditManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */; };
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
 		C1DB22C329C9F95500757380 /* EditManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DB22C229C9F95500757380 /* EditManager.swift */; };
 		C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */; };
@@ -3807,6 +3808,7 @@
 		B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHistoryTableSheetViewController.swift; sourceTree = "<group>"; };
 		C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationObserver.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
 		C167387429E8397B0068EA92 /* EditMessageFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageFinder.swift; sourceTree = "<group>"; };
@@ -6034,6 +6036,7 @@
 				34E88D252098C5AE00A608F4 /* ContactViewController.swift */,
 				346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */,
 				F9B652C028D8CB75006914CA /* DatabaseRecoveryViewController.swift */,
+				C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */,
 				340E9ABF235F876800FA362C /* ForwardMessageViewController.swift */,
 				327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */,
 				340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */,
@@ -11438,6 +11441,7 @@
 				F9B368732977027E00CF1E6D /* DonationViewsUtil+Paypal.swift in Sources */,
 				F90B731D2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift in Sources */,
 				F9DD70B92811AF82000C5960 /* DonationViewsUtil.swift in Sources */,
+				C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */,
 				3428577D26BD8777005A2A96 /* Emoji+Available.swift in Sources */,
 				3428577726BD8777005A2A96 /* Emoji+Category.swift in Sources */,
 				3428577C26BD8777005A2A96 /* Emoji+Name.swift in Sources */,
@@ -12547,8 +12551,7 @@
 				F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */,
 				F9E39CE929493D4C001D7721 /* DisappearingMessageFinderTest.swift in Sources */,
 				F9426267289B1B5500460798 /* DispatchQueue+OWSTest.swift in Sources */,
-				C182C4BF29E45D80007F7A7C /* EditManagerTests.swift in Sources */,
-				C182C4BF29E45D80007F7A7C /* EditManagerTests.swift in Sources */,
+				C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */,
 				502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */,
 				D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */,
 				F9426254289B1B5500460798 /* FeatureFlagsTests.swift in Sources */,

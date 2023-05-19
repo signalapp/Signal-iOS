@@ -415,12 +415,31 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                                    componentDelegate: CVComponentDelegate,
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
-        guard hasTapForMore else {
+
+        guard let componentView = componentView as? CVComponentViewFooter else {
+            owsFailDebug("Unexpected componentView.")
             return false
         }
-        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        componentDelegate.didTapTruncatedTextMessage(itemViewModel)
-        return true
+
+        if hasTapForMore {
+            let readMoreLabel = componentView.tapForMoreLabel
+            let location = sender.location(in: readMoreLabel)
+            if readMoreLabel.bounds.contains(location) {
+                let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+                componentDelegate.didTapTruncatedTextMessage(itemViewModel)
+                return true
+            }
+        }
+        if wasEdited {
+            let editedLabel = componentView.editedLabel
+            let location = sender.location(in: editedLabel)
+            if editedLabel.bounds.contains(location) {
+                let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+                componentDelegate.didTapShowEditHistory(itemViewModel)
+                return true
+            }
+        }
+        return false
     }
 
     // MARK: -

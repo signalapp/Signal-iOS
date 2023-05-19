@@ -313,11 +313,11 @@ public struct CVComponentAndView {
 
 public enum CVComponentKey: CustomStringConvertible, CaseIterable {
     // These components appear in CVComponentMessage.
+    case footer
     case bodyText
     case bodyMedia
     case senderName
     case senderAvatar
-    case footer
     case sticker
     case quotedReply
     case linkPreview
