@@ -30,6 +30,8 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
     }
 }
 
+static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
+
 @interface TSAttachmentStream (TSAttachmentPointer)
 
 - (CGSize)cachedMediaSize;
@@ -304,8 +306,11 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
     OWSAssertDebug(attachmentProtos);
     OWSAssertDebug(albumMessage);
 
-    NSMutableArray *attachmentPointers = [NSMutableArray new];
-    for (SSKProtoAttachmentPointer *attachmentProto in attachmentProtos) {
+    NSUInteger pointerCount = MIN(kMaxAttachmentsPerDataMessage, attachmentProtos.count);
+
+    NSMutableArray *attachmentPointers = [[NSMutableArray alloc] initWithCapacity:pointerCount];
+    for (NSUInteger i = 0; i < pointerCount; i = i + 1) {
+        SSKProtoAttachmentPointer *attachmentProto = attachmentProtos[i];
         TSAttachmentPointer *_Nullable attachmentPointer =
             [self attachmentPointerFromProto:attachmentProto albumMessage:albumMessage];
         if (attachmentPointer) {
