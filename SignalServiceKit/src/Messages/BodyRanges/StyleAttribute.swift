@@ -141,7 +141,7 @@ internal struct StyleAttribute: Equatable, Hashable {
             in: range,
             with: String(
                 repeating: Self.plaintextSpoilerCharacter,
-                count: range.length
+                count: min(range.length, Self.maxPlaintextSpoilerLength)
             )
         )
     }

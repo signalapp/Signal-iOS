@@ -387,7 +387,9 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     public func asPlaintext() -> String {
         let mutableString = NSMutableString(string: hydratedText)
-        styleAttributes.forEach {
+        // Reverse the sorted array so length changes that happen due to
+        // replacement don't affect later ranges.
+        styleAttributes.reversed().forEach {
             guard $0.value.style.contains(.spoiler) else {
                 return
             }
