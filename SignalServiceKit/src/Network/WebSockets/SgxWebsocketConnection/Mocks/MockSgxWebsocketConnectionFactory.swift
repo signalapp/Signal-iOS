@@ -10,16 +10,23 @@ import SignalCoreKit
 
 public class MockSgxWebsocketConnectionFactory: SgxWebsocketConnectionFactory {
 
-    public var onConnectAndPerformHandshake: ((
-        _ configurator: SgxWebsocketConfigurator,
-        _ queue: DispatchQueue
-    ) -> Promise<SgxWebsocketConnection> )?
+    private var onConnectAndPerformHandshakeHandlers = [String: ((Any) -> Promise<Any>)]()
 
-    func connectAndPerformHandshake<Configurator>(
+    public func setOnConnectAndPerformHandshake<Configurator: SgxWebsocketConfigurator>(
+        _ block: @escaping (Configurator) -> Promise<SgxWebsocketConnection<Configurator>>
+    ) {
+        let key = String(describing: Configurator.self)
+        self.onConnectAndPerformHandshakeHandlers[key] = {
+            return block($0 as! Configurator).map(on: SyncScheduler()) { $0 }
+        }
+    }
+
+    public func connectAndPerformHandshake<Configurator: SgxWebsocketConfigurator>(
         configurator: Configurator,
         on queue: DispatchQueue
-    ) -> Promise<SgxWebsocketConnection> where Configurator: SgxWebsocketConfigurator {
-        onConnectAndPerformHandshake!(configurator, queue)
+    ) -> Promise<SgxWebsocketConnection<Configurator>> {
+        let key = String(describing: Configurator.self)
+        return onConnectAndPerformHandshakeHandlers[key]!(configurator).map(on: SyncScheduler()) { $0 as! SgxWebsocketConnection<Configurator> }
     }
 }
 

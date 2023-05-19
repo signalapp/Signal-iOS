@@ -1,0 +1,161 @@
+//
+// Copyright 2023 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+//
+
+syntax = "proto3";
+
+// iOS - package name determines class prefix
+package SVR2Proto;
+
+// Client protocol for SecureValueRecovery2 (SVR2).
+//
+// A client that wishes to store a secret should call Backup,
+// followed by Expose.  Backup adds the secret to the store,
+// and Expose makes that secret available for restoration.  Subsequent
+// calls to Restore allow the client to retrieve the stored secret.
+// Calls to Backup and Expose are idempotent.  A client should call
+// Backup until it succeeds, then call Expose until it succeeds.
+// A client should NOT call Backup+Expose until the pair succeeds,
+// as doing so potentially resets the `tries` counter and allows
+// for brute force attempts against the pin.  If Backup succeeds but
+// a subsequent Expose call returns status=ERROR, the client can be
+// pretty sure that something nefarious is going on, and they should
+// reconsider storing their secret.
+
+message Request {
+
+  // reserved for use by server (backupId)
+  reserved 1;
+
+  // oneof inner {
+    optional BackupRequest backup = 2;
+    optional ExposeRequest expose = 5;
+    optional RestoreRequest restore = 3;
+    optional DeleteRequest delete = 4;
+  // }
+}
+
+message Response {
+  // oneof inner {
+    optional BackupResponse backup = 1;
+    optional ExposeResponse expose = 4;
+    optional RestoreResponse restore = 2;
+    optional DeleteResponse delete = 3;
+  // }
+}
+
+//
+// backup
+//
+
+message BackupRequest {
+  // If the backup_id does not already exist, a new backup will be created
+  //
+  // If a backup already exists, it will be overwritten and response will have 
+  // status=OK.
+  bytes data = 1;  // between 16 and 48 bytes
+  bytes pin = 2;  // 32 bytes
+  uint32 max_tries = 3;  // in range [1,255]
+}
+
+message BackupResponse {
+  enum Status {
+    UNSET = 0;  // never returned
+    OK = 1;  // successfully set db[backup_id]=data
+  }
+
+  Status status = 1;
+}
+
+//
+// restore
+//
+
+message RestoreRequest {
+  bytes pin = 1;  // 32 bytes
+}
+
+message RestoreResponse {
+  enum Status {
+    UNSET = 0;  // never returned
+    OK = 1;  // successfully restored, [data] will be set
+    MISSING = 2;  // db[backup_id] does not exist
+    PIN_MISMATCH = 3;  // pin did not match, tries were decremented
+  }
+
+  Status status = 1;
+  bytes data = 2;  // between 16 and 48 bytes, if set
+  uint32 tries = 3;  // in range [0,255]
+}
+
+//
+// delete
+//
+
+message DeleteRequest {
+}
+
+message DeleteResponse {
+}
+
+//
+// expose
+//
+
+message ExposeRequest {
+  bytes data = 1;
+}
+
+message ExposeResponse {
+  enum Status {
+    UNSET = 0;  // never returned
+    OK = 1;  // successfully restored, [data] will be set
+
+    // If this status comes back after a successful Backup() call,
+    // this should be cause for concern.
+    // It means that someone has either reset, deleted, or tried to brute-force
+    // the backup since it was created.
+    ERROR = 2;
+  }
+
+  Status status = 1;
+}
+
+message ClientHandshakeStart {
+  // Public key associated with this server's enclave. For use in test-only
+  // contexts where attestation is not available
+  bytes test_only_pubkey = 1;
+
+  // Remote-attestation evidence associated with the public key
+  bytes evidence = 2;
+
+  // Endorsements of remote-attestation evidence.
+  bytes endorsement = 3;
+}
+
+
+// RaftGroupConfig is a configuration shared by members of a Raft group.
+// It's created only once, on creation of the Raft group.  From that
+// point forward, it's shared between replicas as they're added to the
+// group, and it's not possible to modify it externally.
+//
+// An attested RaftGroupConfig will be returned as part of the evidence.
+// Clients must validate that the attested configuration matches their
+// expected configuration.
+message RaftGroupConfig {
+
+  // The unique group id for the raft group
+  fixed64 group_id = 1;
+
+  // This raft group will refuse to serve client request with
+  // <min_voting_replicas, and will refuse to add new voting members
+  // when max_voting_replicas has been reached.
+  uint32 min_voting_replicas = 2;
+  uint32 max_voting_replicas = 3;
+  // Anything which, in normal Raft, would require quorum() participants
+  // to push forward will instead require quorum() + super_majority.  Should
+  // there be fewer than super_majority total nodes in the Raft, all Raft
+  // nodes will be required.
+  uint32 super_majority = 4;
+}

@@ -6,22 +6,41 @@
 import Foundation
 import LibSignalClient
 import SignalCoreKit
-
-// MARK: -
+import SwiftProtobuf
 
 /// Exposes a SgxClient-conformant server communication channel.
 ///
 /// This handles the initial handshake & subsequent encryption/decryption
 /// of the exchanged messages using an `SgxClient` instance provided
 /// by a `SgxWebsocketConfigurator`.
-public protocol SgxWebsocketConnection {
+///
+/// While this is a class, there should never be an instance of this base class; all instances
+/// should be of a concrete subclass. It is only a class and not a protocol so users can refer
+/// to an instance by config type without specifying the implementation,
+/// e.g. `SgxWebsocketConnection<FooServerConfigurator>`.
+/// That is not possible for a protocol with an associated type.
+public class SgxWebsocketConnection<Configurator: SgxWebsocketConfigurator> {
 
-    func sendRequestAndReadResponse(_ request: Data) -> Promise<Data>
-    func sendRequestAndReadAllResponses(_ request: Data) -> Promise<[Data]>
-    func disconnect()
+    // Never add an initializer to this class; instances should be impossible.
+    fileprivate init() {}
+
+    // Subclasses must implement.
+    func sendRequestAndReadResponse(_ request: Configurator.Request) -> Promise<Configurator.Response> {
+        fatalError("Concrete subclass must implement")
+    }
+
+    // Subclasses must implement.
+    func sendRequestAndReadAllResponses(_ request: Configurator.Request) -> Promise<[Configurator.Response]> {
+        fatalError("Concrete subclass must implement")
+    }
+
+    // Subclasses must implement.
+    func disconnect() {
+        fatalError("Concrete subclass must implement")
+    }
 }
 
-public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>: SgxWebsocketConnection {
+public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>: SgxWebsocketConnection<Configurator> {
 
     private let webSocket: WebSocketPromise
     private let configurator: Configurator
@@ -38,6 +57,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         self.configurator = configurator
         self.client = client
         self.queue = queue
+        super.init()
     }
 
     internal static func connectAndPerformHandshake(
@@ -45,7 +65,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         auth: RemoteAttestation.Auth,
         websocketFactory: WebSocketFactory,
         queue: DispatchQueue
-    ) throws -> Promise<SgxWebsocketConnection> {
+    ) throws -> Promise<SgxWebsocketConnection<Configurator>> {
         let webSocket = try buildSocket(
             configurator: configurator,
             auth: auth,
@@ -67,14 +87,14 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
                 try client.completeHandshake(handshakeResponse)
                 return client
             }
-        }.map(on: queue) { client in
-            SgxWebsocketConnectionImpl(
+        }.map(on: queue) { client -> SgxWebsocketConnection<Configurator> in
+            return SgxWebsocketConnectionImpl<Configurator>(
                 webSocket: webSocket,
                 configurator: configurator,
                 client: client,
                 queue: queue
             )
-        }.recover(on: queue) { error -> Promise<SgxWebsocketConnection> in
+        }.recover(on: queue) { error -> Promise<SgxWebsocketConnection<Configurator>> in
             Logger.warn("\(type(of: configurator).loggingName): Disconnecting socket after failed handshake: \(error)")
             webSocket.disconnect()
             throw error
@@ -100,21 +120,29 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         return webSocketPromise
     }
 
-    public func sendRequestAndReadResponse(_ request: Data) -> Promise<Data> {
+    public override func sendRequestAndReadResponse(
+        _ request: Configurator.Request
+    ) -> Promise<Configurator.Response> {
         firstly(on: queue) { () -> Promise<Data> in
-            try self.encryptAndSendRequest(request)
+            try self.encryptAndSendRequest(request.serializedData())
             return self.webSocket.waitForResponse()
         }.map(on: queue) { encryptedResponse in
-            try self.decryptResponse(encryptedResponse)
+            let data = try self.decryptResponse(encryptedResponse)
+            return try Configurator.Response(serializedData: data)
         }
     }
 
-    public func sendRequestAndReadAllResponses(_ request: Data) -> Promise<[Data]> {
+    public override func sendRequestAndReadAllResponses(
+        _ request: Configurator.Request
+    ) -> Promise<[Configurator.Response]> {
         firstly(on: queue) { () -> Promise<[Data]> in
-            try self.encryptAndSendRequest(request)
+            try self.encryptAndSendRequest(request.serializedData())
             return self.webSocket.waitForAllResponses()
         }.map(on: queue) { encryptedResponses in
-            try encryptedResponses.map { try self.decryptResponse($0) }
+            try encryptedResponses.map {
+                let data = try self.decryptResponse($0)
+                return try Configurator.Response(serializedData: data)
+            }
         }
     }
 
@@ -131,7 +159,40 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         return Data(try client.establishedRecv(encryptedResponse))
     }
 
-    public func disconnect() {
+    public override func disconnect() {
         webSocket.disconnect()
     }
 }
+
+#if TESTABLE_BUILD
+
+public class MockSgxWebsocketConnection<Configurator: SgxWebsocketConfigurator>: SgxWebsocketConnection<Configurator> {
+
+    internal override init() {
+        super.init()
+    }
+
+    public var onSendRequestAndReadResponse: ((Configurator.Request) -> Promise<Configurator.Response>)?
+
+    public override func sendRequestAndReadResponse(
+        _ request: Configurator.Request
+    ) -> Promise<Configurator.Response> {
+        onSendRequestAndReadResponse!(request)
+    }
+
+    public var onSendRequestAndReadAllResponses: ((Configurator.Request) -> Promise<[Configurator.Response]>)?
+
+    public override func sendRequestAndReadAllResponses(
+        _ request: Configurator.Request
+    ) -> Promise<[Configurator.Response]> {
+        onSendRequestAndReadAllResponses!(request)
+    }
+
+    public var onDisconnect: (() -> Void)?
+
+    public override func disconnect() {
+        onDisconnect?()
+    }
+}
+
+#endif

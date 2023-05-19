@@ -6,12 +6,16 @@
 import Foundation
 import LibSignalClient
 import SignalCoreKit
+import SwiftProtobuf
 
 /// Defines configuration for a websocket connection to an `SgxClient`-compliant server.
 /// Besides defining constant values used to establish the connection (url, mrenclave),
 /// handles fetching of authentication headers used when opening the websocket,
 /// and creation of the LibSignal-provided `SgxClient`.
 public protocol SgxWebsocketConfigurator {
+
+    associatedtype Request: SwiftProtobuf.Message
+    associatedtype Response: SwiftProtobuf.Message
 
     /// MrEnclave to use for the websocket connection.
     /// Typically points to a TSConstants value.

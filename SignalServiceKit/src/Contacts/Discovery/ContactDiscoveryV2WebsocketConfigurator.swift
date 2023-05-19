@@ -6,23 +6,26 @@
 import Foundation
 import LibSignalClient
 
-public class ContactDiscoveryV2WebsocketConfigurator: SgxWebsocketConfigurator {
+internal class ContactDiscoveryV2WebsocketConfigurator: SgxWebsocketConfigurator {
 
-    public init() {}
+    internal typealias Request = CDSI_ClientRequest
+    internal typealias Response = CDSI_ClientResponse
 
-    public func fetchAuth() -> SignalCoreKit.Promise<RemoteAttestation.Auth> {
+    internal init() {}
+
+    internal func fetchAuth() -> SignalCoreKit.Promise<RemoteAttestation.Auth> {
         return RemoteAttestation.authForCDSI()
     }
 
-    public var mrenclave: MrEnclave { TSConstants.contactDiscoveryV2MrEnclave }
+    internal var mrenclave: MrEnclave { TSConstants.contactDiscoveryV2MrEnclave }
 
-    public static var signalServiceType: SignalServiceType { .contactDiscoveryV2 }
+    internal static var signalServiceType: SignalServiceType { .contactDiscoveryV2 }
 
-    public static func websocketUrlPath(mrenclaveString: String) -> String {
+    internal static func websocketUrlPath(mrenclaveString: String) -> String {
         return "v1/\(mrenclaveString)/discovery"
     }
 
-    public static func client(
+    internal static func client(
         mrenclave: MrEnclave,
         attestationMessage: Data,
         currentDate: Date

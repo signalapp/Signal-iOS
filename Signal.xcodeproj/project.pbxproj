@@ -813,6 +813,7 @@
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
 		662ABF3329510F8300518D90 /* OutgoingCallEventSyncMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6640639A294D1F8D00997E0B /* OutgoingCallEventSyncMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44082A1567E4001F83E2 /* svr2.pb.swift */; };
 		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
 		6640639C294D201F00997E0B /* OutgoingCallEventSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6640639B294D201F00997E0B /* OutgoingCallEventSyncMessage.m */; };
 		6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */; };
@@ -892,7 +893,6 @@
 		66C2B14B2A13E2AC008DDE72 /* SgxWebsocketConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B14A2A13E2AC008DDE72 /* SgxWebsocketConnection.swift */; };
 		66C2B14D2A13E2C7008DDE72 /* SgxWebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B14C2A13E2C7008DDE72 /* SgxWebsocketConfigurator.swift */; };
 		66C2B1502A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B14F2A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift */; };
-		66C2B1522A13F1B9008DDE72 /* MockSgxWebsocketConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1512A13F1B9008DDE72 /* MockSgxWebsocketConnection.swift */; };
 		66C2B1542A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1532A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift */; };
 		66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */; };
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
@@ -3300,6 +3300,7 @@
 		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
+		662C44082A1567E4001F83E2 /* svr2.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = svr2.pb.swift; sourceTree = "<group>"; };
 		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
 		6640639A294D1F8D00997E0B /* OutgoingCallEventSyncMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutgoingCallEventSyncMessage.h; sourceTree = "<group>"; };
 		6640639B294D201F00997E0B /* OutgoingCallEventSyncMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutgoingCallEventSyncMessage.m; sourceTree = "<group>"; };
@@ -3383,7 +3384,6 @@
 		66C2B14A2A13E2AC008DDE72 /* SgxWebsocketConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SgxWebsocketConnection.swift; sourceTree = "<group>"; };
 		66C2B14C2A13E2C7008DDE72 /* SgxWebsocketConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SgxWebsocketConfigurator.swift; sourceTree = "<group>"; };
 		66C2B14F2A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSgxWebsocketConnectionFactory.swift; sourceTree = "<group>"; };
-		66C2B1512A13F1B9008DDE72 /* MockSgxWebsocketConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSgxWebsocketConnection.swift; sourceTree = "<group>"; };
 		66C2B1532A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2WebsocketConfigurator.swift; sourceTree = "<group>"; };
 		66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2WebsocketConfigurator.swift; sourceTree = "<group>"; };
 		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
@@ -6775,7 +6775,6 @@
 		66C2B14E2A13F0BC008DDE72 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
-				66C2B1512A13F1B9008DDE72 /* MockSgxWebsocketConnection.swift */,
 				66C2B14F2A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift */,
 			);
 			path = Mocks;
@@ -8769,6 +8768,7 @@
 				F9C5C9A3289453B100548EEE /* SSKProtos.swift */,
 				F9C5C9B8289453B100548EEE /* StorageService.pb.swift */,
 				F9C5C9A7289453B100548EEE /* StorageServiceProto.swift */,
+				662C44082A1567E4001F83E2 /* svr2.pb.swift */,
 				F9C5C9AC289453B100548EEE /* WebSocketProto.swift */,
 				F9C5C9B7289453B100548EEE /* WebSocketResources.pb.swift */,
 			);
@@ -12050,7 +12050,6 @@
 				F9C5CD7B289453B300548EEE /* MobileCoinHelper.swift in Sources */,
 				F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */,
 				D9E335A42993269100825677 /* MockDBV2.swift in Sources */,
-				66C2B1522A13F1B9008DDE72 /* MockSgxWebsocketConnection.swift in Sources */,
 				66C2B1502A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift in Sources */,
 				F9C57FAD28E5F1E2001D3596 /* MockSSKEnvironment.swift in Sources */,
 				F9C5CE56289453B400548EEE /* MockSubscriptionManager.swift in Sources */,
@@ -12380,6 +12379,7 @@
 				66FC637829DF8BEF00F00DAC /* StyleAttribute.swift in Sources */,
 				6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */,
 				F9C5CCE8289453B300548EEE /* SubscriptionManager.swift in Sources */,
+				662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */,
 				66C2B13D2A0E9116008DDE72 /* SVR2AuthCredential.swift in Sources */,
 				66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */,
 				66C2B1382A0DB6A9008DDE72 /* SVRAuthCredential.swift in Sources */,

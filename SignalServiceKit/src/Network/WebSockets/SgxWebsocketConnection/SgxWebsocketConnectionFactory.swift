@@ -22,7 +22,7 @@ protocol SgxWebsocketConnectionFactory {
     func connectAndPerformHandshake<Configurator: SgxWebsocketConfigurator>(
         configurator: Configurator,
         on queue: DispatchQueue
-    ) -> Promise<SgxWebsocketConnection>
+    ) -> Promise<SgxWebsocketConnection<Configurator>>
 }
 
 final class SgxWebsocketConnectionFactoryImpl: SgxWebsocketConnectionFactory {
@@ -36,11 +36,11 @@ final class SgxWebsocketConnectionFactoryImpl: SgxWebsocketConnectionFactory {
     func connectAndPerformHandshake<Configurator: SgxWebsocketConfigurator>(
         configurator: Configurator,
         on queue: DispatchQueue
-    ) -> Promise<SgxWebsocketConnection> {
+    ) -> Promise<SgxWebsocketConnection<Configurator>> {
         let websocketFactory = self.websocketFactory
         return firstly {
             return configurator.fetchAuth()
-        }.then(on: queue) { auth -> Promise<SgxWebsocketConnection> in
+        }.then(on: queue) { (auth) -> Promise<SgxWebsocketConnection<Configurator>> in
             return try SgxWebsocketConnectionImpl<Configurator>.connectAndPerformHandshake(
                 configurator: configurator,
                 auth: auth,

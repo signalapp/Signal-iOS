@@ -145,17 +145,17 @@ final class ContactDiscoveryV2Operation {
                 on: queue
             )
         }.then(on: queue) { connection -> Promise<[DiscoveryResult]> in
-            let initialRequest = try self.buildRequest()
-            return firstly {
-                connection.sendRequestAndReadResponse(initialRequest.requestData)
+            let initialRequest = self.buildRequest()
+            return firstly { () -> Promise<CDSI_ClientResponse> in
+                connection.sendRequestAndReadResponse(initialRequest.request)
             }.map(on: queue) { tokenResponse in
                 // We need to persist the token & new e164s before dealing with the result.
                 // If we don't, a interrupted request could lead to a corrupted token.
                 try self.handle(tokenResponse: tokenResponse, initialRequest: initialRequest)
             }.then(on: queue) {
-                connection.sendRequestAndReadAllResponses(try self.buildTokenAck())
-            }.map(on: queue) { dataResponses in
-                try self.handle(dataResponses: dataResponses)
+                connection.sendRequestAndReadAllResponses(self.buildTokenAck())
+            }.map(on: queue) { responses in
+                try self.handle(responses: responses)
             }.recover(on: queue) { error -> Promise<[DiscoveryResult]> in
                 // We disconnect if there's an error. This might be a connection error, but
                 // it also might be a locally-thrown error, and in that case, we need to
@@ -182,11 +182,11 @@ final class ContactDiscoveryV2Operation {
         /// few e164s in the common case.
         var newE164s: Set<E164>
 
-        /// The data to send to the server as part of the initial request.
-        var requestData: Data
+        /// The proto to send to the server as part of the initial request.
+        var request: CDSI_ClientRequest
     }
 
-    private func buildRequest() throws -> InitialRequest {
+    private func buildRequest() -> InitialRequest {
         let prevToken: Data
         let prevE164s: Data
         let newE164s: Set<E164>
@@ -219,17 +219,16 @@ final class ContactDiscoveryV2Operation {
         return InitialRequest(
             hasToken: !prevToken.isEmpty,
             newE164s: newE164s,
-            requestData: try request.serializedData()
+            request: request
         )
     }
 
     private func handle(
-        tokenResponse: Data,
+        tokenResponse: CDSI_ClientResponse,
         initialRequest: InitialRequest
     ) throws {
-        let response = try CDSI_ClientResponse(serializedData: tokenResponse)
         // If the server provides an empty token, we should reject it.
-        guard !response.token.isEmpty else {
+        guard !tokenResponse.token.isEmpty else {
             throw ContactDiscoveryError(
                 kind: .genericServerError,
                 debugDescription: "token response missing token",
@@ -238,22 +237,21 @@ final class ContactDiscoveryV2Operation {
             )
         }
         try persistentState?.save(
-            newToken: response.token,
+            newToken: tokenResponse.token,
             clearE164s: !initialRequest.hasToken,
             newE164s: initialRequest.newE164s
         )
     }
 
-    private func buildTokenAck() throws -> Data {
+    private func buildTokenAck() -> CDSI_ClientRequest {
         var request = CDSI_ClientRequest()
         request.tokenAck = true
-        return try request.serializedData()
+        return request
     }
 
-    private func handle(dataResponses: [Data]) throws -> [DiscoveryResult] {
+    private func handle(responses: [CDSI_ClientResponse]) throws -> [DiscoveryResult] {
         var result = [DiscoveryResult]()
-        for dataResponse in dataResponses {
-            let response = try CDSI_ClientResponse(serializedData: dataResponse)
+        for response in responses {
             Logger.info("CDSv2: Consumed \(response.debugPermitsUsed) tokens")
             result.append(contentsOf: try Self.decodePniAciResult(response.e164PniAciTriples))
         }

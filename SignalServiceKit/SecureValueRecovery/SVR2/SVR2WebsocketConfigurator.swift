@@ -7,33 +7,36 @@ import Foundation
 import LibSignalClient
 import SignalCoreKit
 
-public class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
+internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
 
-    public let mrenclave: MrEnclave
+    internal typealias Request = SVR2Proto_Request
+    internal typealias Response = SVR2Proto_Response
+
+    internal let mrenclave: MrEnclave
 
     private init(mrenclave: MrEnclave) {
         self.mrenclave = mrenclave
     }
 
-    public init() {
+    internal init() {
         self.mrenclave = TSConstants.svr2Enclave
     }
 
-    public static func forPastEnclave(_ enclave: MrEnclave) -> SVR2WebsocketConfigurator {
+    internal static func forPastEnclave(_ enclave: MrEnclave) -> SVR2WebsocketConfigurator {
         return SVR2WebsocketConfigurator(mrenclave: enclave)
     }
 
-    public static var signalServiceType: SignalServiceType { .svr2 }
+    internal static var signalServiceType: SignalServiceType { .svr2 }
 
-    public static func websocketUrlPath(mrenclaveString: String) -> String {
+    internal static func websocketUrlPath(mrenclaveString: String) -> String {
         return "v1/\(mrenclaveString)"
     }
 
-    public func fetchAuth() -> SignalCoreKit.Promise<RemoteAttestation.Auth> {
+    internal func fetchAuth() -> SignalCoreKit.Promise<RemoteAttestation.Auth> {
         fatalError("Auth for SVR2 is unimplemented")
     }
 
-    public static func client(
+    internal static func client(
         mrenclave: MrEnclave,
         attestationMessage: Data,
         currentDate: Date
