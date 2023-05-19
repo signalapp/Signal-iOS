@@ -8,19 +8,12 @@ import SignalCoreKit
 
 // This entity performs a single load.
 public class CVLoader: NSObject {
-
-    static var verboseLogging: Bool {
-        false && DebugFlags.internalLogging
-    }
-
     private let threadUniqueId: String
     private let loadRequest: CVLoadRequest
     private let viewStateSnapshot: CVViewStateSnapshot
     private let spoilerReveal: SpoilerRevealState
     private let prevRenderState: CVRenderState
     private let messageLoader: MessageLoader
-
-    private let benchSteps = BenchSteps(title: "CVLoader")
 
     required init(
         threadUniqueId: String,
@@ -55,7 +48,6 @@ public class CVLoader: NSObject {
             // To ensure coherency, the entire load should be done with a single transaction.
             let loadState: LoadState = try Self.databaseStorage.read { transaction in
 
-                self.benchSteps.step("start")
                 let loadThreadViewModel = { () -> ThreadViewModel in
                     guard let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction) else {
                         // If thread has been deleted from the database, use last known model.
@@ -76,8 +68,6 @@ public class CVLoader: NSObject {
                     prevRenderState: prevRenderState,
                     transaction: transaction
                 )
-
-                self.benchSteps.step("threadViewModel")
 
                 // Don't cache in the reset() case.
                 let canReuseInteractions = loadRequest.canReuseInteractionModels && !loadRequest.didReset
@@ -185,21 +175,11 @@ public class CVLoader: NSObject {
                 loadType: loadRequest.loadType
             )
 
-            loadRequest.logLoadEvent("After renderState")
-
-            self.benchSteps.step("build render state")
-
             let update = CVUpdate.build(
                 renderState: renderState,
                 prevRenderState: prevRenderState,
                 loadRequest: loadRequest
             )
-
-            loadRequest.logLoadEvent("After update built")
-
-            self.benchSteps.step("build render update")
-
-            self.benchSteps.logAll()
 
             return update
         }

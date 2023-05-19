@@ -170,10 +170,6 @@ public final class ConversationViewController: OWSViewController {
         // We won't have a navigation controller if we're presented in a preview
         owsAssertDebug(self.navigationController != nil || self.isInPreviewPlatter)
 
-        #if TESTABLE_BUILD
-        initialLoadBenchSteps.step("viewDidLoad.1")
-        #endif
-
         super.viewDidLoad()
 
         createContents()
@@ -183,10 +179,6 @@ public final class ConversationViewController: OWSViewController {
         loadCoordinator.viewDidLoad()
 
         self.startReloadTimer()
-
-        #if TESTABLE_BUILD
-        initialLoadBenchSteps.step("viewDidLoad.2")
-        #endif
     }
 
     private func createContents() {
@@ -300,12 +292,6 @@ public final class ConversationViewController: OWSViewController {
     public override func viewWillAppear(_ animated: Bool) {
         self.viewWillAppearDidBegin()
 
-        #if TESTABLE_BUILD
-        initialLoadBenchSteps.step("viewWillAppear.1")
-        #endif
-
-        Logger.verbose("viewWillAppear")
-
         super.viewWillAppear(animated)
 
         if let groupThread = thread as? TSGroupThread {
@@ -344,9 +330,6 @@ public final class ConversationViewController: OWSViewController {
 
         self.showMessageRequestDialogIfRequired()
         self.viewWillAppearDidComplete()
-        #if TESTABLE_BUILD
-        initialLoadBenchSteps.step("viewWillAppear.2")
-        #endif
     }
 
     private func acquireCacheLeases(_ groupThread: TSGroupThread) {
@@ -365,11 +348,6 @@ public final class ConversationViewController: OWSViewController {
         self.viewDidAppearDidBegin()
 
         InstrumentsMonitor.trackEvent(name: "ConversationViewController.viewDidAppear")
-
-        #if TESTABLE_BUILD
-        initialLoadBenchSteps.step("viewDidAppear.1")
-        #endif
-        Logger.verbose("viewDidAppear")
 
         super.viewDidAppear(animated)
 
@@ -446,9 +424,6 @@ public final class ConversationViewController: OWSViewController {
         }
 
         self.viewDidAppearDidComplete()
-        #if TESTABLE_BUILD
-        initialLoadBenchSteps.step("viewDidAppear.2")
-        #endif
     }
 
     // `viewWillDisappear` is called whenever the view *starts* to disappear,
@@ -456,8 +431,6 @@ public final class ConversationViewController: OWSViewController {
     // this can be canceled. As such, we shouldn't tear down anything expensive
     // until `viewDidDisappear`.
     public override func viewWillDisappear(_ animated: Bool) {
-        Logger.verbose("")
-
         super.viewWillDisappear(animated)
 
         self.isViewCompletelyAppeared = false
@@ -469,8 +442,6 @@ public final class ConversationViewController: OWSViewController {
     }
 
     public override func viewDidDisappear(_ animated: Bool) {
-        Logger.verbose("")
-
         super.viewDidDisappear(animated)
 
         InstrumentsMonitor.trackEvent(name: "ConversationViewController.viewDidDisappear")

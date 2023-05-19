@@ -126,8 +126,6 @@ public class SDSDatabaseStorage: SDSTransactable {
     }
 
     public func reopenGRDBStorage(completion: @escaping () -> Void = {}) {
-        let benchSteps = BenchSteps()
-
         // There seems to be a rare issue where at least one reader or writer
         // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
         // a schema migration and does not reflect the migrations.
@@ -145,8 +143,6 @@ public class SDSDatabaseStorage: SDSTransactable {
             // should be drained by this point.
             owsAssertDebug(weakPool == nil)
             owsAssertDebug(weakGrdbStorage == nil)
-
-            benchSteps.step("New GRDB adapter.")
 
             completion()
         }

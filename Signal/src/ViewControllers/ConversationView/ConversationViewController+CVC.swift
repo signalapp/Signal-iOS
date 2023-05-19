@@ -122,8 +122,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             return
         }
 
-        let benchSteps = BenchSteps(title: "updateWithNewRenderState")
-
         let renderState = update.renderState
         let isFirstLoad = renderState.isFirstLoad
 
@@ -140,8 +138,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         // Capture old group model before we update threadViewModel.
         // This will be nil for non-group threads.
         let oldGroupModel = renderState.prevThreadViewModel?.threadRecord.groupModelIfGroupThread
-
-        benchSteps.step("1")
 
         updateNavigationBarSubtitleLabel()
         updateBarButtonItems()
@@ -161,25 +157,11 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             updateNavigationTitle()
         }
 
-        Logger.verbose("Landing load: \(update.type.debugName), load: \(update.loadType), isFirstLoad: \(isFirstLoad), renderItems: \(update.prevRenderState.items.count) -> \(renderItems.count), scrollAction: \(scrollAction.description)")
-
-        benchSteps.step("2")
-
         updateShouldHideCollectionViewContent(reloadIfClearingFlag: false)
 
-        benchSteps.step("3")
-
         if loadCoordinator.shouldHideCollectionViewContent {
-
-            Logger.verbose("Not applying load.")
-
             updateViewToReflectLoad(loadedRenderState: self.renderState)
-
-            benchSteps.step("4a")
-
             loadDidLand(renderState: update.renderState)
-
-            benchSteps.step("5a")
         } else {
             if !viewState.hasAppliedFirstLoad {
                 // Ignore scrollAction; we need to scroll to .initialPosition.
@@ -201,39 +183,27 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 }
             }
 
-            benchSteps.step("4b")
-
             setHasAppliedFirstLoadIfNecessary()
-
-            benchSteps.step("5b")
         }
-
-        benchSteps.logAll()
     }
 
     // The more work we put into this method, the greater our
     // confidence we have that CVC view state is always up-to-date.
     // But that can make "minor update" updates more expensive.
     private func updateViewToReflectLoad(loadedRenderState: CVRenderState) {
-
         // We can skip some of this work
         guard self.hasViewWillAppearEverBegun else {
             return
         }
-
-        let benchSteps = BenchSteps()
 
         self.updateLastKnownDistanceFromBottom()
         self.updateInputToolbarLayout()
         self.showMessageRequestDialogIfRequired()
         self.configureScrollDownButtons()
 
-        benchSteps.step("loadCompletion.1")
-
         let hasViewDidAppearEverCompleted = self.hasViewDidAppearEverCompleted
 
         DispatchQueue.main.async {
-            let benchSteps = BenchSteps()
             Self.databaseStorage.read { transaction in
                 self.reloadReactionsDetailSheet(transaction: transaction)
                 self.updateUnreadMessageFlag(transaction: transaction)
@@ -241,7 +211,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             if hasViewDidAppearEverCompleted {
                 _ = self.autoLoadMoreIfNecessary()
             }
-            benchSteps.step("loadCompletion.2")
         }
     }
 
@@ -352,8 +321,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     }
 
     private func updateForMinorUpdate(update: CVUpdate, scrollAction: CVScrollAction) {
-        Logger.verbose("")
-
         // If the scroll action is not animated, perform it _before_
         // updateViewToReflectLoad().
         if !scrollAction.isAnimated {
@@ -370,46 +337,17 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     }
 
     private func updateWithFirstLoad(update: CVUpdate) {
-
-        let benchSteps = BenchSteps(title: "updateWithFirstLoad")
-
-        #if TESTABLE_BUILD
-        initialLoadBenchSteps.step("updateWithFirstLoad.1")
-        #endif
-
-        Logger.verbose("")
-
-        benchSteps.step("1")
-
         reloadCollectionViewImmediately()
-
-        benchSteps.step("2")
 
         scrollToInitialPosition(animated: false)
         if self.hasViewDidAppearEverCompleted {
             clearInitialScrollState()
         }
-
-        benchSteps.step("3")
-
         updateViewToReflectLoad(loadedRenderState: self.renderState)
-
-        benchSteps.step("4")
-
         loadDidLand(renderState: update.renderState)
-
-        benchSteps.step("5")
-
-        benchSteps.logAll()
-
-        #if TESTABLE_BUILD
-        initialLoadBenchSteps.step("updateWithFirstLoad.2")
-        initialLoadBenchSteps.logAll()
-        #endif
     }
 
     private func setHasAppliedFirstLoadIfNecessary() {
-
         guard !viewState.hasAppliedFirstLoad else {
             return
         }
@@ -419,11 +357,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         }
     }
 
-    private func updateReloadingAll(renderState: CVRenderState,
-                                    scrollAction: CVScrollAction) {
-
-        Logger.verbose("")
-
+    private func updateReloadingAll(renderState: CVRenderState, scrollAction: CVScrollAction) {
         reloadCollectionViewImmediately()
 
         DispatchQueue.main.async { [weak self] in
@@ -443,8 +377,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     }
 
     private func resetViewStateAfterError() {
-        Logger.verbose("")
-
         reloadCollectionViewForReset()
 
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
@@ -460,8 +392,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     ) {
         AssertIsOnMainThread()
         owsAssertDebug(!items.isEmpty)
-
-        Logger.verbose("")
 
         let renderState = update.renderState
         let isScrolledToBottom = updateToken.isScrolledToBottom
@@ -577,10 +507,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
             let section = Self.messageSection
             for item in items {
-                if !DebugFlags.reduceLogChatter {
-                    Logger.verbose("\(item.logSafeDescription)")
-                }
-
                 switch item.updateType {
                 case .delete(let oldIndex):
                     let indexPath = IndexPath(row: oldIndex, section: section)
@@ -625,13 +551,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             viewState.scrollActionForUpdate = nil
 
             if !finished {
-                Logger.verbose("performBatchUpdates did not finish")
-                if DebugFlags.internalLogging {
-                    Logger.warn("Layout: \(self.layout.debugDescription)")
-                    Logger.warn("prevRenderState: \(update.prevRenderState.debugDescription)")
-                    Logger.warn("renderState: \(update.renderState.debugDescription)")
-                }
-
                 // If animations were interrupted, reset to get back to a known good state.
                 DispatchQueue.main.async { [weak self] in
                     self?.resetViewStateAfterError()

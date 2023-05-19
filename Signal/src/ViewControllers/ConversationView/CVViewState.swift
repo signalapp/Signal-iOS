@@ -136,11 +136,6 @@ public class CVViewState: NSObject {
 
     public var presentationStatus: CVPresentationStatus = .notYetPresented
 
-    #if TESTABLE_BUILD
-    public let initialLoadBenchSteps = BenchSteps(title: "initialLoadBenchSteps")
-    public let presentationStatusBenchSteps = BenchSteps(title: "presentationStatusBenchSteps")
-    #endif
-
     public let backgroundContainer = CVBackgroundContainer()
 
     weak var reactionsDetailSheet: ReactionsDetailSheet?
@@ -312,12 +307,6 @@ public extension ConversationViewController {
         set { viewState.reactionsDetailSheet = newValue }
     }
     var contactShareViewHelper: ContactShareViewHelper { viewState.contactShareViewHelper }
-
-    // MARK: -
-
-    #if TESTABLE_BUILD
-    var initialLoadBenchSteps: BenchSteps { viewState.initialLoadBenchSteps }
-    #endif
 }
 
 // MARK: -
@@ -486,15 +475,6 @@ public extension ConversationViewController {
         AssertIsOnMainThread()
 
         if viewState.presentationStatus.rawValue < value.rawValue {
-            Logger.verbose("presentationStatus: \(viewState.presentationStatus) -> \(value).")
-
-            #if TESTABLE_BUILD
-            viewState.presentationStatusBenchSteps.step(value.description)
-            if value == .firstViewDidAppearHasCompleted {
-                viewState.presentationStatusBenchSteps.logAll()
-            }
-            #endif
-
             viewState.presentationStatus = value
         }
     }

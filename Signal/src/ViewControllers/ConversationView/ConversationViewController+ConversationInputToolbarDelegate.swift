@@ -21,10 +21,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
     public func sendButtonPressed() {
         AssertIsOnMainThread()
 
-        if CVLoader.verboseLogging {
-            Logger.info("")
-        }
-
         guard hasViewWillAppearEverBegun else {
             owsFailDebug("InputToolbar not yet ready.")
             return

@@ -523,16 +523,8 @@ public class CVLoadCoordinator: NSObject {
             // No load is needed.
             return
         }
-        if CVLoader.verboseLogging {
-            Logger.info("Trying to begin load.")
-        }
         guard loadBuildingRequestId.tryToSetIfNil(loadRequest.requestId) else {
-            Logger.verbose("Ignoring; already loading.")
             return
-        }
-        loadRequestBuilder.loadBegun()
-        if CVLoader.verboseLogging {
-            Logger.info("Loading[\(loadRequest.requestId)]")
         }
 
         loadRequestBuilder = CVLoadRequest.Builder()
@@ -581,14 +573,9 @@ public class CVLoadCoordinator: NSObject {
             messageLoader: messageLoader
         )
 
-        if CVLoader.verboseLogging {
-            Logger.info("Before load promise[\(loadRequest.requestId)]")
-        }
-
         firstly {
             loader.loadPromise()
         }.then(on: DispatchQueue.main) { [weak self] (update: CVUpdate) -> Promise<CVUpdate> in
-            loadRequest.logLoadEvent("Load landing ready")
             guard let self = self else {
                 throw OWSGenericError("Missing self.")
             }
@@ -604,7 +591,6 @@ public class CVLoadCoordinator: NSObject {
         AssertIsOnMainThread()
 
         let loadRequest = update.loadRequest
-        loadRequest.logLoadEvent("Load complete \(update.prevRenderState.items.count) -> \(renderState.items.count)")
 
         let didClearBuildingFlag = loadBuildingRequestId.tryToClearIfEqual(loadRequest.requestId)
         // This flag should already be cleared.
@@ -661,33 +647,18 @@ public class CVLoadCoordinator: NSObject {
             if let lastKeyboardAnimationDate = viewState.lastKeyboardAnimationDate,
                lastKeyboardAnimationDate.isAfterNow,
                viewState.selectionAnimationState != .willAnimate {
-                if CVLoader.verboseLogging {
-                    Logger.verbose("Waiting for keyboard animation.")
-                }
                 return false
             }
             guard viewState.selectionAnimationState != .animating  else {
-                if CVLoader.verboseLogging {
-                    Logger.verbose("Waiting for selection animation.")
-                }
                 return false
             }
             if let interaction = viewState.collectionViewActiveContextMenuInteraction, interaction.contextMenuVisible {
-                if CVLoader.verboseLogging {
-                    Logger.verbose("Waiting for context menu animation.")
-                }
                 return false
             }
             guard Self.canOverlapLandingAnimations || !delegate.isLayoutApplyingUpdate else {
-                if CVLoader.verboseLogging {
-                    Logger.verbose("Waiting for isLayoutApplyingUpdate.")
-                }
                 return false
             }
             guard !delegate.areCellsAnimating else {
-                if CVLoader.verboseLogging {
-                    Logger.verbose("Waiting for areCellsAnimating.")
-                }
                 return false
             }
             return true
@@ -696,12 +667,7 @@ public class CVLoadCoordinator: NSObject {
         let loadRequest = update.loadRequest
 
         // It's important that we only set loadLandingRequestId if canLandLoad is true.
-        guard canLandLoad(),
-              self.loadLandingRequestId.tryToSetIfNil(loadRequest.requestId) else {
-
-            if CVLoader.verboseLogging {
-                Logger.verbose("Waiting to land load.")
-            }
+        guard canLandLoad(), self.loadLandingRequestId.tryToSetIfNil(loadRequest.requestId) else {
             // We wait in a pretty tight loop to ensure loads land in a timely way.
             //
             // DispatchQueue.asyncAfter() will take longer to perform
@@ -726,8 +692,6 @@ public class CVLoadCoordinator: NSObject {
         delegate.updateWithNewRenderState(update: update,
                                           scrollAction: loadRequest.scrollAction,
                                           updateToken: updateToken)
-
-        loadRequest.logLoadEvent("Load landing begun \(update.prevRenderState.items.count) -> \(renderState.items.count)")
 
         // Once this load's landing has _begun_ we can start building the next load.
         // loadLandingRequestId ensures that we only land one load at a time.
@@ -758,7 +722,6 @@ public class CVLoadCoordinator: NSObject {
         firstly { () -> Promise<Void> in
             loadDidLandPromise
         }.done(on: CVUtils.landingQueue) {
-            loadRequest.logLoadEvent("Load landing complete")
             loadFuture.resolve(update)
         }.catch(on: CVUtils.landingQueue) { error in
             loadFuture.reject(error)
@@ -784,9 +747,6 @@ public class CVLoadCoordinator: NSObject {
             guard let loadDidLandFuture = self.loadDidLandFuture else {
                 owsFailDebug("Missing loadDidLandFuture.")
                 return
-            }
-            if CVLoader.verboseLogging {
-                Logger.info("LoadLanding fulfilled[\(loadRequestId)]")
             }
             loadDidLandFuture.resolve()
         }

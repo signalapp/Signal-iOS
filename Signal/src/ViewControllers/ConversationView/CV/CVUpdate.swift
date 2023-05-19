@@ -44,14 +44,6 @@ struct CVUpdate {
     var loadType: CVLoadType { loadRequest.loadType }
 
     typealias Item = BatchUpdate<CVRenderItem>.Item
-
-    public func logLoadEvent(_ label: String,
-                             file: String = #file,
-                             function: String = #function,
-                             line: Int = #line) {
-        let label = "\(label) [\(prevRenderState.items.count) -> \(renderState.items.count)]"
-        loadRequest.logLoadEvent(label, file: file, function: function, line: line)
-    }
 }
 
 // MARK: -
