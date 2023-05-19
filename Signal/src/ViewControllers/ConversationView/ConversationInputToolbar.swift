@@ -1949,7 +1949,11 @@ extension ConversationInputToolbar {
             inputToolbarDelegate.sendVoiceMemoDraft(voiceMemoDraft)
             return
         }
-
+        
+        // keyboard is set to alphabet again when send button is pressed
+        inputTextView.keyboardType = .alphabet
+        inputTextView.reloadInputViews()
+        
         inputToolbarDelegate.sendButtonPressed()
     }
 
