@@ -147,9 +147,7 @@ public extension ChatListViewController {
             owsFailDebug("Missing threadViewModel.")
             return nil
         }
-        let vc = ConversationViewController(threadViewModel: threadViewModel,
-                                            action: .none,
-                                            focusMessageId: nil)
+        let vc = databaseStorage.read { tx in ConversationViewController.load(threadViewModel: threadViewModel, tx: tx) }
         vc.previewSetup()
         return vc
     }

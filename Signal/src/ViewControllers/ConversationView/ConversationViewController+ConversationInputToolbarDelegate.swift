@@ -116,7 +116,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                                       transaction: transaction)
         }
 
-        loadCoordinator.clearUnreadMessagesIndicator()
         // TODO: Audit optimistic insertion.
         loadCoordinator.appendUnsavedOutgoingTextMessage(message)
         messageWasSent(message)

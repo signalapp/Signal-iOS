@@ -36,24 +36,28 @@ struct CVViewStateSnapshot: Dependencies {
 
     let searchText: String?
 
-    let hasClearedUnreadMessagesIndicator: Bool
+    let oldestUnreadMessageSortId: UInt64?
 
     let currentCallThreadId: String?
 
-    static func snapshot(viewState: CVViewState,
-                         typingIndicatorsSender: SignalServiceAddress?,
-                         hasClearedUnreadMessagesIndicator: Bool,
-                         previousViewStateSnapshot: CVViewStateSnapshot?) -> CVViewStateSnapshot {
-        CVViewStateSnapshot(textExpansion: viewState.textExpansion.copy(),
-                            spoilerReveal: viewState.spoilerReveal.copy(),
-                            messageSwipeActionState: viewState.messageSwipeActionState.copy(),
-                            coreState: viewState.asCoreState,
-                            typingIndicatorsSender: typingIndicatorsSender,
-                            uiMode: viewState.uiMode,
-                            previousUIMode: previousViewStateSnapshot?.uiMode ?? .normal,
-                            searchText: viewState.lastSearchedText,
-                            hasClearedUnreadMessagesIndicator: hasClearedUnreadMessagesIndicator,
-                            currentCallThreadId: callService.currentCall?.thread.uniqueId)
+    static func snapshot(
+        viewState: CVViewState,
+        typingIndicatorsSender: SignalServiceAddress?,
+        oldestUnreadMessageSortId: UInt64?,
+        previousViewStateSnapshot: CVViewStateSnapshot?
+    ) -> CVViewStateSnapshot {
+        CVViewStateSnapshot(
+            textExpansion: viewState.textExpansion.copy(),
+            spoilerReveal: viewState.spoilerReveal.copy(),
+            messageSwipeActionState: viewState.messageSwipeActionState.copy(),
+            coreState: viewState.asCoreState,
+            typingIndicatorsSender: typingIndicatorsSender,
+            uiMode: viewState.uiMode,
+            previousUIMode: previousViewStateSnapshot?.uiMode ?? .normal,
+            searchText: viewState.lastSearchedText,
+            oldestUnreadMessageSortId: oldestUnreadMessageSortId,
+            currentCallThreadId: callService.currentCall?.thread.uniqueId
+        )
     }
 
     static func mockSnapshotForStandaloneItems(
@@ -69,7 +73,7 @@ struct CVViewStateSnapshot: Dependencies {
             uiMode: .normal,
             previousUIMode: .normal,
             searchText: nil,
-            hasClearedUnreadMessagesIndicator: false,
+            oldestUnreadMessageSortId: nil,
             currentCallThreadId: nil
         )
     }

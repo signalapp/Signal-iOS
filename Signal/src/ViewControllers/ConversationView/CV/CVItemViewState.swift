@@ -80,7 +80,7 @@ public struct CVItemViewState: Equatable {
 struct CVItemModelBuilder: CVItemBuilding, Dependencies {
 
     let itemBuildingContext: CVItemBuildingContext
-    let messageMapping: CVMessageMapping
+    let messageLoader: MessageLoader
 
     // MARK: -
 
@@ -95,20 +95,17 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
 
     init(loadContext: CVLoadContext) {
         self.itemBuildingContext = loadContext
-        self.messageMapping = loadContext.messageMapping
+        self.messageLoader = loadContext.messageLoader
     }
 
     // TODO: How should we handle failed stickers?
     // TODO: Do we need a new equivalent of clearNeedsUpdate?
     mutating func buildItems() -> [CVItemModel] {
-
         // Contact Offers / Thread Details are the first item in the thread
-        if messageMapping.shouldShowThreadDetails {
-            Logger.debug("adding thread details")
-
+        if messageLoader.shouldShowThreadDetails {
             // The thread details should have a stable timestamp.
             let threadDetailsTimestamp: UInt64
-            if let firstInteraction = messageMapping.loadedInteractions.first {
+            if let firstInteraction = messageLoader.loadedInteractions.first {
                 threadDetailsTimestamp = max(1, firstInteraction.timestamp) - 2
             } else {
                 threadDetailsTimestamp = 1
@@ -120,13 +117,12 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         }
 
         // UnknownThreadWarning are the second item in the thread
-        if messageMapping.shouldShowUnknownThreadWarning(thread: thread,
-                                                         transaction: transaction) {
+        if messageLoader.shouldShowUnknownThreadWarning(thread: thread, transaction: transaction) {
             Logger.debug("adding UnknownThreadWarning")
 
             // The "Unknown Thread Warning" should have a stable timestamp.
             let timestamp: UInt64
-            if let firstInteraction = messageMapping.loadedInteractions.first {
+            if let firstInteraction = messageLoader.loadedInteractions.first {
                 timestamp = max(1, firstInteraction.timestamp) - 1
             } else {
                 timestamp = 2
@@ -138,7 +134,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         }
 
         var interactionIds = Set<String>()
-        for interaction in messageMapping.loadedInteractions {
+        for interaction in messageLoader.loadedInteractions {
             guard !interactionIds.contains(interaction.uniqueId) else {
                 owsFailDebug("Duplicate interaction(1): \(interaction.uniqueId)")
                 continue
@@ -149,7 +145,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             owsAssertDebug(item != nil)
         }
 
-        if messageMapping.shouldShowDefaultDisappearingMessageTimer(
+        if messageLoader.shouldShowDefaultDisappearingMessageTimer(
             thread: thread,
             transaction: transaction
         ) {
@@ -528,11 +524,10 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         let itemTimestamp = item.interaction.timestamp
         owsAssertDebug(itemTimestamp > 0)
 
-        if !hasPlacedUnreadIndicator,
-           !viewStateSnapshot.hasClearedUnreadMessagesIndicator,
-           let oldestUnreadInteraction = messageMapping.oldestUnreadInteraction,
-           oldestUnreadInteraction.sortId <= item.interaction.sortId {
-
+        if hasPlacedUnreadIndicator {
+            return
+        }
+        if let oldestSortId = viewStateSnapshot.oldestUnreadMessageSortId, oldestSortId <= item.interaction.sortId {
             hasPlacedUnreadIndicator = true
             let interaction = UnreadIndicatorInteraction(thread: thread,
                                                          timestamp: itemTimestamp,
@@ -688,14 +683,12 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
 
 // MARK: -
 
-fileprivate extension CVMessageMapping {
+private extension MessageLoader {
     var shouldShowThreadDetails: Bool {
         !canLoadOlder
     }
-    func shouldShowUnknownThreadWarning(thread: TSThread,
-                                        transaction: SDSAnyReadTransaction) -> Bool {
-        !canLoadOlder && Self.contactsManagerImpl.shouldShowUnknownThreadWarning(thread: thread,
-                                                                                 transaction: transaction)
+    func shouldShowUnknownThreadWarning(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+        !canLoadOlder && NSObject.contactsManagerImpl.shouldShowUnknownThreadWarning(thread: thread, transaction: transaction)
     }
     func shouldShowDefaultDisappearingMessageTimer(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
         GRDBThreadFinder.shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: transaction.unwrapGrdbRead)

@@ -16,7 +16,7 @@ struct CVLoadContext: CVItemBuildingContext {
     let threadViewModel: ThreadViewModel
     let viewStateSnapshot: CVViewStateSnapshot
     let spoilerReveal: SpoilerRevealState
-    let messageMapping: CVMessageMapping
+    let messageLoader: MessageLoader
     let prevRenderState: CVRenderState
     let transaction: SDSAnyReadTransaction
     let avatarBuilder: CVAvatarBuilder
@@ -26,7 +26,7 @@ struct CVLoadContext: CVItemBuildingContext {
         threadViewModel: ThreadViewModel,
         viewStateSnapshot: CVViewStateSnapshot,
         spoilerReveal: SpoilerRevealState,
-        messageMapping: CVMessageMapping,
+        messageLoader: MessageLoader,
         prevRenderState: CVRenderState,
         transaction: SDSAnyReadTransaction
     ) {
@@ -34,7 +34,7 @@ struct CVLoadContext: CVItemBuildingContext {
         self.threadViewModel = threadViewModel
         self.viewStateSnapshot = viewStateSnapshot
         self.spoilerReveal = spoilerReveal
-        self.messageMapping = messageMapping
+        self.messageLoader = messageLoader
         self.prevRenderState = prevRenderState
         self.transaction = transaction
         self.avatarBuilder = CVAvatarBuilder(transaction: transaction)

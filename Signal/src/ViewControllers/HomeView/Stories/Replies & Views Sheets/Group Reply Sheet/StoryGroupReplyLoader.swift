@@ -8,8 +8,8 @@ import SignalCoreKit
 import SignalMessaging
 
 class StoryGroupReplyLoader: Dependencies {
-    private let loadingLock = UnfairLock()
-    private var messageMapping: CVMessageMapping!
+    private let messageBatchFetcher: StoryGroupReplyBatchFetcher
+    private let messageLoader: MessageLoader
     private let threadUniqueId: String
     private let storyMessage: StoryMessage
     private weak var tableView: UITableView?
@@ -22,17 +22,9 @@ class StoryGroupReplyLoader: Dependencies {
 
     var numberOfRows: Int { replyUniqueIds.count }
 
-    var oldestLoadedRow: Int? {
-        let loadedInteractions = loadingLock.withLock { messageMapping.loadedInteractions }
-        guard let uniqueId = loadedInteractions.first?.uniqueId else { return nil }
-        return replyUniqueIds.firstIndex(of: uniqueId)
-    }
+    private(set) var oldestLoadedRow: Int?
 
-    var newestLoadedRow: Int? {
-        let loadedInteractions = loadingLock.withLock { messageMapping.loadedInteractions }
-        guard let uniqueId = loadedInteractions.last?.uniqueId else { return nil }
-        return replyUniqueIds.firstIndex(of: uniqueId)
-    }
+    private(set) var newestLoadedRow: Int?
 
     var isScrolledToBottom: Bool {
         AssertIsOnMainThread()
@@ -58,17 +50,19 @@ class StoryGroupReplyLoader: Dependencies {
         self.threadUniqueId = threadUniqueId
         self.storyMessage = storyMessage
         self.tableView = tableView
+        self.messageBatchFetcher = StoryGroupReplyBatchFetcher(
+            storyAuthor: ServiceId(storyMessage.authorUuid),
+            storyTimestamp: storyMessage.timestamp
+        )
+        self.messageLoader = MessageLoader(
+            batchFetcher: messageBatchFetcher,
+            interactionFetchers: [NSObject.modelReadCaches.interactionReadCache, SDSInteractionFetcherImpl()]
+        )
 
         // Load the first page synchronously.
         databaseStorage.read { transaction in
-            messageMapping = CVMessageMapping(
-                threadUniqueId: threadUniqueId,
-                storyReplyQueryMode: .onlyGroupReplies(storyTimestamp: storyMessage.timestamp)
-            )
-
             load(mode: .initial, transaction: transaction)
         }
-
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
 
@@ -88,14 +82,14 @@ class StoryGroupReplyLoader: Dependencies {
 
     func loadNewerPageIfNecessary() {
         LoadingMode.newer.async {
-            guard self.loadingLock.withLock({ self.messageMapping.canLoadNewer }) else { return }
+            guard self.messageLoader.canLoadNewer else { return }
             self.databaseStorage.read { self.load(mode: .newer, transaction: $0) }
         }
     }
 
     func loadOlderPageIfNecessary() {
         LoadingMode.older.async {
-            guard self.loadingLock.withLock({ self.messageMapping.canLoadOlder }) else { return }
+            guard self.messageLoader.canLoadOlder else { return }
             self.databaseStorage.read { self.load(mode: .older, transaction: $0) }
         }
     }
@@ -152,7 +146,7 @@ class StoryGroupReplyLoader: Dependencies {
 
         let reusableInteractions: [String: TSInteraction]
         if canReuseInteractions {
-            let loadedInteractions = loadingLock.withLock { messageMapping.loadedInteractions }
+            let loadedInteractions = messageLoader.loadedInteractions
             reusableInteractions = loadedInteractions.reduce(
                 into: [String: TSInteraction]()
             ) { partialResult, interaction in
@@ -163,47 +157,50 @@ class StoryGroupReplyLoader: Dependencies {
             reusableInteractions = [:]
         }
 
-        loadingLock.withLock {
-            do {
-                switch mode {
-                case .initial:
-                    try self.messageMapping.loadInitialMessagePage(
-                        focusMessageId: nil,
-                        reusableInteractions: reusableInteractions,
-                        deletedInteractionIds: deletedInteractionIds,
-                        transaction: transaction
-                    )
-                case .newer:
-                    try self.messageMapping.loadNewerMessagePage(
-                        reusableInteractions: reusableInteractions,
-                        deletedInteractionIds: deletedInteractionIds,
-                        transaction: transaction
-                    )
-                case .older:
-                    try self.messageMapping.loadOlderMessagePage(
-                        reusableInteractions: reusableInteractions,
-                        deletedInteractionIds: deletedInteractionIds,
-                        transaction: transaction
-                    )
-                case .reload:
-                    try self.messageMapping.loadSameLocation(
-                        reusableInteractions: reusableInteractions,
-                        deletedInteractionIds: deletedInteractionIds,
-                        transaction: transaction
-                    )
-                }
-            } catch {
-                owsFailDebug("Load failed for mode \(mode): \(error)")
-                return
+        messageBatchFetcher.refetch(tx: transaction)
+
+        do {
+            switch mode {
+            case .initial:
+                try self.messageLoader.loadInitialMessagePage(
+                    focusMessageId: messageBatchFetcher.uniqueIdsAndRowIds.first?.uniqueId,
+                    reusableInteractions: reusableInteractions,
+                    deletedInteractionIds: deletedInteractionIds,
+                    tx: transaction.asV2Read
+                )
+            case .newer:
+                try self.messageLoader.loadNewerMessagePage(
+                    reusableInteractions: reusableInteractions,
+                    deletedInteractionIds: deletedInteractionIds,
+                    tx: transaction.asV2Read
+                )
+            case .older:
+                try self.messageLoader.loadOlderMessagePage(
+                    reusableInteractions: reusableInteractions,
+                    deletedInteractionIds: deletedInteractionIds,
+                    tx: transaction.asV2Read
+                )
+            case .reload:
+                try self.messageLoader.loadSameLocation(
+                    reusableInteractions: reusableInteractions,
+                    deletedInteractionIds: deletedInteractionIds,
+                    tx: transaction.asV2Read
+                )
             }
+        } catch {
+            owsFailDebug("Couldn't load story replies \(error)")
         }
 
         let newReplyItems = buildItems(reusableInteractionIds: Array(reusableInteractions.keys), transaction: transaction)
-        let replyUniqueIds = InteractionFinder.groupReplyUniqueIds(for: self.storyMessage, transaction: transaction)
+        let replyUniqueIds = messageBatchFetcher.uniqueIdsAndRowIds.map { $0.uniqueId }
+        let oldestLoadedRow = messageLoader.loadedInteractions.first.flatMap { replyUniqueIds.firstIndex(of: $0.uniqueId) }
+        let newestLoadedRow = messageLoader.loadedInteractions.last.flatMap { replyUniqueIds.firstIndex(of: $0.uniqueId) }
 
         DispatchQueue.main.async {
             let wasScrolledToBottom = self.isScrolledToBottom
 
+            self.oldestLoadedRow = oldestLoadedRow
+            self.newestLoadedRow = newestLoadedRow
             self.replyUniqueIds = replyUniqueIds
             self.replyItems = newReplyItems
             self.tableView?.reloadData()
@@ -218,7 +215,7 @@ class StoryGroupReplyLoader: Dependencies {
             return replyItems
         }
 
-        let loadedInteractions = loadingLock.withLock { messageMapping.loadedInteractions }
+        let loadedInteractions = messageLoader.loadedInteractions
 
         var messages = [(SignalServiceAddress, TSMessage)]()
         var authorAddresses = Set<SignalServiceAddress>()
@@ -321,5 +318,49 @@ extension StoryGroupReplyLoader: DatabaseChangeDelegate {
 
     func databaseChangesDidReset() {
         reload(canReuseInteractions: false)
+    }
+}
+
+// MARK: - Batch Fetcher
+
+private class StoryGroupReplyBatchFetcher: MessageLoaderBatchFetcher {
+    private let storyAuthor: ServiceId
+    private let storyTimestamp: UInt64
+
+    private(set) var uniqueIdsAndRowIds = [(uniqueId: String, rowId: Int64)]()
+
+    init(storyAuthor: ServiceId, storyTimestamp: UInt64) {
+        self.storyAuthor = storyAuthor
+        self.storyTimestamp = storyTimestamp
+    }
+
+    func refetch(tx: SDSAnyReadTransaction) {
+        uniqueIdsAndRowIds = InteractionFinder.groupReplyUniqueIdsAndRowIds(
+            storyAuthor: storyAuthor,
+            storyTimestamp: storyTimestamp,
+            transaction: tx
+        )
+    }
+
+    func fetchUniqueIds(filter: RowIdFilter, excludingPlaceholders excludePlaceholders: Bool, limit: Int, tx: DBReadTransaction) throws -> [String] {
+        // This design is extremely weird. However, we already fetch all the
+        // uniqueIds for a given story when rendering the view, and while we could
+        // design a bunch of equivalent database queries to do the same thing, we
+        // already have access to everything we need in memory. The performance of
+        // this entire method is O(n), but the constant factor on this O(n) will be
+        // much smaller than the one where we fetch `uniqueIdsAndRowIds` (which we
+        // do just as often as we invoked this method (from a big-O perspective)).
+        // In the future, we should support proper paging on this view, but for
+        // now, this is probably faster than what we had before.
+        switch filter {
+        case .newest:
+            return Array(uniqueIdsAndRowIds.lazy.suffix(limit).map { $0.uniqueId })
+        case .before(let rowId):
+            return Array(uniqueIdsAndRowIds.lazy.filter { $0.rowId < rowId }.suffix(limit).map { $0.uniqueId })
+        case .after(let rowId):
+            return Array(uniqueIdsAndRowIds.lazy.filter { $0.rowId > rowId }.prefix(limit).map { $0.uniqueId })
+        case .range(let rowIds):
+            return Array(uniqueIdsAndRowIds.lazy.filter { rowIds.contains($0.rowId) }.prefix(limit).map { $0.uniqueId })
+        }
     }
 }

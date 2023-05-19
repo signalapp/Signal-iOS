@@ -83,7 +83,6 @@ struct CVLoadRequest {
     let canReuseInteractionModels: Bool
     let canReuseComponentStates: Bool
     let didReset: Bool
-    let shouldClearOldestUnreadInteraction: Bool
 
     private let loadStartDate = Date()
     public var loadStartDateFormatted: String {
@@ -188,8 +187,6 @@ struct CVLoadRequest {
         private var canReuseComponentStates = true
         private var didReset = false
 
-        private var shouldClearOldestUnreadInteraction = false
-
         mutating func reload(updatedInteractionIds: Set<String>,
                              deletedInteractionIds: Set<String>) {
             AssertIsOnMainThread()
@@ -249,13 +246,6 @@ struct CVLoadRequest {
             shouldLoad = true
         }
 
-        mutating func clearOldestUnreadInteraction() {
-            AssertIsOnMainThread()
-
-            self.shouldClearOldestUnreadInteraction = true
-            shouldLoad = true
-        }
-
         mutating func reload(scrollAction: CVScrollAction?) {
             AssertIsOnMainThread()
 
@@ -289,15 +279,16 @@ struct CVLoadRequest {
             }
 
             let loadScheduleDelayInterval: TimeInterval = abs(loadScheduleDate?.timeIntervalSinceNow ?? 0)
-            return CVLoadRequest(requestId: requestId,
-                                 loadType: loadType,
-                                 updatedInteractionIds: updatedInteractionIds,
-                                 deletedInteractionIds: deletedInteractionIds,
-                                 canReuseInteractionModels: canReuseInteractionModels,
-                                 canReuseComponentStates: canReuseComponentStates,
-                                 didReset: didReset,
-                                 shouldClearOldestUnreadInteraction: shouldClearOldestUnreadInteraction,
-                                 loadScheduleDelayInterval: loadScheduleDelayInterval)
+            return CVLoadRequest(
+                requestId: requestId,
+                loadType: loadType,
+                updatedInteractionIds: updatedInteractionIds,
+                deletedInteractionIds: deletedInteractionIds,
+                canReuseInteractionModels: canReuseInteractionModels,
+                canReuseComponentStates: canReuseComponentStates,
+                didReset: didReset,
+                loadScheduleDelayInterval: loadScheduleDelayInterval
+            )
         }
     }
 }

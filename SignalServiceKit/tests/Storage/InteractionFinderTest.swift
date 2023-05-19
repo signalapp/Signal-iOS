@@ -42,8 +42,8 @@ class InteractionFinderTest: SSKBaseTestSwift {
         let finder1 = InteractionFinder(threadUniqueId: contactThread1.uniqueId)
         let finder2 = InteractionFinder(threadUniqueId: contactThread2.uniqueId)
         self.read { transaction in
-            XCTAssertEqual(0, finder1.count(transaction: transaction))
-            XCTAssertEqual(0, finder2.count(transaction: transaction))
+            XCTAssertEqual(0, try! finder1.fetchUniqueIds(filter: .newest, excludingPlaceholders: true, limit: 100, tx: transaction).count)
+            XCTAssertEqual(0, try! finder2.fetchUniqueIds(filter: .newest, excludingPlaceholders: true, limit: 100, tx: transaction).count)
         }
 
         self.write { transaction in
@@ -64,8 +64,8 @@ class InteractionFinderTest: SSKBaseTestSwift {
         }
 
         self.read { transaction in
-            XCTAssertEqual(4, finder1.count(transaction: transaction))
-            XCTAssertEqual(2, finder2.count(transaction: transaction))
+            XCTAssertEqual(4, try! finder1.fetchUniqueIds(filter: .newest, excludingPlaceholders: true, limit: 100, tx: transaction).count)
+            XCTAssertEqual(2, try! finder2.fetchUniqueIds(filter: .newest, excludingPlaceholders: true, limit: 100, tx: transaction).count)
         }
     }
 

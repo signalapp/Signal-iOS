@@ -911,13 +911,8 @@ public class InteractionReadCache: NSObject {
         return cache.getValue(for: cacheKey, transaction: transaction)
     }
 
-    @objc(getInteractionsIfInCacheForUniqueIds:transaction:)
-    public func getInteractionsIfInCache(forUniqueIds uniqueIds: [String], transaction: SDSAnyReadTransaction) -> [String: TSInteraction] {
-        let keys: [String] = uniqueIds.map { $0 }
-        let result: [String: TSInteraction] = cache.getValuesIfInCache(for: keys, transaction: transaction)
-        return Dictionary(uniqueKeysWithValues: result.map({ (key, value) in
-            return (key, value)
-        }))
+    public func getInteractionsIfInCache(for uniqueIds: [String], transaction: SDSAnyReadTransaction) -> [String: TSInteraction] {
+        return cache.getValuesIfInCache(for: uniqueIds, transaction: transaction)
     }
 
     @objc(didRemoveInteraction:transaction:)

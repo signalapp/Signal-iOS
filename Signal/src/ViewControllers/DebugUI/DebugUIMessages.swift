@@ -3394,9 +3394,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
                 profileManager.addThread(toProfileWhitelist: contactThread, transaction: transaction)
                 createFakeMessagesInBatches(messageQuantity, inThread: contactThread, messageContentType: .longText, transaction: transaction)
-
-                let interactionCount = contactThread.numberOfInteractions(transaction: transaction)
-                Logger.info("Create fake thread: \(e164), interactions: \(interactionCount)")
+                Logger.info("Created a fake thread for \(e164) with \(messageQuantity) messages")
             }
         }
     }
@@ -3568,27 +3566,16 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         Logger.info("deleteRandomMessages: \(count)")
 
         let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
-
-        let messageCount = interactionFinder.count(transaction: transaction)
-
-        var messageIndices: [UInt] = Array((0..<messageCount))
-        var interactions: [TSInteraction] = []
-
-        for _ in (0..<count) {
-            guard let index = Array(0..<messageIndices.count).randomElement() else {
-                break
-            }
-
-            let messageIndex = messageIndices[index]
-            messageIndices.remove(at: index)
-
-            guard let interaction = try! interactionFinder.interaction(at: messageIndex, transaction: transaction) else {
-                owsFailDebug("interaction was unexpectedly nil")
-                continue
-            }
-            interactions.append(interaction)
-        }
-
+        var uniqueIds = try! interactionFinder.fetchUniqueIds(
+            filter: .newest,
+            excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
+            limit: 100_000,
+            tx: transaction
+        )
+        let interactions = InteractionFinder.interactions(
+            withInteractionIds: Set(uniqueIds.shuffled().prefix(Int(count))),
+            transaction: transaction
+        )
         for interaction in interactions {
             interaction.anyRemove(transaction: transaction)
         }

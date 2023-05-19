@@ -74,30 +74,35 @@ public class CVLoadCoordinator: NSObject {
         }
     }
 
-    private var hasClearedUnreadMessagesIndicator = false
+    private var oldestUnreadMessageSortId: UInt64?
 
-    private let messageMapping: CVMessageMapping
+    private let messageLoader: MessageLoader
 
     // TODO: Remove. This model will get stale.
     private let thread: TSThread
 
-    required init(viewState: CVViewState) {
+    required init(viewState: CVViewState, oldestUnreadMessageSortId: UInt64?) {
         self.viewState = viewState
         let threadViewModel = viewState.threadViewModel
         self.threadUniqueId = threadViewModel.threadRecord.uniqueId
         self.thread = threadViewModel.threadRecord
         self.conversationStyle = viewState.conversationStyle
         self.spoilerReveal = viewState.spoilerReveal
-
-        let viewStateSnapshot = CVViewStateSnapshot.snapshot(viewState: viewState,
-                                                             typingIndicatorsSender: nil,
-                                                             hasClearedUnreadMessagesIndicator: hasClearedUnreadMessagesIndicator,
-                                                             previousViewStateSnapshot: nil)
-        self.renderState = CVRenderState.defaultRenderState(threadViewModel: threadViewModel,
-                                                            viewStateSnapshot: viewStateSnapshot)
-
-        self.messageMapping = CVMessageMapping(thread: threadViewModel.threadRecord)
-
+        self.oldestUnreadMessageSortId = oldestUnreadMessageSortId
+        let viewStateSnapshot = CVViewStateSnapshot.snapshot(
+            viewState: viewState,
+            typingIndicatorsSender: nil,
+            oldestUnreadMessageSortId: oldestUnreadMessageSortId,
+            previousViewStateSnapshot: nil
+        )
+        self.renderState = CVRenderState.defaultRenderState(
+            threadViewModel: threadViewModel,
+            viewStateSnapshot: viewStateSnapshot
+        )
+        self.messageLoader = MessageLoader(
+            batchFetcher: ConversationViewBatchFetcher(interactionFinder: InteractionFinder(threadUniqueId: thread.uniqueId)),
+            interactionFetchers: [Self.modelReadCaches.interactionReadCache, SDSInteractionFetcherImpl()]
+        )
         super.init()
     }
 
@@ -471,16 +476,11 @@ public class CVLoadCoordinator: NSObject {
     func clearUnreadMessagesIndicator() {
         AssertIsOnMainThread()
 
-        // Once we've cleared the unread messages indicator,
-        // make sure we don't show it again.
-        hasClearedUnreadMessagesIndicator = true
-
-        guard nil != messageMapping.oldestUnreadInteraction else {
+        guard oldestUnreadMessageSortId != nil else {
             return
         }
-
-        loadRequestBuilder.clearOldestUnreadInteraction()
-        loadIfNecessary()
+        oldestUnreadMessageSortId = nil
+        enqueueReload()
     }
 
     // MARK: -
@@ -488,10 +488,9 @@ public class CVLoadCoordinator: NSObject {
     func resetClearedUnreadMessagesIndicator() {
         AssertIsOnMainThread()
 
-        hasClearedUnreadMessagesIndicator = false
-
-        loadRequestBuilder.clearOldestUnreadInteraction()
-        loadIfNecessary()
+        // TODO: Implement this method correctly by allowing the unread indicator
+        // to be shown past initial load so we don't mark all messages as read on
+        // foreground if we have a chat open.
     }
 
     // MARK: -
@@ -567,34 +566,27 @@ public class CVLoadCoordinator: NSObject {
         }
 
         let typingIndicatorsSender = typingIndicatorsImpl.typingAddress(forThread: thread)
-        let viewStateSnapshot = CVViewStateSnapshot.snapshot(viewState: viewState,
-                                                             typingIndicatorsSender: typingIndicatorsSender,
-                                                             hasClearedUnreadMessagesIndicator: hasClearedUnreadMessagesIndicator,
-                                                             previousViewStateSnapshot: prevRenderState.viewStateSnapshot)
-        let loader = CVLoader(threadUniqueId: threadUniqueId,
-                              loadRequest: loadRequest,
-                              viewStateSnapshot: viewStateSnapshot,
-                              spoilerReveal: spoilerReveal,
-                              prevRenderState: prevRenderState,
-                              messageMapping: messageMapping)
+        let viewStateSnapshot = CVViewStateSnapshot.snapshot(
+            viewState: viewState,
+            typingIndicatorsSender: typingIndicatorsSender,
+            oldestUnreadMessageSortId: oldestUnreadMessageSortId,
+            previousViewStateSnapshot: prevRenderState.viewStateSnapshot
+        )
+        let loader = CVLoader(
+            threadUniqueId: threadUniqueId,
+            loadRequest: loadRequest,
+            viewStateSnapshot: viewStateSnapshot,
+            spoilerReveal: spoilerReveal,
+            prevRenderState: prevRenderState,
+            messageLoader: messageLoader
+        )
 
         if CVLoader.verboseLogging {
             Logger.info("Before load promise[\(loadRequest.requestId)]")
         }
 
-        firstly { () -> Promise<CVUpdate> in
-            let updatePromise = loader.loadPromise()
-
-            if CVLoader.verboseLogging {
-                // If we're doing verbose logging, add this step to the promise chain
-                // so that we can measure the delay dispatching onto .main.
-                return updatePromise.map(on: CVUtils.landingQueue) { (update: CVUpdate) -> CVUpdate in
-                    loadRequest.logLoadEvent("Load landing dispatch")
-                    return update
-                }
-            } else {
-                return updatePromise
-            }
+        firstly {
+            loader.loadPromise()
         }.then(on: DispatchQueue.main) { [weak self] (update: CVUpdate) -> Promise<CVUpdate> in
             loadRequest.logLoadEvent("Load landing ready")
             guard let self = self else {

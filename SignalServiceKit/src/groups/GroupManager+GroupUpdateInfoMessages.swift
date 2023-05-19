@@ -295,8 +295,7 @@ private extension GroupManager {
         do {
             try InteractionFinder(threadUniqueId: groupThread.uniqueId)
                 .enumerateRecentInteractions(
-                    excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(), // This matches how messages are loaded in CVMessageMapping
-                    storyReplyQueryMode: .excludeGroupReplies,
+                    excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(), // This matches how messages are loaded in MessageLoader
                     transaction: transaction,
                     block: { interaction, shouldStop in
                         if mostRecentVisibleInteraction == nil {

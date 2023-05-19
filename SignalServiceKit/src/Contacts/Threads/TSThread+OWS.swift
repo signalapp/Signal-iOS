@@ -185,23 +185,6 @@ public extension TSThread {
         }
         lastVisibleInteractionStore.setData(data, key: thread.uniqueId, transaction: transaction)
     }
-
-    @available(swift, obsoleted: 1.0)
-    @objc
-    func numberOfInteractions(transaction: SDSAnyReadTransaction) -> UInt {
-        numberOfInteractions(transaction: transaction)
-    }
-
-    func numberOfInteractions(
-        with storyReplyQueryMode: StoryReplyQueryMode = .excludeGroupReplies,
-        transaction: SDSAnyReadTransaction
-    ) -> UInt {
-        InteractionFinder(threadUniqueId: uniqueId).count(
-            excludingPlaceholders: true,
-            storyReplyQueryMode: storyReplyQueryMode,
-            transaction: transaction
-        )
-    }
 }
 
 // MARK: - Drafts

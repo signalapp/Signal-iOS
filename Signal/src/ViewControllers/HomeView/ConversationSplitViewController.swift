@@ -181,12 +181,14 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // can maintain its scroll position when navigating back.
         homeVC.chatListViewController.updateLastViewedThread(thread, animated: animated)
 
-        let threadViewModel = databaseStorage.read {
-            return ThreadViewModel(thread: thread,
-                                   forChatList: false,
-                                   transaction: $0)
+        let vc = databaseStorage.read { tx in
+            ConversationViewController.load(
+                threadViewModel: ThreadViewModel(thread: thread, forChatList: false, transaction: tx),
+                action: action,
+                focusMessageId: focusMessageId,
+                tx: tx
+            )
         }
-        let vc = ConversationViewController(threadViewModel: threadViewModel, action: action, focusMessageId: focusMessageId)
 
         selectedConversationViewController = vc
 

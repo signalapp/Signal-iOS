@@ -852,7 +852,14 @@ public class GroupManager: NSObject {
 
         sendGroupQuitMessage(inThread: groupThread, transaction: transaction)
 
-        let hasMessages = groupThread.numberOfInteractions(transaction: transaction) > 0
+        let anyInteraction = try? InteractionFinder(threadUniqueId: groupThread.uniqueId).fetchUniqueIds(
+            filter: .newest,
+            excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
+            limit: 1,
+            tx: transaction
+        ).first
+
+        let hasMessages = anyInteraction != nil
         let infoMessagePolicy: InfoMessagePolicy = hasMessages ? .always : .never
 
         var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder

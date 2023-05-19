@@ -20,6 +20,16 @@
 
 @implementation TSThreadTest
 
+- (NSUInteger)numberOfInteractionsInThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+{
+    InteractionFinder *finder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    __block NSUInteger result = 0;
+    [finder enumerateInteractionIdsWithTransaction:transaction
+                                             error:NULL
+                                             block:^(NSString *uniqueId, BOOL *stop) { result += 1; }];
+    return result;
+}
+
 - (void)testDeletingThreadDeletesInteractions
 {
     TSContactThread *thread = [[TSContactThread alloc]
@@ -29,7 +39,7 @@
     }];
 
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
+        XCTAssertEqual(0, [self numberOfInteractionsInThread:thread transaction:transaction]);
     }];
 
     TSIncomingMessageBuilder *incomingMessageBuilder =
@@ -50,13 +60,13 @@
     }];
 
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        XCTAssertEqual(2, [thread numberOfInteractionsWithTransaction:transaction]);
+        XCTAssertEqual(2, [self numberOfInteractionsInThread:thread transaction:transaction]);
     }];
 
     [self writeWithBlock:^(
         SDSAnyWriteTransaction *transaction) { [thread softDeleteThreadWithTransaction:transaction]; }];
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
+        XCTAssertEqual(0, [self numberOfInteractionsInThread:thread transaction:transaction]);
         XCTAssertEqual(0, [TSInteraction anyCountWithTransaction:transaction]);
     }];
 }
@@ -71,7 +81,7 @@
 
     // Sanity check
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
+        XCTAssertEqual(0, [self numberOfInteractionsInThread:thread transaction:transaction]);
     }];
 
     __block TSAttachmentStream *incomingAttachment;
@@ -119,7 +129,7 @@
 
     // Sanity check
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        XCTAssertEqual(2, [thread numberOfInteractionsWithTransaction:transaction]);
+        XCTAssertEqual(2, [self numberOfInteractionsInThread:thread transaction:transaction]);
     }];
 
     // Actual Test Follows
@@ -127,7 +137,7 @@
         SDSAnyWriteTransaction *transaction) { [thread softDeleteThreadWithTransaction:transaction]; }];
 
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
+        XCTAssertEqual(0, [self numberOfInteractionsInThread:thread transaction:transaction]);
     }];
 
     BOOL incomingFileStillExists =

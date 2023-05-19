@@ -653,27 +653,22 @@ extension ConversationViewController {
         public var uniqueId: String { interaction.uniqueId }
     }
 
-    public func lastVisibleInteractionIdWithSneakyTransaction(_ threadViewModel: ThreadViewModel) -> String? {
-        lastVisibleInteractionWithSneakyTransaction(thread: threadViewModel.threadRecord)?.uniqueId
+    public static func lastVisibleInteractionId(for thread: TSThread, tx: SDSAnyReadTransaction) -> String? {
+        return lastVisibleInteraction(for: thread, tx: tx)?.uniqueId
     }
 
     private func lastVisibleInteractionWithSneakyTransaction() -> LastVisibleInteraction? {
-        lastVisibleInteractionWithSneakyTransaction(thread: thread)
+        return databaseStorage.read { tx in Self.lastVisibleInteraction(for: thread, tx: tx) }
     }
 
-    private func lastVisibleInteractionWithSneakyTransaction(thread: TSThread) -> LastVisibleInteraction? {
-        databaseStorage.read { transaction in
-            guard let lastVisibleInteraction = thread.lastVisibleInteraction(transaction: transaction),
-                  let interaction = thread.firstInteraction(atOrAroundSortId: lastVisibleInteraction.sortId,
-                                                            transaction: transaction) else {
-
-                return nil
-            }
-
-            let onScreenPercentage = lastVisibleInteraction.onScreenPercentage
-
-            return LastVisibleInteraction(interaction: interaction,
-                                          onScreenPercentage: onScreenPercentage)
+    private static func lastVisibleInteraction(for thread: TSThread, tx: SDSAnyReadTransaction) -> LastVisibleInteraction? {
+        guard
+            let lastVisibleInteraction = thread.lastVisibleInteraction(transaction: tx),
+            let interaction = thread.firstInteraction(atOrAroundSortId: lastVisibleInteraction.sortId, transaction: tx)
+        else {
+            return nil
         }
+        let onScreenPercentage = lastVisibleInteraction.onScreenPercentage
+        return LastVisibleInteraction(interaction: interaction, onScreenPercentage: onScreenPercentage)
     }
 }

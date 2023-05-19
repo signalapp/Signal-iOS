@@ -35,8 +35,7 @@ public enum ConversationViewAction {
 
 // MARK: -
 
-public class ConversationViewController: OWSViewController {
-
+public final class ConversationViewController: OWSViewController {
     public let viewState: CVViewState
     public let loadCoordinator: CVLoadCoordinator
     public let layout: ConversationViewLayout
@@ -60,21 +59,64 @@ public class ConversationViewController: OWSViewController {
 
     // MARK: -
 
-    public required init(threadViewModel: ThreadViewModel,
-                         action: ConversationViewAction = .none,
-                         focusMessageId: String? = nil) {
+    public static func load(
+        threadViewModel: ThreadViewModel,
+        action: ConversationViewAction = .none,
+        focusMessageId: String? = nil,
+        tx: SDSAnyReadTransaction
+    ) -> ConversationViewController {
+        // We always need to find where the unread divider should be placed, even
+        // if we opened the chat by tapping on a search result.
+        let interactionFinder = InteractionFinder(threadUniqueId: threadViewModel.threadRecord.uniqueId)
+        let oldestUnreadMessage = try? interactionFinder.oldestUnreadInteraction(transaction: tx.unwrapGrdbRead)
+
+        let loadAroundMessageId: String?
+        let scrollToMessageId: String?
+
+        if let focusMessageId {
+            loadAroundMessageId = focusMessageId
+            scrollToMessageId = focusMessageId
+        } else if let oldestUnreadMessage {
+            loadAroundMessageId = oldestUnreadMessage.uniqueId
+            // Set this to `nil` so that we scroll to the unread divider.
+            scrollToMessageId = nil
+        } else {
+            // If we're not scrolling to a specific message AND we don't have any
+            // unread messages, try to focus on the last visible interaction.
+            let lastVisibleMessageId = Self.lastVisibleInteractionId(for: threadViewModel.threadRecord, tx: tx)
+            loadAroundMessageId = lastVisibleMessageId
+            scrollToMessageId = lastVisibleMessageId
+        }
+
+        return ConversationViewController(
+            threadViewModel: threadViewModel,
+            action: action,
+            loadAroundMessageId: loadAroundMessageId,
+            scrollToMessageId: scrollToMessageId,
+            oldestUnreadMessage: oldestUnreadMessage
+        )
+    }
+
+    private init(
+        threadViewModel: ThreadViewModel,
+        action: ConversationViewAction,
+        loadAroundMessageId: String?,
+        scrollToMessageId: String?,
+        oldestUnreadMessage: TSInteraction?
+    ) {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
         let conversationStyle = ConversationViewController.buildInitialConversationStyle(threadViewModel: threadViewModel)
-        self.viewState = CVViewState(threadViewModel: threadViewModel,
-                                     conversationStyle: conversationStyle)
-        self.loadCoordinator = CVLoadCoordinator(viewState: viewState)
+        self.viewState = CVViewState(
+            threadViewModel: threadViewModel,
+            conversationStyle: conversationStyle
+        )
+        self.loadCoordinator = CVLoadCoordinator(
+            viewState: viewState,
+            oldestUnreadMessageSortId: oldestUnreadMessage?.sortId
+        )
         self.layout = ConversationViewLayout(conversationStyle: conversationStyle)
-        self.collectionView = ConversationCollectionView(frame: .zero,
-                                                         collectionViewLayout: self.layout)
-
+        self.collectionView = ConversationCollectionView(frame: .zero, collectionViewLayout: self.layout)
         self.searchController = ConversationSearchController(thread: threadViewModel.threadRecord)
 
         super.init()
@@ -83,29 +125,20 @@ public class ConversationViewController: OWSViewController {
         self.viewState.selectionState.delegate = self
         self.hidesBottomBarWhenPushed = true
 
-        #if TESTABLE_BUILD
-        self.initialLoadBenchSteps.step("Init CVC")
-        #endif
-
         self.inputAccessoryPlaceholder.delegate = self
-
-        // If we're not scrolling to a specific message AND we don't have
-        // any unread messages, try to focus on the last visible interaction.
-        var focusMessageId = focusMessageId
-        if focusMessageId == nil, !threadViewModel.hasUnreadMessages {
-            focusMessageId = self.lastVisibleInteractionIdWithSneakyTransaction(threadViewModel)
-        }
 
         contactsViewHelper.addObserver(self)
         contactShareViewHelper.delegate = self
 
         self.actionOnOpen = action
 
-        self.recordInitialScrollState(focusMessageId)
+        self.recordInitialScrollState(scrollToMessageId)
 
-        loadCoordinator.configure(delegate: self,
-                                  componentDelegate: self,
-                                  focusMessageIdOnOpen: focusMessageId)
+        loadCoordinator.configure(
+            delegate: self,
+            componentDelegate: self,
+            focusMessageIdOnOpen: loadAroundMessageId
+        )
 
         searchController.delegate = self
 
@@ -113,13 +146,14 @@ public class ConversationViewController: OWSViewController {
         // chain, and thus won't inherit our inputAccessoryView, so we manually set it here.
         searchController.uiSearchController.searchBar.inputAccessoryView = self.inputAccessoryPlaceholder
 
-        self.otherUsersProfileDidChangeEvent = DebouncedEvents.build(mode: .firstLast,
-                                                                     maxFrequencySeconds: 1.0,
-                                                                     onQueue: .asyncOnQueue(queue: .main)) { [weak self] in
+        self.otherUsersProfileDidChangeEvent = DebouncedEvents.build(
+            mode: .firstLast,
+            maxFrequencySeconds: 1.0,
+            onQueue: .asyncOnQueue(queue: .main)
+        ) { [weak self] in
             // Reload all cells if this is a group conversation,
             // since we may need to update the sender names on the messages.
-            self?.loadCoordinator.enqueueReload(canReuseInteractionModels: true,
-                                                canReuseComponentStates: false)
+            self?.loadCoordinator.enqueueReload(canReuseInteractionModels: true, canReuseComponentStates: false)
         }
     }
 

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // This entity performs a single load.
 public class CVLoader: NSObject {
@@ -17,7 +18,7 @@ public class CVLoader: NSObject {
     private let viewStateSnapshot: CVViewStateSnapshot
     private let spoilerReveal: SpoilerRevealState
     private let prevRenderState: CVRenderState
-    private let messageMapping: CVMessageMapping
+    private let messageLoader: MessageLoader
 
     private let benchSteps = BenchSteps(title: "CVLoader")
 
@@ -27,26 +28,23 @@ public class CVLoader: NSObject {
         viewStateSnapshot: CVViewStateSnapshot,
         spoilerReveal: SpoilerRevealState,
         prevRenderState: CVRenderState,
-        messageMapping: CVMessageMapping
+        messageLoader: MessageLoader
     ) {
         self.threadUniqueId = threadUniqueId
         self.loadRequest = loadRequest
         self.viewStateSnapshot = viewStateSnapshot
         self.spoilerReveal = spoilerReveal
         self.prevRenderState = prevRenderState
-        self.messageMapping = messageMapping
+        self.messageLoader = messageLoader
     }
 
     func loadPromise() -> Promise<CVUpdate> {
-
         let threadUniqueId = self.threadUniqueId
         let loadRequest = self.loadRequest
         let viewStateSnapshot = self.viewStateSnapshot
         let spoilerReveal = self.spoilerReveal
         let prevRenderState = self.prevRenderState
-        let messageMapping = self.messageMapping
-
-        Logger.verbose("LoadType: \(loadRequest.loadType): \(loadRequest.loadStartDateFormatted)")
+        let messageLoader = self.messageLoader
 
         struct LoadState {
             let threadViewModel: ThreadViewModel
@@ -74,16 +72,12 @@ public class CVLoader: NSObject {
                     threadViewModel: threadViewModel,
                     viewStateSnapshot: viewStateSnapshot,
                     spoilerReveal: spoilerReveal,
-                    messageMapping: messageMapping,
+                    messageLoader: messageLoader,
                     prevRenderState: prevRenderState,
                     transaction: transaction
                 )
 
                 self.benchSteps.step("threadViewModel")
-
-                if loadRequest.shouldClearOldestUnreadInteraction {
-                    messageMapping.oldestUnreadInteraction = nil
-                }
 
                 // Don't cache in the reset() case.
                 let canReuseInteractions = loadRequest.canReuseInteractionModels && !loadRequest.didReset
@@ -126,74 +120,70 @@ public class CVLoader: NSObject {
                     }
                 }
 
-                loadRequest.logLoadEvent("Before messageMapping")
-
                 do {
                     switch loadRequest.loadType {
                     case .loadInitialMapping(let focusMessageIdOnOpen, _):
                         owsAssertDebug(reusableInteractions.isEmpty)
-                        try messageMapping.loadInitialMessagePage(focusMessageId: focusMessageIdOnOpen,
-                                                                  reusableInteractions: [:],
-                                                                  deletedInteractionIds: [],
-                                                                  transaction: transaction)
+                        try messageLoader.loadInitialMessagePage(
+                            focusMessageId: focusMessageIdOnOpen,
+                            reusableInteractions: [:],
+                            deletedInteractionIds: [],
+                            tx: transaction.asV2Read
+                        )
                     case .loadSameLocation:
-                        try messageMapping.loadSameLocation(reusableInteractions: reusableInteractions,
-                                                            deletedInteractionIds: deletedInteractionIds,
-                                                            transaction: transaction)
+                        try messageLoader.loadSameLocation(
+                            reusableInteractions: reusableInteractions,
+                            deletedInteractionIds: deletedInteractionIds,
+                            tx: transaction.asV2Read
+                        )
                     case .loadOlder:
-                        try messageMapping.loadOlderMessagePage(reusableInteractions: reusableInteractions,
-                                                                deletedInteractionIds: deletedInteractionIds,
-                                                                transaction: transaction)
+                        try messageLoader.loadOlderMessagePage(
+                            reusableInteractions: reusableInteractions,
+                            deletedInteractionIds: deletedInteractionIds,
+                            tx: transaction.asV2Read
+                        )
                     case .loadNewer:
-                        try messageMapping.loadNewerMessagePage(reusableInteractions: reusableInteractions,
-                                                                deletedInteractionIds: deletedInteractionIds,
-                                                                transaction: transaction)
+                        try messageLoader.loadNewerMessagePage(
+                            reusableInteractions: reusableInteractions,
+                            deletedInteractionIds: deletedInteractionIds,
+                            tx: transaction.asV2Read
+                        )
                     case .loadNewest:
-                        try messageMapping.loadNewestMessagePage(reusableInteractions: reusableInteractions,
-                                                                 deletedInteractionIds: deletedInteractionIds,
-                                                                 transaction: transaction)
+                        try messageLoader.loadNewestMessagePage(
+                            reusableInteractions: reusableInteractions,
+                            deletedInteractionIds: deletedInteractionIds,
+                            tx: transaction.asV2Read
+                        )
                     case .loadPageAroundInteraction(let interactionId, _):
-                        try messageMapping.loadMessagePage(aroundInteractionId: interactionId,
-                                                           reusableInteractions: reusableInteractions,
-                                                           deletedInteractionIds: deletedInteractionIds,
-                                                           transaction: transaction)
+                        try messageLoader.loadMessagePage(
+                            aroundInteractionId: interactionId,
+                            reusableInteractions: reusableInteractions,
+                            deletedInteractionIds: deletedInteractionIds,
+                            tx: transaction.asV2Read
+                        )
                     }
                 } catch {
-                    owsFailDebug("Error: \(error)")
-                    // Fail over to try to load newest.
-                    try messageMapping.loadNewestMessagePage(reusableInteractions: reusableInteractions,
-                                                             deletedInteractionIds: deletedInteractionIds,
-                                                             transaction: transaction)
+                    owsFailDebug("Couldn't load conversation view messages \(error)")
+                    throw error
                 }
 
-                loadRequest.logLoadEvent("After messageMapping")
-                self.benchSteps.step("messageMapping")
-
-                loadRequest.logLoadEvent("Before buildRenderItems")
-
-                let items: [CVRenderItem] = self.buildRenderItems(loadContext: loadContext,
-                                                                  updatedInteractionIds: updatedInteractionIds)
-
-                loadRequest.logLoadEvent("After buildRenderItems")
-
-                self.benchSteps.step("buildRenderItems")
-
-                let loadState = LoadState(threadViewModel: threadViewModel, items: items)
-
-                loadRequest.logLoadEvent("After LoadState")
-
-                return loadState
+                return LoadState(
+                    threadViewModel: threadViewModel,
+                    items: self.buildRenderItems(loadContext: loadContext, updatedInteractionIds: updatedInteractionIds)
+                )
             }
 
             let items = loadState.items
             let threadViewModel = loadState.threadViewModel
-            let renderState = CVRenderState(threadViewModel: threadViewModel,
-                                            prevThreadViewModel: prevRenderState.threadViewModel,
-                                            items: items,
-                                            canLoadOlderItems: messageMapping.canLoadOlder,
-                                            canLoadNewerItems: messageMapping.canLoadNewer,
-                                            viewStateSnapshot: viewStateSnapshot,
-                                            loadType: loadRequest.loadType)
+            let renderState = CVRenderState(
+                threadViewModel: threadViewModel,
+                prevThreadViewModel: prevRenderState.threadViewModel,
+                items: items,
+                canLoadOlderItems: messageLoader.canLoadOlder,
+                canLoadNewerItems: messageLoader.canLoadNewer,
+                viewStateSnapshot: viewStateSnapshot,
+                loadType: loadRequest.loadType
+            )
 
             loadRequest.logLoadEvent("After renderState")
 
