@@ -198,9 +198,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         let hasViewDidAppearEverCompleted = self.hasViewDidAppearEverCompleted
 
         DispatchQueue.main.async {
-            Self.databaseStorage.read { transaction in
-                self.reloadReactionsDetailSheet(transaction: transaction)
-            }
+            self.reloadReactionsDetailSheetWithSneakyTransaction()
             if hasViewDidAppearEverCompleted {
                 _ = self.autoLoadMoreIfNecessary()
             }

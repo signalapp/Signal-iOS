@@ -54,7 +54,7 @@ extension ConversationViewController {
         return self.indexPath(forInteractionUniqueId: messageActionInteractionId) == nil
     }
 
-    public func reloadReactionsDetailSheet(transaction: SDSAnyReadTransaction) {
+    public func reloadReactionsDetailSheetWithSneakyTransaction() {
         AssertIsOnMainThread()
 
         guard let reactionsDetailSheet = self.reactionsDetailSheet else {
@@ -78,7 +78,9 @@ extension ConversationViewController {
 
         // Update the detail sheet with the latest reaction
         // state, in case the reactions have changed.
-        reactionsDetailSheet.setReactionState(reactionState, transaction: transaction)
+        databaseStorage.read { tx in
+            reactionsDetailSheet.setReactionState(reactionState, transaction: tx)
+        }
     }
 
     public func dismissReactionsDetailSheet(animated: Bool) {
