@@ -76,7 +76,7 @@ extension ConversationViewController {
             scrollToNextMentionIsHidden = !shouldScrollToMentionAppear
         }
 
-        self.scrollDownButton.unreadCount = self.unreadMessageCount
+        self.scrollDownButton.unreadCount = threadViewModel.unreadCount
         self.scrollToNextMentionButton.unreadCount = UInt(self.unreadMentionMessages.count)
 
         let scrollDownVisibilityDidChange = scrollDownIsHidden != scrollDownWasHidden
