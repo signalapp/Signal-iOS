@@ -350,9 +350,9 @@ NSString *const OWSPreferencesKeyDeviceScale = @"OWSPreferencesKeyDeviceScale";
     [self setBool:YES forKey:OWSPreferencesKeyWasViewOnceTooltipShown];
 }
 
-- (BOOL)wasGroupCallTooltipShown
+- (BOOL)wasGroupCallTooltipShownWithTransaction:(SDSAnyReadTransaction *)tx
 {
-    return [self boolForKey:OWSPreferencesKeyWasGroupCallTooltipShown defaultValue:NO];
+    return [self.keyValueStore getBool:OWSPreferencesKeyWasGroupCallTooltipShown defaultValue:NO transaction:tx];
 }
 
 - (void)incrementGroupCallTooltipShownCount

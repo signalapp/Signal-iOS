@@ -117,7 +117,7 @@ public extension ConversationViewController {
         guard canCall, isGroupConversation else {
             return
         }
-        if preferences.wasGroupCallTooltipShown() {
+        if viewState.didAlreadyShowGroupCallTooltipEnoughTimes {
             return
         }
 
@@ -126,7 +126,10 @@ public extension ConversationViewController {
         // as the navbar items change.
         if !hasIncrementedGroupCallTooltipShownCount {
             preferences.incrementGroupCallTooltipShownCount()
-            self.hasIncrementedGroupCallTooltipShownCount = true
+            viewState.didAlreadyShowGroupCallTooltipEnoughTimes = databaseStorage.read { tx in
+                preferences.wasGroupCallTooltipShown(with: tx)
+            }
+            hasIncrementedGroupCallTooltipShownCount = true
         }
 
         if conversationViewModel.groupCallInProgress {

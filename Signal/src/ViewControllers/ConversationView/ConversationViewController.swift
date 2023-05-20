@@ -92,12 +92,14 @@ public final class ConversationViewController: OWSViewController {
 
         let conversationStyle = ConversationViewController.buildInitialConversationStyle(for: thread, tx: tx)
         let conversationViewModel = ConversationViewModel.load(for: thread, tx: tx)
+        let didAlreadyShowGroupCallTooltipEnoughTimes = preferences.wasGroupCallTooltipShown(with: tx)
 
         return ConversationViewController(
             threadViewModel: threadViewModel,
             conversationViewModel: conversationViewModel,
             action: action,
             conversationStyle: conversationStyle,
+            didAlreadyShowGroupCallTooltipEnoughTimes: didAlreadyShowGroupCallTooltipEnoughTimes,
             loadAroundMessageId: loadAroundMessageId,
             scrollToMessageId: scrollToMessageId,
             oldestUnreadMessage: oldestUnreadMessage
@@ -109,6 +111,7 @@ public final class ConversationViewController: OWSViewController {
         conversationViewModel: ConversationViewModel,
         action: ConversationViewAction,
         conversationStyle: ConversationStyle,
+        didAlreadyShowGroupCallTooltipEnoughTimes: Bool,
         loadAroundMessageId: String?,
         scrollToMessageId: String?,
         oldestUnreadMessage: TSInteraction?
@@ -117,7 +120,8 @@ public final class ConversationViewController: OWSViewController {
 
         self.viewState = CVViewState(
             threadUniqueId: threadViewModel.threadRecord.uniqueId,
-            conversationStyle: conversationStyle
+            conversationStyle: conversationStyle,
+            didAlreadyShowGroupCallTooltipEnoughTimes: didAlreadyShowGroupCallTooltipEnoughTimes
         )
         self.loadCoordinator = CVLoadCoordinator(
             viewState: viewState,

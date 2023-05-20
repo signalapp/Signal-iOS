@@ -95,6 +95,7 @@ public class CVViewState: NSObject {
 
     public var groupCallTooltip: GroupCallTooltip?
     public var groupCallTooltipTailReferenceView: UIView?
+    public var didAlreadyShowGroupCallTooltipEnoughTimes: Bool
     public var hasIncrementedGroupCallTooltipShownCount = false
     public var groupCallBarButtonItem: UIBarButtonItem?
 
@@ -151,9 +152,14 @@ public class CVViewState: NSObject {
 
     // MARK: - 
 
-    public required init(threadUniqueId: String, conversationStyle: ConversationStyle) {
+    public required init(
+        threadUniqueId: String,
+        conversationStyle: ConversationStyle,
+        didAlreadyShowGroupCallTooltipEnoughTimes: Bool
+    ) {
         self.threadUniqueId = threadUniqueId
         self.conversationStyle = conversationStyle
+        self.didAlreadyShowGroupCallTooltipEnoughTimes = didAlreadyShowGroupCallTooltipEnoughTimes
     }
 }
 

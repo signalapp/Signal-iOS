@@ -78,7 +78,7 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (BOOL)wasViewOnceTooltipShown;
 - (void)setWasViewOnceTooltipShown;
 
-- (BOOL)wasGroupCallTooltipShown;
+- (BOOL)wasGroupCallTooltipShownWithTransaction:(SDSAnyReadTransaction *)tx;
 - (void)incrementGroupCallTooltipShownCount;
 - (void)setWasGroupCallTooltipShown;
 
