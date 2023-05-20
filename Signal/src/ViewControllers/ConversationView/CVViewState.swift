@@ -107,8 +107,6 @@ public class CVViewState: NSObject {
     public var scrollUpdateTimer: Timer?
     public var isWaitingForDeceleration = false
 
-    public var unreadMentionMessages = [TSMessage]()
-
     public var actionOnOpen: ConversationViewAction = .none
 
     public var readTimer: Timer?

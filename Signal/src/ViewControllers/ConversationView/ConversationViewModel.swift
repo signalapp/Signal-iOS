@@ -10,6 +10,7 @@ class ConversationViewModel {
     let groupCallInProgress: Bool
     let isSystemContact: Bool
     let shouldShowVerifiedBadge: Bool
+    let unreadMentionMessageIds: [String]
 
     static func load(for thread: TSThread, tx: SDSAnyReadTransaction) -> ConversationViewModel {
         let groupCallInProgress = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: tx)
@@ -24,21 +25,31 @@ class ConversationViewModel {
             isSystemContact = false
         }
 
+        let unreadMentionMessageIds = MentionFinder.messagesMentioning(
+            address: NSObject.tsAccountManager.localAddress!,
+            in: thread,
+            includeReadMessages: false,
+            transaction: tx.unwrapGrdbRead
+        ).map { $0.uniqueId }
+
         return ConversationViewModel(
             groupCallInProgress: groupCallInProgress,
             isSystemContact: isSystemContact,
-            shouldShowVerifiedBadge: shouldShowVerifiedBadge(for: thread, tx: tx)
+            shouldShowVerifiedBadge: shouldShowVerifiedBadge(for: thread, tx: tx),
+            unreadMentionMessageIds: unreadMentionMessageIds
         )
     }
 
     init(
         groupCallInProgress: Bool,
         isSystemContact: Bool,
-        shouldShowVerifiedBadge: Bool
+        shouldShowVerifiedBadge: Bool,
+        unreadMentionMessageIds: [String]
     ) {
         self.groupCallInProgress = groupCallInProgress
         self.isSystemContact = isSystemContact
         self.shouldShowVerifiedBadge = shouldShowVerifiedBadge
+        self.unreadMentionMessageIds = unreadMentionMessageIds
     }
 
     private static func shouldShowVerifiedBadge(for thread: TSThread, tx: SDSAnyReadTransaction) -> Bool {

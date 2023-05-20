@@ -682,17 +682,11 @@ public class FullTextSearcher: NSObject {
             return threadViewModel
         }
 
-        var mentionedMessageCache = [SignalServiceAddress: [TSMessage]]()
         let getMentionedMessages: (SignalServiceAddress) -> [TSMessage] = { address in
-            if let mentionedMessages = mentionedMessageCache[address] {
-                return mentionedMessages
-            }
-            let mentionedMessages = MentionFinder.messagesMentioning(
+            return MentionFinder.messagesMentioning(
                 address: address,
                 transaction: transaction.unwrapGrdbRead
             )
-            mentionedMessageCache[address] = mentionedMessages
-            return mentionedMessages
         }
 
         func appendMessage(_ message: TSMessage, snippet: NSAttributedString?) {

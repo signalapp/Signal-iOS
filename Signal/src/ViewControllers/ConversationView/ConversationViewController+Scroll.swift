@@ -423,10 +423,12 @@ extension ConversationViewController {
 
     @objc
     func scrollToNextMentionButtonTapped() {
-        if let nextMessage = unreadMentionMessages.first {
-            ensureInteractionLoadedThenScrollToInteraction(nextMessage.uniqueId,
-                                                           alignment: .bottomIfNotEntirelyOnScreen,
-                                                           isAnimated: true)
+        if let nextMessageId = conversationViewModel.unreadMentionMessageIds.first {
+            ensureInteractionLoadedThenScrollToInteraction(
+                nextMessageId,
+                alignment: .bottomIfNotEntirelyOnScreen,
+                isAnimated: true
+            )
         }
     }
 

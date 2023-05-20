@@ -419,34 +419,6 @@ public extension ConversationViewController {
     }
 }
 
-// MARK: - Unread Counts
-
-public extension ConversationViewController {
-    var unreadMentionMessages: [TSMessage] {
-        get { viewState.unreadMentionMessages }
-        set {
-            guard viewState.unreadMentionMessages != newValue else {
-                return
-            }
-            viewState.unreadMentionMessages = newValue
-            configureScrollDownButtons()
-        }
-    }
-
-    func updateUnreadMessageFlag(transaction: SDSAnyReadTransaction) {
-        AssertIsOnMainThread()
-
-        if let localAddress = tsAccountManager.localAddress {
-            self.unreadMentionMessages = MentionFinder.messagesMentioning(address: localAddress,
-                                                                          in: thread,
-                                                                          includeReadMessages: false,
-                                                                          transaction: transaction.unwrapGrdbRead)
-        } else {
-            owsFailDebug("Missing localAddress.")
-        }
-    }
-}
-
 // MARK: - Timers
 
 extension ConversationViewController {
