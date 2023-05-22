@@ -3,12 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import Curve25519Kit
 
 extension ChangePhoneNumberPniManagerImpl {
     enum Shims {
         typealias IdentityManager = _ChangePhoneNumberPniManager_IdentityManagerShim
-        typealias MessageSender = _ChangePhoneNumberPniManager_MessageSenderShim
         typealias PreKeyManager = _ChangePhoneNumberPniManager_PreKeyManagerShim
         typealias SignedPreKeyStore = _ChangePhoneNumberPniManager_SignedPreKeyStoreShim
         typealias TSAccountManager = _ChangePhoneNumberPniManager_TSAccountManagerShim
@@ -16,7 +15,6 @@ extension ChangePhoneNumberPniManagerImpl {
 
     enum Wrappers {
         typealias IdentityManager = _ChangePhoneNumberPniManager_IdentityManagerWrapper
-        typealias MessageSender = _ChangePhoneNumberPniManager_MessageSenderWrapper
         typealias PreKeyManager = _ChangePhoneNumberPniManager_PreKeyManagerWrapper
         typealias SignedPreKeyStore = _ChangePhoneNumberPniManager_SignedPreKeyStoreWrapper
         typealias TSAccountManager = _ChangePhoneNumberPniManager_TSAccountManagerWrapper
@@ -35,21 +33,6 @@ protocol _ChangePhoneNumberPniManager_IdentityManagerShim {
     )
 }
 
-protocol _ChangePhoneNumberPniManager_MessageSenderShim {
-    func buildDeviceMessage(
-        forMessagePlaintextContent messagePlaintextContent: Data?,
-        messageEncryptionStyle: EncryptionStyle,
-        recipientId: String,
-        serviceId: ServiceId,
-        deviceId: UInt32,
-        isOnlineMessage: Bool,
-        isTransientSenderKeyDistributionMessage: Bool,
-        isStoryMessage: Bool,
-        isResendRequestMessage: Bool,
-        udSendingParamsProvider: UDSendingParamsProvider?
-    ) throws -> DeviceMessage?
-}
-
 protocol _ChangePhoneNumberPniManager_PreKeyManagerShim {
     func refreshOneTimePreKeys(
         forIdentity identity: OWSIdentity,
@@ -58,6 +41,8 @@ protocol _ChangePhoneNumberPniManager_PreKeyManagerShim {
 }
 
 protocol _ChangePhoneNumberPniManager_SignedPreKeyStoreShim {
+    func generateSignedPreKey(signedBy: ECKeyPair) -> SignedPreKeyRecord
+
     func storeSignedPreKeyAsAcceptedAndCurrent(
         signedPreKeyId: Int32,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
@@ -66,6 +51,8 @@ protocol _ChangePhoneNumberPniManager_SignedPreKeyStoreShim {
 }
 
 protocol _ChangePhoneNumberPniManager_TSAccountManagerShim {
+    func generateRegistrationId() -> UInt32
+
     func setPniRegistrationId(
         newRegistrationId: UInt32,
         transaction: DBWriteTransaction
@@ -98,40 +85,6 @@ class _ChangePhoneNumberPniManager_IdentityManagerWrapper: _ChangePhoneNumberPni
     }
 }
 
-class _ChangePhoneNumberPniManager_MessageSenderWrapper: _ChangePhoneNumberPniManager_MessageSenderShim {
-    private let messageSender: MessageSender
-
-    init(_ messageSender: MessageSender) {
-        self.messageSender = messageSender
-    }
-
-    func buildDeviceMessage(
-        forMessagePlaintextContent messagePlaintextContent: Data?,
-        messageEncryptionStyle: EncryptionStyle,
-        recipientId: String,
-        serviceId: ServiceId,
-        deviceId: UInt32,
-        isOnlineMessage: Bool,
-        isTransientSenderKeyDistributionMessage: Bool,
-        isStoryMessage: Bool,
-        isResendRequestMessage: Bool,
-        udSendingParamsProvider: UDSendingParamsProvider?
-    ) throws -> DeviceMessage? {
-        try messageSender.buildDeviceMessage(
-            messagePlaintextContent: messagePlaintextContent,
-            messageEncryptionStyle: messageEncryptionStyle,
-            recipientId: recipientId,
-            serviceId: serviceId,
-            deviceId: deviceId,
-            isOnlineMessage: isOnlineMessage,
-            isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
-            isStoryMessage: isStoryMessage,
-            isResendRequestMessage: isResendRequestMessage,
-            udSendingParamsProvider: udSendingParamsProvider
-        )
-    }
-}
-
 class _ChangePhoneNumberPniManager_PreKeyManagerWrapper: _ChangePhoneNumberPniManager_PreKeyManagerShim {
     func refreshOneTimePreKeys(
         forIdentity identity: OWSIdentity,
@@ -149,6 +102,10 @@ class _ChangePhoneNumberPniManager_SignedPreKeyStoreWrapper: _ChangePhoneNumberP
 
     init(_ signedPreKeyStore: SSKSignedPreKeyStore) {
         self.signedPreKeyStore = signedPreKeyStore
+    }
+
+    func generateSignedPreKey(signedBy: ECKeyPair) -> SignedPreKeyRecord {
+        return SSKSignedPreKeyStore.generateSignedPreKey(signedBy: signedBy)
     }
 
     func storeSignedPreKeyAsAcceptedAndCurrent(
@@ -169,6 +126,10 @@ class _ChangePhoneNumberPniManager_TSAccountManagerWrapper: _ChangePhoneNumberPn
 
     init(_ tsAccountManager: TSAccountManager) {
         self.tsAccountManager = tsAccountManager
+    }
+
+    func generateRegistrationId() -> UInt32 {
+        return TSAccountManager.generateRegistrationId()
     }
 
     func setPniRegistrationId(

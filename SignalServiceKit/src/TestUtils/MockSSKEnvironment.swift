@@ -61,6 +61,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let networkManager = OWSFakeNetworkManager()
         let ows2FAManager = OWS2FAManager()
         let pniSignalProtocolStore = SignalProtocolStore(for: .pni)
+        let profileManager = OWSFakeProfileManager()
         let signalService = OWSSignalServiceMock()
         let signalServiceAddressCache = SignalServiceAddressCache()
         let storageServiceManager = FakeStorageServiceManager()
@@ -80,6 +81,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             networkManager: networkManager,
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniSignalProtocolStore,
+            profileManager: profileManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
@@ -93,7 +95,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let contactsManager = FakeContactsManager()
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = NoopPendingReceiptRecorder()
-        let profileManager = OWSFakeProfileManager()
         let messageManager = OWSMessageManager()
         let blockingManager = BlockingManager()
         let remoteConfigManager = StubbableRemoteConfigManager()

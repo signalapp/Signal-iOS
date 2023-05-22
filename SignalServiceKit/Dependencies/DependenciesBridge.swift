@@ -52,6 +52,8 @@ public class DependenciesBridge {
 
     public let learnMyOwnPniManager: LearnMyOwnPniManager
 
+    public let pniHelloWorldManager: PniHelloWorldManager
+
     public let recipientFetcher: RecipientFetcher
     public let recipientMerger: RecipientMerger
 
@@ -77,6 +79,7 @@ public class DependenciesBridge {
         networkManager: NetworkManager,
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
+        profileManager: ProfileManagerProtocol,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
@@ -96,6 +99,7 @@ public class DependenciesBridge {
             networkManager: networkManager,
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniProtocolStore,
+            profileManager: profileManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
@@ -120,6 +124,7 @@ public class DependenciesBridge {
         networkManager: NetworkManager,
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
+        profileManager: ProfileManagerProtocol,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
@@ -131,6 +136,13 @@ public class DependenciesBridge {
         self.db = SDSDB(databaseStorage: databaseStorage)
         self.keyValueStoreFactory = SDSKeyValueStoreFactory()
 
+        let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
+            messageSender: PniDistributionParameterBuilderImpl.Wrappers.MessageSender(messageSender),
+            pniSignedPreKeyStore: PniDistributionParameterBuilderImpl.Wrappers.SignedPreKeyStore(pniProtocolStore.signedPreKeyStore),
+            schedulers: schedulers,
+            tsAccountManager: PniDistributionParameterBuilderImpl.Wrappers.TSAccountManager(tsAccountManager)
+        )
+
         self.appExpiry = AppExpiryImpl(
             keyValueStoreFactory: keyValueStoreFactory,
             dateProvider: dateProvider,
@@ -140,8 +152,8 @@ public class DependenciesBridge {
 
         self.changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
             schedulers: schedulers,
+            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
             identityManager: ChangePhoneNumberPniManagerImpl.Wrappers.IdentityManager(identityManager),
-            messageSender: ChangePhoneNumberPniManagerImpl.Wrappers.MessageSender(messageSender),
             preKeyManager: ChangePhoneNumberPniManagerImpl.Wrappers.PreKeyManager(),
             pniSignedPreKeyStore: ChangePhoneNumberPniManagerImpl.Wrappers.SignedPreKeyStore(pniProtocolStore.signedPreKeyStore),
             tsAccountManager: ChangePhoneNumberPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
@@ -177,6 +189,19 @@ public class DependenciesBridge {
             databaseStorage: db,
             keyValueStoreFactory: keyValueStoreFactory,
             schedulers: schedulers
+        )
+
+        self.pniHelloWorldManager = PniHelloWorldManagerImpl(
+            database: db,
+            identityManager: PniHelloWorldManagerImpl.Wrappers.IdentityManager(identityManager),
+            keyValueStoreFactory: keyValueStoreFactory,
+            networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
+            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
+            pniSignedPreKeyStore: PniHelloWorldManagerImpl.Wrappers.SignedPreKeyStore(pniProtocolStore.signedPreKeyStore),
+            profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
+            schedulers: schedulers,
+            signalRecipientStore: PniHelloWorldManagerImpl.Wrappers.SignalRecipientStore(),
+            tsAccountManager: PniHelloWorldManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
         )
 
         self.registrationSessionManager = RegistrationSessionManagerImpl(

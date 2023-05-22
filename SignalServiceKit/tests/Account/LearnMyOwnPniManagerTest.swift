@@ -65,7 +65,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         db.write { kvStore.setHasSucceeded(tx: $0) }
 
         db.read { tx in
-            learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+            _ = learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
         }
 
         XCTAssertFalse(accountServiceClientMock.completeWhoAmIRequest())
@@ -79,7 +79,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         tsAccountManagerMock.isPrimaryDevice = false
 
         db.read { tx in
-            learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+            _ = learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
         }
 
         XCTAssertFalse(accountServiceClientMock.completeWhoAmIRequest())
@@ -110,7 +110,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         accountServiceClientMock.mockWhoAmI = .init(aci: localAci, pni: remotePni, e164: localE164)
 
         db.read { tx in
-            learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+            _ = learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
         }
 
         XCTAssertTrue(accountServiceClientMock.completeWhoAmIRequest())
@@ -128,7 +128,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
 
         db.read { tx in
-            learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+            _ = learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
         }
 
         XCTAssertFalse(accountServiceClientMock.completeWhoAmIRequest())
@@ -149,7 +149,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         accountServiceClientMock.mockWhoAmI = .init(aci: remoteAci, pni: remotePni, e164: localE164)
 
         db.read { tx in
-            learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+            _ = learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
         }
 
         XCTAssertTrue(accountServiceClientMock.completeWhoAmIRequest())
@@ -167,7 +167,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
 
         db.read { tx in
-            learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+            _ = learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
         }
 
         XCTAssertFalse(accountServiceClientMock.completeWhoAmIRequest())
@@ -187,7 +187,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         profileFetcherMock.profileFetchResult = .success(nil)
 
         db.read { tx in
-            learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+            _ = learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
         }
 
         XCTAssertFalse(accountServiceClientMock.completeWhoAmIRequest())
@@ -207,7 +207,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         profileFetcherMock.profileFetchResult = .success(Data(repeating: 4, count: 12))
 
         db.read { tx in
-            learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+            _ = learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
         }
 
         XCTAssertFalse(accountServiceClientMock.completeWhoAmIRequest())
@@ -227,7 +227,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         profileFetcherMock.profileFetchResult = .failure(OWSGenericError("whoops"))
 
         db.read { tx in
-            learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+            _ = learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
         }
 
         XCTAssertFalse(accountServiceClientMock.completeWhoAmIRequest())
@@ -247,7 +247,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         profileFetcherMock.profileFetchResult = .success(Data(repeating: 3, count: 12))
 
         db.read { tx in
-            learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+            _ = learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
         }
 
         XCTAssertFalse(accountServiceClientMock.completeWhoAmIRequest())

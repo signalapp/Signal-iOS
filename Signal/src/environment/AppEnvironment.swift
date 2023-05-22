@@ -74,9 +74,20 @@ public class AppEnvironment: NSObject {
         )
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            DependenciesBridge.shared.db.read { tx in
-                DependenciesBridge.shared.learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
-            }
+            let db = DependenciesBridge.shared.db
+            let learnMyOwnPniManager = DependenciesBridge.shared.learnMyOwnPniManager
+            let pniHelloWorldManager = DependenciesBridge.shared.pniHelloWorldManager
+            let schedulers = DependenciesBridge.shared.schedulers
+
+            firstly(on: schedulers.sync) { () -> Promise<Void> in
+                return db.read { tx in
+                    return learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+                }
+            }.done(on: schedulers.global()) { () -> Void in
+                db.write { tx in
+                    pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
+                }
+            }.cauterize()
         }
 
         // Hang certain singletons on Environment too.

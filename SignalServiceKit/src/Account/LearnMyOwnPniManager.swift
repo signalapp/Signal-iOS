@@ -11,7 +11,7 @@ import SignalCoreKit
 /// the client and service. This manager handles syncing the PNI and related
 /// keys as necessary.
 public protocol LearnMyOwnPniManager {
-    func learnMyOwnPniIfNecessary(tx: DBReadTransaction)
+    func learnMyOwnPniIfNecessary(tx: DBReadTransaction) -> Promise<Void>
 }
 
 final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
@@ -54,7 +54,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
         self.schedulers = schedulers
     }
 
-    func learnMyOwnPniIfNecessary(tx syncTx: DBReadTransaction) {
+    func learnMyOwnPniIfNecessary(tx syncTx: DBReadTransaction) -> Promise<Void> {
         let hasCompletedPniLearningAlready = keyValueStore.getBool(
             StoreConstants.hasCompletedPniLearning,
             defaultValue: false,
@@ -63,30 +63,31 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
 
         guard !hasCompletedPniLearningAlready else {
             logger.info("Skipping PNI learning, already completed.")
-            return
+            return .value(())
         }
 
         guard tsAccountManager.isPrimaryDevice(tx: syncTx) else {
             logger.info("Skipping PNI learning on linked device.")
-            return
+            return .value(())
         }
 
         guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: syncTx) else {
             logger.warn("Skipping PNI learning, no local identifiers!")
-            return
+            return .value(())
         }
 
         let localPniIdentityPublicKeyData: Data? = identityManager.pniIdentityPublicKeyData(tx: syncTx)
 
-        firstly(on: schedulers.sync) { () -> Promise<ServiceId> in
+        return firstly(on: schedulers.sync) { () -> Promise<ServiceId> in
             return self.fetchMyPniIfNecessary(localIdentifiers: localIdentifiers)
-        }.then(on: schedulers.sync) { localPni in
+        }.then(on: schedulers.sync) { localPni -> Promise<Void> in
             return self.createPniKeysIfNecessary(
                 localPni: localPni,
                 localPniIdentityPublicKeyData: localPniIdentityPublicKeyData
             )
-        }.catch(on: schedulers.sync) { error in
+        }.recover(on: schedulers.sync) { error in
             self.logger.error("Error learning local PNI! \(error)")
+            throw error
         }
     }
 

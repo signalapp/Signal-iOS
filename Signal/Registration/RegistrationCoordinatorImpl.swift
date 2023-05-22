@@ -3208,7 +3208,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         twoFAMode: AccountAttributes.TwoFactorAuthMode,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
         pniPendingState: ChangePhoneNumberPni.PendingState,
-        pniParams: ChangePhoneNumberPni.Parameters
+        pniParams: PniDistribution.Parameters
     ) -> Guarantee<ChangeNumberResult> {
         Logger.info("")
 

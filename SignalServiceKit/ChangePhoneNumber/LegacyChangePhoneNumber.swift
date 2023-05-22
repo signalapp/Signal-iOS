@@ -42,8 +42,8 @@ public class LegacyChangePhoneNumber: NSObject {
     public func deprecated_buildNewChangeToken(
         forNewE164 newE164: E164,
         transaction synchronousTransaction: SDSAnyWriteTransaction
-    ) -> Promise<(ChangePhoneNumberPni.Parameters, ChangeToken)> {
-        typealias Parameters = ChangePhoneNumberPni.Parameters
+    ) -> Promise<(PniDistribution.Parameters, ChangeToken)> {
+        typealias Parameters = PniDistribution.Parameters
         typealias PendingState = ChangePhoneNumberPni.PendingState
 
         owsAssertDebug(CurrentAppContext().isMainApp)

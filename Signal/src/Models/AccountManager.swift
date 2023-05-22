@@ -187,7 +187,7 @@ public class AccountManager: NSObject, Dependencies {
 
         Logger.info("Changing phone number.")
 
-        typealias PniParameters = ChangePhoneNumberPni.Parameters
+        typealias PniParameters = PniDistribution.Parameters
         typealias ChangeToken = LegacyChangePhoneNumber.ChangeToken
 
         return firstly { () -> Promise<(PniParameters, ChangeToken)> in
@@ -248,7 +248,7 @@ public class AccountManager: NSObject, Dependencies {
         newE164: E164,
         verificationCode: String,
         registrationLock: String?,
-        pniChangePhoneNumberParameters: ChangePhoneNumberPni.Parameters
+        pniChangePhoneNumberParameters: PniDistribution.Parameters
     ) -> Promise<ChangePhoneNumberResponse> {
         firstly { () -> Promise<HTTPResponse> in
             let request = OWSRequestFactory.changePhoneNumberRequest(

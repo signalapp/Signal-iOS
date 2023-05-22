@@ -6,13 +6,13 @@
 import Foundation
 import Curve25519Kit
 
-/// Represents a message sent to linked devices during a change-number
+/// Represents a message sent to linked devices during a PNI distribution event
 /// informing those devices of the new PNI identity.
 ///
 /// Note that this type is not a ``TSOutgoingMessage`` subclass, as it is not
 /// sent through our message-sending machinery, and is instead part of a
-/// change-number request (and thereafter distributed by the service).
-final class PniChangePhoneNumberSyncMessage {
+/// PNI distribution request (and thereafter distributed by the service).
+final class PniDistributionSyncMessage {
     private let pniIdentityKeyPair: ECKeyPair
     private let signedPreKey: SignedPreKeyRecord
     private let registrationId: UInt32

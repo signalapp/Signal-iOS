@@ -265,7 +265,7 @@ public enum RegistrationRequestFactory {
         verificationMethod: VerificationMethod,
         e164: E164,
         reglockToken: String?,
-        pniChangeNumberParameters: ChangePhoneNumberPni.Parameters
+        pniChangeNumberParameters: PniDistribution.Parameters
     ) -> TSRequest {
         let urlPathComponents = URLPathComponents(
             ["v2", "accounts", "number"]
@@ -287,12 +287,12 @@ public enum RegistrationRequestFactory {
             parameters["reglock"] = reglockToken
         }
 
-        parameters["pniIdentityKey"] = pniChangeNumberParameters.pniIdentityKey.prependKeyType().base64EncodedString()
-        parameters["devicePniSignedPrekeys"] = pniChangeNumberParameters.devicePniSignedPreKeys.mapValues {
-            OWSRequestFactory.signedPreKeyRequestParameters($0)
-        }
-        parameters["deviceMessages"] = pniChangeNumberParameters.deviceMessages.map { $0.requestParameters() }
-        parameters["pniRegistrationIds"] = pniChangeNumberParameters.pniRegistrationIds
+        parameters.merge(
+            pniChangeNumberParameters.requestParameters(),
+            uniquingKeysWith: { _, _ in
+                owsFail("Unexpectedly encountered duplicate keys!")
+            }
+        )
 
         let result = TSRequest(url: url, method: "PUT", parameters: parameters)
         result.shouldHaveAuthorizationHeaders = true

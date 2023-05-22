@@ -57,7 +57,7 @@ public extension OWSRequestFactory {
         newPhoneNumberE164: String,
         verificationCode: String,
         registrationLock: String?,
-        pniChangePhoneNumberParameters: ChangePhoneNumberPni.Parameters
+        pniChangePhoneNumberParameters: PniDistribution.Parameters
     ) -> TSRequest {
         owsAssertDebug(nil != newPhoneNumberE164.strippedOrNil)
         owsAssertDebug(nil != verificationCode.strippedOrNil)

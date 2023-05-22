@@ -176,7 +176,7 @@ extension RegistrationCoordinatorImpl {
             e164: E164,
             reglockToken: String?,
             authPassword: String,
-            pniChangeNumberParameters: ChangePhoneNumberPni.Parameters,
+            pniChangeNumberParameters: PniDistribution.Parameters,
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers
         ) -> Guarantee<AccountResponse> {

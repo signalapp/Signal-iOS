@@ -19,10 +19,11 @@ public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
         let keyPair = Curve25519.generateKeyPair()
         let registrationId = UInt32.random(in: 1...0x3fff)
         return .value(.success(
-            parameters: ChangePhoneNumberPni.Parameters.mock(
+            parameters: PniDistribution.Parameters.mock(
                 pniIdentityKeyPair: keyPair,
                 localDeviceId: localDeviceId,
-                registrationId: registrationId
+                localDevicePniSignedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: keyPair),
+                localDevicePniRegistrationId: registrationId
             ),
             pendingState: ChangePhoneNumberPni.PendingState(
                 newE164: newE164,

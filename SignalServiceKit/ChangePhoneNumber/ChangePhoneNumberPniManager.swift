@@ -11,12 +11,6 @@ import Foundation
 public protocol ChangePhoneNumberPniManager {
     /// Prepares for an impending "change number" request.
     ///
-    /// Generates parameters to set a new PNI identity, including:
-    /// - A new identity key for this account.
-    /// - New signed pre-key pairs and registration IDs for all devices.
-    /// - An encrypted message for each linked device informing them about the
-    ///   new identity. Note that this message contains private key data.
-    ///
     /// It is possible that the change-number request will be interrupted
     /// (e.g. app crash, connection loss), but that the new identity will have
     /// already been accepted and committed by the server. In this scenario the
@@ -64,67 +58,6 @@ public protocol ChangePhoneNumberPniManager {
 /// Namespace for change-number PNI types.
 public enum ChangePhoneNumberPni {
 
-    /// PNI-related parameters for a change-number request.
-    public struct Parameters {
-        let pniIdentityKey: Data
-        private(set) var devicePniSignedPreKeys: [String: SignedPreKeyRecord] = [:]
-        private(set) var pniRegistrationIds: [String: UInt32] = [:]
-        private(set) var deviceMessages: [DeviceMessage] = []
-
-        fileprivate init(pniIdentityKey: Data) {
-            self.pniIdentityKey = pniIdentityKey
-        }
-
-        #if TESTABLE_BUILD
-
-        public static func mock(
-            pniIdentityKeyPair: ECKeyPair,
-            localDeviceId: UInt32,
-            registrationId: UInt32
-        ) -> Parameters {
-            var mock = Parameters(pniIdentityKey: pniIdentityKeyPair.publicKey)
-            mock.addLocalDevice(
-                localDeviceId: localDeviceId,
-                signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: pniIdentityKeyPair),
-                registrationId: registrationId
-            )
-            return mock
-        }
-
-        #endif
-
-        fileprivate mutating func addLocalDevice(
-            localDeviceId: UInt32,
-            signedPreKey: SignedPreKeyRecord,
-            registrationId: UInt32
-        ) {
-            devicePniSignedPreKeys["\(localDeviceId)"] = signedPreKey
-            pniRegistrationIds["\(localDeviceId)"] = registrationId
-        }
-
-        fileprivate mutating func addLinkedDevice(
-            deviceId: UInt32,
-            signedPreKey: SignedPreKeyRecord,
-            registrationId: UInt32,
-            deviceMessage: DeviceMessage
-        ) {
-            owsAssert(deviceId == deviceMessage.destinationDeviceId)
-
-            devicePniSignedPreKeys["\(deviceId)"] = signedPreKey
-            pniRegistrationIds["\(deviceId)"] = registrationId
-            deviceMessages.append(deviceMessage)
-        }
-
-        func requestParameters() -> [String: Any] {
-            [
-                "pniIdentityKey": pniIdentityKey.prependKeyType().base64EncodedString(),
-                "devicePniSignedPrekeys": devicePniSignedPreKeys.mapValues { OWSRequestFactory.signedPreKeyRequestParameters($0) },
-                "deviceMessages": deviceMessages.map { $0.requestParameters() },
-                "pniRegistrationIds": pniRegistrationIds
-            ]
-        }
-    }
-
     /// Represents a change-number operation that has not yet been finalized.
     public struct PendingState: Equatable {
         public let newE164: E164
@@ -147,7 +80,7 @@ public enum ChangePhoneNumberPni {
 
     public enum GeneratePniIdentityResult {
         /// Successful generation of PNI change-number parameters and state.
-        case success(parameters: Parameters, pendingState: PendingState)
+        case success(parameters: PniDistribution.Parameters, pendingState: PendingState)
 
         /// An error occurred.
         case failure
@@ -163,26 +96,27 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
     private let logger: PrefixedLogger = .init(prefix: "[CNPNI]")
 
     private let schedulers: Schedulers
+    private let pniDistributionParameterBuilder: PniDistributionParamaterBuilder
 
     private let identityManager: Shims.IdentityManager
-    private let messageSender: Shims.MessageSender
     private let preKeyManager: Shims.PreKeyManager
     private let pniSignedPreKeyStore: Shims.SignedPreKeyStore
     private let tsAccountManager: Shims.TSAccountManager
 
     init(
         schedulers: Schedulers,
+        pniDistributionParameterBuilder: PniDistributionParamaterBuilder,
         identityManager: Shims.IdentityManager,
-        messageSender: Shims.MessageSender,
         preKeyManager: Shims.PreKeyManager,
         pniSignedPreKeyStore: Shims.SignedPreKeyStore,
         tsAccountManager: Shims.TSAccountManager
     ) {
+        self.schedulers = schedulers
+        self.pniDistributionParameterBuilder = pniDistributionParameterBuilder
+
         self.identityManager = identityManager
-        self.messageSender = messageSender
         self.preKeyManager = preKeyManager
         self.pniSignedPreKeyStore = pniSignedPreKeyStore
-        self.schedulers = schedulers
         self.tsAccountManager = tsAccountManager
     }
 
@@ -202,172 +136,27 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         let pendingState = ChangePhoneNumberPni.PendingState(
             newE164: newE164,
             pniIdentityKeyPair: pniIdentityKeyPair,
-            localDevicePniSignedPreKeyRecord: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: pniIdentityKeyPair),
-            localDevicePniRegistrationId: TSAccountManager.generateRegistrationId()
+            localDevicePniSignedPreKeyRecord: pniSignedPreKeyStore.generateSignedPreKey(signedBy: pniIdentityKeyPair),
+            localDevicePniRegistrationId: tsAccountManager.generateRegistrationId()
         )
 
-        var pniParameters = ChangePhoneNumberPni.Parameters(pniIdentityKey: pniIdentityKeyPair.publicKey)
-
-        // Include the signed pre key & registration ID for the current device.
-        pniParameters.addLocalDevice(
-            localDeviceId: localDeviceId,
-            signedPreKey: pendingState.localDevicePniSignedPreKeyRecord,
-            registrationId: pendingState.localDevicePniRegistrationId
-        )
-
-        // Create a signed pre key & registration ID for linked devices.
-        let linkedDevicePromises: [Promise<LinkedDevicePniGenerationParams?>]
-        do {
-            linkedDevicePromises = try buildLinkedDevicePniGenerationParams(
+        return firstly(on: schedulers.sync) { () -> Guarantee<PniDistribution.ParameterGenerationResult> in
+            self.pniDistributionParameterBuilder.buildPniDistributionParameters(
                 localAci: localAci,
                 localAccountId: localAccountId,
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds,
-                pniIdentityKeyPair: pniIdentityKeyPair
+                localPniIdentityKeyPair: pniIdentityKeyPair,
+                localDevicePniSignedPreKey: pendingState.localDevicePniSignedPreKeyRecord,
+                localDevicePniRegistrationId: pendingState.localDevicePniRegistrationId
             )
-        } catch {
-            return .value(.failure)
-        }
-
-        return firstly(on: schedulers.sync) { [schedulers] () -> Guarantee<[Result<LinkedDevicePniGenerationParams?, Error>]> in
-            Guarantee.when(
-                on: schedulers.global(),
-                resolved: linkedDevicePromises
-            )
-        }.map(on: schedulers.sync) { linkedDeviceParamResults -> ChangePhoneNumberPni.GeneratePniIdentityResult in
-            for linkedDeviceParamResult in linkedDeviceParamResults {
-                switch linkedDeviceParamResult {
-                case .success(let param):
-                    guard let param else { continue }
-
-                    pniParameters.addLinkedDevice(
-                        deviceId: param.deviceId,
-                        signedPreKey: param.signedPreKey,
-                        registrationId: param.registrationId,
-                        deviceMessage: param.deviceMessage
-                    )
-                case .failure:
-                    // If we have any errors, return immediately.
-                    return .failure
-                }
+        }.map(on: schedulers.sync) { paramGenerationResult in
+            switch paramGenerationResult {
+            case .success(let parameters):
+                return .success(parameters: parameters, pendingState: pendingState)
+            case .failure:
+                return .failure
             }
-
-            return .success(
-                parameters: pniParameters,
-                pendingState: pendingState
-            )
-        }
-    }
-
-    /// Bundles parameters concerning linked devices and PNI identity
-    /// generation.
-    private struct LinkedDevicePniGenerationParams {
-        let deviceId: UInt32
-        let signedPreKey: SignedPreKeyRecord
-        let registrationId: UInt32
-        let deviceMessage: DeviceMessage
-    }
-
-    /// Asynchronously build params for generating a new PNI identity, for each
-    /// linked device.
-    /// - Returns
-    /// One promise per linked device for which PNI identity generation params
-    /// are being built. A `nil` param in a resolved promise indicates a linked
-    /// device that is no longer valid, and was ignored.
-    private func buildLinkedDevicePniGenerationParams(
-        localAci: ServiceId,
-        localAccountId: String,
-        localDeviceId: UInt32,
-        localUserAllDeviceIds: [UInt32],
-        pniIdentityKeyPair: ECKeyPair
-    ) throws -> [Promise<LinkedDevicePniGenerationParams?>] {
-        let localUserLinkedDeviceIds: [UInt32] = localUserAllDeviceIds.filter { deviceId in
-            deviceId != localDeviceId
-        }
-
-        guard localUserLinkedDeviceIds.count == (localUserAllDeviceIds.count - 1) else {
-            throw OWSAssertionError("Local device ID missing - can't change number if the local device isn't registered.")
-        }
-
-        return localUserLinkedDeviceIds.map { linkedDeviceId in
-            let logger = logger
-            let signedPreKey = SSKSignedPreKeyStore.generateSignedPreKey(signedBy: pniIdentityKeyPair)
-            let registrationId = TSAccountManager.generateRegistrationId()
-
-            logger.info("Building device message for device with ID \(linkedDeviceId).")
-
-            return encryptPniChangeNumber(
-                recipientId: localAccountId,
-                recipientAci: localAci,
-                recipientDeviceId: linkedDeviceId,
-                identityKeyPair: pniIdentityKeyPair,
-                signedPreKey: signedPreKey,
-                registrationId: registrationId
-            ).map(on: schedulers.sync) { deviceMessage -> LinkedDevicePniGenerationParams? in
-                guard let deviceMessage else {
-                    logger.warn("Missing device message - is device with ID \(linkedDeviceId) invalid?")
-                    return nil
-                }
-
-                logger.info("Built device message for device with ID \(linkedDeviceId).")
-
-                return LinkedDevicePniGenerationParams(
-                    deviceId: linkedDeviceId,
-                    signedPreKey: signedPreKey,
-                    registrationId: registrationId,
-                    deviceMessage: deviceMessage
-                )
-            }.recover(on: schedulers.sync) { error throws -> Promise<LinkedDevicePniGenerationParams?> in
-                logger.error("Failed to build device message for device with ID \(linkedDeviceId): \(error).")
-                throw error
-            }
-        }
-    }
-
-    /// Builds a ``DeviceMessage`` for the given parameters, for delivery to a
-    /// linked device.
-    ///
-    /// - Returns
-    /// The message for the linked device. If `nil`, indicates the device was
-    /// invalid and should be skipped.
-    private func encryptPniChangeNumber(
-        recipientId: String,
-        recipientAci: ServiceId,
-        recipientDeviceId: UInt32,
-        identityKeyPair: ECKeyPair,
-        signedPreKey: SignedPreKeyRecord,
-        registrationId: UInt32
-    ) -> Promise<DeviceMessage?> {
-        let message = PniChangePhoneNumberSyncMessage(
-            pniIdentityKeyPair: identityKeyPair,
-            signedPreKey: signedPreKey,
-            registrationId: registrationId
-        )
-
-        let plaintextContent: Data
-        do {
-            plaintextContent = try message.buildSerializedMessageProto()
-        } catch let error {
-            return .init(error: error)
-        }
-
-        return firstly(on: schedulers.global()) { () throws -> DeviceMessage? in
-            // Important to wrap this in asynchronity, since it might make
-            // blocking network requests.
-            let deviceMessage: DeviceMessage? = try self.messageSender.buildDeviceMessage(
-                forMessagePlaintextContent: plaintextContent,
-                messageEncryptionStyle: .whisper,
-                recipientId: recipientId,
-                serviceId: recipientAci,
-                deviceId: recipientDeviceId,
-                isOnlineMessage: false,
-                isTransientSenderKeyDistributionMessage: false,
-                isStoryMessage: false,
-                isResendRequestMessage: false,
-                udSendingParamsProvider: nil // Sync messages do not use UD
-            )
-
-            return deviceMessage
         }
     }
 

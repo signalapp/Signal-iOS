@@ -56,6 +56,7 @@ public class AppSetup {
         let networkManager = NetworkManager()
         let ows2FAManager = OWS2FAManager()
         let pniSignalProtocolStore = SignalProtocolStore(for: .pni)
+        let profileManager = OWSProfileManager(databaseStorage: databaseStorage)
         let signalService = OWSSignalService()
         let signalServiceAddressCache = SignalServiceAddressCache()
         let storageServiceManager = StorageServiceManagerImpl.shared
@@ -75,6 +76,7 @@ public class AppSetup {
             networkManager: networkManager,
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniSignalProtocolStore,
+            profileManager: profileManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
@@ -96,7 +98,6 @@ public class AppSetup {
         let contactsManager = OWSContactsManager(swiftValues: .makeWithValuesFromDependenciesBridge())
         let linkPreviewManager = OWSLinkPreviewManager()
         let pendingReceiptRecorder = MessageRequestPendingReceipts()
-        let profileManager = OWSProfileManager(databaseStorage: databaseStorage)
         let messageManager = OWSMessageManager()
         let blockingManager = BlockingManager()
         let remoteConfigManager = ServiceRemoteConfigManager(

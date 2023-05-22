@@ -8,35 +8,33 @@ import XCTest
 @testable import SignalServiceKit
 
 class ChangePhoneNumberPniManagerTest: XCTestCase {
-    private typealias Parameters = ChangePhoneNumberPni.Parameters
-    private typealias PendingState = ChangePhoneNumberPni.PendingState
-    private typealias GenerateResult = ChangePhoneNumberPni.GeneratePniIdentityResult
+    private var identityManagerMock: IdentityManagerMock!
+    private var pniDistributionParameterBuilderMock: PniDistributionParameterBuilderMock!
+    private var preKeyManagerMock: PreKeyManagerMock!
+    private var signedPreKeyStoreMock: SignedPreKeyStoreMock!
+    private var tsAccountManagerMock: TSAccountManagerMock!
 
-    private var identityManagerMock: ChangePhoneNumberPniManagerImpl.Mocks.IdentityManager!
-    private var messageSenderMock: ChangePhoneNumberPniManagerImpl.Mocks.MessageSender!
-    private var preKeyManagerMock: ChangePhoneNumberPniManagerImpl.Mocks.PreKeyManager!
-    private var signedPreKeyStoreMock: ChangePhoneNumberPniManagerImpl.Mocks.SignedPreKeyStore!
-    private var tsAccountManagerMock: ChangePhoneNumberPniManagerImpl.Mocks.TSAccountManager!
-
-    private var scheduler: TestScheduler!
+    private var schedulers: TestSchedulers!
     private var db: MockDB!
 
-    private var changeNumberPniManager: ChangePhoneNumberPniManagerImpl!
+    private var changeNumberPniManager: ChangePhoneNumberPniManager!
 
     public override func setUp() {
         identityManagerMock = .init()
-        messageSenderMock = .init()
+        pniDistributionParameterBuilderMock = .init()
         preKeyManagerMock = .init()
         signedPreKeyStoreMock = .init()
         tsAccountManagerMock = .init()
 
-        scheduler = .init()
+        schedulers = TestSchedulers(scheduler: TestScheduler())
+        schedulers.scheduler.start()
+
         db = .init()
 
-        changeNumberPniManager = .init(
-            schedulers: TestSchedulers(scheduler: scheduler),
+        changeNumberPniManager = ChangePhoneNumberPniManagerImpl(
+            schedulers: schedulers,
+            pniDistributionParameterBuilder: pniDistributionParameterBuilderMock,
             identityManager: identityManagerMock,
-            messageSender: messageSenderMock,
             preKeyManager: preKeyManagerMock,
             pniSignedPreKeyStore: signedPreKeyStoreMock,
             tsAccountManager: tsAccountManagerMock
@@ -45,90 +43,62 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
     // MARK: - Generate identity
 
-    func testGenerateIdentity_HappyPath() {
-        let e164: E164 = .init("+17735550199")!
-        let linkedDeviceIds: [UInt32] = [123]
+    func testGenerateIdentityHappyPath() {
+        let e164 = E164("+17735550199")!
 
-        messageSenderMock.deviceMessageMocks = [
-            .valid(registrationId: 456)
-        ]
-
-        scheduler.start()
+        pniDistributionParameterBuilderMock.buildOutcomes = [.success]
 
         let (parameters, pendingState) = generateIdentity(
-            forNewE164: e164,
-            linkedDeviceIds: linkedDeviceIds
+            e164: e164,
+            linkedDeviceIds: [2, 3]
         ).value!.unwrapSuccess
 
-        XCTAssertEqual(parameters.devicePniSignedPreKeys.count, 2)
-        XCTAssertEqual(parameters.pniRegistrationIds.count, 2)
-        XCTAssertEqual(parameters.deviceMessages.count, 1)
-        XCTAssertEqual(parameters.deviceMessages.first?.destinationDeviceId, 123)
-        XCTAssertEqual(parameters.deviceMessages.first?.destinationRegistrationId, 456)
+        XCTAssertEqual(e164, pendingState.newE164)
 
-        XCTAssertEqual(pendingState.newE164, e164)
+        XCTAssertEqual(identityManagerMock.generatedKeyPairs.count, 1)
+        XCTAssertEqual(identityManagerMock.generatedKeyPairs.first?.publicKey, parameters.pniIdentityKey)
+        XCTAssertEqual(identityManagerMock.generatedKeyPairs.first, pendingState.pniIdentityKeyPair)
 
-        XCTAssert(messageSenderMock.deviceMessageMocks.isEmpty)
+        XCTAssertEqual(signedPreKeyStoreMock.generatedSignedPreKeys.count, 1)
+        XCTAssertEqual(signedPreKeyStoreMock.generatedSignedPreKeys.first, pendingState.localDevicePniSignedPreKeyRecord)
+
+        XCTAssertEqual(tsAccountManagerMock.generatedRegistrationIds.count, 1)
+        XCTAssertEqual(tsAccountManagerMock.generatedRegistrationIds.first, pendingState.localDevicePniRegistrationId)
+
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedForDeviceIds, [[1, 2, 3]])
+        XCTAssertTrue(pniDistributionParameterBuilderMock.buildOutcomes.isEmpty)
     }
 
-    /// If one of our linked devices is invalid, per the message sender, we
-    /// should skip it and generate identity without parameters for it.
-    func testGenerateIdentity_InvalidDevice() {
-        let e164: E164 = .init("+17735550199")!
-        let linkedDeviceIds: [UInt32] = [123, 1234]
+    func testGenerateIdentityWithError() {
+        let e164 = E164("+17735550199")!
 
-        messageSenderMock.deviceMessageMocks = [
-            .valid(registrationId: 456),
-            .invalidDevice
-        ]
-
-        scheduler.start()
-
-        let (parameters, pendingState) = generateIdentity(
-            forNewE164: e164,
-            linkedDeviceIds: linkedDeviceIds
-        ).value!.unwrapSuccess
-
-        XCTAssertEqual(parameters.devicePniSignedPreKeys.count, 2)
-        XCTAssertEqual(parameters.pniRegistrationIds.count, 2)
-        XCTAssertEqual(parameters.deviceMessages.count, 1)
-        XCTAssertEqual(parameters.deviceMessages.first?.destinationDeviceId, 123)
-        XCTAssertEqual(parameters.deviceMessages.first?.destinationRegistrationId, 456)
-
-        XCTAssertEqual(pendingState.newE164, e164)
-
-        XCTAssert(messageSenderMock.deviceMessageMocks.isEmpty)
-    }
-
-    func testGenerateIdentity_Error() {
-        let e164: E164 = .init("+17735550199")!
-        let linkedDeviceIds: [UInt32] = [123]
-
-        messageSenderMock.deviceMessageMocks = [
-            .error
-        ]
-
-        scheduler.start()
+        pniDistributionParameterBuilderMock.buildOutcomes = [.failure]
 
         let isFailureResult = generateIdentity(
-            forNewE164: e164,
-            linkedDeviceIds: linkedDeviceIds
+            e164: e164,
+            linkedDeviceIds: [2, 3]
         ).value!.isError
 
-        XCTAssert(isFailureResult)
-        XCTAssert(messageSenderMock.deviceMessageMocks.isEmpty)
+        XCTAssertTrue(isFailureResult)
+
+        XCTAssertEqual(identityManagerMock.generatedKeyPairs.count, 1)
+        XCTAssertEqual(signedPreKeyStoreMock.generatedSignedPreKeys.count, 1)
+        XCTAssertEqual(tsAccountManagerMock.generatedRegistrationIds.count, 1)
+
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedForDeviceIds, [[1, 2, 3]])
+        XCTAssertTrue(pniDistributionParameterBuilderMock.buildOutcomes.isEmpty)
     }
 
     // MARK: - Finalize identity
 
-    func testFinalizeIdentity_HappyPath() {
-        let e164: E164 = .init("+17745550199")!
+    func testFinalizeIdentityHappyPath() {
+        let e164 = E164("+17735550199")!
 
-        scheduler.start()
+        pniDistributionParameterBuilderMock.buildOutcomes = [.success]
 
         let (_, pendingState) = generateIdentity(
-            forNewE164: e164,
-            linkedDeviceIds: []
+            e164: e164,
+            linkedDeviceIds: [2, 3]
         ).value!.unwrapSuccess
 
         db.write { transaction in
@@ -165,11 +135,10 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
     // MARK: - Helpers
 
     private func generateIdentity(
-        forNewE164 newE164: E164,
+        e164: E164,
         linkedDeviceIds: [UInt32]
-    ) -> Guarantee<GenerateResult> {
-        let e164: E164 = .init("+17735550199")!
-        let aci: ServiceId = .init(UUID())
+    ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult> {
+        let aci = ServiceId(UUID())
         let accountId: String = UUID().uuidString
 
         let localDeviceId: UInt32 = 1
@@ -186,7 +155,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
 private extension ChangePhoneNumberPni.GeneratePniIdentityResult {
     var unwrapSuccess: (
-        ChangePhoneNumberPni.Parameters,
+        PniDistribution.Parameters,
         ChangePhoneNumberPni.PendingState
     ) {
         guard case let .success(parameters, pendingState) = self else {
@@ -202,5 +171,127 @@ private extension ChangePhoneNumberPni.GeneratePniIdentityResult {
         }
 
         return true
+    }
+}
+
+// MARK: - Mocks
+
+// MARK: IdentityManager
+
+private class IdentityManagerMock: ChangePhoneNumberPniManagerImpl.Shims.IdentityManager {
+    var generatedKeyPairs: [ECKeyPair] = []
+    var storedKeyPairs: [OWSIdentity: ECKeyPair] = [:]
+
+    func generateNewIdentityKeyPair() -> ECKeyPair {
+        let keyPair = Curve25519.generateKeyPair()
+        generatedKeyPairs.append(keyPair)
+        return keyPair
+    }
+
+    func storeIdentityKeyPair(
+        _ keyPair: ECKeyPair?,
+        for identity: OWSIdentity,
+        transaction _: DBWriteTransaction
+    ) {
+        storedKeyPairs[identity] = keyPair
+    }
+}
+
+// MARK: PreKeyManager
+
+private class PreKeyManagerMock: ChangePhoneNumberPniManagerImpl.Shims.PreKeyManager {
+    var attemptedRefreshes: [(OWSIdentity, Bool)] = []
+
+    func refreshOneTimePreKeys(
+        forIdentity identity: OWSIdentity,
+        alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
+    ) {
+        attemptedRefreshes.append((identity, shouldRefreshSignedPreKey))
+    }
+}
+
+// MARK: PniDistributionParameterBuilder
+
+private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuilder {
+    enum BuildOutcome {
+        case success
+        case failure
+    }
+
+    var buildOutcomes: [BuildOutcome] = []
+    var buildRequestedForDeviceIds: [[UInt32]] = []
+
+    func buildPniDistributionParameters(
+        localAci: ServiceId,
+        localAccountId: String,
+        localDeviceId: UInt32,
+        localUserAllDeviceIds: [UInt32],
+        localPniIdentityKeyPair: ECKeyPair,
+        localDevicePniSignedPreKey: SignedPreKeyRecord,
+        localDevicePniRegistrationId: UInt32
+    ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
+        guard let buildOutcome = buildOutcomes.first else {
+            XCTFail("Missing build outcome!")
+            return .value(.failure)
+        }
+
+        buildOutcomes = Array(buildOutcomes.dropFirst())
+
+        buildRequestedForDeviceIds.append(localUserAllDeviceIds)
+
+        switch buildOutcome {
+        case .success:
+            return .value(.success(PniDistribution.Parameters.mock(
+                pniIdentityKeyPair: localPniIdentityKeyPair,
+                localDeviceId: localDeviceId,
+                localDevicePniSignedPreKey: localDevicePniSignedPreKey,
+                localDevicePniRegistrationId: localDevicePniRegistrationId
+            )))
+        case .failure:
+            return .value(.failure)
+        }
+    }
+}
+
+// MARK: SignedPreKeyStore
+
+private class SignedPreKeyStoreMock: ChangePhoneNumberPniManagerImpl.Shims.SignedPreKeyStore {
+    var generatedSignedPreKeys: [SignedPreKeyRecord] = []
+    var storedSignedPreKeyId: Int32?
+    var storedSignedPreKeyRecord: SignedPreKeyRecord?
+
+    func generateSignedPreKey(signedBy: ECKeyPair) -> SignedPreKeyRecord {
+        let signedPreKey = SSKSignedPreKeyStore.generateSignedPreKey(signedBy: signedBy)
+        generatedSignedPreKeys.append(signedPreKey)
+        return signedPreKey
+    }
+
+    func storeSignedPreKeyAsAcceptedAndCurrent(
+        signedPreKeyId: Int32,
+        signedPreKeyRecord: SignedPreKeyRecord,
+        transaction: DBWriteTransaction
+    ) {
+        storedSignedPreKeyId = signedPreKeyId
+        storedSignedPreKeyRecord = signedPreKeyRecord
+    }
+}
+
+// MARK: TSAccountManager
+
+private class TSAccountManagerMock: ChangePhoneNumberPniManagerImpl.Shims.TSAccountManager {
+    var generatedRegistrationIds: [UInt32] = []
+    var storedPniRegistrationId: UInt32?
+
+    func generateRegistrationId() -> UInt32 {
+        let registrationId = UInt32.random(in: 0..<100)
+        generatedRegistrationIds.append(registrationId)
+        return registrationId
+    }
+
+    func setPniRegistrationId(
+        newRegistrationId: UInt32,
+        transaction: DBWriteTransaction
+    ) {
+        storedPniRegistrationId = newRegistrationId
     }
 }
