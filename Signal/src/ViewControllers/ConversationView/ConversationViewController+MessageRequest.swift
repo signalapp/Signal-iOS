@@ -262,21 +262,26 @@ extension ConversationViewController: MessageRequestDelegate {
             SDSDatabaseStorage.shared.asyncWrite { transaction in
                 if unblockThread {
                     self.blockingManager.removeBlockedThread(thread, wasLocallyInitiated: true, transaction: transaction)
+                } else {
+                    // If this is an accept, not an unblock, we should send a
+                    // sync messages telling our other devices that we accepted.
+                    self.syncManager.sendMessageRequestResponseSyncMessage(
+                        thread: thread,
+                        responseType: .accept,
+                        transaction: transaction
+                    )
                 }
 
                 // Whitelist the thread
                 self.profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
 
-                // Send a sync message notifying our other devices the request was accepted
-                self.syncManager.sendMessageRequestResponseSyncMessage(
-                    thread: thread,
-                    responseType: .accept,
-                    transaction: transaction
-                )
+                if !thread.isGroupThread {
+                    // If this is a contact thread, we should give the
+                    // now-unblocked contact our profile key.
+                    let profileKeyMessage = OWSProfileKeyMessage(thread: thread, transaction: transaction)
+                    Self.sskJobQueues.messageSenderJobQueue.add(message: profileKeyMessage.asPreparer, transaction: transaction)
+                }
 
-                // Send our profile key to the sender
-                let profileKeyMessage = OWSProfileKeyMessage(thread: thread, transaction: transaction)
-                Self.sskJobQueues.messageSenderJobQueue.add(message: profileKeyMessage.asPreparer, transaction: transaction)
                 NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
             }
         }
