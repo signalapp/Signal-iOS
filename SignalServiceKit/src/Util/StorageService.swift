@@ -6,7 +6,7 @@
 import Foundation
 
 @objc
-public protocol StorageServiceManager {
+public protocol StorageServiceManagerObjc {
     func recordPendingDeletions(deletedGroupV1Ids: [Data])
 
     func recordPendingUpdates(updatedAccountIds: [AccountId])
@@ -49,8 +49,11 @@ public protocol StorageServiceManager {
     /// state at the time this method is invoked, the returned Promise will be
     /// resolved after that state has been fetched".
     func waitForPendingRestores() -> AnyPromise
+}
 
-    func resetLocalData(transaction: SDSAnyWriteTransaction)
+public protocol StorageServiceManager: StorageServiceManagerObjc {
+
+    func resetLocalData(transaction: DBWriteTransaction)
 }
 
 // MARK: -
@@ -250,10 +253,13 @@ public struct StorageService: Dependencies {
             switch response.status {
             case .success:
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
-                let decryptResult = DependenciesBridge.shared.svr.decrypt(
-                    keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
-                    encryptedData: encryptedManifestContainer.value
-                )
+                let decryptResult = self.databaseStorage.read(block: { tx in
+                    return DependenciesBridge.shared.svr.decrypt(
+                        keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
+                        encryptedData: encryptedManifestContainer.value,
+                        transaction: tx.asV2Read
+                    )
+                })
                 switch decryptResult {
                 case .success(let manifestData):
                     return .latestManifest(try StorageServiceProtoManifestRecord(serializedData: manifestData))
@@ -291,10 +297,13 @@ public struct StorageService: Dependencies {
             // Encrypt the manifest
             let manifestData = try manifest.serializedData()
             let encryptedManifestData: Data
-            let encryptResult = DependenciesBridge.shared.svr.encrypt(
-                keyType: .storageServiceManifest(version: manifest.version),
-                data: manifestData
-            )
+            let encryptResult = self.databaseStorage.read(block: { tx in
+                return DependenciesBridge.shared.svr.encrypt(
+                    keyType: .storageServiceManifest(version: manifest.version),
+                    data: manifestData,
+                    transaction: tx.asV2Read
+                )
+            })
             switch encryptResult {
             case .success(let data):
                 encryptedManifestData = data
@@ -312,10 +321,13 @@ public struct StorageService: Dependencies {
             builder.setInsertItem(try newItems.map { item in
                 let itemData = try item.record.serializedData()
                 let encryptedItemData: Data
-                let itemEncryptionResult = DependenciesBridge.shared.svr.encrypt(
-                    keyType: .storageServiceRecord(identifier: item.identifier),
-                    data: itemData
-                )
+                let itemEncryptionResult = self.databaseStorage.read(block: { tx in
+                    return DependenciesBridge.shared.svr.encrypt(
+                        keyType: .storageServiceRecord(identifier: item.identifier),
+                        data: itemData,
+                        transaction: tx.asV2Read
+                    )
+                })
                 switch itemEncryptionResult {
                 case .success(let data):
                     encryptedItemData = data
@@ -349,10 +361,14 @@ public struct StorageService: Dependencies {
                 // Our version was out of date, we should've received a copy of the latest version
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
                 let manifestData: Data
-                let decryptionResult = DependenciesBridge.shared.svr.decrypt(
-                    keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
-                    encryptedData: encryptedManifestContainer.value
-                )
+
+                let decryptionResult = self.databaseStorage.read(block: { tx in
+                    return DependenciesBridge.shared.svr.decrypt(
+                        keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
+                        encryptedData: encryptedManifestContainer.value,
+                        transaction: tx.asV2Read
+                    )
+                })
                 switch decryptionResult {
                 case .success(let data):
                     manifestData = data
@@ -418,10 +434,13 @@ public struct StorageService: Dependencies {
                     throw StorageError.assertion
                 }
                 let itemData: Data
-                let itemDecryptionResult = DependenciesBridge.shared.svr.decrypt(
-                    keyType: .storageServiceRecord(identifier: itemIdentifier),
-                    encryptedData: encryptedItemData
-                )
+                let itemDecryptionResult = self.databaseStorage.read(block: { tx in
+                    return DependenciesBridge.shared.svr.decrypt(
+                        keyType: .storageServiceRecord(identifier: itemIdentifier),
+                        encryptedData: encryptedItemData,
+                        transaction: tx.asV2Read
+                    )
+                })
                 switch itemDecryptionResult {
                 case .success(let data):
                     itemData = data

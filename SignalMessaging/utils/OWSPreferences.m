@@ -295,7 +295,7 @@ NSString *const OWSPreferencesKeyDeviceScale = @"OWSPreferencesKeyDeviceScale";
     [self setBool:value forKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators];
 
     [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
-    [SSKEnvironment.shared.storageServiceManager recordPendingLocalAccountUpdates];
+    [SSKEnvironment.shared.storageServiceManagerObjc recordPendingLocalAccountUpdates];
 }
 
 - (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction

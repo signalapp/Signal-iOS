@@ -378,6 +378,8 @@ public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordin
 
 public class _RegistrationCoordinator_UDManagerMock: _RegistrationCoordinator_UDManagerShim {
 
+    public init() {}
+
     public var shouldAllowUnrestrictedAccessLocalMock: (() -> Bool) = { true }
 
     public func shouldAllowUnrestrictedAccessLocal(transaction: DBReadTransaction) -> Bool {

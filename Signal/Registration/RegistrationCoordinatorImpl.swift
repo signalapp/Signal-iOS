@@ -1412,13 +1412,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func loadLocalMasterKeyAndUpdateState(_ tx: DBWriteTransaction) {
-        // The hex vs base64 different here is intentional.
-        let regRecoveryPw = deps.svr.data(for: .registrationRecoveryPassword, transaction: tx)?.base64EncodedString()
+        let regRecoveryPw = deps.svr.data(
+            for: .registrationRecoveryPassword,
+            transaction: tx
+        )?.canonicalStringRepresentation
         inMemoryState.regRecoveryPw = regRecoveryPw
         if regRecoveryPw != nil {
             updatePersistedState(tx) { $0.shouldSkipRegistrationSplash = true }
         }
-        inMemoryState.reglockToken = deps.svr.data(for: .registrationLock, transaction: tx)?.hexadecimalString
+        inMemoryState.reglockToken = deps.svr.data(
+            for: .registrationLock,
+            transaction: tx
+        )?.canonicalStringRepresentation
         // If we have a local master key, theres no need to restore after registration.
         // (we will still back up though)
         inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = !deps.svr.hasMasterKey(transaction: tx)

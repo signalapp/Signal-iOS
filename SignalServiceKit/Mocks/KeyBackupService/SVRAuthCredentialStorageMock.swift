@@ -45,6 +45,11 @@ public class SVRAuthCredentialStorageMock: SVRAuthCredentialStorage {
         invalidCredentials.lazy.map(\.credential.username).forEach { svr2Dict[$0] = nil }
     }
 
+    public func removeSVR2CredentialsForCurrentUser(_ transaction: DBWriteTransaction) {
+        guard let currentSVR2Username else { return }
+        svr2Dict[currentSVR2Username] = nil
+    }
+
     // MARK: - KBS
 
     public var currentKBSUsername: String?

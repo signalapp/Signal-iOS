@@ -16,9 +16,4 @@ public final class SecureValueRecoveryObjcBridge: NSObject {
     public static func hasBackedUpMasterKey(transaction: SDSAnyReadTransaction) -> Bool {
         return DependenciesBridge.shared.svr.hasBackedUpMasterKey(transaction: transaction.asV2Read)
     }
-
-    @objc
-    public static func deriveRegistrationLockToken(transaction: SDSAnyReadTransaction) -> String? {
-        return DependenciesBridge.shared.svr.deriveRegistrationLockToken(transaction: transaction.asV2Read)
-    }
 }

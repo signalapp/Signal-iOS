@@ -2312,7 +2312,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_resetStorageServiceData) { transaction in
-            Self.storageServiceManager.resetLocalData(transaction: transaction.asAnyWrite)
+            Self.storageServiceManager.resetLocalData(transaction: transaction.asAnyWrite.asV2Write)
             return .success(())
         }
 

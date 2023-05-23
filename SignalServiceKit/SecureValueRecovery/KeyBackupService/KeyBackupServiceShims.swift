@@ -23,14 +23,12 @@ import Foundation
 extension SVR {
     public enum Shims {
         public typealias TSAccountManager = _KeyBackupServiceImpl_TSAccountManagerShim
-        public typealias StorageServiceManager = _KeyBackupServiceImpl_StorageServiceManagerShim
         public typealias OWS2FAManager = _KeyBackupServiceImpl_OWS2FAManagerShim
         public typealias RemoteAttestation = _KeyBackupServiceImpl_RemoteAttestationShim
     }
 
     public enum Wrappers {
         public typealias TSAccountManager = _KeyBackupServiceImpl_TSAccountManagerWrapper
-        public typealias StorageServiceManager = _KeyBackupServiceImpl_StorageServiceManagerWrapper
         public typealias OWS2FAManager = _KeyBackupServiceImpl_OWS2FAManagerWrapper
         public typealias RemoteAttestation = _KeyBackupServiceImpl_RemoteAttestationWrapper
     }
@@ -42,6 +40,8 @@ public protocol _KeyBackupServiceImpl_TSAccountManagerShim {
 
     func isPrimaryDevice(transaction: DBReadTransaction) -> Bool
     func isRegisteredAndReady(transaction: DBReadTransaction) -> Bool
+
+    func scheduleAccountAttributesUpdate(authedAccount: AuthedAccount, transaction: DBWriteTransaction)
 }
 
 public class _KeyBackupServiceImpl_TSAccountManagerWrapper: SVR.Shims.TSAccountManager {
@@ -55,30 +55,11 @@ public class _KeyBackupServiceImpl_TSAccountManagerWrapper: SVR.Shims.TSAccountM
     public func isRegisteredAndReady(transaction: DBReadTransaction) -> Bool {
         return accountManager.isRegisteredAndReady(transaction: SDSDB.shimOnlyBridge(transaction))
     }
-}
 
-// MARK: - StorageServiceManager
-
-public protocol _KeyBackupServiceImpl_StorageServiceManagerShim {
-    func resetLocalData(transaction: DBWriteTransaction)
-    func restoreOrCreateManifestIfNecessary(
-        authedAccount: AuthedAccount
-    )
-}
-
-public class _KeyBackupServiceImpl_StorageServiceManagerWrapper: SVR.Shims.StorageServiceManager {
-    private let manager: StorageServiceManager
-    public init(_ manager: StorageServiceManager) { self.manager = manager }
-
-    public func resetLocalData(transaction: DBWriteTransaction) {
-        manager.resetLocalData(transaction: SDSDB.shimOnlyBridge(transaction))
-    }
-
-    public func restoreOrCreateManifestIfNecessary(
-        authedAccount: AuthedAccount
-    ) {
-        manager.restoreOrCreateManifestIfNecessary(
-            authedAccount: authedAccount
+    public func scheduleAccountAttributesUpdate(authedAccount: AuthedAccount, transaction: DBWriteTransaction) {
+        accountManager.scheduleAccountAttributesUpdate(
+            authedAccount: authedAccount,
+            transaction: SDSDB.shimOnlyBridge(transaction)
         )
     }
 }

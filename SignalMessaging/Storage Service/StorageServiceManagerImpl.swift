@@ -368,10 +368,9 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         return promise
     }
 
-    @objc
-    public func resetLocalData(transaction: SDSAnyWriteTransaction) {
+    public func resetLocalData(transaction: DBWriteTransaction) {
         Logger.info("Resetting local storage service data.")
-        StorageServiceOperation.keyValueStore.removeAll(transaction: transaction)
+        StorageServiceOperation.keyValueStore.removeAll(transaction: SDSDB.shimOnlyBridge(transaction))
     }
 
     private func cleanUpUnknownData() {

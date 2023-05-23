@@ -82,7 +82,11 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             }
 
             let storageServiceKey = DependenciesBridge.shared.svr.data(for: .storageService, transaction: transaction.asV2Read)
-            let syncKeysMessage = OWSSyncKeysMessage(thread: thread, storageServiceKey: storageServiceKey, transaction: transaction)
+            let syncKeysMessage = OWSSyncKeysMessage(
+                thread: thread,
+                storageServiceKey: storageServiceKey?.rawData,
+                transaction: transaction
+            )
             self.sskJobQueues.messageSenderJobQueue.add(message: syncKeysMessage.asPreparer, transaction: transaction)
         }
     }

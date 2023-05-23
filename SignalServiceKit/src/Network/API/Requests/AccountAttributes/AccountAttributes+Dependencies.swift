@@ -96,11 +96,10 @@ extension AccountAttributes {
             twoFaMode = .none
         } else {
             if
-                let reglockToken = svr.deriveRegistrationLockToken(transaction: transaction.asV2Read),
-                reglockToken.isEmpty.negated,
+                let reglockToken = svr.data(for: .registrationLock, transaction: transaction.asV2Read),
                 dependencies.ows2FAManager.isRegistrationLockV2Enabled(transaction: transaction)
             {
-                twoFaMode = .v2(reglockToken: reglockToken)
+                twoFaMode = .v2(reglockToken: reglockToken.canonicalStringRepresentation)
             } else if
                 let pinCode = dependencies.ows2FAManager.pinCode(with: transaction),
                 pinCode.isEmpty.negated,
@@ -115,7 +114,7 @@ extension AccountAttributes {
         let registrationRecoveryPassword = svr.data(
             for: .registrationRecoveryPassword,
             transaction: transaction.asV2Read
-        )?.base64EncodedString()
+        )?.canonicalStringRepresentation
 
         let encryptedDeviceName = (encryptedDeviceNameRaw?.isEmpty ?? true) ? nil : encryptedDeviceNameRaw?.base64EncodedString()
 

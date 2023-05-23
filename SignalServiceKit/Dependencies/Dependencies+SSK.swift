@@ -217,11 +217,11 @@ public extension NSObject {
         SSKEnvironment.shared.contactsManagerRef
     }
 
-    final var storageServiceManager: StorageServiceManager {
+    final var storageServiceManagerObjc: StorageServiceManagerObjc {
         SSKEnvironment.shared.storageServiceManagerRef
     }
 
-    static var storageServiceManager: StorageServiceManager {
+    static var storageServiceManagerObjc: StorageServiceManagerObjc {
         SSKEnvironment.shared.storageServiceManagerRef
     }
 
@@ -465,6 +465,17 @@ public extension NSObject {
     @nonobjc
     static var contactDiscoveryManager: ContactDiscoveryManager {
         SSKEnvironment.shared.contactDiscoveryManagerRef
+    }
+}
+
+public extension NSObject {
+
+    final var storageServiceManager: StorageServiceManager {
+        SSKEnvironment.shared.storageServiceManagerRef
+    }
+
+    static var storageServiceManager: StorageServiceManager {
+        SSKEnvironment.shared.storageServiceManagerRef
     }
 }
 

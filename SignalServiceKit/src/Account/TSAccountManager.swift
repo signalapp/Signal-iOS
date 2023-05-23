@@ -401,8 +401,8 @@ public extension TSAccountManager {
         return updateAccountAttributesIfNecessaryAttempt(authedAccount: authedAccount)
     }
 
-    // Sets the flag to force an account attributes update,
-    // then initiates an attempt.
+    // Sets the flag to force an account attributes update synchronously,
+    // then initiates an attempt after the transaction ends.
     @objc
     func updateAccountAttributes(transaction: SDSAnyWriteTransaction) {
         self.keyValueStore.setDate(Date(),
@@ -410,6 +410,17 @@ public extension TSAccountManager {
                                    transaction: transaction)
         transaction.addAsyncCompletionOffMain {
             self.updateAccountAttributesIfNecessary()
+        }
+    }
+
+    // Sets the flag to force an account attributes update synchronously,
+    // then initiates an attempt after the transaction ends..
+    func scheduleAccountAttributesUpdate(authedAccount: AuthedAccount, transaction: SDSAnyWriteTransaction) {
+        self.keyValueStore.setDate(Date(),
+                                   key: Self.needsAccountAttributesUpdateKey,
+                                   transaction: transaction)
+        transaction.addAsyncCompletionOffMain {
+            self.updateAccountAttributesIfNecessaryAttempt(authedAccount: authedAccount).cauterize()
         }
     }
 
@@ -747,14 +758,6 @@ public class RegistrationMissing2FAPinError: NSObject, Error, IsRetryableProvide
     // MARK: - IsRetryableProvider
 
     public var isRetryableProvider: Bool { false }
-}
-
-public extension TSAccountManager {
-
-    @objc(clearKBSKeysWithTransaction:)
-    func clearKBSKeys(with transaction: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.svr.clearKeys(transaction: transaction.asV2Write)
-    }
 }
 
 // MARK: - Phone number discoverability

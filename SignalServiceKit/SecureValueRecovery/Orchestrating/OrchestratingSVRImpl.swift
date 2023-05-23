@@ -31,7 +31,7 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         remoteAttestation: SVR.Shims.RemoteAttestation,
         schedulers: Schedulers,
         signalService: OWSSignalServiceProtocol,
-        storageServiceManager: SVR.Shims.StorageServiceManager,
+        storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocolSwift,
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR.Shims.OWS2FAManager
@@ -40,7 +40,14 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         let shouldUseSVR2 = FeatureFlags.mirrorSVR2 || FeatureFlags.exclusiveSVR2
         if shouldUseSVR2 {
             svrs.append(SecureValueRecovery2Impl(
-                keyValueStoreFactory: keyValueStoreFactory
+                credentialStorage: credentialStorage,
+                db: databaseStorage,
+                keyValueStoreFactory: keyValueStoreFactory,
+                schedulers: schedulers,
+                storageServiceManager: storageServiceManager,
+                syncManager: syncManager,
+                tsAccountManager: accountManager,
+                twoFAManager: twoFAManager
             ))
         }
         if !FeatureFlags.exclusiveSVR2 {
@@ -162,17 +169,25 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
 
     // MARK: - Master Key Encryption
 
-    public func encrypt(keyType: SVR.DerivedKey, data: Data) -> SVR.DerivedKeyResult {
+    public func encrypt(
+        keyType: SVR.DerivedKey,
+        data: Data,
+        transaction: DBReadTransaction
+    ) -> SVR.ApplyDerivedKeyResult {
         return doLocalRead({
-                return $0.encrypt(keyType: keyType, data: data)
+                return $0.encrypt(keyType: keyType, data: data, transaction: transaction)
             },
             isLocalKeyMissingError: \.isKeyMissingError
         )
     }
 
-    public func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) -> SVR.DerivedKeyResult {
+    public func decrypt(
+        keyType: SVR.DerivedKey,
+        encryptedData: Data,
+        transaction: DBReadTransaction
+    ) -> SVR.ApplyDerivedKeyResult {
         return doLocalRead({
-                return $0.decrypt(keyType: keyType, encryptedData: encryptedData)
+                return $0.decrypt(keyType: keyType, encryptedData: encryptedData, transaction: transaction)
             },
             isLocalKeyMissingError: \.isKeyMissingError
         )
@@ -198,17 +213,7 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
 
     // MARK: - Value Derivation
 
-    public func deriveRegistrationLockToken() -> String? {
-        return db.read(block: self.deriveRegistrationLockToken(transaction:))
-    }
-
-    public func deriveRegistrationLockToken(transaction: DBReadTransaction) -> String? {
-        return doLocalRead {
-            $0.deriveRegistrationLockToken(transaction: transaction)
-        }
-    }
-
-    public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> Data? {
+    public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> SVR.DerivedKeyData? {
         return doLocalRead {
             $0.data(for: key, transaction: transaction)
         }
@@ -377,7 +382,7 @@ extension SVR.RestoreKeysResult {
     }
 }
 
-extension SVR.DerivedKeyResult {
+extension SVR.ApplyDerivedKeyResult {
 
     fileprivate var isKeyMissingError: Bool {
         switch self {

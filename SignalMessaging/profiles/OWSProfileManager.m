@@ -865,7 +865,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     [transaction addSyncCompletion:^{
         // Mark the removed whitelisted addresses for update
         if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
-            [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:addressesToRemove.allObjects];
+            [self.storageServiceManagerObjc recordPendingUpdatesWithUpdatedAddresses:addressesToRemove.allObjects];
         }
 
         for (SignalServiceAddress *address in addressesToRemove) {
@@ -907,7 +907,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     [transaction addSyncCompletion:^{
         // Mark the new whitelisted addresses for update
         if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
-            [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:addressesToAdd.allObjects];
+            [self.storageServiceManagerObjc recordPendingUpdatesWithUpdatedAddresses:addressesToAdd.allObjects];
         }
 
         for (SignalServiceAddress *address in addressesToAdd) {
@@ -1083,8 +1083,8 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
             OWSFailDebug(@"Missing groupThread.");
             return;
         }
-        
-        [self.storageServiceManager recordPendingUpdatesWithGroupModel:groupThread.groupModel];
+
+        [self.storageServiceManagerObjc recordPendingUpdatesWithGroupModel:groupThread.groupModel];
     }];
 }
 

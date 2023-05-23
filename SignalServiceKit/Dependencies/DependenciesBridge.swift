@@ -174,7 +174,7 @@ public class DependenciesBridge {
             remoteAttestation: SVR.Wrappers.RemoteAttestation(),
             schedulers: schedulers,
             signalService: signalService,
-            storageServiceManager: SVR.Wrappers.StorageServiceManager(storageServiceManager),
+            storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             tsConstants: tsConstants,
             twoFAManager: SVR.Wrappers.OWS2FAManager(ows2FAManager)

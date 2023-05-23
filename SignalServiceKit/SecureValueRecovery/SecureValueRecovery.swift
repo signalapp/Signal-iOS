@@ -7,6 +7,8 @@ import Foundation
 
 public enum SVR {
 
+    static let masterKeyLengthBytes: UInt = 32
+
     public enum SVRError: Error, Equatable {
         case assertion
         case invalidPin(remainingAttempts: UInt32)
@@ -87,7 +89,30 @@ public enum SVR {
         case genericError(Error)
     }
 
-    public enum DerivedKeyResult {
+    public struct DerivedKeyData {
+        /// Can never be empty data; instances would fail to initialize.
+        public let rawData: Data
+        public let type: DerivedKey
+
+        internal init?(_ rawData: Data?, _ type: DerivedKey) {
+            guard let rawData, !rawData.isEmpty else {
+                return nil
+            }
+            self.rawData = rawData
+            self.type = type
+        }
+
+        public var canonicalStringRepresentation: String {
+            switch type {
+            case .storageService, .storageServiceManifest, .storageServiceRecord, .registrationRecoveryPassword:
+                return rawData.base64EncodedString()
+            case .registrationLock:
+                return rawData.hexadecimalString
+            }
+        }
+    }
+
+    public enum ApplyDerivedKeyResult {
         case success(Data)
         case masterKeyMissing
         //  Error encrypting or decrypting
@@ -108,6 +133,7 @@ public protocol SecureValueRecovery {
 
     /// Indicates whether your pin is valid when compared to your stored keys.
     /// This is a local verification and does not make any requests to the SVR.
+    /// Callback will happen on the main thread.
     func verifyPin(_ pin: String, resultHandler: @escaping (Bool) -> Void)
 
     // When changing number, we need to verify the PIN against the new number's SVR
@@ -128,11 +154,17 @@ public protocol SecureValueRecovery {
 
     // MARK: - Master Key Encryption
 
-    func encrypt(keyType: SVR.DerivedKey, data: Data) -> SVR.DerivedKeyResult
+    func encrypt(
+        keyType: SVR.DerivedKey,
+        data: Data,
+        transaction: DBReadTransaction
+    ) -> SVR.ApplyDerivedKeyResult
 
-    func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) -> SVR.DerivedKeyResult
-
-    func deriveRegistrationLockToken(transaction: DBReadTransaction) -> String?
+    func decrypt(
+        keyType: SVR.DerivedKey,
+        encryptedData: Data,
+        transaction: DBReadTransaction
+    ) -> SVR.ApplyDerivedKeyResult
 
     func warmCaches()
 
@@ -148,9 +180,11 @@ public protocol SecureValueRecovery {
 
     func setMasterKeyBackedUp(_ value: Bool, transaction: DBWriteTransaction)
 
+    /// Rotate the master key and _don't_ back it up to the SVR server, in effect switching to a
+    /// local-only master key and disabling PIN usage for backup restoration.
     func useDeviceLocalMasterKey(authedAccount: AuthedAccount, transaction: DBWriteTransaction)
 
-    func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> Data?
+    func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> SVR.DerivedKeyData?
 
     func isKeyAvailable(_ key: SVR.DerivedKey, transaction: DBReadTransaction) -> Bool
 }

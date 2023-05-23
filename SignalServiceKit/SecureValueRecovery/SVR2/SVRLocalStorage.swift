@@ -66,7 +66,7 @@ internal class SVRLocalStorage {
         keyValueStore.setInt(value.rawValue, key: Keys.pinType, transaction: transaction)
     }
 
-    internal func setEncodedPINVerificationString(_ value: String, _ transaction: DBWriteTransaction) {
+    internal func setEncodedPINVerificationString(_ value: String?, _ transaction: DBWriteTransaction) {
         keyValueStore.setString(value, key: Keys.encodedPINVerificationString, transaction: transaction)
     }
 
@@ -75,11 +75,11 @@ internal class SVRLocalStorage {
         keyValueStore.setData(value, key: Keys.syncedStorageServiceKey, transaction: transaction)
     }
 
-    internal func setSVR1EnclaveName(_ value: String, _ transaction: DBWriteTransaction) {
+    internal func setSVR1EnclaveName(_ value: String?, _ transaction: DBWriteTransaction) {
         keyValueStore.setString(value, key: Keys.svr1EnclaveName, transaction: transaction)
     }
 
-    internal func setSVR2EnclaveName(_ value: String, _ transaction: DBWriteTransaction) {
+    internal func setSVR2EnclaveName(_ value: String?, _ transaction: DBWriteTransaction) {
         keyValueStore.setString(value, key: Keys.svr2EnclaveName, transaction: transaction)
     }
 

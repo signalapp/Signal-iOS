@@ -11,7 +11,6 @@ import Foundation
 extension SVR {
     public enum TestMocks {
         public typealias TSAccountManager = _KeyBackupServiceImpl_TSAccountManagerTestMock
-        public typealias StorageServiceManager = _KeyBackupServiceImpl_StorageServiceManagerTestMock
         public typealias OWS2FAManager = _KeyBackupServiceImpl_OWS2FAManagerTestMock
         public typealias RemoteAttestation = _KeyBackupServiceImpl_RemoteAttestationMock
         public typealias URLSession = _KeyBackupServiceImpl_OWSURLSessionMock
@@ -35,17 +34,8 @@ public class _KeyBackupServiceImpl_TSAccountManagerTestMock: SVR.Shims.TSAccount
     public func isRegisteredAndReady(transaction: DBReadTransaction) -> Bool {
         return isRegisteredAndReady
     }
-}
 
-// MARK: - StorageServiceManager
-
-public class _KeyBackupServiceImpl_StorageServiceManagerTestMock: SVR.Shims.StorageServiceManager {
-
-    public init() {}
-
-    public func resetLocalData(transaction: DBWriteTransaction) {}
-
-    public func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount) {}
+    public func scheduleAccountAttributesUpdate(authedAccount: AuthedAccount, transaction: DBWriteTransaction) {}
 }
 
 // MARK: - OWS2FAManager

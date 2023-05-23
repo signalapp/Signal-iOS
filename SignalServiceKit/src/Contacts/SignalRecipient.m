@@ -195,7 +195,7 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
     self.unregisteredAtTimestamp = unregisteredAtTimestamp;
 
     if (source != SignalRecipientSourceStorageService) {
-        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
+        [self.storageServiceManagerObjc recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
     }
 }
 
@@ -312,7 +312,7 @@ const uint64_t SignalRecipientDistantPastUnregisteredTimestamp = 1;
     [super anyDidRemoveWithTransaction:transaction];
 
     [self.modelReadCaches.signalRecipientReadCache didRemoveSignalRecipient:self transaction:transaction];
-    [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
+    [self.storageServiceManagerObjc recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
 }
 
 + (TSFTSIndexMode)FTSIndexMode

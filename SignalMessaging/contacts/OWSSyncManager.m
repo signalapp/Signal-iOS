@@ -603,7 +603,7 @@ typedef NS_ENUM(NSUInteger, OWSContactSyncMode) {
             break;
         }
         case SSKProtoSyncMessageFetchLatestTypeStorageManifest:
-            [SSKEnvironment.shared.storageServiceManager
+            [SSKEnvironment.shared.storageServiceManagerObjc
                 restoreOrCreateManifestIfNecessaryWithAuthedAccount:AuthedAccount.implicit];
             break;
         case SSKProtoSyncMessageFetchLatestTypeSubscriptionStatus:

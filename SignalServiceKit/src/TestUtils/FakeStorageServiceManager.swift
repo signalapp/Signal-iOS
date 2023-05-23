@@ -28,7 +28,7 @@ public class FakeStorageServiceManager: NSObject, StorageServiceManager {
 
     public func waitForPendingRestores() -> AnyPromise { AnyPromise(Promise.value(())) }
 
-    public func resetLocalData(transaction: SDSAnyWriteTransaction) {}
+    public func resetLocalData(transaction: DBWriteTransaction) {}
 }
 
 #endif

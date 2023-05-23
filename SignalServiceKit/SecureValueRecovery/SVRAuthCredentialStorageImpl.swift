@@ -46,6 +46,15 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         }
     }
 
+    public func removeSVR2CredentialsForCurrentUser(_ transaction: DBWriteTransaction) {
+        let currentUsername = currentUsername(for: .svr2, transaction)
+        updateCredentials(for: .svr2, transaction) {
+            $0.removeAll(where: { existingCredential in
+                existingCredential.username == currentUsername
+            })
+        }
+    }
+
     // MARK: - KBS (SVR1)
 
     public func storeAuthCredentialForCurrentUsername(_ credential: KBSAuthCredential, _ transaction: DBWriteTransaction) {

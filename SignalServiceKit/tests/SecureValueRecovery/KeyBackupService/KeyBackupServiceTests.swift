@@ -37,7 +37,7 @@ class KeyBackupServiceTests: XCTestCase {
             remoteAttestation: remoteAttestation,
             schedulers: TestSchedulers(scheduler: scheduler),
             signalService: mockSignalService,
-            storageServiceManager: SVR.TestMocks.StorageServiceManager(),
+            storageServiceManager: FakeStorageServiceManager(),
             syncManager: OWSMockSyncManager(),
             tsConstants: tsConstants,
             twoFAManager: SVR.TestMocks.OWS2FAManager()
@@ -98,7 +98,7 @@ class KeyBackupServiceTests: XCTestCase {
             }
 
             let registrationLockToken = db.read {
-                keyBackupService.deriveRegistrationLockToken(transaction: $0)
+                keyBackupService.data(for: .registrationLock, transaction: $0)?.canonicalStringRepresentation
             }
 
             XCTAssertEqual(vector.registrationLock, registrationLockToken)
@@ -218,12 +218,14 @@ class KeyBackupServiceTests: XCTestCase {
             XCTAssertEqual(hasMasterKey, vector.masterKeyData != nil)
 
             db.read { tx in
-                XCTAssertEqual(vector.derivedKeyData, keyBackupService.data(for: vector.derivedKey, transaction: tx))
-                XCTAssertEqual(vector.storageServiceKeyData, keyBackupService.data(for: .storageService, transaction: tx))
+                XCTAssertEqual(vector.derivedKeyData, keyBackupService.data(for: vector.derivedKey, transaction: tx)?.rawData)
+                XCTAssertEqual(vector.storageServiceKeyData, keyBackupService.data(for: .storageService, transaction: tx)?.rawData)
             }
 
             let encryptedData: Data
-            switch keyBackupService.encrypt(keyType: vector.derivedKey, data: vector.rawData) {
+            switch db.read(block: { tx in
+                keyBackupService.encrypt(keyType: vector.derivedKey, data: vector.rawData, transaction: tx)
+            }) {
             case .success(let data):
                 encryptedData = data
             case .masterKeyMissing:
@@ -233,7 +235,9 @@ class KeyBackupServiceTests: XCTestCase {
                 XCTFail("Failed to encrypt: \(error)")
                 return
             }
-            switch keyBackupService.decrypt(keyType: vector.derivedKey, encryptedData: encryptedData) {
+            switch db.read(block: { tx in
+                keyBackupService.decrypt(keyType: vector.derivedKey, encryptedData: encryptedData, transaction: tx)
+            }) {
             case .success(let decryptedData):
                 XCTAssertEqual(vector.rawData, decryptedData)
             case .masterKeyMissing:

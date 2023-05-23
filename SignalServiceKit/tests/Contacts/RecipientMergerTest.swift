@@ -73,7 +73,7 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingLocalAccountUpdates() {}
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiersObjC) {}
     func backupPendingChanges(authedAccount: AuthedAccount) {}
-    func resetLocalData(transaction: SDSAnyWriteTransaction) {}
+    func resetLocalData(transaction: DBWriteTransaction) {}
     func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount) -> AnyPromise {
         AnyPromise(Promise<Void>(error: OWSGenericError("Not implemented.")))
     }

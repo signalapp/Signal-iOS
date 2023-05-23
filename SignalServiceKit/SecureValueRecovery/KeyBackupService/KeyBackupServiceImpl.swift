@@ -22,7 +22,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     private let remoteAttestation: SVR.Shims.RemoteAttestation
     private let schedulers: Schedulers
     private let signalService: OWSSignalServiceProtocol
-    private let storageServiceManager: SVR.Shims.StorageServiceManager
+    private let storageServiceManager: StorageServiceManager
     private let syncManager: SyncManagerProtocolSwift
     private let tsConstants: TSConstantsProtocol
     private let twoFAManager: SVR.Shims.OWS2FAManager
@@ -36,7 +36,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         remoteAttestation: SVR.Shims.RemoteAttestation,
         schedulers: Schedulers,
         signalService: OWSSignalServiceProtocol,
-        storageServiceManager: SVR.Shims.StorageServiceManager,
+        storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocolSwift,
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR.Shims.OWS2FAManager
@@ -497,7 +497,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     private func dataToDeriveFrom(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> Data? {
         switch key {
         case .storageServiceManifest, .storageServiceRecord:
-            return self.data(for: .storageService, transaction: transaction)
+            return self.data(for: .storageService, transaction: transaction)?.rawData
         default:
             // Most keys derive directly from the master key.
             // Only a few exceptions derive from another derived key.
@@ -506,7 +506,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         }
     }
 
-    public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> Data? {
+    public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> SVR.DerivedKeyData? {
         // If we have this derived key stored in the database, use it.
         // This should only happen if we're a linked device and received
         // the derived key via a sync message, since we won't know about
@@ -514,46 +514,50 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         let isPrimaryDevice = accountManager.isPrimaryDevice(transaction: transaction)
         if (!isPrimaryDevice || appContext.isRunningTests),
             let cachedData = getOrLoadState(transaction: transaction).syncedDerivedKeys[key] {
-            return cachedData
+            return SVR.DerivedKeyData(cachedData, key)
         }
 
         guard let dataToDeriveFrom = dataToDeriveFrom(for: key, transaction: transaction) else {
             return nil
         }
 
-        return key.derivedData(from: dataToDeriveFrom)
+        return SVR.DerivedKeyData(key.derivedData(from: dataToDeriveFrom), key)
     }
 
     public func isKeyAvailable(_ key: SVR.DerivedKey, transaction: DBReadTransaction) -> Bool {
         return data(for: key, transaction: transaction) != nil
     }
 
-    public func encrypt(keyType: SVR.DerivedKey, data: Data) -> SVR.DerivedKeyResult {
-        guard let keyData = db.read(block: { self.data(for: keyType, transaction: $0) }) else {
+    public func encrypt(
+        keyType: SVR.DerivedKey,
+        data: Data,
+        transaction: DBReadTransaction
+    ) -> SVR.ApplyDerivedKeyResult {
+        guard let keyData = self.data(for: keyType, transaction: transaction) else {
             owsFailDebug("missing derived key \(keyType)")
             return .masterKeyMissing
         }
         do {
-            return .success(try Aes256GcmEncryptedData.encrypt(data, key: keyData).concatenate())
+            return .success(try Aes256GcmEncryptedData.encrypt(data, key: keyData.rawData).concatenate())
         } catch let error {
             return .cryptographyError(error)
         }
     }
 
-    public func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) -> SVR.DerivedKeyResult {
-        guard let keyData = db.read(block: { self.data(for: keyType, transaction: $0) }) else {
+    public func decrypt(
+        keyType: SVR.DerivedKey,
+        encryptedData: Data,
+        transaction: DBReadTransaction
+    ) -> SVR.ApplyDerivedKeyResult {
+        guard let keyData = self.data(for: keyType, transaction: transaction) else {
             owsFailDebug("missing derived key \(keyType)")
             return .masterKeyMissing
         }
         do {
-            return .success(try Aes256GcmEncryptedData(concatenated: encryptedData).decrypt(key: keyData))
+            return .success(try Aes256GcmEncryptedData(concatenated: encryptedData).decrypt(key: keyData.rawData))
         } catch let error {
             return .cryptographyError(error)
         }
-    }
-
-    public func deriveRegistrationLockToken(transaction: DBReadTransaction) -> String? {
-        return self.data(for: .registrationLock, transaction: transaction)?.hexadecimalString
     }
 
     // MARK: - Master Key Management
@@ -606,13 +610,13 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     func generateMasterKey() -> Data {
         assertIsOnBackgroundQueue()
 
-        return Cryptography.generateRandomBytes(32)
+        return Cryptography.generateRandomBytes(SVR.masterKeyLengthBytes)
     }
 
     func encryptMasterKey(_ masterKey: Data, encryptionKey: Data) throws -> Data {
         assertIsOnBackgroundQueue()
 
-        guard masterKey.count == 32 else { throw SVR.SVRError.assertion }
+        guard masterKey.count == SVR.masterKeyLengthBytes else { throw SVR.SVRError.assertion }
         guard encryptionKey.count == 32 else { throw SVR.SVRError.assertion }
 
         let (iv, cipherText) = try Cryptography.encryptSHA256HMACSIV(data: masterKey, key: encryptionKey)
@@ -634,7 +638,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             key: encryptionKey
         )
 
-        guard masterKey.count == 32 else { throw SVR.SVRError.assertion }
+        guard masterKey.count == SVR.masterKeyLengthBytes else { throw SVR.SVRError.assertion }
 
         return masterKey
     }
@@ -757,8 +761,8 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         masterKey: Data,
         isMasterKeyBackedUp: Bool,
         pinType: SVR.PinType,
-        encodedVerificationString: String,
-        enclaveName: String,
+        encodedVerificationString: String?,
+        enclaveName: String?,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
@@ -841,8 +845,8 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             masterKey: generateMasterKey(),
             isMasterKeyBackedUp: false,
             pinType: .alphanumeric,
-            encodedVerificationString: "",
-            enclaveName: "",
+            encodedVerificationString: nil,
+            enclaveName: nil,
             authedAccount: authedAccount,
             transaction: transaction
         )

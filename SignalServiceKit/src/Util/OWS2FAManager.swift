@@ -60,7 +60,10 @@ extension OWS2FAManager {
     public func enableRegistrationLockV2() -> Promise<Void> {
         return DispatchQueue.global().async(.promise) { () -> String in
             let token = Self.databaseStorage.read { tx in
-                return DependenciesBridge.shared.svr.deriveRegistrationLockToken(transaction: tx.asV2Read)
+                return DependenciesBridge.shared.svr.data(
+                    for: .registrationLock,
+                    transaction: tx.asV2Read
+                )?.canonicalStringRepresentation
             }
             guard let token else {
                 throw OWSAssertionError("Cannot enable registration lock without an existing PIN")

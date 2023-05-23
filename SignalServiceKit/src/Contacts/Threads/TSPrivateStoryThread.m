@@ -144,7 +144,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                                                }];
 
     if (updateStorageService) {
-        [SSKEnvironment.storageServiceManager
+        [SSKEnvironment.storageServiceManagerObjc
             recordPendingUpdatesWithUpdatedStoryDistributionListIds:@[ self.distributionListIdentifier ]];
     }
 }
@@ -159,7 +159,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                                                }];
 
     if (updateStorageService) {
-        [SSKEnvironment.storageServiceManager
+        [SSKEnvironment.storageServiceManagerObjc
             recordPendingUpdatesWithUpdatedStoryDistributionListIds:@[ self.distributionListIdentifier ]];
     }
 }
@@ -172,7 +172,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                                                block:^(TSPrivateStoryThread *thread) { thread.name = name; }];
 
     if (updateStorageService) {
-        [SSKEnvironment.storageServiceManager
+        [SSKEnvironment.storageServiceManagerObjc
             recordPendingUpdatesWithUpdatedStoryDistributionListIds:@[ self.distributionListIdentifier ]];
     }
 }

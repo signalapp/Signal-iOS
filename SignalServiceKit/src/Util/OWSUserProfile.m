@@ -863,9 +863,9 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                 if (localAddress == nil) {
                     localAddress = self.tsAccountManager.localAddress;
                 }
-                [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:@[ localAddress ]];
+                [self.storageServiceManagerObjc recordPendingUpdatesWithUpdatedAddresses:@[ localAddress ]];
             } else {
-                [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:@[ self.address ]];
+                [self.storageServiceManagerObjc recordPendingUpdatesWithUpdatedAddresses:@[ self.address ]];
             }
         }];
     }

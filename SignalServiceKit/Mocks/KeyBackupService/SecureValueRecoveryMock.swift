@@ -63,16 +63,20 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         return .value(())
     }
 
-    public func encrypt(keyType: SVR.DerivedKey, data: Data) -> SVR.DerivedKeyResult {
+    public func encrypt(
+        keyType: SVR.DerivedKey,
+        data: Data,
+        transaction: DBReadTransaction
+    ) -> SVR.ApplyDerivedKeyResult {
         return .success(data)
     }
 
-    public func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) -> SVR.DerivedKeyResult {
+    public func decrypt(
+        keyType: SVR.DerivedKey,
+        encryptedData: Data,
+        transaction: DBReadTransaction
+    ) -> SVR.ApplyDerivedKeyResult {
         return .success(encryptedData)
-    }
-
-    public func deriveRegistrationLockToken(transaction: DBReadTransaction) -> String? {
-        return reglockToken
     }
 
     public func warmCaches() {
@@ -128,8 +132,8 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         return dataGenerator(key)
     }
 
-    public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> Data? {
-        return dataGenerator(key)
+    public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> SVR.DerivedKeyData? {
+        return SVR.DerivedKeyData(dataGenerator(key), key)
     }
 
     public func isKeyAvailable(_ key: SVR.DerivedKey, transaction: DBReadTransaction) -> Bool {

@@ -319,7 +319,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
         ^(SDSAnyWriteTransaction *transaction) { [self setAreReadReceiptsEnabled:value transaction:transaction]; });
 
     [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
-    [SSKEnvironment.shared.storageServiceManager recordPendingLocalAccountUpdates];
+    [SSKEnvironment.shared.storageServiceManagerObjc recordPendingLocalAccountUpdates];
 }
 
 
