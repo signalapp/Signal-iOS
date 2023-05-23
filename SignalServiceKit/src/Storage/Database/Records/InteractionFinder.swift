@@ -632,11 +632,12 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
         let recordTypesSql = recordTypes.map { "\($0.rawValue)" }.joined(separator: ",")
 
+        // We don't need filterEditHistoryClause because "read IS 0" implies
+        // "editState != 2", and it's much faster to check the former.
         return """
         (
             \(interactionColumn: .read) IS 0
             \(GRDBInteractionFinder.filterStoryRepliesClause())
-            \(GRDBInteractionFinder.filterEditHistoryClause())
             AND \(interactionColumn: .recordType) IN (\(recordTypesSql))
         )
         """
@@ -650,10 +651,11 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             columnPrefix = ""
         }
 
+        // We don't need filterEditHistoryClause because "read IS 0" implies
+        // "editState != 2", and it's much faster to check the former.
         return """
         \(columnPrefix)\(interactionColumn: .read) IS 0
         \(GRDBInteractionFinder.filterStoryRepliesClause(interactionsAlias: interactionsAlias))
-        \(GRDBInteractionFinder.filterEditHistoryClause(interactionsAlias: interactionsAlias))
         AND (
             \(columnPrefix)\(interactionColumn: .recordType) IN (\(SDSRecordType.incomingMessage.rawValue), \(SDSRecordType.call.rawValue))
             OR (
