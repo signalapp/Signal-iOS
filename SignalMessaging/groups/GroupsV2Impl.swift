@@ -1937,12 +1937,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                 // We're already an invited member; try to join by accepting the invite.
                 // That will make us a full member; requesting to join via
                 // the invite link might make us a requesting member.
-                return self.updateGroupV2(
-                    groupId: groupModelV2.groupId,
-                    groupSecretParamsData: groupModelV2.secretParamsData
-                ) { groupChangeSet in
-                    groupChangeSet.promoteInvitedMember(localUuid)
-                }
+                return GroupManager.localAcceptInviteToGroupV2(groupModel: groupModelV2)
             } else {
                 throw GroupsV2Error.localUserNotInGroup
             }
@@ -2102,6 +2097,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                                                           newGroupModel: newGroupModel,
                                                           oldDisappearingMessageToken: disappearingMessageToken,
                                                           newDisappearingMessageToken: disappearingMessageToken,
+                                                          newlyLearnedPniToAciAssociations: [:],
                                                           groupUpdateSourceAddress: localAddress,
                                                           transaction: transaction)
 
@@ -2147,6 +2143,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                                                           newGroupModel: groupModel,
                                                           oldDisappearingMessageToken: nil,
                                                           newDisappearingMessageToken: disappearingMessageToken,
+                                                          newlyLearnedPniToAciAssociations: [:],
                                                           groupUpdateSourceAddress: localAddress,
                                                           transaction: transaction)
 
@@ -2295,6 +2292,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                                                       newGroupModel: newGroupModel,
                                                       oldDisappearingMessageToken: disappearingMessageToken,
                                                       newDisappearingMessageToken: disappearingMessageToken,
+                                                      newlyLearnedPniToAciAssociations: [:],
                                                       groupUpdateSourceAddress: localAddress,
                                                       transaction: transaction)
 
@@ -2446,6 +2444,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                                                           newGroupModel: newGroupModel,
                                                           oldDisappearingMessageToken: disappearingMessageToken,
                                                           newDisappearingMessageToken: disappearingMessageToken,
+                                                          newlyLearnedPniToAciAssociations: [:],
                                                           groupUpdateSourceAddress: nil,
                                                           transaction: transaction)
             }
@@ -2496,6 +2495,16 @@ fileprivate extension OWSHttpHeaders {
 
 private extension GroupsProtoGroupChangeActions {
     var containsProfileKeyCredentials: Bool {
-        !addMembers.isEmpty
+        // When adding a member, we include their profile key credential.
+        let isAddingMembers = !addMembers.isEmpty
+
+        // When promoting an invited member, we include the profile key for
+        // their ACI.
+        // Note: in practice the only user we'll promote is ourself, when
+        // accepting an invite.
+        let isPromotingPni = !promotePniPendingMembers.isEmpty
+        let isPromotingAci = !promotePendingMembers.isEmpty
+
+        return isAddingMembers || isPromotingPni || isPromotingAci
     }
 }

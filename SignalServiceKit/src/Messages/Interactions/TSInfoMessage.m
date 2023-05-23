@@ -19,6 +19,8 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyNewDisappearingMessageToken
     = @"InfoMessageUserInfoKeyNewDisappearingMessageToken";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceAddress
     = @"InfoMessageUserInfoKeyGroupUpdateSourceAddress";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyUpdaterKnownToBeLocalUser
+    = @"InfoMessageUserInfoKeyUpdaterWasLocalUser";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyProfileChanges = @"InfoMessageUserInfoKeyProfileChanges";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyChangePhoneNumberUuid
     = @"InfoMessageUserInfoKeyChangePhoneNumberUuid";

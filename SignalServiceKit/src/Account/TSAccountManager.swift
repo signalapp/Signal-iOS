@@ -83,6 +83,11 @@ public extension TSAccountManager {
         getOrLoadAccountState(with: transaction).localIdentifiers
     }
 
+    /// May use a sneaky transaction to load state. Use with caution.
+    var localIdentifiers: LocalIdentifiers? {
+        getOrLoadAccountStateWithSneakyTransaction().localIdentifiers
+    }
+
     @objc
     var isRegistered: Bool {
         getOrLoadAccountStateWithSneakyTransaction().isRegistered

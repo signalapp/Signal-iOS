@@ -15,16 +15,24 @@ public struct ChangedGroupModel {
     public let changeAuthorUuid: UUID
     public let profileKeys: [UUID: Data]
 
-    public init(oldGroupModel: TSGroupModelV2,
-                newGroupModel: TSGroupModelV2,
-                newDisappearingMessageToken: DisappearingMessageToken?,
-                changeAuthorUuid: UUID,
-                profileKeys: [UUID: Data]) {
+    /// Associations between a PNI and ACI that we learned as a part of this
+    /// group change.
+    public let newlyLearnedPniToAciAssociations: [ServiceId: ServiceId]
+
+    public init(
+        oldGroupModel: TSGroupModelV2,
+        newGroupModel: TSGroupModelV2,
+        newDisappearingMessageToken: DisappearingMessageToken?,
+        changeAuthorUuid: UUID,
+        profileKeys: [UUID: Data],
+        newlyLearnedPniToAciAssociations: [ServiceId: ServiceId]
+    ) {
         self.oldGroupModel = oldGroupModel
         self.newGroupModel = newGroupModel
         self.newDisappearingMessageToken = newDisappearingMessageToken
         self.changeAuthorUuid = changeAuthorUuid
         self.profileKeys = profileKeys
+        self.newlyLearnedPniToAciAssociations = newlyLearnedPniToAciAssociations
     }
 }
 
@@ -139,6 +147,10 @@ public class GroupsV2IncomingChanges: Dependencies {
         // After parsing, we should fill in profileKeys in the profile manager.
         var profileKeys = [UUID: Data]()
 
+        // We may learn that a PNI and ACI are associated while processing group
+        // change protos.
+        var newlyLearnedPniToAciAssociations = [ServiceId: ServiceId]()
+
         for action in changeActionsProto.addMembers {
             let didJoinFromInviteLink = (action.hasJoinFromInviteLink && action.joinFromInviteLink)
 
@@ -242,7 +254,10 @@ public class GroupsV2IncomingChanges: Dependencies {
         }
 
         for action in changeActionsProto.modifyMemberProfileKeys {
-            let (aci, _, profileKey) = try action.getAciProperties(groupV2Params: groupV2Params)
+            let (aci, profileKey) = try {
+                let props = try action.getAciProperties(groupV2Params: groupV2Params)
+                return (props.aci, props.profileKey)
+            }()
 
             guard oldGroupMembership.isFullMember(aci) else {
                 throw OWSAssertionError("Attempting to modify profile key for ACI that is not a member!")
@@ -345,7 +360,10 @@ public class GroupsV2IncomingChanges: Dependencies {
         }
 
         for action in changeActionsProto.promotePendingMembers {
-            let (aci, aciCiphertext, profileKey) = try action.getAciProperties(groupV2Params: groupV2Params)
+            let (aci, aciCiphertext, profileKey) = try {
+                let props = try action.getAciProperties(groupV2Params: groupV2Params)
+                return (props.aci, props.aciCiphertext, props.profileKey)
+            }()
 
             guard oldGroupMembership.isInvitedMember(aci) else {
                 throw OWSAssertionError("Attempting to promote ACI that is not currently invited!")
@@ -367,6 +385,37 @@ public class GroupsV2IncomingChanges: Dependencies {
             }
 
             profileKeys[aci] = profileKey
+        }
+
+        for action in changeActionsProto.promotePniPendingMembers {
+            let (aci, pni, pniCiphertext, profileKey) = try {
+                let props = try action.getPniAndAciProperties(groupV2Params: groupV2Params)
+                return (props.aci, props.pni, props.pniCiphertext, props.profileKey)
+            }()
+
+            guard
+                oldGroupMembership.isInvitedMember(pni),
+                let pniRole = oldGroupMembership.role(for: pni)
+            else {
+                throw OWSAssertionError("Attempting to promote PNI that was not previously an invited member or is missing role!")
+            }
+
+            // Clear the invited PNI from the membership...
+            groupMembershipBuilder.removeInvalidInvite(userId: pniCiphertext)
+            groupMembershipBuilder.remove(pni)
+
+            // ...and ensure the ACI is a full member...
+            if oldGroupMembership.isFullMember(aci) {
+                owsFailDebug("Promoting PNI whose ACI is already a full member!")
+            } else {
+                groupMembershipBuilder.addFullMember(aci, role: pniRole)
+            }
+
+            // ...and hold onto the profile key...
+            profileKeys[aci] = profileKey
+
+            // ...and track the PNI -> ACI promotion.
+            newlyLearnedPniToAciAssociations[ServiceId(pni)] = ServiceId(aci)
         }
 
         for action in changeActionsProto.addRequestingMembers {
@@ -605,15 +654,41 @@ public class GroupsV2IncomingChanges: Dependencies {
 
         let newGroupModel = try builder.buildAsV2()
 
-        return ChangedGroupModel(oldGroupModel: oldGroupModel,
-                                 newGroupModel: newGroupModel,
-                                 newDisappearingMessageToken: newDisappearingMessageToken,
-                                 changeAuthorUuid: changeAuthorUuid,
-                                 profileKeys: profileKeys)
+        return ChangedGroupModel(
+            oldGroupModel: oldGroupModel,
+            newGroupModel: newGroupModel,
+            newDisappearingMessageToken: newDisappearingMessageToken,
+            changeAuthorUuid: changeAuthorUuid,
+            profileKeys: profileKeys,
+            newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations
+        )
     }
 }
 
 // MARK: - HasAciAndProfileKey
+
+private struct AciProperties {
+    let aci: UUID
+    let aciCiphertext: Data
+    let profileKey: Data
+}
+
+private struct PniAndAciProperties {
+    let pni: UUID
+    let pniCiphertext: Data
+
+    let aci: UUID
+    let aciCiphertext: Data
+    let profileKey: Data
+
+    init(pni: UUID, pniCiphertext: Data, aciProperties: AciProperties) {
+        self.pni = pni
+        self.pniCiphertext = pniCiphertext
+        self.aci = aciProperties.aci
+        self.aciCiphertext = aciProperties.aciCiphertext
+        self.profileKey = aciProperties.profileKey
+    }
+}
 
 private protocol HasAciAndProfileKey {
     var userID: Data? { get }
@@ -621,30 +696,29 @@ private protocol HasAciAndProfileKey {
     var presentation: Data? { get }
 }
 
+private protocol HasPniAndAciAndProfileKey: HasAciAndProfileKey {
+    var pni: Data? { get }
+}
+
 extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: HasAciAndProfileKey {}
 extension GroupsProtoGroupChangeActionsPromotePendingMemberAction: HasAciAndProfileKey {}
+extension GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction: HasPniAndAciAndProfileKey {}
 
 private extension HasAciAndProfileKey {
-    typealias AciProperties = (
-        aci: UUID,
-        aciCiphertext: Data,
-        profileKey: Data
-    )
-
     func getAciProperties(groupV2Params: GroupV2Params) throws -> AciProperties {
         if
             let aciCiphertext = userID,
-            let profileKeyData = profileKey
+            let profileKeyCiphertextData = profileKey
         {
             let aci = try groupV2Params.uuid(forUserId: aciCiphertext)
 
-            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyData))
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
             let profileKey = try groupV2Params.profileKey(
                 forProfileKeyCiphertext: profileKeyCiphertext,
                 uuid: aci
             )
 
-            return (
+            return AciProperties(
                 aci: aci,
                 aciCiphertext: aciCiphertext,
                 profileKey: profileKey
@@ -664,7 +738,7 @@ private extension HasAciAndProfileKey {
                 uuid: aci
             )
 
-            return (
+            return AciProperties(
                 aci: aci,
                 aciCiphertext: aciCiphertext.serialize().asData,
                 profileKey: profileKey
@@ -672,5 +746,23 @@ private extension HasAciAndProfileKey {
         } else {
             throw OWSAssertionError("Malformed proto!")
         }
+    }
+}
+
+private extension HasPniAndAciAndProfileKey {
+    func getPniAndAciProperties(groupV2Params: GroupV2Params) throws -> PniAndAciProperties {
+        let aciProperties = try getAciProperties(groupV2Params: groupV2Params)
+
+        guard let pniCiphertext = pni else {
+            throw OWSAssertionError("Malformed proto!")
+        }
+
+        let pni = try groupV2Params.uuid(forUserId: pniCiphertext)
+
+        return PniAndAciProperties(
+            pni: pni,
+            pniCiphertext: pniCiphertext,
+            aciProperties: aciProperties
+        )
     }
 }

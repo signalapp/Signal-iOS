@@ -218,7 +218,7 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
 
     func addInvitedMember(_ uuid: UUID, role: TSGroupMemberRole)
 
-    func promoteInvitedMember(_ uuid: UUID)
+    func setLocalShouldAcceptInvite()
 
     func setShouldLeaveGroupDeclineInvite()
 

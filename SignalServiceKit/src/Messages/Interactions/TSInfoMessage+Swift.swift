@@ -19,7 +19,7 @@ public extension TSInfoMessage {
             // Legacy info message before we began embedding user info.
             return GroupUpdateCopy.defaultGroupUpdateDescription(
                 groupUpdateSourceAddress: groupUpdateSourceAddress,
-                localAci: tsAccountManager.localIdentifiers(transaction: transaction)?.aci,
+                localIdentifiers: tsAccountManager.localIdentifiers(transaction: transaction),
                 transaction: transaction
             )
         }
@@ -82,7 +82,7 @@ extension TSInfoMessage {
         ) else {
             return GroupUpdateCopy.defaultGroupUpdateDescription(
                 groupUpdateSourceAddress: groupUpdateSourceAddress,
-                localAci: tsAccountManager.localUuid.map { ServiceId($0) },
+                localIdentifiers: tsAccountManager.localIdentifiers(transaction: transaction),
                 transaction: transaction
             )
         }
@@ -136,8 +136,10 @@ extension TSInfoMessage {
         newGroupModel: TSGroupModel,
         transaction: SDSAnyReadTransaction
     ) -> GroupUpdateCopy? {
-        guard let localAddress = tsAccountManager.localAddress else {
-            Logger.warn("missing local address")
+        guard
+            let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction)
+        else {
+            owsFailDebug("Missing local identifiers!")
             return nil
         }
 
@@ -146,8 +148,9 @@ extension TSInfoMessage {
             newGroupModel: newGroupModel,
             oldDisappearingMessageToken: oldDisappearingMessageToken,
             newDisappearingMessageToken: newDisappearingMessageToken,
-            localAddress: localAddress,
+            localIdentifiers: localIdentifiers,
             groupUpdateSourceAddress: groupUpdateSourceAddress,
+            updaterKnownToBeLocalUser: updaterWasLocalUser,
             updateMessages: updateMessages,
             transaction: transaction
         )
@@ -207,7 +210,7 @@ extension TSInfoMessage {
         return groupModel
     }
 
-    public var updateMessages: UpdateMessages? {
+    public var updateMessages: UpdateMessagesWrapper? {
         return infoMessageValue(forKey: .updateMessages)
     }
 
@@ -227,8 +230,19 @@ extension TSInfoMessage {
         return infoMessageValue(forKey: .newDisappearingMessageToken)
     }
 
+    /// The address of the user to whom this update should be attributed, if
+    /// known.
     public var groupUpdateSourceAddress: SignalServiceAddress? {
         return infoMessageValue(forKey: .groupUpdateSourceAddress)
+    }
+
+    /// Whether we determined, at the time we created this info message, that
+    /// the updater was the local user.
+    /// - Returns
+    /// `true` if we knew conclusively that the updater was the local user, and
+    /// `false` otherwise.
+    public var updaterWasLocalUser: Bool {
+        return infoMessageValue(forKey: .updaterKnownToBeLocalUser) ?? false
     }
 
     fileprivate var profileChanges: ProfileChanges? {
@@ -245,8 +259,8 @@ extension TSInfoMessage {
         }
     }
 
-    public func setUpdateMessages(_ messages: UpdateMessages) {
-        setInfoMessageValue(messages, forKey: .updateMessages)
+    public func setUpdateMessages(_ updateMessages: UpdateMessagesWrapper) {
+        setInfoMessageValue(updateMessages, forKey: .updateMessages)
     }
 
     public func setNewGroupModel(_ newGroupModel: TSGroupModel) {

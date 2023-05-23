@@ -74,6 +74,7 @@ public class AppSetup {
             messageSender: messageSender,
             modelReadCaches: modelReadCaches,
             networkManager: networkManager,
+            notificationsManager: notificationPresenter,
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniSignalProtocolStore,
             profileManager: profileManager,

@@ -402,8 +402,8 @@ public extension GroupMembership {
         return Set(memberStates.keys.lazy.compactMap { $0.uuid })
     }
 
-    var bannedMemberAddresses: Set<SignalServiceAddress> {
-        return Set(bannedMembers.keys.lazy.map { SignalServiceAddress(uuid: $0) })
+    var bannedMemberUuids: Set<UUID> {
+        return Set(bannedMembers.keys)
     }
 }
 
@@ -459,7 +459,7 @@ public extension GroupMembership {
     }
 
     func isFullMember(_ uuid: UUID) -> Bool {
-        isFullMember(SignalServiceAddress(uuid: uuid))
+        return isFullMember(SignalServiceAddress(uuid: uuid))
     }
 
     @objc
@@ -471,7 +471,7 @@ public extension GroupMembership {
     }
 
     func isInvitedMember(_ uuid: UUID) -> Bool {
-        isInvitedMember(SignalServiceAddress(uuid: uuid))
+        return isInvitedMember(SignalServiceAddress(uuid: uuid))
     }
 
     func isRequestingMember(_ address: SignalServiceAddress) -> Bool {
@@ -482,7 +482,7 @@ public extension GroupMembership {
     }
 
     func isRequestingMember(_ uuid: UUID) -> Bool {
-        isRequestingMember(SignalServiceAddress(uuid: uuid))
+        return isRequestingMember(SignalServiceAddress(uuid: uuid))
     }
 
     func isMemberOfAnyKind(_ address: SignalServiceAddress) -> Bool {
@@ -494,7 +494,7 @@ public extension GroupMembership {
     }
 
     func isBannedMember(_ uuid: UUID) -> Bool {
-        bannedMembers[uuid] != nil
+        return bannedMembers[uuid] != nil
     }
 
     func hasInvalidInvite(forUserId userId: Data) -> Bool {
@@ -513,6 +513,10 @@ public extension GroupMembership {
             owsFailDebug("Not a pending profile key member.")
             return nil
         }
+    }
+
+    func addedByUuid(forInvitedMember uuid: UUID) -> UUID? {
+        return addedByUuid(forInvitedMember: SignalServiceAddress(uuid: uuid))
     }
 
     /// This method should only be called for full members.
@@ -701,49 +705,91 @@ public extension GroupMembership {
 // MARK: - Local user accessors
 
 public extension GroupMembership {
+    /// The local PNI, if it is present and an invited member.
+    ///
+    /// - Note
+    /// PNIs can only be invited members. Further note that profile keys are
+    /// required for full and requesting members, and PNIs have no associated
+    /// profile or profile key.
+    private func localPniAsInvitedMember(localIdentifiers: LocalIdentifiers) -> ServiceId? {
+        if let localPni = localIdentifiers.pni, isInvitedMember(localPni.uuidValue) {
+            return localPni
+        }
+
+        return nil
+    }
+
     @objc
     var isLocalUserMemberOfAnyKind: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers else {
             return false
         }
-        return isMemberOfAnyKind(localAddress)
+
+        if isMemberOfAnyKind(localIdentifiers.aciAddress) {
+            return true
+        }
+
+        return localPniAsInvitedMember(localIdentifiers: localIdentifiers) != nil
     }
 
     @objc
     var isLocalUserFullMember: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
+        guard let localAci = tsAccountManager.localUuid else {
             return false
         }
-        return isFullMember(localAddress)
+
+        return isFullMember(localAci)
     }
 
+    /// The ID at which the local user is invited, if at all.
+    ///
+    /// Checks membership for the local ACI first. If none is available, falls
+    /// back to checking membership for the local PNI.
+    func localUserInvitedAtServiceId(localIdentifiers: LocalIdentifiers) -> ServiceId? {
+        if isMemberOfAnyKind(localIdentifiers.aci.uuidValue) {
+            // If our ACI is any kind of member, return that membership rather
+            // than falling back to the PNI.
+            if isInvitedMember(localIdentifiers.aci.uuidValue) {
+                return localIdentifiers.aci
+            }
+
+            return nil
+        }
+
+        return localPniAsInvitedMember(localIdentifiers: localIdentifiers)
+    }
+
+    /// Whether the local user is an invited member.
+    ///
+    /// Checks membership for the local ACI first. If none is available, falls
+    /// back to checking membership for the local PNI.
     var isLocalUserInvitedMember: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers else {
             return false
         }
-        return isInvitedMember(localAddress)
+
+        return localUserInvitedAtServiceId(localIdentifiers: localIdentifiers) != nil
     }
 
     var isLocalUserRequestingMember: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
+        guard let localAci = tsAccountManager.localUuid else {
             return false
         }
-        return isRequestingMember(localAddress)
+
+        return isRequestingMember(localAci)
     }
 
     @objc
     var isLocalUserFullOrInvitedMember: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
-            return false
-        }
-        return (isFullMember(localAddress) || isInvitedMember(localAddress))
+        return isLocalUserFullMember || isLocalUserInvitedMember
     }
 
     var isLocalUserFullMemberAndAdministrator: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
+        guard let localAci = tsAccountManager.localUuid else {
             return false
         }
-        return isFullMemberAndAdministrator(localAddress)
+
+        return isFullMemberAndAdministrator(localAci)
     }
 }
 

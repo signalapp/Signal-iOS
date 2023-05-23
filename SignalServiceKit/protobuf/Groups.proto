@@ -122,6 +122,13 @@ message GroupChange {
             bytes profile_key = 3;
         }
 
+        message PromoteMemberPendingPniAciProfileKeyAction {
+            bytes presentation = 1; // Populated by client when sending to server.
+            bytes user_id = 2; // Populated by server when receiving on client.
+            bytes pni = 3; // Populated by server when receiving on client.
+            bytes profile_key = 4; // Populated by server when receiving on client.
+        }
+
         message AddRequestingMemberAction {
             RequestingMember added = 1;
 	    }
@@ -206,6 +213,7 @@ message GroupChange {
                  ModifyAnnouncementsOnlyAction              modifyAnnouncementsOnly         = 21;  // change epoch = 3
         repeated AddBannedMemberAction                      addBannedMembers                = 22;  // change epoch = 4
         repeated DeleteBannedMemberAction                   deleteBannedMembers             = 23;  // change epoch = 4
+        repeated PromoteMemberPendingPniAciProfileKeyAction promotePniPendingMembers        = 24;  // change epoch = 5
     }
 
     bytes  actions         = 1; // The serialized actions

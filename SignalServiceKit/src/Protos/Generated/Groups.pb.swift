@@ -504,6 +504,12 @@ struct GroupsProtos_GroupChange {
       set {_uniqueStorage()._deleteBannedMembers = newValue}
     }
 
+    /// change epoch = 5
+    var promotePniPendingMembers: [GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction] {
+      get {return _storage._promotePniPendingMembers}
+      set {_uniqueStorage()._promotePniPendingMembers = newValue}
+    }
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     struct AddMemberAction {
@@ -613,6 +619,28 @@ struct GroupsProtos_GroupChange {
 
       var userID: Data = Data()
 
+      var profileKey: Data = Data()
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+    }
+
+    struct PromoteMemberPendingPniAciProfileKeyAction {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      /// Populated by client when sending to server.
+      var presentation: Data = Data()
+
+      /// Populated by server when reciving on client.
+      var userID: Data = Data()
+
+      /// Populated by server when reciving on client.
+      var pni: Data = Data()
+
+      /// Populated by server when reciving on client.
       var profileKey: Data = Data()
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -1061,6 +1089,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction: @unchec
 extension GroupsProtos_GroupChange.Actions.AddPendingMemberAction: @unchecked Sendable {}
 extension GroupsProtos_GroupChange.Actions.DeletePendingMemberAction: @unchecked Sendable {}
 extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction: @unchecked Sendable {}
 extension GroupsProtos_GroupChange.Actions.AddRequestingMemberAction: @unchecked Sendable {}
 extension GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction: @unchecked Sendable {}
 extension GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction: @unchecked Sendable {}
@@ -1591,6 +1620,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     21: .same(proto: "modifyAnnouncementsOnly"),
     22: .same(proto: "addBannedMembers"),
     23: .same(proto: "deleteBannedMembers"),
+    24: .same(proto: "promotePniPendingMembers"),
   ]
 
   fileprivate class _StorageClass {
@@ -1617,6 +1647,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     var _modifyAnnouncementsOnly: GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction? = nil
     var _addBannedMembers: [GroupsProtos_GroupChange.Actions.AddBannedMemberAction] = []
     var _deleteBannedMembers: [GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction] = []
+    var _promotePniPendingMembers: [GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction] = []
 
     static let defaultInstance = _StorageClass()
 
@@ -1646,6 +1677,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
       _modifyAnnouncementsOnly = source._modifyAnnouncementsOnly
       _addBannedMembers = source._addBannedMembers
       _deleteBannedMembers = source._deleteBannedMembers
+      _promotePniPendingMembers = source._promotePniPendingMembers
     }
   }
 
@@ -1687,6 +1719,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
         case 21: try { try decoder.decodeSingularMessageField(value: &_storage._modifyAnnouncementsOnly) }()
         case 22: try { try decoder.decodeRepeatedMessageField(value: &_storage._addBannedMembers) }()
         case 23: try { try decoder.decodeRepeatedMessageField(value: &_storage._deleteBannedMembers) }()
+        case 24: try { try decoder.decodeRepeatedMessageField(value: &_storage._promotePniPendingMembers) }()
         default: break
         }
       }
@@ -1768,6 +1801,9 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
       if !_storage._deleteBannedMembers.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._deleteBannedMembers, fieldNumber: 23)
       }
+      if !_storage._promotePniPendingMembers.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._promotePniPendingMembers, fieldNumber: 24)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1800,6 +1836,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
         if _storage._modifyAnnouncementsOnly != rhs_storage._modifyAnnouncementsOnly {return false}
         if _storage._addBannedMembers != rhs_storage._addBannedMembers {return false}
         if _storage._deleteBannedMembers != rhs_storage._deleteBannedMembers {return false}
+        if _storage._promotePniPendingMembers != rhs_storage._promotePniPendingMembers {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -2071,6 +2108,56 @@ extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: SwiftProt
   static func ==(lhs: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction, rhs: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction) -> Bool {
     if lhs.presentation != rhs.presentation {return false}
     if lhs.userID != rhs.userID {return false}
+    if lhs.profileKey != rhs.profileKey {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".PromoteMemberPendingPniAciProfileKeyAction"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "presentation"),
+    2: .standard(proto: "user_id"),
+    3: .same(proto: "pni"),
+    4: .standard(proto: "profile_key"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.presentation) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.userID) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self.pni) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self.profileKey) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.presentation.isEmpty {
+      try visitor.visitSingularBytesField(value: self.presentation, fieldNumber: 1)
+    }
+    if !self.userID.isEmpty {
+      try visitor.visitSingularBytesField(value: self.userID, fieldNumber: 2)
+    }
+    if !self.pni.isEmpty {
+      try visitor.visitSingularBytesField(value: self.pni, fieldNumber: 3)
+    }
+    if !self.profileKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.profileKey, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction, rhs: GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction) -> Bool {
+    if lhs.presentation != rhs.presentation {return false}
+    if lhs.userID != rhs.userID {return false}
+    if lhs.pni != rhs.pni {return false}
     if lhs.profileKey != rhs.profileKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

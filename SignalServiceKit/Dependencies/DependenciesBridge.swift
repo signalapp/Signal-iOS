@@ -47,6 +47,8 @@ public class DependenciesBridge {
 
     public let deviceManager: OWSDeviceManager
 
+    public let groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter
+
     public let svrCredentialStorage: SVRAuthCredentialStorage
     public let svr: SecureValueRecovery
 
@@ -77,6 +79,7 @@ public class DependenciesBridge {
         messageSender: MessageSender,
         modelReadCaches: ModelReadCaches,
         networkManager: NetworkManager,
+        notificationsManager: NotificationsProtocol,
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
         profileManager: ProfileManagerProtocol,
@@ -97,6 +100,7 @@ public class DependenciesBridge {
             messageSender: messageSender,
             modelReadCaches: modelReadCaches,
             networkManager: networkManager,
+            notificationsManager: notificationsManager,
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniProtocolStore,
             profileManager: profileManager,
@@ -122,6 +126,7 @@ public class DependenciesBridge {
         messageSender: MessageSender,
         modelReadCaches: ModelReadCaches,
         networkManager: NetworkManager,
+        notificationsManager: NotificationsProtocol,
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
         profileManager: ProfileManagerProtocol,
@@ -162,6 +167,10 @@ public class DependenciesBridge {
         self.deviceManager = OWSDeviceManagerImpl(
             databaseStorage: db,
             keyValueStoreFactory: keyValueStoreFactory
+        )
+
+        self.groupUpdateInfoMessageInserter = GroupUpdateInfoMessageInserterImpl(
+            notificationsManager: notificationsManager
         )
 
         self.svrCredentialStorage = SVRAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)

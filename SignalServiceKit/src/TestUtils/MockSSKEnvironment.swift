@@ -59,6 +59,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let messageSender = FakeMessageSender()
         let modelReadCaches = ModelReadCaches(factory: TestableModelReadCacheFactory())
         let networkManager = OWSFakeNetworkManager()
+        let notificationsManager = NoopNotificationsManager()
         let ows2FAManager = OWS2FAManager()
         let pniSignalProtocolStore = SignalProtocolStore(for: .pni)
         let profileManager = OWSFakeProfileManager()
@@ -79,6 +80,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             messageSender: messageSender,
             modelReadCaches: modelReadCaches,
             networkManager: networkManager,
+            notificationsManager: notificationsManager,
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniSignalProtocolStore,
             profileManager: profileManager,
@@ -198,7 +200,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             sskJobQueues: sskJobQueues,
             contactDiscoveryManager: contactDiscoveryManager,
             callMessageHandler: FakeCallMessageHandler(),
-            notificationsManager: NoopNotificationsManager(),
+            notificationsManager: notificationsManager,
             messageSendLog: messageSendLog
         )
     }

@@ -70,7 +70,6 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
     private var membersToChangeRole = [UUID: TSGroupMemberRole]()
     private var invitedMembersToAdd = [UUID: TSGroupMemberRole]()
     private var invalidInvitesToRemove = [Data: InvalidInvite]()
-    private var invitedMembersToPromote = [UUID]()
 
     // Banning
     private var membersToBan = [UUID]()
@@ -89,6 +88,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
 
     private var inviteLinkPasswordMode: InviteLinkPasswordMode?
 
+    private var shouldAcceptInvite = false
     private var shouldLeaveGroupDeclineInvite = false
     private var shouldRevokeInvalidInvites = false
 
@@ -153,11 +153,6 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         membersToUnban.append(uuid)
     }
 
-    public func promoteInvitedMember(_ uuid: UUID) {
-        owsAssertDebug(!invitedMembersToPromote.contains(uuid))
-        invitedMembersToPromote.append(uuid)
-    }
-
     public func changeRoleForMember(_ uuid: UUID, role: TSGroupMemberRole) {
         owsAssertDebug(membersToChangeRole[uuid] == nil)
         membersToChangeRole[uuid] = role
@@ -166,6 +161,11 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
     public func addInvitedMember(_ uuid: UUID, role: TSGroupMemberRole) {
         owsAssertDebug(invitedMembersToAdd[uuid] == nil)
         invitedMembersToAdd[uuid] = role
+    }
+
+    public func setLocalShouldAcceptInvite() {
+        owsAssertDebug(!shouldAcceptInvite)
+        shouldAcceptInvite = true
     }
 
     public func setShouldLeaveGroupDeclineInvite() {
@@ -256,7 +256,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         // credentials that we'll actually need to build the change proto.
         //
         // NOTE: We don't (and can't) gather profile key credentials for pending members.
-        var newUserUuids: Set<UUID> = Set(membersToAdd.keys).union(invitedMembersToPromote)
+        var newUserUuids: Set<UUID> = Set(membersToAdd.keys)
         newUserUuids.insert(localUuid)
 
         return firstly(on: DispatchQueue.global()) { () -> Promise<GroupsV2Swift.ProfileKeyCredentialMap> in
@@ -317,9 +317,11 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         let groupV2Params = try currentGroupModel.groupV2Params()
 
         var actionsBuilder = GroupsProtoGroupChangeActions.builder()
-        guard let localUuid = tsAccountManager.localUuid else {
-            throw OWSAssertionError("Missing localUuid.")
+        guard let localIdentifiers = tsAccountManager.localIdentifiers else {
+            throw OWSAssertionError("Missing local identifiers!")
         }
+
+        let localAci: UUID = localIdentifiers.aci.uuidValue
 
         let oldRevision = currentGroupModel.revision
         let newRevision = oldRevision + 1
@@ -553,7 +555,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
             var actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
             actionBuilder.setAdded(try GroupsV2Protos.buildPendingMemberProto(uuid: uuid,
                                                                               role: role.asProtoRole,
-                                                                              localUuid: localUuid,
+                                                                              localUuid: localAci,
                                                                               groupV2Params: groupV2Params))
             actionsBuilder.addAddPendingMembers(try actionBuilder.build())
             didChange = true
@@ -641,7 +643,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
 
         var accessForAddFromInviteLink = self.accessForAddFromInviteLink
         if currentGroupMembership.allMembersOfAnyKind.count == 1 &&
-            currentGroupMembership.isFullMemberAndAdministrator(localUuid) &&
+            currentGroupMembership.isFullMemberAndAdministrator(localAci) &&
             self.shouldLeaveGroupDeclineInvite {
             // If we're the last admin to leave the group,
             // disable the group invite link.
@@ -659,33 +661,62 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
             }
         }
 
-        for uuid in invitedMembersToPromote {
-            if currentGroupMembership.isInvitedMember(uuid) {
-                guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
-                    throw OWSAssertionError("Missing profile key credential: \(uuid)")
+        if self.shouldAcceptInvite {
+            guard let localProfileKeyCredential = profileKeyCredentialMap[localAci] else {
+                throw OWSAssertionError("Missing local profile key credential!")
+            }
+
+            let profileKeyCredentialPresentationData = try GroupsV2Protos.presentationData(
+                profileKeyCredential: localProfileKeyCredential,
+                groupV2Params: groupV2Params
+            )
+
+            // Accepting an invite to our ACI uses a different change action
+            // than an invite to our PNI. We can determine which scenario we're
+            // in by the presence of our ACI or PNI in the invited member list.
+
+            var promotedLocalAci: Bool
+            let isLocalInvitedByAci = currentGroupMembership.isInvitedMember(localAci)
+            let isLocalInvitedByPni = {
+                guard let localPni = localIdentifiers.pni?.uuidValue else { return false }
+                return currentGroupMembership.isInvitedMember(localPni)
+            }()
+
+            if isLocalInvitedByAci {
+                if isLocalInvitedByPni {
+                    Logger.warn("Both local ACI and PNI were invited. Accepting invite by ACI.")
                 }
 
                 var actionBuilder = GroupsProtoGroupChangeActionsPromotePendingMemberAction.builder()
-                actionBuilder.setPresentation(try GroupsV2Protos.presentationData(
-                    profileKeyCredential: profileKeyCredential,
-                    groupV2Params: groupV2Params
-                ))
+                actionBuilder.setPresentation(profileKeyCredentialPresentationData)
 
                 actionsBuilder.addPromotePendingMembers(try actionBuilder.build())
-                didChange = true
 
-                remainingMemberOfAnyKindUuids.insert(uuid)
-                remainingFullMemberUuids.insert(uuid)
-            } else if currentGroupMembership.isFullMember(uuid) {
-                // Redundant change, not a conflict.
+                promotedLocalAci = true
+            } else if isLocalInvitedByPni {
+                var actionBuilder = GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction.builder()
+                actionBuilder.setPresentation(profileKeyCredentialPresentationData)
+
+                actionsBuilder.addPromotePniPendingMembers(try actionBuilder.build())
+
+                promotedLocalAci = true
+            } else if currentGroupMembership.isFullMember(localAci) {
+                Logger.warn("Accepting invite, but already a full member!")
+                promotedLocalAci = false
             } else {
+                owsFailDebug("Local user is neither invited nor a full member. How did we get here?")
                 throw GroupsV2Error.cannotBuildGroupChangeProto_conflictingChange
             }
 
+            if promotedLocalAci {
+                didChange = true
+                remainingMemberOfAnyKindUuids.insert(localAci)
+                remainingFullMemberUuids.insert(localAci)
+            }
         }
 
         if self.shouldLeaveGroupDeclineInvite {
-            let canLeaveGroup = GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: localUuid,
+            let canLeaveGroup = GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: localAci,
                                                                                            remainingFullMemberUuids: remainingFullMemberUuids,
                                                                                            remainingAdminUuids: remainingAdminUuids)
             guard canLeaveGroup else {
@@ -695,17 +726,19 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
             }
 
             // Check that we are still invited or in group.
-            if currentGroupMembership.isInvitedMember(localUuid) {
+            if let invitedAtServiceId = currentGroupMembership.localUserInvitedAtServiceId(
+                localIdentifiers: localIdentifiers
+            ) {
                 // Decline invite
                 var actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
-                let localUserId = try groupV2Params.userId(forUuid: localUuid)
-                actionBuilder.setDeletedUserID(localUserId)
+                let invitedAtUserId = try groupV2Params.userId(forUuid: invitedAtServiceId.uuidValue)
+                actionBuilder.setDeletedUserID(invitedAtUserId)
                 actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
                 didChange = true
-            } else if currentGroupMembership.isFullMember(localUuid) {
+            } else if currentGroupMembership.isFullMember(localAci) {
                 // Leave group
                 var actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
-                let localUserId = try groupV2Params.userId(forUuid: localUuid)
+                let localUserId = try groupV2Params.userId(forUuid: localAci)
                 actionBuilder.setDeletedUserID(localUserId)
                 actionsBuilder.addDeleteMembers(try actionBuilder.build())
                 didChange = true
@@ -738,8 +771,8 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         }
 
         if shouldUpdateLocalProfileKey {
-            guard let profileKeyCredential = profileKeyCredentialMap[localUuid] else {
-                throw OWSAssertionError("Missing profile key credential: \(localUuid)")
+            guard let profileKeyCredential = profileKeyCredentialMap[localAci] else {
+                throw OWSAssertionError("Missing profile key credential: \(localAci)")
             }
             var actionBuilder = GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.builder()
             actionBuilder.setPresentation(try GroupsV2Protos.presentationData(profileKeyCredential: profileKeyCredential,

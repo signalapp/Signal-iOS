@@ -31,43 +31,63 @@ extension ConversationViewController: MessageRequestDelegate {
             owsFailDebug("Invalid thread.")
             return
         }
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("missing local address")
+
+        guard let localIdentifiers = tsAccountManager.localIdentifiers else {
+            owsFailDebug("Missing local identifiers!")
             return
         }
+
         let groupMembership = groupThread.groupModel.groupMembership
-        guard groupMembership.isInvitedMember(localAddress) else {
-            owsFailDebug("Can't reject invite if not pending.")
+
+        guard let invitedAtServiceId = groupMembership.localUserInvitedAtServiceId(
+            localIdentifiers: localIdentifiers
+        ) else {
+            owsFailDebug("Can't reject invite if not invited!")
             return
         }
-        guard let addedByUuid = groupMembership.addedByUuid(forInvitedMember: localAddress) else {
-            owsFailDebug("Missing addedByUuid.")
-            return
-        }
-        let addedByAddress = SignalServiceAddress(uuid: addedByUuid)
-        let addedByName = contactsManager.displayName(for: addedByAddress)
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
 
-        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("GROUPS_INVITE_BLOCK_GROUP",
-                                                                         comment: "Label for 'block group' button in group invite view."),
-                                                style: .default) { [weak self] _ in
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "GROUPS_INVITE_BLOCK_GROUP",
+                comment: "Label for 'block group' button in group invite view."
+            ),
+            style: .default
+        ) { [weak self] _ in
             self?.blockThread()
         })
-        let blockInviterTitle = String(format: OWSLocalizedString("GROUPS_INVITE_BLOCK_INVITER_FORMAT",
-                                                                 comment: "Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}."),
-                                       addedByName)
-        actionSheet.addAction(ActionSheetAction(title: blockInviterTitle,
-                                                style: .default) { [weak self] _ in
-            self?.blockUserAndDelete(addedByAddress)
-        })
-        let blockGroupAndInviterTitle = String(format: OWSLocalizedString("GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT",
-                                                                         comment: "Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}."),
-                                               addedByName)
-        actionSheet.addAction(ActionSheetAction(title: blockGroupAndInviterTitle,
-                                                style: .default) { [weak self] _ in
-            self?.blockUserAndGroupAndDelete(addedByAddress)
-        })
+
+        if let addedByUuid = groupMembership.addedByUuid(forInvitedMember: invitedAtServiceId.uuidValue) {
+            let addedByAddress = SignalServiceAddress(uuid: addedByUuid)
+            let addedByName = contactsManager.displayName(for: addedByAddress)
+
+            actionSheet.addAction(ActionSheetAction(
+                title: String(
+                    format: OWSLocalizedString(
+                        "GROUPS_INVITE_BLOCK_INVITER_FORMAT",
+                        comment: "Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}."
+                    ),
+                    addedByName
+                ),
+                style: .default
+            ) { [weak self] _ in
+                self?.blockUserAndDelete(addedByAddress)
+            })
+
+            actionSheet.addAction(ActionSheetAction(
+                title: String(
+                    format: OWSLocalizedString(
+                        "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT",
+                        comment: "Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}."),
+                    addedByName
+                ),
+                style: .default
+            ) { [weak self] _ in
+                self?.blockUserAndGroupAndDelete(addedByAddress)
+            })
+        }
+
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         presentActionSheet(actionSheet)

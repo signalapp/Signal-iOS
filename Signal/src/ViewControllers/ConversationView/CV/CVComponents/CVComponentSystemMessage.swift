@@ -833,6 +833,7 @@ extension CVComponentSystemMessage {
         case .groupCreated,
              .generic,
              .debug,
+             .sequenceOfInviteLinkRequestAndCancels,
              .userMembershipState,
              .userMembershipState_invalidInvitesRemoved,
              .userMembershipState_invalidInvitesAdded,
@@ -1032,18 +1033,23 @@ extension CVComponentSystemMessage {
             guard let newGroupModel = infoMessage.newGroupModel else {
                 return nil
             }
+
             if newGroupModel.wasJustCreatedByLocalUserV2 {
-                return Action(title: OWSLocalizedString("GROUPS_INVITE_FRIENDS_BUTTON",
-                                                       comment: "Label for 'invite friends to group' button."),
-                              accessibilityIdentifier: "group_invite_friends",
-                              action: .didTapGroupInviteLinkPromotion(groupModel: newGroupModel))
-            }
-            guard let oldGroupModel = infoMessage.oldGroupModel else {
-                return nil
+                return Action(
+                    title: OWSLocalizedString(
+                        "GROUPS_INVITE_FRIENDS_BUTTON",
+                        comment: "Label for 'invite friends to group' button."
+                    ),
+                    accessibilityIdentifier: "group_invite_friends",
+                    action: .didTapGroupInviteLinkPromotion(groupModel: newGroupModel)
+                )
             }
 
-            guard let groupUpdates = infoMessage.groupUpdateItems(transaction: transaction),
-                  !groupUpdates.isEmpty else {
+            guard
+                let oldGroupModel = infoMessage.oldGroupModel,
+                let groupUpdates = infoMessage.groupUpdateItems(transaction: transaction),
+                !groupUpdates.isEmpty
+            else {
                 return nil
             }
 
@@ -1065,14 +1071,7 @@ extension CVComponentSystemMessage {
                         accessibilityIdentifier: "group_description_view",
                         action: .didTapViewGroupDescription(groupModel: newGroupModel)
                     )
-                default:
-                    break
-                }
-            }
-
-            if let singleUpdateMessage = infoMessage.updateMessages?.asSingleMessage {
-                switch singleUpdateMessage {
-                case .sequenceOfInviteLinkRequestAndCancels(_, let isTail):
+                case .sequenceOfInviteLinkRequestAndCancels(let isTail):
                     guard isTail else { return nil }
 
                     guard
@@ -1119,26 +1118,37 @@ extension CVComponentSystemMessage {
                             requesterUuid: requesterUuid
                         )
                     )
+                default:
+                    break
                 }
-            } else {
-                let newlyRequestingMembers = newGroupModel.groupMembership.requestingMembers
-                    .subtracting(oldGroupModel.groupMembership.requestingMembers)
-
-                guard !newlyRequestingMembers.isEmpty else {
-                    return nil
-                }
-
-                let title = (newlyRequestingMembers.count > 1
-                             ? OWSLocalizedString("GROUPS_VIEW_REQUESTS_BUTTON",
-                                                 comment: "Label for button that lets the user view the requests to join the group.")
-                             : OWSLocalizedString("GROUPS_VIEW_REQUEST_BUTTON",
-                                                 comment: "Label for button that lets the user view the request to join the group."))
-                return Action(
-                    title: title,
-                    accessibilityIdentifier: "show_group_requests_button",
-                    action: .didTapShowConversationSettingsAndShowMemberRequests
-                )
             }
+
+            let newlyRequestingMembers = newGroupModel.groupMembership.requestingMembers
+                .subtracting(oldGroupModel.groupMembership.requestingMembers)
+
+            guard !newlyRequestingMembers.isEmpty else {
+                return nil
+            }
+
+            let title: String = {
+                if newlyRequestingMembers.count > 1 {
+                    return OWSLocalizedString(
+                        "GROUPS_VIEW_REQUESTS_BUTTON",
+                        comment: "Label for button that lets the user view the requests to join the group."
+                    )
+                } else {
+                    return OWSLocalizedString(
+                        "GROUPS_VIEW_REQUEST_BUTTON",
+                        comment: "Label for button that lets the user view the request to join the group."
+                    )
+                }
+            }()
+
+            return Action(
+                title: title,
+                accessibilityIdentifier: "show_group_requests_button",
+                action: .didTapShowConversationSettingsAndShowMemberRequests
+            )
         case .typeGroupQuit:
             return nil
         case .unknownProtocolVersion:

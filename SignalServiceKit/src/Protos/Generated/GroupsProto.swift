@@ -2596,6 +2596,198 @@ extension GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
 
 #endif
 
+// MARK: - GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction
+
+public struct GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction
+
+    public var presentation: Data? {
+        guard hasPresentation else {
+            return nil
+        }
+        return proto.presentation
+    }
+    public var hasPresentation: Bool {
+        return !proto.presentation.isEmpty
+    }
+
+    public var userID: Data? {
+        guard hasUserID else {
+            return nil
+        }
+        return proto.userID
+    }
+    public var hasUserID: Bool {
+        return !proto.userID.isEmpty
+    }
+
+    public var pni: Data? {
+        guard hasPni else {
+            return nil
+        }
+        return proto.pni
+    }
+    public var hasPni: Bool {
+        return !proto.pni.isEmpty
+    }
+
+    public var profileKey: Data? {
+        guard hasProfileKey else {
+            return nil
+        }
+        return proto.profileKey
+    }
+    public var hasProfileKey: Bool {
+        return !proto.profileKey.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction) {
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyActionBuilder {
+        return GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyActionBuilder()
+        if let _value = presentation {
+            builder.setPresentation(_value)
+        }
+        if let _value = userID {
+            builder.setUserID(_value)
+        }
+        if let _value = pni {
+            builder.setPni(_value)
+        }
+        if let _value = profileKey {
+            builder.setProfileKey(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPresentation(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.presentation = valueParam
+    }
+
+    public mutating func setPresentation(_ valueParam: Data) {
+        proto.presentation = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.userID = valueParam
+    }
+
+    public mutating func setUserID(_ valueParam: Data) {
+        proto.userID = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPni(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.pni = valueParam
+    }
+
+    public mutating func setPni(_ valueParam: Data) {
+        proto.pni = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setProfileKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.profileKey = valueParam
+    }
+
+    public mutating func setProfileKey(_ valueParam: Data) {
+        proto.profileKey = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction {
+        return GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction {
+        return GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyActionBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - GroupsProtoGroupChangeActionsAddRequestingMemberAction
 
 public struct GroupsProtoGroupChangeActionsAddRequestingMemberAction: Codable, CustomDebugStringConvertible {
@@ -4513,6 +4705,8 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
 
     public let deleteBannedMembers: [GroupsProtoGroupChangeActionsDeleteBannedMemberAction]
 
+    public let promotePniPendingMembers: [GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction]
+
     public var sourceUuid: Data? {
         guard hasSourceUuid else {
             return nil
@@ -4559,7 +4753,8 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
                  modifyDescription: GroupsProtoGroupChangeActionsModifyDescriptionAction?,
                  modifyAnnouncementsOnly: GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction?,
                  addBannedMembers: [GroupsProtoGroupChangeActionsAddBannedMemberAction],
-                 deleteBannedMembers: [GroupsProtoGroupChangeActionsDeleteBannedMemberAction]) {
+                 deleteBannedMembers: [GroupsProtoGroupChangeActionsDeleteBannedMemberAction],
+                 promotePniPendingMembers: [GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction]) {
         self.proto = proto
         self.addMembers = addMembers
         self.deleteMembers = deleteMembers
@@ -4582,6 +4777,7 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
         self.modifyAnnouncementsOnly = modifyAnnouncementsOnly
         self.addBannedMembers = addBannedMembers
         self.deleteBannedMembers = deleteBannedMembers
+        self.promotePniPendingMembers = promotePniPendingMembers
     }
 
     public func serializedData() throws -> Data {
@@ -4675,6 +4871,9 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
         var deleteBannedMembers: [GroupsProtoGroupChangeActionsDeleteBannedMemberAction] = []
         deleteBannedMembers = proto.deleteBannedMembers.map { GroupsProtoGroupChangeActionsDeleteBannedMemberAction($0) }
 
+        var promotePniPendingMembers: [GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction] = []
+        promotePniPendingMembers = proto.promotePniPendingMembers.map { GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction($0) }
+
         self.init(proto: proto,
                   addMembers: addMembers,
                   deleteMembers: deleteMembers,
@@ -4696,7 +4895,8 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
                   modifyDescription: modifyDescription,
                   modifyAnnouncementsOnly: modifyAnnouncementsOnly,
                   addBannedMembers: addBannedMembers,
-                  deleteBannedMembers: deleteBannedMembers)
+                  deleteBannedMembers: deleteBannedMembers,
+                  promotePniPendingMembers: promotePniPendingMembers)
     }
 
     public init(from decoder: Swift.Decoder) throws {
@@ -4767,6 +4967,7 @@ extension GroupsProtoGroupChangeActions {
         }
         builder.setAddBannedMembers(addBannedMembers)
         builder.setDeleteBannedMembers(deleteBannedMembers)
+        builder.setPromotePniPendingMembers(promotePniPendingMembers)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4978,6 +5179,14 @@ public struct GroupsProtoGroupChangeActionsBuilder {
 
     public mutating func setDeleteBannedMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsDeleteBannedMemberAction]) {
         proto.deleteBannedMembers = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addPromotePniPendingMembers(_ valueParam: GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction) {
+        proto.promotePniPendingMembers.append(valueParam.proto)
+    }
+
+    public mutating func setPromotePniPendingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsPromoteMemberPendingPniAciProfileKeyAction]) {
+        proto.promotePniPendingMembers = wrappedItems.map { $0.proto }
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

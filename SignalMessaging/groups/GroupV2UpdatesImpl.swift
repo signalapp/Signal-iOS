@@ -178,13 +178,11 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.revision).")
         }
 
-        let groupUpdateSourceAddress = SignalServiceAddress(uuid: changedGroupModel.changeAuthorUuid)
-        let newGroupModel = changedGroupModel.newGroupModel
-        let newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
         let updatedGroupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
-            newGroupModel: newGroupModel,
-            newDisappearingMessageToken: newDisappearingMessageToken,
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            newGroupModel: changedGroupModel.newGroupModel,
+            newDisappearingMessageToken: changedGroupModel.newDisappearingMessageToken,
+            newlyLearnedPniToAciAssociations: changedGroupModel.newlyLearnedPniToAciAssociations,
+            groupUpdateSourceAddress: SignalServiceAddress(uuid: changedGroupModel.changeAuthorUuid),
             transaction: transaction
         ).groupThread
 
@@ -776,6 +774,7 @@ private extension GroupV2UpdatesImpl {
             let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 newGroupModel: newGroupModel,
                 newDisappearingMessageToken: newDisappearingMessageToken,
+                newlyLearnedPniToAciAssociations: [:],
                 groupUpdateSourceAddress: groupUpdateSourceAddress,
                 canInsert: true,
                 didAddLocalUserToV2Group: didAddLocalUserToV2Group,
@@ -847,6 +846,7 @@ private extension GroupV2UpdatesImpl {
         let newGroupModel: TSGroupModel
         let newDisappearingMessageToken: DisappearingMessageToken?
         let newProfileKeys: [UUID: Data]
+        let newlyLearnedPniToAciAssociations: [ServiceId: ServiceId]
 
         // We should prefer to update models using the change action if we can,
         // since it contains information about the change author.
@@ -864,6 +864,7 @@ private extension GroupV2UpdatesImpl {
             newGroupModel = changedGroupModel.newGroupModel
             newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
             newProfileKeys = changedGroupModel.profileKeys
+            newlyLearnedPniToAciAssociations = changedGroupModel.newlyLearnedPniToAciAssociations
         } else if let snapshot = groupChange.snapshot {
             logger.info("Applying snapshot.")
 
@@ -873,6 +874,7 @@ private extension GroupV2UpdatesImpl {
             newGroupModel = try builder.build()
             newDisappearingMessageToken = snapshot.disappearingMessageToken
             newProfileKeys = snapshot.profileKeys
+            newlyLearnedPniToAciAssociations = [:]
         } else if groupChange.changeActionsProto != nil {
             logger.info("Change action proto was not a single revision update.")
 
@@ -928,8 +930,10 @@ private extension GroupV2UpdatesImpl {
         groupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
             newGroupModel: newGroupModel,
             newDisappearingMessageToken: newDisappearingMessageToken,
+            newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
             groupUpdateSourceAddress: groupUpdateSourceAddressForAttribution,
-            transaction: transaction).groupThread
+            transaction: transaction
+        ).groupThread
 
         // Merge known profile keys, always taking latest.
         profileKeysByUuid.merge(newProfileKeys) { (_, latest) in latest }
@@ -1022,6 +1026,7 @@ private extension GroupV2UpdatesImpl {
             let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 newGroupModel: newGroupModel,
                 newDisappearingMessageToken: newDisappearingMessageToken,
+                newlyLearnedPniToAciAssociations: [:], // Not available from snapshots
                 groupUpdateSourceAddress: groupUpdateSourceAddress,
                 canInsert: true,
                 didAddLocalUserToV2Group: false,

@@ -61,7 +61,8 @@ public class GroupManager: NSObject {
     // Epoch 2: Group Description
     // Epoch 3: Announcement-Only Groups
     // Epoch 4: Banned Members
-    public static let changeProtoEpoch: UInt32 = 4
+    // Epoch 5: Promote pending PNI members
+    public static let changeProtoEpoch: UInt32 = 5
 
     // This matches kOversizeTextMessageSizeThreshold.
     public static let maxEmbeddedChangeProtoLength: UInt = 2 * 1024
@@ -488,7 +489,7 @@ public class GroupManager: NSObject {
                                            descriptionText: String? = nil,
                                            avatarData: Data? = nil,
                                            groupId: Data? = nil,
-                                           groupsVersion: GroupsVersion? = nil,
+                                           groupsVersion: GroupsVersion = .V1,
                                            transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
 
         guard let localAddress = tsAccountManager.localAddress else {
@@ -565,13 +566,18 @@ public class GroupManager: NSObject {
                                                  groupUpdateSourceAddress: SignalServiceAddress?,
                                                  infoMessagePolicy: InfoMessagePolicy = .always,
                                                  transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
-        return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: groupModel,
-                                                                                     newDisappearingMessageToken: disappearingMessageToken,
-                                                                                     groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                     canInsert: true,
-                                                                                     didAddLocalUserToV2Group: false,
-                                                                                     infoMessagePolicy: infoMessagePolicy,
-                                                                                     transaction: transaction)
+        owsAssertDebug(groupModel.groupsVersion == .V1)
+
+        return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            newGroupModel: groupModel,
+            newDisappearingMessageToken: disappearingMessageToken,
+            newlyLearnedPniToAciAssociations: [:],
+            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            canInsert: true,
+            didAddLocalUserToV2Group: false,
+            infoMessagePolicy: infoMessagePolicy,
+            transaction: transaction
+        )
     }
 
     // MARK: - Update Existing Group (Remote)
@@ -596,12 +602,15 @@ public class GroupManager: NSObject {
             return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
         }
         let newGroupModel = updateInfo.newGroupModel
-        return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
-                                                                                     newDisappearingMessageToken: disappearingMessageToken,
-                                                                                     groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                     canInsert: false,
-                                                                                     didAddLocalUserToV2Group: false,
-                                                                                     transaction: transaction)
+        return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            newGroupModel: newGroupModel,
+            newDisappearingMessageToken: disappearingMessageToken,
+            newlyLearnedPniToAciAssociations: [:],
+            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            canInsert: false,
+            didAddLocalUserToV2Group: false,
+            transaction: transaction
+        )
     }
 
     @objc
@@ -797,13 +806,11 @@ public class GroupManager: NSObject {
                                                transaction: transaction)
             }
         }.then(on: DispatchQueue.global()) { _ -> Promise<TSGroupThread> in
-            guard let localUuid = tsAccountManager.localUuid else {
-                throw OWSAssertionError("Missing localUuid.")
-            }
-
-            return updateGroupV2(groupModel: groupModel,
-                                 description: "Accept invite") { groupChangeSet in
-                groupChangeSet.promoteInvitedMember(localUuid)
+            return updateGroupV2(
+                groupModel: groupModel,
+                description: "Accept invite"
+            ) { groupChangeSet in
+                groupChangeSet.setLocalShouldAcceptInvite()
             }
         }
     }
@@ -879,6 +886,7 @@ public class GroupManager: NSObject {
         let groupUpdateSourceAddress = localAddress
         let result = try self.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                       newDisappearingMessageToken: nil,
+                                                                                      newlyLearnedPniToAciAssociations: [:],
                                                                                       groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                       infoMessagePolicy: infoMessagePolicy,
                                                                                       transaction: transaction)
@@ -1160,6 +1168,7 @@ public class GroupManager: NSObject {
                 // DM state.
                 _ = try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                 newDisappearingMessageToken: nil,
+                                                                                newlyLearnedPniToAciAssociations: [:],
                                                                                 groupUpdateSourceAddress: nil,
                                                                                 infoMessagePolicy: .always,
                                                                                 transaction: transaction)
@@ -1355,6 +1364,7 @@ public class GroupManager: NSObject {
                                          newGroupModel: groupModel,
                                          oldDisappearingMessageToken: nil,
                                          newDisappearingMessageToken: newDisappearingMessageToken,
+                                         newlyLearnedPniToAciAssociations: [:],
                                          groupUpdateSourceAddress: sourceAddress,
                                          transaction: transaction)
         default:
@@ -1472,6 +1482,7 @@ public class GroupManager: NSObject {
                                      newGroupModel: newGroupModelV2,
                                      oldDisappearingMessageToken: oldDMConfiguration.asToken,
                                      newDisappearingMessageToken: newDMConfiguration.asToken,
+                                     newlyLearnedPniToAciAssociations: [:],
                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                      transaction: transaction)
 
@@ -1488,14 +1499,24 @@ public class GroupManager: NSObject {
         return groupThreadV2
     }
 
-    // If newDisappearingMessageToken is nil, don't update the disappearing messages configuration.
-    public static func tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel newGroupModelParam: TSGroupModel,
-                                                                                    newDisappearingMessageToken: DisappearingMessageToken?,
-                                                                                    groupUpdateSourceAddress: SignalServiceAddress?,
-                                                                                    canInsert: Bool,
-                                                                                    didAddLocalUserToV2Group: Bool,
-                                                                                    infoMessagePolicy: InfoMessagePolicy = .always,
-                                                                                    transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
+    /// Update persisted group-related state for the provided models, or insert
+    /// it if this group does not already exist. If appropriate, inserts an info
+    /// message into the group thread describing what has changed about the
+    /// group.
+    ///
+    /// - Parameter newlyLearnedPniToAciAssociations
+    /// Associations between PNIs and ACIs that were learned as a result of this
+    /// group update.
+    public static func tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+        newGroupModel newGroupModelParam: TSGroupModel,
+        newDisappearingMessageToken: DisappearingMessageToken?,
+        newlyLearnedPniToAciAssociations: [ServiceId: ServiceId],
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        canInsert: Bool,
+        didAddLocalUserToV2Group: Bool,
+        infoMessagePolicy: InfoMessagePolicy = .always,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> UpsertGroupResult {
 
         var newGroupModel = newGroupModelParam
 
@@ -1549,17 +1570,27 @@ public class GroupManager: NSObject {
 
         return try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                            newDisappearingMessageToken: newDisappearingMessageToken,
+                                                                           newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
                                                                            groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                            infoMessagePolicy: infoMessagePolicy,
                                                                            transaction: transaction)
     }
 
-    // If newDisappearingMessageToken is nil, don't update the disappearing messages configuration.
-    public static func updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel newGroupModelParam: TSGroupModel,
-                                                                               newDisappearingMessageToken: DisappearingMessageToken?,
-                                                                               groupUpdateSourceAddress: SignalServiceAddress?,
-                                                                               infoMessagePolicy: InfoMessagePolicy = .always,
-                                                                               transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
+    /// Update persisted group-related state for the provided models. If
+    /// appropriate, inserts an info message into the group thread describing
+    /// what has changed about the group.
+    ///
+    /// - Parameter newlyLearnedPniToAciAssociations
+    /// Associations between PNIs and ACIs that were learned as a result of this
+    /// group update.
+    public static func updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+        newGroupModel newGroupModelParam: TSGroupModel,
+        newDisappearingMessageToken: DisappearingMessageToken?,
+        newlyLearnedPniToAciAssociations: [ServiceId: ServiceId],
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        infoMessagePolicy: InfoMessagePolicy = .always,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> UpsertGroupResult {
 
         var newGroupModel = newGroupModelParam
 
@@ -1668,17 +1699,16 @@ public class GroupManager: NSObject {
 
         switch infoMessagePolicy {
         case .always, .updatesOnly:
-            let infoMessage = insertGroupUpdateInfoMessage(groupThread: groupThread,
-                                                           oldGroupModel: oldGroupModel,
-                                                           newGroupModel: newGroupModel,
-                                                           oldDisappearingMessageToken: updateDMResult.oldDisappearingMessageToken,
-                                                           newDisappearingMessageToken: updateDMResult.newDisappearingMessageToken,
-                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                           transaction: transaction)
-            if let infoMessage = infoMessage,
-               DebugFlags.internalLogging {
-                owsAssertDebug(!infoMessage.isEmptyGroupUpdate(transaction: transaction))
-            }
+            insertGroupUpdateInfoMessage(
+                groupThread: groupThread,
+                oldGroupModel: oldGroupModel,
+                newGroupModel: newGroupModel,
+                oldDisappearingMessageToken: updateDMResult.oldDisappearingMessageToken,
+                newDisappearingMessageToken: updateDMResult.newDisappearingMessageToken,
+                newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
+                groupUpdateSourceAddress: groupUpdateSourceAddress,
+                transaction: transaction
+            )
         default:
             break
         }
