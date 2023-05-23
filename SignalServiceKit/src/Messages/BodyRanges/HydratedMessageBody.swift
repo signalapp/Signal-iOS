@@ -199,12 +199,17 @@ public class HydratedMessageBody: Equatable, Hashable {
                     mentionPlaintext = MentionAttribute.mentionPrefix + displayName
                 }
                 finalMentionLength = (mentionPlaintext as NSString).length
-                mentionOffsetDelta = finalMentionLength - mention.range.length
-                finalText.replaceCharacters(in: newMentionRange, with: mentionPlaintext)
-                finalMentionAttributes.append(.init(
-                    MentionAttribute.fromOriginalRange(mention.range, mentionUuid: mention.value),
-                    range: NSRange(location: newMentionRange.location, length: finalMentionLength)
-                ))
+                // Make sure we don't have any illegal mention ranges; if so skip them.
+                if newMentionRange.upperBound <= finalText.length {
+                    mentionOffsetDelta = finalMentionLength - mention.range.length
+                    finalText.replaceCharacters(in: newMentionRange, with: mentionPlaintext)
+                    finalMentionAttributes.append(.init(
+                        MentionAttribute.fromOriginalRange(mention.range, mentionUuid: mention.value),
+                        range: NSRange(location: newMentionRange.location, length: finalMentionLength)
+                    ))
+                } else {
+                    mentionOffsetDelta = 0
+                }
             }
             rangeOffset += mentionOffsetDelta
 
