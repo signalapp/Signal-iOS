@@ -814,6 +814,10 @@
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
 		662ABF3329510F8300518D90 /* OutgoingCallEventSyncMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6640639A294D1F8D00997E0B /* OutgoingCallEventSyncMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44082A1567E4001F83E2 /* svr2.pb.swift */; };
+		662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */; };
+		662C440F2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */; };
+		662C44112A182EC4001F83E2 /* LegacyKbsStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44102A182EC4001F83E2 /* LegacyKbsStateManager.swift */; };
+		662C44132A1835F4001F83E2 /* SVRLocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44122A1835F4001F83E2 /* SVRLocalStorage.swift */; };
 		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
 		6640639C294D201F00997E0B /* OutgoingCallEventSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6640639B294D201F00997E0B /* OutgoingCallEventSyncMessage.m */; };
 		6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */; };
@@ -3305,6 +3309,10 @@
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
 		662C44082A1567E4001F83E2 /* svr2.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = svr2.pb.swift; sourceTree = "<group>"; };
+		662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Impl.swift; sourceTree = "<group>"; };
+		662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrchestratingSVRImpl.swift; sourceTree = "<group>"; };
+		662C44102A182EC4001F83E2 /* LegacyKbsStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyKbsStateManager.swift; sourceTree = "<group>"; };
+		662C44122A1835F4001F83E2 /* SVRLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRLocalStorage.swift; sourceTree = "<group>"; };
 		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
 		6640639A294D1F8D00997E0B /* OutgoingCallEventSyncMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutgoingCallEventSyncMessage.h; sourceTree = "<group>"; };
 		6640639B294D201F00997E0B /* OutgoingCallEventSyncMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutgoingCallEventSyncMessage.m; sourceTree = "<group>"; };
@@ -6740,6 +6748,7 @@
 				66C2B1392A0E8D91008DDE72 /* KBSAuthCredential.swift */,
 				F9C5CB1B289453B200548EEE /* KeyBackupServiceImpl.swift */,
 				6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */,
+				662C44102A182EC4001F83E2 /* LegacyKbsStateManager.swift */,
 			);
 			path = KeyBackupService;
 			sourceTree = "<group>";
@@ -6747,8 +6756,10 @@
 		66C2B13B2A0E9108008DDE72 /* SVR2 */ = {
 			isa = PBXGroup;
 			children = (
+				662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */,
 				66C2B13C2A0E9116008DDE72 /* SVR2AuthCredential.swift */,
 				66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */,
+				662C44122A1835F4001F83E2 /* SVRLocalStorage.swift */,
 			);
 			path = SVR2;
 			sourceTree = "<group>";
@@ -6757,6 +6768,7 @@
 			isa = PBXGroup;
 			children = (
 				66C2B1402A12B0E6008DDE72 /* OrchestratingSVRAuthCredential.swift */,
+				662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */,
 			);
 			path = Orchestrating;
 			sourceTree = "<group>";
@@ -12024,6 +12036,7 @@
 				F9C5CD47289453B300548EEE /* LegacyChainKey.m in Sources */,
 				D9CA5BF729B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift in Sources */,
 				F9C5CE0E289453B400548EEE /* LegacyChangePhoneNumber.swift in Sources */,
+				662C44112A182EC4001F83E2 /* LegacyKbsStateManager.swift in Sources */,
 				D9AE0ADB29188A170063488B /* LegacyMessageDecryptJobRecord.swift in Sources */,
 				F9C5CD44289453B300548EEE /* LegacyMessageKeys.m in Sources */,
 				F9C5CD40289453B300548EEE /* LegacyReceivingChain.m in Sources */,
@@ -12085,6 +12098,7 @@
 				F9C5CD1C289453B300548EEE /* ObservedDatabaseChanges.swift in Sources */,
 				F9C5CE16289453B400548EEE /* OffMainThreadTimer.swift in Sources */,
 				66C2B1412A12B0E6008DDE72 /* OrchestratingSVRAuthCredential.swift in Sources */,
+				662C440F2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift in Sources */,
 				F9C5CE43289453B400548EEE /* OrderedDictionary.swift in Sources */,
 				F9C5CE1E289453B400548EEE /* OrderedSet.swift in Sources */,
 				F9C5CD9F289453B400548EEE /* OutageDetection.swift in Sources */,
@@ -12320,6 +12334,7 @@
 				F9C5CD23289453B300548EEE /* SDSTransactable.swift in Sources */,
 				F9C5CD22289453B300548EEE /* SDSTransaction.swift in Sources */,
 				66138FB6298326C7002E0CFE /* SecureValueRecovery.swift in Sources */,
+				662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */,
 				6691E7F72996EAD70032A68A /* SecureValueRecoveryMock.swift in Sources */,
 				6698FC1C2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift in Sources */,
 				F9C5CD37289453B300548EEE /* SenderKeyStore.swift in Sources */,
@@ -12403,6 +12418,7 @@
 				6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */,
 				6691E7EC2996E62B0032A68A /* SVRAuthCredentialStorageMock.swift in Sources */,
 				6691E7EC2996E62B0032A68A /* SVRAuthCredentialStorageMock.swift in Sources */,
+				662C44132A1835F4001F83E2 /* SVRLocalStorage.swift in Sources */,
 				66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */,
 				F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */,
 				F9C5CE04289453B400548EEE /* SyncManagerProtocol.swift in Sources */,

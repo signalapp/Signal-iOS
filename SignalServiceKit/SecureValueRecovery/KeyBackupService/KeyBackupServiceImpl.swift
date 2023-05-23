@@ -17,6 +17,8 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     private let credentialStorage: SVRAuthCredentialStorage
     private let db: DB
     private let keyValueStoreFactory: KeyValueStoreFactory
+    private let legacyStateManager: LegacyKbsStateManager
+    private let localStorage: SVRLocalStorage
     private let remoteAttestation: SVR.Shims.RemoteAttestation
     private let schedulers: Schedulers
     private let signalService: OWSSignalServiceProtocol
@@ -44,6 +46,8 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         self.credentialStorage = credentialStorage
         self.db = databaseStorage
         self.keyValueStoreFactory = keyValueStoreFactory
+        self.legacyStateManager = LegacyKbsStateManager(keyValueStoreFactory: keyValueStoreFactory)
+        self.localStorage = SVRLocalStorage(keyValueStoreFactory: keyValueStoreFactory)
         self.remoteAttestation = remoteAttestation
         self.schedulers = schedulers
         self.signalService = signalService
@@ -57,17 +61,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
 
     static let maximumKeyAttempts: UInt32 = 10
 
-    /// Indicates whether or not we have a master key locally
-    public var hasMasterKey: Bool {
-        return getOrLoadStateWithSneakyTransaction().masterKey != nil
-    }
-
-    public var currentEnclave: KeyBackupEnclave { return tsConstants.keyBackupEnclave }
-
-    /// Indicates whether or not we have a master key stored in KBS
-    public var hasBackedUpMasterKey: Bool {
-        return getOrLoadStateWithSneakyTransaction().isMasterKeyBackedUp
-    }
+    private var currentEnclave: KeyBackupEnclave { return tsConstants.keyBackupEnclave }
 
     public func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool {
         return getOrLoadState(transaction: transaction).isMasterKeyBackedUp
@@ -77,8 +71,8 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         return getOrLoadState(transaction: transaction).masterKey != nil
     }
 
-    public var currentPinType: SVR.PinType? {
-        return getOrLoadStateWithSneakyTransaction().pinType
+    public func currentPinType(transaction: DBReadTransaction) -> SVR.PinType? {
+        return getOrLoadState(transaction: transaction).pinType
     }
 
     /// Indicates whether your pin is valid when compared to your stored keys.
@@ -402,20 +396,6 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         }
     }
 
-    public func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> AnyPromise {
-        let promise: Promise<Void> = generateAndBackupKeys(with: pin, rotateMasterKey: rotateMasterKey)
-        return AnyPromise(promise)
-    }
-
-    /// Backs up the user's master key to KBS and stores it locally in the database.
-    /// If the user doesn't have a master key already a new one is generated.
-    public func generateAndBackupKeys(
-        with pin: String,
-        rotateMasterKey: Bool
-    ) -> Promise<Void> {
-        return generateAndBackupKeys(pin: pin, authMethod: .implicit, rotateMasterKey: rotateMasterKey)
-    }
-
     public func generateAndBackupKeys(
         pin: String,
         authMethod: SVR.AuthMethod,
@@ -486,9 +466,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             Logger.error("recording backupKeyRequest errored: \(error)")
 
             self.db.write { transaction in
-                self.keyValueStore.setBool(true, key: Self.hasBackupKeyRequestFailedIdentifier, transaction: transaction)
-
-                self.reloadState(transaction: transaction)
+                self.legacyStateManager.setHasBackupKeyRequestFailed(true, transaction: transaction)
             }
 
             guard let kbsError = error as? SVR.SVRError else {
@@ -546,30 +524,32 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         return key.derivedData(from: dataToDeriveFrom)
     }
 
-    public func isKeyAvailable(_ key: SVR.DerivedKey) -> Bool {
-        return db.read {
-            return data(for: key, transaction: $0) != nil
-        }
+    public func isKeyAvailable(_ key: SVR.DerivedKey, transaction: DBReadTransaction) -> Bool {
+        return data(for: key, transaction: transaction) != nil
     }
 
-    public func encrypt(keyType: SVR.DerivedKey, data: Data) throws -> Data {
+    public func encrypt(keyType: SVR.DerivedKey, data: Data) -> SVR.DerivedKeyResult {
         guard let keyData = db.read(block: { self.data(for: keyType, transaction: $0) }) else {
             owsFailDebug("missing derived key \(keyType)")
-            throw SVR.SVRError.assertion
+            return .masterKeyMissing
         }
-        return try Aes256GcmEncryptedData.encrypt(data, key: keyData).concatenate()
+        do {
+            return .success(try Aes256GcmEncryptedData.encrypt(data, key: keyData).concatenate())
+        } catch let error {
+            return .cryptographyError(error)
+        }
     }
 
-    public func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) throws -> Data {
+    public func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) -> SVR.DerivedKeyResult {
         guard let keyData = db.read(block: { self.data(for: keyType, transaction: $0) }) else {
             owsFailDebug("missing derived key \(keyType)")
-            throw SVR.SVRError.assertion
+            return .masterKeyMissing
         }
-        return try Aes256GcmEncryptedData(concatenated: encryptedData).decrypt(key: keyData)
-    }
-
-    public func deriveRegistrationLockToken() -> String? {
-        return db.read(block: self.deriveRegistrationLockToken(transaction:))
+        do {
+            return .success(try Aes256GcmEncryptedData(concatenated: encryptedData).decrypt(key: keyData))
+        } catch let error {
+            return .cryptographyError(error)
+        }
     }
 
     public func deriveRegistrationLockToken(transaction: DBReadTransaction) -> String? {
@@ -661,17 +641,6 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
 
     // MARK: - State
 
-    private lazy var keyValueStore: KeyValueStore = {
-        return keyValueStoreFactory.keyValueStore(collection: "kOWSKeyBackupService_Keys")
-    }()
-
-    private static let masterKeyIdentifier = "masterKey"
-    private static let pinTypeIdentifier = "pinType"
-    private static let encodedVerificationStringIdentifier = "encodedVerificationString"
-    private static let hasBackupKeyRequestFailedIdentifier = "hasBackupKeyRequestFailed"
-    private static let hasPendingRestorationIdentifier = "hasPendingRestoration"
-    private static let isMasterKeyBackedUpIdentifier = "isMasterKeyBackedUp"
-    private static let enclaveNameIdentifier = "enclaveName"
     private let cacheQueue = DispatchQueue(label: "org.signal.key-backup-service")
 
     private var cachedState: State?
@@ -679,51 +648,21 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         let masterKey: Data?
         let pinType: SVR.PinType?
         let encodedVerificationString: String?
-        let hasBackupKeyRequestFailed: Bool
-        let hasPendingRestoration: Bool
         let isMasterKeyBackedUp: Bool
         let syncedDerivedKeys: [SVR.DerivedKey: Data]
         let enclaveName: String?
 
-        init(keyValueStore: KeyValueStore, transaction: DBReadTransaction) {
-            masterKey = keyValueStore.getData(masterKeyIdentifier, transaction: transaction)
-
-            if let rawPinType = keyValueStore.getInt(pinTypeIdentifier, transaction: transaction) {
-                pinType = SVR.PinType(rawValue: rawPinType)
+        init(localStorage: SVRLocalStorage, transaction: DBReadTransaction) {
+            masterKey = localStorage.getMasterKey(transaction)
+            pinType = localStorage.getPinType(transaction)
+            encodedVerificationString = localStorage.getEncodedPINVerificationString(transaction)
+            isMasterKeyBackedUp = localStorage.getIsMasterKeyBackedUp(transaction)
+            if let storageServiceKey = localStorage.getSyncedStorageServiceKey(transaction) {
+                syncedDerivedKeys = [.storageService: storageServiceKey]
             } else {
-                pinType = nil
+                syncedDerivedKeys = [:]
             }
-
-            encodedVerificationString = keyValueStore.getString(
-                encodedVerificationStringIdentifier,
-                transaction: transaction
-            )
-
-            hasBackupKeyRequestFailed = keyValueStore.getBool(
-                hasBackupKeyRequestFailedIdentifier,
-                defaultValue: false,
-                transaction: transaction
-            )
-
-            hasPendingRestoration = keyValueStore.getBool(
-                hasPendingRestorationIdentifier,
-                defaultValue: false,
-                transaction: transaction
-            )
-
-            isMasterKeyBackedUp = keyValueStore.getBool(
-                isMasterKeyBackedUpIdentifier,
-                defaultValue: false,
-                transaction: transaction
-            )
-
-            var syncedDerivedKeys = [SVR.DerivedKey: Data]()
-            for type in SVR.DerivedKey.syncableKeys {
-                syncedDerivedKeys[type] = keyValueStore.getData(type.rawValue, transaction: transaction)
-            }
-            self.syncedDerivedKeys = syncedDerivedKeys
-
-            enclaveName = keyValueStore.getString(enclaveNameIdentifier, transaction: transaction)
+            enclaveName = localStorage.getSVR1EnclaveName(transaction)
         }
     }
 
@@ -739,7 +678,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
 
     @discardableResult
     private func loadState(transaction: DBReadTransaction) -> State {
-        let state = State(keyValueStore: keyValueStore, transaction: transaction)
+        let state = State(localStorage: localStorage, transaction: transaction)
         cacheQueue.sync { cachedState = state }
         return state
     }
@@ -781,7 +720,8 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         Logger.info("Migrating from KBS enclave \(String(describing: state.enclaveName)) to \(currentEnclave.name)")
 
         generateAndBackupKeys(
-            with: pin,
+            pin: pin,
+            authMethod: .implicit,
             rotateMasterKey: false
         ).then { () -> Promise<Void> in
             guard let previousEnclave = TSConstants.keyBackupPreviousEnclaves.first(where: { $0.name == state.enclaveName }) else {
@@ -809,22 +749,11 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     /// restored from the server if you know the pin.
     public func clearKeys(transaction: DBWriteTransaction) {
         clearNextToken(transaction: transaction)
-
-        keyValueStore.removeValues(forKeys: [
-            Self.masterKeyIdentifier,
-            Self.isMasterKeyBackedUpIdentifier,
-            Self.pinTypeIdentifier,
-            Self.encodedVerificationStringIdentifier
-        ], transaction: transaction)
-
-        for type in SVR.DerivedKey.syncableKeys {
-            keyValueStore.removeValue(forKey: type.rawValue, transaction: transaction)
-        }
-
+        localStorage.clearKeys(transaction)
         reloadState(transaction: transaction)
     }
 
-    func store(
+    internal func store(
         masterKey: Data,
         isMasterKeyBackedUp: Bool,
         pinType: SVR.PinType,
@@ -842,42 +771,24 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             || pinType != previousState.pinType
             || encodedVerificationString != previousState.encodedVerificationString else { return }
 
-        keyValueStore.setData(
-            masterKey,
-            key: Self.masterKeyIdentifier,
-            transaction: transaction
-        )
-
-        keyValueStore.setBool(
-            isMasterKeyBackedUp,
-            key: Self.isMasterKeyBackedUpIdentifier,
-            transaction: transaction
-        )
-
-        keyValueStore.setInt(
-            pinType.rawValue,
-            key: Self.pinTypeIdentifier,
-            transaction: transaction
-        )
-
-        keyValueStore.setString(
-            encodedVerificationString,
-            key: Self.encodedVerificationStringIdentifier,
-            transaction: transaction
-        )
-
-        keyValueStore.setString(
-            enclaveName,
-            key: Self.enclaveNameIdentifier,
-            transaction: transaction
-        )
+        if masterKey != previousState.masterKey {
+            localStorage.setMasterKey(masterKey, transaction)
+        }
+        if isMasterKeyBackedUp != previousState.isMasterKeyBackedUp {
+            localStorage.setIsMasterKeyBackedUp(isMasterKeyBackedUp, transaction)
+        }
+        if pinType != previousState.pinType {
+            localStorage.setPinType(pinType, transaction)
+        }
+        if encodedVerificationString != previousState.encodedVerificationString {
+            localStorage.setEncodedPINVerificationString(encodedVerificationString, transaction)
+        }
+        if enclaveName != previousState.enclaveName {
+            localStorage.setSVR1EnclaveName(enclaveName, transaction)
+        }
 
         // Clear failed status
-        keyValueStore.setBool(
-            false,
-            key: Self.hasBackupKeyRequestFailedIdentifier,
-            transaction: transaction
-        )
+        legacyStateManager.setHasBackupKeyRequestFailed(false, transaction: transaction)
 
         reloadState(transaction: transaction)
 
@@ -890,14 +801,14 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         // If the app is ready start that restoration.
         guard AppReadiness.isAppReady else { return }
 
+        // TODO: These two things happen asynchronously and definitely race with each other.
         storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount)
 
         // Sync our new keys with linked devices.
         syncManager.sendKeysSyncMessage()
     }
 
-    public func storeSyncedKey(
-        type: SVR.DerivedKey,
+    public func storeSyncedStorageServiceKey(
         data: Data?,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
@@ -906,42 +817,18 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             return owsFailDebug("primary device should never store synced keys")
         }
 
-        guard SVR.DerivedKey.syncableKeys.contains(type) else {
-            return owsFailDebug("tried to store a non-syncable key")
-        }
-
-        keyValueStore.setData(data, key: type.rawValue, transaction: transaction)
+        localStorage.setSyncedStorageServiceKey(data, transaction)
 
         reloadState(transaction: transaction)
 
         // Trigger a re-fetch of the storage manifest, our keys have changed
-        if type == .storageService, data != nil {
+        if data != nil {
             storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount)
         }
     }
 
-    public func hasBackupKeyRequestFailed(transaction: DBReadTransaction) -> Bool {
-        getOrLoadState(transaction: transaction).hasBackupKeyRequestFailed
-    }
-
-    public func hasPendingRestoration(transaction: DBReadTransaction) -> Bool {
-        getOrLoadState(transaction: transaction).hasPendingRestoration
-    }
-
-    public func recordPendingRestoration(transaction: DBWriteTransaction) {
-        keyValueStore.setBool(true, key: Self.hasPendingRestorationIdentifier, transaction: transaction)
-
-        reloadState(transaction: transaction)
-    }
-
-    public func clearPendingRestoration(transaction: DBWriteTransaction) {
-        keyValueStore.removeValue(forKey: Self.hasPendingRestorationIdentifier, transaction: transaction)
-
-        reloadState(transaction: transaction)
-    }
-
     public func setMasterKeyBackedUp(_ value: Bool, transaction: DBWriteTransaction) {
-        keyValueStore.setBool(value, key: Self.isMasterKeyBackedUpIdentifier, transaction: transaction)
+        localStorage.setIsMasterKeyBackedUp(value, transaction)
 
         reloadState(transaction: transaction)
     }

@@ -93,8 +93,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Key sync messages should only be processed on linked devices")
         }
 
-        DependenciesBridge.shared.svr.storeSyncedKey(
-            type: .storageService,
+        DependenciesBridge.shared.svr.storeSyncedStorageServiceKey(
             data: syncMessage.storageService,
             authedAccount: .implicit(),
             transaction: transaction.asV2Write

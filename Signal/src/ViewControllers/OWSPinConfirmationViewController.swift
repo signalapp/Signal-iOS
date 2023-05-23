@@ -126,7 +126,10 @@ public class PinConfirmationViewController: OWSViewController {
         // Pin text field
 
         pinTextField.delegate = self
-        pinTextField.keyboardType = context.svr.currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
+        let currentPinType = context.db.read { tx in
+            context.svr.currentPinType(transaction: tx)
+        }
+        pinTextField.keyboardType = currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
         pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .dynamicTypeBodyClamped
         pinTextField.textAlignment = .center
@@ -334,7 +337,10 @@ extension PinConfirmationViewController: UIViewControllerTransitioningDelegate {
 extension PinConfirmationViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let hasPendingChanges: Bool
-        if context.svr.currentPinType == .alphanumeric {
+        let currentPinType = context.db.read { tx in
+            context.svr.currentPinType(transaction: tx)
+        }
+        if currentPinType == .alphanumeric {
             hasPendingChanges = true
         } else {
             ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)

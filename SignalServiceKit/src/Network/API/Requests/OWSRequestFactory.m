@@ -260,27 +260,30 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/payments/conversions"] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)updateSecondaryDeviceCapabilitiesRequest
++ (TSRequest *)updateSecondaryDeviceCapabilitiesRequestWithHasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey
 {
     // If you are updating capabilities for a primary device, use `updateAccountAttributes` instead
     OWSAssertDebug(!self.tsAccountManager.isPrimaryDevice);
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/devices/capabilities"]
                               method:@"PUT"
-                          parameters:[self deviceCapabilitiesWithIsSecondaryDevice:YES]];
+                          parameters:[self deviceCapabilitiesWithIsSecondaryDevice:YES
+                                                              hasBackedUpMasterKey:hasBackedUpMasterKey]];
 }
 
-+ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDevice
++ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:
+    (BOOL)hasBackedUpMasterKey
 {
     // tsAccountManager.isPrimaryDevice only has a valid value for registered
     // devices.
     OWSAssertDebug(self.tsAccountManager.isRegisteredAndReady);
 
     BOOL isSecondaryDevice = !self.tsAccountManager.isPrimaryDevice;
-    return [self deviceCapabilitiesWithIsSecondaryDevice:isSecondaryDevice];
+    return [self deviceCapabilitiesWithIsSecondaryDevice:isSecondaryDevice hasBackedUpMasterKey:hasBackedUpMasterKey];
 }
 
 + (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesWithIsSecondaryDevice:(BOOL)isSecondaryDevice
+                                                             hasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey
 {
     NSMutableDictionary<NSString *, NSNumber *> *capabilities = [NSMutableDictionary new];
     capabilities[@"gv2"] = @(YES);
@@ -299,7 +302,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     // to have a capability in order to be linked, we might need to always
     // set that capability here if isSecondaryDevice is true.
 
-    if (SecureValueRecoveryObjcBridge.hasBackedUpMasterKey) {
+
+    if (hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
     }
 

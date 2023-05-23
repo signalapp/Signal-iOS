@@ -36,7 +36,7 @@ public protocol SignalServiceClient {
 
     // MARK: - Secondary Devices
 
-    func updateSecondaryDeviceCapabilities() -> Promise<Void>
+    func updateSecondaryDeviceCapabilities(hasBackedUpMasterKey: Bool) -> Promise<Void>
 }
 
 // MARK: -
@@ -271,8 +271,8 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
 
     // MARK: - Secondary Devices
 
-    public func updateSecondaryDeviceCapabilities() -> Promise<Void> {
-        let request = OWSRequestFactory.updateSecondaryDeviceCapabilitiesRequest()
+    public func updateSecondaryDeviceCapabilities(hasBackedUpMasterKey: Bool) -> Promise<Void> {
+        let request = OWSRequestFactory.updateSecondaryDeviceCapabilitiesRequest(withHasBackedUpMasterKey: hasBackedUpMasterKey)
         return self.networkManager.makePromise(request: request).asVoid()
     }
 }

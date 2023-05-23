@@ -132,8 +132,8 @@ public class AccountManager: NSObject, Dependencies {
                 // If the user previously had a PIN, but we don't have record of it,
                 // mark them as pending restoration during onboarding. Reg lock users
                 // will have already restored their PIN by this point.
-                if response.hasPreviouslyUsedKBS, !DependenciesBridge.shared.svr.hasMasterKey {
-                    DependenciesBridge.shared.svr.recordPendingRestoration(transaction: transaction.asV2Write)
+                if response.hasPreviouslyUsedKBS, !DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction.asV2Read) {
+                    LegacyKbsStateManager.shared.recordPendingRestoration(transaction: transaction.asV2Write)
                 }
             }
 
@@ -410,7 +410,10 @@ public class AccountManager: NSObject, Dependencies {
                 }
             }
         }.then(on: DispatchQueue.global()) {
-            self.serviceClient.updateSecondaryDeviceCapabilities()
+            let hasBackedUpMasterKey = self.databaseStorage.read { tx in
+                DependenciesBridge.shared.svr.hasBackedUpMasterKey(transaction: tx.asV2Read)
+            }
+            return self.serviceClient.updateSecondaryDeviceCapabilities(hasBackedUpMasterKey: hasBackedUpMasterKey)
         }.done {
             self.completeRegistration()
         }.then { _ -> Promise<Void> in

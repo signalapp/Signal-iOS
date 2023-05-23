@@ -31,6 +31,10 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public var currentPinType: SVR.PinType?
 
+    public func currentPinType(transaction: DBReadTransaction) -> SVR.PinType? {
+        return currentPinType
+    }
+
     public var verifyPinHandler: (String) -> Bool = { _ in return true }
 
     public func verifyPin(_ pin: String, resultHandler: @escaping (Bool) -> Void) {
@@ -43,22 +47,10 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         return .value(reglockToken!)
     }
 
-    public func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> AnyPromise {
-        return AnyPromise(Promise<Void>.value(()))
-    }
-
     public var generateAndBackupKeysMock: ((_ pin: String, _ authMethod: SVR.AuthMethod, _ rotateMasterKey: Bool) -> Promise<Void>)?
-
-    public func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> Promise<Void> {
-        return generateAndBackupKeysMock!(pin, .implicit, rotateMasterKey)
-    }
 
     public func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) -> Promise<Void> {
         return generateAndBackupKeysMock!(pin, authMethod, rotateMasterKey)
-    }
-
-    public func restoreKeysAndBackup(with pin: String, and auth: KBSAuthCredential?) -> Promise<Void> {
-        fatalError("Unimplemented")
     }
 
     public var restoreKeysAndBackupMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>)?
@@ -71,16 +63,12 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         return .value(())
     }
 
-    public func encrypt(keyType: SVR.DerivedKey, data: Data) throws -> Data {
-        return data
+    public func encrypt(keyType: SVR.DerivedKey, data: Data) -> SVR.DerivedKeyResult {
+        return .success(data)
     }
 
-    public func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) throws -> Data {
-        return encryptedData
-    }
-
-    public func deriveRegistrationLockToken() -> String? {
-        return reglockToken
+    public func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) -> SVR.DerivedKeyResult {
+        return .success(encryptedData)
     }
 
     public func deriveRegistrationLockToken(transaction: DBReadTransaction) -> String? {
@@ -95,8 +83,7 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         hasMasterKey = false
     }
 
-    public func storeSyncedKey(
-        type: SVR.DerivedKey,
+    public func storeSyncedStorageServiceKey(
         data: Data?,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
@@ -145,7 +132,7 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         return dataGenerator(key)
     }
 
-    public func isKeyAvailable(_ key: SVR.DerivedKey) -> Bool {
+    public func isKeyAvailable(_ key: SVR.DerivedKey, transaction: DBReadTransaction) -> Bool {
         return true
     }
 }

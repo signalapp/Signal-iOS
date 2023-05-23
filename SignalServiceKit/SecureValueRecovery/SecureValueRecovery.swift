@@ -51,12 +51,6 @@ public enum SVR {
             }
         }
 
-        static var syncableKeys: [DerivedKey] {
-            return [
-                .storageService
-            ]
-        }
-
         public func derivedData(from dataToDeriveFrom: Data) -> Data? {
             guard let data = rawValue.data(using: .utf8) else {
                 owsFailDebug("Failed to encode data")
@@ -92,23 +86,25 @@ public enum SVR {
         // Some other issue.
         case genericError(Error)
     }
+
+    public enum DerivedKeyResult {
+        case success(Data)
+        case masterKeyMissing
+        //  Error encrypting or decrypting
+        case cryptographyError(Error)
+    }
 }
 
 public protocol SecureValueRecovery {
 
     /// Indicates whether or not we have a master key locally
-    var hasMasterKey: Bool { get }
-
-    var currentEnclave: KeyBackupEnclave { get }
-
-    /// Indicates whether or not we have a master key stored in SVR
-    var hasBackedUpMasterKey: Bool { get }
-
-    func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool
-
     func hasMasterKey(transaction: DBReadTransaction) -> Bool
 
-    var currentPinType: SVR.PinType? { get }
+    /// Indicates whether or not we have a master key stored in SVR
+    func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool
+
+    /// The pin type used (e.g. numeric, alphanumeric)
+    func currentPinType(transaction: DBReadTransaction) -> SVR.PinType?
 
     /// Indicates whether your pin is valid when compared to your stored keys.
     /// This is a local verification and does not make any requests to the SVR.
@@ -120,16 +116,7 @@ public protocol SecureValueRecovery {
     func acquireRegistrationLockForNewNumber(with pin: String, and auth: SVRAuthCredential) -> Promise<String>
 
     /// Loads the users key, if any, from the SVR into the database.
-    func restoreKeysAndBackup(with pin: String, and auth: SVRAuthCredential?) -> Promise<Void>
-
-    /// Loads the users key, if any, from the SVR into the database.
     func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>
-
-    func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> AnyPromise
-
-    /// Backs up the user's master key to SVR and stores it locally in the database.
-    /// If the user doesn't have a master key already a new one is generated.
-    func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> Promise<Void>
 
     /// Backs up the user's master key to SVR and stores it locally in the database.
     /// If the user doesn't have a master key already a new one is generated.
@@ -141,11 +128,10 @@ public protocol SecureValueRecovery {
 
     // MARK: - Master Key Encryption
 
-    func encrypt(keyType: SVR.DerivedKey, data: Data) throws -> Data
+    func encrypt(keyType: SVR.DerivedKey, data: Data) -> SVR.DerivedKeyResult
 
-    func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) throws -> Data
+    func decrypt(keyType: SVR.DerivedKey, encryptedData: Data) -> SVR.DerivedKeyResult
 
-    func deriveRegistrationLockToken() -> String?
     func deriveRegistrationLockToken(transaction: DBReadTransaction) -> String?
 
     func warmCaches()
@@ -154,20 +140,11 @@ public protocol SecureValueRecovery {
     /// restored from the server if you know the pin.
     func clearKeys(transaction: DBWriteTransaction)
 
-    func storeSyncedKey(
-        type: SVR.DerivedKey,
+    func storeSyncedStorageServiceKey(
         data: Data?,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     )
-
-    func hasBackupKeyRequestFailed(transaction: DBReadTransaction) -> Bool
-
-    func hasPendingRestoration(transaction: DBReadTransaction) -> Bool
-
-    func recordPendingRestoration(transaction: DBWriteTransaction)
-
-    func clearPendingRestoration(transaction: DBWriteTransaction)
 
     func setMasterKeyBackedUp(_ value: Bool, transaction: DBWriteTransaction)
 
@@ -175,12 +152,5 @@ public protocol SecureValueRecovery {
 
     func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> Data?
 
-    func isKeyAvailable(_ key: SVR.DerivedKey) -> Bool
-}
-
-extension SecureValueRecovery {
-
-    public func restoreKeysAndBackup(with pin: String) -> Promise<Void> {
-        restoreKeysAndBackup(with: pin, and: nil)
-    }
+    func isKeyAvailable(_ key: SVR.DerivedKey, transaction: DBReadTransaction) -> Bool
 }

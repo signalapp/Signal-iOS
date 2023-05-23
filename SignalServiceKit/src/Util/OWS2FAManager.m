@@ -92,7 +92,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         return;
     }
 
-    if (self.hasBackedUpMasterKey) {
+    if ([self hasBackedUpMasterKeyWithTransaction:transaction]) {
         pin = [SVRUtil normalizePin:pin];
     } else {
         // Convert the pin to arabic numerals, we never want to
@@ -105,8 +105,12 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 - (OWS2FAMode)mode
 {
+    __block bool hasBackedUpMasterKey;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        hasBackedUpMasterKey = [self hasBackedUpMasterKeyWithTransaction:transaction];
+    }];
     // Identify what version of 2FA we're using
-    if (self.hasBackedUpMasterKey) {
+    if (hasBackedUpMasterKey) {
         return OWS2FAMode_V2;
     } else if (self.pinCode != nil) {
         return OWS2FAMode_V1;
@@ -263,7 +267,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         return NO;
     }
 
-    if (!self.hasBackedUpMasterKey) {
+    if (![self hasBackedUpMasterKeyWithTransaction:transaction]) {
         return NO;
     }
 

@@ -97,7 +97,9 @@ class KeyBackupServiceTests: XCTestCase {
                 )
             }
 
-            let registrationLockToken = keyBackupService.deriveRegistrationLockToken()
+            let registrationLockToken = db.read {
+                keyBackupService.deriveRegistrationLockToken(transaction: $0)
+            }
 
             XCTAssertEqual(vector.registrationLock, registrationLockToken)
         }
@@ -194,8 +196,7 @@ class KeyBackupServiceTests: XCTestCase {
                         transaction: transaction
                     )
                 case .synced:
-                    keyBackupService.storeSyncedKey(
-                        type: .storageService,
+                    keyBackupService.storeSyncedStorageServiceKey(
                         data: storageServiceKeyData,
                         authedAccount: .implicit(),
                         transaction: transaction
@@ -211,19 +212,35 @@ class KeyBackupServiceTests: XCTestCase {
         for vector in vectors {
             db.write { vector.storeKey(keyBackupService: keyBackupService, transaction: $0) }
 
-            XCTAssertEqual(keyBackupService.hasMasterKey, vector.masterKeyData != nil)
+            let hasMasterKey = db.read {
+                keyBackupService.hasMasterKey(transaction: $0)
+            }
+            XCTAssertEqual(hasMasterKey, vector.masterKeyData != nil)
 
             db.read { tx in
                 XCTAssertEqual(vector.derivedKeyData, keyBackupService.data(for: vector.derivedKey, transaction: tx))
                 XCTAssertEqual(vector.storageServiceKeyData, keyBackupService.data(for: .storageService, transaction: tx))
             }
 
-            let encryptedData = try keyBackupService.encrypt(keyType: vector.derivedKey, data: vector.rawData)
-            let decryptedData = try keyBackupService.decrypt(keyType: vector.derivedKey, encryptedData: encryptedData)
-            XCTAssertEqual(vector.rawData, decryptedData)
-
-            let decryptedVectorData = try keyBackupService.decrypt(keyType: vector.derivedKey, encryptedData: vector.encryptedData)
-            XCTAssertEqual(vector.rawData, decryptedVectorData)
+            let encryptedData: Data
+            switch keyBackupService.encrypt(keyType: vector.derivedKey, data: vector.rawData) {
+            case .success(let data):
+                encryptedData = data
+            case .masterKeyMissing:
+                XCTFail("Missing master key")
+                return
+            case .cryptographyError(let error):
+                XCTFail("Failed to encrypt: \(error)")
+                return
+            }
+            switch keyBackupService.decrypt(keyType: vector.derivedKey, encryptedData: encryptedData) {
+            case .success(let decryptedData):
+                XCTAssertEqual(vector.rawData, decryptedData)
+            case .masterKeyMissing:
+                XCTFail("Missing master key")
+            case .cryptographyError(let error):
+                XCTFail("Failed to decrypt: \(error)")
+            }
         }
     }
 

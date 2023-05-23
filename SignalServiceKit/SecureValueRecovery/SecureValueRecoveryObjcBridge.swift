@@ -13,12 +13,12 @@ public final class SecureValueRecoveryObjcBridge: NSObject {
     private override init() {}
 
     @objc
-    public static var hasBackedUpMasterKey: Bool {
-        DependenciesBridge.shared.svr.hasBackedUpMasterKey
+    public static func hasBackedUpMasterKey(transaction: SDSAnyReadTransaction) -> Bool {
+        return DependenciesBridge.shared.svr.hasBackedUpMasterKey(transaction: transaction.asV2Read)
     }
 
     @objc
-    public static func deriveRegistrationLockToken() -> String? {
-        return DependenciesBridge.shared.svr.deriveRegistrationLockToken()
+    public static func deriveRegistrationLockToken(transaction: SDSAnyReadTransaction) -> String? {
+        return DependenciesBridge.shared.svr.deriveRegistrationLockToken(transaction: transaction.asV2Read)
     }
 }

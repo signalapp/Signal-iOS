@@ -59,7 +59,10 @@ extension OWS2FAManager {
 
     public func enableRegistrationLockV2() -> Promise<Void> {
         return DispatchQueue.global().async(.promise) { () -> String in
-            guard let token = DependenciesBridge.shared.svr.deriveRegistrationLockToken() else {
+            let token = Self.databaseStorage.read { tx in
+                return DependenciesBridge.shared.svr.deriveRegistrationLockToken(transaction: tx.asV2Read)
+            }
+            guard let token else {
                 throw OWSAssertionError("Cannot enable registration lock without an existing PIN")
             }
             return token
@@ -225,14 +228,15 @@ extension OWS2FAManager {
     // MARK: - KeyBackupService Wrappers/Helpers
 
     @objc
-    public var hasBackedUpMasterKey: Bool {
-        DependenciesBridge.shared.svr.hasBackedUpMasterKey
+    public func hasBackedUpMasterKey(transaction: SDSAnyReadTransaction) -> Bool {
+        return DependenciesBridge.shared.svr.hasBackedUpMasterKey(transaction: transaction.asV2Read)
     }
 
     @objc(generateAndBackupKeysWithPin:rotateMasterKey:)
     @available(swift, obsoleted: 1.0)
     public func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> AnyPromise {
-        return DependenciesBridge.shared.svr.generateAndBackupKeys(with: pin, rotateMasterKey: rotateMasterKey)
+        let promise = DependenciesBridge.shared.svr.generateAndBackupKeys(pin: pin, authMethod: .implicit, rotateMasterKey: rotateMasterKey)
+        return AnyPromise(promise)
     }
 
     @objc

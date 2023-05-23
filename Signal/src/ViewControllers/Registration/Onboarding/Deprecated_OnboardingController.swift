@@ -87,7 +87,7 @@ public class Deprecated_OnboardingController: NSObject {
             var milestones: [OnboardingMilestone] = [.verifiedPhoneNumber, .phoneNumberDiscoverability, .setupProfile]
 
             let hasPendingPinRestoration = context.db.read {
-                context.svr.hasPendingRestoration(transaction: $0)
+                LegacyKbsStateManager.shared.hasPendingRestoration(transaction: $0)
             }
 
             if hasPendingPinRestoration {
@@ -96,7 +96,7 @@ public class Deprecated_OnboardingController: NSObject {
 
             if FeatureFlags.pinsForNewUsers || hasPendingPinRestoration {
                 let hasBackupKeyRequestFailed = context.db.read {
-                    context.svr.hasBackupKeyRequestFailed(transaction: $0)
+                    LegacyKbsStateManager.shared.hasBackupKeyRequestFailed(transaction: $0)
                 }
 
                 if hasBackupKeyRequestFailed {
@@ -147,7 +147,10 @@ public class Deprecated_OnboardingController: NSObject {
             milestones.append(.setupProfile)
         }
 
-        if context.svr.hasMasterKey {
+        let hasMasterKey = context.db.read { tx in
+            context.svr.hasMasterKey(transaction: tx)
+        }
+        if hasMasterKey {
             milestones.append(.restorePin)
             milestones.append(.setupPin)
         }
@@ -590,7 +593,7 @@ public class Deprecated_OnboardingController: NSObject {
     }
 
     internal var hasPendingRestoration: Bool {
-        context.db.read { context.svr.hasPendingRestoration(transaction: $0) }
+        context.db.read { LegacyKbsStateManager.shared.hasPendingRestoration(transaction: $0) }
     }
 
     public func submitVerification(fromViewController: UIViewController,
@@ -611,40 +614,38 @@ public class Deprecated_OnboardingController: NSObject {
             // they could be stale from previous registrations.
             context.db.write { context.svr.clearKeys(transaction: $0) }
 
-            context.svr.restoreKeysAndBackup(with: twoFAPin, and: self.kbsAuth).done {
-                // If we restored successfully clear out KBS auth, the server will give it
-                // to us again if we still need to do KBS operations.
-                self.kbsAuth = nil
-                // The above operation already does a backup; don't bother doing another one later.
-                self.hasBackedUpKBS = true
+            let authMethod: SVR.AuthMethod
+            if let kbsAuth {
+                authMethod = .svrAuth(kbsAuth, backup: nil)
+            } else {
+                authMethod = .implicit
+            }
+            context.svr.restoreKeysAndBackup(pin: twoFAPin, authMethod: authMethod).done {
+                switch $0 {
+                case .success:
+                    // If we restored successfully clear out KBS auth, the server will give it
+                    // to us again if we still need to do KBS operations.
+                    self.kbsAuth = nil
+                    // The above operation already does a backup; don't bother doing another one later.
+                    self.hasBackedUpKBS = true
 
-                if self.hasPendingRestoration {
-                    firstly {
-                        self.accountManager.performInitialStorageServiceRestore()
-                    }.ensure {
-                        completion(.success)
-                    }.catch { error in
-                        owsFailDebugUnlessNetworkFailure(error)
+                    if self.hasPendingRestoration {
+                        firstly {
+                            self.accountManager.performInitialStorageServiceRestore()
+                        }.ensure {
+                            completion(.success)
+                        }.catch { error in
+                            owsFailDebugUnlessNetworkFailure(error)
+                        }
+                    } else {
+                        // We've restored our keys, we can now re-run this method to post our registration token
+                        // We need to first mark reglock as enabled so we know to include the reglock token in our
+                        // registration attempt.
+                        self.databaseStorage.write { transaction in
+                            self.ows2FAManager.markRegistrationLockV2Enabled(transaction: transaction)
+                        }
+                        self.submitVerification(fromViewController: fromViewController, completion: completion)
                     }
-                } else {
-                    // We've restored our keys, we can now re-run this method to post our registration token
-                    // We need to first mark reglock as enabled so we know to include the reglock token in our
-                    // registration attempt.
-                    self.databaseStorage.write { transaction in
-                        self.ows2FAManager.markRegistrationLockV2Enabled(transaction: transaction)
-                    }
-                    self.submitVerification(fromViewController: fromViewController, completion: completion)
-                }
-            }.catch { error in
-                guard let error = error as? SVR.SVRError else {
-                    owsFailDebug("unexpected response from KBS")
-                    return completion(.invalid2FAPin)
-                }
-
-                switch error {
-                case .assertion:
-                    owsFailDebug("unexpected response from KBS")
-                    completion(.invalid2FAPin)
                 case .invalidPin(let remainingAttempts):
                     Logger.warn("Invalid V2 PIN, \(remainingAttempts) attempt(s) remaining")
                     completion(.invalidV2RegistrationLockPin(remainingAttempts: remainingAttempts))
@@ -654,6 +655,9 @@ public class Deprecated_OnboardingController: NSObject {
                     // was deleted due to too many failed attempts. They'll
                     // have to retry after the registration lock window expires.
                     completion(.exhaustedV2RegistrationLockAttempts)
+                case .genericError, .networkError:
+                    owsFailDebug("unexpected response from KBS")
+                    return completion(.invalid2FAPin)
                 }
             }
 
@@ -705,13 +709,21 @@ public class Deprecated_OnboardingController: NSObject {
                 }
             }
             return Promise.value(())
-        }.then { [weak self] in
+        }.then { [weak self] () -> Promise<Void> in
             // Do best effort to back up to KBS once we complete registration; this resets
             // the PIN guesses.
             guard let self = self, !self.hasBackedUpKBS, let twoFAPin = self.twoFAPin else {
                 return Promise.value(())
             }
-            return self.context.svr.restoreKeysAndBackup(with: twoFAPin)
+            return self.context.svr.restoreKeysAndBackup(pin: twoFAPin, authMethod: .implicit).then { (result: SVR.RestoreKeysResult) -> Promise<Void> in
+                switch result {
+                case .success:
+                    return .value(())
+                case .backupMissing, .invalidPin, .networkError, .genericError:
+                    // All errors are collapsed down below anyway.
+                    return .init(error: OWSAssertionError("Failed to restore keys"))
+                }
+            }
         }
 
         if showModal {
@@ -836,7 +848,7 @@ extension Deprecated_OnboardingController: Deprecated_RegistrationPinAttemptsExh
 
         if hasPendingRestoration {
             context.db.write { transaction in
-                context.svr.clearPendingRestoration(transaction: transaction)
+                LegacyKbsStateManager.shared.clearPendingRestoration(transaction: transaction)
             }
             showNextMilestone(navigationController: navigationController)
         } else {

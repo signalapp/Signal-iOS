@@ -119,6 +119,17 @@ public class FeatureFlags: BaseFlags {
 
     @objc
     public static let editMessageReceive: Bool = build.includes(.internal)
+
+    /// If true, we will read/write from/to SVR2 _and_ KBS.
+    /// Once this is true for everyone, it can be removed a new _remote_ flag
+    /// should be added which when triggered will make clients exclusively talk
+    /// to SVR2 and never even try KBS. That flag will be enabled ~90 days later.
+    public static let mirrorSVR2: Bool = false
+
+    /// If true, we will read/write exclusively from/to SVR2.
+    /// This is a placeholder for a feature flag to be added later, so that we don't turn
+    /// it on for older builds when we flip the flag remotely.
+    public static let exclusiveSVR2: Bool = false
 }
 
 // MARK: -

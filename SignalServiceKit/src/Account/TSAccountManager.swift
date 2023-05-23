@@ -452,7 +452,13 @@ public extension TSAccountManager {
         let deviceCapabilitiesKey = "deviceCapabilities"
         let appVersionKey = "appVersion"
 
-        let currentDeviceCapabilities: [String: NSNumber] = OWSRequestFactory.deviceCapabilitiesForLocalDevice()
+        let hasBackedUpMasterKey = self.databaseStorage.read { tx in
+            DependenciesBridge.shared.svr.hasBackedUpMasterKey(transaction: tx.asV2Read)
+        }
+
+        let currentDeviceCapabilities: [String: NSNumber] = OWSRequestFactory.deviceCapabilitiesForLocalDevice(
+            withHasBackedUpMasterKey: hasBackedUpMasterKey
+        )
         let currentAppVersion4 = AppVersion.shared.currentAppVersion4
 
         var lastAttributeRequest: Date?
@@ -485,7 +491,7 @@ public extension TSAccountManager {
             let client = SignalServiceRestClient()
             return (self.isPrimaryDevice
                         ? client.updatePrimaryDeviceAccountAttributes()
-                        : client.updateSecondaryDeviceCapabilities())
+                    : client.updateSecondaryDeviceCapabilities(hasBackedUpMasterKey: hasBackedUpMasterKey))
         }.then(on: DispatchQueue.global()) {
             self.profileManager.fetchLocalUsersProfilePromise(authedAccount: authedAccount)
         }.map(on: DispatchQueue.global()) { _ -> Void in

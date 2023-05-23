@@ -59,7 +59,9 @@ public struct StorageService: Dependencies {
     public enum StorageError: Error, IsRetryableProvider {
         case assertion
         case retryableAssertion
+        case manifestEncryptionFailed(version: UInt64)
         case manifestDecryptionFailed(version: UInt64)
+        case itemEncryptionFailed(identifier: StorageIdentifier)
         case itemDecryptionFailed(identifier: StorageIdentifier)
         case networkError(statusCode: Int, underlyingError: Error)
 
@@ -71,7 +73,11 @@ public struct StorageService: Dependencies {
                 return false
             case .retryableAssertion:
                 return true
+            case .manifestEncryptionFailed:
+                return false
             case .manifestDecryptionFailed:
+                return false
+            case .itemEncryptionFailed:
                 return false
             case .itemDecryptionFailed:
                 return false
@@ -244,16 +250,16 @@ public struct StorageService: Dependencies {
             switch response.status {
             case .success:
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
-                let manifestData: Data
-                do {
-                    manifestData = try DependenciesBridge.shared.svr.decrypt(
-                        keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
-                        encryptedData: encryptedManifestContainer.value
-                    )
-                } catch {
+                let decryptResult = DependenciesBridge.shared.svr.decrypt(
+                    keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
+                    encryptedData: encryptedManifestContainer.value
+                )
+                switch decryptResult {
+                case .success(let manifestData):
+                    return .latestManifest(try StorageServiceProtoManifestRecord(serializedData: manifestData))
+                case .masterKeyMissing, .cryptographyError:
                     throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
                 }
-                return .latestManifest(try StorageServiceProtoManifestRecord(serializedData: manifestData))
             case .notFound:
                 return .noExistingManifest
             case .noContent:
@@ -284,10 +290,17 @@ public struct StorageService: Dependencies {
 
             // Encrypt the manifest
             let manifestData = try manifest.serializedData()
-            let encryptedManifestData = try DependenciesBridge.shared.svr.encrypt(
+            let encryptedManifestData: Data
+            let encryptResult = DependenciesBridge.shared.svr.encrypt(
                 keyType: .storageServiceManifest(version: manifest.version),
                 data: manifestData
             )
+            switch encryptResult {
+            case .success(let data):
+                encryptedManifestData = data
+            case .masterKeyMissing, .cryptographyError:
+                throw StorageError.manifestEncryptionFailed(version: manifest.version)
+            }
 
             let manifestWrapperBuilder = StorageServiceProtoStorageManifest.builder(
                 version: manifest.version,
@@ -298,10 +311,17 @@ public struct StorageService: Dependencies {
             // Encrypt the new items
             builder.setInsertItem(try newItems.map { item in
                 let itemData = try item.record.serializedData()
-                let encryptedItemData = try DependenciesBridge.shared.svr.encrypt(
+                let encryptedItemData: Data
+                let itemEncryptionResult = DependenciesBridge.shared.svr.encrypt(
                     keyType: .storageServiceRecord(identifier: item.identifier),
                     data: itemData
                 )
+                switch itemEncryptionResult {
+                case .success(let data):
+                    encryptedItemData = data
+                case .masterKeyMissing, .cryptographyError:
+                    throw StorageError.itemEncryptionFailed(identifier: item.identifier)
+                }
                 let itemWrapperBuilder = StorageServiceProtoStorageItem.builder(key: item.identifier.data, value: encryptedItemData)
                 return try itemWrapperBuilder.build()
             })
@@ -329,12 +349,14 @@ public struct StorageService: Dependencies {
                 // Our version was out of date, we should've received a copy of the latest version
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
                 let manifestData: Data
-                do {
-                    manifestData = try DependenciesBridge.shared.svr.decrypt(
-                        keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
-                        encryptedData: encryptedManifestContainer.value
-                    )
-                } catch {
+                let decryptionResult = DependenciesBridge.shared.svr.decrypt(
+                    keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
+                    encryptedData: encryptedManifestContainer.value
+                )
+                switch decryptionResult {
+                case .success(let data):
+                    manifestData = data
+                case .masterKeyMissing, .cryptographyError:
                     throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
                 }
                 return try StorageServiceProtoManifestRecord(serializedData: manifestData)
@@ -396,12 +418,14 @@ public struct StorageService: Dependencies {
                     throw StorageError.assertion
                 }
                 let itemData: Data
-                do {
-                    itemData = try DependenciesBridge.shared.svr.decrypt(
-                        keyType: .storageServiceRecord(identifier: itemIdentifier),
-                        encryptedData: encryptedItemData
-                    )
-                } catch {
+                let itemDecryptionResult = DependenciesBridge.shared.svr.decrypt(
+                    keyType: .storageServiceRecord(identifier: itemIdentifier),
+                    encryptedData: encryptedItemData
+                )
+                switch itemDecryptionResult {
+                case .success(let data):
+                    itemData = data
+                case .masterKeyMissing, .cryptographyError:
                     throw StorageError.itemDecryptionFailed(identifier: itemIdentifier)
                 }
                 let record = try StorageServiceProtoStorageRecord(serializedData: itemData)

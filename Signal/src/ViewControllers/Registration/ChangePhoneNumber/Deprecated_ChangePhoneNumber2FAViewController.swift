@@ -51,7 +51,7 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
     }
 
     private var hasPendingRestoration: Bool {
-        context.db.read { context.svr.hasPendingRestoration(transaction: $0) }
+        context.db.read { LegacyKbsStateManager.shared.hasPendingRestoration(transaction: $0) }
     }
 
     private let context: ViewControllerContext

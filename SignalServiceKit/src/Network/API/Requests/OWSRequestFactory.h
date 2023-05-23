@@ -90,9 +90,10 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 #pragma mark - Attributes and Capabilities
 
-+ (TSRequest *)updateSecondaryDeviceCapabilitiesRequest;
++ (TSRequest *)updateSecondaryDeviceCapabilitiesRequestWithHasBackedUpMasterKey:(BOOL)hasBackedUpMasterKey;
 
-+ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDevice;
++ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDeviceWithHasBackedUpMasterKey:
+    (BOOL)hasBackedUpMasterKey;
 
 #pragma mark - Prekeys
 
