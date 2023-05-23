@@ -52,10 +52,6 @@ extension ConversationViewController {
         renderState.debugDescription
     }
 
-    public var isLayoutApplyingUpdate: Bool {
-        layout.isPerformBatchUpdatesOrReloadDataBeingAppliedOrSettling
-    }
-
     public var areCellsAnimating: Bool {
         viewState.activeCellAnimations.count > 0
     }
@@ -118,7 +114,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             // if called for the first time.
 
             Logger.info("View is not yet loaded.")
-            loadDidLand(renderState: update.renderState)
+            loadDidLand()
             return
         }
 
@@ -161,7 +157,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         if loadCoordinator.shouldHideCollectionViewContent {
             updateViewToReflectLoad(loadedRenderState: self.renderState)
-            loadDidLand(renderState: update.renderState)
+            loadDidLand()
         } else {
             if !viewState.hasAppliedFirstLoad {
                 // Ignore scrollAction; we need to scroll to .initialPosition.
@@ -214,7 +210,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         }
     }
 
-    private func loadDidLand(renderState: CVRenderState) {
+    private func loadDidLand() {
         switch viewState.selectionAnimationState {
         case .willAnimate:
             viewState.selectionAnimationState = .animating
@@ -222,8 +218,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             viewState.selectionAnimationState = .idle
             ensureBottomViewType()
         }
-
-        self.loadCoordinator.loadDidLandInView(renderState: renderState)
     }
 
     // The view's first appearance and the first load can race.
@@ -329,7 +323,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         updateViewToReflectLoad(loadedRenderState: self.renderState)
 
-        loadDidLand(renderState: update.renderState)
+        loadDidLand()
 
         if scrollAction.isAnimated {
             self.perform(scrollAction: scrollAction)
@@ -344,7 +338,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             clearInitialScrollState()
         }
         updateViewToReflectLoad(loadedRenderState: self.renderState)
-        loadDidLand(renderState: update.renderState)
+        loadDidLand()
     }
 
     private func setHasAppliedFirstLoadIfNecessary() {
@@ -369,7 +363,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 self.perform(scrollAction: scrollAction)
             }
             self.updateViewToReflectLoad(loadedRenderState: renderState)
-            self.loadDidLand(renderState: renderState)
+            self.loadDidLand()
             if scrollAction.isAnimated {
                 self.perform(scrollAction: scrollAction)
             }
@@ -541,7 +535,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             self.updateViewToReflectLoad(loadedRenderState: renderState)
 
             if shouldAnimateUpdate {
-                self.loadDidLand(renderState: update.renderState)
+                self.loadDidLand()
             }
 
             if scrollAction.isAnimated {
@@ -567,7 +561,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                                     cvc: self)
 
         if !shouldAnimateUpdate {
-            self.loadDidLand(renderState: update.renderState)
+            self.loadDidLand()
         }
     }
 

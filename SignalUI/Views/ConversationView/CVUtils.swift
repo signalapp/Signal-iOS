@@ -26,12 +26,6 @@ public class CVUtils {
     public static func workQueue(isInitialLoad: Bool) -> DispatchQueue {
         isInitialLoad ? workQueue_userInteractive : workQueue_userInitiated
     }
-
-    public static let landingQueue: DispatchQueue = {
-        DispatchQueue(label: "org.signal.conversation-view.landing",
-                      qos: .userInitiated,
-                      autoreleaseFrequency: .workItem)
-    }()
 }
 
 // MARK: -
