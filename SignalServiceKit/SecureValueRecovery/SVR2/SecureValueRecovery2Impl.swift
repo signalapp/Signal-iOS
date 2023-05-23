@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalArgon2
 
 /// Implementation of `SecureValueRecovery` that talks to the SVR2 server.
 public class SecureValueRecovery2Impl: SecureValueRecovery {
@@ -101,17 +100,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 return
             }
 
-            guard let pinData = SVRUtil.normalizePin(pin).data(using: .utf8) else {
-                owsFailDebug("failed to determine pin data")
-                return
-            }
-
-            do {
-                // TODO: switch to libsignal hashing
-                isValid = try Argon2.verify(encoded: encodedVerificationString, password: pinData, variant: .i)
-            } catch {
-                owsFailDebug("Failed to validate encodedVerificationString with error: \(error)")
-            }
+            isValid = SVRUtil.verifyPIN(pin: pin, againstEncodedPINVerificationString: encodedVerificationString)
         }
     }
 

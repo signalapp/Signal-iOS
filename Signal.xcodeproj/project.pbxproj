@@ -818,6 +818,7 @@
 		662C440F2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */; };
 		662C44112A182EC4001F83E2 /* LegacyKbsStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44102A182EC4001F83E2 /* LegacyKbsStateManager.swift */; };
 		662C44132A1835F4001F83E2 /* SVRLocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44122A1835F4001F83E2 /* SVRLocalStorage.swift */; };
+		662C44172A1D21D7001F83E2 /* SecureValueRecovery2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */; };
 		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
 		6640639C294D201F00997E0B /* OutgoingCallEventSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6640639B294D201F00997E0B /* OutgoingCallEventSyncMessage.m */; };
 		6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */; };
@@ -1346,10 +1347,10 @@
 		D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */; };
 		D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */; };
 		D9CA5BF729B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA5BF629B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift */; };
-		D9CAF7502A0ACFF20049193A /* PniDistributionParameterBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */; };
-		D9CAF7532A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */; };
 		D9CAF7492A09CCE50049193A /* PniHelloWorldManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAF7482A09CCE50049193A /* PniHelloWorldManager.swift */; };
 		D9CAF74E2A09D2BD0049193A /* PniHelloWorldManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAF74C2A09D2AB0049193A /* PniHelloWorldManagerTest.swift */; };
+		D9CAF7502A0ACFF20049193A /* PniDistributionParameterBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */; };
+		D9CAF7532A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */; };
 		D9E335A42993269100825677 /* MockDBV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAE2982F4C4002E0CFE /* MockDBV2.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
 		D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */; };
@@ -3313,6 +3314,7 @@
 		662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrchestratingSVRImpl.swift; sourceTree = "<group>"; };
 		662C44102A182EC4001F83E2 /* LegacyKbsStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyKbsStateManager.swift; sourceTree = "<group>"; };
 		662C44122A1835F4001F83E2 /* SVRLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRLocalStorage.swift; sourceTree = "<group>"; };
+		662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Tests.swift; sourceTree = "<group>"; };
 		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
 		6640639A294D1F8D00997E0B /* OutgoingCallEventSyncMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutgoingCallEventSyncMessage.h; sourceTree = "<group>"; };
 		6640639B294D201F00997E0B /* OutgoingCallEventSyncMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutgoingCallEventSyncMessage.m; sourceTree = "<group>"; };
@@ -3920,10 +3922,10 @@
 		D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManifest.swift; sourceTree = "<group>"; };
 		D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+SSK.swift"; sourceTree = "<group>"; };
 		D9CA5BF629B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LegacyChangePhoneNumber+ChangeTokens.swift"; sourceTree = "<group>"; };
-		D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniDistributionParameterBuilder.swift; sourceTree = "<group>"; };
-		D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniDistributionParameterBuilderTest.swift; sourceTree = "<group>"; };
 		D9CAF7482A09CCE50049193A /* PniHelloWorldManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniHelloWorldManager.swift; sourceTree = "<group>"; };
 		D9CAF74C2A09D2AB0049193A /* PniHelloWorldManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniHelloWorldManagerTest.swift; sourceTree = "<group>"; };
+		D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniDistributionParameterBuilder.swift; sourceTree = "<group>"; };
+		D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniDistributionParameterBuilderTest.swift; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
 		D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+ColumnName.swift"; sourceTree = "<group>"; };
 		D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Remove.swift"; sourceTree = "<group>"; };
@@ -6603,6 +6605,14 @@
 			path = V2;
 			sourceTree = "<group>";
 		};
+		662C44142A1D20EB001F83E2 /* SVR2 */ = {
+			isa = PBXGroup;
+			children = (
+				662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */,
+			);
+			path = SVR2;
+			sourceTree = "<group>";
+		};
 		6645F30629BF8D1000B58EBD /* AccountAttributes */ = {
 			isa = PBXGroup;
 			children = (
@@ -6777,6 +6787,7 @@
 			isa = PBXGroup;
 			children = (
 				6673FF732979F7A400F96CFD /* KeyBackupService */,
+				662C44142A1D20EB001F83E2 /* SVR2 */,
 				6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */,
 			);
 			path = SecureValueRecovery;
@@ -10480,7 +10491,6 @@
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
-				"${BUILT_PRODUCTS_DIR}/SignalArgon2/SignalArgon2.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalRingRTC/SignalRingRTC.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
@@ -10509,7 +10519,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalArgon2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalRingRTC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
@@ -10566,7 +10575,6 @@
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
-				"${BUILT_PRODUCTS_DIR}/SignalArgon2/SignalArgon2.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalRingRTC/SignalRingRTC.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
@@ -10587,7 +10595,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalArgon2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalRingRTC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
@@ -10662,7 +10669,6 @@
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
-				"${BUILT_PRODUCTS_DIR}/SignalArgon2/SignalArgon2.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalRingRTC/SignalRingRTC.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
@@ -10683,7 +10689,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalArgon2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalRingRTC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
@@ -12263,8 +12268,8 @@
 				F9C5CDEF289453B400548EEE /* PinnedThreadManager.swift in Sources */,
 				F9C5CE2A289453B400548EEE /* Platform.swift in Sources */,
 				F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */,
-				D9C2D78729A80C9C00D79715 /* PniChangePhoneNumberSyncMessage.swift in Sources */,
 				D9CAF7502A0ACFF20049193A /* PniDistributionParameterBuilder.swift in Sources */,
+				D9C2D78729A80C9C00D79715 /* PniDistributionSyncMessage.swift in Sources */,
 				D9C2D78729A80C9C00D79715 /* PniDistributionSyncMessage.swift in Sources */,
 				D9CAF7492A09CCE50049193A /* PniHelloWorldManager.swift in Sources */,
 				D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */,
@@ -12647,6 +12652,7 @@
 				F942624E289B1B5500460798 /* SDSDatabaseStorageObservationTest.swift in Sources */,
 				F942624B289B1B5500460798 /* SDSDatabaseStorageTest.swift in Sources */,
 				F942624A289B1B5500460798 /* SDSKeyValueStoreTest.swift in Sources */,
+				662C44172A1D21D7001F83E2 /* SecureValueRecovery2Tests.swift in Sources */,
 				5003BB45299F650E0037159B /* ServiceIdTest.swift in Sources */,
 				F942626C289B1B5500460798 /* SignalAccountFinderTest.swift in Sources */,
 				E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */,

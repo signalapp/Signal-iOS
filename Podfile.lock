@@ -49,8 +49,6 @@ PODS:
   - PureLayout (3.1.4)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
-  - SignalArgon2 (1.3.2)
-  - SignalArgon2/Tests (1.3.2)
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
   - SignalCoreKit/Tests (1.0.0):
@@ -95,8 +93,6 @@ DEPENDENCIES:
   - PureLayout
   - Reachability
   - SAMKeychain
-  - SignalArgon2 (from `https://github.com/signalapp/Argon2.git`)
-  - SignalArgon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.27.0`)
@@ -145,9 +141,6 @@ EXTERNAL SOURCES:
   MobileCoinMinimal:
     :branch: charlesmchen/mobileCoinMinimal
     :git: https://github.com/signalapp/MobileCoin-Swift.git
-  SignalArgon2:
-    :git: https://github.com/signalapp/Argon2.git
-    :submodules: true
   SignalCoreKit:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
@@ -189,10 +182,6 @@ CHECKOUT OPTIONS:
   MobileCoinMinimal:
     :commit: dae1e36cb6aeb8fab2c35ce857bd45cd0ce07023
     :git: https://github.com/signalapp/MobileCoin-Swift.git
-  SignalArgon2:
-    :commit: 6a37e32167500ff7830e337b726a1653061d86b2
-    :git: https://github.com/signalapp/Argon2.git
-    :submodules: true
   SignalCoreKit:
     :commit: c31350f2cab65be465b292752108fa876b81258f
     :git: https://github.com/signalapp/SignalCoreKit
@@ -227,7 +216,6 @@ SPEC CHECKSUMS:
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
   SignalCoreKit: 3191731b893914ad63ae156899405621adaf9dfa
   SignalRingRTC: 79fd7fa7a48fcecc1e1540dcfd6da67574ed06a2
   SQLCipher: 57fa9f863fa4a3ed9dd3c90ace52315db8c0fdca
@@ -236,6 +224,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: e54dae3082b1fc3cb118cef1cecfeb6de77e8b25
+PODFILE CHECKSUM: bbc6d38f80bdcdb67dda2ea75970182b10b7518f
 
 COCOAPODS: 1.11.3

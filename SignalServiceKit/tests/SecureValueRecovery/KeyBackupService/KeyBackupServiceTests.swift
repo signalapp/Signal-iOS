@@ -72,7 +72,7 @@ class KeyBackupServiceTests: XCTestCase {
         let vectors = try decoder.decode([Vector].self, from: jsonData)
 
         for vector in vectors {
-            let (encryptionKey, accessKey) = try keyBackupService.deriveEncryptionKeyAndAccessKey(pin: vector.pin, backupId: vector.backupId)
+            let (encryptionKey, accessKey) = try SVRUtil.deriveSVR1EncryptionKeyAndAccessKey(pin: vector.pin, backupId: vector.backupId)
 
             XCTAssertEqual(vector.argon2Hash, encryptionKey + accessKey)
             XCTAssertEqual(vector.kbsAccessKey, accessKey)
@@ -120,36 +120,6 @@ class KeyBackupServiceTests: XCTestCase {
             let normalizedPin = SVRUtil.normalizePin(vector.pin)
             XCTAssertEqual(vector.bytes, normalizedPin.data(using: .utf8)!, vector.name)
         }
-    }
-
-    func test_pinVerification() throws {
-        let pin = "apassword"
-        let salt = Data.data(
-            fromHex: "202122232425262728292A2B2C2D2E2F"
-        )!
-        let expectedEncodedVerificationString = "$argon2i$v=19$m=512,t=64,p=1$ICEiIyQlJicoKSorLC0uLw$NeZzhiNv4cRmRMct9scf7d838bzmHJvrZtU/0BH0v/U"
-
-        let encodedVerificationString = try keyBackupService.deriveEncodedVerificationString(pin: pin, salt: salt)
-
-        XCTAssertEqual(expectedEncodedVerificationString, encodedVerificationString)
-
-        db.write { transaction in
-            keyBackupService.store(
-                masterKey: Data(repeating: 0x00, count: 32),
-                isMasterKeyBackedUp: true,
-                pinType: .init(forPin: pin),
-                encodedVerificationString: encodedVerificationString,
-                enclaveName: "",
-                authedAccount: .implicit(),
-                transaction: transaction
-            )
-        }
-
-        // The correct PIN returns as valid.
-        AssertPin(pin, isValid: true)
-
-        // The incorrect PIN returns as invalid.
-        AssertPin("notmypassword", isValid: false)
     }
 
     func test_storageServiceEncryption() throws {

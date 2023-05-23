@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalArgon2
 import SignalCoreKit
 
 public class KeyBackupServiceImpl: SecureValueRecovery {
@@ -89,16 +88,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
                 return
             }
 
-            guard let pinData = SVRUtil.normalizePin(pin).data(using: .utf8) else {
-                owsFailDebug("failed to determine pin data")
-                return
-            }
-
-            do {
-                isValid = try Argon2.verify(encoded: encodedVerificationString, password: pinData, variant: .i)
-            } catch {
-                owsFailDebug("Failed to validate encodedVerificationString with error: \(error)")
-            }
+            isValid = SVRUtil.verifyPIN(pin: pin, againstEncodedPINVerificationString: encodedVerificationString)
         }
     }
 
@@ -270,7 +260,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
                 throw SVR.SVRError.assertion
             case .ok:
-                let encodedVerificationString = try self.deriveEncodedVerificationString(pin: pin)
+                let encodedVerificationString = try SVRUtil.deriveEncodedPINVerificationString(pin: pin)
 
                 // We successfully stored the new keys in KBS, save them in the database.
                 // Since the backup request is always for the current enclave, we want to
@@ -341,7 +331,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             enclave: enclave,
             ignoreCachedToken: ignoreCachedToken
         ).map(on: schedulers.global()) { backupId in
-            return try self.deriveEncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
+            return try SVRUtil.deriveSVR1EncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
         }.then { encryptionKey, accessKey in
             self.restoreKeyRequest(
                 accessKey: accessKey,
@@ -409,7 +399,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
                 if rotateMasterKey { return self.generateMasterKey() }
                 return self.getOrLoadStateWithSneakyTransaction().masterKey ?? self.generateMasterKey()
             }()
-            let (encryptionKey, accessKey) = try self.deriveEncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
+            let (encryptionKey, accessKey) = try SVRUtil.deriveSVR1EncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
             let encryptedMasterKey = try self.encryptMasterKey(masterKey, encryptionKey: encryptionKey)
 
             return (masterKey, encryptedMasterKey, accessKey)
@@ -447,7 +437,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
                 throw SVR.SVRError.assertion
             case .ok:
-                let encodedVerificationString = try self.deriveEncodedVerificationString(pin: pin)
+                let encodedVerificationString = try SVRUtil.deriveEncodedPINVerificationString(pin: pin)
 
                 // We successfully stored the new keys in KBS, save them in the database
                 self.db.write { transaction in
@@ -565,46 +555,6 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     private func assertIsOnBackgroundQueue() {
         guard !CurrentAppContext().isRunningTests else { return }
         AssertNotOnMainThread()
-    }
-
-    func deriveEncryptionKeyAndAccessKey(pin: String, backupId: Data) throws -> (encryptionKey: Data, accessKey: Data) {
-        assertIsOnBackgroundQueue()
-
-        guard let pinData = SVRUtil.normalizePin(pin).data(using: .utf8) else { throw SVR.SVRError.assertion }
-        guard backupId.count == 32 else { throw SVR.SVRError.assertion }
-
-        let (rawHash, _) = try Argon2.hash(
-            iterations: 32,
-            memoryInKiB: 1024 * 16, // 16MiB
-            threads: 1,
-            password: pinData,
-            salt: backupId,
-            desiredLength: 64,
-            variant: .id,
-            version: .v13
-        )
-
-        return (encryptionKey: rawHash[0...31], accessKey: rawHash[32...63])
-    }
-
-    func deriveEncodedVerificationString(pin: String, salt: Data = Cryptography.generateRandomBytes(16)) throws -> String {
-        assertIsOnBackgroundQueue()
-
-        guard let pinData = SVRUtil.normalizePin(pin).data(using: .utf8) else { throw SVR.SVRError.assertion }
-        guard salt.count == 16 else { throw SVR.SVRError.assertion }
-
-        let (_, encodedString) = try Argon2.hash(
-            iterations: 64,
-            memoryInKiB: 512,
-            threads: 1,
-            password: pinData,
-            salt: salt,
-            desiredLength: 32,
-            variant: .i,
-            version: .v13
-        )
-
-        return encodedString
     }
 
     func generateMasterKey() -> Data {
