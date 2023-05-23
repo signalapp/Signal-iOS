@@ -41,14 +41,10 @@ internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
         attestationMessage: Data,
         currentDate: Date
     ) throws -> LibSignalClient.SgxClient {
-        #if DEBUG
-        return try Svr2Client.create_NOT_FOR_PRODUCTION(
+        return try Svr2Client.create(
             mrenclave: mrenclave.dataValue,
             attestationMessage: attestationMessage,
             currentDate: currentDate
         )
-        #else
-        owsFail("SVR2 unavailable")
-        #endif
     }
 }
