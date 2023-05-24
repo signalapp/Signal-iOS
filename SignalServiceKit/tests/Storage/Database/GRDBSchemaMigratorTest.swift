@@ -106,4 +106,58 @@ class GRDBSchemaMigratorTest: XCTestCase {
         XCTAssertEqual(rows[2]["key"], "SomeKey")
         XCTAssertEqual(rows[2]["value"], Data(count: 3))
     }
+
+    func testMigrateThreadReplyInfos() throws {
+        let collection = "TSThreadReplyInfo"
+
+        let initialEntries: [(String, String, String)] = [
+            (collection, "00000000-0000-4000-8000-000000000001", #"{"author":{"backingUuid":"00000000-0000-4000-8000-00000000000A","backingPhoneNumber":null},"timestamp":1683201600000}"#),
+            (collection, "00000000-0000-4000-8000-000000000002", #"{"author":{"backingUuid":null,"backingPhoneNumber":"+16505550100"},"timestamp":1683201600000}"#),
+            (collection, "00000000-0000-4000-8000-000000000003", "ABC123"),
+            ("UnrelatedCollection", "00000000-0000-4000-8000-000000000001", #"{"author":{"backingUuid":"00000000-0000-4000-8000-00000000000A","backingPhoneNumber":null},"timestamp":1683201600000}"#)
+        ]
+
+        // Set up the database with sample data that may have existed.
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            // A snapshot of the key value store as it existed when this migration was
+            // added. If the key value store's schema is updated in the future, don't
+            // update this call site. It must remain as a snapshot.
+            try db.execute(
+                sql: "CREATE TABLE keyvalue (key TEXT NOT NULL, collection TEXT NOT NULL, value BLOB NOT NULL, PRIMARY KEY (key, collection))"
+            )
+            for (collection, key, value) in initialEntries {
+                try db.execute(
+                    sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                    arguments: [collection, key, try XCTUnwrap(value.data(using: .utf8))]
+                )
+            }
+        }
+
+        // Run the test.
+        try databaseQueue.write { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+            try GRDBSchemaMigrator.migrateThreadReplyInfos(transaction: transaction)
+        }
+
+        // Validate the ending state.
+        let rows = try databaseQueue.read {
+            try Row.fetchAll($0, sql: "SELECT collection, key, value FROM keyvalue ORDER BY collection, key")
+        }
+
+        XCTAssertEqual(rows.count, 3)
+
+        XCTAssertEqual(rows[0]["collection"], collection)
+        XCTAssertEqual(rows[0]["key"], "00000000-0000-4000-8000-000000000001")
+        XCTAssertEqual(rows[0]["value"], #"{"author":"00000000-0000-4000-8000-00000000000A","timestamp":1683201600000}"#)
+
+        XCTAssertEqual(rows[1]["collection"], collection)
+        XCTAssertEqual(rows[1]["key"], "00000000-0000-4000-8000-000000000003")
+        XCTAssertEqual(rows[1]["value"], "ABC123")
+
+        XCTAssertEqual(rows[2]["collection"], "UnrelatedCollection")
+        XCTAssertEqual(rows[2]["key"], "00000000-0000-4000-8000-000000000001")
+        XCTAssertEqual(rows[2]["value"], #"{"author":{"backingUuid":"00000000-0000-4000-8000-00000000000A","backingPhoneNumber":null},"timestamp":1683201600000}"#)
+    }
 }

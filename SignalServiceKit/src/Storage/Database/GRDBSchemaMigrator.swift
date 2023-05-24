@@ -225,6 +225,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addIndexToFindFailedAttachments
         case dropMessageSendLogTriggers
         case addEditMessageChanges
+        case threadReplyInfoServiceIds
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -282,7 +283,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 56
+    public static let grdbSchemaVersionLatest: UInt = 57
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2277,6 +2278,11 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.threadReplyInfoServiceIds) { tx in
+            try Self.migrateThreadReplyInfos(transaction: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -2725,6 +2731,29 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     // MARK: - Migrations
+
+    static func migrateThreadReplyInfos(transaction: GRDBWriteTransaction) throws {
+        let collection = "TSThreadReplyInfo"
+        try transaction.database.execute(
+            sql: """
+                UPDATE "keyvalue" SET
+                    "value" = json_replace("value", '$.author', json_extract("value", '$.author.backingUuid'))
+                WHERE
+                    "collection" IS ?
+                    AND json_valid("value")
+            """,
+            arguments: [collection]
+        )
+        try transaction.database.execute(
+            sql: """
+                DELETE FROM "keyvalue" WHERE
+                    "collection" IS ?
+                    AND json_valid("value")
+                    AND json_extract("value", '$.author') IS NULL
+            """,
+            arguments: [collection]
+        )
+    }
 
     static func migrateVoiceMessageDrafts(
         transaction: GRDBWriteTransaction,

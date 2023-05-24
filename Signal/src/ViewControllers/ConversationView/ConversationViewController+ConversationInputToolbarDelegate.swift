@@ -254,30 +254,35 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                     return
                 }
 
+                let didChange = Self.draftHasChanged(
+                    currentDraft: currentDraft,
+                    quotedReply: quotedReply,
+                    thread: thread,
+                    transaction: transaction
+                )
+
                 // Persist the draft only if its changed. This avoids unnecessary model changes.
-                if Self.draftHasChanged(currentDraft: currentDraft,
-                                        quotedReply: quotedReply,
-                                        thread: thread,
-                                        transaction: transaction) {
-                    let replyInfo: ThreadReplyInfo?
-                    if let quotedReply = quotedReply {
-                        replyInfo = ThreadReplyInfo(timestamp: quotedReply.timestamp,
-                                                    authorAddress: quotedReply.authorAddress)
-                    } else {
-                        replyInfo = nil
-                    }
-                    thread.update(withDraft: currentDraft,
-                                  replyInfo: replyInfo,
-                                  transaction: transaction)
+                guard didChange else {
+                    return
                 }
+
+                let replyInfo: ThreadReplyInfoObjC?
+                if let quotedReply, let serviceId = quotedReply.authorAddress.serviceId {
+                    replyInfo = ThreadReplyInfoObjC(ThreadReplyInfo(timestamp: quotedReply.timestamp, author: serviceId))
+                } else {
+                    replyInfo = nil
+                }
+                thread.update(withDraft: currentDraft, replyInfo: replyInfo, transaction: transaction)
             }
         }
     }
 
-    private static func draftHasChanged(currentDraft: MessageBody?,
-                                        quotedReply: OWSQuotedReplyModel?,
-                                        thread: TSThread,
-                                        transaction: SDSAnyReadTransaction) -> Bool {
+    private static func draftHasChanged(
+        currentDraft: MessageBody?,
+        quotedReply: OWSQuotedReplyModel?,
+        thread: TSThread,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
         let currentText = currentDraft?.text ?? ""
         let persistedText = thread.messageDraft ?? ""
         if currentText != persistedText {
@@ -290,11 +295,12 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return true
         }
 
-        let persistedQuotedReply = ThreadReplyInfo(threadUniqueID: thread.uniqueId, transaction: transaction)
+        let threadReplyInfoStore = DependenciesBridge.shared.threadReplyInfoStore
+        let persistedQuotedReply = threadReplyInfoStore.fetch(for: thread.uniqueId, tx: transaction.asV2Read)
         if quotedReply?.timestamp != persistedQuotedReply?.timestamp {
             return true
         }
-        if quotedReply?.authorAddress != persistedQuotedReply?.author {
+        if quotedReply?.authorAddress.serviceId != persistedQuotedReply?.author {
             return true
         }
         return false

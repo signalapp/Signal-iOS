@@ -117,12 +117,10 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     @objc
-    public class func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: SDSAnyReadTransaction) throws -> [TSInteraction] {
+    public class func interactions(withTimestamp timestamp: UInt64, filter: (TSInteraction) -> Bool, transaction: SDSAnyReadTransaction) throws -> [TSInteraction] {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            return try GRDBInteractionFinder.interactions(withTimestamp: timestamp,
-                                                                 filter: filter,
-                                                                 transaction: grdbRead)
+            return try GRDBInteractionFinder.interactions(withTimestamp: timestamp, filter: filter, transaction: grdbRead)
         }
     }
 
@@ -718,7 +716,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
     }
 
-    static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
+    static func interactions(withTimestamp timestamp: UInt64, filter: (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)

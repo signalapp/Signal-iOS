@@ -171,7 +171,7 @@ public extension ConversationViewController {
                 messageDraft = self.thread.currentDraft(transaction: transaction)
                 voiceMemoDraft = VoiceMessageInterruptedDraft.currentDraft(for: self.thread, transaction: transaction)
                 if messageDraft != nil || voiceMemoDraft != nil {
-                    replyDraft = ThreadReplyInfo(threadUniqueID: self.thread.uniqueId, transaction: transaction)
+                    replyDraft = DependenciesBridge.shared.threadReplyInfoStore.fetch(for: self.thread.uniqueId, tx: transaction.asV2Read)
                 }
             }
         }

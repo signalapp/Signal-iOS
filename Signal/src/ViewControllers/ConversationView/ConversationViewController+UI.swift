@@ -278,10 +278,10 @@ extension ConversationViewController {
                 withTimestamp: draftReply.timestamp,
                 filter: { candidate in
                     if let incoming = candidate as? TSIncomingMessage {
-                        return incoming.authorAddress == draftReply.author
+                        return incoming.authorAddress.serviceId == draftReply.author
                     }
                     if candidate is TSOutgoingMessage {
-                        return draftReply.author.isLocalAddress
+                        return tsAccountManager.localIdentifiers(transaction: transaction)?.aci == draftReply.author
                     }
                     return false
                 },

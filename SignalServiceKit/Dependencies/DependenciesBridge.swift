@@ -40,6 +40,7 @@ public class DependenciesBridge {
     public let keyValueStoreFactory: KeyValueStoreFactory
     let threadAssociatedDataStore: ThreadAssociatedDataStore
     public let threadRemover: ThreadRemover
+    public let threadReplyInfoStore: ThreadReplyInfoStore
 
     public let appExpiry: AppExpiry
 
@@ -221,6 +222,8 @@ public class DependenciesBridge {
             signalService: signalService
         )
 
+        self.threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: self.keyValueStoreFactory)
+
         let groupMemberStore = GroupMemberStoreImpl()
         let interactionStore = InteractionStoreImpl()
         self.threadAssociatedDataStore = ThreadAssociatedDataStoreImpl()
@@ -238,6 +241,7 @@ public class DependenciesBridge {
             interactionRemover: ThreadRemoverImpl.Wrappers.InteractionRemover(),
             threadAssociatedDataStore: self.threadAssociatedDataStore,
             threadReadCache: ThreadRemoverImpl.Wrappers.ThreadReadCache(modelReadCaches.threadReadCache),
+            threadReplyInfoStore: self.threadReplyInfoStore,
             threadStore: threadStore
         )
 
