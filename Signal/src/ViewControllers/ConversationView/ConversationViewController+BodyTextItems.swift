@@ -205,7 +205,7 @@ extension ConversationViewController {
             if address.isLocalAddress {
                 return true
             }
-            if databaseStorage.read(block: { SignalRecipient.isRegisteredRecipient(address, transaction: $0) }) {
+            if databaseStorage.read(block: { SignalRecipient.isRegistered(address: address, tx: $0) }) {
                 return true
             }
             return false

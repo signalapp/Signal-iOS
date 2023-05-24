@@ -13,11 +13,11 @@ private class MockRecipientDataStore: RecipientDataStore {
     var recipientTable: [Int: SignalRecipient] = [:]
 
     func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient? {
-        copyRecipient(recipientTable.values.first(where: { $0.recipientUUID == serviceId.uuidValue.uuidString }) ?? nil)
+        copyRecipient(recipientTable.values.first(where: { $0.serviceId == serviceId }) ?? nil)
     }
 
     func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient? {
-        copyRecipient(recipientTable.values.first(where: { $0.recipientPhoneNumber == phoneNumber }) ?? nil)
+        copyRecipient(recipientTable.values.first(where: { $0.phoneNumber == phoneNumber }) ?? nil)
     }
 
     private func copyRecipient(_ signalRecipient: SignalRecipient?) -> SignalRecipient? {
@@ -146,8 +146,8 @@ class RecipientMergerTest: XCTestCase {
                     XCTAssertEqual(mockDataStore.nextRowId, initialRecipient.rowId, "\(testCase)")
                     mockDataStore.insertRecipient(
                         SignalRecipient(
-                            serviceId: initialRecipient.serviceId.map { ServiceIdObjC($0) },
-                            phoneNumber: initialRecipient.phoneNumber.map { E164ObjC($0) }
+                            serviceId: initialRecipient.serviceId,
+                            phoneNumber: initialRecipient.phoneNumber
                         ),
                         transaction: transaction
                     )
@@ -169,8 +169,8 @@ class RecipientMergerTest: XCTestCase {
 
                 for finalRecipient in testCase.finalState.reversed() {
                     let signalRecipient = mockDataStore.recipientTable.removeValue(forKey: finalRecipient.rowId)
-                    XCTAssertEqual(signalRecipient?.recipientUUID, finalRecipient.serviceId?.uuidValue.uuidString, "\(idx)")
-                    XCTAssertEqual(signalRecipient?.recipientPhoneNumber, finalRecipient.phoneNumber?.stringValue, "\(idx)")
+                    XCTAssertEqual(signalRecipient?.serviceId, finalRecipient.serviceId, "\(idx)")
+                    XCTAssertEqual(signalRecipient?.phoneNumber, finalRecipient.phoneNumber?.stringValue, "\(idx)")
                 }
                 XCTAssertEqual(mockDataStore.recipientTable, [:], "\(idx)")
             }

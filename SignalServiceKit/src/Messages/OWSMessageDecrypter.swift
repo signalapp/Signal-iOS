@@ -712,7 +712,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             phoneNumber: E164(decryptResult.senderE164),
             tx: transaction.asV2Write
         )
-        recipient.markAsRegistered(deviceId: sourceDeviceId, transaction: transaction)
+        recipient.markAsRegisteredAndSave(deviceId: sourceDeviceId, tx: transaction)
 
         let identifiedEnvelope = try IdentifiedIncomingEnvelope(
             validatedEnvelope: incomingEnvelope,

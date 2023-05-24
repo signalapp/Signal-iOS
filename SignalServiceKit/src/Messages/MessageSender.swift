@@ -58,10 +58,10 @@ extension MessageSender {
         ignoreErrors: Bool
     ) -> [Promise<Void>] {
         let (recipientId, deviceIdsWithoutSessions): (AccountId?, [UInt32]) = databaseStorage.read { transaction in
-            let recipient = SignalRecipient.get(
-                address: messageSend.address,
-                mustHaveDevices: false,
-                transaction: transaction
+            let recipient = SignalRecipient.fetchRecipient(
+                for: messageSend.address,
+                onlyIfRegistered: false,
+                tx: transaction
             )
 
             // If there is no existing recipient for this address, try and send to the
@@ -70,7 +70,7 @@ extension MessageSender {
                 return (nil, [OWSDevice.primaryDeviceId])
             }
 
-            var deviceIds = recipient.deviceIds ?? []
+            var deviceIds = recipient.deviceIds
 
             // Filter out the current device; we never need a session for it.
             if messageSend.isLocalAddress {
@@ -117,7 +117,7 @@ extension MessageSender {
                         serviceId: messageSend.serviceId.wrappedValue,
                         tx: transaction.asV2Write
                     )
-                    recipient.markAsRegistered(deviceId: deviceId, transaction: transaction)
+                    recipient.markAsRegisteredAndSave(deviceId: deviceId, tx: transaction)
 
                     try self.createSession(
                         for: preKeyBundle,
@@ -805,7 +805,7 @@ extension MessageSender {
                 owsAssertDebug(signalRecipient.address.phoneNumber != nil)
                 owsAssertDebug(signalRecipient.address.uuid != nil)
             }
-            serviceIds.append(contentsOf: signalRecipients.lazy.compactMap { ServiceId(uuidString: $0.recipientUUID) })
+            serviceIds.append(contentsOf: signalRecipients.lazy.compactMap { $0.serviceId })
             return serviceIds
         }
     }
@@ -838,13 +838,13 @@ extension MessageSender {
     @objc
     func buildDeviceMessages(messageSend: OWSMessageSend) throws -> [DeviceMessage] {
         let recipient = databaseStorage.read { tx in
-            SignalRecipient.get(address: messageSend.address, mustHaveDevices: false, transaction: tx)
+            SignalRecipient.fetchRecipient(for: messageSend.address, onlyIfRegistered: false, tx: tx)
         }
         guard let recipient else {
             throw InvalidMessageError()
         }
 
-        var recipientDeviceIds = recipient.deviceIds ?? []
+        var recipientDeviceIds = recipient.deviceIds
 
         if messageSend.isLocalAddress {
             let localDeviceId = tsAccountManager.storedDeviceId
@@ -1106,7 +1106,7 @@ extension MessageSender {
                     serviceId: messageSend.serviceId.wrappedValue,
                     tx: transaction.asV2Write
                 )
-                recipient.markAsRegistered(transaction: transaction)
+                recipient.markAsRegisteredAndSave(tx: transaction)
             }
 
             Self.profileManager.didSendOrReceiveMessage(
@@ -1271,13 +1271,13 @@ extension MessageSender {
             message.update(withSkippedRecipient: address, transaction: transaction)
         }
 
-        if !SignalRecipient.isRegisteredRecipient(address, transaction: transaction) {
+        if !SignalRecipient.isRegistered(address: address, tx: transaction) {
             return
         }
 
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write)
-        recipient.markAsUnregistered(transaction: transaction)
+        recipient.markAsUnregisteredAndSave(tx: transaction)
         // TODO: Should we deleteAllSessionsForContact here?
         //       If so, we'll need to avoid doing a prekey fetch every
         //       time we try to send a message to an unregistered user.
@@ -1327,11 +1327,7 @@ extension MessageSender {
         devicesToRemove: [UInt32],
         transaction: SDSAnyWriteTransaction
     ) {
-        owsAssertDebug(!Thread.isMainThread)
-        guard !devicesToAdd.isEmpty || !devicesToRemove.isEmpty else {
-            owsFailDebug("No devices to add or remove.")
-            return
-        }
+        AssertNotOnMainThread()
         owsAssertDebug(Set(devicesToAdd).isDisjoint(with: devicesToRemove))
 
         if !devicesToAdd.isEmpty, SignalServiceAddress(serviceId).isLocalAddress {
@@ -1343,11 +1339,7 @@ extension MessageSender {
 
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write)
-        recipient.updateWithDevices(
-            toAdd: devicesToAdd.map { NSNumber(value: $0) },
-            devicesToRemove: devicesToRemove.map { NSNumber(value: $0) },
-            transaction: transaction
-        )
+        recipient.modifyAndSave(deviceIdsToAdd: devicesToAdd, deviceIdsToRemove: devicesToRemove, tx: transaction)
 
         if !devicesToRemove.isEmpty {
             Logger.info("Archiving sessions for extra devices: \(devicesToRemove)")

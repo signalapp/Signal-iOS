@@ -160,7 +160,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
             oldPhoneNumber: oldPhoneNumber?.stringValue,
             newPhoneNumber: newPhoneNumber,
             isLocalRecipient: isLocalRecipient,
-            signalRecipient: SignalRecipient(serviceId: ServiceIdObjC(serviceId), phoneNumber: E164ObjC(newPhoneNumber))
+            signalRecipient: SignalRecipient(serviceId: serviceId, phoneNumber: newPhoneNumber)
         )
     }
 

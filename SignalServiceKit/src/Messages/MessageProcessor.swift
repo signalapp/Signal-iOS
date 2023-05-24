@@ -709,7 +709,7 @@ struct ProcessingRequestBuilder {
             // (e.g. the app crashed or was killed), we'll have to re-decrypt again
             // before we process. This is safe since the decrypt operation would also
             // be rolled back (since the transaction didn't commit) and should be rare.
-            messageManager.checkForUnknownLinkedDevice(in: identifiedEnvelope.envelope, transaction: transaction)
+            messageManager.checkForUnknownLinkedDevice(in: identifiedEnvelope, tx: transaction)
             switch identifiedEnvelope.envelopeType {
             case .ciphertext, .prekeyBundle, .unidentifiedSender, .senderkeyMessage, .plaintextContent:
                 if result.plaintextData == nil {

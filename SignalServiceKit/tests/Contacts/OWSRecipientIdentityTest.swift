@@ -39,7 +39,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             for recipient in self.recipients {
-                recipientFetcher.fetchOrCreate(serviceId: recipient, tx: tx.asV2Write).markAsRegistered(transaction: tx)
+                recipientFetcher.fetchOrCreate(serviceId: recipient, tx: tx.asV2Write).markAsRegisteredAndSave(tx: tx)
             }
         }
         // Create identities for our recipients.

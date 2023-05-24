@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 @objc
 public class GRDBSchemaMigrator: NSObject {
@@ -2833,10 +2834,10 @@ public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
         // Since we have duplicate recipients for an address, we want to keep the one returned by the
         // finder, since that is the one whose uniqueId is used as the `accountId` for the
         // accountId finder.
-        guard let primaryRecipient = SignalRecipient.get(
-            address: address,
-            mustHaveDevices: false,
-            transaction: transaction
+        guard let primaryRecipient = SignalRecipient.fetchRecipient(
+            for: address,
+            onlyIfRegistered: false,
+            tx: transaction
         ) else {
             owsFailDebug("primaryRecipient was unexpectedly nil")
             continue

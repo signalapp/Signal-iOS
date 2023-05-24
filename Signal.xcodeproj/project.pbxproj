@@ -1865,8 +1865,6 @@
 		F9C5CCB1289453B300548EEE /* RemoteAttestationQuote.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C8289453B100548EEE /* RemoteAttestationQuote.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB3289453B300548EEE /* RemoteAttestationQuote.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9CA289453B100548EEE /* RemoteAttestationQuote.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCB5289453B300548EEE /* Contact.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9CD289453B100548EEE /* Contact.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCB6289453B300548EEE /* SignalRecipient.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9CE289453B100548EEE /* SignalRecipient.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCB7289453B300548EEE /* SignalRecipient+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9CF289453B100548EEE /* SignalRecipient+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB9289453B300548EEE /* OWSDisappearingMessagesConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCBA289453B300548EEE /* TSThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D2289453B100548EEE /* TSThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCBB289453B300548EEE /* PhoneNumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D3289453B100548EEE /* PhoneNumberUtil.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1876,7 +1874,6 @@
 		F9C5CCC3289453B300548EEE /* ContactDiscoveryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC4289453B300548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC5289453B300548EEE /* SignalAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DE289453B100548EEE /* SignalAccount.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCC7289453B300548EEE /* SignalRecipient.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9E0289453B100548EEE /* SignalRecipient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCC8289453B300548EEE /* SignalRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E1289453B100548EEE /* SignalRecipient.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC9289453B300548EEE /* Contact.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9E2289453B100548EEE /* Contact.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCCA289453B300548EEE /* TSPrivateStoryThread+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E4289453B100548EEE /* TSPrivateStoryThread+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -4456,8 +4453,6 @@
 		F9C5C9C8289453B100548EEE /* RemoteAttestationQuote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteAttestationQuote.m; sourceTree = "<group>"; };
 		F9C5C9CA289453B100548EEE /* RemoteAttestationQuote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoteAttestationQuote.h; sourceTree = "<group>"; };
 		F9C5C9CD289453B100548EEE /* Contact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contact.m; sourceTree = "<group>"; };
-		F9C5C9CE289453B100548EEE /* SignalRecipient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalRecipient.m; sourceTree = "<group>"; };
-		F9C5C9CF289453B100548EEE /* SignalRecipient+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SignalRecipient+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisappearingMessagesConfiguration.h; sourceTree = "<group>"; };
 		F9C5C9D2289453B100548EEE /* TSThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSThread.h; sourceTree = "<group>"; };
 		F9C5C9D3289453B100548EEE /* PhoneNumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberUtil.m; sourceTree = "<group>"; };
@@ -4467,7 +4462,6 @@
 		F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryOperation.swift; sourceTree = "<group>"; };
 		F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSDisappearingMessagesConfiguration+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C9DE289453B100548EEE /* SignalAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccount.swift; sourceTree = "<group>"; };
-		F9C5C9E0289453B100548EEE /* SignalRecipient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalRecipient.h; sourceTree = "<group>"; };
 		F9C5C9E1289453B100548EEE /* SignalRecipient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalRecipient.swift; sourceTree = "<group>"; };
 		F9C5C9E2289453B100548EEE /* Contact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Contact.h; sourceTree = "<group>"; };
 		F9C5C9E4289453B100548EEE /* TSPrivateStoryThread+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSPrivateStoryThread+SDS.swift"; sourceTree = "<group>"; };
@@ -8907,9 +8901,6 @@
 				506695E229C29BCE00B6D8D0 /* RecipientMerger.swift */,
 				F9C5C9DE289453B100548EEE /* SignalAccount.swift */,
 				F9C5C9F7289453B100548EEE /* SignalAccountFinder.swift */,
-				F9C5C9CF289453B100548EEE /* SignalRecipient+SDS.swift */,
-				F9C5C9E0289453B100548EEE /* SignalRecipient.h */,
-				F9C5C9CE289453B100548EEE /* SignalRecipient.m */,
 				F9C5C9E1289453B100548EEE /* SignalRecipient.swift */,
 				F9C5C9FA289453B100548EEE /* SignalRecipientFinder.swift */,
 				F9C5C9FC289453B100548EEE /* SignalServiceAddress.swift */,
@@ -9754,7 +9745,6 @@
 				F9C5CD24289453B300548EEE /* SDSCrossProcess.h in Headers */,
 				F9C5CD20289453B300548EEE /* SDSDatabaseStorage+Objc.h in Headers */,
 				F9C5CD28289453B300548EEE /* SDSKeyValueStore+ObjC.h in Headers */,
-				F9C5CCC7289453B300548EEE /* SignalRecipient.h in Headers */,
 				F9262C46289462F600063502 /* SignalServiceKit-Prefix.pch in Headers */,
 				F9C5C8A7289451B900548EEE /* SignalServiceKit.h in Headers */,
 				F9C5CD4B289453B300548EEE /* SignedPrekeyRecord.h in Headers */,
@@ -12409,8 +12399,6 @@
 				88DF819B28E1158800F8BA80 /* SignalProxy+RelayClient.swift in Sources */,
 				88DF819528E1130900F8BA80 /* SignalProxy+RelayServer.swift in Sources */,
 				88DF819928E1157400F8BA80 /* SignalProxy.swift in Sources */,
-				F9C5CCB7289453B300548EEE /* SignalRecipient+SDS.swift in Sources */,
-				F9C5CCB6289453B300548EEE /* SignalRecipient.m in Sources */,
 				F9C5CCC8289453B300548EEE /* SignalRecipient.swift in Sources */,
 				F9C5CCE0289453B300548EEE /* SignalRecipientFinder.swift in Sources */,
 				F9C5CC9A289453B300548EEE /* SignalService.pb.swift in Sources */,

@@ -30,7 +30,7 @@ class SignalDotMePhoneNumberLink: Dependencies {
                 let existingRecipient = databaseStorage.read { transaction in
                     AnySignalRecipientFinder().signalRecipientForPhoneNumber(phoneNumber, transaction: transaction)
                 }
-                if let existingRecipient = existingRecipient, existingRecipient.devices.count > 0 {
+                if let existingRecipient, existingRecipient.isRegistered {
                     return Promise.value([existingRecipient])
                 }
                 return contactDiscoveryManager.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)

@@ -263,7 +263,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         __block BOOL isRegularlyScheduledRun = NO;
         __block NSSet<NSString *> *allContactPhoneNumbers;
         __block NSSet<NSString *> *phoneNumbersForIntersection;
-        __block NSMutableSet<SignalRecipient *> *existingRegisteredRecipients = [NSMutableSet new];
+        __block NSSet<SignalRecipient *> *existingRegisteredRecipients;
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             // Contact updates initiated by the user should always do a full intersection.
             if (!isUserRequested) {
@@ -275,14 +275,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                     isRegularlyScheduledRun = YES;
                 }
             }
-            
-            [SignalRecipient anyEnumerateWithTransaction:transaction
-                                                   block:^(SignalRecipient *signalRecipient, BOOL *stop) {
-                if (signalRecipient.devices.count > 0) {
-                    [existingRegisteredRecipients addObject:signalRecipient];
-                }
-            }];
-            
+
+            existingRegisteredRecipients =
+                [NSSet setWithArray:[SignalRecipient fetchAllRegisteredRecipientsWithTx:transaction]];
             allContactPhoneNumbers = [self phoneNumbersForIntersectionWithContacts:contacts];
             phoneNumbersForIntersection = allContactPhoneNumbers;
             

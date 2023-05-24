@@ -376,7 +376,7 @@ public class SignalServiceAddressCache: NSObject {
         databaseStorage.read { transaction in
             if let localAddress = tsAccountManager.localAddress(with: transaction) {
                 updateRecipient(
-                    serviceIdString: localAddress.serviceIdObjC?.uuidValue.uuidString,
+                    serviceId: localAddress.serviceId,
                     // PNI TODO: Fetch our own PNI once it's stored on our SignalRecipient.
                     //
                     // (Even though our own PNI may be available at this point, we should have
@@ -395,14 +395,14 @@ public class SignalServiceAddressCache: NSObject {
 
     func updateRecipient(_ signalRecipient: SignalRecipient) {
         updateRecipient(
-            serviceIdString: signalRecipient.recipientUUID,
+            serviceId: signalRecipient.serviceId,
             // PNI TODO: Fetch the recipientPNI once that property is available.
             pniString: nil,
-            phoneNumber: signalRecipient.recipientPhoneNumber
+            phoneNumber: signalRecipient.phoneNumber
         )
     }
 
-    private func updateRecipient(serviceIdString: String?, pniString: String?, phoneNumber: String?) {
+    private func updateRecipient(serviceId: ServiceId?, pniString: String?, phoneNumber: String?) {
         state.update { cacheState in
             // This cache associates phone numbers to the other identifiers. If we
             // don't have a phone number, there's nothing to associate.
@@ -417,7 +417,7 @@ public class SignalServiceAddressCache: NSObject {
 
             let oldServiceIds: [ServiceId] = cacheState.phoneNumberToServiceIds[phoneNumber] ?? []
             let newServiceIds: [ServiceId] = [
-                ServiceId(uuidString: serviceIdString),
+                serviceId,
                 ServiceId(uuidString: pniString)
             ].compacted()
 

@@ -50,8 +50,8 @@ extension OWSRecipientIdentity {
         let groupMember_uuidString = TSGroupMember.columnName(.serviceId, fullyQualified: true)
 
         let recipient_id = "\(signalRecipientColumnFullyQualified: .id)"
-        let recipient_recipientPhoneNumber = "\(signalRecipientColumnFullyQualified: .recipientPhoneNumber)"
-        let recipient_recipientUUID = "\(signalRecipientColumnFullyQualified: .recipientUUID)"
+        let recipient_recipientPhoneNumber = "\(signalRecipientColumnFullyQualified: .phoneNumber)"
+        let recipient_recipientUUID = "\(signalRecipientColumnFullyQualified: .serviceIdString)"
         let recipient_uniqueID = "\(signalRecipientColumnFullyQualified: .uniqueId)"
 
         let recipientIdentity_uniqueID = "\(recipientIdentityColumnFullyQualified: .uniqueId)"
@@ -59,7 +59,7 @@ extension OWSRecipientIdentity {
         let sql =
         """
         SELECT \(recipient_recipientUUID), \(recipient_recipientPhoneNumber)
-        FROM \(SignalRecipientRecord.databaseTableName),
+        FROM \(SignalRecipient.databaseTableName),
              \(RecipientIdentityRecord.databaseTableName),
              \(TSGroupMember.databaseTableName)
         WHERE  \(recipient_uniqueID) = \(recipientIdentity_uniqueID) AND

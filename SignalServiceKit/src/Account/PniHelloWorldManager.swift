@@ -259,19 +259,18 @@ class _PniHelloWorldManagerImpl_SignalRecipientStore_Wrapper: _PniHelloWorldMana
         tx: DBReadTransaction
     ) -> (accountId: String, deviceIds: [UInt32])? {
         guard
-            let localRecipient = SignalRecipient.get(
-                address: SignalServiceAddress(localAci),
-                mustHaveDevices: false,
-                transaction: SDSDB.shimOnlyBridge(tx)
-            ),
-            let localUserAllDeviceIds = localRecipient.deviceIds
+            let localRecipient = SignalRecipient.fetchRecipient(
+                for: SignalServiceAddress(localAci),
+                onlyIfRegistered: false,
+                tx: SDSDB.shimOnlyBridge(tx)
+            )
         else {
             return nil
         }
 
         return (
             localRecipient.accountId,
-            localUserAllDeviceIds
+            localRecipient.deviceIds
         )
     }
 }

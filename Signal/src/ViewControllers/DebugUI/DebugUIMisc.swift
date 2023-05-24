@@ -367,8 +367,8 @@ class DebugUIMisc: DebugUIPage, Dependencies {
     }
 
     private static func logSignalRecipients() {
-        Self.databaseStorage.read { transaction in
-            SignalRecipient.anyEnumerate(transaction: transaction, batchSize: 32) { (signalRecipient, _) in
+        Self.databaseStorage.read { tx in
+            SignalRecipient.anyEnumerate(transaction: tx, batchingPreference: .batched(32)) { signalRecipient, _ in
                 Logger.verbose("SignalRecipient: \(signalRecipient.addressComponentsDescription)")
             }
         }

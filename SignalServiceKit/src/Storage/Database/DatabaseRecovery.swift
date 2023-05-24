@@ -250,7 +250,7 @@ public extension DatabaseRecovery {
             OWSRecipientIdentity.table.tableName,
             OWSUserProfile.table.tableName,
             SignalAccount.databaseTableName,
-            SignalRecipient.table.tableName,
+            SignalRecipient.databaseTableName,
             StoryMessage.databaseTableName,
             TSAttachment.table.tableName,
             TSInteraction.table.tableName,

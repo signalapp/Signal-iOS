@@ -147,7 +147,7 @@ extension OWSMessageManager {
         if blockingManager.isAddressBlocked(SignalServiceAddress(identifiedEnvelope.sourceServiceId), transaction: tx) {
             return
         }
-        checkForUnknownLinkedDevice(in: envelope, transaction: tx)
+        checkForUnknownLinkedDevice(in: identifiedEnvelope, tx: tx)
         switch identifiedEnvelope.envelopeType {
         case .ciphertext, .prekeyBundle, .unidentifiedSender, .senderkeyMessage, .plaintextContent:
             guard let plaintextData else {
@@ -596,29 +596,26 @@ extension OWSMessageManager {
     }
 
     @objc
-    func checkForUnknownLinkedDevice(in envelope: SSKProtoEnvelope, transaction: SDSAnyWriteTransaction) {
-        guard let sourceAddress = envelope.sourceAddress, sourceAddress.isLocalAddress else {
+    func checkForUnknownLinkedDevice(in envelope: IdentifiedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
+        let serviceId = envelope.sourceServiceId
+        let deviceId = envelope.sourceDeviceId
+
+        guard serviceId == tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
             return
         }
-        let sourceDevice = envelope.sourceDevice
 
         // Check if the SignalRecipient (used for sending messages) knows about
         // this device.
-        let recipient = SignalRecipient.get(address: sourceAddress, mustHaveDevices: false, transaction: transaction)
-        if let recipient {
-            let deviceIds = recipient.deviceIds ?? []
-            if !deviceIds.contains(sourceDevice) {
-                Logger.info("Message received from unknown linked device; adding to local SignalRecipient: \(sourceDevice).")
-                recipient.updateWithDevices(toAdd: [NSNumber(value: sourceDevice)], devicesToRemove: [], transaction: transaction)
-            }
-        } else {
-            owsFailDebug("No local SignalRecipient.")
+        let recipient = DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
+        if !recipient.deviceIds.contains(deviceId) {
+            Logger.info("Message received from unknown linked device; adding to local SignalRecipient: \(deviceId).")
+            recipient.modifyAndSave(deviceIdsToAdd: [deviceId], deviceIdsToRemove: [], tx: tx)
         }
 
         // Check if OWSDevice (ie the "Linked Devices" UI) knows about this device.
-        let hasDevice = OWSDevice.anyFetchAll(transaction: transaction).contains(where: { $0.deviceId == sourceDevice })
+        let hasDevice = OWSDevice.anyFetchAll(transaction: tx).contains(where: { $0.deviceId == deviceId })
         if !hasDevice {
-            Logger.info("Message received from unknown linked device; refreshing device list: \(sourceDevice).")
+            Logger.info("Message received from unknown linked device; refreshing device list: \(deviceId).")
             OWSDevicesService.refreshDevices()
             profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
         }

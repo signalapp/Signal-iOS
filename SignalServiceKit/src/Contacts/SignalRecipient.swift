@@ -7,49 +7,290 @@ import Foundation
 import GRDB
 import SignalCoreKit
 
-extension SignalRecipient {
+/// We create SignalRecipient records for accounts we know about.
+///
+/// A SignalRecipient's stable identifier is an ACI. Once a SignalRecipient
+/// has an ACI, it can't change. However, the other identifiers (phone
+/// number & PNI) can freely change when users change the phone number
+/// associated with their account.
+///
+/// We also store the set of device IDs for each account on this record. If
+/// an account has at least one device, it's registered. If an account
+/// doesn't have any devices, then that user isn't registered.
+public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decodable {
+    public static let databaseTableName = "model_SignalRecipient"
+    public static var recordType: UInt { SDSRecordType.signalRecipient.rawValue }
+    public static var ftsIndexMode: TSFTSIndexMode { .always }
 
-    @objc
-    public var isRegistered: Bool { !devices.set.isEmpty }
-
-    public var deviceIds: [UInt32]? {
-        (devices.array as? [NSNumber])?.map { $0.uint32Value }
+    public enum Constants {
+        public static let distantPastUnregisteredTimestamp: UInt64 = 1
     }
 
-    // MARK: -
+    public enum ModifySource: Int {
+        case local
+        case storageService
+    }
 
-    public func markAsUnregistered(at timestamp: UInt64? = nil, source: SignalRecipientSource = .local, transaction: SDSAnyWriteTransaction) {
-        guard devices.count != 0 else {
+    public var id: RowId?
+    public let uniqueId: String
+    public var serviceIdString: String?
+    public var phoneNumber: String?
+    private(set) public var deviceIds: [UInt32]
+    private(set) public var unregisteredAtTimestamp: UInt64?
+
+    public var serviceId: ServiceId? {
+        get { ServiceId(uuidString: serviceIdString) }
+        set { serviceIdString = newValue?.uuidValue.uuidString }
+    }
+
+    public var address: SignalServiceAddress {
+        SignalServiceAddress(uuidString: serviceIdString, phoneNumber: phoneNumber)
+    }
+
+    public convenience init(serviceId: ServiceId?, phoneNumber: E164?) {
+        self.init(serviceId: serviceId, phoneNumber: phoneNumber, deviceIds: [])
+    }
+
+    public convenience init(serviceId: ServiceId?, phoneNumber: E164?, deviceIds: [UInt32]) {
+        self.init(
+            id: nil,
+            uniqueId: UUID().uuidString,
+            serviceIdString: serviceId?.uuidValue.uuidString,
+            phoneNumber: phoneNumber?.stringValue,
+            deviceIds: deviceIds,
+            unregisteredAtTimestamp: deviceIds.isEmpty ? Constants.distantPastUnregisteredTimestamp : nil
+        )
+    }
+
+    private init(
+        id: RowId?,
+        uniqueId: String,
+        serviceIdString: String?,
+        phoneNumber: String?,
+        deviceIds: [UInt32],
+        unregisteredAtTimestamp: UInt64?
+    ) {
+        self.id = id
+        self.uniqueId = uniqueId
+        self.serviceIdString = serviceIdString
+        self.phoneNumber = phoneNumber
+        self.deviceIds = deviceIds
+        self.unregisteredAtTimestamp = unregisteredAtTimestamp
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return SignalRecipient(
+            id: id,
+            uniqueId: uniqueId,
+            serviceIdString: serviceIdString,
+            phoneNumber: phoneNumber,
+            deviceIds: deviceIds,
+            unregisteredAtTimestamp: unregisteredAtTimestamp
+        )
+    }
+
+    public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+        case id
+        case recordType
+        case uniqueId
+        case serviceIdString = "recipientUUID"
+        case phoneNumber = "recipientPhoneNumber"
+        case deviceIds = "devices"
+        case unregisteredAtTimestamp
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        let decodedRecordType = try container.decode(UInt.self, forKey: .recordType)
+        guard decodedRecordType == Self.recordType else {
+            owsFailDebug("Unexpected record type: \(decodedRecordType)")
+            throw SDSError.invalidValue
+        }
+
+        id = try container.decodeIfPresent(RowId.self, forKey: .id)
+        uniqueId = try container.decode(String.self, forKey: .uniqueId)
+        serviceIdString = try container.decodeIfPresent(String.self, forKey: .serviceIdString)
+        phoneNumber = try container.decodeIfPresent(String.self, forKey: .phoneNumber)
+        let encodedDeviceIds = try container.decode(Data.self, forKey: .deviceIds)
+        let deviceSetObjC: NSOrderedSet = try LegacySDSSerializer().deserializeLegacySDSData(encodedDeviceIds, propertyName: "devices")
+        let deviceArray = (deviceSetObjC.array as? [NSNumber])?.map { $0.uint32Value }
+        // If we can't parse the values in the NSOrderedSet, assume the user isn't
+        // registered. If they are registered, we'll correct the data store the
+        // next time we try to send them a message.
+        deviceIds = deviceArray ?? []
+        unregisteredAtTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .unregisteredAtTimestamp)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(id, forKey: .id)
+        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(uniqueId, forKey: .uniqueId)
+        try container.encodeIfPresent(serviceIdString, forKey: .serviceIdString)
+        try container.encodeIfPresent(phoneNumber, forKey: .phoneNumber)
+        let deviceSetObjC = NSOrderedSet(array: deviceIds.map { NSNumber(value: $0) })
+        let encodedDevices = LegacySDSSerializer().serializeAsLegacySDSData(property: deviceSetObjC)
+        try container.encode(encodedDevices, forKey: .deviceIds)
+        try container.encodeIfPresent(unregisteredAtTimestamp, forKey: .unregisteredAtTimestamp)
+    }
+
+    // MARK: - Fetching
+
+    public static func fetchRecipient(
+        for address: SignalServiceAddress,
+        onlyIfRegistered: Bool,
+        tx: SDSAnyReadTransaction
+    ) -> SignalRecipient? {
+        owsAssertDebug(address.isValid)
+        let readCache = modelReadCaches.signalRecipientReadCache
+        guard let signalRecipient = readCache.getSignalRecipient(address: address, transaction: tx) else {
+            return nil
+        }
+        if onlyIfRegistered {
+            guard signalRecipient.isRegistered else {
+                return nil
+            }
+        }
+        return signalRecipient
+    }
+
+    public static func isRegistered(address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
+        return fetchRecipient(for: address, onlyIfRegistered: true, tx: tx) != nil
+    }
+
+    @objc
+    public static func fetchAllRegisteredRecipients(tx: SDSAnyReadTransaction) -> [SignalRecipient] {
+        var result = [SignalRecipient]()
+        Self.anyEnumerate(transaction: tx) { signalRecipient, _ in
+            guard signalRecipient.isRegistered else {
+                return
+            }
+            result.append(signalRecipient)
+        }
+        return result
+    }
+
+    // MARK: - Registered & Device IDs
+
+    public var isRegistered: Bool { !deviceIds.isEmpty }
+
+    public func markAsUnregisteredAndSave(
+        at timestamp: UInt64? = nil,
+        source: ModifySource = .local,
+        tx: SDSAnyWriteTransaction
+    ) {
+        guard isRegistered else {
             return
         }
 
-        let timestamp = timestamp ?? Date.ows_millisecondTimestamp()
-        anyUpdate(transaction: transaction) {
-            $0.removeAllDevicesWithUnregistered(atTimestamp: timestamp, source: source)
-        }
+        removeAllDevices(unregisteredAtTimestamp: timestamp ?? Date.ows_millisecondTimestamp(), source: source)
+        anyOverwritingUpdate(transaction: tx)
     }
 
-    public func markAsRegistered(
-        source: SignalRecipientSource = .local,
+    public func markAsRegisteredAndSave(
+        source: ModifySource = .local,
         deviceId: UInt32 = OWSDevice.primaryDeviceId,
-        transaction: SDSAnyWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) {
         // Always add the primary device ID if we're adding any other.
-        let deviceIds: Set<UInt32> = [deviceId, OWSDevice.primaryDeviceId]
+        let deviceIdsToAdd: Set<UInt32> = [deviceId, OWSDevice.primaryDeviceId]
 
-        let missingDeviceIds = deviceIds.filter { !devices.contains(NSNumber(value: $0)) }
+        let missingDeviceIds = deviceIdsToAdd.filter { !deviceIds.contains($0) }
+
         guard !missingDeviceIds.isEmpty else {
             return
         }
 
-        Logger.debug("Adding devices \(missingDeviceIds) to existing recipient.")
+        addDevices(missingDeviceIds, source: source)
+        anyOverwritingUpdate(transaction: tx)
+    }
 
-        anyUpdate(transaction: transaction) {
-            $0.addDevices(Set(missingDeviceIds.map { NSNumber(value: $0) }), source: source)
+    public func modifyAndSave(deviceIdsToAdd: [UInt32], deviceIdsToRemove: [UInt32], tx: SDSAnyWriteTransaction) {
+        if deviceIdsToAdd.isEmpty, deviceIdsToRemove.isEmpty {
+            return
+        }
+
+        // Add new devices first to avoid an intermediate "empty" state.
+        Logger.info("Adding \(deviceIdsToAdd) to \(address).")
+        addDevices(deviceIdsToAdd, source: .local)
+
+        Logger.info("Removing \(deviceIdsToRemove) from \(address).")
+        removeDevices(deviceIdsToRemove, source: .local)
+
+        anyOverwritingUpdate(transaction: tx)
+
+        tx.addAsyncCompletionOnMain {
+            // Device changes can affect the UD access mode for a recipient,
+            // so we need to fetch the profile for this user to update UD access mode.
+            self.profileManager.fetchProfile(for: self.address, authedAccount: .implicit())
+
+            if self.address.isLocalAddress {
+                self.socketManager.cycleSocket()
+            }
         }
     }
 
-    // MARK: -
+    private func addDevices(_ deviceIdsToAdd: some Sequence<UInt32>, source: ModifySource) {
+        deviceIds = Set(deviceIds).union(deviceIdsToAdd).sorted()
+
+        if !deviceIds.isEmpty, unregisteredAtTimestamp != nil {
+            setUnregisteredAtTimestamp(nil, source: source)
+        }
+    }
+
+    private func removeDevices(_ deviceIdsToRemove: some Sequence<UInt32>, source: ModifySource) {
+        deviceIds = Set(deviceIds).subtracting(deviceIdsToRemove).sorted()
+
+        if deviceIds.isEmpty, unregisteredAtTimestamp == nil {
+            setUnregisteredAtTimestamp(Date.ows_millisecondTimestamp(), source: source)
+        }
+    }
+
+    private func removeAllDevices(unregisteredAtTimestamp: UInt64, source: ModifySource) {
+        deviceIds = []
+        setUnregisteredAtTimestamp(unregisteredAtTimestamp, source: source)
+    }
+
+    private func setUnregisteredAtTimestamp(_ unregisteredAtTimestamp: UInt64?, source: ModifySource) {
+        if self.unregisteredAtTimestamp == unregisteredAtTimestamp {
+            return
+        }
+        self.unregisteredAtTimestamp = unregisteredAtTimestamp
+
+        switch source {
+        case .storageService:
+            // Don't need to tell storage service what they just told us.
+            break
+        case .local:
+            storageServiceManager.recordPendingUpdates(updatedAccountIds: [uniqueId])
+        }
+    }
+
+    // MARK: - Callbacks
+
+    public func anyDidInsert(transaction tx: SDSAnyWriteTransaction) {
+        modelReadCaches.signalRecipientReadCache.didInsertOrUpdate(signalRecipient: self, transaction: tx)
+    }
+
+    public func anyDidUpdate(transaction tx: SDSAnyWriteTransaction) {
+        modelReadCaches.signalRecipientReadCache.didInsertOrUpdate(signalRecipient: self, transaction: tx)
+    }
+
+    public func anyDidRemove(transaction tx: SDSAnyWriteTransaction) {
+        modelReadCaches.signalRecipientReadCache.didRemove(signalRecipient: self, transaction: tx)
+        storageServiceManager.recordPendingUpdates(updatedAccountIds: [uniqueId])
+    }
+
+    public func anyDidFetchOne(transaction tx: SDSAnyReadTransaction) {
+        modelReadCaches.signalRecipientReadCache.didReadSignalRecipient(self, transaction: tx)
+    }
+
+    public func anyDidEnumerateOne(transaction tx: SDSAnyReadTransaction) {
+        modelReadCaches.signalRecipientReadCache.didReadSignalRecipient(self, transaction: tx)
+    }
+
+    // MARK: - Contact Merging
 
     public static let phoneNumberDidChange = Notification.Name("phoneNumberDidChange")
     public static let notificationKeyPhoneNumber = "phoneNumber"
@@ -327,10 +568,22 @@ extension SignalRecipient {
 
     @objc
     public var addressComponentsDescription: String {
-        SignalServiceAddress.addressComponentsDescription(uuidString: recipientUUID,
-                                                          phoneNumber: recipientPhoneNumber)
+        SignalServiceAddress.addressComponentsDescription(uuidString: serviceIdString, phoneNumber: phoneNumber)
     }
 }
+
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(signalRecipientColumn column: SignalRecipient.CodingKeys) {
+        appendLiteral(SignalRecipient.columnName(column))
+    }
+    mutating func appendInterpolation(signalRecipientColumnFullyQualified column: SignalRecipient.CodingKeys) {
+        appendLiteral(SignalRecipient.columnName(column, fullyQualified: true))
+    }
+}
+
+// MARK: -
 
 class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
     private let sessionStore: SSKSessionStore

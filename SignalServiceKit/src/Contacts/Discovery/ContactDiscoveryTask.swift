@@ -100,7 +100,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
                 phoneNumber: discoveredContact.e164,
                 tx: tx
             )
-            recipient.markAsRegistered(transaction: SDSDB.shimOnlyBridge(tx))
+            recipient.markAsRegisteredAndSave(tx: SDSDB.shimOnlyBridge(tx))
             return recipient
         })
 
@@ -131,7 +131,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             }
 
             let recipient = recipientFetcher.fetchOrCreate(phoneNumber: undiscoverableE164, tx: tx)
-            recipient.markAsUnregistered(transaction: SDSDB.shimOnlyBridge(tx))
+            recipient.markAsUnregisteredAndSave(tx: SDSDB.shimOnlyBridge(tx))
         }
 
         return registeredRecipients

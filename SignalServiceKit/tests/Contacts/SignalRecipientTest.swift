@@ -85,8 +85,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
         write { transaction in
             let recipient = mergeHighTrust(serviceId: serviceId, phoneNumber: phoneNumber, transaction: transaction)
-            XCTAssertEqual(recipient.recipientUUID, serviceId.uuidValue.uuidString)
-            XCTAssertEqual(recipient.recipientPhoneNumber, phoneNumber.stringValue)
+            XCTAssertEqual(recipient.serviceId, serviceId)
+            XCTAssertEqual(recipient.phoneNumber, phoneNumber.stringValue)
 
             // The incomplete address is automatically filled after marking the
             // complete address as registered.
@@ -585,13 +585,13 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
             XCTAssertNotNil(recipient.unregisteredAtTimestamp)
 
-            recipient.markAsRegistered(transaction: tx)
+            recipient.markAsRegisteredAndSave(tx: tx)
             XCTAssertNil(fetchRecipient(serviceId: serviceId, transaction: tx)!.unregisteredAtTimestamp)
 
-            recipient.markAsUnregistered(transaction: tx)
-            XCTAssertGreaterThan(fetchRecipient(serviceId: serviceId, transaction: tx)!.unregisteredAtTimestamp!.doubleValue, 0)
+            recipient.markAsUnregisteredAndSave(tx: tx)
+            XCTAssertGreaterThan(fetchRecipient(serviceId: serviceId, transaction: tx)!.unregisteredAtTimestamp!, 0)
 
-            recipient.markAsRegistered(transaction: tx)
+            recipient.markAsRegisteredAndSave(tx: tx)
             XCTAssertNil(fetchRecipient(serviceId: serviceId, transaction: tx)!.unregisteredAtTimestamp)
         }
     }
@@ -620,13 +620,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             for testCase in testCases {
                 let recipient = recipientFetcher.fetchOrCreate(serviceId: ServiceId(UUID()), tx: tx.asV2Write)
-                if !testCase.initialDeviceIds.isEmpty {
-                    recipient.anyUpdate(transaction: tx) {
-                        $0.addDevices(Set(testCase.initialDeviceIds.map { NSNumber(value: $0) }), source: .local)
-                    }
-                }
-                recipient.markAsRegistered(deviceId: testCase.addedDeviceId, transaction: tx)
-                XCTAssertEqual(recipient.deviceIds.map { Set($0) }, testCase.expectedDeviceIds, "\(testCase)")
+                recipient.modifyAndSave(deviceIdsToAdd: Array(testCase.initialDeviceIds), deviceIdsToRemove: [], tx: tx)
+                recipient.markAsRegisteredAndSave(deviceId: testCase.addedDeviceId, tx: tx)
+                XCTAssertEqual(Set(recipient.deviceIds), testCase.expectedDeviceIds, "\(testCase)")
             }
         }
     }
@@ -645,10 +641,58 @@ class SignalRecipientTest: SSKBaseTestSwift {
     }
 
     private func fetchRecipient(serviceId: ServiceId, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
-        SignalRecipient.get(address: SignalServiceAddress(serviceId), mustHaveDevices: false, transaction: transaction)
+        SignalRecipient.fetchRecipient(for: SignalServiceAddress(serviceId), onlyIfRegistered: false, tx: transaction)
     }
 
     private func fetchRecipient(phoneNumber: E164, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
-        SignalRecipient.get(address: SignalServiceAddress(phoneNumber), mustHaveDevices: false, transaction: transaction)
+        SignalRecipient.fetchRecipient(for: SignalServiceAddress(phoneNumber), onlyIfRegistered: false, tx: transaction)
+    }
+}
+
+final class SignalRecipient2Test: XCTestCase {
+    func testDecodeStableRow() throws {
+        let inMemoryDb = InMemoryDatabase()
+        inMemoryDb.write { db in
+            try db.execute(sql: """
+                INSERT INTO "model_SignalRecipient" (
+                    "id", "recordType", "uniqueId", "devices", "recipientPhoneNumber", "recipientUUID", "unregisteredAtTimestamp"
+                ) VALUES (
+                    18,
+                    31,
+                    '00000000-0000-4000-8000-00000000000A',
+                    X'62706c6973743030d4010203040506070a582476657273696f6e592461726368697665725424746f7058246f626a6563747312000186a05f100f4e534b657965644172636869766572d1080954726f6f748001a80b0c191a1b1c1d1e55246e756c6cd60d0e0f1011121314151617185624636c6173735b4e532e6f626a6563742e315b4e532e6f626a6563742e345b4e532e6f626a6563742e305b4e532e6f626a6563742e335b4e532e6f626a6563742e3280078003800680028005800410011002100510041006d21f2021225a24636c6173736e616d655824636c61737365735c4e534f726465726564536574a223245c4e534f726465726564536574584e534f626a65637400080011001a00240029003200370049004c00510053005c0062006f00760082008e009a00a600b200b400b600b800ba00bc00be00c000c200c400c600c800cd00d800e100ee00f100fe0000000000000201000000000000002500000000000000000000000000000107',
+                    '+16505550100',
+                    '00000000-0000-4000-8000-000000000000',
+                    NULL
+                ),
+                (
+                    21,
+                    31,
+                    '00000000-0000-4000-8000-00000000000B',
+                    X'62706c6973743030d4010203040506070a582476657273696f6e592461726368697665725424746f7058246f626a6563747312000186a05f100f4e534b657965644172636869766572d1080954726f6f748001a30b0c0f55246e756c6cd10d0e5624636c6173738002d2101112135a24636c6173736e616d655824636c61737365735c4e534f726465726564536574a214155c4e534f726465726564536574584e534f626a65637408111a24293237494c5153575d6067696e79828f929f00000000000001010000000000000016000000000000000000000000000000a8',
+                    '+16505550101',
+                    '00000000-0000-4000-8000-000000000001',
+                    1683679214631
+                );
+            """)
+        }
+        inMemoryDb.read { db in
+            let signalRecipients = try! SignalRecipient.fetchAll(db)
+            XCTAssertEqual(signalRecipients.count, 2)
+
+            XCTAssertEqual(signalRecipients[0].id, 18)
+            XCTAssertEqual(signalRecipients[0].uniqueId, "00000000-0000-4000-8000-00000000000A")
+            XCTAssertEqual(signalRecipients[0].deviceIds, [1, 2, 5, 4, 6])
+            XCTAssertEqual(signalRecipients[0].phoneNumber, "+16505550100")
+            XCTAssertEqual(signalRecipients[0].serviceIdString, "00000000-0000-4000-8000-000000000000")
+            XCTAssertEqual(signalRecipients[0].unregisteredAtTimestamp, nil)
+
+            XCTAssertEqual(signalRecipients[1].id, 21)
+            XCTAssertEqual(signalRecipients[1].uniqueId, "00000000-0000-4000-8000-00000000000B")
+            XCTAssertEqual(signalRecipients[1].deviceIds, [])
+            XCTAssertEqual(signalRecipients[1].phoneNumber, "+16505550101")
+            XCTAssertEqual(signalRecipients[1].serviceIdString, "00000000-0000-4000-8000-000000000001")
+            XCTAssertEqual(signalRecipients[1].unregisteredAtTimestamp, 1683679214631)
+        }
     }
 }

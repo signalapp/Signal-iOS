@@ -429,8 +429,7 @@ public class FullTextSearcher: NSObject {
                 assert(signalContactMap[signalAccount.recipientAddress] == nil)
                 signalContactMap[signalAccount.recipientAddress] = searchResult
             case let signalRecipient as SignalRecipient:
-                guard signalRecipient.devices.count > 0 else {
-                    // Ignore unregistered recipients.
+                guard signalRecipient.isRegistered else {
                     return
                 }
                 let signalAccount = SignalAccount.transientSignalAccount(forSignalRecipient: signalRecipient)
@@ -529,8 +528,7 @@ public class FullTextSearcher: NSObject {
                 assert(signalContactMap[signalAccount.recipientAddress] == nil)
                 signalContactMap[signalAccount.recipientAddress] = searchResult
             case let signalRecipient as SignalRecipient:
-                guard signalRecipient.devices.count > 0 else {
-                    // Ignore unregistered recipients.
+                guard signalRecipient.isRegistered else {
                     return
                 }
                 let signalAccount = SignalAccount.transientSignalAccount(forSignalRecipient: signalRecipient)
@@ -862,8 +860,7 @@ public class FullTextSearcher: NSObject {
                 return
             }
 
-            // Ignore unregistered recipients.
-            guard recipient.devices.count > 0 else { return }
+            guard recipient.isRegistered else { return }
 
             let account = SignalAccount.transientSignalAccount(forSignalRecipient: recipient)
             appendSignalAccount(account)

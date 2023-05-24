@@ -22,7 +22,7 @@ public class OWSAccountIdFinder: NSObject {
         forAddress address: SignalServiceAddress,
         transaction: SDSAnyReadTransaction
     ) -> AccountId? {
-        return SignalRecipient.get(address: address, mustHaveDevices: false, transaction: transaction)?.accountId
+        return SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: transaction)?.accountId
     }
 
     /// Fetches (or creates) a SignalRecipient for a provided address.

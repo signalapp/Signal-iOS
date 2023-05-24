@@ -238,7 +238,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             )
             // Mark as registered only if we have a UUID (we always do in this branch).
             // If we don't have a UUID, contacts can't be registered.
-            recipient.markAsRegistered(transaction: transaction)
+            recipient.markAsRegisteredAndSave(tx: transaction)
         } else if let phoneNumber = contactDetails.phoneNumber {
             recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: transaction.asV2Write)
         } else {

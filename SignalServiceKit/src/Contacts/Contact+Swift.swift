@@ -11,7 +11,7 @@ public extension Contact {
     func signalRecipients(transaction: SDSAnyReadTransaction) -> [SignalRecipient] {
         e164sForIntersection.compactMap { e164Number in
             let address = SignalServiceAddress(phoneNumber: e164Number)
-            return SignalRecipient.get(address: address, mustHaveDevices: true, transaction: transaction)
+            return SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: true, tx: transaction)
         }
     }
 
@@ -45,7 +45,7 @@ public extension Contact {
     func registeredAddresses(transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         e164sForIntersection.compactMap { e164 in
             let address = SignalServiceAddress(phoneNumber: e164)
-            if SignalRecipient.isRegisteredRecipient(address, transaction: transaction) {
+            if SignalRecipient.isRegistered(address: address, tx: transaction) {
                 return address
             } else {
                 return nil

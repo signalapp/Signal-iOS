@@ -23,7 +23,7 @@ extension Usernames {
         public init(forRecipient recipient: SignalRecipient) {
             self.recipient = recipient
 
-            add(e164: recipient.recipientPhoneNumber)
+            add(e164: recipient.phoneNumber)
         }
 
         public static func assembleByQuerying(

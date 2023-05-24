@@ -4,6 +4,7 @@
 //
 
 import GRDB
+import SignalCoreKit
 
 public enum BatchingPreference {
     case batched(UInt = Batching.kDefaultBatchSize)

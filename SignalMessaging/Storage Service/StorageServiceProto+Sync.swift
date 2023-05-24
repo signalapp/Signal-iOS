@@ -142,12 +142,12 @@ struct StorageServiceContact {
             unregisteredAtTimestamp = nil
         } else {
             unregisteredAtTimestamp = (
-                signalRecipient.unregisteredAtTimestamp?.uint64Value ?? SignalRecipientDistantPastUnregisteredTimestamp
+                signalRecipient.unregisteredAtTimestamp ?? SignalRecipient.Constants.distantPastUnregisteredTimestamp
             )
         }
         self.init(
-            serviceId: ServiceId.expectNilOrValid(uuidString: signalRecipient.recipientUUID),
-            serviceE164: E164.expectNilOrValid(stringValue: signalRecipient.recipientPhoneNumber),
+            serviceId: signalRecipient.serviceId,
+            serviceE164: E164.expectNilOrValid(stringValue: signalRecipient.phoneNumber),
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )
     }
@@ -379,9 +379,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             tx: transaction.asV2Write
         )
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
-            recipient.markAsUnregistered(at: unregisteredAtTimestamp, source: .storageService, transaction: transaction)
+            recipient.markAsUnregisteredAndSave(at: unregisteredAtTimestamp, source: .storageService, tx: transaction)
         } else {
-            recipient.markAsRegistered(source: .storageService, transaction: transaction)
+            recipient.markAsRegisteredAndSave(source: .storageService, tx: transaction)
         }
 
         let address = recipient.address

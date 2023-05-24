@@ -201,7 +201,7 @@ class DebugUINotifications: DebugUIPage, Dependencies {
             let recipients: Set<SignalRecipient> = self.databaseStorage.read { transaction in
                 let allRecipients = SignalRecipient.anyFetchAll(transaction: transaction)
                 let activeRecipients = allRecipients.filter { recipient in
-                    guard recipient.devices.count > 0 else {
+                    guard recipient.isRegistered else {
                         return false
                     }
 

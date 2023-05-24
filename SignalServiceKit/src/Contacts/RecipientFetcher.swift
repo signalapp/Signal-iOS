@@ -21,7 +21,7 @@ class RecipientFetcherImpl: RecipientFetcher {
         if let serviceIdRecipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx) {
             return serviceIdRecipient
         }
-        let newInstance = SignalRecipient(serviceId: ServiceIdObjC(serviceId), phoneNumber: nil)
+        let newInstance = SignalRecipient(serviceId: serviceId, phoneNumber: nil)
         recipientStore.insertRecipient(newInstance, transaction: tx)
         return newInstance
     }
@@ -30,7 +30,7 @@ class RecipientFetcherImpl: RecipientFetcher {
         if let result = recipientStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx) {
             return result
         }
-        let result = SignalRecipient(serviceId: nil, phoneNumber: E164ObjC(phoneNumber))
+        let result = SignalRecipient(serviceId: nil, phoneNumber: phoneNumber)
         recipientStore.insertRecipient(result, transaction: tx)
         return result
     }

@@ -58,7 +58,7 @@ final class UUIDBackfillTaskTest: SSKBaseTestSwift {
         databaseStorage.write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             for phoneNumber in phoneNumbers {
-                recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write).markAsRegistered(transaction: tx)
+                recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write).markAsRegisteredAndSave(tx: tx)
             }
             let recipientMerger = DependenciesBridge.shared.recipientMerger
             let mergedRecipient = recipientMerger.applyMergeFromLinkedDevice(
@@ -67,7 +67,7 @@ final class UUIDBackfillTaskTest: SSKBaseTestSwift {
                 phoneNumber: E164("+16505550102")!,
                 tx: tx.asV2Write
             )
-            mergedRecipient.markAsRegistered(transaction: tx)
+            mergedRecipient.markAsRegisteredAndSave(tx: tx)
         }
 
         let manager = MockContactDiscoveryManager()

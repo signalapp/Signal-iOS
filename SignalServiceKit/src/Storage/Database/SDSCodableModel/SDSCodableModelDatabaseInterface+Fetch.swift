@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import GRDB
+import SignalCoreKit
+
 extension SDSCodableModelDatabaseInterfaceImpl {
 
     /// Fetch a persisted model with the given unique ID, if one exists.
@@ -13,25 +16,34 @@ extension SDSCodableModelDatabaseInterfaceImpl {
     ) -> Model? {
         owsAssertDebug(!uniqueId.isEmpty)
 
+        return fetchModel(
+            modelType: modelType,
+            sql: "SELECT * FROM \(modelType.databaseTableName) WHERE uniqueId = ?",
+            arguments: [uniqueId],
+            transaction: transaction
+        )
+    }
+
+    func fetchModel<Model: SDSCodableModel>(
+        modelType: Model.Type,
+        sql: String,
+        arguments: StatementArguments,
+        transaction: DBReadTransaction
+    ) -> Model? {
         let transaction = SDSDB.shimOnlyBridge(transaction)
 
         let grdbTransaction = transaction.unwrapGrdbRead
 
         do {
-            let sql: String = """
-                SELECT * FROM \(modelType.databaseTableName)
-                WHERE uniqueId = ?
-            """
-
             let model = try modelType.fetchOne(
                 grdbTransaction.database,
                 sql: sql,
-                arguments: [uniqueId]
+                arguments: arguments
             )
             model?.anyDidFetchOne(transaction: transaction)
             return model
         } catch let error {
-            owsFailDebug("Failed to fetch model \(modelType) by uniqueId: \(error)")
+            owsFailDebug("Failed to fetch model \(modelType): \(error)")
             return nil
         }
     }

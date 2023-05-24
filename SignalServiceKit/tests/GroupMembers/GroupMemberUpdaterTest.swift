@@ -103,8 +103,8 @@ class GroupMemberUpdaterTest: XCTestCase {
 
         for signalRecipient in signalRecipients {
             mockSignalServiceAddressCache.updateRecipient(SignalRecipient(
-                serviceId: ServiceIdObjC(uuidString: signalRecipient.serviceId),
-                phoneNumber: E164(signalRecipient.phoneNumber).map { E164ObjC($0) }
+                serviceId: ServiceId(uuidString: signalRecipient.serviceId),
+                phoneNumber: E164(signalRecipient.phoneNumber)
             ))
         }
 

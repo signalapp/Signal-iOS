@@ -134,9 +134,10 @@ public extension OWSProfileManager {
             addresses.insert(SignalServiceAddress(phoneNumber: phoneNumber))
         }
 
-        return AnySignalRecipientFinder().signalRecipients(for: Array(addresses), transaction: transaction)
-            .filter { $0.devices.count > 0 }
-            .map { $0.address }
+        return Array(
+            AnySignalRecipientFinder().signalRecipients(for: Array(addresses), transaction: transaction)
+                .lazy.filter { $0.isRegistered }.map { $0.address }
+        )
     }
 
     @objc

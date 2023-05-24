@@ -673,7 +673,7 @@ extension OWSContactsManager {
                 continue
             }
             // TODO: Confirm ordering.
-            signalRecipients.sort { $0.compare($1) == .orderedAscending }
+            signalRecipients.sort { $0.address.compare($1.address) == .orderedAscending }
             // We use Batching since contact avatars could be large.
             Batching.enumerate(signalRecipients, batchSize: 12) { signalRecipient in
                 if seenAddresses.contains(signalRecipient.address) {

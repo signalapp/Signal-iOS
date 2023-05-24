@@ -276,7 +276,7 @@ public extension TSAccountManager {
             phoneNumber: newLocalNumber.wrappedValue,
             tx: transaction.asV2Write
         )
-        localRecipient.markAsRegistered(transaction: transaction)
+        localRecipient.markAsRegisteredAndSave(tx: transaction)
     }
 
     // MARK: - Deregistration

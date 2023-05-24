@@ -24,10 +24,10 @@ extension MessageSender {
         }
 
         init(serviceId: ServiceId, transaction readTx: SDSAnyReadTransaction) {
-            let recipient = SignalRecipient.get(
-                address: SignalServiceAddress(serviceId),
-                mustHaveDevices: false,
-                transaction: readTx
+            let recipient = SignalRecipient.fetchRecipient(
+                for: SignalServiceAddress(serviceId),
+                onlyIfRegistered: false,
+                tx: readTx
             )
             self.serviceId = serviceId
             self.devices = recipient?.deviceIds ?? []
@@ -302,7 +302,7 @@ extension MessageSender {
                         if !message.isStorySend {
                             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
                             recipientFetcher.fetchOrCreate(serviceId: recipient.serviceId, tx: tx.asV2Write)
-                                .markAsRegistered(transaction: tx)
+                                .markAsRegisteredAndSave(tx: tx)
                         }
 
                         self.profileManager.didSendOrReceiveMessage(

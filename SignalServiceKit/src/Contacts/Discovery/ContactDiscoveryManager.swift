@@ -351,7 +351,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         ) {
             let now = Date()
             let missingPhoneNumbers = requestedPhoneNumbers
-                .subtracting(signalRecipients.lazy.compactMap { $0.recipientPhoneNumber })
+                .subtracting(signalRecipients.lazy.compactMap { $0.phoneNumber })
             for missingPhoneNumber in missingPhoneNumbers {
                 phoneNumberFetchDates[missingPhoneNumber] = now
             }

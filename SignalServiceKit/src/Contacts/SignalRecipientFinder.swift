@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 public class AnySignalRecipientFinder: NSObject {
@@ -68,55 +69,52 @@ class GRDBSignalRecipientFinder: NSObject {
 
     fileprivate func signalRecipientForUUID(_ uuid: UUID?, transaction: GRDBReadTransaction) -> SignalRecipient? {
         guard let uuidString = uuid?.uuidString else { return nil }
-        let sql = "SELECT * FROM \(SignalRecipientRecord.databaseTableName) WHERE \(signalRecipientColumn: .recipientUUID) = ?"
-        return SignalRecipient.grdbFetchOne(sql: sql, arguments: [uuidString], transaction: transaction)
+        let sql = "SELECT * FROM \(SignalRecipient.databaseTableName) WHERE \(signalRecipientColumn: .serviceIdString) = ?"
+        return SignalRecipient.anyFetch(sql: sql, arguments: [uuidString], transaction: transaction.asAnyRead)
     }
 
     fileprivate func signalRecipientForPhoneNumber(_ phoneNumber: String?, transaction: GRDBReadTransaction) -> SignalRecipient? {
         guard let phoneNumber = phoneNumber else { return nil }
-        let sql = "SELECT * FROM \(SignalRecipientRecord.databaseTableName) WHERE \(signalRecipientColumn: .recipientPhoneNumber) = ?"
-        return SignalRecipient.grdbFetchOne(sql: sql, arguments: [phoneNumber], transaction: transaction)
+        let sql = "SELECT * FROM \(SignalRecipient.databaseTableName) WHERE \(signalRecipientColumn: .phoneNumber) = ?"
+        return SignalRecipient.anyFetch(sql: sql, arguments: [phoneNumber], transaction: transaction.asAnyRead)
     }
 
-    func signalRecipients(for addresses: [SignalServiceAddress], transaction: GRDBReadTransaction) -> [SignalRecipient] {
+    func signalRecipients(for addresses: [SignalServiceAddress], transaction tx: GRDBReadTransaction) -> [SignalRecipient] {
         guard !addresses.isEmpty else { return [] }
 
         let phoneNumbersToLookup = addresses.compactMap { $0.phoneNumber }.map { "'\($0)'" }.joined(separator: ",")
         let uuidsToLookup = addresses.compactMap { $0.uuidString }.map { "'\($0)'" }.joined(separator: ",")
 
         let sql = """
-            SELECT * FROM \(SignalRecipientRecord.databaseTableName)
-            WHERE \(signalRecipientColumn: .recipientPhoneNumber) IN (\(phoneNumbersToLookup))
-            OR \(signalRecipientColumn: .recipientUUID) IN (\(uuidsToLookup))
+            SELECT * FROM \(SignalRecipient.databaseTableName)
+            WHERE \(signalRecipientColumn: .phoneNumber) IN (\(phoneNumbersToLookup))
+            OR \(signalRecipientColumn: .serviceIdString) IN (\(uuidsToLookup))
         """
 
-        let cursor = SignalRecipient.grdbFetchCursor(sql: sql, transaction: transaction)
-
-        var recipients = Set<SignalRecipient>()
-        do {
-            while let recipient = try cursor.next() {
-                recipients.insert(recipient)
-            }
-        } catch {
-            owsFailDebug("unexpected error \(error)")
+        var result = [SignalRecipient]()
+        SignalRecipient.anyEnumerate(transaction: tx.asAnyRead, sql: sql, arguments: []) { signalRecipient, _ in
+            result.append(signalRecipient)
         }
-
-        return Array(recipients)
+        return result
     }
 
-    fileprivate func registeredRecipientsWithoutUUID(transaction: GRDBReadTransaction) -> [SignalRecipient] {
+    fileprivate func registeredRecipientsWithoutUUID(transaction tx: GRDBReadTransaction) -> [SignalRecipient] {
         let sql = """
-        SELECT * FROM \(SignalRecipientRecord.databaseTableName)
-        WHERE (
-            \(signalRecipientColumn: .recipientUUID) IS NULL OR
-            \(signalRecipientColumn: .recipientUUID) IS ""
-        ) AND (
-            \(signalRecipientColumn: .recipientPhoneNumber) IS NOT NULL
-        )
+            SELECT * FROM \(SignalRecipient.databaseTableName)
+            WHERE (
+                \(signalRecipientColumn: .serviceIdString) IS NULL OR
+                \(signalRecipientColumn: .serviceIdString) IS ''
+            ) AND (
+                \(signalRecipientColumn: .phoneNumber) IS NOT NULL
+            )
         """
-        let cursor = SignalRecipient.grdbFetchCursor(sql: sql, transaction: transaction)
-
-        let allLegacyRecipients = try! cursor.all()
-        return allLegacyRecipients.filter { $0.devices.count > 0 }
+        var result = [SignalRecipient]()
+        SignalRecipient.anyEnumerate(transaction: tx.asAnyRead, sql: sql, arguments: []) { signalRecipient, _ in
+            guard signalRecipient.isRegistered else {
+                return
+            }
+            result.append(signalRecipient)
+        }
+        return result
     }
 }

@@ -218,7 +218,7 @@ class RecipientMergerImpl: RecipientMerger {
         // without any modifications. This will be the path taken in 99% of cases
         // (ie, we'll hit this path every time a recipient sends you a message,
         // assuming they haven't changed their phone number).
-        if let serviceIdRecipient, serviceIdRecipient.recipientPhoneNumber == phoneNumber.stringValue {
+        if let serviceIdRecipient, serviceIdRecipient.phoneNumber == phoneNumber.stringValue {
             return serviceIdRecipient
         }
 
@@ -228,7 +228,7 @@ class RecipientMergerImpl: RecipientMerger {
         // would match the the prior `if` check and return early without making any
         // modifications.
 
-        let oldPhoneNumber = serviceIdRecipient?.recipientPhoneNumber
+        let oldPhoneNumber = serviceIdRecipient?.phoneNumber
 
         let mergedRecipient: SignalRecipient
 
@@ -243,7 +243,7 @@ class RecipientMergerImpl: RecipientMerger {
             dataStore.updateRecipient(mergedRecipient, transaction: transaction)
             storageServiceManager.recordPendingUpdates(updatedAccountIds: [mergedRecipient.accountId])
         case .none:
-            mergedRecipient = SignalRecipient(serviceId: ServiceIdObjC(serviceId), phoneNumber: E164ObjC(phoneNumber))
+            mergedRecipient = SignalRecipient(serviceId: serviceId, phoneNumber: phoneNumber)
             dataStore.insertRecipient(mergedRecipient, transaction: transaction)
         }
 
@@ -273,7 +273,7 @@ class RecipientMergerImpl: RecipientMerger {
 
         if let serviceIdRecipient {
             if let phoneNumberRecipient {
-                if phoneNumberRecipient.recipientUUID == nil && serviceIdRecipient.recipientPhoneNumber == nil {
+                if phoneNumberRecipient.serviceIdString == nil && serviceIdRecipient.phoneNumber == nil {
                     // These are the same, but not fully complete; we need to merge them.
                     return mergeRecipients(
                         serviceId: serviceId,
@@ -306,7 +306,7 @@ class RecipientMergerImpl: RecipientMerger {
             // `phoneNumber` _before_ we update `serviceIdRecipient`'s phone number.
             temporaryShims.clearMappings(phoneNumber: phoneNumber, transaction: transaction)
 
-            if let oldPhoneNumber = serviceIdRecipient.recipientPhoneNumber {
+            if let oldPhoneNumber = serviceIdRecipient.phoneNumber {
                 Logger.info("Learned serviceId \(serviceId) changed from old phoneNumber \(oldPhoneNumber) to new phoneNumber \(phoneNumber)")
             } else {
                 Logger.info("Learned serviceId \(serviceId) is associated with phoneNumber \(phoneNumber)")
@@ -321,7 +321,7 @@ class RecipientMergerImpl: RecipientMerger {
             // might have mappings for the new ServiceId. We need to clear that out.
             temporaryShims.clearMappings(serviceId: serviceId, transaction: transaction)
 
-            if phoneNumberRecipient.recipientUUID != nil {
+            if phoneNumberRecipient.serviceIdString != nil {
                 // We can't change the ServiceId because it's non-empty. Instead, we must
                 // create a new SignalRecipient. We clear the phone number here since it
                 // will belong to the new SignalRecipient.
@@ -332,7 +332,7 @@ class RecipientMergerImpl: RecipientMerger {
             }
 
             Logger.info("Learned serviceId \(serviceId) is associated with phoneNumber \(phoneNumber)")
-            phoneNumberRecipient.recipientUUID = serviceId.uuidValue.uuidString
+            phoneNumberRecipient.serviceId = serviceId
             return phoneNumberRecipient
         }
 
@@ -345,25 +345,25 @@ class RecipientMergerImpl: RecipientMerger {
         phoneNumber: E164?,
         transaction: DBWriteTransaction
     ) {
-        let oldPhoneNumber = recipient.recipientPhoneNumber?.nilIfEmpty
-        let oldServiceIdString = recipient.recipientUUID
+        let oldPhoneNumber = recipient.phoneNumber?.nilIfEmpty
+        let oldServiceIdString = recipient.serviceIdString
 
-        recipient.recipientPhoneNumber = phoneNumber?.stringValue
+        recipient.phoneNumber = phoneNumber?.stringValue
 
-        if recipient.recipientPhoneNumber == nil && oldServiceIdString == nil {
+        if recipient.phoneNumber == nil && oldServiceIdString == nil {
             Logger.warn("Clearing out the phone number on a recipient with no serviceId; old phone number: \(String(describing: oldPhoneNumber))")
             // Fill in a random UUID, so we can complete the change and maintain a common
             // association for all the records and not leave them dangling. This should
             // in general never happen.
-            recipient.recipientUUID = UUID().uuidString
+            recipient.serviceId = ServiceId(UUID())
         } else {
-            Logger.info("Changing the phone number on a recipient; serviceId: \(oldServiceIdString ?? "nil"), phoneNumber: \(oldPhoneNumber ?? "nil") -> \(recipient.recipientPhoneNumber ?? "nil")")
+            Logger.info("Changing the phone number on a recipient; serviceId: \(oldServiceIdString ?? "nil"), phoneNumber: \(oldPhoneNumber ?? "nil") -> \(recipient.phoneNumber ?? "nil")")
         }
 
         temporaryShims.didUpdatePhoneNumber(
             oldServiceIdString: oldServiceIdString,
             oldPhoneNumber: oldPhoneNumber,
-            newServiceIdString: recipient.recipientUUID,
+            newServiceIdString: recipient.serviceIdString,
             newPhoneNumber: phoneNumber,
             transaction: transaction
         )
@@ -377,12 +377,12 @@ class RecipientMergerImpl: RecipientMerger {
         transaction: DBWriteTransaction
     ) -> SignalRecipient {
         owsAssertDebug(
-            serviceIdRecipient.recipientPhoneNumber == nil
-            || serviceIdRecipient.recipientPhoneNumber == phoneNumber.stringValue
+            serviceIdRecipient.phoneNumber == nil
+            || serviceIdRecipient.phoneNumber == phoneNumber.stringValue
         )
         owsAssertDebug(
-            phoneNumberRecipient.recipientUUID == nil
-            || phoneNumberRecipient.recipientUUID == serviceId.uuidValue.uuidString
+            phoneNumberRecipient.serviceIdString == nil
+            || phoneNumberRecipient.serviceIdString == serviceId.uuidValue.uuidString
         )
 
         // We have separate recipients in the db for the uuid and phone number.
@@ -421,8 +421,8 @@ class RecipientMergerImpl: RecipientMerger {
         owsAssertBeta(winningRecipient !== losingRecipient)
 
         // Make sure the winning recipient is fully qualified.
-        winningRecipient.recipientPhoneNumber = phoneNumber.stringValue
-        winningRecipient.recipientUUID = serviceId.uuidValue.uuidString
+        winningRecipient.phoneNumber = phoneNumber.stringValue
+        winningRecipient.serviceId = serviceId
 
         // Discard the losing recipient.
         // TODO: Should we clean up any state related to the discarded recipient?

@@ -56,7 +56,7 @@ public class UUIDBackfillTask {
         e164sToFetch.formUnion(
             allRecipientsWithoutUUID
                 .lazy
-                .compactMap { $0.recipientPhoneNumber }
+                .compactMap { $0.phoneNumber }
                 .compactMap { PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: $0)?.toE164() }
         )
 

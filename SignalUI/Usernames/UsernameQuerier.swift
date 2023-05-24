@@ -171,7 +171,7 @@ public struct UsernameQuerier {
         tx: SDSAnyWriteTransaction
     ) {
         let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
-        recipient.markAsRegistered(transaction: tx)
+        recipient.markAsRegisteredAndSave(tx: tx)
 
         let isUsernameBestIdentifier = Usernames.BetterIdentifierChecker.assembleByQuerying(
             forRecipient: recipient,

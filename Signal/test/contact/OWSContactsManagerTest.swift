@@ -44,7 +44,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         write { tx in
             for serviceId in serviceIds {
                 let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
-                recipient.markAsRegistered(transaction: tx)
+                recipient.markAsRegisteredAndSave(tx: tx)
             }
         }
     }

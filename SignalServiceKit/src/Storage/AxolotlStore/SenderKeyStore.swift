@@ -458,16 +458,15 @@ private struct KeyRecipient: Codable, Dependencies {
     /// Build a KeyRecipient for the given address by fetching all of the devices and corresponding registrationIds
     static func currentState(for serviceId: ServiceId, transaction: SDSAnyReadTransaction) throws -> KeyRecipient {
         guard
-            let recipient = SignalRecipient.get(
-                address: SignalServiceAddress(serviceId),
-                mustHaveDevices: false,
-                transaction: transaction
-            ),
-            let deviceIds = recipient.deviceIds
+            let recipient = SignalRecipient.fetchRecipient(
+                for: SignalServiceAddress(serviceId),
+                onlyIfRegistered: false,
+                tx: transaction
+            )
         else {
             throw OWSAssertionError("Invalid device array")
         }
-
+        let deviceIds = recipient.deviceIds
         let protocolAddresses = try deviceIds.map { try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: $0) }
         let sessionStore = signalProtocolStore(for: .aci).sessionStore
         let devices: [Device] = try protocolAddresses.map {

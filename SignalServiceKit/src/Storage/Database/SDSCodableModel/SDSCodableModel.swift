@@ -159,6 +159,19 @@ public extension SDSCodableModel {
         )
     }
 
+    static func anyFetch(
+        sql: String,
+        arguments: StatementArguments = [],
+        transaction: SDSAnyReadTransaction
+    ) -> Self? {
+        SDSCodableModelDatabaseInterfaceImpl().fetchModel(
+            modelType: Self.self,
+            sql: sql,
+            arguments: arguments,
+            transaction: transaction.asV2Read
+        )
+    }
+
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
     static func anyFetchAll(

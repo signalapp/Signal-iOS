@@ -55,15 +55,15 @@ public class LegacyChangePhoneNumber: NSObject {
                 guard
                     let localAci = tsAccountManager.localUuid(with: transaction).map({ ServiceId($0) }),
                     let localAddress = tsAccountManager.localAddress(with: transaction),
-                    let localRecipient = SignalRecipient.get(
-                        address: localAddress,
-                        mustHaveDevices: false,
-                        transaction: transaction
-                    ),
-                    let localUserAllDeviceIds = localRecipient.deviceIds
+                    let localRecipient = SignalRecipient.fetchRecipient(
+                        for: localAddress,
+                        onlyIfRegistered: false,
+                        tx: transaction
+                    )
                 else {
                     return .init(error: OWSAssertionError("Missing local parameters!"))
                 }
+                let localUserAllDeviceIds = localRecipient.deviceIds
 
                 return changePhoneNumberPniManager.generatePniIdentity(
                     forNewE164: newE164,
@@ -322,7 +322,7 @@ public class LegacyChangePhoneNumber: NSObject {
             phoneNumber: serviceE164,
             tx: transaction.asV2Write
         )
-        localRecipient.markAsRegistered(transaction: transaction)
+        localRecipient.markAsRegisteredAndSave(tx: transaction)
 
         if
             serviceE164 != localE164
