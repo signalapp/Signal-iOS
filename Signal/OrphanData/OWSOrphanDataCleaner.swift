@@ -191,9 +191,13 @@ extension OWSOrphanDataCleaner {
         do {
             actualRelativePaths = try FileManager.default.subpathsOfDirectory(atPath: basePath)
         } catch CocoaError.fileReadNoSuchFile {
-            return []
+            actualRelativePaths = []
         } catch {
             Logger.warn("Orphan data cleaner couldn't find any paths \(error.shortDescription)")
+            actualRelativePaths = []
+        }
+
+        if actualRelativePaths.isEmpty {
             return []
         }
 
