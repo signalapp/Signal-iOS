@@ -129,7 +129,7 @@ public extension ConversationViewController {
             self.hasIncrementedGroupCallTooltipShownCount = true
         }
 
-        if threadViewModel.groupCallInProgress {
+        if conversationViewModel.groupCallInProgress {
             return
         }
 

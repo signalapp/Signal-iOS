@@ -65,9 +65,11 @@ public final class ConversationViewController: OWSViewController {
         focusMessageId: String? = nil,
         tx: SDSAnyReadTransaction
     ) -> ConversationViewController {
+        let thread = threadViewModel.threadRecord
+
         // We always need to find where the unread divider should be placed, even
         // if we opened the chat by tapping on a search result.
-        let interactionFinder = InteractionFinder(threadUniqueId: threadViewModel.threadRecord.uniqueId)
+        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
         let oldestUnreadMessage = try? interactionFinder.oldestUnreadInteraction(transaction: tx.unwrapGrdbRead)
 
         let loadAroundMessageId: String?
@@ -88,9 +90,14 @@ public final class ConversationViewController: OWSViewController {
             scrollToMessageId = lastVisibleMessageId
         }
 
+        let conversationStyle = ConversationViewController.buildInitialConversationStyle(for: thread, tx: tx)
+        let conversationViewModel = ConversationViewModel.load(for: thread, tx: tx)
+
         return ConversationViewController(
             threadViewModel: threadViewModel,
+            conversationViewModel: conversationViewModel,
             action: action,
+            conversationStyle: conversationStyle,
             loadAroundMessageId: loadAroundMessageId,
             scrollToMessageId: scrollToMessageId,
             oldestUnreadMessage: oldestUnreadMessage
@@ -99,20 +106,23 @@ public final class ConversationViewController: OWSViewController {
 
     private init(
         threadViewModel: ThreadViewModel,
+        conversationViewModel: ConversationViewModel,
         action: ConversationViewAction,
+        conversationStyle: ConversationStyle,
         loadAroundMessageId: String?,
         scrollToMessageId: String?,
         oldestUnreadMessage: TSInteraction?
     ) {
         AssertIsOnMainThread()
 
-        let conversationStyle = ConversationViewController.buildInitialConversationStyle(threadViewModel: threadViewModel)
         self.viewState = CVViewState(
-            threadViewModel: threadViewModel,
+            threadUniqueId: threadViewModel.threadRecord.uniqueId,
             conversationStyle: conversationStyle
         )
         self.loadCoordinator = CVLoadCoordinator(
             viewState: viewState,
+            threadViewModel: threadViewModel,
+            conversationViewModel: conversationViewModel,
             oldestUnreadMessageSortId: oldestUnreadMessage?.sortId
         )
         self.layout = ConversationViewLayout(conversationStyle: conversationStyle)

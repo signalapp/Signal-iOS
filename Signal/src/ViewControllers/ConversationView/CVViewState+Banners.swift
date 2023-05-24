@@ -197,8 +197,6 @@ public extension CVViewState {
         hideDuration: kHourInterval
     )
 
-    private var threadUniqueId: String { threadViewModel.threadRecord.uniqueId }
-
     func shouldShowDroppedGroupMembersBanner(transaction: SDSAnyReadTransaction) -> Bool {
         !Self.isDroppedGroupMembersBannerHiding.isHidden(threadUniqueId: threadUniqueId, transaction: transaction)
     }

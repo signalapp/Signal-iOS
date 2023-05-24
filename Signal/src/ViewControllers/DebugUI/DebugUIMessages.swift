@@ -379,7 +379,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         if includeLabels {
             actions.append(fakeOutgoingTextMessageAction(thread: thread, messageState: .sent, text: "⚠️ Outgoing Reserved Color Png ⚠️"))
         }
-        let conversationStyle = ConversationViewController.buildDefaultConversationStyle(thread: thread)
+        let bubbleColorIncoming = ConversationStyle.bubbleColorIncoming(hasWallpaper: false, isDarkThemeEnabled: Theme.isDarkThemeEnabled)
         actions += [
             fakeOutgoingPngAction(
                 thread: thread,
@@ -416,7 +416,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 thread: thread,
                 actionLabel: "Fake Outgoing 'Outgoing' Png",
                 imageSize: .square(200),
-                backgroundColor: conversationStyle.bubbleColorIncoming,
+                backgroundColor: bubbleColorIncoming,
                 textColor: .white,
                 imageLabel: "W",
                 messageState: .failed,
@@ -426,7 +426,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 thread: thread,
                 actionLabel: "Fake Outgoing 'Outgoing' Png",
                 imageSize: .square(200),
-                backgroundColor: conversationStyle.bubbleColorIncoming,
+                backgroundColor: bubbleColorIncoming,
                 textColor: .white,
                 imageLabel: "W",
                 messageState: .sending,
@@ -436,7 +436,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 thread: thread,
                 actionLabel: "Fake Outgoing 'Outgoing' Png",
                 imageSize: .square(200),
-                backgroundColor: conversationStyle.bubbleColorIncoming,
+                backgroundColor: bubbleColorIncoming,
                 textColor: .white,
                 imageLabel: "W",
                 messageState: .sent,

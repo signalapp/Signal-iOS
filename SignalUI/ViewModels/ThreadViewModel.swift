@@ -17,9 +17,6 @@ public class ThreadViewModel: NSObject {
     public let associatedData: ThreadAssociatedData
     public let hasPendingMessageRequest: Bool
     public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
-    public let groupCallInProgress: Bool
-    public let hasWallpaper: Bool
-    public let isWallpaperPhoto: Bool
     public let isBlocked: Bool
 
     public var isArchived: Bool { associatedData.isArchived }
@@ -27,8 +24,6 @@ public class ThreadViewModel: NSObject {
     public var mutedUntilTimestamp: UInt64 { associatedData.mutedUntilTimestamp }
     public var mutedUntilDate: Date? { associatedData.mutedUntilDate }
     public var isMarkedUnread: Bool { associatedData.isMarkedUnread }
-
-    public let chatColor: ChatColor
 
     public var isContactThread: Bool {
         return !isGroupThread
@@ -53,8 +48,6 @@ public class ThreadViewModel: NSObject {
         let associatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
         self.associatedData = associatedData
 
-        self.chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
-
         if let contactThread = thread as? TSContactThread {
             self.contactAddress = contactThread.contactAddress
             self.shortName = Self.contactsManager.shortDisplayName(
@@ -71,10 +64,6 @@ public class ThreadViewModel: NSObject {
         self.hasUnreadMessages = associatedData.isMarkedUnread || unreadCount > 0
         self.hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
 
-        self.groupCallInProgress = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: transaction)
-            .filter { $0.joinedMemberAddresses.count > 0 }
-            .count > 0
-
         self.lastMessageForInbox = thread.lastInteractionForInbox(transaction: transaction)
 
         if forChatList {
@@ -84,18 +73,6 @@ public class ThreadViewModel: NSObject {
                                         transaction: transaction)
         } else {
             chatListInfo = nil
-        }
-
-        if let wallpaper = Wallpaper.wallpaperForRendering(for: thread, transaction: transaction) {
-            self.hasWallpaper = true
-            if case .photo = wallpaper {
-                self.isWallpaperPhoto = true
-            } else {
-                self.isWallpaperPhoto = false
-            }
-        } else {
-            self.hasWallpaper = false
-            self.isWallpaperPhoto = false
         }
 
         isBlocked = Self.blockingManager.isThreadBlocked(thread, transaction: transaction)

@@ -589,55 +589,66 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                 withReuseIdentifier: LoadMoreMessagesView.reuseIdentifier)
     }
 
-    public static func buildInitialConversationStyle(threadViewModel: ThreadViewModel) -> ConversationStyle {
-        ConversationStyle(type: .initial,
-                          thread: threadViewModel.threadRecord,
-                          viewWidth: 0,
-                          hasWallpaper: threadViewModel.hasWallpaper,
-                          isWallpaperPhoto: threadViewModel.isWallpaperPhoto,
-                          chatColor: .placeholderValue)
+    public static func buildInitialConversationStyle(for thread: TSThread, tx: SDSAnyReadTransaction) -> ConversationStyle {
+        buildConversationStyle(
+            type: .initial,
+            thread: thread,
+            viewWidth: 0,
+            overrideChatColor: .placeholderValue,
+            tx: tx
+        )
     }
 
-    public static func buildDefaultConversationStyle(thread: TSThread) -> ConversationStyle {
-        ConversationStyle(type: .default,
-                          thread: thread,
-                          viewWidth: 0,
-                          hasWallpaper: false,
-                          isWallpaperPhoto: false,
-                          chatColor: .placeholderValue)
+    private static func buildConversationStyle(
+        type: ConversationStyle.`Type`,
+        thread: TSThread,
+        viewWidth: CGFloat,
+        overrideChatColor: ChatColor?,
+        tx: SDSAnyReadTransaction
+    ) -> ConversationStyle {
+        let hasWallpaper: Bool
+        let isWallpaperPhoto: Bool
+        switch Wallpaper.wallpaperForRendering(for: thread, transaction: tx) {
+        case .photo:
+            hasWallpaper = true
+            isWallpaperPhoto = true
+        case .some:
+            hasWallpaper = true
+            isWallpaperPhoto = false
+        case .none:
+            hasWallpaper = false
+            isWallpaperPhoto = false
+        }
+        return ConversationStyle(
+            type: type,
+            thread: thread,
+            viewWidth: viewWidth,
+            hasWallpaper: hasWallpaper,
+            isWallpaperPhoto: isWallpaperPhoto,
+            chatColor: overrideChatColor ?? ChatColors.chatColorForRendering(thread: thread, transaction: tx)
+        )
     }
 
     private func buildConversationStyle() -> ConversationStyle {
         AssertIsOnMainThread()
 
-        var hasWallpaper: Bool = false
-        var isWallpaperPhoto: Bool = false
-        var chatColor: ChatColor = .placeholderValue
-        databaseStorage.read { transaction in
-            if let wallpaper = Wallpaper.wallpaperForRendering(for: self.thread, transaction: transaction) {
-                hasWallpaper = true
-                if case .photo = wallpaper {
-                    isWallpaperPhoto = true
-                } else {
-                    isWallpaperPhoto = false
-                }
-            } else {
-                hasWallpaper = false
-                isWallpaperPhoto = false
+        func buildConversationStyle(type: ConversationStyle.`Type`, viewWidth: CGFloat) -> ConversationStyle {
+            databaseStorage.read { tx in
+                Self.buildConversationStyle(
+                    type: type,
+                    thread: thread,
+                    viewWidth: viewWidth,
+                    overrideChatColor: nil,
+                    tx: tx
+                )
             }
-            chatColor = ChatColors.chatColorForRendering(thread: self.thread, transaction: transaction)
         }
 
         func buildDefaultConversationStyle(type: ConversationStyle.`Type`) -> ConversationStyle {
             // Treat all styles as "initial" (not to be trusted) until
             // we have a view config.
             let viewWidth = floor(collectionView.width)
-            return ConversationStyle(type: type,
-                                     thread: thread,
-                                     viewWidth: viewWidth,
-                                     hasWallpaper: hasWallpaper,
-                                     isWallpaperPhoto: isWallpaperPhoto,
-                                     chatColor: chatColor)
+            return buildConversationStyle(type: type, viewWidth: viewWidth)
         }
 
         guard self.conversationStyle.type != .`default` else {
@@ -687,12 +698,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             // We can derive a style that reflects what the correct style will be,
             // using values from the navigationController.
             let viewWidth = floor(navigationViewWidth)
-            return ConversationStyle(type: .placeholder,
-                                     thread: thread,
-                                     viewWidth: viewWidth,
-                                     hasWallpaper: hasWallpaper,
-                                     isWallpaperPhoto: isWallpaperPhoto,
-                                     chatColor: chatColor)
+            return buildConversationStyle(type: .placeholder, viewWidth: viewWidth)
         }
     }
 

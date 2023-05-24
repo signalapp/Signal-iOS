@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalUI
 
 // This captures all of the state loaded by the CVLoadCoordinator.
 //
@@ -18,11 +19,13 @@ class CVRenderState {
     let renderStateId: UInt
 
     let threadViewModel: ThreadViewModel
-
     let prevThreadViewModel: ThreadViewModel?
     var isEmptyInitialState: Bool {
         prevThreadViewModel == nil
     }
+
+    let conversationViewModel: ConversationViewModel
+
     var isFirstLoad: Bool {
         if let loadType = self.loadType,
            case CVLoadType.loadInitialMapping = loadType {
@@ -60,16 +63,19 @@ class CVRenderState {
 
     public let allIndexPaths: [IndexPath]
 
-    init(threadViewModel: ThreadViewModel,
-         prevThreadViewModel: ThreadViewModel?,
-         items: [CVRenderItem],
-         canLoadOlderItems: Bool,
-         canLoadNewerItems: Bool,
-         viewStateSnapshot: CVViewStateSnapshot,
-         loadType: CVLoadType?) {
-
+    init(
+        threadViewModel: ThreadViewModel,
+        prevThreadViewModel: ThreadViewModel?,
+        conversationViewModel: ConversationViewModel,
+        items: [CVRenderItem],
+        canLoadOlderItems: Bool,
+        canLoadNewerItems: Bool,
+        viewStateSnapshot: CVViewStateSnapshot,
+        loadType: CVLoadType?
+    ) {
         self.threadViewModel = threadViewModel
         self.prevThreadViewModel = prevThreadViewModel
+        self.conversationViewModel = conversationViewModel
         self.items = items
         self.canLoadOlderItems = canLoadOlderItems
         self.canLoadNewerItems = canLoadNewerItems
@@ -96,15 +102,21 @@ class CVRenderState {
         self.allIndexPaths = allIndexPaths
     }
 
-    static func defaultRenderState(threadViewModel: ThreadViewModel,
-                                   viewStateSnapshot: CVViewStateSnapshot) -> CVRenderState {
-        CVRenderState(threadViewModel: threadViewModel,
-                      prevThreadViewModel: nil,
-                      items: [],
-                      canLoadOlderItems: false,
-                      canLoadNewerItems: false,
-                      viewStateSnapshot: viewStateSnapshot,
-                      loadType: nil)
+    static func defaultRenderState(
+        threadViewModel: ThreadViewModel,
+        conversationViewModel: ConversationViewModel,
+        viewStateSnapshot: CVViewStateSnapshot
+    ) -> CVRenderState {
+        CVRenderState(
+            threadViewModel: threadViewModel,
+            prevThreadViewModel: nil,
+            conversationViewModel: conversationViewModel,
+            items: [],
+            canLoadOlderItems: false,
+            canLoadNewerItems: false,
+            viewStateSnapshot: viewStateSnapshot,
+            loadType: nil
+        )
     }
 
     public func indexPath(forInteractionUniqueId interactionUniqueId: String) -> IndexPath? {

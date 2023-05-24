@@ -79,9 +79,13 @@ public class CVLoadCoordinator: NSObject {
     // TODO: Remove. This model will get stale.
     private let thread: TSThread
 
-    required init(viewState: CVViewState, oldestUnreadMessageSortId: UInt64?) {
+    required init(
+        viewState: CVViewState,
+        threadViewModel: ThreadViewModel,
+        conversationViewModel: ConversationViewModel,
+        oldestUnreadMessageSortId: UInt64?
+    ) {
         self.viewState = viewState
-        let threadViewModel = viewState.threadViewModel
         self.threadUniqueId = threadViewModel.threadRecord.uniqueId
         self.thread = threadViewModel.threadRecord
         self.conversationStyle = viewState.conversationStyle
@@ -95,6 +99,7 @@ public class CVLoadCoordinator: NSObject {
         )
         self.renderState = CVRenderState.defaultRenderState(
             threadViewModel: threadViewModel,
+            conversationViewModel: conversationViewModel,
             viewStateSnapshot: viewStateSnapshot
         )
         self.messageLoader = MessageLoader(

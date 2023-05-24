@@ -125,7 +125,7 @@ extension ConversationViewController {
                 if self.isGroupConversation {
                     let videoCallButton = UIBarButtonItem()
 
-                    if threadViewModel.groupCallInProgress {
+                    if conversationViewModel.groupCallInProgress {
                         let pill = JoinGroupCallPill()
                         pill.addTarget(self,
                                        action: #selector(showGroupLobbyOrActiveCall),

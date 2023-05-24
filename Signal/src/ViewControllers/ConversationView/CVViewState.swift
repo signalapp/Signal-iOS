@@ -17,7 +17,7 @@ public protocol CVViewStateDelegate: AnyObject {
 public class CVViewState: NSObject {
     public weak var delegate: CVViewStateDelegate?
 
-    public var threadViewModel: ThreadViewModel
+    public let threadUniqueId: String
     public var conversationStyle: ConversationStyle
     public var inputToolbar: ConversationInputToolbar?
     public let headerView = ConversationHeaderView()
@@ -154,17 +154,19 @@ public class CVViewState: NSObject {
 
     // MARK: - 
 
-    public required init(threadViewModel: ThreadViewModel, conversationStyle: ConversationStyle) {
-        self.threadViewModel = threadViewModel
+    public required init(threadUniqueId: String, conversationStyle: ConversationStyle) {
+        self.threadUniqueId = threadUniqueId
         self.conversationStyle = conversationStyle
     }
 }
 
 // MARK: -
 
-public extension ConversationViewController {
+extension ConversationViewController {
 
     var threadViewModel: ThreadViewModel { renderState.threadViewModel }
+
+    var conversationViewModel: ConversationViewModel { renderState.conversationViewModel }
 
     var thread: TSThread { threadViewModel.threadRecord }
 

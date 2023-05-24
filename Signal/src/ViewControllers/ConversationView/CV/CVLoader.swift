@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalCoreKit
+import SignalUI
 
 // This entity performs a single load.
 public class CVLoader: NSObject {
@@ -41,23 +42,28 @@ public class CVLoader: NSObject {
 
         struct LoadState {
             let threadViewModel: ThreadViewModel
+            let conversationViewModel: ConversationViewModel
             let items: [CVRenderItem]
         }
 
         return firstly(on: CVUtils.workQueue(isInitialLoad: loadRequest.isInitialLoad)) { () -> CVUpdate in
             // To ensure coherency, the entire load should be done with a single transaction.
             let loadState: LoadState = try Self.databaseStorage.read { transaction in
-
-                let loadThreadViewModel = { () -> ThreadViewModel in
-                    guard let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction) else {
+                let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction)
+                let threadViewModel = { () -> ThreadViewModel in
+                    guard let thread else {
                         // If thread has been deleted from the database, use last known model.
                         return prevRenderState.threadViewModel
                     }
-                    return ThreadViewModel(thread: thread,
-                                           forChatList: false,
-                                           transaction: transaction)
-                }
-                let threadViewModel = loadThreadViewModel()
+                    return ThreadViewModel(thread: thread, forChatList: false, transaction: transaction)
+                }()
+                let conversationViewModel = { () -> ConversationViewModel in
+                    guard let thread else {
+                        // If thread has been deleted from the database, use last known model.
+                        return prevRenderState.conversationViewModel
+                    }
+                    return ConversationViewModel.load(for: thread, tx: transaction)
+                }()
 
                 let loadContext = CVLoadContext(
                     loadRequest: loadRequest,
@@ -159,16 +165,16 @@ public class CVLoader: NSObject {
 
                 return LoadState(
                     threadViewModel: threadViewModel,
+                    conversationViewModel: conversationViewModel,
                     items: self.buildRenderItems(loadContext: loadContext, updatedInteractionIds: updatedInteractionIds)
                 )
             }
 
-            let items = loadState.items
-            let threadViewModel = loadState.threadViewModel
             let renderState = CVRenderState(
-                threadViewModel: threadViewModel,
+                threadViewModel: loadState.threadViewModel,
                 prevThreadViewModel: prevRenderState.threadViewModel,
-                items: items,
+                conversationViewModel: loadState.conversationViewModel,
+                items: loadState.items,
                 canLoadOlderItems: messageLoader.canLoadOlder,
                 canLoadNewerItems: messageLoader.canLoadNewer,
                 viewStateSnapshot: viewStateSnapshot,
