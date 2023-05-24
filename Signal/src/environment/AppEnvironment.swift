@@ -51,6 +51,8 @@ public class AppEnvironment: NSObject {
 
     public var windowManagerRef: OWSWindowManager = OWSWindowManager()
 
+    private(set) var appIconBadgeUpdater: AppIconBadgeUpdater!
+    private(set) var badgeManager: BadgeManager!
     private var usernameValidationObserverRef: UsernameValidationObserver?
 
     private override init() {
@@ -65,13 +67,24 @@ public class AppEnvironment: NSObject {
         SwiftSingletons.register(self)
     }
 
-    public func setup() {
+    func setup() {
         callService.createCallUIAdapter()
 
+        self.badgeManager = BadgeManager(
+            databaseStorage: databaseStorage,
+            mainScheduler: DispatchQueue.main,
+            serialScheduler: DispatchQueue.sharedUtility
+        )
+        self.appIconBadgeUpdater = AppIconBadgeUpdater(badgeManager: badgeManager)
         self.usernameValidationObserverRef = UsernameValidationObserver(
             manager: DependenciesBridge.shared.usernameValidationManager,
             database: DependenciesBridge.shared.db
         )
+
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            self.badgeManager.startObservingChanges(in: self.databaseStorage)
+            self.appIconBadgeUpdater.startObserving()
+        }
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             let db = DependenciesBridge.shared.db

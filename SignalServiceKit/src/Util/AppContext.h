@@ -101,8 +101,6 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 // Should be a NOOP if isMainApp is NO.
 - (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjectsDescription:(NSString *)blockingObjectsDescription;
 
-- (void)setMainAppBadgeNumber:(NSInteger)value;
-
 @property (nonatomic, readonly) CGFloat statusBarHeight;
 
 // Returns the VC that should be used to present alerts, modals, etc.

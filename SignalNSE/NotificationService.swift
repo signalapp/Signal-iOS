@@ -55,7 +55,7 @@ class NotificationService: UNNotificationServiceExtension {
         }
     }
 
-    private static func nseDidComplete() -> Int {
+    private static func nseDidComplete() {
         unfairLock.withLock {
             _nseCounter = _nseCounter > 0 ? _nseCounter - 1 : 0
 
@@ -63,49 +63,23 @@ class NotificationService: UNNotificationServiceExtension {
                 _logTimer?.invalidate()
                 _logTimer = nil
             }
-            return _nseCounter
         }
     }
 
     // MARK: -
 
     // This method is thread-safe.
-    func completeSilently(timeHasExpired: Bool = false, logger: NSELogger) {
+    func completeSilently(timeHasExpired: Bool = false, badgeValue: UInt? = nil, logger: NSELogger) {
         defer { logger.flush() }
 
-        let nseCount = Self.nseDidComplete()
-
         guard let contentHandler = contentHandler.swap(nil) else {
-            if DebugFlags.internalLogging {
-                logger.warn("No contentHandler, memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount).")
-            }
             return
         }
 
-        let content = UNMutableNotificationContent()
-        content.badge = {
-            if let nseContext = CurrentAppContext() as? NSEContext {
-                if !timeHasExpired {
-                    // If we have time, we might as well get the current up-to-date badge count
-                    let freshCount = databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) }
-                    return NSNumber(value: freshCount)
-                } else if let cachedBadgeCount = nseContext.desiredBadgeNumber.get() {
-                    // If we don't have time to get a fresh count, let's use the cached count stored in our context
-                    return NSNumber(value: cachedBadgeCount)
-                } else {
-                    // The context never set a badge count, let's leave things as-is:
-                    return nil
-                }
-            } else {
-                // We never set up an NSEContext. Let's leave things as-is:
-                owsFailDebug("Missing NSE context!")
-                return nil
-            }
-        }()
+        Self.nseDidComplete()
 
-        if DebugFlags.internalLogging {
-            logger.info("Invoking contentHandler, memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount).")
-        }
+        let content = UNMutableNotificationContent()
+        content.badge = badgeValue.map { NSNumber(value: $0) }
 
         if timeHasExpired {
             contentHandler(content)
@@ -265,7 +239,11 @@ class NotificationService: UNNotificationServiceExtension {
             logger.info("Message fetch completed.")
             SignalProxy.stopRelayServer()
             globalEnvironment.processingMessageCounter.decrementOrZero()
-            self?.completeSilently(logger: logger)
+            // If we're completing normally, try to update the badge on the app icon.
+            let badgeValue = Self.databaseStorage.read { tx in
+                InteractionFinder.unreadCountInAllThreads(transaction: tx.unwrapGrdbRead)
+            }
+            self?.completeSilently(badgeValue: badgeValue, logger: logger)
         }.catch(on: DispatchQueue.global()) { error in
             logger.error("Error: \(error)")
         }

@@ -44,10 +44,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageManager () <DatabaseChangeDelegate>
-
-@end
-
 #pragma mark -
 
 @implementation OWSMessageManager
@@ -62,69 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSingletonAssert();
 
-    if (CurrentAppContext().isMainApp) {
-        AppReadinessRunNowOrWhenAppWillBecomeReady(^{ [self startObserving]; });
-    }
-
     return self;
-}
-
-#pragma mark -
-
-- (void)startObserving
-{
-    [self.databaseStorage appendDatabaseChangeDelegate:self];
-
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(databaseDidCommitInteractionChange)
-               name:DatabaseChangeObserver.databaseDidCommitInteractionChangeNotification
-             object:nil];
-}
-
-- (void)databaseDidCommitInteractionChange
-{
-    OWSAssertIsOnMainThread();
-    OWSLogInfo(@"");
-
-    // Only the main app needs to update the badge count.
-    // When app is active, this will occur in response to database changes
-    // that affect interactions (see below).
-    // When app is not active, we should update badge count whenever
-    // changes to interactions are committed.
-    if (CurrentAppContext().isMainApp && !CurrentAppContext().isMainAppAndActive) {
-        [self updateApplicationBadgeCount];
-    }
-}
-
-#pragma mark - DatabaseChangeDelegate
-
-- (void)databaseChangesDidUpdateWithDatabaseChanges:(id<DatabaseChanges>)databaseChanges
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(AppReadiness.isAppReady);
-
-    if (!databaseChanges.didUpdateInteractions) {
-        return;
-    }
-
-    [self updateApplicationBadgeCount];
-}
-
-- (void)databaseChangesDidUpdateExternally
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(AppReadiness.isAppReady);
-
-    [self updateApplicationBadgeCount];
-}
-
-- (void)databaseChangesDidReset
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(AppReadiness.isAppReady);
-
-    [self updateApplicationBadgeCount];
 }
 
 #pragma mark - message handling

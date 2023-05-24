@@ -153,8 +153,6 @@ class MainAppContext: NSObject, AppContext {
         UIApplication.shared.isIdleTimerDisabled = shouldBeBlocking
     }
 
-    func setMainAppBadgeNumber(_ value: Int) { UIApplication.shared.applicationIconBadgeNumber = value }
-
     func frontmostViewController() -> UIViewController? { UIApplication.shared.frontmostViewControllerIgnoringAlerts }
 
     func openSystemSettings() { UIApplication.shared.openSystemSettings() }

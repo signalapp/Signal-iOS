@@ -61,14 +61,12 @@ class HomeTabBarController: UITabBarController {
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterForeground), name: .OWSApplicationWillEnterForeground, object: nil)
         applyTheme()
 
-        databaseStorage.appendDatabaseChangeDelegate(self)
-
         viewControllers = [chatListNavController, storiesNavController]
 
         chatListNavController.tabBarItem = chatListTabBarItem
         storiesNavController.tabBarItem = storiesTabBarItem
 
-        updateChatListBadge()
+        AppEnvironment.shared.badgeManager.addObserver(self)
         storyBadgeCountManager.beginObserving(observer: self)
 
         // We read directly from the database here, as the cache may not have been warmed by the time
@@ -101,14 +99,6 @@ class HomeTabBarController: UITabBarController {
             selectedTab = .chatList
             setTabBarHidden(true, animated: false)
         }
-    }
-
-    func updateChatListBadge() {
-        guard RemoteConfig.stories else { return }
-        let unreadMessageCount = databaseStorage.read { transaction in
-            InteractionFinder.unreadCountInAllThreads(transaction: transaction.unwrapGrdbRead)
-        }
-        chatListTabBarItem.badgeValue = unreadMessageCount > 0 ? "\(unreadMessageCount)" : nil
     }
 
     // MARK: - Hiding the tab bar
@@ -173,19 +163,9 @@ class HomeTabBarController: UITabBarController {
     }
 }
 
-extension HomeTabBarController: DatabaseChangeDelegate {
-    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        if databaseChanges.didUpdateInteractions || databaseChanges.didUpdateModel(collection: String(describing: ThreadAssociatedData.self)) {
-            updateChatListBadge()
-        }
-    }
-
-    func databaseChangesDidUpdateExternally() {
-        updateChatListBadge()
-    }
-
-    func databaseChangesDidReset() {
-        updateChatListBadge()
+extension HomeTabBarController: BadgeObserver {
+    func didUpdateBadgeValue(_ badgeManager: BadgeManager, badgeValue: UInt) {
+        chatListTabBarItem.badgeValue = badgeValue > 0 ? "\(badgeValue)" : nil
     }
 }
 

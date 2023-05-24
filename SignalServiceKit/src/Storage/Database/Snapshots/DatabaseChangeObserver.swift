@@ -39,15 +39,11 @@ func AssertHasDatabaseChangeObserverLock() {
 
 @objc
 public class DatabaseChangeObserver: NSObject {
-
-    @objc
-    public static let databaseDidCommitInteractionChangeNotification = Notification.Name("databaseDidCommitInteractionChangeNotification")
-
     public static let kMaxIncrementalRowChanges = 200
 
     private lazy var nonModelTables: Set<String> = Set([
-                                                        MediaGalleryRecord.databaseTableName,
-                                                        PendingReadReceiptRecord.databaseTableName
+        MediaGalleryRecord.databaseTableName,
+        PendingReadReceiptRecord.databaseTableName
     ])
 
     // We protect DatabaseChangeObserver state with an UnfairLock.
@@ -434,11 +430,6 @@ extension DatabaseChangeObserver: TransactionObserver {
                 Self.committedChangesLock.withLock {
                     self.committedChanges.setLastError(error)
                 }
-            }
-
-            let didModifyInteractions = pendingChangesToCommit.tableNames.contains(InteractionRecord.databaseTableName)
-            if didModifyInteractions {
-                NotificationCenter.default.postNotificationNameAsync(Self.databaseDidCommitInteractionChangeNotification, object: nil)
             }
 
             #if TESTABLE_BUILD

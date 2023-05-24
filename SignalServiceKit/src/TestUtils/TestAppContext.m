@@ -122,10 +122,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
 }
 
-- (void)setMainAppBadgeNumber:(NSInteger)value
-{
-}
-
 - (nullable UIViewController *)frontmostViewController
 {
     return nil;

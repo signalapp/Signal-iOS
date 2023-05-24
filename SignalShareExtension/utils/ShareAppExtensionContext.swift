@@ -141,10 +141,6 @@ extension ShareAppExtensionContext: AppContext {
         Logger.debug("Ignoring request to block sleep.")
     }
 
-    func setMainAppBadgeNumber(_ value: Int) {
-        owsFailBeta("")
-    }
-
     var statusBarHeight: CGFloat { 20 }
 
     func frontmostViewController() -> UIViewController? {

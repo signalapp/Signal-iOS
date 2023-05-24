@@ -95,13 +95,6 @@ class NSEContext: NSObject, AppContext {
 
     func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String) {}
 
-    // The NSE can't update UIApplication directly, so instead we cache our last desired badge number
-    // and use it to update the modified notification content
-    var desiredBadgeNumber: AtomicOptional<Int> = .init(nil)
-    func setMainAppBadgeNumber(_ value: Int) {
-        desiredBadgeNumber.set(value)
-    }
-
     func frontmostViewController() -> UIViewController? { nil }
     func openSystemSettings() {}
     func open(_ url: URL, completion: ((Bool) -> Void)? = nil) {}

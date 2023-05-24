@@ -75,28 +75,6 @@ extension OWSMessageManager {
         Self.pendingTasks.buildPendingTask(label: label)
     }
 
-    @objc
-    public func updateApplicationBadgeCount() {
-        let readUnreadCount: (SDSAnyReadTransaction) -> UInt = { transaction in
-            InteractionFinder.unreadCountInAllThreads(transaction: transaction.unwrapGrdbRead)
-        }
-
-        let fetchBadgeCount = { () -> Promise<UInt> in
-            // The main app gets to perform this synchronously
-            if CurrentAppContext().isMainApp {
-                return .value(self.databaseStorage.read(block: readUnreadCount))
-            } else {
-                return self.databaseStorage.read(.promise, readUnreadCount)
-            }
-        }
-
-        fetchBadgeCount().done {
-            CurrentAppContext().setMainAppBadgeNumber(Int($0))
-        }.catch { error in
-            owsFailDebug("Failed to update badge number: \(error)")
-        }
-    }
-
     /// Performs a limited amount of time sensitive processing before scheduling
     /// the remainder of message processing
     ///

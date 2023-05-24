@@ -125,10 +125,8 @@ class NotificationSettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didToggleIncludesMutedConversationsInBadgeCountSwitch(_ sender: UISwitch) {
-        let currentValue = databaseStorage.read { SSKPreferences.includeMutedThreadsInBadgeCount(transaction: $0) }
-        guard currentValue != sender.isOn else { return }
-        databaseStorage.write { SSKPreferences.setIncludeMutedThreadsInBadgeCount(sender.isOn, transaction: $0) }
-        messageManager.updateApplicationBadgeCount()
+        databaseStorage.write { tx in SSKPreferences.setIncludeMutedThreadsInBadgeCount(sender.isOn, transaction: tx) }
+        AppEnvironment.shared.badgeManager.invalidateBadgeValue()
     }
 
     @objc

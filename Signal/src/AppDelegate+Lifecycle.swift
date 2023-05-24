@@ -134,8 +134,9 @@ extension AppDelegate {
         AssertIsOnMainThread()
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            let oldBadgeValue = UIApplication.shared.applicationIconBadgeNumber
             AppEnvironment.shared.notificationPresenter.clearAllNotifications()
-            self.messageManager.updateApplicationBadgeCount()
+            UIApplication.shared.applicationIconBadgeNumber = oldBadgeValue
         }
     }
 }
