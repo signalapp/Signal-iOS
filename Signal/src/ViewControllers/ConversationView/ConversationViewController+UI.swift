@@ -6,6 +6,7 @@
 import Foundation
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 extension ConversationViewController {
     public func updateNavigationTitle() {
@@ -13,43 +14,22 @@ extension ConversationViewController {
 
         self.title = nil
 
-        var name: String?
-        var attributedName: NSAttributedString?
-        var icon: UIImage?
-        if let contactThread = thread as? TSContactThread {
-            if thread.isNoteToSelf {
-                name = MessageStrings.noteToSelf
-            } else {
-                name = contactsManager.displayName(for: contactThread.contactAddress)
-            }
+        // If the user is in the system contacts, show a badge
+        headerView.titleIcon = (
+            conversationViewModel.isSystemContact
+            ? UIImage(named: "contact-outline-16")?.withRenderingMode(.alwaysTemplate)
+            : nil
+        )
 
-            // If the user is in the system contacts, show a badge
-            let isSystemContact = databaseStorage.read { transaction in
-                contactsManagerImpl.isSystemContact(address: contactThread.contactAddress, transaction: transaction)
-            }
-            if isSystemContact {
-                icon = UIImage(named: "contact-outline-16")?.withRenderingMode(.alwaysTemplate)
-            }
-        } else if let groupThread = thread as? TSGroupThread {
-            name = groupThread.groupNameOrDefault
-        } else {
-            owsFailDebug("Invalid thread.")
+        let attributedName = NSAttributedString(
+            string: threadViewModel.name,
+            attributes: [
+                .foregroundColor: Theme.primaryTextColor
+            ]
+        )
+        if headerView.attributedTitle != attributedName {
+            headerView.attributedTitle = attributedName
         }
-
-        self.headerView.titleIcon = icon
-
-        if nil == attributedName,
-           let unattributedName = name {
-            attributedName = NSAttributedString(string: unattributedName,
-                                                attributes: [
-                                                    .foregroundColor: Theme.primaryTextColor
-                                                ])
-        }
-
-        if attributedName == headerView.attributedTitle {
-            return
-        }
-        headerView.attributedTitle = attributedName
     }
 
     public func createHeaderViews() {
@@ -179,23 +159,6 @@ extension ConversationViewController {
         }
     }
 
-    private func shouldShowVerifiedBadge(for thread: TSThread) -> Bool {
-        switch thread {
-        case let groupThread as TSGroupThread:
-            if groupThread.groupModel.groupMembers.isEmpty {
-                return false
-            }
-            return !Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId)
-
-        case let contactThread as TSContactThread:
-            return Self.identityManager.verificationState(for: contactThread.contactAddress) == .verified
-
-        default:
-            owsFailDebug("Showing conversation for unexpected thread type.")
-            return false
-        }
-    }
-
     public func updateNavigationBarSubtitleLabel() {
         AssertIsOnMainThread()
 
@@ -218,7 +181,7 @@ extension ConversationViewController {
 
         let isMuted = threadViewModel.isMuted
         let hasTimer = disappearingMessagesConfiguration.isEnabled
-        let isVerified = shouldShowVerifiedBadge(for: thread)
+        let isVerified = conversationViewModel.shouldShowVerifiedBadge
 
         if isMuted {
             subtitleText.appendTemplatedImage(named: "bell-disabled-outline-24", font: subtitleFont)

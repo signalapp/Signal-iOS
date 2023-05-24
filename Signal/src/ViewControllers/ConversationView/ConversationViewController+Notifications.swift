@@ -57,20 +57,24 @@ extension ConversationViewController {
     private func otherUsersProfileDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        if let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
-           address.isValid,
-           thread.recipientAddressesWithSneakyTransaction.contains(address) {
-            if thread is TSContactThread {
-                // update title with profile name
-                updateNavigationTitle()
-            }
+        guard
+            let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+            address.isValid,
+            thread.recipientAddressesWithSneakyTransaction.contains(address)
+        else {
+            return
+        }
 
-            // Reload all cells if this is a group conversation,
-            // since we may need to update the sender names on the messages.
-            // Use a DebounceEvent to de-bounce.
-            if isGroupConversation {
-                otherUsersProfileDidChangeEvent?.requestNotify()
-            }
+        if thread is TSContactThread {
+            // update title with profile name
+            enqueueReload()
+        }
+
+        // Reload all cells if this is a group conversation,
+        // since we may need to update the sender names on the messages.
+        // Use a DebounceEvent to de-bounce.
+        if isGroupConversation {
+            otherUsersProfileDidChangeEvent?.requestNotify()
         }
     }
 
@@ -104,7 +108,7 @@ extension ConversationViewController {
     private func identityStateDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        updateNavigationBarSubtitleLabel()
+        enqueueReload()
         ensureBannerState()
     }
 

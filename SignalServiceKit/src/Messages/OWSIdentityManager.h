@@ -69,7 +69,6 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
                  transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (OWSVerificationState)verificationStateForAddress:(SignalServiceAddress *)address;
-- (BOOL)groupContainsUnverifiedMember:(NSString *)threadUniqueID;
 - (OWSVerificationState)verificationStateForAddress:(SignalServiceAddress *)address
                                         transaction:(SDSAnyReadTransaction *)transaction;
 

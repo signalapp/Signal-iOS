@@ -149,9 +149,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         showMessageRequestDialogIfRequiredAsync()
 
-        if thread.isGroupThread {
-            updateNavigationTitle()
-        }
+        updateNavigationTitle()
 
         updateShouldHideCollectionViewContent(reloadIfClearingFlag: false)
 

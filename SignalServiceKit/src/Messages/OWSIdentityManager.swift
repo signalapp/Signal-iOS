@@ -94,9 +94,7 @@ extension OWSIdentityManager {
         return IdentityStore(identityManager: self, identityKeyPair: identityKeyPair.identityKeyPair)
     }
 
-    @objc
-    public func groupContainsUnverifiedMember(_ groupUniqueID: String,
-                                              transaction: SDSAnyReadTransaction) -> Bool {
+    public func groupContainsUnverifiedMember(_ groupUniqueID: String, transaction: SDSAnyReadTransaction) -> Bool {
         return OWSRecipientIdentity.groupContainsUnverifiedMember(groupUniqueID, transaction: transaction)
     }
 }

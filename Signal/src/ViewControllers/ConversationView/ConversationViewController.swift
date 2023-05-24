@@ -646,8 +646,6 @@ extension ConversationViewController: ContactsViewHelperObserver {
     public func contactsViewHelperDidUpdateContacts() {
         AssertIsOnMainThread()
 
-        self.updateNavigationTitle()
-        loadCoordinator.enqueueReload(canReuseInteractionModels: true,
-                                      canReuseComponentStates: false)
+        loadCoordinator.enqueueReload(canReuseInteractionModels: true, canReuseComponentStates: false)
     }
 }

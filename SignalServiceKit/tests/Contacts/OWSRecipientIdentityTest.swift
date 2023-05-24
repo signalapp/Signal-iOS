@@ -63,7 +63,9 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
     }
 
     func testNoneVerified() throws {
-        XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))
+        read { tx in
+            XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, transaction: tx))
+        }
     }
 
     func testAllVerified() throws {
@@ -75,7 +77,9 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
                 isUserInitiatedChange: true
             )
         }
-        XCTAssertFalse(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))
+        read { tx in
+            XCTAssertFalse(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, transaction: tx))
+        }
     }
 
     func testSomeVerified() throws {
@@ -86,7 +90,9 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
             address: SignalServiceAddress(recipient),
             isUserInitiatedChange: true
         )
-        XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))
+        read { tx in
+            XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, transaction: tx))
+        }
     }
 
     func testSomeNoLongerVerified() throws {
@@ -109,7 +115,9 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
                 isUserInitiatedChange: false
             )
         }
-        XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))
+        read { tx in
+            XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, transaction: tx))
+        }
 
         // Check that the list of no-longer-verified addresses is just Alice and Bob.
         read { transaction in
@@ -157,6 +165,8 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
                 isUserInitiatedChange: true
             )
         }
-        XCTAssertFalse(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId))
+        read { tx in
+            XCTAssertFalse(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, transaction: tx))
+        }
     }
 }

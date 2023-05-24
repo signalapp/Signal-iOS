@@ -338,15 +338,6 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     [self fireIdentityStateChangeNotificationAfterTransaction:transaction];
 }
 
-- (BOOL)groupContainsUnverifiedMember:(NSString *)threadUniqueID
-{
-    __block BOOL result = NO;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
-        result = [self groupContainsUnverifiedMember:threadUniqueID transaction:transaction];
-    }];
-    return result;
-}
-
 - (NSArray<SignalServiceAddress *> *)noLongerVerifiedAddressesInGroup:(NSString *)groupThreadID
                                                                 limit:(NSInteger)limit
                                                           transaction:(SDSAnyReadTransaction *)transaction
