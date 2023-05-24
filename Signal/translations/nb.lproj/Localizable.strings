@@ -5435,10 +5435,10 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Konfigurer profilen din";
 
 /* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal is unable to send an SMS code to your number due to an external failure.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal kan ikke sende SMS-koden til nummeret ditt på grunn av en ekstern feil.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal was unable to send an SMS code right now due to an external failure, please try again later.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal kunne ikke sende SMS-koden på grunn av en ekstern feil. Prøv igjen senere.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Du må registrere deg før du kan sende en melding.";

@@ -5435,10 +5435,10 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "إعداد الملف الشخصي";
 
 /* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal is unable to send an SMS code to your number due to an external failure.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "لم يتمكن Signal من إرسال رمز عبر رسالة قصيرة إلى هاتفك نظرًا لعطب خارجي.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal was unable to send an SMS code right now due to an external failure, please try again later.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "لم يتمكن Signal من إرسال رمز عبر رسالة قصيرة الآن نظرًا لعطب خارجي، يُرجى المحاولة مجددًا لاحقًا.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "يجب عليك التسجيل قبل أن تتمكن من إرسال رسالة.";

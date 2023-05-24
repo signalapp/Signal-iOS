@@ -5435,10 +5435,10 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "プロフィールの設定";
 
 /* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal is unable to send an SMS code to your number due to an external failure.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "外的な要因のため、Signal は SMS コードをお使いの電話番号に送信できません。";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal was unable to send an SMS code right now due to an external failure, please try again later.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "外的な要因のため Signal は SMS コードを送信できませんでした。後ほどもう一度お試しください。";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "メッセージを送信する前に登録が必要です。";

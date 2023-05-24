@@ -5435,10 +5435,10 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Thiết lập hồ sơ";
 
 /* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal is unable to send an SMS code to your number due to an external failure.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal không thể gửi mã SMS đến số của bạn do một lỗi từ bên ngoài.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal was unable to send an SMS code right now due to an external failure, please try again later.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal không thể gửi mã SMS ngay bây giờ do một lỗi từ bên ngoài, vui lòng thử lại sau.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Bạn cần đăng ký trước khi có thể gửi tin nhắn.";

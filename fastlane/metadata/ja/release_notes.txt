@@ -1,1 +1,1 @@
-• Quickly spot your favorites in the attachment selector. If you’ve given your heart to a picture or a video in the Photos app, that symbol of your love will now appear in Signal too.
+• 添付ファイルセレクターで、お気に入りの写真をすぐに見つけられます。写真アプリで写真や動画をお気に入りとして設定すると、Signal でもその設定が反映されます。

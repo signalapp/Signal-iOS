@@ -5435,10 +5435,10 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "設定你嘅個人資料";
 
 /* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal is unable to send an SMS code to your number due to an external failure.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "因為出現外部問題，Signal 傳送唔到 SMS 驗證碼畀你嘅電話號碼。";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal was unable to send an SMS code right now due to an external failure, please try again later.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "因為出現外部問題，Signal 傳送唔到 SMS 驗證碼畀你嘅電話號碼，請之後再試。";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "你需要註冊先可以傳送訊息。";
