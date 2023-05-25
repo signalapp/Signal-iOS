@@ -23,6 +23,7 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
 
     public static let databaseTableName = "model_SignalAccount"
     public static var recordType: UInt { SDSRecordType.signalAccount.rawValue }
+    public static var ftsIndexMode: TSFTSIndexMode { .always }
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
