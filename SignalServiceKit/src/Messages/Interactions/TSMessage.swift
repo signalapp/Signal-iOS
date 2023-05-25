@@ -168,6 +168,11 @@ public extension TSMessage {
         serverTimestamp: UInt64,
         transaction: SDSAnyWriteTransaction
     ) -> RemoteDeleteProcessingResult {
+        guard SDS.fitsInInt64(sentAtTimestamp) else {
+            owsFailDebug("Unable to delete a message with invalid sentAtTimestamp: \(sentAtTimestamp)")
+            return .invalidDelete
+        }
+
         if let threadUniqueId = threadUniqueId, let messageToDelete = InteractionFinder.findMessage(
             withTimestamp: sentAtTimestamp,
             threadId: threadUniqueId,
