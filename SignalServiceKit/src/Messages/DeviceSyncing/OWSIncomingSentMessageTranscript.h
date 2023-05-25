@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
                        serverTimestamp:(uint64_t)serverTimestamp
                            transaction:(SDSAnyWriteTransaction *)transaction;
 
-@property (nonatomic, readonly) SignalServiceAddress *recipientAddress;
+@property (nonatomic, readonly, nullable) SignalServiceAddress *recipientAddress;
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t dataMessageTimestamp;
 @property (nonatomic, readonly) uint64_t serverTimestamp;

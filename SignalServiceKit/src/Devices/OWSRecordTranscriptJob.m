@@ -43,6 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (transcript.isEndSessionMessage) {
+        if (!transcript.recipientAddress) {
+            OWSFailDebug(@"Missing recipient address for end session message!");
+            return;
+        }
+
         OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientAddress);
         SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
         [sessionStore archiveAllSessionsForAddress:transcript.recipientAddress transaction:transaction];

@@ -101,6 +101,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (sentProto.destinationAddress) {
         _recipientAddress = sentProto.destinationAddress;
+    } else {
+        OWSFailDebug(@"Neither a group ID nor recipient address found!");
+        return nil;
     }
 
     if (_groupId != nil) {
