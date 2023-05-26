@@ -43,8 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isExpirationTimerUpdate;
 @property (nonatomic, readonly) BOOL isEndSessionMessage;
 @property (nonatomic, readonly, nullable) NSData *groupId;
-@property (nonatomic, readonly) NSString *body;
-@property (nonatomic, readonly) MessageBodyRanges *bodyRanges;
+@property (nonatomic, readonly, nullable) NSString *body;
+@property (nonatomic, readonly, nullable) MessageBodyRanges *bodyRanges;
 @property (nonatomic, readonly) NSArray<SSKProtoAttachmentPointer *> *attachmentPointerProtos;
 @property (nonatomic, readonly, nullable) TSThread *thread;
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
