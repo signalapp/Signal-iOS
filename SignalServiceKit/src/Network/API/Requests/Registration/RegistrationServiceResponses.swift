@@ -198,6 +198,43 @@ public enum RegistrationServiceResponses {
         }
     }
 
+    // MARK: - SVR2 Auth Check
+
+    public enum SVR2AuthCheckResponseCodes: Int, UnknownEnumCodable {
+        /// Success. Response body has `SVR2AuthCheckResponse` object.
+        case success = 200
+        /// The server couldn't parse the set of credentials.
+        case malformedRequest = 422
+        /// The POST request body is not valid JSON.
+        case invalidJSON = 400
+        case unexpectedError = -1
+
+        static public var unknown: Self { .unexpectedError }
+    }
+
+    public struct SVR2AuthCheckResponse: Codable {
+        public let matches: [String: Result]
+
+        public enum Result: String, UnknownEnumCodable {
+            /// At most one credential will be marked as a `match` per request.
+            /// Clients should use this credential when re-registering the associated phone number.
+            case match
+            /// The provided credential is valid and should be retained by the client,
+            /// but cannot be used to re-register the provided number.
+            case notMatch = "not-match"
+            /// Indicates that the credential may not be used to re-register any phone number and should be discarded.
+            case invalid
+
+            // Server API explicitly says clients should treat unrecognized values as invalid.
+            static public var unknown: Self { return .invalid }
+        }
+
+        public func result(for credential: SVR2AuthCredential) -> Result? {
+            let key = "\(credential.credential.username):\(credential.credential.password)"
+            return matches[key]
+        }
+    }
+
     // MARK: - Account Creation/Change Number
 
     public enum AccountCreationResponseCodes: Int, UnknownEnumCodable {
@@ -305,18 +342,26 @@ public enum RegistrationServiceResponses {
         /// using the user's PIN.
         /// NOTE: this is NOT an SVR2 credential.
         public let kbsAuthCredential: KBSAuthCredential
+        /// A credential with which the client can talk to SVR2 server to
+        /// recover the SVR master key, and from it the reglock token,
+        /// using the user's PIN.
+        /// NOTE: this is NOT an KBS/SVR1 credential.
+        public let svr2AuthCredential: SVR2AuthCredential
 
         public enum CodingKeys: String, CodingKey {
             case timeRemainingMs = "timeRemaining"
             case kbsAuthCredential = "backupCredentials"
+            case svr2AuthCredential = "svr2Credentials"
         }
 
         public init(
             timeRemainingMs: Int,
-            kbsAuthCredential: KBSAuthCredential
+            kbsAuthCredential: KBSAuthCredential,
+            svr2AuthCredential: SVR2AuthCredential
         ) {
             self.timeRemainingMs = timeRemainingMs
             self.kbsAuthCredential = kbsAuthCredential
+            self.svr2AuthCredential = svr2AuthCredential
         }
 
         public init(from decoder: Decoder) throws {
@@ -324,12 +369,15 @@ public enum RegistrationServiceResponses {
             timeRemainingMs = try container.decode(Int.self, forKey: .timeRemainingMs)
             let credential = try container.decode(RemoteAttestation.Auth.self, forKey: .kbsAuthCredential)
             kbsAuthCredential = KBSAuthCredential(credential: credential)
+            let svr2Credential = try container.decode(RemoteAttestation.Auth.self, forKey: .svr2AuthCredential)
+            self.svr2AuthCredential = SVR2AuthCredential(credential: svr2Credential)
         }
 
         public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(timeRemainingMs, forKey: .timeRemainingMs)
             try container.encode(kbsAuthCredential.credential, forKey: .kbsAuthCredential)
+            try container.encode(svr2AuthCredential.credential, forKey: .svr2AuthCredential)
         }
     }
 

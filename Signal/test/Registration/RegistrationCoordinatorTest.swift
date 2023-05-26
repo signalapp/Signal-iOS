@@ -646,7 +646,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
                 bodyJson: RegistrationServiceResponses.RegistrationLockFailureResponse(
                     timeRemainingMs: 10,
-                    kbsAuthCredential: Stubs.svrAuthCredential
+                    kbsAuthCredential: Stubs.kbsAuthCredential,
+                    svr2AuthCredential: Stubs.svr2AuthCredential
                 )
             )
             mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
@@ -866,33 +867,61 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.setAllProfileInfo()
 
             // Put some auth credentials in storage.
-            let credentialCandidates: [SVRAuthCredential] = [
-                Stubs.svrAuthCredential,
-                SVRAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
-                SVRAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
-                SVRAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
+            // We should prefer svr2 credentials if available.
+            let shouldPreferSVR2 = FeatureFlags.mirrorSVR2 || FeatureFlags.exclusiveSVR2
+
+            let svr2CredentialCandidates: [SVR2AuthCredential] = [
+                Stubs.svr2AuthCredential,
+                SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
+                SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
+                SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
             ]
-            svrAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.credential.username).mapValues { $0.first! }
+            svrAuthCredentialStore.svr2Dict = Dictionary(grouping: svr2CredentialCandidates, by: \.credential.username).mapValues { $0.first! }
+
+            let kbsCredentialCandidates: [KBSAuthCredential] = [
+                Stubs.kbsAuthCredential,
+                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
+                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
+                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
+            ]
+            svrAuthCredentialStore.dict = Dictionary(grouping: kbsCredentialCandidates, by: \.credential.username).mapValues { $0.first! }
 
             // Get past the opening.
             goThroughOpeningHappyPath(expectedNextStep: .phoneNumberEntry(Stubs.phoneNumberEntryState(mode: mode)))
 
             // Give it a phone number, which should cause it to check the auth credentials.
             // Match the main auth credential.
-            let expectedKBSCheckRequest = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
-                e164: Stubs.e164,
-                credentials: credentialCandidates
-            )
-            mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
-                urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
-                statusCode: 200,
-                bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                    "\(Stubs.svrAuthCredential.credential.username):\(Stubs.svrAuthCredential.credential.password)": .match,
-                    "aaaa:abc": .notMatch,
-                    "zzzz:xyz": .invalid,
-                    "0000:123": .unknown
-                ])
-            ))
+            if shouldPreferSVR2 {
+                let expectedSVR2CheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
+                    e164: Stubs.e164,
+                    credentials: svr2CredentialCandidates
+                )
+                mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
+                    urlSuffix: expectedSVR2CheckRequest.url!.absoluteString,
+                    statusCode: 200,
+                    bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
+                        "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .match,
+                        "aaaa:abc": .notMatch,
+                        "zzzz:xyz": .invalid,
+                        "0000:123": .unknown
+                    ])
+                ))
+            } else {
+                let expectedKBSCheckRequest = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
+                    e164: Stubs.e164,
+                    credentials: kbsCredentialCandidates
+                )
+                mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
+                    urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
+                    statusCode: 200,
+                    bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
+                        "\(Stubs.kbsAuthCredential.credential.username):\(Stubs.kbsAuthCredential.credential.password)": .match,
+                        "aaaa:abc": .notMatch,
+                        "zzzz:xyz": .invalid,
+                        "0000:123": .unknown
+                    ])
+                ))
+            }
 
             let nextStep = coordinator.submitE164(Stubs.e164).value
 
@@ -900,11 +929,23 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // to recover the SVR master key.
             XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForSVRAuthCredentialPath(mode: self.mode)))
             // We should have wipted the invalid and unknown credentials.
-            let remainingCredentials = svrAuthCredentialStore.dict
-            XCTAssertNotNil(remainingCredentials[Stubs.svrAuthCredential.credential.username])
-            XCTAssertNotNil(remainingCredentials["aaaa"])
-            XCTAssertNil(remainingCredentials["zzzz"])
-            XCTAssertNil(remainingCredentials["0000"])
+            if shouldPreferSVR2 {
+                let remainingCredentials = svrAuthCredentialStore.svr2Dict
+                XCTAssertNotNil(remainingCredentials[Stubs.svr2AuthCredential.credential.username])
+                XCTAssertNotNil(remainingCredentials["aaaa"])
+                XCTAssertNil(remainingCredentials["zzzz"])
+                XCTAssertNil(remainingCredentials["0000"])
+                // KBS should be untouched.
+                XCTAssertNotNil(svrAuthCredentialStore.dict[Stubs.kbsAuthCredential.credential.username])
+            } else {
+                let remainingCredentials = svrAuthCredentialStore.dict
+                XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.credential.username])
+                XCTAssertNotNil(remainingCredentials["aaaa"])
+                XCTAssertNil(remainingCredentials["zzzz"])
+                XCTAssertNil(remainingCredentials["0000"])
+                // SVR2 should be untouched.
+                XCTAssertNotNil(svrAuthCredentialStore.svr2Dict[Stubs.svr2AuthCredential.credential.username])
+            }
 
             scheduler.stop()
             scheduler.adjustTime(to: 0)
@@ -917,7 +958,11 @@ public class RegistrationCoordinatorTest: XCTestCase {
             svr.restoreKeysAndBackupMock = { pin, authMethod in
                 XCTAssertEqual(self.scheduler.currentTime, 0)
                 XCTAssertEqual(pin, Stubs.pinCode)
-                XCTAssertEqual(authMethod, .svrAuth(Stubs.svrAuthCredential, backup: nil))
+                if shouldPreferSVR2 {
+                    XCTAssertEqual(authMethod, .svrAuth(.svr2Only(Stubs.svr2AuthCredential), backup: nil))
+                } else {
+                    XCTAssertEqual(authMethod, .svrAuth(.kbsOnly(Stubs.kbsAuthCredential), backup: nil))
+                }
                 self.svr.hasMasterKey = true
                 return self.scheduler.guarantee(resolvingWith: .success, atTime: 1)
             }
@@ -1025,11 +1070,11 @@ public class RegistrationCoordinatorTest: XCTestCase {
             setupDefaultAccountAttributes()
 
             // Put some auth credentials in storage.
-            let credentialCandidates: [SVRAuthCredential] = [
-                Stubs.svrAuthCredential,
-                SVRAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
-                SVRAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
-                SVRAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
+            let credentialCandidates: [KBSAuthCredential] = [
+                Stubs.kbsAuthCredential,
+                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
+                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "zzzz", password: "xyz")),
+                KBSAuthCredential(credential: RemoteAttestation.Auth(username: "0000", password: "123"))
             ]
             svrAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.credential.username).mapValues { $0.first! }
 
@@ -1052,7 +1097,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
                     statusCode: 200,
                     bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                        "\(Stubs.svrAuthCredential.credential.username):\(Stubs.svrAuthCredential.credential.password)": .notMatch,
+                        "\(Stubs.kbsAuthCredential.credential.username):\(Stubs.kbsAuthCredential.credential.password)": .notMatch,
                         "aaaa:abc": .notMatch,
                         "zzzz:xyz": .invalid,
                         "0000:123": .unknown
@@ -1096,7 +1141,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // We should have wipted the invalid and unknown credentials.
             let remainingCredentials = svrAuthCredentialStore.dict
-            XCTAssertNotNil(remainingCredentials[Stubs.svrAuthCredential.credential.username])
+            XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.credential.username])
             XCTAssertNotNil(remainingCredentials["aaaa"])
             XCTAssertNil(remainingCredentials["zzzz"])
             XCTAssertNil(remainingCredentials["0000"])
@@ -1112,8 +1157,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
             setupDefaultAccountAttributes()
 
             // Put some auth credentials in storage.
-            let credentialCandidates: [SVRAuthCredential] = [
-                Stubs.svrAuthCredential
+            let credentialCandidates: [KBSAuthCredential] = [
+                Stubs.kbsAuthCredential
             ]
             svrAuthCredentialStore.dict = Dictionary(grouping: credentialCandidates, by: \.credential.username).mapValues { $0.first! }
 
@@ -1139,7 +1184,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
                     statusCode: 200,
                     bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                        "\(Stubs.svrAuthCredential.credential.username):\(Stubs.svrAuthCredential.credential.password)": .notMatch
+                        "\(Stubs.kbsAuthCredential.credential.username):\(Stubs.kbsAuthCredential.credential.password)": .notMatch
                     ])
                 ),
                 atTime: 2,
@@ -1180,7 +1225,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // We should have wiped the invalid and unknown credentials.
             let remainingCredentials = svrAuthCredentialStore.dict
-            XCTAssertNotNil(remainingCredentials[Stubs.svrAuthCredential.credential.username])
+            XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.credential.username])
 
             // Now change the phone number; this should take us back to phone number entry.
             nextStep = coordinator.requestChangeE164()
@@ -1200,7 +1245,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
                     statusCode: 200,
                     bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                        "\(Stubs.svrAuthCredential.credential.username):\(Stubs.svrAuthCredential.credential.password)": .match
+                        "\(Stubs.kbsAuthCredential.credential.username):\(Stubs.kbsAuthCredential.credential.password)": .match
                     ])
                 ),
                 atTime: 5,
@@ -2765,6 +2810,52 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
     // TODO[Registration]: test the profile setup steps.
 
+    // MARK: - Persisted State backwards compatibility
+
+    typealias ReglockState = RegistrationCoordinatorImpl.PersistedState.SessionState.ReglockState
+
+    public func testPersistedState_SVRCredentialCompat() throws {
+        let reglockExpirationDate = Date(timeIntervalSince1970: 10000)
+        let decoder = JSONDecoder()
+
+        // Serialized ReglockState.none
+        let reglockStateNoneData = "7b226e6f6e65223a7b7d7d"
+        XCTAssertEqual(
+            ReglockState.none,
+            try decoder.decode(ReglockState.self, from: Data.data(fromHex: reglockStateNoneData)!)
+        )
+
+        // Serialized ReglockState.reglocked(
+        //     credential: KBSAuthCredential(credential: RemoteAttestation.Auth(username: "abcd", password: "xyz"),
+        //     expirationDate: reglockExpirationDate
+        // )
+        let reglockStateReglockedData = "7b227265676c6f636b6564223a7b2265787069726174696f6e44617465223a2d3937383239373230302c2263726564656e7469616c223a7b2263726564656e7469616c223a7b22757365726e616d65223a2261626364222c2270617373776f7264223a2278797a227d7d7d7d"
+        XCTAssertEqual(
+            ReglockState.reglocked(credential: .init(kbs: Stubs.kbsAuthCredential, svr2: nil), expirationDate: reglockExpirationDate),
+            try decoder.decode(ReglockState.self, from: Data.data(fromHex: reglockStateReglockedData)!)
+        )
+
+        // Serialized ReglockState.reglocked(
+        //     credential: ReglockState.SVRAuthCredential(
+        //         kbs: KBSAuthCredential(credential: RemoteAttestation.Auth(username: "abcd", password: "xyz"),
+        //         svr2: SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "xxx", password: "yyy"))
+        //     ),
+        //     expirationDate: reglockExpirationDate
+        // )
+        let reglockStateReglockedSVR2Data = "7b227265676c6f636b6564223a7b2265787069726174696f6e44617465223a2d3937383239373230302c2263726564656e7469616c223a7b226b6273223a7b2263726564656e7469616c223a7b22757365726e616d65223a2261626364222c2270617373776f7264223a2278797a227d7d2c2273767232223a7b2263726564656e7469616c223a7b22757365726e616d65223a22787878222c2270617373776f7264223a22797979227d7d7d7d7d"
+        XCTAssertEqual(
+            ReglockState.reglocked(credential: .init(kbs: Stubs.kbsAuthCredential, svr2: Stubs.svr2AuthCredential), expirationDate: reglockExpirationDate),
+            try decoder.decode(ReglockState.self, from: Data.data(fromHex: reglockStateReglockedSVR2Data)!)
+        )
+
+        // Serialized ReglockState.waitingTimeout(expirationDate: reglockExpirationDate)
+        let reglockStateWaitingTimeoutData = "7b2277616974696e6754696d656f7574223a7b2265787069726174696f6e44617465223a2d3937383239373230307d7d"
+        XCTAssertEqual(
+            ReglockState.waitingTimeout(expirationDate: reglockExpirationDate),
+            try decoder.decode(ReglockState.self, from: Data.data(fromHex: reglockStateWaitingTimeoutData)!)
+        )
+    }
+
     // MARK: Happy Path Setups
 
     private func preservingSchedulerState(_ block: () -> Void) {
@@ -2922,7 +3013,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
         static let reglockData = Data(repeating: 7, count: 8)
         static var reglockToken: String { reglockData.hexadecimalString }
 
-        static let svrAuthCredential = SVRAuthCredential(credential: RemoteAttestation.Auth(username: "abcd", password: "xyz"))
+        static let kbsAuthCredential = KBSAuthCredential(credential: RemoteAttestation.Auth(username: "abcd", password: "xyz"))
+        static let svr2AuthCredential = SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "xxx", password: "yyy"))
 
         static let captchaToken = "captchaToken"
         static let apnsToken = "apnsToken"

@@ -196,6 +196,33 @@ public enum RegistrationRequestFactory {
         return result
     }
 
+    // MARK: - SVR2 Auth Check
+
+    public static func svr2AuthCredentialCheckRequest(
+        e164: E164,
+        credentials: [SVR2AuthCredential]
+    ) -> TSRequest {
+        owsAssertDebug(!credentials.isEmpty)
+
+        let urlPathComponents = URLPathComponents(
+            ["v2", "backup", "auth", "check"]
+        )
+        var urlComponents = URLComponents()
+        urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
+        let url = urlComponents.url!
+
+        let parameters: [String: Any] = [
+            "number": e164.stringValue,
+            "passwords": credentials.map {
+                "\($0.credential.username):\($0.credential.password)"
+            }
+        ]
+
+        let result = TSRequest(url: url, method: "POST", parameters: parameters)
+        result.shouldHaveAuthorizationHeaders = false
+        return result
+    }
+
     // MARK: - Account Creation/Change Number
 
     public enum VerificationMethod {

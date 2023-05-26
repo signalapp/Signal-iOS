@@ -9,7 +9,7 @@ import Foundation
 
 public class SVRAuthCredentialStorageMock: SVRAuthCredentialStorage {
 
-    public var dict: [String: SVRAuthCredential] {
+    public var dict: [String: KBSAuthCredential] {
         get { return kbsDict }
         set { kbsDict = newValue }
     }

@@ -62,6 +62,58 @@ extension RegistrationCoordinatorImpl {
             }
         }
 
+        enum SVR2AuthCheckResponse {
+            case success(RegistrationServiceResponses.SVR2AuthCheckResponse)
+            case networkError
+            case genericError
+        }
+
+        static func makeSVR2AuthCheckRequest(
+            e164: E164,
+            candidateCredentials: [SVR2AuthCredential],
+            signalService: OWSSignalServiceProtocol,
+            schedulers: Schedulers
+        ) -> Guarantee<SVR2AuthCheckResponse> {
+            let request = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
+                e164: e164,
+                credentials: candidateCredentials
+            )
+            return makeRequest(
+                request,
+                signalService: signalService,
+                schedulers: schedulers,
+                handler: self.handleSVR2AuthCheckResponse(statusCode:retryAfterHeader:bodyData:),
+                fallbackError: .genericError,
+                networkFailureError: .networkError
+            )
+        }
+
+        private static func handleSVR2AuthCheckResponse(
+            statusCode: Int,
+            retryAfterHeader: String?,
+            bodyData: Data?
+        ) -> SVR2AuthCheckResponse {
+            let statusCode = RegistrationServiceResponses.SVR2AuthCheckResponseCodes(rawValue: statusCode)
+            switch statusCode {
+            case .success:
+                guard let bodyData else {
+                    Logger.warn("Got empty KBS auth check response")
+                    return .genericError
+                }
+                guard let response = try? JSONDecoder().decode(RegistrationServiceResponses.SVR2AuthCheckResponse.self, from: bodyData) else {
+                    Logger.warn("Unable to parse KBS auth check response from response")
+                    return .genericError
+                }
+
+                return .success(response)
+            case .malformedRequest, .invalidJSON:
+                Logger.error("Malformed kbs auth check request")
+                return .genericError
+            case .none, .unexpectedError:
+                return .genericError
+            }
+        }
+
         static func makeCreateAccountRequest(
             _ method: RegistrationRequestFactory.VerificationMethod,
             e164: E164,

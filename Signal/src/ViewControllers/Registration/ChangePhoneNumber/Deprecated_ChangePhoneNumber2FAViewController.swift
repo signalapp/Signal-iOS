@@ -364,7 +364,14 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
         }
 
         return firstly {
-            self.context.svr.acquireRegistrationLockForNewNumber(with: pin, and: kbsAuth)
+            // The only way to get here is to have had an in progress change number from before
+            // registration updates launched. That was well before the launch of svr2. Therefore,
+            // when we eventually shut down KBS, we can consider this code path really old and
+            // unrecoverable; someone stuck in a change number for that long is doomed because
+            // the kbs they will try and access is dead anyway.
+            // In other words: when we kill .kbsOnly, don't bother to keep this around. Treat it
+            // as if the whole thing failed with no backups.
+            self.context.svr.acquireRegistrationLockForNewNumber(with: pin, and: .kbsOnly(kbsAuth))
         }.map(on: DispatchQueue.global()) { registrationLockToken -> String in
             self.changePhoneNumberController.registrationLockToken = registrationLockToken
             return registrationLockToken

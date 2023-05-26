@@ -137,7 +137,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
 
         return restoreKeys(
             pin: pin,
-            auth: .svrAuth(auth, backup: nil),
+            auth: auth.kbsAuthMethod,
             enclave: enclave,
             ignoreCachedToken: true
         ).map(on: schedulers.global()) { restoredKeys -> String in
@@ -152,25 +152,6 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         }
     }
 
-    /// Loads the users key, if any, from the KBS into the database.
-    public func restoreKeysAndBackup(with pin: String, and auth: SVRAuthCredential?) -> Promise<Void> {
-        return restoreKeysAndBackup(pin: pin, authMethod: auth.map { SVR.AuthMethod.svrAuth($0, backup: nil) } ?? SVR.AuthMethod.implicit)
-            .then(on: schedulers.sync) { result -> Promise<Void> in
-                switch result {
-                case .success:
-                    return .value(())
-                case .invalidPin(remainingAttempts: let remainingAttempts):
-                    throw SVR.SVRError.invalidPin(remainingAttempts: remainingAttempts)
-                case .backupMissing:
-                    throw SVR.SVRError.backupMissing
-                case .networkError(let error):
-                    throw error
-                case .genericError(let error):
-                    throw error
-                }
-            }
-    }
-
     public func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
         // When restoring your backup we want to check the current enclave first,
         // and then fallback to previous enclaves if the current enclave has no
@@ -178,12 +159,30 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         // to oldest enclave, so we start with the newest enclave and then progressively
         // check older enclaves.
         let enclavesToCheck = [TSConstants.keyBackupEnclave] + TSConstants.keyBackupPreviousEnclaves
+        guard let authMethod = authMethod.kbs else {
+            return .value(.genericError(SVR.SVRError.assertion))
+        }
         return restoreKeysAndBackup(pin: pin, auth: authMethod, enclavesToCheck: enclavesToCheck)
+    }
+
+    /// An auth credential is needed to talk to the KBS server.
+    /// This defines how we should get that auth credential
+    public indirect enum AuthMethod: Equatable {
+        /// Explicitly provide an auth credential to use directly with KBS.
+        /// note: if it fails, will fall back to the backup or implicit if unset.
+        case kbsAuth(KBSAuthCredential, backup: AuthMethod?)
+        /// Get an SVR auth credential from the chat server first with the
+        /// provided credentials, then use it to talk to the SVR server.
+        case chatServerAuth(AuthedAccount)
+        /// Use whatever SVR auth credential we have cached; if unavailable or
+        /// if invalid, falls back to getting a SVR auth credential from the chat server
+        /// with the chat server auth credentials we have cached.
+        case implicit
     }
 
     private func restoreKeysAndBackup(
         pin: String,
-        auth: SVR.AuthMethod,
+        auth: AuthMethod,
         enclavesToCheck: [KeyBackupEnclave]
     ) -> Guarantee<SVR.RestoreKeysResult> {
         guard let enclave = enclavesToCheck.first else {
@@ -211,7 +210,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
 
     private func restoreKeysAndBackup(
         pin: String,
-        auth: SVR.AuthMethod,
+        auth: AuthMethod,
         enclave: KeyBackupEnclave
     ) -> Guarantee<SVR.RestoreKeysResult> {
         Logger.info("Attempting KBS restore from enclave \(enclave.name)")
@@ -322,7 +321,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
 
     private func restoreKeys(
         pin: String,
-        auth: SVR.AuthMethod,
+        auth: AuthMethod,
         enclave: KeyBackupEnclave,
         ignoreCachedToken: Bool = false
     ) -> Promise<RestoredKeys> {
@@ -391,6 +390,9 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         authMethod: SVR.AuthMethod,
         rotateMasterKey: Bool
     ) -> Promise<Void> {
+        guard let authMethod = authMethod.kbs else {
+            return Promise.init(error: SVR.SVRError.assertion)
+        }
         return fetchBackupId(
             auth: authMethod,
             enclave: currentEnclave
@@ -807,7 +809,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     // MARK: - Requests
 
     private func enclaveRequest<RequestType: KBSRequestOption>(
-        auth: SVR.AuthMethod,
+        auth: AuthMethod,
         enclave: KeyBackupEnclave,
         ignoreCachedToken: Bool = false,
         requestOptionBuilder: @escaping (Token) throws -> RequestType
@@ -901,7 +903,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         accessKey: Data,
         encryptedMasterKey: Data,
         enclave: KeyBackupEnclave,
-        auth: SVR.AuthMethod
+        auth: AuthMethod
     ) -> Promise<KeyBackupProtoBackupResponse> {
         return enclaveRequest(auth: auth, enclave: enclave) { token -> KeyBackupProtoBackupRequest in
             guard let serviceId = Data.data(fromHex: enclave.serviceId) else {
@@ -933,7 +935,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     private func restoreKeyRequest(
         accessKey: Data,
         enclave: KeyBackupEnclave,
-        auth: SVR.AuthMethod,
+        auth: AuthMethod,
         ignoreCachedToken: Bool = false
     ) -> Promise<KeyBackupProtoRestoreResponse> {
         return enclaveRequest(auth: auth, enclave: enclave, ignoreCachedToken: ignoreCachedToken) { token -> KeyBackupProtoRestoreRequest in
@@ -962,7 +964,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     }
 
     private func deleteKeyRequest(
-        auth: SVR.AuthMethod,
+        auth: AuthMethod,
         enclave: KeyBackupEnclave
     ) -> Promise<KeyBackupProtoDeleteResponse> {
         return enclaveRequest(auth: auth, enclave: enclave) { token -> KeyBackupProtoDeleteRequest in
@@ -1110,7 +1112,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         }
     }
 
-    private func fetchBackupId(auth: SVR.AuthMethod, enclave: KeyBackupEnclave, ignoreCachedToken: Bool = false) -> Promise<Data> {
+    private func fetchBackupId(auth: AuthMethod, enclave: KeyBackupEnclave, ignoreCachedToken: Bool = false) -> Promise<Data> {
         if !ignoreCachedToken, let currentToken = nextToken(
             enclaveName: enclave.name
         ) { return Promise.value(currentToken.backupId) }
@@ -1172,12 +1174,12 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     /// Calls `RemoteAttestation.performForKeyBackup(auth: enclave:)` with either the provided credential,
     /// or any we have stored locally.
     /// Stores the resulting credential to disk for reuse in the future.
-    internal func performRemoteAttestation(auth: SVR.AuthMethod, enclave: KeyBackupEnclave) -> Promise<RemoteAttestation> {
+    internal func performRemoteAttestation(auth: AuthMethod, enclave: KeyBackupEnclave) -> Promise<RemoteAttestation> {
         let authMethod: RemoteAttestation.KeyBackupAuthMethod
         var backupAuthMethod: RemoteAttestation.KeyBackupAuthMethod?
         let implicitAuthMethod: RemoteAttestation.KeyBackupAuthMethod
-        var kbsAuth: SVRAuthCredential?
-        let cachedKbsAuth: SVRAuthCredential? = self.db.read(block: { credentialStorage.getAuthCredentialForCurrentUser($0) })
+        var kbsAuth: KBSAuthCredential?
+        let cachedKbsAuth: KBSAuthCredential? = self.db.read(block: { credentialStorage.getAuthCredentialForCurrentUser($0) })
 
         if let cachedKbsAuth {
             backupAuthMethod = .chatServerImplicitCredentials
@@ -1189,11 +1191,11 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         }
 
         switch auth {
-        case let .svrAuth(kBSAuthCredential, backup):
+        case let .kbsAuth(kBSAuthCredential, backup):
             authMethod = .kbsAuth(kBSAuthCredential.credential)
             kbsAuth = kBSAuthCredential
             switch backup {
-            case .svrAuth(let backupCredential, _):
+            case .kbsAuth(let backupCredential, _):
                 backupAuthMethod = .kbsAuth(backupCredential.credential)
             case let .chatServerAuth(authedAccount):
                 backupAuthMethod = .chatServer(authedAccount.chatServiceAuth)
@@ -1232,7 +1234,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             }
             .map(on: schedulers.sync) { [credentialStorage, db] attestation in
                 let credential = attestation.auth
-                db.write { credentialStorage.storeAuthCredentialForCurrentUsername(SVRAuthCredential(credential: credential), $0) }
+                db.write { credentialStorage.storeAuthCredentialForCurrentUsername(KBSAuthCredential(credential: credential), $0) }
                 return attestation
             }
     }
@@ -1278,16 +1280,47 @@ extension KeyBackupProtoDeleteRequest: KBSRequestOption {
     static var stringRepresentation: String { "delete" }
 }
 
-extension SVR.AuthMethod {
+extension KeyBackupServiceImpl.AuthMethod {
 
     var authedAccount: AuthedAccount {
         switch self {
-        case .svrAuth(_, let backup):
+        case .kbsAuth(_, let backup):
             return backup?.authedAccount ?? .implicit()
         case .chatServerAuth(let chatServiceAuth):
             return chatServiceAuth
         case .implicit:
             return .implicit()
         }
+    }
+}
+
+extension SVR.AuthMethod {
+
+    var kbs: KeyBackupServiceImpl.AuthMethod? {
+        switch self {
+        case .svrAuth(let someSVRAuthCredential, let backup):
+            switch someSVRAuthCredential {
+            case .kbsOnly(let kBSAuthCredential):
+                return .kbsAuth(kBSAuthCredential, backup: backup?.kbs)
+            case .svr2Only:
+                return backup?.kbs
+            case .both(let kBSAuthCredential, _):
+                return .kbsAuth(kBSAuthCredential, backup: backup?.kbs)
+            }
+        case .chatServerAuth(let authedAccount):
+            return .chatServerAuth(authedAccount)
+        case .implicit:
+            return .implicit
+        }
+    }
+}
+
+extension SVRAuthCredential {
+
+    var kbsAuthMethod: KeyBackupServiceImpl.AuthMethod {
+        guard let kbs else {
+            return .implicit
+        }
+        return .kbsAuth(kbs, backup: nil)
     }
 }

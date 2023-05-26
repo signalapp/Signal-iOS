@@ -15,4 +15,4 @@ import Foundation
 ///
 /// ~90 days later, we will stop talking to KBS entirely, and this should be changed
 /// to point to SVR2AuthCredential.
-public typealias SVRAuthCredential = KBSAuthCredential
+public typealias SVRAuthCredential = OrchestratingSVRAuthCredential
