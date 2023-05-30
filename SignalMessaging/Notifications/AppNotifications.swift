@@ -1131,16 +1131,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     private let unfairLock = UnfairLock()
     private var mostRecentNotifications = TruncatedList<UInt64>(maxLength: kAudioNotificationsThrottleCount)
 
-    private func requestSound(thread: TSThread) -> OWSSound? {
-        guard checkIfShouldPlaySound() else {
-            return nil
-        }
-
-        return OWSSounds.notificationSound(for: thread)
+    private func requestSound(thread: TSThread) -> Sound? {
+        checkIfShouldPlaySound() ? Sounds.notificationSoundForThread(thread) : nil
     }
 
-    private func requestGlobalSound() -> OWSSound? {
-        checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil
+    private func requestGlobalSound() -> Sound? {
+        checkIfShouldPlaySound() ? Sounds.globalNotificationSound : nil
     }
 
     // This method is thread-safe.

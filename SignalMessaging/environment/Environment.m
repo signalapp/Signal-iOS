@@ -46,7 +46,6 @@ static Environment *sharedEnvironment = nil;
 
 - (instancetype)initWithPreferences:(OWSPreferences *)preferences
          proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
-                             sounds:(OWSSounds *)sounds
                       avatarBuilder:(AvatarBuilder *)avatarBuilder
                         smJobQueues:(SignalMessagingJobQueues *)smJobQueues
 {
@@ -57,13 +56,11 @@ static Environment *sharedEnvironment = nil;
 
     OWSAssertDebug(preferences);
     OWSAssertDebug(proximityMonitoringManager);
-    OWSAssertDebug(sounds);
     OWSAssertDebug(avatarBuilder);
     OWSAssertDebug(smJobQueues);
 
     _preferencesRef = preferences;
     _proximityMonitoringManagerRef = proximityMonitoringManager;
-    _soundsRef = sounds;
     _avatarBuilderRef = avatarBuilder;
     _signalMessagingJobQueuesRef = smJobQueues;
 

@@ -34,12 +34,12 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
                 return OWSTableItem.newCell()
             }
 
-            let sound = OWSSounds.notificationSound(for: self.threadViewModel.threadRecord)
+            let sound = Sounds.notificationSoundForThread(self.threadViewModel.threadRecord)
             let cell = OWSTableItem.buildCellWithAccessoryLabel(
                 icon: .settingsMessageSound,
                 itemName: OWSLocalizedString("SETTINGS_ITEM_NOTIFICATION_SOUND",
                                             comment: "Label for settings view that allows user to change the notification sound."),
-                accessoryText: OWSSounds.displayName(forSound: sound)
+                accessoryText: sound.displayName
             )
             cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "notifications")
             return cell

@@ -171,7 +171,7 @@ class UserNotificationPresenter: Dependencies {
         threadIdentifier: String?,
         userInfo: [AnyHashable: Any],
         interaction: INInteraction?,
-        sound: OWSSound?,
+        sound: Sound?,
         replacingIdentifier: String? = nil,
         completion: NotificationActionCompletion?
     ) {
@@ -185,7 +185,7 @@ class UserNotificationPresenter: Dependencies {
         content.categoryIdentifier = category.identifier
         content.userInfo = userInfo
         let isAppActive = CurrentAppContext().isMainAppAndActive
-        if let sound = sound, sound != OWSStandardSound.none.rawValue {
+        if let sound, sound != .standard(.none) {
             Logger.info("[Notification Sounds] presenting notification with sound")
             content.sound = sound.notificationSound(isQuiet: isAppActive)
         } else {
@@ -490,14 +490,14 @@ public protocol StoryGroupReplier: UIViewController {
     var threadUniqueId: String? { get }
 }
 
-extension OWSSound {
+extension Sound {
     func notificationSound(isQuiet: Bool) -> UNNotificationSound {
-        guard let filename = OWSSounds.filename(forSound: self, quiet: isQuiet) else {
+        guard let filename = filename(quiet: isQuiet) else {
             owsFailDebug("[Notification Sounds] sound filename was unexpectedly nil")
             return UNNotificationSound.default
         }
         if
-            !FileManager.default.fileExists(atPath: (OWSSounds.soundsDirectory() as NSString).appendingPathComponent(filename))
+            !FileManager.default.fileExists(atPath: (Sounds.soundsDirectory as NSString).appendingPathComponent(filename))
             && !FileManager.default.fileExists(atPath: (Bundle.main.bundlePath as NSString).appendingPathComponent(filename))
         {
             Logger.info("[Notification Sounds] sound file doesn't exist!")

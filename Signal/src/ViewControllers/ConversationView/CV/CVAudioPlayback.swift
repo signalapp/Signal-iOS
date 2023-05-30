@@ -151,15 +151,15 @@ public class CVAudioPlayer: NSObject {
     public var audioPlaybackState: AudioPlaybackState = .stopped
     private var soundPlayer: AudioPlayer?
     private var soundComplete: (() -> Void)?
-    private func playStandardSound(_ sound: OWSStandardSound, completion: (() -> Void)? = nil) {
+    private func playStandardSound(_ sound: StandardSound, completion: (() -> Void)? = nil) {
         AssertIsOnMainThread()
 
-        if let soundPlayer = soundPlayer {
+        if let soundPlayer {
             soundPlayer.stop()
             soundComplete?()
         }
 
-        soundPlayer = OWSSounds.audioPlayer(forSound: sound.rawValue, audioBehavior: .audioMessagePlayback)
+        soundPlayer = Sounds.audioPlayer(forSound: .standard(sound), audioBehavior: .audioMessagePlayback)
         soundPlayer?.delegate = self
         soundPlayer?.play()
         soundComplete = completion

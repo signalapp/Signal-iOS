@@ -30,7 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPreferences:(OWSPreferences *)preferences
          proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
-                             sounds:(OWSSounds *)sounds
                       avatarBuilder:(AvatarBuilder *)avatarBuilder
                         smJobQueues:(SignalMessagingJobQueues *)smJobQueues;
 

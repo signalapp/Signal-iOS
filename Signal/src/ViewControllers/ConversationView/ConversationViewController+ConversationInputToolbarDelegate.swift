@@ -54,8 +54,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         loadCoordinator.clearUnreadMessagesIndicator()
         inputToolbar?.quotedReply = nil
 
-        if self.preferences.soundInForeground() {
-            let soundId = OWSSounds.systemSoundID(forSound: OWSStandardSound.messageSent.rawValue, quiet: true)
+        if self.preferences.soundInForeground(),
+           let soundId = Sounds.systemSoundIDForSound(.standard(.messageSent), quiet: true) {
             AudioServicesPlaySystemSound(soundId)
         }
         Self.typingIndicatorsImpl.didSendOutgoingMessage(inThread: thread)

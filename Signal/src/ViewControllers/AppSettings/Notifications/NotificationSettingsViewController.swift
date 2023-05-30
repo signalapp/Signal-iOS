@@ -34,7 +34,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 "SETTINGS_ITEM_NOTIFICATION_SOUND",
                 comment: "Label for settings view that allows user to change the notification sound."
             ),
-            detailText: OWSSounds.displayName(forSound: OWSSounds.globalNotificationSound()),
+            detailText: Sounds.globalNotificationSound.displayName,
             actionBlock: { [weak self] in
                 let vc = NotificationSettingsSoundViewController { self?.updateTableContents() }
                 self?.present(OWSNavigationController(rootViewController: vc), animated: true)

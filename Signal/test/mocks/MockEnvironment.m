@@ -6,7 +6,6 @@
 #import "MockEnvironment.h"
 #import "OWSWindowManager.h"
 #import <SignalMessaging/OWSPreferences.h>
-#import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalUI/ContactsViewHelper.h>
 #import <SignalUI/SignalUI-Swift.h>
@@ -26,14 +25,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // TODO: We should probably mock this out.
     OWSPreferences *preferences = [OWSPreferences new];
-    OWSSounds *sounds = [OWSSounds new];
     id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
     AvatarBuilder *avatarBuilder = [AvatarBuilder new];
     SignalMessagingJobQueues *smJobQueues = [SignalMessagingJobQueues new];
 
     self = [super initWithPreferences:preferences
            proximityMonitoringManager:proximityMonitoringManager
-                               sounds:sounds
                         avatarBuilder:avatarBuilder
                           smJobQueues:smJobQueues];
 

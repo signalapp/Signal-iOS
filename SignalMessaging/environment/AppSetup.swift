@@ -89,7 +89,6 @@ public class AppSetup {
 
         let preferences = OWSPreferences()
         let proximityMonitoringManager = OWSProximityMonitoringManagerImpl()
-        let sounds = OWSSounds()
         let avatarBuilder = AvatarBuilder()
         let smJobQueues = SignalMessagingJobQueues()
 
@@ -152,7 +151,6 @@ public class AppSetup {
         Environment.shared = Environment(
             preferences: preferences,
             proximityMonitoringManager: proximityMonitoringManager,
-            sounds: sounds,
             avatarBuilder: avatarBuilder,
             smJobQueues: smJobQueues
         )
@@ -225,6 +223,8 @@ public class AppSetup {
         NSKeyedUnarchiver.setClass(OWSUserProfile.self, forClassName: OWSUserProfile.collection())
         NSKeyedUnarchiver.setClass(OWSGroupInfoRequestMessage.self, forClassName: "OWSSyncGroupsRequestMessage")
         NSKeyedUnarchiver.setClass(TSGroupModelV2.self, forClassName: "TSGroupModelV2")
+
+        Sounds.performStartupTasks()
 
         return AppSetup.DatabaseContinuation(
             appContext: appContext,

@@ -3,16 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 
-extension OWSSounds {
+extension Sounds {
 
-    private static func shouldAudioPlayerLoop(forSound sound: OWSSound) -> Bool {
-        guard let sound = OWSStandardSound(rawValue: sound) else {
-            return false
-        }
-        switch sound {
+    private static func shouldAudioPlayerLoop(forSound sound: Sound) -> Bool {
+        guard case .standard(let standardSound) = sound else { return false }
+        switch standardSound {
         case .callConnecting, .callOutboundRinging, .defaultiOSIncomingRingtone:
             return true
         default:
@@ -20,8 +17,8 @@ extension OWSSounds {
         }
     }
 
-    public static func audioPlayer(forSound sound: OWSSound, audioBehavior: AudioBehavior) -> AudioPlayer? {
-        guard let soundUrl = OWSSounds.soundURL(forSound: sound, quiet: false) else {
+    public static func audioPlayer(forSound sound: Sound, audioBehavior: AudioBehavior) -> AudioPlayer? {
+        guard let soundUrl = sound.soundUrl(quiet: false) else {
             return nil
         }
         let player = AudioPlayer(mediaUrl: soundUrl, audioBehavior: audioBehavior)

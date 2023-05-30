@@ -10,17 +10,17 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
     private let thread: TSThread?
     private let completion: (() -> Void)?
 
-    private let originalNotificationSound: OWSSound
-    private lazy var notificationSound: OWSSound = originalNotificationSound
+    private let originalNotificationSound: Sound
+    private lazy var notificationSound: Sound = originalNotificationSound
 
     init(thread: TSThread? = nil, completion: (() -> Void)? = nil) {
         self.thread = thread
         self.completion = completion
 
-        if let thread = thread {
-            self.originalNotificationSound = OWSSounds.notificationSound(for: thread)
+        if let thread {
+            self.originalNotificationSound = Sounds.notificationSoundForThread(thread)
         } else {
-            self.originalNotificationSound = OWSSounds.globalNotificationSound()
+            self.originalNotificationSound = Sounds.globalNotificationSound
         }
 
         super.init()
@@ -73,18 +73,18 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
 
         let section = OWSTableSection()
 
-        for sound in OWSSounds.allNotificationSounds().map({ $0.uintValue }) {
+        for sound in Sounds.allNotificationSounds {
             let soundName: String
-            if sound == OWSStandardSound.note.rawValue {
+            if sound == .standard(.note) {
                 soundName = String(
                     format: OWSLocalizedString(
                         "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT",
                         comment: "Format string for the default 'Note' sound. Embeds the system {{sound name}}."
                     ),
-                    OWSSounds.displayName(forSound: sound)
+                    sound.displayName
                 )
             } else {
-                soundName = OWSSounds.displayName(forSound: sound)
+                soundName = sound.displayName
             }
 
             section.add(.init(
@@ -125,9 +125,9 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
     }
 
     private var player: AudioPlayer?
-    private func soundWasSelected(_ sound: OWSSound) {
+    private func soundWasSelected(_ sound: Sound) {
         player?.stop()
-        player = OWSSounds.audioPlayer(forSound: sound, audioBehavior: .playback)
+        player = Sounds.audioPlayer(forSound: sound, audioBehavior: .playback)
         player?.isLooping = false
         player?.play()
 
@@ -158,10 +158,10 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
 
     @objc
     private func didTapDone() {
-        if let thread = thread {
-            OWSSounds.setNotificationSound(notificationSound, for: thread)
+        if let thread {
+            Sounds.setNotificationSound(notificationSound, forThread: thread)
         } else {
-            OWSSounds.setGlobalNotificationSound(notificationSound)
+            Sounds.setGlobalNotificationSound(notificationSound)
         }
 
         stopPlayingAndDismiss()
@@ -170,7 +170,7 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
 
 extension NotificationSettingsSoundViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        OWSSounds.import(at: urls)
+        Sounds.importSoundsAtUrls(urls)
         updateTableContents()
     }
 }

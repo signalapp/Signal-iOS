@@ -359,12 +359,12 @@ class CallAudioService: NSObject, CallObserver {
         stopRinging()
     }
 
-    private func prepareToPlay(sound: OWSStandardSound) -> AudioPlayer? {
-        guard let newPlayer = OWSSounds.audioPlayer(forSound: sound.rawValue, audioBehavior: .call) else {
-            owsFailDebug("unable to build player for sound: \(OWSSounds.displayName(forSound: sound.rawValue))")
+    private func prepareToPlay(sound: StandardSound) -> AudioPlayer? {
+        guard let newPlayer = Sounds.audioPlayer(forSound: .standard(sound), audioBehavior: .call) else {
+            owsFailDebug("unable to build player for sound: \(sound.displayName)")
             return nil
         }
-        Logger.info("playing sound: \(OWSSounds.displayName(forSound: sound.rawValue))")
+        Logger.info("playing sound: \(sound.displayName)")
 
         // It's important to stop the current player **before** starting the new player. In the case that
         // we're playing the same sound, since the player is memoized on the sound instance, we'd otherwise
@@ -375,7 +375,7 @@ class CallAudioService: NSObject, CallObserver {
         return newPlayer
     }
 
-    private func play(sound: OWSStandardSound) {
+    private func play(sound: StandardSound) {
         guard let newPlayer = prepareToPlay(sound: sound) else { return }
         newPlayer.play()
     }

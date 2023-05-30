@@ -57,14 +57,6 @@ public extension NSObject {
         groupV2Updates as! GroupV2UpdatesImpl
     }
 
-    final var sounds: OWSSounds {
-        Environment.shared.soundsRef
-    }
-
-    static var sounds: OWSSounds {
-        Environment.shared.soundsRef
-    }
-
     var avatarBuilder: AvatarBuilder {
         Environment.shared.avatarBuilderRef
     }
@@ -141,14 +133,6 @@ public extension Dependencies {
         groupV2Updates as! GroupV2UpdatesImpl
     }
 
-    var sounds: OWSSounds {
-        Environment.shared.soundsRef
-    }
-
-    static var sounds: OWSSounds {
-        Environment.shared.soundsRef
-    }
-
     var avatarBuilder: AvatarBuilder {
         Environment.shared.avatarBuilderRef
     }
@@ -172,15 +156,6 @@ public extension Dependencies {
 public extension OWSProfileManager {
     static var shared: OWSProfileManager {
         SSKEnvironment.shared.profileManagerRef as! OWSProfileManager
-    }
-}
-
-// MARK: -
-
-@objc
-public extension OWSSounds {
-    static var shared: OWSSounds {
-        Environment.shared.soundsRef
     }
 }
 
