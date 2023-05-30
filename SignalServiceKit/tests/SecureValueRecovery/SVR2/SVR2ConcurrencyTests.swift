@@ -28,12 +28,6 @@ class SVR2ConcurrencyTests: XCTestCase {
         mockConnectionFactory = MockSgxWebsocketConnectionFactory()
 
         let mockClientWrapper = MockSVR2ClientWrapper()
-        mockClientWrapper.didHashPinAndEncryptMasterKey = { pin, _, masterKey in
-            return SVR2.PinHashResult(
-                encryptedMasterKey: masterKey,
-                accessKey: pin
-            )
-        }
 
         self.svr = SecureValueRecovery2Impl(
             clientWrapper: mockClientWrapper,

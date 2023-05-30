@@ -16,21 +16,9 @@ internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
     internal let mrenclave: MrEnclave
     private let authMethod: SVR.AuthMethod
 
-    private init(mrenclave: MrEnclave, authMethod: SVR.AuthMethod) {
+    init(mrenclave: MrEnclave = TSConstants.svr2Enclave, authMethod: SVR.AuthMethod) {
         self.mrenclave = mrenclave
         self.authMethod = authMethod
-    }
-
-    internal init(authMethod: SVR.AuthMethod) {
-        self.mrenclave = TSConstants.svr2Enclave
-        self.authMethod = authMethod
-    }
-
-    internal static func forPastEnclave(
-        _ enclave: MrEnclave,
-        authMethod: SVR.AuthMethod
-    ) -> SVR2WebsocketConfigurator {
-        return SVR2WebsocketConfigurator(mrenclave: enclave, authMethod: authMethod)
     }
 
     internal static var signalServiceType: SignalServiceType { .svr2 }
