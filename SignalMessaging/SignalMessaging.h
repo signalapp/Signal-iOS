@@ -22,4 +22,3 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/OWSSyncManager.h>
 #import <SignalMessaging/ThreadUtil.h>
-#import <SignalMessaging/VersionMigrations.h>

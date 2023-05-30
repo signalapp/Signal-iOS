@@ -276,8 +276,6 @@
 		346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129AE1FD1F5D900532771 /* SystemContactsFetcher.swift */; };
 		346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129B11FD1F7E800532771 /* OWSProfileManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129B21FD1F7E800532771 /* OWSProfileManager.m */; };
-		346129E21FD5C0BE00532771 /* VersionMigrations.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129E01FD5C0BE00532771 /* VersionMigrations.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		346129E31FD5C0BE00532771 /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129E11FD5C0BE00532771 /* VersionMigrations.m */; };
 		34612A061FD7238600532771 /* OWSSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 34612A041FD7238500532771 /* OWSSyncManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34612A071FD7238600532771 /* OWSSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34612A051FD7238500532771 /* OWSSyncManager.m */; };
 		34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463532E256EA525003C5428 /* ConversationViewTest.swift */; };
@@ -2632,8 +2630,6 @@
 		346129B21FD1F7E800532771 /* OWSProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProfileManager.m; sourceTree = "<group>"; };
 		346129BD1FD2068600532771 /* ThreadUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadUtil.h; sourceTree = "<group>"; };
 		346129BE1FD2068600532771 /* ThreadUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadUtil.m; sourceTree = "<group>"; };
-		346129E01FD5C0BE00532771 /* VersionMigrations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionMigrations.h; sourceTree = "<group>"; };
-		346129E11FD5C0BE00532771 /* VersionMigrations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VersionMigrations.m; sourceTree = "<group>"; };
 		34612A041FD7238500532771 /* OWSSyncManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSyncManager.h; sourceTree = "<group>"; };
 		34612A051FD7238500532771 /* OWSSyncManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncManager.m; sourceTree = "<group>"; };
 		3463532E256EA525003C5428 /* ConversationViewTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationViewTest.swift; sourceTree = "<group>"; };
@@ -5398,8 +5394,6 @@
 				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
 				34074F60203D0CBE004596AE /* OWSSounds.h */,
 				34074F5F203D0CBD004596AE /* OWSSounds.m */,
-				346129E01FD5C0BE00532771 /* VersionMigrations.h */,
-				346129E11FD5C0BE00532771 /* VersionMigrations.m */,
 			);
 			path = environment;
 			sourceTree = "<group>";
@@ -9615,7 +9609,6 @@
 				34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */,
 				453518961FC63DBF00210559 /* SignalMessaging.h in Headers */,
 				45194F901FD7200000333B2C /* ThreadUtil.h in Headers */,
-				346129E21FD5C0BE00532771 /* VersionMigrations.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11168,7 +11161,6 @@
 				D9C2D77A299B0B9800D79715 /* Usernames+BetterIdentifierChecker.swift in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsPresenter.swift in Sources */,
 				347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */,
-				346129E31FD5C0BE00532771 /* VersionMigrations.m in Sources */,
 				503AECCD29B2B88600642F66 /* VoiceMessageConstants.swift in Sources */,
 				3402AABF271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift in Sources */,
 			);

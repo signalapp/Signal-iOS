@@ -16,7 +16,6 @@
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging.h>
-#import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/CallKitIdStore.h>
 #import <SignalServiceKit/DarwinNotificationCenter.h>
