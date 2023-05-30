@@ -42,7 +42,7 @@ public extension ThreadUtil {
             logInProduction: true
         )
         BenchManager.benchAsync(title: "Send Message Milestone: Enqueue \(message.timestamp)") { benchmarkCompletion in
-            Self.enqueueSendAsyncWrite { writeTransaction in
+            enqueueSendAsyncWrite { writeTransaction in
                 outgoingMessagePreparer.insertMessage(linkPreviewDraft: linkPreviewDraft,
                                                       transaction: writeTransaction)
                 Self.sskJobQueues.messageSenderJobQueue.add(
