@@ -187,6 +187,30 @@ public protocol GroupsV2Swift: GroupsV2 {
 
 // MARK: -
 
+/// Represents a constructed group change, ready to be sent to the service.
+public struct GroupsV2BuiltGroupChange {
+    /// Represents what we should do with regards to messages updating the other
+    /// members of the group about this change, if it successfully applied on
+    /// the service.
+    public enum GroupUpdateMessageBehavior {
+        /// Send a group update message to all other group members.
+        case sendUpdateToOtherGroupMembers
+        /// Do not send any group update messages.
+        case sendNothing
+    }
+
+    public init(
+        proto: GroupsProtoGroupChangeActions,
+        groupUpdateMessageBehavior: GroupUpdateMessageBehavior
+    ) {
+        self.proto = proto
+        self.groupUpdateMessageBehavior = groupUpdateMessageBehavior
+    }
+
+    public let proto: GroupsProtoGroupChangeActions
+    public let groupUpdateMessageBehavior: GroupUpdateMessageBehavior
+}
+
 public protocol GroupsV2OutgoingChanges: AnyObject {
     var groupId: Data { get }
     var groupSecretParamsData: Data { get }
@@ -236,7 +260,7 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
         currentGroupModel: TSGroupModelV2,
         currentDisappearingMessageToken: DisappearingMessageToken,
         forceRefreshProfileKeyCredentials: Bool
-    ) -> Promise<GroupsProtoGroupChangeActions>
+    ) -> Promise<GroupsV2BuiltGroupChange>
 }
 
 // MARK: -

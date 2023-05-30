@@ -285,13 +285,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             return Promise(error: error)
         }
 
-        return firstly { () -> Promise<(GroupsProtoGroupChangeActions, HTTPResponse)> in
+        return firstly { () -> Promise<(GroupsV2BuiltGroupChange, HTTPResponse)> in
             self.buildGroupChangeProtoAndTryToUpdateGroupOnService(
                 groupId: groupId,
                 groupV2Params: groupV2Params,
                 changes: changes
             )
-        }.recover(on: DispatchQueue.global()) { error throws -> Promise<(GroupsProtoGroupChangeActions, HTTPResponse)> in
+        }.recover(on: DispatchQueue.global()) { error throws -> Promise<(GroupsV2BuiltGroupChange, HTTPResponse)> in
             switch error {
             case GroupsV2Error.conflictingChangeOnService:
                 // If we failed because a conflicting change has already been
@@ -325,11 +325,15 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             default:
                 throw error
             }
-        }.then(on: DispatchQueue.global()) { (groupChangeProto, response) throws -> Promise<TSGroupThread> in
+        }.then(on: DispatchQueue.global()) { (builtGroupChange, httpResponse) throws -> Promise<TSGroupThread> in
+            guard let responseBodyData = httpResponse.responseBodyData else {
+                throw OWSAssertionError("Missing data in response body!")
+            }
+
             return self.handleGroupUpdatedOnService(
-                response: response,
+                responseBodyData: responseBodyData,
+                builtGroupChange: builtGroupChange,
                 changes: changes,
-                groupChangeProto: groupChangeProto,
                 groupId: groupId,
                 groupV2Params: groupV2Params
             )
@@ -347,7 +351,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         changes: GroupsV2OutgoingChanges,
         shouldForceRefreshProfileKeyCredentials: Bool = false,
         forceFailOn400: Bool = false
-    ) -> Promise<(GroupsProtoGroupChangeActions, HTTPResponse)> {
+    ) -> Promise<(GroupsV2BuiltGroupChange, HTTPResponse)> {
         self.databaseStorage.read(.promise) { transaction throws -> (TSGroupThread, DisappearingMessageToken) in
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Thread does not exist.")
@@ -356,7 +360,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread, transaction: transaction)
 
             return (groupThread, dmConfiguration.asToken)
-        }.then(on: DispatchQueue.global()) { (groupThread, dmToken) throws -> Promise<GroupsProtoGroupChangeActions> in
+        }.then(on: DispatchQueue.global()) { (groupThread, dmToken) throws -> Promise<GroupsV2BuiltGroupChange> in
             guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                 throw OWSAssertionError("Invalid group model.")
             }
@@ -366,11 +370,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                 currentDisappearingMessageToken: dmToken,
                 forceRefreshProfileKeyCredentials: shouldForceRefreshProfileKeyCredentials
             )
-        }.then(on: DispatchQueue.global()) { groupChangeProto -> Promise<(GroupsProtoGroupChangeActions, HTTPResponse)> in
+        }.then(on: DispatchQueue.global()) { builtGroupChange -> Promise<(GroupsV2BuiltGroupChange, HTTPResponse)> in
             var behavior400: Behavior400 = .fail
             if
                 !forceFailOn400,
-                groupChangeProto.containsProfileKeyCredentials
+                builtGroupChange.proto.containsProfileKeyCredentials
             {
                 // If the proto we're submitting contains a profile key credential
                 // that's expired, we'll get back a generic 400. Consequently, if
@@ -382,7 +386,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
             let requestBuilder: RequestBuilder = { authCredential in
                 return .value(try StorageService.buildUpdateGroupRequest(
-                    groupChangeProto: groupChangeProto,
+                    groupChangeProto: builtGroupChange.proto,
                     groupV2Params: groupV2Params,
                     authCredential: authCredential,
                     groupInviteLinkPassword: nil
@@ -395,25 +399,24 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                 behavior400: behavior400,
                 behavior403: .fetchGroupUpdates,
                 behavior404: .fail
-            ).map(on: DispatchQueue.global()) { response -> (GroupsProtoGroupChangeActions, HTTPResponse) in
-                return (groupChangeProto, response)
+            ).map(on: DispatchQueue.global()) { response -> (GroupsV2BuiltGroupChange, HTTPResponse) in
+                return (builtGroupChange, response)
             }
         }
     }
 
     private func handleGroupUpdatedOnService(
-        response: HTTPResponse,
+        responseBodyData: Data,
+        builtGroupChange: GroupsV2BuiltGroupChange,
         changes: GroupsV2OutgoingChanges,
-        groupChangeProto: GroupsProtoGroupChangeActions,
         groupId: Data,
         groupV2Params: GroupV2Params
     ) -> Promise<TSGroupThread> {
         firstly { () -> Promise<UpdatedV2Group> in
-            guard let changeActionsProtoData = response.responseBodyData else {
-                throw OWSAssertionError("Invalid responseObject.")
-            }
-            let changeActionsProto = try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeActionsProtoData,
-                                                                                         ignoreSignature: true)
+            let changeActionsProto = try GroupsV2Protos.parseAndVerifyChangeActionsProto(
+                responseBodyData,
+                ignoreSignature: true
+            )
 
             // Collect avatar state from our change set so that we can
             // avoid downloading any avatars we just uploaded while
@@ -428,15 +431,27 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                                                          ignoreSignature: true,
                                                          groupV2Params: groupV2Params)
             }.map(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> UpdatedV2Group in
-                return UpdatedV2Group(groupThread: groupThread, changeActionsProtoData: changeActionsProtoData)
+                return UpdatedV2Group(
+                    groupThread: groupThread,
+                    changeActionsProtoData: responseBodyData
+                )
             }
         }.then(on: DispatchQueue.global()) { (updatedV2Group: UpdatedV2Group) -> Promise<TSGroupThread> in
+            switch builtGroupChange.groupUpdateMessageBehavior {
+            case .sendNothing:
+                return .value(updatedV2Group.groupThread)
+            case .sendUpdateToOtherGroupMembers:
+                break
+            }
+
             return firstly {
-                GroupManager.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
-                                                    changeActionsProtoData: updatedV2Group.changeActionsProtoData)
+                return GroupManager.sendGroupUpdateMessage(
+                    thread: updatedV2Group.groupThread,
+                    changeActionsProtoData: updatedV2Group.changeActionsProtoData
+                )
             }.map(on: DispatchQueue.global()) { (_) -> Void in
                 self.sendGroupUpdateMessageToRemovedUsers(groupThread: updatedV2Group.groupThread,
-                                                          groupChangeProto: groupChangeProto,
+                                                          groupChangeProto: builtGroupChange.proto,
                                                           changeActionsProtoData: updatedV2Group.changeActionsProtoData,
                                                           groupV2Params: groupV2Params)
             }.map(on: DispatchQueue.global()) { (_) -> TSGroupThread in

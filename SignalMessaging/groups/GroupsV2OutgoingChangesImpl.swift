@@ -242,7 +242,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         currentGroupModel: TSGroupModelV2,
         currentDisappearingMessageToken: DisappearingMessageToken,
         forceRefreshProfileKeyCredentials: Bool
-    ) -> Promise<GroupsProtoGroupChangeActions> {
+    ) -> Promise<GroupsV2BuiltGroupChange> {
         guard groupId == currentGroupModel.groupId else {
             return Promise(error: OWSAssertionError("Mismatched groupId."))
         }
@@ -264,7 +264,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
                 for: Array(newUserUuids),
                 forceRefresh: forceRefreshProfileKeyCredentials
             )
-        }.map(on: DispatchQueue.global()) { (profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions in
+        }.map(on: DispatchQueue.global()) { (profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap) throws -> GroupsV2BuiltGroupChange in
             try self.buildGroupChangeProto(
                 currentGroupModel: currentGroupModel,
                 currentDisappearingMessageToken: currentDisappearingMessageToken,
@@ -311,9 +311,11 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
     // Essentially, our strategy is to "apply any changes that
     // still make sense".  If no changes do, we throw
     // GroupsV2Error.redundantChange.
-    private func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
-                                       currentDisappearingMessageToken: DisappearingMessageToken,
-                                       profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions {
+    private func buildGroupChangeProto(
+        currentGroupModel: TSGroupModelV2,
+        currentDisappearingMessageToken: DisappearingMessageToken,
+        profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap
+    ) throws -> GroupsV2BuiltGroupChange {
         let groupV2Params = try currentGroupModel.groupV2Params()
 
         var actionsBuilder = GroupsProtoGroupChangeActions.builder()
@@ -333,6 +335,8 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         var remainingMemberOfAnyKindUuids = Set(currentGroupModel.groupMembership.allMembersOfAnyKind.compactMap { $0.uuid })
         var remainingFullMemberUuids = Set(currentGroupModel.groupMembership.fullMembers.compactMap { $0.uuid })
         var remainingAdminUuids = Set(currentGroupModel.groupMembership.fullMemberAdministrators.compactMap { $0.uuid })
+
+        var groupUpdateMessageBehavior: GroupsV2BuiltGroupChange.GroupUpdateMessageBehavior = .sendUpdateToOtherGroupMembers
 
         var didChange = false
 
@@ -729,6 +733,13 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
             if let invitedAtServiceId = currentGroupMembership.localUserInvitedAtServiceId(
                 localIdentifiers: localIdentifiers
             ) {
+                if invitedAtServiceId == localIdentifiers.pni {
+                    // If we are declining an invite to our PNI, we should not
+                    // send group update messages. Messages cannot come from our
+                    // PNI, so we would be leaking our ACI.
+                    groupUpdateMessageBehavior = .sendNothing
+                }
+
                 // Decline invite
                 var actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
                 let invitedAtUserId = try groupV2Params.userId(forUuid: invitedAtServiceId.uuidValue)
@@ -785,8 +796,10 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
             throw GroupsV2Error.redundantChange
         }
 
-        let actionsProto = try actionsBuilder.build()
         Logger.info("Updating group.")
-        return actionsProto
+        return GroupsV2BuiltGroupChange(
+            proto: try actionsBuilder.build(),
+            groupUpdateMessageBehavior: groupUpdateMessageBehavior
+        )
     }
 }
