@@ -119,8 +119,7 @@ public extension ConversationViewController {
         case .inputToolbar:
             bottomView = inputToolbar
         case .blockingGroupMigration:
-            let migrationView = BlockingGroupMigrationView(threadViewModel: threadViewModel,
-                                                           fromViewController: self)
+            let migrationView = BlockingGroupMigrationView(fromViewController: self)
             requestView = migrationView
             bottomView = migrationView
         case .announcementOnlyGroup:

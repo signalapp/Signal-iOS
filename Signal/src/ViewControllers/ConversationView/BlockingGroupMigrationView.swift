@@ -8,14 +8,9 @@ import SignalUI
 
 class BlockingGroupMigrationView: UIStackView {
 
-    private let thread: TSThread
-
     private weak var fromViewController: UIViewController?
 
-    init(threadViewModel: ThreadViewModel, fromViewController: UIViewController) {
-        let thread = threadViewModel.threadRecord
-        self.thread = thread
-        owsAssertDebug(thread as? TSGroupThread != nil)
+    init(fromViewController: UIViewController) {
         self.fromViewController = fromViewController
 
         super.init(frame: .zero)
@@ -42,15 +37,17 @@ class BlockingGroupMigrationView: UIStackView {
         addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
 
-        let format = OWSLocalizedString("GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT",
-                                       comment: "Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}.")
+        let format = OWSLocalizedString(
+            "LEGACY_GROUP_UNSUPPORTED_MESSAGE",
+            comment: "Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}."
+        )
         let learnMoreText = CommonStrings.learnMore
-        let text = String(format: format, learnMoreText)
-        let attributedString = NSMutableAttributedString(string: text)
-        attributedString.setAttributes([
-            .foregroundColor: Theme.accentBlueColor
-        ],
-        forSubstring: learnMoreText)
+
+        let attributedString = NSMutableAttributedString(string: String(format: format, learnMoreText))
+        attributedString.setAttributes(
+            [.foregroundColor: Theme.accentBlueColor],
+            forSubstring: learnMoreText
+        )
 
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
@@ -58,18 +55,10 @@ class BlockingGroupMigrationView: UIStackView {
         label.attributedText = attributedString
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapLearnMore)))
         addArrangedSubview(label)
-
-        let continueButton = OWSFlatButton.button(title: CommonStrings.continueButton,
-                                                 font: UIFont.dynamicTypeBody.semibold(),
-                                                 titleColor: .white,
-                                                 backgroundColor: .ows_accentBlue,
-                                                 target: self,
-                                                 selector: #selector(didTapContinueButton))
-        continueButton.autoSetHeightUsingFont()
-        addArrangedSubview(continueButton)
     }
 
     required init(coder: NSCoder) {
@@ -80,44 +69,16 @@ class BlockingGroupMigrationView: UIStackView {
         return .zero
     }
 
-    // MARK: -
-
     @objc
     public func didTapLearnMore() {
         guard let fromViewController = self.fromViewController else {
             owsFailDebug("Missing fromViewController.")
             return
         }
-        LegacyGroupViewLearnMoreView().present(fromViewController: fromViewController)
-    }
 
-    private func blockingMigrationInfo(groupThread: TSGroupThread) -> GroupsV2MigrationInfo? {
-        guard let groupThread = thread as? TSGroupThread,
-              groupThread.isGroupV1Thread else {
-            return nil
-        }
-
-        // migrationInfoForManualMigrationWithGroupThread uses
-        // a transaction, so we try to avoid calling it.
-        return GroupsV2Migration.migrationInfoForManualMigration(groupThread: groupThread)
-    }
-
-    @objc
-    private func didTapContinueButton(_ sender: UIButton) {
-        guard let groupThread = thread as? TSGroupThread else {
-            owsFailDebug("Invalid thread.")
-            return
-        }
-        guard let fromViewController = self.fromViewController else {
-            owsFailDebug("Missing fromViewController.")
-            return
-        }
-        guard let migrationInfo = blockingMigrationInfo(groupThread: groupThread) else {
-            owsFailDebug("Missing migrationInfo.")
-            return
-        }
-        let mode = GroupMigrationActionSheet.Mode.upgradeGroup(migrationInfo: migrationInfo)
-        let view = GroupMigrationActionSheet(groupThread: groupThread, mode: mode)
-        view.present(fromViewController: fromViewController)
+        fromViewController.presentFormSheet(
+            LegacyGroupLearnMoreViewController(mode: .explainUnsupportedLegacyGroups),
+            animated: true
+        )
     }
 }

@@ -171,9 +171,7 @@ public protocol CVComponentDelegate: AnyObject {
 
     func didTapFailedOutgoingMessage(_ message: TSOutgoingMessage)
 
-    func didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: TSInfoMessage,
-                                                      oldGroupModel: TSGroupModel,
-                                                      newGroupModel: TSGroupModel)
+    func didTapGroupMigrationLearnMore()
 
     func didTapGroupInviteLinkPromotion(groupModel: TSGroupModel)
 
@@ -225,11 +223,7 @@ struct CVMessageAction: Equatable {
         case didTapCorruptedMessage(errorMessage: TSErrorMessage)
         case didTapSessionRefreshMessage(errorMessage: TSErrorMessage)
         case didTapResendGroupUpdate(errorMessage: TSErrorMessage)
-        case didTapShowGroupMigrationLearnMoreActionSheet(
-            infoMessage: TSInfoMessage,
-            oldGroupModel: TSGroupModel,
-            newGroupModel: TSGroupModel
-        )
+        case didTapGroupMigrationLearnMore
         case didTapViewGroupDescription(groupModel: TSGroupModel?)
         case didTapGroupInviteLinkPromotion(groupModel: TSGroupModel)
         case didTapShowConversationSettingsAndShowMemberRequests
@@ -262,12 +256,8 @@ struct CVMessageAction: Equatable {
                 delegate.didTapSessionRefreshMessage(errorMessage)
             case .didTapResendGroupUpdate(let errorMessage):
                 delegate.didTapResendGroupUpdateForErrorMessage(errorMessage)
-            case .didTapShowGroupMigrationLearnMoreActionSheet(let infoMessage, let oldGroupModel, let newGroupModel):
-                delegate.didTapShowGroupMigrationLearnMoreActionSheet(
-                    infoMessage: infoMessage,
-                    oldGroupModel: oldGroupModel,
-                    newGroupModel: newGroupModel
-                )
+            case .didTapGroupMigrationLearnMore:
+                delegate.didTapGroupMigrationLearnMore()
             case .didTapViewGroupDescription(let groupModel):
                 delegate.didTapViewGroupDescription(groupModel: groupModel)
             case .didTapGroupInviteLinkPromotion(let groupModel):

@@ -1059,11 +1059,7 @@ extension CVComponentSystemMessage {
                     return Action(
                         title: CommonStrings.learnMore,
                         accessibilityIdentifier: "group_migration_learn_more",
-                        action: .didTapShowGroupMigrationLearnMoreActionSheet(
-                            infoMessage: infoMessage,
-                            oldGroupModel: oldGroupModel,
-                            newGroupModel: newGroupModel
-                        )
+                        action: .didTapGroupMigrationLearnMore
                     )
                 case .groupDescriptionUpdated:
                     return Action(

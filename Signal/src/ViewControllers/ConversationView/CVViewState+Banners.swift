@@ -175,14 +175,6 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
 
 public extension CVViewState {
 
-    /// The first time this banner is hidden will snooze it for 3 days, and
-    /// the second time will snooze it forever.
-    private static let isDroppedGroupMembersBannerHiding = BannerHiding(
-        identifier: "BannerHiding_droppedGroupMembers",
-        hideDuration: 3 * kDayInterval,
-        hideForeverAfterNumberOfHides: 2
-    )
-
     /// This banner will snooze for 1 week after each hiding, and is
     /// responsive to changes in pending member request state.
     private static let isPendingMemberRequestsBannerHiding = PendingMemberRequestsBannerHiding(
@@ -196,14 +188,6 @@ public extension CVViewState {
         identifier: "BannerHiding_messageRequestNameCollision",
         hideDuration: kHourInterval
     )
-
-    func shouldShowDroppedGroupMembersBanner(transaction: SDSAnyReadTransaction) -> Bool {
-        !Self.isDroppedGroupMembersBannerHiding.isHidden(threadUniqueId: threadUniqueId, transaction: transaction)
-    }
-
-    func hideDroppedGroupMembersBanner(transaction: SDSAnyWriteTransaction) {
-        Self.isDroppedGroupMembersBannerHiding.hide(threadUniqueId: threadUniqueId, transaction: transaction)
-    }
 
     func shouldShowPendingMemberRequestsBanner(
         currentPendingMembers: some Sequence<SignalServiceAddress>,

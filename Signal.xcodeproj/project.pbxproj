@@ -166,7 +166,6 @@
 		3402AAB4271D9E180084CBAE /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95519271B510400B05242 /* VideoPlayerView.swift */; };
 		3402AAB6271D9E180084CBAE /* ImageEditorCropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95556271B510400B05242 /* ImageEditorCropViewController.swift */; };
 		3402AABF271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402AABE271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift */; };
-		3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */; };
 		3405C06E25435048008B24EF /* ConversationViewController+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */; };
 		34067EAB2710D61A000407C3 /* DebugLogs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34067EAA2710D61A000407C3 /* DebugLogs.swift */; };
 		3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D31D25DBF70400885B14 /* RefreshEvent.swift */; };
@@ -1349,6 +1348,7 @@
 		D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */; };
 		D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */; };
 		D9C2D78729A80C9C00D79715 /* PniDistributionSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D78629A80C9C00D79715 /* PniDistributionSyncMessage.swift */; };
+		D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C30DDA2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift */; };
 		D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */; };
 		D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */; };
 		D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */; };
@@ -2518,7 +2518,6 @@
 		3402A9F7271D9C700084CBAE /* OWSQuotedReplyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQuotedReplyModel.m; sourceTree = "<group>"; };
 		3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ThreadUtil+SignalUI.swift"; sourceTree = "<group>"; };
 		3402AABE271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceMessageInterruptedDraftStore.swift; sourceTree = "<group>"; };
-		3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMigrationActionSheet.swift; sourceTree = "<group>"; };
 		3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Banners.swift"; sourceTree = "<group>"; };
 		34067EAA2710D61A000407C3 /* DebugLogs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugLogs.swift; sourceTree = "<group>"; };
 		3406D31D25DBF70400885B14 /* RefreshEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefreshEvent.swift; sourceTree = "<group>"; };
@@ -3929,6 +3928,7 @@
 		D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUsernameMegaphone.swift; sourceTree = "<group>"; };
 		D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameSelectionCoordinator.swift; sourceTree = "<group>"; };
 		D9C2D78629A80C9C00D79715 /* PniDistributionSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniDistributionSyncMessage.swift; sourceTree = "<group>"; };
+		D9C30DDA2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyGroupLearnMoreViewController.swift; sourceTree = "<group>"; };
 		D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgrade.swift; sourceTree = "<group>"; };
 		D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManifest.swift; sourceTree = "<group>"; };
 		D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+SSK.swift"; sourceTree = "<group>"; };
@@ -6068,7 +6068,7 @@
 				327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */,
 				340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */,
 				3490D57C25ADDC2900F5F96C /* GroupLinkPromotionActionSheet.swift */,
-				3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */,
+				D9C30DDA2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift */,
 				76C87FE028BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift */,
 				4542DF53208D40AC007B4E76 /* LoadingViewController.swift */,
 				88A9729322FB4D02004B4FBF /* LocationPicker.swift */,
@@ -11548,7 +11548,6 @@
 				34B14D8F24F41C4300CC3A9A /* GroupLinkQRCodeViewController.swift in Sources */,
 				34B14D8D24F02A9600CC3A9A /* GroupLinkViewController.swift in Sources */,
 				347B83FD24378DDF0019A52C /* GroupMemberRequestsAndInvitesViewController.swift in Sources */,
-				3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */,
 				889DFA10264EE76F00D03921 /* GroupNameViewController.swift in Sources */,
 				88BE44A82615451A00AE8E33 /* GroupPermissionsSettingsViewController.swift in Sources */,
 				880FB40428CC251A00FA1C10 /* GroupStorySettingsViewController.swift in Sources */,
@@ -11568,6 +11567,7 @@
 				32AC5CE7255B51E900829BD8 /* JoinGroupCallPill.swift in Sources */,
 				45C845AD291466C0005F6EA5 /* JournalingOrderedDictionary.swift in Sources */,
 				5045F44229E0DB7100058E5F /* LaunchJobs.swift in Sources */,
+				D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */,
 				3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */,
 				76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,

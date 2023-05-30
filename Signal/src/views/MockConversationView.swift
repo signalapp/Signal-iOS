@@ -406,9 +406,7 @@ extension MockConversationView: CVComponentDelegate {
 
     func didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {}
 
-    func didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: TSInfoMessage,
-                                                      oldGroupModel: TSGroupModel,
-                                                      newGroupModel: TSGroupModel) {}
+    func didTapGroupMigrationLearnMore() {}
 
     func didTapGroupInviteLinkPromotion(groupModel: TSGroupModel) {}
 

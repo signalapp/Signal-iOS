@@ -651,20 +651,12 @@ extension ConversationViewController: CVComponentDelegate {
         resendFailedOutgoingMessage(message)
     }
 
-    public func didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: TSInfoMessage,
-                                                             oldGroupModel: TSGroupModel,
-                                                             newGroupModel: TSGroupModel) {
+    public func didTapGroupMigrationLearnMore() {
         AssertIsOnMainThread()
-
-        guard let groupThread = thread as? TSGroupThread else {
-            owsFailDebug("Invalid thread.")
-            return
-        }
-
-        let actionSheet = GroupMigrationActionSheet.actionSheetForMigratedGroup(groupThread: groupThread,
-                                                                                oldGroupModel: oldGroupModel,
-                                                                                newGroupModel: newGroupModel)
-        actionSheet.present(fromViewController: self)
+        presentFormSheet(
+            LegacyGroupLearnMoreViewController(mode: .explainNewGroups),
+            animated: true
+        )
     }
 
     public func didTapGroupInviteLinkPromotion(groupModel: TSGroupModel) {

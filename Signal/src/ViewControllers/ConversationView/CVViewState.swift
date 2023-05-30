@@ -22,8 +22,6 @@ public class CVViewState: NSObject {
     public var inputToolbar: ConversationInputToolbar?
     public let headerView = ConversationHeaderView()
 
-    public var hasTriedToMigrateGroup = false
-
     public let inputAccessoryPlaceholder = InputAccessoryViewPlaceholder()
     public var bottomBar = UIView.container()
     public var bottomBarBottomConstraint: NSLayoutConstraint?

@@ -77,16 +77,6 @@ public extension ConversationViewController {
                                  accessibilityIdentifier: "pending_group_request_banner")
     }
 
-    // MARK: - Dropped Group Members Banner
-
-    func createDroppedGroupMembersBannerIfNecessary(viewState: CVViewState) -> UIView? {
-        guard let droppedMembersInfo = GroupMigrationActionSheet.buildDroppedMembersInfo(thread: thread) else {
-            return nil
-        }
-        return createDroppedGroupMembersBanner(viewState: viewState,
-                                               droppedMembersInfo: droppedMembersInfo)
-    }
-
     // MARK: - Name collision banners
 
     func createMessageRequestNameCollisionBannerIfNecessary(viewState: CVViewState) -> UIView? {
@@ -218,48 +208,6 @@ public extension ConversationViewController {
 // MARK: -
 
 fileprivate extension ConversationViewController {
-
-    typealias DroppedMembersInfo = GroupMigrationActionSheet.DroppedMembersInfo
-
-}
-
-// MARK: -
-
-fileprivate extension ConversationViewController {
-
-    func createDroppedGroupMembersBanner(viewState: CVViewState,
-                                         droppedMembersInfo: DroppedMembersInfo) -> UIView {
-        let titleFormat = OWSLocalizedString("GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d", tableName: "PluralAware",
-                                            comment: "Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}.")
-        let title = String.localizedStringWithFormat(titleFormat, droppedMembersInfo.addableMembers.count)
-
-        let notNowButton = OWSButton(title: CommonStrings.notNowButton) { [weak self] in
-            guard let self = self else { return }
-            AssertIsOnMainThread()
-            self.databaseStorage.write { viewState.hideDroppedGroupMembersBanner(transaction: $0) }
-            self.ensureBannerState()
-        }
-        notNowButton.titleLabel?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-
-        let addMembersButtonText = OWSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON",
-                                                     comment: "Label for the 'add members' button in the 're-add dropped groups members' banner.")
-        let addMembersButton = OWSButton(title: addMembersButtonText) { [weak self] in
-            self?.reAddDroppedGroupMembers(droppedMembersInfo: droppedMembersInfo)
-        }
-        addMembersButton.titleLabel?.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-
-        return Self.createBanner(title: title,
-                                 buttons: [notNowButton, addMembersButton],
-                                 accessibilityIdentifier: "dropped_group_members_banner")
-    }
-
-    func reAddDroppedGroupMembers(droppedMembersInfo: DroppedMembersInfo) {
-        let mode = GroupMigrationActionSheet.Mode.reAddDroppedMembers(members: droppedMembersInfo.addableMembers)
-        let view = GroupMigrationActionSheet(groupThread: droppedMembersInfo.groupThread, mode: mode)
-        view.present(fromViewController: self)
-    }
-
-    // MARK: -
 
     static func buildBannerLabel(title: String) -> UILabel {
         let label = UILabel()
@@ -574,16 +522,6 @@ extension ConversationViewController {
                     self?.showConversationSettingsAndShowMemberRequests()
                 }
 
-                banners.append(banner)
-            }
-
-            if
-                let banner = createDroppedGroupMembersBannerIfNecessary(viewState: viewState),
-                databaseStorage.read(block: {
-                    // We will skip this read if the above check fails, which
-                    // will be most of the time.
-                    viewState.shouldShowDroppedGroupMembersBanner(transaction: $0)
-                }) {
                 banners.append(banner)
             }
         }

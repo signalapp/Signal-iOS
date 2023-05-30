@@ -109,34 +109,6 @@ public extension GroupsV2Migration {
     private static var autoMigrationMode: GroupsV2MigrationMode {
         return .autoMigrationPolite
     }
-
-    static func autoMigrateThreadIfNecessary(thread: TSThread) {
-        AssertIsOnMainThread()
-
-        guard let groupThread = thread as? TSGroupThread else {
-            return
-        }
-        guard groupThread.isGroupV1Thread else {
-            return
-        }
-
-        let migrationMode = self.autoMigrationMode
-        firstly {
-            return tryToMigrate(groupThread: groupThread, migrationMode: migrationMode)
-        }.done(on: DispatchQueue.global()) { (_: TSGroupThread) in
-            Logger.verbose("")
-        }.catch(on: DispatchQueue.global()) { error in
-            if case GroupsV2Error.groupDoesNotExistOnService = error {
-                Logger.warn("Error: \(error)")
-            } else if case GroupsV2Error.localUserNotInGroup = error {
-                Logger.warn("Error: \(error)")
-            } else if case GroupsV2Error.groupCannotBeMigrated = error {
-                Logger.info("Error: \(error)")
-            } else {
-                owsFailDebug("Error: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: -

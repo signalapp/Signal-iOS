@@ -429,14 +429,6 @@ public final class ConversationViewController: OWSViewController {
         self.configureScrollDownButtons()
         inputToolbar?.viewDidAppear()
 
-        if !self.viewState.hasTriedToMigrateGroup {
-            self.viewState.hasTriedToMigrateGroup = true
-
-            if !DebugFlags.reduceLogChatter {
-                GroupsV2Migration.autoMigrateThreadIfNecessary(thread: thread)
-            }
-        }
-
         self.viewDidAppearDidComplete()
     }
 

@@ -113,7 +113,7 @@ struct ConversationHeaderBuilder: Dependencies {
         }
 
         if groupThread.isGroupV1Thread {
-            builder.addLegacyGroupView(groupThread: groupThread)
+            builder.addLegacyGroupView()
         }
 
         builder.addButtons()
@@ -476,16 +476,10 @@ struct ConversationHeaderBuilder: Dependencies {
         return label
     }
 
-    mutating func addLegacyGroupView(groupThread: TSGroupThread) {
+    mutating func addLegacyGroupView() {
         subviews.append(UIView.spacer(withHeight: 12))
 
-        let migrationInfo = GroupsV2Migration.migrationInfoForManualMigration(groupThread: groupThread,
-                                                                              transaction: transaction)
-        let legacyGroupView = LegacyGroupView(
-            groupThread: groupThread,
-            migrationInfo: migrationInfo,
-            viewController: delegate
-        )
+        let legacyGroupView = LegacyGroupView(viewController: delegate)
         legacyGroupView.configure()
         legacyGroupView.backgroundColor = delegate.tableViewController.cellBackgroundColor
         subviews.append(legacyGroupView)
