@@ -326,9 +326,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         case .last24Hours:
             timestampArgument = DateUtil.formatDateAsTime(timestamp)
         case .lastWeek:
-            timestampArgument = DateUtil.weekdayFormatter().string(from: timestamp)
+            timestampArgument = DateUtil.weekdayFormatter.string(from: timestamp)
         case .other:
-            timestampArgument = DateUtil.monthAndDayFormatter().string(from: timestamp)
+            timestampArgument = DateUtil.monthAndDayFormatter.string(from: timestamp)
         }
 
         // We could build these localized string keys by interpolating the two pieces,

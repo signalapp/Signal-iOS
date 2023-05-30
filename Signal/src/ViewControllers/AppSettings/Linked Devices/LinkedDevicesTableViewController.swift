@@ -473,7 +473,7 @@ private class DeviceTableViewCell: UITableViewCell {
         let linkedFormatString = OWSLocalizedString("DEVICE_LINKED_AT_LABEL", comment: "{{Short Date}} when device was linked.")
         linkedLabel.text = String(
             format: linkedFormatString,
-            DateUtil.dateFormatter().string(
+            DateUtil.dateFormatter.string(
                 from: displayableDevice.device.createdAt
             )
         )
@@ -489,7 +489,7 @@ private class DeviceTableViewCell: UITableViewCell {
             "DEVICE_LAST_ACTIVE_AT_LABEL",
             comment: "{{Short Date}} when device last communicated with Signal Server."
         )
-        lastSeenLabel.text = String(format: lastSeenFormatString, DateUtil.dateFormatter().string(from: displayedLastSeenAt))
+        lastSeenLabel.text = String(format: lastSeenFormatString, DateUtil.dateFormatter.string(from: displayedLastSeenAt))
     }
 
     private func configureLabelColors() {

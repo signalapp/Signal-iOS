@@ -5,9 +5,19 @@
 
 import Foundation
 
-extension DateUtil {
+public class DateUtil {
 
-    @objc
+    private init() {}
+
+    // MARK: - Formatters
+
+    public static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .none
+        formatter.dateStyle = .short
+        return formatter
+    }()
+
     public static let timeFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.timeStyle = .short
@@ -15,12 +25,55 @@ extension DateUtil {
         return formatter
     }()
 
+    public static let weekdayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("EEEE")
+        return formatter
+    }()
+
+    public static let monthAndDayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("M/d")
+        return formatter
+    }()
+
+    private static let shortDayOfWeekFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("E")
+        return formatter
+    }()
+
+    private static let otherYearMessageFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("MMM d, yyyy")
+        return formatter
+    }()
+
+    private static let thisYearMessageFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("MMM d")
+        return formatter
+    }()
+
+    private static let thisWeekMessageFormatterShort: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("E")
+        return formatter
+    }()
+
+    private static let thisWeekMessageFormatterLong: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("EEEE")
+        return formatter
+    }()
+
+    // MARK: Day Comparison
+
     // Returns the difference in days, ignoring hours, minutes, seconds.
     // If both dates are the same date, returns 0.
     // If firstDate is a day before secondDate, returns 1.
     //
     // Note: Assumes both dates use the "current" calendar.
-    @objc
     public static func daysFrom(firstDate: Date, toSecondDate secondDate: Date) -> Int {
         let calendar = Calendar.current
         guard let days = calendar.dateComponents([.day],
@@ -32,29 +85,88 @@ extension DateUtil {
         return days
     }
 
-    // Returns the difference in years, ignoring shorter units of time.
-    // If both dates fall in the same year, returns 0.
-    // If firstDate is from the year before secondDate, returns 1.
-    //
-    // Note: Assumes both dates use the "current" calendar.
-    public static func yearsFrom(firstDate: Date, toSecondDate secondDate: Date) -> Int {
-        let calendar = Calendar.current
-        let units: Set<Calendar.Component> = [.era, .year]
-        var components1 = calendar.dateComponents(units, from: firstDate)
-        var components2 = calendar.dateComponents(units, from: secondDate)
-        components1.hour = 12
-        components2.hour = 12
-        guard let date1 = calendar.date(from: components1),
-              let date2 = calendar.date(from: components2) else {
-            owsFailDebug("Invalid date.")
-            return 0
-        }
-        guard let result = calendar.dateComponents([.year], from: date1, to: date2).year else {
-            owsFailDebug("Missing result.")
-            return 0
-        }
-        return result
+    public static func dateIsOlderThanToday(_ date: Date, now: Date? = nil) -> Bool {
+        let dayDifference = daysFrom(firstDate: date, toSecondDate: now ?? Date())
+        return dayDifference > 0
     }
+
+    public static func dateIsOlderThanYesterday(_ date: Date, now: Date? = nil) -> Bool {
+        let dayDifference = daysFrom(firstDate: date, toSecondDate: now ?? Date())
+        return dayDifference > 1
+    }
+
+    public static func dateIsOlderThanOneWeek(_ date: Date, now: Date? = nil) -> Bool {
+        let dayDifference = daysFrom(firstDate: date, toSecondDate: now ?? Date())
+        return dayDifference > 6
+    }
+
+    public static func dateIsToday(_ date: Date, now: Date? = nil) -> Bool {
+        let dayDifference = daysFrom(firstDate: date, toSecondDate: now ?? Date())
+        return dayDifference == 0
+    }
+
+    public static func dateIsYesterday(_ date: Date, now: Date? = nil) -> Bool {
+        let dayDifference = daysFrom(firstDate: date, toSecondDate: now ?? Date())
+        return dayDifference == 1
+    }
+
+    public static func dateIsThisYear(_ date: Date, now: Date? = nil) -> Bool {
+        let calendar = Calendar.current
+        return calendar.component(.year, from: date) == calendar.component(.year, from: now ?? Date())
+    }
+
+    // MARK: Generic Date Formats
+
+    public static func formatPastTimestampRelativeToNow(_ pastTimestamp: UInt64) -> String {
+        let nowTimestamp = NSDate.ows_millisecondTimeStamp()
+        let isFutureTimestamp = pastTimestamp >= nowTimestamp
+
+        let pastDate = NSDate.ows_date(withMillisecondsSince1970: pastTimestamp)
+        let dateString: String = {
+            if isFutureTimestamp || dateIsToday(pastDate) {
+                return OWSLocalizedString("DATE_TODAY", comment: "The current day.")
+            } else if dateIsYesterday(pastDate) {
+                return OWSLocalizedString("DATE_YESTERDAY", comment: "The day before today.")
+            } else {
+                return dateFormatter.string(from: pastDate)
+            }
+        }()
+        return dateString.appending(" ").appending(timeFormatter.string(from: pastDate))
+    }
+
+    public static func formatTimestampShort(_ timestamp: UInt64) -> String {
+        return formatDateShort(NSDate.ows_date(withMillisecondsSince1970: timestamp))
+    }
+
+    public static func formatDateShort(_ date: Date) -> String {
+        let dayDifference = daysFrom(firstDate: date, toSecondDate: Date())
+        let dateIsOlderThanToday = dayDifference > 0
+        let dateIsOlderThanOneWeek = dayDifference > 6
+
+        let dateTimeString: String = {
+            if !dateIsThisYear(date) {
+                return dateFormatter.string(from: date)
+            } else if dateIsOlderThanOneWeek {
+                return monthAndDayFormatter.string(from: date)
+            } else if dateIsOlderThanToday {
+                return shortDayOfWeekFormatter.string(from: date)
+            } else {
+                return formatMessageTimestampForCVC(date.ows_millisecondsSince1970, shouldUseLongFormat: false)
+            }
+        }()
+
+        return dateTimeString
+    }
+
+    public static func formatTimestampAsTime(_ timestamp: UInt64) -> String {
+        return formatDateAsTime(NSDate.ows_date(withMillisecondsSince1970: timestamp))
+    }
+
+    public static func formatDateAsTime(_ date: Date) -> String {
+        return timeFormatter.string(from: date)
+    }
+
+    // MARK: Formatting for UI
 
     // We might receive a message "from the future" due to a bug or
     // malicious sender or a sender whose device time is misconfigured,
@@ -64,7 +176,6 @@ extension DateUtil {
         return date < nowDate ? date : nowDate
     }
 
-    @objc
     public static func formatMessageTimestampForCVC(_ timestamp: UInt64,
                                                     shouldUseLongFormat: Bool) -> String {
         let date = clampBeforeNow(Date(millisecondsSince1970: timestamp))

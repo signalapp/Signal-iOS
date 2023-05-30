@@ -59,7 +59,7 @@ extension OWSOrphanDataCleaner {
             #else
             let hasEnoughTimePassed = DateUtil.dateIsOlderThanOneWeek
             #endif
-            if hasEnoughTimePassed(lastCleaningDate) {
+            if hasEnoughTimePassed(lastCleaningDate, nil) {
                 Logger.info("Performing orphan data cleanup because enough time has passed")
                 return true
             }
