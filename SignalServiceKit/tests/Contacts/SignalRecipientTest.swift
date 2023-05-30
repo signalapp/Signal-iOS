@@ -165,7 +165,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let newAccount = SignalAccount.anyFetch(
                 uniqueId: oldAccount.uniqueId,
                 transaction: transaction
-            )!
+            )
 
             // We maintain the same thread, profile, interactions, etc.
             // after the phone number change. They are updated to reflect
@@ -185,9 +185,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertNotEqual(oldProfile.recipientPhoneNumber, newProfile.recipientPhoneNumber)
             XCTAssertEqual(newAddress, newProfile.address)
 
-            XCTAssertEqual(oldAccount.uniqueId, newAccount.uniqueId)
-            XCTAssertNotEqual(oldAccount.recipientPhoneNumber, newAccount.recipientPhoneNumber)
-            XCTAssertEqual(newAddress, newAccount.recipientAddress)
+            XCTAssertNil(newAccount)
         }
     }
 
@@ -267,9 +265,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertEqual(newAddress, newProfile.address)
             XCTAssertNotEqual(newAddress, oldProfile.address)
 
-            XCTAssertEqual(oldAccount.uniqueId, newAccount.uniqueId)
-            XCTAssertNil(newAccount.recipientPhoneNumber)
-            XCTAssertNotEqual(newAddress, newAccount.recipientAddress)
+            XCTAssertEqual(newAccount.uniqueId, oldAccount.uniqueId)
+            XCTAssertEqual(newAccount.recipientPhoneNumber, phoneNumber.stringValue)
+            XCTAssertEqual(newAccount.recipientUUID, newAci.uuidValue.uuidString)
         }
     }
 

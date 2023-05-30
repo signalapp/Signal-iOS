@@ -113,6 +113,7 @@ class RecipientMergerImpl: RecipientMerger {
     ) -> [RecipientMergeObserver] {
         [
             signalServiceAddressCache,
+            SignalAccountMergeObserver(),
             // The group member MergeObserver depends on `SignalServiceAddressCache`, so ensure that one's listed first.
             GroupMemberMergeObserverImpl(
                 threadStore: threadStore,

@@ -41,13 +41,13 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
     public let uniqueId: String
 
     @objc
-    public var contact: Contact?
+    private(set) public var contact: Contact?
     public let contactAvatarHash: Data?
     public let multipleAccountLabelText: String
     @objc
     public let recipientPhoneNumber: String?
     @objc
-    public let recipientUUID: String?
+    internal(set) public var recipientUUID: String?
 
     @objc
     public init(
