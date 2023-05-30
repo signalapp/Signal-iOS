@@ -1,1 +1,1 @@
-• We fixed a few obscure bugs in the registration process so that even more people can register for Signal without also registering their disappointment.
+• Opravili jsme několik chyb ukrytých v registračním procesu, takže je teď ještě jednodušší registrovat se do služby Signal, aniž byste zaregistrovali své zklamání.

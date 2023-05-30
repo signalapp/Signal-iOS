@@ -1,1 +1,1 @@
-• We fixed a few obscure bugs in the registration process so that even more people can register for Signal without also registering their disappointment.
+• 我们修复了注册过程中的一些小漏洞，让更多人可以轻松顺畅地注册 Signal 账户。

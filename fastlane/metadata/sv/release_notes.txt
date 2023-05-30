@@ -1,1 +1,1 @@
-• We fixed a few obscure bugs in the registration process so that even more people can register for Signal without also registering their disappointment.
+• Vi har fixat några obskyra buggar i registreringsprocessen. Nu kan ännu fler registrera sig för Signal utan att även registrera sin besvikelse.

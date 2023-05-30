@@ -1,1 +1,1 @@
-• We fixed a few obscure bugs in the registration process so that even more people can register for Signal without also registering their disappointment.
+• हमने पंजीकरण प्रक्रिया में कुछ अस्पष्ट बगों को ठीक कर दिया है, ताकि और भी लोग बिना किसी निराशा के Signal पर पंजीकरण कर सकें।

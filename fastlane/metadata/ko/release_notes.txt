@@ -1,1 +1,1 @@
-• We fixed a few obscure bugs in the registration process so that even more people can register for Signal without also registering their disappointment.
+• 원활한 가입 절차를 지원하기 위해 가입 절차의 몇 가지 버그를 수정했습니다.

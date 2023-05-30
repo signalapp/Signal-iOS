@@ -2123,7 +2123,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "未儲存的變更";
 
 /* Label for Edit History modal */
-"EDIT_HISTORY_LABEL" = "Edit History";
+"EDIT_HISTORY_LABEL" = "編輯歷史記錄";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "複製";
@@ -3749,7 +3749,7 @@
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "傳送時間已復制";
 
 /* Title for the 'edit history' section on the 'message details' view. */
-"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "View Edit History";
+"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "瀏覽編輯歷史紀錄";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "傳送自";

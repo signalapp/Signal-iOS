@@ -2123,7 +2123,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "સેવ ન કરેલ ફેરફારો";
 
 /* Label for Edit History modal */
-"EDIT_HISTORY_LABEL" = "Edit History";
+"EDIT_HISTORY_LABEL" = "ફેરફારોની હિસ્ટ્રી";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "કૉપિ";
@@ -3749,7 +3749,7 @@
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "મોકલવા માટેના સમયને કૉપિ કરવામાં આવેલ છે";
 
 /* Title for the 'edit history' section on the 'message details' view. */
-"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "View Edit History";
+"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "ફેરફારોની હિસ્ટ્રી જુઓ";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "તરફથી મોકલવામાં આવેલ છે";

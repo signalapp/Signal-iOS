@@ -1,1 +1,1 @@
-• We fixed a few obscure bugs in the registration process so that even more people can register for Signal without also registering their disappointment.
+• เรากำจัดเหล่าบั๊กตัวฉกาจที่มักเข้ามาป่วนในขั้นตอนการลงทะเบียน เพื่อช่วยให้ผู้ใช้สามารถลงทะเบียนใช้งาน Signal ได้อย่างสะดวกง่ายดาย ไม่มีปัญหาชวนหงุดหงิดใจ

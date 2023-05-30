@@ -1,1 +1,1 @@
-• We fixed a few obscure bugs in the registration process so that even more people can register for Signal without also registering their disappointment.
+• Wir haben ein paar seltsame Fehler im Anmeldeprozess behoben, damit sich noch mehr Leute bei Signal anmelden können, ohne uns auch noch ihre Enttäuschung zu melden.

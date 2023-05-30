@@ -1,1 +1,1 @@
-• We fixed a few obscure bugs in the registration process so that even more people can register for Signal without also registering their disappointment.
+• Kijavítottunk néhány rejtett hibát a regisztrációs folyamat során, hogy még többen regisztrálhassanak a Signalra anélkül, hogy a csalódottságukat is regisztrálnák.
