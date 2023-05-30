@@ -840,7 +840,7 @@ public class OWSWebSocket: NSObject {
 
         guard let webSocket = GlobalDependencies.webSocketFactory.buildSocket(
             request: request,
-            callbackQueue: OWSWebSocket.serialQueue
+            callbackScheduler: OWSWebSocket.serialQueue
         ) else {
             owsFailDebug("Missing webSocket.")
             return

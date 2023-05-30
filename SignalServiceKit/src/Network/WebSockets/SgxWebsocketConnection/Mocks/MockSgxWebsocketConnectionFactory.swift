@@ -23,10 +23,10 @@ public class MockSgxWebsocketConnectionFactory: SgxWebsocketConnectionFactory {
 
     public func connectAndPerformHandshake<Configurator: SgxWebsocketConfigurator>(
         configurator: Configurator,
-        on queue: DispatchQueue
+        on scheduler: Scheduler
     ) -> Promise<SgxWebsocketConnection<Configurator>> {
         let key = String(describing: Configurator.self)
-        return onConnectAndPerformHandshakeHandlers[key]!(configurator).map(on: SyncScheduler()) { $0 as! SgxWebsocketConnection<Configurator> }
+        return onConnectAndPerformHandshakeHandlers[key]!(configurator).map(on: scheduler) { $0 as! SgxWebsocketConnection<Configurator> }
     }
 }
 

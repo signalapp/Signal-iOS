@@ -30,7 +30,7 @@ extension SSKWebSocketState: CustomStringConvertible {
 
 public protocol SSKWebSocket: AnyObject {
 
-    init?(request: WebSocketRequest, signalService: OWSSignalServiceProtocol, callbackQueue: DispatchQueue)
+    init?(request: WebSocketRequest, signalService: OWSSignalServiceProtocol, callbackScheduler: Scheduler)
 
     var delegate: SSKWebSocketDelegate? { get set }
 
@@ -124,7 +124,7 @@ public struct WebSocketRequest {
 public protocol WebSocketFactory {
     var canBuildWebSocket: Bool { get }
 
-    func buildSocket(request: WebSocketRequest, callbackQueue: DispatchQueue) -> SSKWebSocket?
+    func buildSocket(request: WebSocketRequest, callbackScheduler: Scheduler) -> SSKWebSocket?
 }
 
 // MARK: -
@@ -136,7 +136,7 @@ public class WebSocketFactoryMock: NSObject, WebSocketFactory {
 
     public var canBuildWebSocket: Bool { false }
 
-    public func buildSocket(request: WebSocketRequest, callbackQueue: DispatchQueue) -> SSKWebSocket? {
+    public func buildSocket(request: WebSocketRequest, callbackScheduler: Scheduler) -> SSKWebSocket? {
         owsFailDebug("Cannot build websocket.")
         return nil
     }
@@ -156,11 +156,11 @@ public class WebSocketFactoryNative: NSObject, WebSocketFactory {
         }
     }
 
-    public func buildSocket(request: WebSocketRequest, callbackQueue: DispatchQueue) -> SSKWebSocket? {
+    public func buildSocket(request: WebSocketRequest, callbackScheduler: Scheduler) -> SSKWebSocket? {
         guard #available(iOS 13, *) else {
             return nil
         }
-        return SSKWebSocketNative(request: request, signalService: signalService, callbackQueue: callbackQueue)
+        return SSKWebSocketNative(request: request, signalService: signalService, callbackScheduler: callbackScheduler)
     }
 }
 
@@ -173,13 +173,13 @@ public class SSKWebSocketNative: SSKWebSocket {
     public let id = SSKWebSocketNative.idCounter.increment()
 
     private let requestUrl: URL
-    private let callbackQueue: DispatchQueue
+    private let callbackScheduler: Scheduler
     private let urlSession: OWSURLSessionProtocol
 
     public required init?(
         request: WebSocketRequest,
         signalService: OWSSignalServiceProtocol,
-        callbackQueue: DispatchQueue
+        callbackScheduler: Scheduler
     ) {
         let signalServiceInfo = request.signalService.signalServiceInfo()
 
@@ -202,7 +202,7 @@ public class SSKWebSocketNative: SSKWebSocket {
             configuration: configuration
         )
         self.requestUrl = urlRequest.url!
-        self.callbackQueue = callbackQueue
+        self.callbackScheduler = callbackScheduler
     }
 
     // MARK: - SSKWebSocket
@@ -252,7 +252,7 @@ public class SSKWebSocketNative: SSKWebSocket {
             isConnected = true
             hasEverConnected = true
 
-            callbackQueue.async {
+            callbackScheduler.async {
                 self.delegate?.websocketDidConnect(socket: self)
             }
         }
@@ -280,7 +280,7 @@ public class SSKWebSocketNative: SSKWebSocket {
         case .success(let message):
             switch message {
             case .data(let data):
-                callbackQueue.async {
+                callbackScheduler.async {
                     self.delegate?.websocket(self, didReceiveData: data)
                 }
             case .string:
@@ -408,7 +408,7 @@ public class SSKWebSocketNative: SSKWebSocket {
         }
         shouldReportError = false
 
-        callbackQueue.async {
+        callbackScheduler.async {
             Logger.warn("[\(self.id), context: \(context)] Socket error: \(error)")
             self.delegate?.websocketDidDisconnectOrFail(socket: self, error: error)
         }

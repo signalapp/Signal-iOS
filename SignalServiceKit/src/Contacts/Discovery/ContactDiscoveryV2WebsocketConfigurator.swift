@@ -10,6 +10,7 @@ internal class ContactDiscoveryV2WebsocketConfigurator: SgxWebsocketConfigurator
 
     internal typealias Request = CDSI_ClientRequest
     internal typealias Response = CDSI_ClientResponse
+    internal typealias Client = Cds2Client
 
     internal init() {}
 
@@ -29,7 +30,7 @@ internal class ContactDiscoveryV2WebsocketConfigurator: SgxWebsocketConfigurator
         mrenclave: MrEnclave,
         attestationMessage: Data,
         currentDate: Date
-    ) throws -> SgxClient {
+    ) throws -> Cds2Client {
         return try Cds2Client(
             mrenclave: mrenclave.dataValue,
             attestationMessage: attestationMessage,

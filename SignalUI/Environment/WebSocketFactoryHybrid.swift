@@ -14,14 +14,14 @@ public class WebSocketFactoryHybrid: WebSocketFactory, Dependencies {
 
     public var canBuildWebSocket: Bool { true }
 
-    public func buildSocket(request: WebSocketRequest, callbackQueue: DispatchQueue) -> SSKWebSocket? {
+    public func buildSocket(request: WebSocketRequest, callbackScheduler: Scheduler) -> SSKWebSocket? {
         let webSocketType: SSKWebSocket.Type
         if #available(iOS 13, *) {
             webSocketType = SSKWebSocketNative.self
         } else {
             webSocketType = SSKWebSocketStarScream.self
         }
-        return webSocketType.init(request: request, signalService: signalService, callbackQueue: callbackQueue)
+        return webSocketType.init(request: request, signalService: signalService, callbackScheduler: callbackScheduler)
     }
 }
 
@@ -41,7 +41,7 @@ class SSKWebSocketStarScream: SSKWebSocket {
     required init?(
         request: WebSocketRequest,
         signalService: OWSSignalServiceProtocol,
-        callbackQueue: DispatchQueue
+        callbackScheduler: Scheduler
     ) {
         let endpoint = signalService.buildUrlEndpoint(for: request.signalService.signalServiceInfo())
 
@@ -50,6 +50,10 @@ class SSKWebSocketStarScream: SSKWebSocket {
         }
 
         let socket = WebSocket(request: urlRequest)
+        // A compromise; Starscream.Websocket expects a DispatchQueue but we have
+        // a scheduler which, in practice, is always a DispatchQueue but in tests
+        // is not. This is going away once we drop iOS 12, anyway.
+        let callbackQueue = (callbackScheduler as? DispatchQueue) ?? .main
         socket.callbackQueue = callbackQueue
         socket.disableSSLCertValidation = true
         socket.socketSecurityLevel = StreamSocketSecurityLevel.tlSv1_2

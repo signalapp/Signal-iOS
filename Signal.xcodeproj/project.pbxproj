@@ -808,6 +808,7 @@
 		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
+		6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */; };
 		662ABF3329510F8300518D90 /* OutgoingCallEventSyncMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6640639A294D1F8D00997E0B /* OutgoingCallEventSyncMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44082A1567E4001F83E2 /* svr2.pb.swift */; };
 		662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */; };
@@ -864,6 +865,7 @@
 		6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */; };
 		6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC192980AB45004EFC30 /* DependenciesBridge.swift */; };
 		6698FC1C2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC1B2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift */; };
+		669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669947B92A20129000E4DC0C /* SVR2Shims.swift */; };
 		669E8FE828B4153C00043D28 /* OWSUrlSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE728B4153B00043D28 /* OWSUrlSession.swift */; };
 		669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */; };
 		669E8FEF28B417D500043D28 /* OWSSignalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEE28B417D500043D28 /* OWSSignalService.swift */; };
@@ -3304,6 +3306,7 @@
 		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
+		6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2ConcurrencyTests.swift; sourceTree = "<group>"; };
 		662C44082A1567E4001F83E2 /* svr2.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = svr2.pb.swift; sourceTree = "<group>"; };
 		662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Impl.swift; sourceTree = "<group>"; };
 		662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrchestratingSVRImpl.swift; sourceTree = "<group>"; };
@@ -3363,6 +3366,7 @@
 		6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerContext.swift; sourceTree = "<group>"; };
 		6698FC192980AB45004EFC30 /* DependenciesBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesBridge.swift; sourceTree = "<group>"; };
 		6698FC1B2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecoveryObjcBridge.swift; sourceTree = "<group>"; };
+		669947B92A20129000E4DC0C /* SVR2Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2Shims.swift; sourceTree = "<group>"; };
 		669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLBuilderUtil.swift; sourceTree = "<group>"; };
 		669E8FE528B4149200043D28 /* BaseOWSURLSessionMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseOWSURLSessionMock.swift; sourceTree = "<group>"; };
 		669E8FE728B4153B00043D28 /* OWSUrlSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSUrlSession.swift; sourceTree = "<group>"; };
@@ -6618,6 +6622,7 @@
 			isa = PBXGroup;
 			children = (
 				662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */,
+				6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */,
 			);
 			path = SVR2;
 			sourceTree = "<group>";
@@ -6777,6 +6782,7 @@
 			children = (
 				662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */,
 				66C2B13C2A0E9116008DDE72 /* SVR2AuthCredential.swift */,
+				669947B92A20129000E4DC0C /* SVR2Shims.swift */,
 				66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */,
 				662C44122A1835F4001F83E2 /* SVRLocalStorage.swift */,
 			);
@@ -12428,6 +12434,7 @@
 				F9C5CCE8289453B300548EEE /* SubscriptionManager.swift in Sources */,
 				662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */,
 				66C2B13D2A0E9116008DDE72 /* SVR2AuthCredential.swift in Sources */,
+				669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */,
 				66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */,
 				66C2B1382A0DB6A9008DDE72 /* SVRAuthCredential.swift in Sources */,
 				6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */,
@@ -12687,6 +12694,7 @@
 				884BF73E28D37D5F00D94636 /* StoryManagerTest.swift in Sources */,
 				F9CAC77F29199B9200EEC1DE /* StringTest.swift in Sources */,
 				6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */,
+				6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */,
 				6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */,
 				884BF73D28D37D5F00D94636 /* SystemStoryManagerTest.swift in Sources */,
 				F9426249289B1B5500460798 /* TestModelTests.swift in Sources */,

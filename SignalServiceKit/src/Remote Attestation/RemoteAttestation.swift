@@ -73,6 +73,14 @@ extension RemoteAttestation {
     }
 }
 
+// MARK: - SVR2
+
+extension RemoteAttestation {
+    static func authForSVR2(chatServiceAuth: ChatServiceAuth) -> Promise<Auth> {
+        return Auth.fetch(forService: .svr2, auth: chatServiceAuth)
+    }
+}
+
 // MARK: - EnclaveConfig
 
 public extension RemoteAttestation {
@@ -247,11 +255,13 @@ fileprivate extension RemoteAttestation {
     enum Service {
         case keyBackup
         case cdsi
+        case svr2
 
         func authRequest() -> TSRequest {
             switch self {
             case .keyBackup: return OWSRequestFactory.remoteAttestationAuthRequestForKeyBackup()
             case .cdsi: return OWSRequestFactory.remoteAttestationAuthRequestForCDSI()
+            case .svr2: return OWSRequestFactory.remoteAttestationAuthRequestForSVR2()
             }
         }
     }

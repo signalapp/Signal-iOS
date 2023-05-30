@@ -23,6 +23,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         // Start the scheduler so everything executes synchronously.
         self.scheduler.start()
         self.svr = SecureValueRecovery2Impl(
+            connectionFactory: MockSgxWebsocketConnectionFactory(),
             credentialStorage: credentialStorage,
             db: db,
             keyValueStoreFactory: InMemoryKeyValueStoreFactory(),

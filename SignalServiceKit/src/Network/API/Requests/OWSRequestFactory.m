@@ -411,6 +411,11 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v2/directory/auth"] method:@"GET" parameters:@{}];
 }
 
++ (TSRequest *)remoteAttestationAuthRequestForSVR2
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v2/backup/auth"] method:@"GET" parameters:@{}];
+}
+
 #pragma mark - KBS
 
 + (TSRequest *)kbsEnclaveTokenRequestWithEnclaveName:(NSString *)enclaveName

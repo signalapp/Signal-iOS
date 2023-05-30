@@ -9,7 +9,7 @@ import SignalCoreKit
 
 // MARK: -
 
-protocol SgxWebsocketConnectionFactory {
+public protocol SgxWebsocketConnectionFactory {
 
     /// Connect to an SgxClient-conformant server via websocket and perform the initial handshake.
     ///
@@ -21,7 +21,7 @@ protocol SgxWebsocketConnectionFactory {
     ///     returned connection is properly disconnected.
     func connectAndPerformHandshake<Configurator: SgxWebsocketConfigurator>(
         configurator: Configurator,
-        on queue: DispatchQueue
+        on scheduler: Scheduler
     ) -> Promise<SgxWebsocketConnection<Configurator>>
 }
 
@@ -35,17 +35,17 @@ final class SgxWebsocketConnectionFactoryImpl: SgxWebsocketConnectionFactory {
 
     func connectAndPerformHandshake<Configurator: SgxWebsocketConfigurator>(
         configurator: Configurator,
-        on queue: DispatchQueue
+        on scheduler: Scheduler
     ) -> Promise<SgxWebsocketConnection<Configurator>> {
         let websocketFactory = self.websocketFactory
         return firstly {
             return configurator.fetchAuth()
-        }.then(on: queue) { (auth) -> Promise<SgxWebsocketConnection<Configurator>> in
+        }.then(on: scheduler) { (auth) -> Promise<SgxWebsocketConnection<Configurator>> in
             return try SgxWebsocketConnectionImpl<Configurator>.connectAndPerformHandshake(
                 configurator: configurator,
                 auth: auth,
                 websocketFactory: websocketFactory,
-                queue: queue
+                scheduler: scheduler
             )
         }
     }

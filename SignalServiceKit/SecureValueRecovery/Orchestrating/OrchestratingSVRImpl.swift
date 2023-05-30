@@ -25,6 +25,7 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     public init(
         accountManager: SVR.Shims.TSAccountManager,
         appContext: AppContext,
+        connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
         databaseStorage: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
@@ -40,6 +41,7 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         let shouldUseSVR2 = FeatureFlags.mirrorSVR2 || FeatureFlags.exclusiveSVR2
         if shouldUseSVR2 {
             svrs.append(SecureValueRecovery2Impl(
+                connectionFactory: connectionFactory,
                 credentialStorage: credentialStorage,
                 db: databaseStorage,
                 keyValueStoreFactory: keyValueStoreFactory,

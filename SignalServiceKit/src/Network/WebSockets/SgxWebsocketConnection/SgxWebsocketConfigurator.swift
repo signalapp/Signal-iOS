@@ -16,6 +16,7 @@ public protocol SgxWebsocketConfigurator {
 
     associatedtype Request: SwiftProtobuf.Message
     associatedtype Response: SwiftProtobuf.Message
+    associatedtype Client: SgxClient
 
     /// MrEnclave to use for the websocket connection.
     /// Typically points to a TSConstants value.
@@ -48,7 +49,7 @@ public protocol SgxWebsocketConfigurator {
         mrenclave: MrEnclave,
         attestationMessage: Data,
         currentDate: Date
-    ) throws -> SgxClient
+    ) throws -> Client
 
     /// Name to use for logging connection events. Defaults to class name.
     static var loggingName: String { get }

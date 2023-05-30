@@ -58,8 +58,6 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
 
     // MARK: - Pin Management
 
-    static let maximumKeyAttempts: UInt32 = 10
-
     private var currentEnclave: KeyBackupEnclave { return tsConstants.keyBackupEnclave }
 
     public func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool {
@@ -916,7 +914,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             backupRequestBuilder.setPin(accessKey)
             backupRequestBuilder.setToken(token.data)
             backupRequestBuilder.setBackupID(token.backupId)
-            backupRequestBuilder.setTries(Self.maximumKeyAttempts)
+            backupRequestBuilder.setTries(SVR.maximumKeyAttempts)
             backupRequestBuilder.setServiceID(serviceId)
 
             // number of seconds since unix epoch after which this request should be valid

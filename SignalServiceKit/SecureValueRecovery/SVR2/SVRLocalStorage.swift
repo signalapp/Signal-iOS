@@ -48,8 +48,8 @@ internal class SVRLocalStorage {
         return keyValueStore.getString(Keys.svr1EnclaveName, transaction: transaction)
     }
 
-    internal func getSVR2EnclaveName(_ transaction: DBReadTransaction) -> String? {
-        return keyValueStore.getString(Keys.svr2EnclaveName, transaction: transaction)
+    internal func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String? {
+        return keyValueStore.getString(Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
 
     // MARK: - Setters
@@ -79,8 +79,8 @@ internal class SVRLocalStorage {
         keyValueStore.setString(value, key: Keys.svr1EnclaveName, transaction: transaction)
     }
 
-    internal func setSVR2EnclaveName(_ value: String?, _ transaction: DBWriteTransaction) {
-        keyValueStore.setString(value, key: Keys.svr2EnclaveName, transaction: transaction)
+    internal func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction) {
+        keyValueStore.setString(value, key: Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
 
     // MARK: - Clearing Keys
@@ -94,7 +94,7 @@ internal class SVRLocalStorage {
                 Keys.isMasterKeyBackedUp,
                 Keys.syncedStorageServiceKey,
                 Keys.svr1EnclaveName,
-                Keys.svr2EnclaveName
+                Keys.svr2MrEnclaveStringValue
             ],
             transaction: transaction
         )
@@ -110,6 +110,6 @@ internal class SVRLocalStorage {
         static let isMasterKeyBackedUp = "isMasterKeyBackedUp"
         static let syncedStorageServiceKey = "Storage Service Encryption"
         static let svr1EnclaveName = "enclaveName"
-        static let svr2EnclaveName = "svr2_enclaveName"
+        static let svr2MrEnclaveStringValue = "svr2_mrenclaveStringValue"
     }
 }

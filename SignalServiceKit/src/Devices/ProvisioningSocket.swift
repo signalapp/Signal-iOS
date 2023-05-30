@@ -25,7 +25,7 @@ public class ProvisioningSocket {
             urlQueryItems: [URLQueryItem(name: "agent", value: OWSDeviceProvisioner.userAgent)],
             extraHeaders: [:]
         )
-        let webSocket = webSocketFactory.buildSocket(request: request, callbackQueue: .main)!
+        let webSocket = webSocketFactory.buildSocket(request: request, callbackScheduler: DispatchQueue.main)!
         self.socket = webSocket
         webSocket.delegate = self
     }
