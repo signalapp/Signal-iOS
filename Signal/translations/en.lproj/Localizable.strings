@@ -1616,10 +1616,10 @@
 "DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
 
 /* info message text in conversation view */
-"DECLINED_AUDIO_CALL" = "You declined a voice call";
+"DECLINED_AUDIO_CALL" = "You declined a voice call.";
 
 /* info message text in conversation view */
-"DECLINED_VIDEO_CALL" = "You declined a video call";
+"DECLINED_VIDEO_CALL" = "You declined a video call.";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Delete Account";
@@ -3299,10 +3299,10 @@
 "INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
 /* info message text in conversation view */
-"INCOMING_AUDIO_CALL" = "Incoming voice call";
+"INCOMING_AUDIO_CALL" = "Incoming Voice Call";
 
 /* info message text in conversation view */
-"INCOMING_VIDEO_CALL" = "Incoming video call";
+"INCOMING_VIDEO_CALL" = "Incoming Video Call";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3872,16 +3872,16 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "New Messages";
 
 /* info message text in conversation view */
-"MISSED_AUDIO_CALL" = "Missed voice call";
+"MISSED_AUDIO_CALL" = "Missed Voice Call";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
-"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+"MISSED_CALL_DO_NOT_DISTURB" = "Missed Call While on Do Not Disturb";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+"MISSED_CALL_FOCUS_MODE" = "Missed Call While Using Focus";
 
 /* info message text in conversation view */
-"MISSED_VIDEO_CALL" = "Missed video call";
+"MISSED_VIDEO_CALL" = "Missed Video Call";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
@@ -4103,7 +4103,7 @@
 "NOTIFICATIONS_NONE" = "No Name or Content";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
+"NOTIFICATIONS_SECTION_INAPP" = "Play While App Is Open";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
@@ -4319,16 +4319,16 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
 
 /* info message text in conversation view */
-"OUTGOING_AUDIO_CALL" = "Outgoing voice call";
+"OUTGOING_AUDIO_CALL" = "Outgoing Voice Call";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_AUDIO_CALL" = "Unanswered voice call";
+"OUTGOING_MISSED_AUDIO_CALL" = "Unanswered Voice Call";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_VIDEO_CALL" = "Unanswered video call";
+"OUTGOING_MISSED_VIDEO_CALL" = "Unanswered Video Call";
 
 /* info message text in conversation view */
-"OUTGOING_VIDEO_CALL" = "Outgoing video call";
+"OUTGOING_VIDEO_CALL" = "Outgoing Video Call";
 
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
@@ -4760,13 +4760,13 @@
 "PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
+"PIN_CREATION_CHANGING_TITLE" = "Change Your PIN";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
+"PIN_CREATION_CONFIRM_TITLE" = "Confirm Your PIN";
 
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
@@ -4814,7 +4814,7 @@
 "PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits";
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits.";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Re-enter PIN";
