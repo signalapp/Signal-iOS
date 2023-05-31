@@ -781,12 +781,6 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         }
     }
 
-    public func setMasterKeyBackedUp(_ value: Bool, transaction: DBWriteTransaction) {
-        localStorage.setIsMasterKeyBackedUp(value, transaction)
-
-        reloadState(transaction: transaction)
-    }
-
     public func useDeviceLocalMasterKey(
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction

@@ -101,10 +101,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         return localStorage.getIsMasterKeyBackedUp(transaction)
     }
 
-    public func setMasterKeyBackedUp(_ value: Bool, transaction: DBWriteTransaction) {
-        localStorage.setIsMasterKeyBackedUp(value, transaction)
-    }
-
     public func useDeviceLocalMasterKey(authedAccount: AuthedAccount, transaction: DBWriteTransaction) {
         setLocalDataAndSyncStorageServiceIfNeeded(
             masterKey: Cryptography.generateRandomBytes(SVR.masterKeyLengthBytes),

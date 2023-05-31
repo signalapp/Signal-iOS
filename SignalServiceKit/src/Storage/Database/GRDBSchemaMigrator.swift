@@ -2355,22 +2355,8 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_kbsStateCleanup) { transaction in
-            if DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction.asAnyRead.asV2Read) {
-                DependenciesBridge.shared.svr.setMasterKeyBackedUp(true, transaction: transaction.asAnyWrite.asV2Write)
-            }
-
-            guard let isUsingRandomPinKey = OWS2FAManager.keyValueStore().getBool(
-                "isUsingRandomPinKey",
-                transaction: transaction.asAnyRead
-            ), isUsingRandomPinKey else {
-                return .success(())
-            }
-
-            OWS2FAManager.keyValueStore().removeValue(forKey: "isUsingRandomPinKey", transaction: transaction.asAnyWrite)
-            DependenciesBridge.shared.svr.useDeviceLocalMasterKey(
-                authedAccount: .implicit(),
-                transaction: transaction.asAnyWrite.asV2Write
-            )
+            // Tombstone for an old migration that doesn't need to exist anymore.
+            // But no new migration should reuse the identifier.
             return .success(())
         }
 

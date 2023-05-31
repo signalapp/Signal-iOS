@@ -115,10 +115,6 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         doesHavePendingRestoration = false
     }
 
-    public func setMasterKeyBackedUp(_ value: Bool, transaction: DBWriteTransaction) {
-        hasBackedUpMasterKey = true
-    }
-
     public func useDeviceLocalMasterKey(
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction

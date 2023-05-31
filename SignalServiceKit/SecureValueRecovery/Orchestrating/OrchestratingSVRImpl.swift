@@ -96,10 +96,6 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         return svrs.contains(where: { $0.hasBackedUpMasterKey(transaction: transaction) })
     }
 
-    public func setMasterKeyBackedUp(_ value: Bool, transaction: DBWriteTransaction) {
-        svrs.forEach { $0.setMasterKeyBackedUp(value, transaction: transaction) }
-    }
-
     public func useDeviceLocalMasterKey(authedAccount: AuthedAccount, transaction: DBWriteTransaction) {
         svrs.forEach { $0.useDeviceLocalMasterKey(authedAccount: authedAccount, transaction: transaction) }
     }
