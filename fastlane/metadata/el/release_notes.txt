@@ -1,1 +1,1 @@
-• We fixed a few obscure bugs in the registration process so that even more people can register for Signal without also registering their disappointment. Now we’re submitting this update to Apple (which is a registered trademark).
+• Διορθώσαμε μερικά ασαφή σφάλματα στη διαδικασία εγγραφής, έτσι ώστε ακόμη περισσότερος κόσμος να μπορεί να εγγραφεί στο Signal χωρίς προβλήματα. 
