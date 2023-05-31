@@ -994,7 +994,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Migrating enclaves
 
-    /// If there is a newer enclave that the one we most recent backed up to, backs up known
+    /// If there is a newer enclave than the one we most recently backed up to, backs up known
     /// master key data to it instead, marking the old enclave for deletion.
     /// If there is no migration needed, returns a success promise immediately.
     private func migrateEnclavesIfNecessary() -> Promise<Void> {
@@ -1173,9 +1173,23 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private lazy var openConnectionChainedPromise = ChainedPromise<WebsocketConnection?>(initialValue: nil, scheduler: scheduler)
 
     private func makeHandshakeAndOpenConnection(_ config: SVR2WebsocketConfigurator) -> Promise<WebsocketConnection> {
+
+        // Update the auth method with cached credentials if we have them.
+        switch config.authMethod {
+        case .svrAuth, .chatServerAuth:
+            // If we explicitly want to use some credential, use that.
+            break
+        case .implicit:
+            // If implicit, use any cached values.
+            if let cachedCredential: SVR2AuthCredential = db.read(block: credentialStorage.getAuthCredentialForCurrentUser) {
+                config.authMethod = .svrAuth(.svr2Only(cachedCredential), backup: .implicit)
+            }
+        }
+
+        let weakSelf = Weak(value: self)
         var innerError: Error = SVR.SVRError.assertion
-        return openConnectionChainedPromise.enqueue(recoverValue: nil) { [weak self] (_: WebsocketConnection?) -> Promise<WebsocketConnection?> in
-            guard let self else {
+        func innerConnectAndPerformHandshake() -> Promise<WebsocketConnection?> {
+            guard let self = weakSelf.value else {
                 return .init(error: SVR.SVRError.assertion)
             }
             if let openConnection = self.openConnectionByMrEnclaveString[config.mrenclave.stringValue] {
@@ -1190,6 +1204,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     guard let self else {
                         return .init(error: SVR.SVRError.assertion)
                     }
+                    let knownGoodAuthCredential = connection.auth
                     let connection = WebsocketConnection(
                         connection: connection,
                         scheduler: self.scheduler,
@@ -1198,12 +1213,45 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                         }
                     )
                     self.openConnectionByMrEnclaveString[config.mrenclave.stringValue] = connection
+
+                    // If we were able to open a connection, that means the auth used is valid
+                    // and we should cache it.
+                    self.db.write { tx in
+                        self.credentialStorage.storeAuthCredentialForCurrentUsername(
+                            SVR2AuthCredential(credential: knownGoodAuthCredential),
+                            tx
+                        )
+                    }
+
                     return .value(connection)
                 }
-                .recover(on: self.schedulers.sync) { error -> Promise<WebsocketConnection?> in
+                .recover(on: self.schedulers.sync) { [weak self] (error: Error) -> Promise<WebsocketConnection?> in
                     innerError = error
+                    guard let self else {
+                        return .init(error: error)
+                    }
+
+                    // if we fail to connect for any reason, assume the credential we tried to use was bad.
+                    // clear it out, and if we have a backup, try again with that.
+                    switch config.authMethod {
+                    case .svrAuth(let attemptedCredential, let backup):
+                        self.db.write { tx in
+                            self.credentialStorage.deleteInvalidCredentials([attemptedCredential.svr2].compacted(), tx)
+                        }
+                        if let backup {
+                            config.authMethod = backup
+                            return innerConnectAndPerformHandshake()
+                        }
+                    case .chatServerAuth, .implicit:
+                        break
+                    }
+
                     return .init(error: error)
                 }
+        }
+
+        return openConnectionChainedPromise.enqueue(recoverValue: nil) { (_: WebsocketConnection?) -> Promise<WebsocketConnection?> in
+            innerConnectAndPerformHandshake()
         }.then(on: schedulers.sync) { connection -> Promise<WebsocketConnection> in
             if let connection {
                 return .value(connection)

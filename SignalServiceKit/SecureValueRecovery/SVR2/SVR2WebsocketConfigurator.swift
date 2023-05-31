@@ -14,7 +14,7 @@ internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
     internal typealias Client = Svr2Client
 
     internal let mrenclave: MrEnclave
-    private let authMethod: SVR.AuthMethod
+    internal var authMethod: SVR.AuthMethod
 
     init(mrenclave: MrEnclave = TSConstants.svr2Enclave, authMethod: SVR.AuthMethod) {
         self.mrenclave = mrenclave
