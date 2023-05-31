@@ -2123,7 +2123,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "સેવ ન કરેલ ફેરફારો";
 
 /* Label for Edit History modal */
-"EDIT_HISTORY_LABEL" = "Edit History";
+"EDIT_HISTORY_LABEL" = "ફેરફારોની હિસ્ટ્રી";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "કૉપિ";
@@ -3163,128 +3163,8 @@
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "મિત્રોને આમંત્રિત કરો";
 
-/* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "જૂના ગ્રુપ એ એવા ગ્રુપ છે જે એડમિન અને વધુ વર્ણનાત્મક ગ્રુપ અપડેટ્સ જેવા નવા ગ્રુપ ફીચર સાથે સુસંગત નથી.";
-
-/* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "જૂના ગ્રુપ શું હોય છે?";
-
-/* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "જૂના ગ્રુપને હજી નવા ગ્રુપમાં અપગ્રેડ કરી શકાતા નથી, પરંતુ જો તેઓ Signal ના નવીનતમ વર્ઝન પર હોય તો તમે તે જ સભ્યો સાથે નવું ગ્રુપ બનાવી શકો છો.\n\nSignal ભવિષ્યમાં જૂના ગ્રુપને અપગ્રેડ કરવાનો માર્ગ પ્રદાન કરશે.";
-
-/* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "શું હું જૂના ગ્રુપને અપગ્રેડ કરી શકું?";
-
-/* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "નવું ગ્રુપ બનાવવા માટે, તમામ સભ્યોએ Signal ના નવીનતમ વર્ઝનમાં અપડેટ કરવું જોઈએ.";
-
-/* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "લિગેસી બનામ નવા ગ્રુપ";
-
-/* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "@ઉલ્લેખો અને એડમિન જેવા નવા ફીચર સક્રિય કરવા માટે આ ગ્રુપને અપગ્રેડ કરો. જે સભ્યો આ ગ્રુપમાં પોતાનું નામ અથવા ફોટો શેર કર્યો નથી તેમને જોડાવા માટે આમંત્રણ આપવામાં આવશે.%1$@";
-
-/* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "નવા ગ્રુપમાં અપગ્રેડ કરી શકતા નથી";
-
-/* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "આ ગ્રુપને નવા ગ્રુપમાં અપગ્રેડ કરી શકાતું નથી કારણ કે તેમાં ઘણા બધા સભ્યો છે. ગ્રુપનું મહત્તમ કદ કે જેને અપગ્રેડ કરી શકાય છે તે %1$@ છે.";
-
-/* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "જ્યારે વર્તમાન ગ્રુપના તમામ સભ્યો નવા ગ્રુપમાં જોડાવા માટે સક્ષમ Signal ના વર્ઝનનો ઉપયોગ કરી રહ્યા હશે ત્યારે આ ગ્રુપને અપગ્રેડ કરવામાં આવશે.";
-
-/* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "અપગ્રેડ પહેલાના તમામ મેસેજ હિસ્ટ્રી અને મીડિયા રાખવામાં આવશે.";
-
-/* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "આ એક જૂનું ગ્રુપ છે. ગ્રુપ એડમિન જેવા ફીચર ફક્ત નવા ગ્રુપ માટે ઉપલબ્ધ છે. %1$@";
-
-/* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "આ જૂનુ ગ્રુપ હજી નવા ગ્રુપમાં અપગ્રેડ કરવા તૈયાર નથી. %1$@.";
-
-/* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "આ જૂના ગ્રુપને નવા ગ્રુપમાં અપગ્રેડ કરી શકાતું નથી કારણ કે તે ઘણું મોટું છે. %1$@.";
-
-/* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "આ એક જૂનું ગ્રુપ છે. @ઉલ્લેખો અને એડમિન જેવા નવા ફીચરને ઍક્સેસ કરવા માટે, %1$@";
-
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "જૂના ગ્રુપ";
-
-/* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "તમારે ફરીથી આ ગ્રુપમાં જોડાવા માટે આમંત્રણ સ્વીકારવાની જરૂર પડશે, અને જ્યાં સુધી તમે સ્વીકારશો નહીં ત્યાં સુધી ગ્રુપ મેસેજ પ્રાપ્ત થશે નહીં.";
-
-/* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "નવા ગ્રુપ શું છે??";
-
-/* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "અપગ્રેડ પહેલાના તમામ મેસેજ હિસ્ટ્રી અને મીડિયા રાખવામાં આવ્યા છે.";
-
-/* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "નવા ગ્રુપમાં @ઉલ્લેખો અને ગ્રુપ એડમિન્સ જેવા ફીચર છે, અને તે ભવિષ્યમાં વધુ ફીચરને ટેકો આપશે.";
-
-/* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "નવા ગ્રુપ";
-
-/* Label for the 'add members' button in the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "સભ્યો ઉમેરો";
-
-/* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "મેમ્બર ઉમેરવો છે?";
-
-/* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "સભ્યોને ઉમેરવા છે?";
-
-/* Label for the 'add members' button in the 're-add dropped groups members' banner. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "સભ્યો ઉમેરો";
-
-/* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "જ્યારે નવા ગ્રુપને અપગ્રેડ કરવામાં આવ્યું ત્યારે આ મેમ્બરને આપમેળે ઉમેરી શકાયા નહીં:";
-
-/* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "જ્યારે નવા ગ્રુપને અપગ્રેડ કરવામાં આવ્યું ત્યારે આ સભ્યોને આપોઆપ ઉમેરી શકાયા નથી:";
-
-/* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "અપગ્રેડ પહેલાના તમામ મેસેજ હિસ્ટ્રી અને મીડિયા રાખવામાં આવ્યા છે.";
-
-/* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "આ સભ્યને ગ્રુપમાંથી દૂર કરવામાં આવ્યા હતા અને જ્યાં સુધી તેઓ અપગ્રેડ ન કરે ત્યાં સુધી તેઓ ગ્રુપમાં ફરીથી જોડાઈ શકશે નહીં:";
-
-/* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "આ સભ્યોને ગ્રુપમાંથી દૂર કરવામાં આવ્યા હતા અને જ્યાં સુધી તેઓ અપગ્રેડ ન થાય ત્યાં સુધી તેઓ ગ્રુપમાં ફરીથી જોડાઈ શકશે નહીં:";
-
-/* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "આ મેમ્બરને ફરીથી આ ગ્રુપમાં જોડાવા માટે આમંત્રણ સ્વીકારવાની જરૂર પડશે, અને જ્યાં સુધી તેઓ સ્વીકારે નહીં ત્યાં સુધી ગ્રુપ મેસેજ પ્રાપ્ત કરશે નહીં:";
-
-/* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "આ સભ્યો ફરીથી આ ગ્રુપમાં જોડાવા માટે આમંત્રણ સ્વીકારવાની જરૂર પડશે, અને જ્યાં સુધી તેઓ સ્વીકારશે નહીં ત્યાં સુધી ગ્રુપ મેસેજ પ્રાપ્ત કરશે નહીં:";
-
-/* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "આ સભ્ય નવા ગ્રુપમાં જોડાવા માટે સક્ષમ નથી, અને તેને ગ્રુપમાંથી દૂર કરવામાં આવશે:";
-
-/* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "આ સભ્યો નવા ગ્રુપમાં જોડાવા માટે સક્ષમ નથી, અને તેમને ગ્રુપમાંથી દૂર કરવામાં આવશે:";
-
-/* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "નવા ગ્રુપમાં અપગ્રેડ કરો";
-
-/* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "આ ગ્રુપને અપગ્રેડ કરો";
-
-/* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "આ ગ્રુપને અત્યારે નવા ગ્રુપમાં અપગ્રેડ કરી શકાયું નથી.";
-
-/* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "આ ગ્રુપને નવા ગ્રુપમાં અપગ્રેડ કરી શકાતું નથી કારણ કે તમે ઇન્ટરનેટ સાથે જોડાયેલા નથી. પછીથી ફરીથી પ્રયાસ કરો.";
-
-/* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "અપગ્રેડ પૂર્ણ કરી શક્યા નહીં";
-
-/* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "નવા ગ્રુપમાં અપગ્રેડ કરવામાં આવ્યું છે.";
-
-/* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "આ ગ્રુપને અપગ્રેડ કરો";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "તમે જતા પહેલાં, આ ગ્રુપ માટે નવું એડમિન પસંદ કરો.";
@@ -3532,6 +3412,21 @@
 /* Error indicating that a group could not be left. */
 "LEAVE_GROUP_FAILED" = "ગ્રુપ છોડતી વખતે ભૂલ આવી.";
 
+/* Text in a sheet explaining details about 'Legacy Groups'. */
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+
+/* Title for a sheet explaining details about 'Legacy Groups'. */
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+
+/* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+
+/* Text in a sheet explaining details about 'New Groups'. */
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+
+/* Title for a sheet explaining details about 'New Groups'. */
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "આ QR કોડ માન્ય નથી. કૃપા કરીને ખાતરી કરો કે તમે QR કોડને સ્કેન કરી રહ્યાં છો કે જે ડિવાઇસને તમે લિંક કરવા માંગો છો તેના પર પ્રદર્શિત થાય છે.";
 
@@ -3749,7 +3644,7 @@
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "મોકલવા માટેના સમયને કૉપિ કરવામાં આવેલ છે";
 
 /* Title for the 'edit history' section on the 'message details' view. */
-"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "View Edit History";
+"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "ફેરફારોની હિસ્ટ્રી જુઓ";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "તરફથી મોકલવામાં આવેલ છે";

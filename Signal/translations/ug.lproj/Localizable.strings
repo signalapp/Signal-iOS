@@ -2123,7 +2123,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "ساقلانمىغان ئۆزگەرتىشلەر";
 
 /* Label for Edit History modal */
-"EDIT_HISTORY_LABEL" = "Edit History";
+"EDIT_HISTORY_LABEL" = "تەھرىرلەش تارىخى";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "كۆچۈر";
@@ -3163,128 +3163,8 @@
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "دوستلىرىڭىزنى تەكلىپ قىلىڭ";
 
-/* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "كونا گۇرۇپپا دېگىنىمىز باشقۇرغۇچىلار ۋە تېخىمۇ تەپسىلىي گۇرۇپپا يېڭىلانمىسى قاتارلىقلار يېڭى گۇرۇپپا  ئىقتىدارلىرى بىلەن ماسلاشمايدىغان گۇرۇپپىدۇر.";
-
-/* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "«كونا گۇرۇپپىلار» دېگەن نېمە؟";
-
-/* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "كونا گۇرۇپپىلارنى ھازىرچە يېڭى گۇرۇپپىغا يۇقىرىلاتقىلى بولمايدۇ. ئەمما ئەزالار يېڭى نەشردىكى Signal نى ئىشلىتىۋاتقان بولسا، سىز ئوخشاش ئەزالار بىلەن يېڭى گۇرۇپپا قۇرالايسىز.\n\nSignal كەلگۈسىدە كونا گۇرۇپپىلارنى يۇقىرىلىتىش ئۇسۇلى بىلەن تەمىنلەيدۇ.";
-
-/* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "كونا گۇرۇپپىنى يۇقىرىلاتسام بولامدۇ؟";
-
-/* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "«يېڭى گۇرۇپپا» قۇرۇش ئۈچۈن، بارلىق ئەزالار ئۆزلىرىنىڭ Signal ئەپىنى ئەڭ يېڭى نەشرىگە يۇقىرىلىتىشى كېرەك.";
-
-/* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "كونا ۋە يېڭى گۇرۇپپىلارنىڭ سېلىشتۇرمىسى";
-
-/* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "@تىلغا ئېلىش ۋە باشقۇرغۇچى قاتارلىق يېڭى ئىقتىدارلارنى قوزغىتىش ئۈچۈن بۇ گۇرۇپپىنى يېڭىلاڭ. بۇ گۇرۇپپىدا ئىسمى ياكى رەسىمىنى تېخى ئورتاقلاشمىغان ئەزالار قوشۇلۇشقا تەكلىپ قىلىنىدۇ. %1$@.";
-
-/* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "«يېڭى گۇرۇپپا»غا يۇقىرلاتقىلى بولمىدى";
-
-/* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "بۇ گۇرۇپپىدا بەك كۆپ ئەزا بولغاچقا، ئۇنى «يېڭى گۇرۇپپا»غا يېڭىلىغىلى بولمىدى. يېڭىلاش ئۈچۈن گۇرۇپپا ئەزا سانى «%1$@» دىن كۆپ بولماسلىقى كېرەك.";
-
-/* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "نۆۋەتتىكى گۇرۇپپا ئەزالىرىنىڭ ھەممىسى «يېڭى گۇرۇپپا»غا كىرىش ئىقتىدارىغا ئىگە Signal نۇسخىسىنى ئىشلەتكەندە، بۇ گۇرۇپپا يۇقىرىتىلىدۇ.";
-
-/* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "بارلىق ئۇچۇر تارىخى ۋە ۋاسىتە يېڭىلاشتىن بۇرۇن ساقلىنىدۇ.";
-
-/* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "بۇ كونا گۇرۇپپا بولۇپ، گۇرۇپپا باشقۇرغۇچىسى قاتارلىق يېڭى ئىقتىدارلار يېڭى گۇرۇپپىدىلا بار. %1$@";
-
-/* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "بۇ كونا گۇرۇپپا يېڭى گۇرۇپپىغا يېڭىلاشقا تېخى تەييار ئەمەس. %1$@.";
-
-/* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "بۇ كونا گۇرۇپپا بەك چوڭ بولغاچقا يېڭى گۇرۇپپىغا يېڭىلىغىلى بولمايدۇ. %1$@.";
-
-/* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "بۇ كونا گۇرۇپپا بولۇپ، %1$@ ئارقىلىق @تىلغا ئېلىش ۋە باشقۇرغۇچى قاتارلىق يېڭى ئىقتىدارلارنى ئىشلىتىشكە بولىدۇ.";
-
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "كونا گۇرۇپپا";
-
-/* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "بۇ گۇرۇپپىغا قوشۇلۇش تەكلىپنامىسىنى قوبۇل قىلىشىڭىز كېرەك ۋە سىز ئۇنى قوبۇل قىلغۇچە گۇرۇپپا ئۇچۇرلىرىنى كۆرەلمەيسىز.";
-
-/* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "«يېڭى گۇرۇپپىلار» دېگەن نېمە؟";
-
-/* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "بارلىق ئۇچۇر تارىخى ۋە ۋاسىتىلەر يېڭىلاشتىن بۇرۇن ساقلىنىپ قالىدۇ.";
-
-/* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "يېڭى گۇرۇپپىلارنىڭ @ئەتىكەتلەش ۋە گۇرۇپپا باشقۇرغۇچىلىرىغا ئوخشاش ئىقتىدارلىرى بار، كەلگۈسىدە تېخىمۇ كۆپ ئىقتىدارلارنى قوللايدۇ.";
-
-/* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "يېڭى گۇرۇپپىلار";
-
-/* Label for the 'add members' button in the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "ئەزا قوش";
-
-/* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "ئەزا قوشامسىز؟";
-
-/* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "ئەزالار قوشامسىز؟";
-
-/* Label for the 'add members' button in the 're-add dropped groups members' banner. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "ئەزا قوش";
-
-/* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "يۇقىرىلىتىلىپ بولۇنغاندا، بۇ ئەزانى «يېڭى گۇرۇپپا»غا ئاپتوماتىك قوشقىلى بولمايدۇ:";
-
-/* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "يۇقىرىلىتىلىپ بولۇنغاندا، بۇ ئەزالارنى «يېڭى گۇرۇپپا»غا ئاپتوماتىك قوشقىلى بولمايدۇ:";
-
-/* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "بارلىق ئۇچۇر تارىخى ۋە ۋاسىتىلەر يېڭىلاشتىن بۇرۇن ساقلىنىپ قالىدۇ.";
-
-/* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "بۇ ئەزا گۇرۇپپىدىن چىقىرىۋېتىلدى ۋە ئۇلار يۇقىرلاتمىغۇچە قايتىدىن گۇرۇپپىغا قوشۇلالمايدۇ:";
-
-/* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "بۇ ئەزالار گۇرۇپپىدىن چىقىرىۋېتىلدى ۋە ئۇلار يۇقىرلاتمىغۇچە قايتىدىن گۇرۇپپىغا قوشۇلالمايدۇ:";
-
-/* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "بۇ ئەزا بۇ گۇرۇپپىغا قايتا قوشۇلۇش تەكلىپنامىسىنى قوبۇل قىلىشى كېرەك، ئۇلار تەكلىپنامىنى قوبۇل قىلمىغۇچە گۇرۇپپا ئۇچۇرلىرىنى تاپشۇرۇۋالمايدۇ:";
-
-/* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "بۇ ئەزالار بۇ گۇرۇپپىغا قايتا قوشۇلۇش تەكلىپنامىسىنى قوبۇل قىلىشى كېرەك، ئۇلار تەكلىپنامىنى قوبۇل قىلمىغۇچە گۇرۇپپا ئۇچۇرلىرىنى تاپشۇرۇۋالمايدۇ:";
-
-/* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "بۇ ئەزا «يېڭى گۇرۇپپا»غا كىرەلمەيدۇ، ھەمدە بۇ گۇرۇپپىدىن چىقىرىۋېتىلىدۇ:";
-
-/* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "بۇ ئەزالار «يېڭى گۇرۇپپا»غا كىرەلمەيدۇ، ھەمدە بۇ گۇرۇپپىدىن چىقىرىۋېتىلىدۇ:";
-
-/* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "«يېڭى گۇرۇپپا»غا يېڭىلاڭ";
-
-/* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "بۇ گۇرۇپپىنى يۇقىرىلىتىڭ";
-
-/* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "بۇ گۇرۇپپىنى ھازىرچە «يېڭى گۇرۇپپا»غا يۇقىرىلاتقىلى بولمايدۇ.";
-
-/* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "سىز ئىنتېرنېتقا ئۇلانمىغاچقا بۇ گۇرۇپپىنى يېڭى گۇرۇپپىغا يۇقىرىلاتقىلى بولمايدۇ. سەل تۇرۇپ قايتا سىناڭ.";
-
-/* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "يۇقىرىلىتىشنى تاماملىيالمىدى";
-
-/* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "«يېڭى گۇرۇپپا»غا يۇقىرلىتىلدى.";
-
-/* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "بۇ گۇرۇپپىنى يۇقىرىلىتىڭ";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "ئايرىلىشتىن بۇرۇن بۇ گۇرۇپپىغا بىر يېڭى باشقۇرغۇچى تاللاڭ.";
@@ -3532,6 +3412,21 @@
 /* Error indicating that a group could not be left. */
 "LEAVE_GROUP_FAILED" = "گۇرۇپپىدىن ئايرىلىۋاتقاندا بىر خاتالىق كۆرۈلدى.";
 
+/* Text in a sheet explaining details about 'Legacy Groups'. */
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+
+/* Title for a sheet explaining details about 'Legacy Groups'. */
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+
+/* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+
+/* Text in a sheet explaining details about 'New Groups'. */
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+
+/* Title for a sheet explaining details about 'New Groups'. */
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "بۇ QR كودى ئىناۋەتلىك ئەمەس. باغلىماقچى بولغان ئۈسكۈنىدە كۆرسىتىلگەن QR كودىنى سايىلىگەنلىكىڭىزنى جەزملەشتۈرۈڭ.";
 
@@ -3749,7 +3644,7 @@
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "ئەۋەتىلگەن ۋاقىت كۆچۈرۈلدى";
 
 /* Title for the 'edit history' section on the 'message details' view. */
-"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "View Edit History";
+"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "تەھرىرلەش تارىخىنى كۆرۈش";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "يوللىغۇچى";

@@ -301,22 +301,6 @@
 			<string>Skicka %1$d meddelanden</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d medlem kunde inte läggas till igen i den Nya gruppen. Vill du lägga till hen nu?</string>
-			<key>other</key>
-			<string>%1$d medlemmar kunde inte läggas till igen i den Nya gruppen. Vill du lägga till dem nu?</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

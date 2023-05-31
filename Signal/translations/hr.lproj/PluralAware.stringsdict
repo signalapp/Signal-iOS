@@ -377,26 +377,6 @@
 			<string>Pošalji %1$d poruka</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d člana nije bilo moguće ponovno dodati u Novu grupu. Želite li ga dodati sada?</string>
-			<key>few</key>
-			<string>%1$d člana nije bilo moguće ponovno dodati u Novu grupu. Želite li ih dodati sada?</string>
-			<key>many</key>
-			<string>%1$d članova nije bilo moguće ponovno dodati u Novu grupu. Želite li ih dodati sada?</string>
-			<key>other</key>
-			<string>%1$d članova nije bilo moguće ponovno dodati u Novu grupu. Želite li ih dodati sada?</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

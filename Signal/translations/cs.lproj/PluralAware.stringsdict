@@ -377,26 +377,6 @@
 			<string>Odeslat %1$d zpráv</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Do nové skupiny nebylo možné znovu přidat %1$d člena. Chcete ho přidat nyní?</string>
-			<key>few</key>
-			<string>Do nové skupiny nebylo možné znovu přidat %1$d členy. Chcete je přidat nyní?</string>
-			<key>many</key>
-			<string>Do nové skupiny nebylo možné znovu přidat %1$d členů. Chcete je přidat nyní?</string>
-			<key>other</key>
-			<string>Do nové skupiny nebylo možné znovu přidat %1$d členů. Chcete je přidat nyní?</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

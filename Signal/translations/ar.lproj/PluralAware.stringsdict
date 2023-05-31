@@ -453,30 +453,6 @@
 			<string>أرسل %1$d رسالة</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>zero</key>
-			<string>تعذّر إعادة إضافة %1$d عضو إلى المجموعة الجديدة. هل تريد إضافتهم الآن؟</string>
-			<key>one</key>
-			<string>تعذّر إعادة إضافة %1$d عضو إلى المجموعة الجديدة. هل تريد إضافتهم الآن؟</string>
-			<key>two</key>
-			<string>تعذّر إعادة إضافة عضوين %1$d إلى المجموعة الجديدة. هل تريد إضافتهما الآن؟</string>
-			<key>few</key>
-			<string>تعذّر إعادة إضافة %1$d أعضاء إلى المجموعة الجديدة. هل تريد إضافتهم الآن؟</string>
-			<key>many</key>
-			<string>تعذّر إعادة إضافة %1$d عضوًا إلى المجموعة الجديدة. هل تريد إضافتهم الآن؟</string>
-			<key>other</key>
-			<string>تعذّر إعادة إضافة %1$d عضو إلى المجموعة الجديدة. هل تريد إضافتهم الآن؟</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

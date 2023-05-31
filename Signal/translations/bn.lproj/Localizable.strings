@@ -2123,7 +2123,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "অসংরক্ষিত পরিবর্তনসমূহ";
 
 /* Label for Edit History modal */
-"EDIT_HISTORY_LABEL" = "Edit History";
+"EDIT_HISTORY_LABEL" = "এডিট করার ইতিহাস";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "অনুলিপি";
@@ -3163,128 +3163,8 @@
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "বন্ধুকে আমন্ত্রণ জানান";
 
-/* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "লিগ্যাসি গ্রুপ হচ্ছে এমন ধরনের গ্রুপ যেগুলো নতুন গ্রুপের ফিচার যেমন অ্যাডমিন ও অন্যান্য বিস্তারিত গ্রুপ আপডেটের সাথে সামঞ্জস্যপূর্ণ নয়।";
-
-/* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "লিগ্যাসি গ্রুপ কী?";
-
-/* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "লিগ্যাসি গ্রুপগুলিকে এখনও নতুন গ্রুপে আপগ্রেড করা যাবে না, কিন্তু আপনি একই সদস্যদের নিয়ে নতুন গ্রুপ তৈরি করতে পারবেন যদি তারা Signal-এর সর্বশেষ সংস্করণটি ব্যবহার করে থাকেন।\n\nSignal ভবিষ্যতে লিগ্যাসি গ্রুপগুলি আপগ্রেড করার সুবিধা প্রদান করবে।";
-
-/* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "আমি কি একটি লিগ্যাসি গ্রুপ আপগ্রেড করতে পারি?";
-
-/* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "একটি নতুন গ্রুপ তৈরি করতে, সকল সদস্যকে Signal-এর সর্বশেষ সংস্করণটিতে আপডেট করতে হবে।";
-
-/* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "লিগ্যাসি বনাম নতুন গ্রুপ";
-
-/* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "@mentions ও অ্যাডমিনের মতো নতুন ফিচার সক্রিয় করতে গ্রুপটি আপগ্রেড করুন। যে সদস্যরা এই গ্রুপটিতে তাদের নাম বা ফটো শেয়ার করেননি তাদেরকে যোগদান করার জন্য আমন্ত্রণ জানানো হবে। %1$@।";
-
-/* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "নতুন গ্রুপে আপগ্রেড করা যাবে না";
-
-/* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "অনেক বেশি সদস্য থাকায় এই গ্রুপটিকে নতুন গ্রুপে আপগ্রেড করা যাবে না। গ্রুপের সর্বোচ্চ যে আকারকে আপগ্রেড করা যাবে তা হলো %1$@।";
-
-/* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "যখন গ্রুপের সকল সদস্য Signal-এর এমন সংস্করণ ব্যবহার করছেন যা নতুন গ্রুপে যোগদানের উপযোগী, তখন গ্রুপটি আপগ্রেড করা হবে।";
-
-/* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "আপগ্রেড করার আগে সকল ম্যাসেজের ইতিহাস ও মিডিয়া রাখা হবে।";
-
-/* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "এটি একটি লিগ্যাসি গ্রুপ। গ্রুপ অ্যাডমিনের মতো বৈশিষ্ট্যগুলি কেবলমাত্র নতুন গ্রুপের জন্য উপলভ্য থাকে। %1$@";
-
-/* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "এই লিগ্যাসি গ্রুপটি নতুন গ্রুপে আপগ্রেড হওয়ার জন্য এখনও প্রস্তুত নয়। %1$@।";
-
-/* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "এই লিগ্যাসি গ্রুপটি বেশি বড় হওয়ায় এটিকে নতুন গ্রুপে আপগ্রেড করা যাবে না। %1$@।";
-
-/* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "এটি একটি লিগ্যাসি গ্রুপ। @mentions ও অ্যাডমিনের মতো নতুন ফিচারগুলির সুবিধা পেতে, %1$@।";
-
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "লিগ্যাসি গ্রুপ";
-
-/* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "আপনাকে আবার এই গ্রুপে যোগদানের জন্য একটি আমন্ত্রণ স্বীকার করতে হবে এবং আপনি স্বীকার না করা পর্যন্ত গ্রুপের কোনও মেসেজ পাবেন না।";
-
-/* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "নতুন কোন কোন গ্রুপ রয়েছে?";
-
-/* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "আপগ্রেড করার আগে সকল ম্যাসেজের ইতিহাস ও মিডিয়া রাখা হয়েছে।";
-
-/* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "নতুন গ্রুপে @mentions এবং গ্রুপ অ্যাডমিনের মতো ফিচার রয়েছে এবং ভবিষ্যতে আরও ফিচার সমর্থন করবে।";
-
-/* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "নতুন গ্রুপ";
-
-/* Label for the 'add members' button in the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "সদস্যকে যোগ করুন";
-
-/* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "সদস্যকে যোগ করবেন?";
-
-/* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "সদস্যকে যোগ করবেন?";
-
-/* Label for the 'add members' button in the 're-add dropped groups members' banner. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "সদস্যকে যোগ করুন";
-
-/* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "নতুন গ্রুপটি আপগ্রেড হওয়ার সময় এই সদস্যকে স্বয়ংক্রিয়ভাবে এতে যোগ করা যায়নি:";
-
-/* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "নতুন গ্রুপটি আপগ্রেড হওয়ার সময় এই সদস্যদের স্বয়ংক্রিয়ভাবে যোগ করা যায়নি:";
-
-/* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "আপগ্রেড করার আগে সকল ম্যাসেজের ইতিহাস ও মিডিয়া রাখা হয়েছে।";
-
-/* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "এই সদস্যকে গ্রুপটি থেকে সরানো হয়েছে এবং তারা আপগ্রেড না করা পর্যন্ত গ্রুপটিতে পুনরায় যোগ দিতে পারবেন না:";
-
-/* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "এই সদস্যদের গ্রুপটি থেকে সরানো হয়েছে এবং তারা আপগ্রেড না করা পর্যন্ত গ্রুপটিতে পুনরায় যোগ দিতে পারবেন না:";
-
-/* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "এই গ্রুপে আবার যোগ দিতে এই সদস্যকে একটি আমন্ত্রণ স্বীকার করতে হবে, এবং তারা সেটি স্বীকার না করা পর্যন্ত গ্রুপ মেসেজ পাবেন না:";
-
-/* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "এই গ্রুপে পুনরায় যোগ দিতে এই সদস্যদেরকে একটি আমন্ত্রণ স্বীকার করতে হবে এবং তারা সেটি স্বীকার না করা পর্যন্ত গ্রুপ মেসেজগুলি পাবেন না:";
-
-/* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "এই সদস্যটি নতুন গ্রুপে যোগদানের যোগ্য নন এবং তাকে গ্রুপটি থেকে সরানো হবে।";
-
-/* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "এই সদস্যরা নতুন গ্রুপে যোগদানের যোগ্য নন এবং তাদেরকে গ্রুপটি থেকে সরানো হবে:";
-
-/* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "নতুন গ্রুপে আপগ্রেড করুন";
-
-/* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "এই গ্রুপটি আপগ্রেড করুন";
-
-/* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "এই গ্রুপটি এখনই নতুন গ্রুপে আপগ্রেড করা যাবে না।";
-
-/* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "আপনি ইন্টারনেটের সাথে সংযুক্ত না থাকায় এই গ্রুপটিকে নতুন গ্রুপে আপগ্রেড করা যায়নি। পরে আবার চেষ্টা করুন।";
-
-/* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "আপগ্রেড সম্পন্ন করা যায়নি";
-
-/* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "নতুন গ্রুপে আপগ্রেড হয়েছে।";
-
-/* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "এই গ্রুপটি আপগ্রেড করুন";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "আপনি ছেড়ে চলে যাওয়ার আগে, এই গ্রুপের জন্য একটি নতুন অ্যাডমিন বেছে নিন।";
@@ -3532,6 +3412,21 @@
 /* Error indicating that a group could not be left. */
 "LEAVE_GROUP_FAILED" = "গ্রুপ ছাড়ার সময় একটি ত্রুটি ঘটেছে।";
 
+/* Text in a sheet explaining details about 'Legacy Groups'. */
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+
+/* Title for a sheet explaining details about 'Legacy Groups'. */
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+
+/* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+
+/* Text in a sheet explaining details about 'New Groups'. */
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+
+/* Title for a sheet explaining details about 'New Groups'. */
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "এই কিউআর কোডটি বৈধ নয়। আপনি যে ডিভাইস লিঙ্কটি করতে চান তাতে প্রদর্শিত QR কোডটি আপনি স্ক্যান করছেন তা দয়া করে নিশ্চিত হন।";
 
@@ -3749,7 +3644,7 @@
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "পাঠানোর সময় কপি করা হয়েছে";
 
 /* Title for the 'edit history' section on the 'message details' view. */
-"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "View Edit History";
+"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "এডিট করার ইতিহাস দেখুন";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "এর থেকে পাঠানো হয়েছে";

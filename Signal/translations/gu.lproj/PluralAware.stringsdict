@@ -301,22 +301,6 @@
 			<string>%1$d મેસેજ મોકલો</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d સભ્યને નવા ગ્રુપમાં ફરીથી ઉમેરી શકાયા નથી. શું તમે તેમને અત્યારે ઉમેરવા માંગો છો?</string>
-			<key>other</key>
-			<string>%1$d સભ્યોને નવા ગ્રુપમાં ફરીથી ઉમેરી શકાયા નથી. શું તમે તેમને અત્યારે ઉમેરવા માંગો છો?</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

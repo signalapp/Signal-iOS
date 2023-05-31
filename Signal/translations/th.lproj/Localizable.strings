@@ -2123,7 +2123,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "การเปลี่ยนแปลงที่ยังไม่ได้บันทึก";
 
 /* Label for Edit History modal */
-"EDIT_HISTORY_LABEL" = "Edit History";
+"EDIT_HISTORY_LABEL" = "ประวัติการแก้ไข";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "คัดลอก";
@@ -3163,128 +3163,8 @@
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "เชิญเพื่อน";
 
-/* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "กลุ่มแบบเก่าคือกลุ่มที่ไม่รองรับคุณสมบัติของกลุ่มแบบใหม่ เช่น ระบบผู้ดูแลและคำอธิบายการเปลี่ยนแปลงในกลุ่มที่ละเอียดกว่า";
-
-/* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "กลุ่มแบบเก่า (Legacy Group) คืออะไร?";
-
-/* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "กลุ่มแบบเก่ายังไม่สามารถปรับรุ่นเป็นกลุ่มแบบใหม่ได้ แต่คุณสามารถสร้างกลุ่มแบบใหม่ด้วยสมาชิกจากกลุ่มเดิมได้ หากพวกเขาใช้ Signal รุ่นล่าสุดอยู่\n\nในอนาคต Signal จะมีวิธีให้ปรับรุ่นกลุ่มแบบเก่า";
-
-/* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "ฉันสามารถปรับรุ่นกลุ่มแบบเก่าได้หรือไม่?";
-
-/* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "ในการสร้างกลุ่มแบบใหม่นั้น สมาชิกทุกคนจะต้องปรับรุ่น Signal ให้เป็นรุ่นล่าสุด";
-
-/* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "กลุ่มแบบเก่า vs กลุ่มแบบใหม่";
-
-/* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "ปรับรุ่นกลุ่มนี้เพื่อเปิดใช้ความสามารถใหม่ เช่น @กล่าวถึง และระบบผู้ดูแล สมาชิกที่ไม่ได้เปิดเผยชื่อหรือรูปภาพในกลุ่มนี้จะได้รับคำเชิญให้เข้าร่วม %1$@";
-
-/* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "ไม่สามารถปรับรุ่นเป็นกลุ่มแบบใหม่ได้";
-
-/* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "กลุ่มนี้ไม่สามารถปรับรุ่นให้เป็นกลุ่มแบบใหม่ได้ เพราะมีจำนวนสมาชิกมากเกินไป จำนวนสมาชิกสูงสุดของกลุ่มที่สามารถปรับรุ่นได้คือ %1$@";
-
-/* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "เมื่อสมาชิกปัจจุบันของกลุ่มทุกคนได้ใช้ Signal รุ่นที่สามารถเข้าร่วมกลุ่มแบบใหม่ได้ กลุ่มนี้จะถูกปรับรุ่น";
-
-/* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "ประวัติการส่งข้อความและสื่อทั้งหมดจะได้รับการบันทึกไว้ก่อนการอัปเกรด";
-
-/* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "นี่คือกลุ่มแบบเก่า ความสามารถเช่น ระบบผู้ดูแลกลุ่ม จะใช้ได้เฉพาะในกลุ่มแบบใหม่ %1$@";
-
-/* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "กลุ่มแบบเก่านี้ยังไม่พร้อมจะปรับรุ่นเป็นกลุ่มแบบใหม่ %1$@";
-
-/* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "ไม่สามารถปรับรุ่นกลุ่มแบบเก่านี้ให้เป็นกลุ่มแบบใหม่ได้ เพราะมีขนาดใหญ่เกินไป %1$@";
-
-/* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "นี่คือกลุ่มแบบเก่า เพื่อเข้าถึงความสามารถใหม่เช่นการ @กล่าวถึง และระบบผู้ดูแลกลุ่ม %1$@";
-
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "กลุ่มแบบเก่า";
-
-/* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "คุณต้องตอบรับการเชิญเข้ากลุ่มนี้อีกครั้ง และคุณจะไม่ได้รับข้อความในกลุ่มจนกว่าคุณจะตอบรับ";
-
-/* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "อะไรคือกลุ่มแบบใหม่?";
-
-/* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "ประวัติการส่งข้อความและสื่อทั้งหมดได้ถูกบันทึกไว้ก่อนการอัปเกรด";
-
-/* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "กลุ่มแบบใหม่มีความสามารถเช่นการ @กล่าวถึง และระบบผู้ดูแลกลุ่ม และจะมีความสามารถเพิ่มเติมในอนาคต";
-
-/* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "กลุ่มแบบใหม่";
-
-/* Label for the 'add members' button in the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "เพิ่มสมาชิก";
-
-/* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "เพิ่มสมาชิกหรือไม่?";
-
-/* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "เพิ่มสมาชิกหรือไม่?";
-
-/* Label for the 'add members' button in the 're-add dropped groups members' banner. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "เพิ่มสมาชิก";
-
-/* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "สมาชิกรายนี้ไม่สามารถถูกเพิ่มไปยังกลุ่มแบบใหม่ได้โดยอัตโนมัติเมื่อมีการปรับรุ่น:";
-
-/* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "สมาชิกเหล่านี้ไม่สามารถถูกเพิ่มไปยังกลุ่มแบบใหม่ได้โดยอัตโนมัติเมื่อมีการปรับรุ่น:";
-
-/* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "ประวัติการส่งข้อความและสื่อทั้งหมดได้ถูกบันทึกไว้ก่อนการอัปเกรด";
-
-/* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "สมาชิกรายนี้ถูกลบออกจากกลุ่ม และจะไม่สามารถเข้าร่วมกลุ่มได้อีกจนกว่าจะอัปเกรด:";
-
-/* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "สมาชิกเหล่านี้ถูกลบออกจากกลุ่ม และจะไม่สามารถเข้าร่วมกลุ่มได้อีกจนกว่าจะอัปเกรด:";
-
-/* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "สมาชิกรายนี้จะต้องตอบรับคำเชิญเพื่อเข้าร่วมกลุ่มนี้อีกครั้ง และเขาจะไม่ได้รับข้อความกลุ่มจนกว่าเขาจะตอบรับ:";
-
-/* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "สมาชิกเหล่านี้จะต้องตอบรับคำเชิญเพื่อเข้าร่วมกลุ่มนี้อีกครั้ง และพวกเขาจะไม่ได้รับข้อความกลุ่มจนกว่าพวกเขาจะตอบรับ:";
-
-/* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "สมาชิกรายนี้ไม่สามารถร่วมกลุ่มแบบใหม่ได้ และจะถูกลบออกจากกลุ่ม:";
-
-/* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "สมาชิกเหล่านี้ไม่สามารถร่วมกลุ่มแบบใหม่ได้ และจะถูกลบออกจากกลุ่ม:";
-
-/* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "ปรับรุ่นเป็นกลุ่มแบบใหม่";
-
-/* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "ปรับรุ่นกลุ่มนี้";
-
-/* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "กลุ่มนี้ไม่สามารถปรับรุ่นเป็นกลุ่มแบบใหม่ได้ในขณะนี้";
-
-/* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "กลุ่มนี้ไม่สามารถปรับรุ่นเป็นกลุ่มแบบใหม่ได้ เนื่องจากคุณไม่ได้เชื่อมต่อกับอินเทอร์เน็ต กรุณาลองใหม่ภายหลัง";
-
-/* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "ไม่สามารถปรับรุ่นให้เสร็จสิ้นได้";
-
-/* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "ปรับรุ่นเป็นกลุ่มแบบใหม่";
-
-/* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "ปรับรุ่นกลุ่มนี้";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "ก่อนออกจากกลุ่ม ให้เลือกผู้ดูแลคนใหม่สำหรับกลุ่มนี้";
@@ -3532,6 +3412,21 @@
 /* Error indicating that a group could not be left. */
 "LEAVE_GROUP_FAILED" = "เกิดความผิดพลาดขณะออกจากกลุ่ม";
 
+/* Text in a sheet explaining details about 'Legacy Groups'. */
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+
+/* Title for a sheet explaining details about 'Legacy Groups'. */
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+
+/* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+
+/* Text in a sheet explaining details about 'New Groups'. */
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+
+/* Title for a sheet explaining details about 'New Groups'. */
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "รหัส QR นี้ใช้ไม่ได้ กรุณาตรวจสอบให้แน่ใจว่าคุณได้สแกนรหัส QR ที่แสดงบนอุปกรณ์ที่คุณต้องการเชื่อมโยง";
 
@@ -3749,7 +3644,7 @@
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "เวลาที่ส่งถูกคัดลอกแล้ว";
 
 /* Title for the 'edit history' section on the 'message details' view. */
-"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "View Edit History";
+"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "ดูประวัติการแก้ไข";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "ส่งจาก";

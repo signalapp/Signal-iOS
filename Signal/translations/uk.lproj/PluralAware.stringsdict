@@ -377,26 +377,6 @@
 			<string>Надіслати %1$d повідомлення</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Не вдалося повторно додати до нової групи %1$d учасника. Хочете додати його зараз?</string>
-			<key>few</key>
-			<string>Не вдалося повторно додати до нової групи %1$d учасників. Хочете додати їх зараз?</string>
-			<key>many</key>
-			<string>Не вдалося повторно додати до нової групи %1$d учасників. Хочете додати їх зараз?</string>
-			<key>other</key>
-			<string>Не вдалося повторно додати до нової групи %1$d учасника. Хочете додати їх зараз?</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

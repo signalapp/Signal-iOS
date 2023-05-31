@@ -301,22 +301,6 @@
 			<string>Enviar %1$d mensagens</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d membro não pôde voltar a ser adicionado ao &apos;Novo grupo&apos;. Deseja adicioná-lo agora?</string>
-			<key>other</key>
-			<string>%1$d membros não puderam voltar a ser adicionados ao &apos;Novo grupo&apos;. Deseja adicioná-los agora?</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

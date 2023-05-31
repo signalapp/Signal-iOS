@@ -339,24 +339,6 @@
 			<string>Trimite %1$d de mesaje</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d membru nu a putut fi adăugat noului grup. Vrei să-l adaugi acum?</string>
-			<key>few</key>
-			<string>%1$d membri nu au putut fi adăugați noului grup. Vrei să-i adaugi acum?</string>
-			<key>other</key>
-			<string>%1$d de membri nu au putut fi adăugați noului grup. Vrei să-i adaugi acum?</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

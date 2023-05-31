@@ -377,26 +377,6 @@
 			<string>שליחת%1$d הודעות</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>חבר/ה %1$d לא יכל/ה להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותו/ה עכשיו?</string>
-			<key>two</key>
-			<string>%1$d חברים לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
-			<key>many</key>
-			<string>%1$d חברים לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
-			<key>other</key>
-			<string>%1$d חברים לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

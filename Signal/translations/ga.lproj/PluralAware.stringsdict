@@ -415,28 +415,6 @@
 			<string>Seol %1$d teachtaireacht</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua athuair. An mian leat an duine sin a chur leis anois?</string>
-			<key>two</key>
-			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
-			<key>few</key>
-			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
-			<key>many</key>
-			<string>Níorbh fhéidir %1$d mball a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
-			<key>other</key>
-			<string>Níorbh fhéidir %1$d ball a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
-		</dict>
-	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
