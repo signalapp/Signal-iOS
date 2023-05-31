@@ -50,15 +50,35 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
     internal(set) public var recipientUUID: String?
 
     @objc
-    public init(
+    public convenience init(
         contact: Contact?,
         contactAvatarHash: Data?,
         multipleAccountLabelText: String?,
         recipientPhoneNumber: String?,
         recipientUUID: String?
     ) {
-        self.uniqueId = UUID().uuidString
+        self.init(
+            id: nil,
+            uniqueId: UUID().uuidString,
+            contact: contact,
+            contactAvatarHash: contactAvatarHash,
+            multipleAccountLabelText: multipleAccountLabelText,
+            recipientPhoneNumber: recipientPhoneNumber,
+            recipientUUID: recipientUUID
+        )
+    }
 
+    private init(
+        id: RowId?,
+        uniqueId: String,
+        contact: Contact?,
+        contactAvatarHash: Data?,
+        multipleAccountLabelText: String?,
+        recipientPhoneNumber: String?,
+        recipientUUID: String?
+    ) {
+        self.id = id
+        self.uniqueId = uniqueId
         self.contact = contact
         self.contactAvatarHash = contactAvatarHash
         self.multipleAccountLabelText = multipleAccountLabelText ?? ""
@@ -380,6 +400,8 @@ private extension String {
 extension SignalAccount: NSCopying {
     public func copy(with zone: NSZone? = nil) -> Any {
         return SignalAccount(
+            id: self.id,
+            uniqueId: self.uniqueId,
             contact: self.contact,
             contactAvatarHash: self.contactAvatarHash,
             multipleAccountLabelText: self.multipleAccountLabelText,
