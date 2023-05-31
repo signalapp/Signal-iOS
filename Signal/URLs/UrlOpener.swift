@@ -135,7 +135,7 @@ class UrlOpener {
                 return owsFailDebug("Ignoring URL; not primary device.")
             }
             let linkedDevicesViewController = LinkedDevicesTableViewController()
-            let linkDeviceViewController = OWSLinkDeviceViewController()
+            let linkDeviceViewController = LinkDeviceViewController()
             linkDeviceViewController.delegate = linkedDevicesViewController
 
             let navigationController = AppSettingsViewController.inModalNavigationController()
@@ -145,7 +145,7 @@ class UrlOpener {
             navigationController.setViewControllers(viewControllers, animated: false)
 
             rootViewController.presentFormSheet(navigationController, animated: false) {
-                linkDeviceViewController.confirmProvisioning(with: deviceProvisioningURL)
+                linkDeviceViewController.confirmProvisioningWithUrl(deviceProvisioningURL)
             }
         }
     }

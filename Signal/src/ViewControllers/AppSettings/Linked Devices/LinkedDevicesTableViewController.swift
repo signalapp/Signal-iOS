@@ -174,7 +174,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     private func showLinkNewDeviceView() {
         AssertIsOnMainThread()
 
-        let linkView = OWSLinkDeviceViewController()
+        let linkView = LinkDeviceViewController()
         linkView.delegate = self
         navigationController?.pushViewController(linkView, animated: true)
     }
@@ -356,7 +356,7 @@ extension LinkedDevicesTableViewController: DatabaseChangeDelegate {
 
 // MARK: -
 
-extension LinkedDevicesTableViewController: OWSLinkDeviceViewControllerDelegate {
+extension LinkedDevicesTableViewController: LinkDeviceViewControllerDelegate {
 
     func expectMoreDevices() {
 

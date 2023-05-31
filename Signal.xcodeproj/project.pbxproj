@@ -181,7 +181,6 @@
 		340B06C723C8DA2600929588 /* StorageService+GroupsV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */; };
 		340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */; };
 		340D900024FEE6A9007B5504 /* GroupInviteLinksUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */; };
-		340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */; };
 		3412F9BB2350D0840022EDAA /* ThreadPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */; };
 		3414896925C9B6490098E3ED /* CurrencyPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414896825C9B6490098E3ED /* CurrencyPickerViewController.swift */; };
 		3415217525B0CB31009F177F /* CVAttachmentProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3415217425B0CB30009F177F /* CVAttachmentProgressView.swift */; };
@@ -743,7 +742,7 @@
 		505B228329F73ABE005578F3 /* OWSOutgoingResendResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505B228229F73ABE005578F3 /* OWSOutgoingResendResponse.swift */; };
 		505B22A029F88DD6005578F3 /* IdentifiedIncomingEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505B229F29F88DD6005578F3 /* IdentifiedIncomingEnvelope.swift */; };
 		505C2ED029937B5B00C23FB2 /* Data+KeyVersionByte.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */; };
-		505C2ED42997015800C23FB2 /* OWSLinkDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED32997015800C23FB2 /* OWSLinkDeviceViewController.swift */; };
+		505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */; };
 		505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */; };
 		505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */; };
 		505C2EDB29974D2000C23FB2 /* StorageServiceContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */; };
@@ -2532,8 +2531,6 @@
 		340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupV2UpdatesImpl.swift; sourceTree = "<group>"; };
 		340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupInviteLinksUI.swift; sourceTree = "<group>"; };
 		340E9ABF235F876800FA362C /* ForwardMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardMessageViewController.swift; sourceTree = "<group>"; };
-		340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLinkDeviceViewController.m; sourceTree = "<group>"; };
-		340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkDeviceViewController.h; sourceTree = "<group>"; };
 		340FC89D204DAC8D007AEB0F /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewController.h; sourceTree = "<group>"; };
 		340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewScanController.m; sourceTree = "<group>"; };
 		340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewController.m; sourceTree = "<group>"; };
@@ -3243,7 +3240,7 @@
 		505B228229F73ABE005578F3 /* OWSOutgoingResendResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingResendResponse.swift; sourceTree = "<group>"; };
 		505B229F29F88DD6005578F3 /* IdentifiedIncomingEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifiedIncomingEnvelope.swift; sourceTree = "<group>"; };
 		505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+KeyVersionByte.swift"; sourceTree = "<group>"; };
-		505C2ED32997015800C23FB2 /* OWSLinkDeviceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLinkDeviceViewController.swift; sourceTree = "<group>"; };
+		505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkDeviceViewController.swift; sourceTree = "<group>"; };
 		505C2ED529971D4E00C23FB2 /* DeviceLimitExceededError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLimitExceededError.swift; sourceTree = "<group>"; };
 		505C2ED82997422D00C23FB2 /* SelfSignedIdentityTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentityTest.swift; sourceTree = "<group>"; };
 		505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceContactTest.swift; sourceTree = "<group>"; };
@@ -7276,10 +7273,8 @@
 		887B6DCD25F6C44800E677D4 /* Linked Devices */ = {
 			isa = PBXGroup;
 			children = (
+				505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */,
 				3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */,
-				340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */,
-				340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */,
-				505C2ED32997015800C23FB2 /* OWSLinkDeviceViewController.swift */,
 			);
 			path = "Linked Devices";
 			sourceTree = "<group>";
@@ -11552,6 +11547,7 @@
 				45C845AD291466C0005F6EA5 /* JournalingOrderedDictionary.swift in Sources */,
 				5045F44229E0DB7100058E5F /* LaunchJobs.swift in Sources */,
 				D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */,
+				505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */,
 				3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */,
 				76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
@@ -11616,8 +11612,6 @@
 				AC12B86D0DA4943DF1DE9CE6 /* OWSAddToContactViewController.swift in Sources */,
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
 				34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */,
-				340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */,
-				505C2ED42997015800C23FB2 /* OWSLinkDeviceViewController.swift in Sources */,
 				5011D9732A04721A000FE8E5 /* OWSOrphanDataCleaner.m in Sources */,
 				5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */,
 				887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */,
