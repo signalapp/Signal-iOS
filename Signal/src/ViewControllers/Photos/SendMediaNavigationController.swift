@@ -164,6 +164,7 @@ class SendMediaNavigationController: OWSNavigationController {
         let viewController = ImagePickerGridController()
         viewController.delegate = self
         viewController.dataSource = self
+        self.delegate = viewController
         return viewController
     }()
 
@@ -282,6 +283,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
 
             BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
             let presentedViewController = OWSNavigationController(rootViewController: self.mediaLibraryViewController)
+            presentedViewController.delegate = self.mediaLibraryViewController
             self.presentFullScreen(presentedViewController, animated: true)
         }
     }

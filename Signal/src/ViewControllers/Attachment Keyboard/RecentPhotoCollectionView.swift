@@ -48,7 +48,7 @@ class RecentPhotosCollectionView: UICollectionView {
         library.add(delegate: self)
         return library
     }()
-    private lazy var collection = photoLibrary.defaultPhotoCollection()
+    private lazy var collection = photoLibrary.defaultPhotoAlbum()
     private lazy var collectionContents = collection.contents(ascending: false, limit: maxRecentPhotos)
 
     var itemSize: CGSize = .zero {
