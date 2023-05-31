@@ -19,6 +19,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let storageServiceManager: StorageServiceManager
     private let syncManager: SyncManagerProtocolSwift
     private let tsAccountManager: SVR.Shims.TSAccountManager
+    private let tsConstants: TSConstantsProtocol
     private let twoFAManager: SVR.Shims.OWS2FAManager
 
     public convenience init(
@@ -30,6 +31,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocolSwift,
         tsAccountManager: SVR.Shims.TSAccountManager,
+        tsConstants: TSConstantsProtocol,
         twoFAManager: SVR.Shims.OWS2FAManager
     ) {
         self.init(
@@ -42,6 +44,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
+            tsConstants: tsConstants,
             twoFAManager: twoFAManager
         )
     }
@@ -58,6 +61,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocolSwift,
         tsAccountManager: SVR.Shims.TSAccountManager,
+        tsConstants: TSConstantsProtocol,
         twoFAManager: SVR.Shims.OWS2FAManager
     ) {
         self.clientWrapper = clientWrapper
@@ -70,15 +74,21 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.storageServiceManager = storageServiceManager
         self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager
+        self.tsConstants = tsConstants
         self.twoFAManager = twoFAManager
 
         self.scheduler = schedulers.queue(label: "org.signal.svr2", qos: .userInitiated)
     }
 
     public func warmCaches() {
-        // TODO: migrate to any new enclave. Make sure to durably wipe any old
-        // enclaves when doing so, retrying until we succeed or the enclave stops existing.
-        fatalError("Unimplemented!")
+        // Require migrations to succeed before we check for old stuff
+        // to wipe, because migrations add old stuff to be wiped.
+        // If a migration isn't needed, this returns a success immediately.
+        migrateEnclavesIfNecessary()
+            .done(on: scheduler) { [weak self] in
+                self?.wipeOldEnclavesIfNeeded(auth: .implicit)
+            }
+            .cauterize()
     }
 
     // MARK: - Key Existence
@@ -148,7 +158,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     public func acquireRegistrationLockForNewNumber(with pin: String, and auth: SVRAuthCredential) -> Promise<String> {
         return doRestore(pin: pin, authMethod: .svrAuth(auth, backup: nil)).then(on: scheduler) { restoreResult -> Promise<String> in
             switch restoreResult {
-            case .success(masterKey: let masterKey):
+            case .success(let masterKey, _):
+                // Ignore whether we restored from an old enclave; we aren't backing up to the new enclave
+                // on this code path so its not safe to wipe the old one anyway.
                 guard let reglockToken = Self.deriveReglockKey(masterKey: masterKey)?.canonicalStringRepresentation else {
                     return .init(error: SVR.SVRError.assertion)
                 }
@@ -183,13 +195,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     public func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
-        // TODO: if we restore from an old enclave, we should wipe it once we back up to the new enclave.
         doRestore(pin: pin, authMethod: authMethod)
             .then(on: scheduler) { [weak self] restoreResult in
                 switch restoreResult {
                 case .backupMissing, .invalidPin, .genericError, .networkError, .decryptionError, .unretainedError, .serverError:
                     return .value(restoreResult.asSVRResult)
-                case .success(let masterKey):
+                case .success(let masterKey, let enclaveWeRestoredFrom):
                     guard let self else {
                         return .value(.genericError(SVR.SVRError.assertion))
                     }
@@ -203,7 +214,18 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             masterKey: masterKey,
                             authMethod: authMethod
                         )
-                        .map(on: self.schedulers.sync) {
+                        .map(on: self.schedulers.sync) { [weak self] in
+                            // If the backup succeeds, and the restore was from some old enclave,
+                            // delete from that older enclave.
+                            if enclaveWeRestoredFrom.stringValue != self?.tsConstants.svr2Enclave.stringValue {
+                                // Strictly speaking, this happens in a separate transaction from when we mark the
+                                // backup/expose complete. But no matter what this is best effort; the client
+                                // can be uninstalled before it gets a chance to delete the old backup, for example.
+                                self?.db.write { tx in
+                                    self?.addOldEnclaveToDeleteFrom(enclaveWeRestoredFrom, tx)
+                                }
+                                self?.wipeOldEnclavesIfNeeded(auth: authMethod)
+                            }
                             return .success
                         }
                         .recover(on: self.schedulers.sync) { error in
@@ -217,7 +239,27 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     public func deleteKeys() -> Promise<Void> {
-        fatalError("Unimplemented!")
+        doDelete(
+            mrEnclave: tsConstants.svr2Enclave,
+            authMethod: .implicit
+        ).then(on: scheduler) { [weak self] (result: DeleteResult) -> Promise<Void> in
+            // Historically, this has cleared our local keys regardless of whether
+            // the remote request succeeded.
+            // This is because (a) other state in OWS2FAManager is wiped regardless
+            // of outcome, and (b) callsites ignore what the result is.
+            // This can probably be revisited at some point.
+            self?.db.write { tx in
+                self?.clearKeys(transaction: tx)
+            }
+            switch result {
+            case .success:
+                return .value(())
+            case .unretainedError, .serverError:
+                return .init(error: SVR.SVRError.assertion)
+            case .genericError(let error), .networkError(let error):
+                return .init(error: error)
+            }
+        }
     }
 
     public func clearKeys(transaction: DBWriteTransaction) {
@@ -403,7 +445,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         masterKey: Data,
         authMethod: SVR.AuthMethod
     ) -> Promise<Void> {
-        let config = SVR2WebsocketConfigurator(authMethod: authMethod)
+        let config = SVR2WebsocketConfigurator(mrenclave: tsConstants.svr2Enclave, authMethod: authMethod)
         return makeHandshakeAndOpenConnection(config)
             .then(on: scheduler) { [weak self] connection -> Promise<Void> in
                 guard let self else {
@@ -658,7 +700,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     // MARK: - Restore Request
 
     private enum RestoreResult {
-        case success(masterKey: Data)
+        case success(masterKey: Data, mrEnclave: MrEnclave)
         case backupMissing
         case invalidPin(remainingAttempts: UInt32)
         case decryptionError
@@ -684,7 +726,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         pin: String,
         authMethod: SVR.AuthMethod
     ) -> Guarantee<RestoreResult> {
-        var enclavesToTry = [TSConstants.svr2Enclave] + TSConstants.svr2PreviousEnclaves
+        var enclavesToTry = [tsConstants.svr2Enclave] + tsConstants.svr2PreviousEnclaves
         let weakSelf = Weak(value: self)
         func tryNextEnclave() -> Guarantee<RestoreResult> {
             guard enclavesToTry.isEmpty.negated else {
@@ -798,7 +840,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                                 transaction: tx
                             )
                         }
-                        return .success(masterKey: masterKey)
+                        return .success(masterKey: masterKey, mrEnclave: mrEnclave)
                     } catch {
                         return .decryptionError
                     }
@@ -811,6 +853,205 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     return .value(.genericError(error))
                 }
             }
+        }
+    }
+
+    // MARK: - Delete Request
+
+    private enum DeleteResult {
+        case success
+        case serverError
+        case networkError(Error)
+        case genericError(Error)
+        case unretainedError
+    }
+
+    private func doDelete(
+        mrEnclave: MrEnclave,
+        authMethod: SVR.AuthMethod
+    ) -> Guarantee<DeleteResult> {
+        let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
+        return makeHandshakeAndOpenConnection(config)
+            .then(on: scheduler) { [weak self] connection -> Guarantee<DeleteResult> in
+                guard let self else {
+                    return .value(.unretainedError)
+                }
+                return self.performDeleteRequest(
+                    mrEnclave: mrEnclave,
+                    connection: connection,
+                    authedAccount: authMethod.authedAccount
+                )
+            }
+            .recover(on: SyncScheduler()) { error in
+                if error.isNetworkFailureOrTimeout {
+                    return .value(.networkError(error))
+                }
+                return .value(.genericError(error))
+            }
+    }
+
+    private func performDeleteRequest(
+        mrEnclave: MrEnclave,
+        connection: WebsocketConnection,
+        authedAccount: AuthedAccount
+    ) -> Guarantee<DeleteResult> {
+        var request = SVR2Proto_Request()
+        request.delete = SVR2Proto_DeleteRequest()
+        return connection.sendRequestAndReadResponse(request, unretainedError: .genericError(SVR.SVRError.assertion)) { [weak self] makeRequest in
+            guard let self else {
+                return .value(.unretainedError)
+            }
+            return makeRequest().map(on: self.scheduler) { (response) -> DeleteResult in
+                guard response.hasDelete else {
+                    return .serverError
+                }
+                return .success
+            }
+            .recover(on: self.schedulers.sync) { error -> Guarantee<DeleteResult> in
+                if error.isNetworkFailureOrTimeout {
+                    return .value(.networkError(error))
+                } else {
+                    return .value(.genericError(error))
+                }
+            }
+        }
+    }
+
+    // MARK: Durable deletes
+
+    private static let oldEnclavesToDeleteFromKey = "OldEnclavesToDeleteFrom"
+
+    private func getOldEnclavesToDeleteFrom(_ tx: DBReadTransaction) -> [MrEnclave] {
+        // This is decoding a Set<String>. It won't actually ever fail, so just eat up errors.
+        let enclaveStrings: Set<String>? = try? kvStore.getCodableValue(
+            forKey: Self.oldEnclavesToDeleteFromKey,
+            transaction: tx
+        )
+        guard var enclaveStrings else {
+            return []
+        }
+        var enclavesToDeleteFrom = [MrEnclave]()
+        for enclave in tsConstants.svr2PreviousEnclaves {
+            if enclaveStrings.remove(enclave.stringValue) != nil {
+                enclavesToDeleteFrom.append(enclave)
+            }
+        }
+        return enclavesToDeleteFrom
+    }
+
+    private func addOldEnclaveToDeleteFrom(_ enclave: MrEnclave, _ tx: DBWriteTransaction) {
+        // This is (en/de)coding a Set<String>. It won't actually ever fail, so just eat up errors.
+        var enclaveStrings: Set<String> = (try? kvStore.getCodableValue(
+            forKey: Self.oldEnclavesToDeleteFromKey,
+            transaction: tx
+        )) ?? Set()
+        enclaveStrings.insert(enclave.stringValue)
+        cleanUpForgottenEnclaves(in: &enclaveStrings)
+        try? kvStore.setCodable(enclaveStrings, key: Self.oldEnclavesToDeleteFromKey, transaction: tx)
+    }
+
+    private func markOldEnclaveDeleted(_ enclave: MrEnclave, _ tx: DBWriteTransaction) {
+        // This is (en/de)coding a Set<String>. It won't actually ever fail, so just eat up errors.
+        var enclaveStrings: Set<String> = (try? kvStore.getCodableValue(
+            forKey: Self.oldEnclavesToDeleteFromKey,
+            transaction: tx
+        )) ?? Set()
+        enclaveStrings.remove(enclave.stringValue)
+        cleanUpForgottenEnclaves(in: &enclaveStrings)
+        try? kvStore.setCodable(enclaveStrings, key: Self.oldEnclavesToDeleteFromKey, transaction: tx)
+    }
+
+    private func cleanUpForgottenEnclaves(in enclaveStrings: inout Set<String>) {
+        let knownEnclaves = Set(tsConstants.svr2PreviousEnclaves.map(\.stringValue))
+        enclaveStrings.formIntersection(knownEnclaves)
+    }
+
+    private func wipeOldEnclavesIfNeeded(auth: SVR.AuthMethod) {
+        var enclavesToDeleteFrom = db.read(block: self.getOldEnclavesToDeleteFrom)
+        let weakSelf = Weak(value: self)
+        func doNextDelete() -> Guarantee<DeleteResult> {
+            guard
+                let self = weakSelf.value,
+                enclavesToDeleteFrom.isEmpty.negated
+            else {
+                return .value(.unretainedError)
+            }
+            let enclave = enclavesToDeleteFrom.removeFirst()
+            return self.doDelete(mrEnclave: enclave, authMethod: auth).then(on: self.scheduler) { result in
+                switch result {
+                case .success:
+                    weakSelf.value?.db.write { tx in
+                        weakSelf.value?.markOldEnclaveDeleted(enclave, tx)
+                    }
+                case .serverError, .networkError, .genericError, .unretainedError:
+                    Logger.error("Failed to wipe old enclave; will retry eventually.")
+                }
+                return doNextDelete()
+            }
+        }
+        _ = doNextDelete()
+    }
+
+    // MARK: - Migrating enclaves
+
+    /// If there is a newer enclave that the one we most recent backed up to, backs up known
+    /// master key data to it instead, marking the old enclave for deletion.
+    /// If there is no migration needed, returns a success promise immediately.
+    private func migrateEnclavesIfNecessary() -> Promise<Void> {
+        return firstly(on: scheduler) { [weak self] () -> (String, String, Data)? in
+            return self?.db.read { tx in
+                guard
+                    let self,
+                    self.tsAccountManager.isRegisteredAndReady(transaction: tx),
+                    let masterKey = self.localStorage.getMasterKey(tx),
+                    let pin = self.twoFAManager.pinCode(transaction: tx)
+                else {
+                    // Need to be registered with a master key and PIN to migrate.
+                    return nil
+                }
+                let currentEnclaveString = self.tsConstants.svr2Enclave.stringValue
+                guard
+                    self.localStorage.getIsMasterKeyBackedUp(tx),
+                    let backedUpEnclaveString = self.localStorage.getSVR2MrEnclaveStringValue(tx),
+                    backedUpEnclaveString != currentEnclaveString
+                else {
+                    // We only migrate if we actually have a backup on some enclave that isn't
+                    // the current one.
+                    return nil
+                }
+                return (backedUpEnclaveString, pin, masterKey)
+            }
+        }.then(on: scheduler) { [weak self] values -> Promise<Void> in
+            guard let self, let (backedUpEnclaveString, pin, masterKey) = values else {
+                // No migration needed.
+                return .value(())
+            }
+
+            Logger.info("Migrating SVR2 Enclaves")
+            return self
+                .doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: .implicit)
+                .done(on: self.scheduler) { [weak self] in
+                    Logger.info("Successfully migrated SVR2 enclave")
+                    guard let self else {
+                        return
+                    }
+                    if
+                        let backedUpEnclave = self.tsConstants.svr2PreviousEnclaves.first(where: {
+                            $0.stringValue == backedUpEnclaveString
+                        }) {
+                        // Strictly speaking, this happens in a separate transaction from when we mark the
+                        // backup/expose complete. But no matter what this is best effort; the client
+                        // can be uninstalled before it gets a chance to delete the old backup, for example.
+                        self.db.write { tx in
+                            self.addOldEnclaveToDeleteFrom(backedUpEnclave, tx)
+                        }
+                        // We start wiping any old enclaves right after doing this migration,
+                        // no need to kick it off here.
+                    }
+                }
+                .catch(on: self.schedulers.sync) { _ in
+                    owsFailDebug("Failed to migrate SVR2 enclave")
+                }
         }
     }
 

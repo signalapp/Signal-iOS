@@ -49,6 +49,7 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
                 storageServiceManager: storageServiceManager,
                 syncManager: syncManager,
                 tsAccountManager: accountManager,
+                tsConstants: tsConstants,
                 twoFAManager: twoFAManager
             ))
         }

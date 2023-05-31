@@ -86,9 +86,11 @@ internal class MockSVR2ClientWrapper: SVR2ClientWrapper {
 
     class MockSVR2PinHash: SVR2PinHash {
 
-        init() {}
+        init(utf8Pin: Data) {
+            self.accessKey = utf8Pin
+        }
 
-        var accessKey: Data = Data()
+        var accessKey: Data
 
         var didEncryptMasterKey: (_ masterKey: Data) throws -> Data = { return $0 }
 
@@ -103,8 +105,8 @@ internal class MockSVR2ClientWrapper: SVR2ClientWrapper {
         }
     }
 
-    public var didHashPin: ((_ utf8Pin: Data, _ utf8Username: Data) throws -> MockSVR2PinHash) = { _, _ in
-        return MockSVR2PinHash()
+    public var didHashPin: ((_ utf8Pin: Data, _ utf8Username: Data) throws -> MockSVR2PinHash) = { utf8Pin, _ in
+        return MockSVR2PinHash(utf8Pin: utf8Pin)
     }
 
     func hashPin(

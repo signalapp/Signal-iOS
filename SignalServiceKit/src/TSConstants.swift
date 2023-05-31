@@ -299,3 +299,74 @@ private class TSConstantsStaging: TSConstantsProtocol {
     // See: GroupsV2Impl.verifyServerPublicParams(...)
     public let serverPublicParamsBase64 = "ABSY21VckQcbSXVNCGRYJcfWHiAMZmpTtTELcDmxgdFbtp/bWsSxZdMKzfCp8rvIs8ocCU3B37fT3r4Mi5qAemeGeR2X+/YmOGR5ofui7tD5mDQfstAI9i+4WpMtIe8KC3wU5w3Inq3uNWVmoGtpKndsNfwJrCg0Hd9zmObhypUnSkfYn2ooMOOnBpfdanRtrvetZUayDMSC5iSRcXKpdlukrpzzsCIvEwjwQlJYVPOQPj4V0F4UXXBdHSLK05uoPBCQG8G9rYIGedYsClJXnbrgGYG3eMTG5hnx4X4ntARBgELuMWWUEEfSK0mjXg+/2lPmWcTZWR9nkqgQQP0tbzuiPm74H2wMO4u1Wafe+UwyIlIT9L7KLS19Aw8r4sPrXZSSsOZ6s7M1+rTJN0bI5CKY2PX29y5Ok3jSWufIKcgKOnWoP67d5b2du2ZVJjpjfibNIHbT/cegy/sBLoFwtHogVYUewANUAXIaMPyCLRArsKhfJ5wBtTminG/PAvuBdJ70Z/bXVPf8TVsR292zQ65xwvWTejROW6AZX6aqucUj"
 }
+
+#if TESTABLE_BUILD
+
+public class TSConstantsMock: TSConstantsProtocol {
+
+    public init() {}
+
+    private let defaultValues = TSConstantsProduction()
+
+    public lazy var mainServiceIdentifiedURL = defaultValues.mainServiceIdentifiedURL
+
+    public lazy var mainServiceUnidentifiedURL = defaultValues.mainServiceUnidentifiedURL
+
+    public lazy var textSecureCDN0ServerURL = defaultValues.textSecureCDN0ServerURL
+
+    public lazy var textSecureCDN2ServerURL = defaultValues.textSecureCDN2ServerURL
+
+    public lazy var contactDiscoveryV2URL = defaultValues.contactDiscoveryV2URL
+
+    public lazy var keyBackupURL = defaultValues.keyBackupURL
+
+    public lazy var storageServiceURL = defaultValues.storageServiceURL
+
+    public lazy var sfuURL = defaultValues.sfuURL
+
+    public lazy var sfuTestURL = defaultValues.sfuTestURL
+
+    public lazy var svr2URL = defaultValues.svr2URL
+
+    public lazy var registrationCaptchaURL = defaultValues.registrationCaptchaURL
+
+    public lazy var challengeCaptchaURL = defaultValues.challengeCaptchaURL
+
+    public lazy var kUDTrustRoot = defaultValues.kUDTrustRoot
+
+    public lazy var updatesURL = defaultValues.updatesURL
+
+    public lazy var updates2URL = defaultValues.updates2URL
+
+    public lazy var censorshipReflectorHost = defaultValues.censorshipReflectorHost
+
+    public lazy var serviceCensorshipPrefix = defaultValues.serviceCensorshipPrefix
+
+    public lazy var cdn0CensorshipPrefix = defaultValues.cdn0CensorshipPrefix
+
+    public lazy var cdn2CensorshipPrefix = defaultValues.cdn2CensorshipPrefix
+
+    public lazy var keyBackupCensorshipPrefix = defaultValues.keyBackupCensorshipPrefix
+
+    public lazy var storageServiceCensorshipPrefix = defaultValues.storageServiceCensorshipPrefix
+
+    public lazy var contactDiscoveryV2CensorshipPrefix = defaultValues.contactDiscoveryV2CensorshipPrefix
+
+    public lazy var svr2CensorshipPrefix = defaultValues.svr2CensorshipPrefix
+
+    public lazy var contactDiscoveryV2MrEnclave = defaultValues.contactDiscoveryV2MrEnclave
+
+    public lazy var keyBackupEnclave = defaultValues.keyBackupEnclave
+
+    public lazy var keyBackupPreviousEnclaves = defaultValues.keyBackupPreviousEnclaves
+
+    public lazy var svr2Enclave = defaultValues.svr2Enclave
+
+    public lazy var svr2PreviousEnclaves = defaultValues.svr2PreviousEnclaves
+
+    public lazy var applicationGroup = defaultValues.applicationGroup
+
+    public lazy var serverPublicParamsBase64 = defaultValues.serverPublicParamsBase64
+}
+
+#endif

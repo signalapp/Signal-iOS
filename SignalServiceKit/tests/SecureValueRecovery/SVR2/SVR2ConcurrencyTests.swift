@@ -39,6 +39,7 @@ class SVR2ConcurrencyTests: XCTestCase {
             storageServiceManager: FakeStorageServiceManager(),
             syncManager: OWSMockSyncManager(),
             tsAccountManager: SVR.TestMocks.TSAccountManager(),
+            tsConstants: TSConstants.shared,
             twoFAManager: SVR.TestMocks.OWS2FAManager()
         )
     }
