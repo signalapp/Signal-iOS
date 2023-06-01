@@ -309,11 +309,7 @@ public class GroupsV2IncomingChanges: Dependencies {
                 uuid = try groupV2Params.uuid(forUserId: userId)
             } catch {
                 groupMembershipBuilder.addInvalidInvite(userId: userId, addedByUserId: addedByUserId)
-                if DebugFlags.groupsV2ignoreCorruptInvites {
-                    Logger.warn("Error parsing uuid: \(error)")
-                } else {
-                    owsFailDebug("Error parsing uuid: \(error)")
-                }
+                owsFailDebug("Error parsing uuid: \(error)")
                 continue
             }
             guard !oldGroupMembership.isMemberOfAnyKind(uuid) else {

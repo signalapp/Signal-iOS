@@ -43,7 +43,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             // Otherwise, send them & mark that we sent them for this app version.
             self.sendSyncRequestMessage(.blocked, transaction: transaction)
             self.sendSyncRequestMessage(.configuration, transaction: transaction)
-            self.sendSyncRequestMessage(.groups, transaction: transaction)
             self.sendSyncRequestMessage(.contacts, transaction: transaction)
             self.sendSyncRequestMessage(.keys, transaction: transaction)
 
@@ -55,7 +54,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
             return Promise.when(fulfilled: [
                 NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).asVoid(),
-                NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).asVoid(),
                 NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid(),
                 NotificationCenter.default.observe(once: BlockingManager.blockedSyncDidComplete).asVoid(),
                 NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
@@ -187,26 +185,19 @@ public extension OWSSyncManager {
         databaseStorage.asyncWrite { transaction in
             self.sendSyncRequestMessage(.blocked, transaction: transaction)
             self.sendSyncRequestMessage(.configuration, transaction: transaction)
-            self.sendSyncRequestMessage(.groups, transaction: transaction)
             self.sendSyncRequestMessage(.contacts, transaction: transaction)
         }
 
-        let notificationsPromise: Promise<([(threadId: String, sortOrder: UInt32)], [(threadId: String, sortOrder: UInt32)], Void, Void)> = Promise.when(fulfilled:
+        let notificationsPromise: Promise<([(threadId: String, sortOrder: UInt32)], Void, Void)> = Promise.when(fulfilled:
             NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).map { $0.newThreads }.timeout(seconds: timeoutSeconds, substituteValue: []),
-            NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).map { $0.newThreads }.timeout(seconds: timeoutSeconds, substituteValue: []),
             NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds),
             NotificationCenter.default.observe(once: BlockingManager.blockedSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds)
         )
 
-        return notificationsPromise.map { (newContactThreads, newGroupThreads, _, _) -> [String] in
+        return notificationsPromise.map { (newContactThreads, _, _) -> [String] in
             var newThreads: [String: UInt32] = [:]
 
             for newThread in newContactThreads {
-                assert(newThreads[newThread.threadId] == nil)
-                newThreads[newThread.threadId] = newThread.sortOrder
-            }
-
-            for newThread in newGroupThreads {
                 assert(newThreads[newThread.threadId] == nil)
                 newThreads[newThread.threadId] = newThread.sortOrder
             }
@@ -225,8 +216,6 @@ public extension OWSSyncManager {
             owsFailDebug("should not request unknown")
         case .contacts:
             Logger.info("contacts")
-        case .groups:
-            Logger.info("groups")
         case .blocked:
             Logger.info("blocked")
         case .configuration:
@@ -257,8 +246,6 @@ public extension OWSSyncManager {
 private extension Notification {
     var newThreads: [(threadId: String, sortOrder: UInt32)] {
         switch self.object {
-        case let groupSync as IncomingGroupSyncOperation:
-            return groupSync.newThreads
         case let contactSync as IncomingContactSyncOperation:
             return contactSync.newThreads
         default:

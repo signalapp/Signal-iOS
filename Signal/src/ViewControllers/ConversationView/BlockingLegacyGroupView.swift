@@ -6,7 +6,7 @@
 import SignalMessaging
 import SignalUI
 
-class BlockingGroupMigrationView: UIStackView {
+class BlockingLegacyGroupView: UIStackView {
 
     private weak var fromViewController: UIViewController?
 

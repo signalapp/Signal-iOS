@@ -331,12 +331,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                                              isSentUpdate:(BOOL)isSentUpdate
                                               transaction:(SDSAnyWriteTransaction *)transaction;
 
-// This method is used to rewrite the recipient list with a single recipient.
-// It is used to reply to a "group info request", which should only be
-// delivered to the requestor.
-- (void)updateWithSendingToSingleGroupRecipient:(SignalServiceAddress *)singleGroupRecipient
-                                    transaction:(SDSAnyWriteTransaction *)transaction;
-
 // This method is used to record a successful "read" by one recipient.
 - (void)updateWithReadRecipient:(SignalServiceAddress *)recipientAddress
               recipientDeviceId:(uint32_t)deviceId

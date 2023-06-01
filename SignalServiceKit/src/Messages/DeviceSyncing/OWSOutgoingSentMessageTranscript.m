@@ -154,17 +154,8 @@ NS_ASSUME_NONNULL_BEGIN
 
             switch (groupThread.groupModel.groupsVersion) {
                 case GroupsVersionV1: {
-                    SSKProtoGroupContextBuilder *groupBuilder =
-                        [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId];
-                    [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
-                    NSError *error;
-                    SSKProtoGroupContext *_Nullable groupContextProto = [groupBuilder buildAndReturnError:&error];
-                    if (error || !groupContextProto) {
-                        OWSFailDebug(@"could not build protobuf: %@.", error);
-                        return NO;
-                    }
-                    [dataBuilder setGroup:groupContextProto];
-                    break;
+                    OWSLogError(@"[GV1] Failed to build sync message contents for V1 groups message!");
+                    return NO;
                 }
                 case GroupsVersionV2: {
                     if (![groupThread.groupModel isKindOfClass:[TSGroupModelV2 class]]) {

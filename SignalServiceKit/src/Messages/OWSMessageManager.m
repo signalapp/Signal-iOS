@@ -17,7 +17,6 @@
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSGroupInfoRequestMessage.h"
 #import "OWSIdentityManager.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSOutgoingReceiptManager.h"
@@ -348,101 +347,12 @@ NS_ASSUME_NONNULL_BEGIN
 // We don't want to do that if:
 //
 // * The data message is malformed.
-// * The data message is a v1 group update, info request, quit -
-//   anything but a "delivery".
-// * The data message corresponds to an unknown v1 group and we are
-//   responding with a group info request.
 // * The local user is not in the group.
 - (nullable TSThread *)preprocessDataMessage:(SSKProtoDataMessage *)dataMessage
                                     envelope:(SSKProtoEnvelope *)envelope
                                  transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (dataMessage.group != nil) {
-        // V1 Group.
-        SSKProtoGroupContext *groupContext = dataMessage.group;
-        NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
-        if (![GroupManager isValidGroupId:groupId groupsVersion:GroupsVersionV1]) {
-            OWSFailDebug(@"Invalid group id: %lu.", (unsigned long)groupId.length);
-            return nil;
-        }
-
-        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-
-        if (!groupContext.hasType) {
-            OWSFailDebug(@"Group message is missing type.");
-            return nil;
-        }
-
-        SSKProtoGroupContextType groupContextType = groupContext.unwrappedType;
-
-        // Check whether this group has been migrated.
-        if (groupThread != nil && !groupThread.isGroupV1Thread) {
-            if (groupThread.isGroupV2Thread) {
-                [self sendV2UpdateForGroupThread:groupThread envelope:envelope transaction:transaction];
-            } else {
-                OWSFailDebug(@"Invalid group.");
-            }
-            if (groupContextType != SSKProtoGroupContextTypeDeliver) {
-                return nil;
-            }
-        }
-
-        if (groupContextType == SSKProtoGroupContextTypeUpdate) {
-            // Always accept group updates for groups.
-            [self handleGroupStateChangeWithEnvelope:envelope
-                                         dataMessage:dataMessage
-                                        groupContext:groupContext
-                                         transaction:transaction];
-            return nil;
-        }
-        if (groupThread) {
-            if (!groupThread.isLocalUserFullMember) {
-                OWSLogInfo(@"Ignoring messages for left group.");
-                return nil;
-            }
-
-            switch (groupContextType) {
-                case SSKProtoGroupContextTypeUpdate:
-                    OWSFailDebug(@"Unexpected group context type.");
-                    return nil;
-                case SSKProtoGroupContextTypeQuit:
-                    [self handleGroupStateChangeWithEnvelope:envelope
-                                                 dataMessage:dataMessage
-                                                groupContext:groupContext
-                                                 transaction:transaction];
-                    return nil;
-                case SSKProtoGroupContextTypeDeliver:
-                    // At this point, if the group already exists but we have no local details, it likely
-                    // means we previously learned about the group from linked device transcript.
-                    //
-                    // In that case, ask the sender for the group details now so we can learn the
-                    // members, title, and avatar.
-                    if (groupThread.groupModel.groupName == nil && groupThread.groupModel.avatarHash == nil
-                        && groupThread.groupModel.nonLocalGroupMembers.count == 0) {
-                        OWSFailDebug(@"Empty v1 group.");
-                    }
-                    return groupThread;
-                case SSKProtoGroupContextTypeRequestInfo:
-                    OWSFailDebug(@"Ignoring group info request.");
-                    return nil;
-                default:
-                    OWSFailDebug(@"Unknown group context type.");
-                    return nil;
-            }
-        } else {
-            // Unknown group.
-            if (groupContextType == SSKProtoGroupContextTypeUpdate) {
-                OWSFailDebug(@"Unexpected group context type.");
-                return nil;
-            } else if (groupContextType == SSKProtoGroupContextTypeDeliver) {
-                OWSFailDebug(@"Unknown v1 group.");
-                return nil;
-            } else {
-                OWSLogInfo(@"Ignoring group message for unknown group from: %@", envelope.sourceAddress);
-                return nil;
-            }
-        }
-    } else if (dataMessage.groupV2 != nil) {
+    if (dataMessage.groupV2 != nil) {
         // V2 Group.
         SSKProtoGroupContextV2 *groupV2 = dataMessage.groupV2;
         if (!groupV2.hasMasterKey) {
@@ -509,11 +419,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)groupIdForDataMessage:(SSKProtoDataMessage *)dataMessage
 {
-    if (dataMessage.group != nil) {
-        // V1 Group.
-        SSKProtoGroupContext *groupContext = dataMessage.group;
-        return groupContext.id;
-    } else if (dataMessage.groupV2 != nil) {
+    if (dataMessage.groupV2 != nil) {
         // V2 Group.
         SSKProtoGroupContextV2 *groupV2 = dataMessage.groupV2;
         if (!groupV2.hasMasterKey) {
@@ -554,7 +460,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing thread.");
         return;
     }
-    if (thread.isGroupV2Thread) {
+    if (thread.isGroupThread) {
         return;
     }
 
@@ -565,10 +471,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
     DisappearingMessageToken *disappearingMessageToken =
         [DisappearingMessageToken tokenForProtoExpireTimer:dataMessage.expireTimer];
-    [GroupManager remoteUpdateDisappearingMessagesWithContactOrV1GroupThread:thread
-                                                    disappearingMessageToken:disappearingMessageToken
-                                                    groupUpdateSourceAddress:authorAddress
-                                                                 transaction:transaction];
+    [GroupManager remoteUpdateDisappearingMessagesWithContactThread:thread
+                                           disappearingMessageToken:disappearingMessageToken
+                                           groupUpdateSourceAddress:authorAddress
+                                                        transaction:transaction];
 }
 
 // This code path is for UD receipts.
@@ -924,299 +830,6 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-- (void)handleGroupStateChangeWithEnvelope:(SSKProtoEnvelope *)envelope
-                               dataMessage:(SSKProtoDataMessage *)dataMessage
-                              groupContext:(SSKProtoGroupContext *)groupContext
-                               transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!envelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!dataMessage) {
-        OWSFailDebug(@"Missing dataMessage.");
-        return;
-    }
-    if (!groupContext) {
-        OWSFail(@"Missing groupContext.");
-        return;
-    }
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
-        return;
-    }
-    NSData *_Nullable groupId = groupContext.id;
-    if (![GroupManager isValidGroupId:groupId groupsVersion:GroupsVersionV1]) {
-        OWSFailDebug(@"Invalid group id: %lu.", (unsigned long)groupId.length);
-        return;
-    }
-
-    NSMutableSet<SignalServiceAddress *> *newMembers = [NSMutableSet setWithArray:groupContext.memberAddresses];
-
-    for (SignalServiceAddress *address in newMembers) {
-        if (!address.isValid) {
-            OWSFailDebug(@"group update has invalid group member");
-            return;
-        }
-    }
-
-    BOOL shouldSuppressAvatarAttribution = NO;
-    SignalServiceAddress *groupUpdateSourceAddress;
-    if (!envelope.sourceAddress.isValid) {
-        OWSFailDebug(@"Invalid envelope.sourceAddress");
-        return;
-    } else {
-        groupUpdateSourceAddress = envelope.sourceAddress;
-    }
-
-    // Group messages create the group if it doesn't already exist.
-    //
-    // We distinguish between the old group state (if any) and the new group
-    // state.
-    TSGroupThread *_Nullable oldGroupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-    if (oldGroupThread) {
-        // Check whether this group has been migrated.
-        if (!oldGroupThread.isGroupV1Thread) {
-            if (oldGroupThread.isGroupV2Thread) {
-                [self sendV2UpdateForGroupThread:oldGroupThread envelope:envelope transaction:transaction];
-            } else {
-                OWSFailDebug(@"Invalid group.");
-            }
-            return;
-        }
-
-        if (oldGroupThread.isLocalUserFullMember) {
-            // If the local user had left the group we couldn't trust our local group state - we'd
-            // have to trust the remote membership.
-            //
-            // But since we're in the group, ensure no-one is kicked via a group update.
-            [newMembers addObjectsFromArray:oldGroupThread.groupModel.groupMembers];
-        } else {
-            // If the local user has left the group we can't trust our local group state - we
-            // have to trust the remote membership.  Otherwise, we might accidentally re-add
-            // members who left the group while we were not in the group.
-            SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
-            if (localAddress == nil) {
-                OWSFailDebug(@"Missing localAddress.");
-                return;
-            }
-            if (groupContext.unwrappedType != SSKProtoGroupContextTypeUpdate
-                || ![newMembers containsObject:localAddress]) {
-                OWSLogInfo(
-                    @"Ignoring v1 group state change. We are not in group and the group update does not re-add us.");
-                return;
-            }
-
-            // When being re-added to a group, we don't want to attribute
-            // all of the changes that have occurred while we were not in
-            // the group to the person that re-added us to the group.
-            //
-            // But we do want to attribute re-adding us to the user who
-            // did it.  Therefore we do two separate group upserts.  The
-            // first ensures that the group exists and that the other
-            // changes are _not_ attributed (groupUpdateSourceAddress == nil).
-            //
-            // The group upsert below will re-add us to the group and it
-            // will be attributed.
-            NSMutableSet<SignalServiceAddress *> *newMembersWithoutLocalUser = [newMembers mutableCopy];
-            [newMembersWithoutLocalUser removeObject:localAddress];
-
-            DisappearingMessageToken *disappearingMessageToken =
-                [DisappearingMessageToken tokenForProtoExpireTimer:dataMessage.expireTimer];
-            NSError *_Nullable error;
-            UpsertGroupResult *_Nullable result =
-                [GroupManager remoteUpsertExistingGroupV1WithGroupId:groupId
-                                                                name:groupContext.name
-                                                          avatarData:oldGroupThread.groupModel.avatarData
-                                                             members:newMembersWithoutLocalUser.allObjects
-                                            disappearingMessageToken:disappearingMessageToken
-                                            groupUpdateSourceAddress:nil
-                                                   infoMessagePolicy:InfoMessagePolicyAlways
-                                                         transaction:transaction
-                                                               error:&error];
-            if (error != nil || result == nil) {
-                OWSFailDebug(@"Error: %@", error);
-                return;
-            }
-
-            // For the same reason, don't attribute any avatar update
-            // to the user who re-added us.
-            shouldSuppressAvatarAttribution = YES;
-        }
-    }
-
-    switch (groupContext.unwrappedType) {
-        case SSKProtoGroupContextTypeUpdate: {
-            // Ensures that the thread exists.
-            DisappearingMessageToken *disappearingMessageToken =
-                [DisappearingMessageToken tokenForProtoExpireTimer:dataMessage.expireTimer];
-            NSError *_Nullable error;
-            UpsertGroupResult *_Nullable result =
-                [GroupManager remoteUpsertExistingGroupV1WithGroupId:groupId
-                                                                name:groupContext.name
-                                                          avatarData:oldGroupThread.groupModel.avatarData
-                                                             members:newMembers.allObjects
-                                            disappearingMessageToken:disappearingMessageToken
-                                            groupUpdateSourceAddress:groupUpdateSourceAddress
-                                                   infoMessagePolicy:InfoMessagePolicyAlways
-                                                         transaction:transaction
-                                                               error:&error];
-            if (error != nil || result == nil) {
-                OWSFailDebug(@"Error: %@", error);
-                return;
-            }
-            if (groupContext.avatar != nil) {
-                OWSLogVerbose(@"Data message had group avatar attachment");
-                TSGroupThread *newGroupThread = result.groupThread;
-                [self handleReceivedGroupAvatarUpdateWithEnvelope:envelope
-                                                      dataMessage:dataMessage
-                                                      groupThread:newGroupThread
-                                        shouldSuppressAttribution:shouldSuppressAvatarAttribution
-                                                      transaction:transaction];
-            }
-
-            return;
-        }
-        case SSKProtoGroupContextTypeQuit: {
-            if (!oldGroupThread) {
-                OWSLogWarn(@"ignoring quit group message from unknown group.");
-                return;
-            }
-            [newMembers removeObject:envelope.sourceAddress];
-
-            NSError *_Nullable error;
-            UpsertGroupResult *_Nullable result =
-                [GroupManager remoteUpsertExistingGroupV1WithGroupId:groupId
-                                                                name:oldGroupThread.groupModel.groupName
-                                                          avatarData:oldGroupThread.groupModel.avatarData
-                                                             members:newMembers.allObjects
-                                            disappearingMessageToken:nil
-                                            groupUpdateSourceAddress:groupUpdateSourceAddress
-                                                   infoMessagePolicy:InfoMessagePolicyAlways
-                                                         transaction:transaction
-                                                               error:&error];
-            if (error != nil || result == nil) {
-                OWSFailDebug(@"Error: %@", error);
-                return;
-            }
-            return;
-        }
-        default:
-            OWSFailDebug(@"Unexpected non state change group message type: %d", (int)groupContext.unwrappedType);
-            return;
-    }
-}
-
-- (void)handleReceivedGroupAvatarUpdateWithEnvelope:(SSKProtoEnvelope *)envelope
-                                        dataMessage:(SSKProtoDataMessage *)dataMessage
-                                        groupThread:(TSGroupThread *)groupThread
-                          shouldSuppressAttribution:(BOOL)shouldSuppressAttribution
-                                        transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!envelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!dataMessage) {
-        OWSFailDebug(@"Missing dataMessage.");
-        return;
-    }
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
-        return;
-    }
-    if (groupThread.groupModel.groupsVersion != GroupsVersionV1) {
-        OWSFail(@"Invalid groupsVersion.");
-        return;
-    }
-
-    SignalServiceAddress *_Nullable groupUpdateSourceAddress;
-    if (!envelope.sourceAddress.isValid) {
-        OWSFailDebug(@"Invalid envelope.sourceAddress");
-        return;
-    } else if (shouldSuppressAttribution) {
-        groupUpdateSourceAddress = nil;
-    } else {
-        groupUpdateSourceAddress = envelope.sourceAddress;
-    }
-
-    NSData *groupId = groupThread.groupModel.groupId;
-
-    TSAttachmentPointer *_Nullable avatarPointer =
-        [TSAttachmentPointer attachmentPointerFromProto:dataMessage.group.avatar albumMessage:nil];
-
-    if (!avatarPointer) {
-        OWSLogWarn(@"received unsupported group avatar envelope");
-        return;
-    }
-
-    [avatarPointer anyInsertWithTransaction:transaction];
-
-    // Don't enqueue the attachment downloads until the write
-    // transaction is committed or attachmentDownloads might race
-    // and not be able to find the attachment(s)/message/thread.
-    [transaction addAsyncCompletionOffMain:^{
-        [self.attachmentDownloads enqueueHeadlessDownloadWithAttachmentPointer:avatarPointer
-            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                OWSLogVerbose(@"envelope: %@", envelope.debugDescription);
-                OWSLogVerbose(@"dataMessage: %@", dataMessage.debugDescription);
-
-                OWSAssertDebug(attachmentStreams.count == 1);
-                TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-                NSData *_Nullable avatarData = attachmentStream.validStillImageData;
-                if (avatarData == nil) {
-                    OWSFailDebug(@"Missing avatarData.");
-                    return;
-                }
-
-                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *sdsWriteBlockTransaction) {
-                    TSGroupThread *_Nullable oldGroupThread = [TSGroupThread fetchWithGroupId:groupId
-                                                                                  transaction:sdsWriteBlockTransaction];
-                    if (oldGroupThread == nil) {
-                        OWSFailDebug(@"Missing oldGroupThread.");
-                        return;
-                    }
-                    NSError *_Nullable error;
-                    UpsertGroupResult *_Nullable result =
-                        [GroupManager remoteUpdateAvatarToExistingGroupV1WithGroupModel:oldGroupThread.groupModel
-                                                                             avatarData:avatarData
-                                                               groupUpdateSourceAddress:groupUpdateSourceAddress
-                                                                            transaction:sdsWriteBlockTransaction
-                                                                                  error:&error];
-                    if (error != nil || result == nil) {
-                        OWSFailDebug(@"Error: %@", error);
-                        return;
-                    }
-
-                    // Eagerly clean up the attachment.
-                    [attachmentStream anyRemoveWithTransaction:sdsWriteBlockTransaction];
-                });
-            }
-            failure:^(NSError *error) {
-                OWSLogError(@"failed to fetch attachments for group avatar sent at: %llu. with error: %@",
-                    envelope.timestamp,
-                    error);
-
-                if (CurrentAppContext().isRunningTests) {
-                    return;
-                }
-
-                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *sdsWriteBlockTransaction) {
-                    // Eagerly clean up the attachment.
-                    TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:avatarPointer.uniqueId
-                                                                                transaction:sdsWriteBlockTransaction];
-                    if (attachment == nil) {
-                        // In the test case, database storage may be reset by the
-                        // time the pointer download fails.
-                        OWSFailDebugUnlessRunningTests(@"Could not load attachment.");
-                        return;
-                    }
-                    [attachment anyRemoveWithTransaction:sdsWriteBlockTransaction];
-                });
-            }];
-    }];
-}
-
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                withSyncMessage:(SSKProtoSyncMessage *)syncMessage
                  plaintextData:(NSData *)plaintextData
@@ -1281,17 +894,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
             }
 
-            SSKProtoGroupContext *_Nullable groupContextV1 = dataMessage.group;
-            BOOL isV1GroupStateChange = (groupContextV1 != nil && groupContextV1.hasType
-                && (groupContextV1.unwrappedType == SSKProtoGroupContextTypeUpdate
-                    || groupContextV1.unwrappedType == SSKProtoGroupContextTypeQuit));
-
-            if (isV1GroupStateChange) {
-                [self handleGroupStateChangeWithEnvelope:envelope
-                                             dataMessage:dataMessage
-                                            groupContext:groupContextV1
-                                             transaction:transaction];
-            } else if (dataMessage.reaction != nil) {
+            if (dataMessage.reaction != nil) {
                 if (transcript.thread == nil) {
                     OWSFailDebug(@"Could not process reaction from sync transcript.");
                     return;
@@ -1452,8 +1055,6 @@ NS_ASSUME_NONNULL_BEGIN
         [self.syncManager processIncomingConfigurationSyncMessage:syncMessage.configuration transaction:transaction];
     } else if (syncMessage.contacts) {
         [self.syncManager processIncomingContactsSyncMessage:syncMessage.contacts transaction:transaction];
-    } else if (syncMessage.groups) {
-        [self.syncManager processIncomingGroupsSyncMessage:syncMessage.groups transaction:transaction];
     } else if (syncMessage.fetchLatest) {
         [self.syncManager processIncomingFetchLatestSyncMessage:syncMessage.fetchLatest transaction:transaction];
     } else if (syncMessage.keys) {
@@ -1939,31 +1540,6 @@ NS_ASSUME_NONNULL_BEGIN
     // We might be learning of a v1 group id for the first time that
     // corresponds to a v2 group without a v1-to-v2 group id mapping.
     [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
-}
-
-- (void)sendV2UpdateForGroupThread:(TSGroupThread *)groupThread
-                          envelope:(SSKProtoEnvelope *)envelope
-                       transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!groupThread.isGroupV2Thread) {
-        OWSFailDebug(@"Invalid thread.");
-        return;
-    }
-    SignalServiceAddress *senderAddress = envelope.sourceAddress;
-    if (!senderAddress.isValid) {
-        OWSFailDebug(@"Invalid sender: %@", senderAddress);
-        return;
-    }
-    BOOL isFullOrInvitedMember = ([groupThread.groupMembership isFullMember:senderAddress] ||
-        [groupThread.groupMembership isInvitedMember:senderAddress]);
-    if (!isFullOrInvitedMember) {
-        OWSFailDebug(@"Sender is not a member: %@", senderAddress);
-        return;
-    }
-
-    [transaction addAsyncCompletionOffMain:^{
-        [GroupManager sendGroupUpdateMessageObjcWithThread:groupThread singleRecipient:senderAddress];
-    }];
 }
 
 @end

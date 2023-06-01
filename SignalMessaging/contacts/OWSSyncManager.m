@@ -19,7 +19,6 @@
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncFetchLatestMessage.h>
-#import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/OWSSyncKeysMessage.h>
 #import <SignalServiceKit/OWSSyncRequestMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -224,15 +223,6 @@ NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVer
     }];
 }
 
-- (void)processIncomingGroupsSyncMessage:(SSKProtoSyncMessageGroups *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSLogInfo(@"");
-
-    TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:syncMessage.blob albumMessage:nil];
-    [attachmentPointer anyInsertWithTransaction:transaction];
-    [self.smJobQueues.incomingGroupSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId transaction:transaction];
-}
-
 - (void)processIncomingContactsSyncMessage:(SSKProtoSyncMessageContacts *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
 {
     TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:syncMessage.blob
@@ -241,44 +231,6 @@ NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVer
     [self.smJobQueues.incomingContactSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId
                                                            isComplete:syncMessage.isComplete
                                                           transaction:transaction];
-}
-
-#pragma mark - Groups Sync
-
-- (void)syncGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction completion:(void (^)(void))completion
-{
-    if (SSKDebugFlags.dontSendContactOrGroupSyncMessages.value) {
-        OWSLogInfo(@"Skipping group sync message.");
-        return;
-    }
-
-    TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
-    if (thread == nil) {
-        OWSFailDebug(@"Missing thread.");
-        return;
-    }
-    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] initWithThread:thread
-                                                                               transaction:transaction];
-    NSURL *_Nullable syncFileUrl = [syncGroupsMessage buildPlainTextAttachmentFileWithTransaction:transaction];
-    if (!syncFileUrl) {
-        OWSFailDebug(@"Failed to serialize groups sync message.");
-        return;
-    }
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSError *error;
-        id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:syncFileUrl
-                                           shouldDeleteOnDeallocation:YES
-                                                                error:&error];
-        OWSAssertDebug(error == nil);
-        [self.sskJobQueues.messageSenderJobQueue addMediaMessage:syncGroupsMessage
-                                                      dataSource:dataSource
-                                                     contentType:OWSMimeTypeApplicationOctetStream
-                                                  sourceFilename:nil
-                                                         caption:nil
-                                                  albumMessageId:nil
-                                           isTemporaryAttachment:YES];
-        completion();
-    });
 }
 
 #pragma mark - Contacts Sync

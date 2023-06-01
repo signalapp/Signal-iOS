@@ -87,8 +87,10 @@ public extension TSGroupThread {
         uniqueIdMappingStore.setString(threadUniqueId, key: mappingKey, transaction: transaction)
     }
 
-    // Used to update the mapping whenever we know of an existing
-    // group-id-to-thread-unique-id pair.
+    /// Set a mapping from the given group ID to the given thread ID.
+    ///
+    /// If the given group ID is a V1 group ID, also sets the mapping for the
+    /// corresponding V2 group ID.
     static func setGroupIdMapping(_ threadUniqueId: String,
                                   forGroupId groupId: Data,
                                   transaction: SDSAnyWriteTransaction) {
@@ -96,23 +98,18 @@ public extension TSGroupThread {
 
         setThreadId(threadUniqueId, forGroupId: groupId, transaction: transaction)
 
-        if GroupManager.isV1GroupId(groupId) {
-            guard let v2GroupId = groupsV2.v2GroupId(forV1GroupId: groupId) else {
-                owsFailDebug("Couldn't derive v2GroupId.")
-                return
-            }
+        if
+            GroupManager.isV1GroupId(groupId),
+            let v2GroupId = groupsV2.v2GroupId(forV1GroupId: groupId)
+        {
             setThreadId(threadUniqueId, forGroupId: v2GroupId, transaction: transaction)
-        } else if GroupManager.isV2GroupId(groupId) {
-            // Do nothing.
-        } else {
-            owsFailDebug("Invalid group id: \(groupId.hexadecimalString)")
         }
     }
 
-    // Used to update the mapping for a given group id.
-    //
-    // * Uses existing threads/mapping if possible.
-    // * If a v1 group id, it also update the mapping for the v2 group id.
+    /// Update the mapping of this group ID to a thread ID.
+    ///
+    /// Reuses existing mappings if available. If the given group ID is a V1
+    /// group ID, also updates the mapping for the corresponding V2 group ID.
     static func ensureGroupIdMapping(forGroupId groupId: Data,
                                      transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(!groupId.isEmpty)
@@ -121,25 +118,23 @@ public extension TSGroupThread {
             return
         }
 
-        let buildThreadUniqueId = { () -> String in
-            if let threadUniqueId = existingThreadId(forGroupId: groupId,
-                                                     transaction: transaction) {
+        let threadUniqueId: String = {
+            if let threadUniqueId = existingThreadId(
+                forGroupId: groupId,
+                transaction: transaction
+            ) {
                 return threadUniqueId
+            } else if
+                GroupManager.isV1GroupId(groupId),
+                let v2GroupId = groupsV2.v2GroupId(forV1GroupId: groupId),
+                let v2ThreadUniqueId = existingThreadId(forGroupId: v2GroupId, transaction: transaction)
+            {
+                return v2ThreadUniqueId
             }
-            if GroupManager.isV1GroupId(groupId) {
-                if let v2GroupId = groupsV2.v2GroupId(forV1GroupId: groupId) {
-                    if let threadUniqueId = existingThreadId(forGroupId: v2GroupId,
-                                                             transaction: transaction) {
-                        return threadUniqueId
-                    }
-                } else {
-                    owsFailDebug("Couldn't derive v2GroupId.")
-                }
-            }
-            return defaultThreadId(forGroupId: groupId)
-        }
 
-        let threadUniqueId = buildThreadUniqueId()
+            return defaultThreadId(forGroupId: groupId)
+        }()
+
         setGroupIdMapping(threadUniqueId, forGroupId: groupId, transaction: transaction)
     }
 

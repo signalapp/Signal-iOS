@@ -501,10 +501,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                                                       groupChangeProto: GroupsProtoGroupChangeActions,
                                                       changeActionsProtoData: Data,
                                                       groupV2Params: GroupV2Params) {
-        let shouldSendUpdate = !DebugFlags.groupsV2dontSendUpdates.get()
-        guard shouldSendUpdate else {
-            return
-        }
         let uuids = membersRemovedByChangeActions(groupChangeProto: groupChangeProto,
                                                   groupV2Params: groupV2Params)
 
@@ -612,10 +608,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     private func uploadGroupAvatar(avatarData: Data,
                                    groupV2Params: GroupV2Params) -> Promise<String> {
-
-        guard !DebugFlags.groupsV2corruptAvatarUrlPaths.get() else {
-            return Promise.value("some/invalid/url/path")
-        }
 
         let requestBuilder: RequestBuilder = { (authCredential) in
             firstly(on: DispatchQueue.global()) { () -> GroupsV2Request in
@@ -940,8 +932,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                 return
             }
             guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                Logger.warn("Unexpected v1 groupModel; possible migration in progress.")
-                owsAssertDebug(GroupsV2Migration.isMigratingV2GroupId(groupId))
+                owsFailDebug("[GV1] Unexpected V1 group model!")
                 return
             }
             // Try to add avatar from group model, if any.
@@ -1691,10 +1682,32 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
     }
 
     public func v2GroupId(forV1GroupId v1GroupId: Data) -> Data? {
+        guard GroupManager.isValidGroupId(v1GroupId, groupsVersion: .V1) else {
+            owsFailDebug("Invalid V2 group ID!")
+            return nil
+        }
+
         do {
-            return try GroupsV2Migration.v2GroupId(forV1GroupId: v1GroupId)
-        } catch {
-            owsFailDebug("Error: \(error)")
+            let masterKey: Data = try { () throws -> Data in
+                let infoString = "GV2 Migration"
+                guard let keyBytes = try infoString.utf8.withContiguousStorageIfAvailable({ ptr in
+                    try hkdf(
+                        outputLength: GroupMasterKey.SIZE,
+                        inputKeyMaterial: v1GroupId,
+                        salt: [],
+                        info: ptr
+                    )
+                }) else {
+                    owsFail("Failed to compute key bytes!")
+                }
+
+                return Data(keyBytes)
+            }()
+
+            let v2GroupSecretParams = try groupSecretParamsData(forMasterKeyData: masterKey)
+            return try groupId(forGroupSecretParamsData: v2GroupSecretParams)
+        } catch let error {
+            owsFailDebug("Error computing V2 group ID: \(error)")
             return nil
         }
     }
@@ -2488,12 +2501,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             }
             return try GroupsProtoGroupExternalCredential(serializedData: groupProtoData)
         }
-    }
-
-    // MARK: - Migration
-
-    public func updateAlreadyMigratedGroupIfNecessary(v2GroupId: Data) -> Promise<Void> {
-        GroupsV2Migration.updateAlreadyMigratedGroupIfNecessary(v2GroupId: v2GroupId)
     }
 }
 

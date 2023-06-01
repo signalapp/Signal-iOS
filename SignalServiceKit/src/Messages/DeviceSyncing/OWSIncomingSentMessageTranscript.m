@@ -59,25 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
     _dataMessageTimestamp = _dataMessage.timestamp;
     _disappearingMessageToken = [DisappearingMessageToken tokenForProtoExpireTimer:_dataMessage.expireTimer];
 
-    SSKProtoGroupContext *_Nullable groupContextV1 = _dataMessage.group;
     SSKProtoGroupContextV2 *_Nullable groupContextV2 = _dataMessage.groupV2;
-    if (groupContextV1 != nil) {
-        if (groupContextV2 != nil) {
-            OWSFailDebug(@"Transcript has both v1 and v2 group contexts.");
-            return nil;
-        }
-
-        _groupId = groupContextV1.id;
-        if (_groupId.length < 1) {
-            OWSFailDebug(@"Missing groupId.");
-            return nil;
-        }
-        if (![GroupManager isValidGroupId:_groupId groupsVersion:GroupsVersionV1]) {
-            OWSFailDebug(@"Invalid groupId.");
-            return nil;
-        }
-        _isGroupUpdate = (groupContextV1.hasType && groupContextV1.unwrappedType == SSKProtoGroupContextTypeUpdate);
-    } else if (groupContextV2 != nil) {
+    if (groupContextV2 != nil) {
         NSData *_Nullable masterKey = groupContextV2.masterKey;
         if (masterKey.length < 1) {
             OWSFailDebug(@"Missing masterKey.");
@@ -136,37 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
             TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:_groupId transaction:transaction];
             _thread = groupThread;
 
-            if (groupContextV1 != nil) {
-                SignalServiceAddress *_Nullable localAddress
-                    = OWSIncomingSentMessageTranscript.tsAccountManager.localAddress;
-                if (localAddress == nil) {
-                    OWSFailDebug(@"Missing localAddress.");
-                    return nil;
-                }
-
-                if (_thread == nil) {
-                    NSArray<SignalServiceAddress *> *members = @[ localAddress ];
-                    NSError *_Nullable groupError;
-                    _thread = [GroupManager remoteUpsertExistingGroupV1WithGroupId:_groupId
-                                                                              name:groupContextV1.name
-                                                                        avatarData:nil
-                                                                           members:members
-                                                          disappearingMessageToken:self.disappearingMessageToken
-                                                          groupUpdateSourceAddress:localAddress
-                                                                 infoMessagePolicy:InfoMessagePolicyAlways
-                                                                       transaction:transaction
-                                                                             error:&groupError]
-                                  .groupThread;
-                    if (groupError != nil || _thread == nil) {
-                        OWSFailDebug(@"Could not create group: %@", groupError);
-                        return nil;
-                    }
-                }
-                if (!_thread.isGroupV1Thread) {
-                    OWSFailDebug(@"Invalid thread for v1 group.");
-                    return nil;
-                }
-            } else if (groupContextV2 != nil) {
+            if (groupContextV2 != nil) {
                 if (groupThread == nil) {
                     // GroupsV2MessageProcessor should have already created the v2 group
                     // by now.
@@ -273,11 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<SSKProtoAttachmentPointer *> *)attachmentPointerProtos
 {
-    if (self.isGroupUpdate && self.dataMessage.group.avatar) {
-        return @[ self.dataMessage.group.avatar ];
-    } else {
-        return self.dataMessage.attachments;
-    }
+    return self.dataMessage.attachments;
 }
 
 @end

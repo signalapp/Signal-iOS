@@ -172,8 +172,6 @@ public protocol GroupsV2Swift: GroupsV2 {
 
     func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) throws -> Promise<GroupsProtoGroupExternalCredential>
 
-    func updateAlreadyMigratedGroupIfNecessary(v2GroupId: Data) -> Promise<Void>
-
     func groupRecordPendingStorageServiceRestore(
         masterKeyData: Data,
         transaction: SDSAnyReadTransaction
@@ -739,10 +737,6 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
     }
 
     public func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) throws -> Promise<GroupsProtoGroupExternalCredential> {
-        owsFail("Not implemented")
-    }
-
-    public func updateAlreadyMigratedGroupIfNecessary(v2GroupId: Data) -> Promise<Void> {
         owsFail("Not implemented")
     }
 }

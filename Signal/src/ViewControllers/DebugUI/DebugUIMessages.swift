@@ -120,20 +120,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                         DebugUIMessages.sendTextAndSystemMessages(quantity, thread: thread)
                     }
                 }),
-                OWSTableItem(title: "Request Bogus group info", actionBlock: { [self] in
-                    Logger.info("Requesting bogus group info for thread: \(thread)")
-                    self.databaseStorage.write { transaction in
-                        let groupInfoRequestMessage = OWSGroupInfoRequestMessage(
-                            thread: thread,
-                            groupId: TSGroupModel.generateRandomV1GroupId(),
-                            transaction: transaction
-                        )
-                        sskJobQueues.messageSenderJobQueue.add(
-                            message: groupInfoRequestMessage.asPreparer,
-                            transaction: transaction
-                        )
-                    }
-                }),
                 OWSTableItem(title: "Message with stalled timer", actionBlock: {
                     DebugUIMessages.createDisappearingMessagesWhichFailedToStartInThread(thread)
                 }),
@@ -167,14 +153,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             }))
         }
         if let groupThread = thread as? TSGroupThread {
-            items += [
-                OWSTableItem(title: "Send message to all members", actionBlock: {
+            items.append(OWSTableItem(title: "Send message to all members", actionBlock: {
                     DebugUIMessages.sendMessages(1, toAllMembersOfGroup: groupThread)
-                }),
-                OWSTableItem(title: "Send Group Info Request", actionBlock: {
-                    DebugUIMessages.requestGroupInfoForGroupThread(groupThread)
-                })
-            ]
+                }
+            ))
         }
 
         return OWSTableSection(title: name, items: items)
@@ -3745,21 +3727,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
     }
 
     // MARK: Groups
-
-    private static func requestGroupInfoForGroupThread(_ groupThread: TSGroupThread) {
-        databaseStorage.write { transaction in
-            for address in groupThread.groupModel.groupMembers {
-                let thread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
-                Logger.info("Requesting group info for group thread from: \(address)")
-                let groupInfoRequestMessage = OWSGroupInfoRequestMessage(
-                    thread: thread,
-                    groupId: groupThread.groupModel.groupId,
-                    transaction: transaction
-                )
-                sskJobQueues.messageSenderJobQueue.add(message: groupInfoRequestMessage.asPreparer, transaction: transaction)
-            }
-        }
-    }
 
     private static func sendMessages(_ count: UInt, toAllMembersOfGroup groupThread: TSGroupThread) {
         for address in groupThread.groupModel.groupMembers {

@@ -51,9 +51,6 @@ public extension GroupV2Params {
     }
 
     fileprivate func encryptBlob(_ plaintext: Data) throws -> Data {
-        guard !DebugFlags.groupsV2corruptBlobEncryption.get() else {
-            return Randomness.generateRandomBytes(Int32(plaintext.count))
-        }
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: groupSecretParams)
         let ciphertext = try clientZkGroupCipher.encryptBlob(plaintext: [UInt8](plaintext)).asData
         assert(ciphertext != plaintext)

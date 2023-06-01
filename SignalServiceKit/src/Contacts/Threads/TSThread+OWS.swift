@@ -41,19 +41,15 @@ public extension TSThread {
         return groupThread.groupModel
     }
 
-    var isBlockedByMigration: Bool {
-        isGroupV1Thread
-    }
-
     var canSendReactionToThread: Bool {
-        guard !isBlockedByMigration else {
+        guard !isGroupV1Thread else {
             return false
         }
         return true
     }
 
     var canSendNonChatMessagesToThread: Bool {
-        guard !isBlockedByMigration else {
+        guard !isGroupV1Thread else {
             return false
         }
         return true
@@ -65,7 +61,7 @@ public extension TSThread {
     }
 
     func canSendChatMessagesToThread(ignoreAnnouncementOnly: Bool = false) -> Bool {
-        guard !isBlockedByMigration else {
+        guard !isGroupV1Thread else {
             return false
         }
         if !ignoreAnnouncementOnly {

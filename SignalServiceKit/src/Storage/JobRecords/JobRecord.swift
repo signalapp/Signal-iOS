@@ -26,7 +26,10 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
         /// Value originally from ``SDSRecordType``.
         case incomingContactSync = 61
         /// Value originally from ``SDSRecordType``.
-        case incomingGroupSync = 60
+        ///
+        /// This job record type is deprecated, but left around in case any are
+        /// currently-persisted and need to be cleaned up.
+        case deprecated_incomingGroupSync = 60
         /// Value originally from ``SDSRecordType``.
         case legacyMessageDecrypt = 53
         /// Value originally from ``SDSRecordType``.
@@ -53,7 +56,7 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
         switch jobRecordType {
         case .broadcastMediaMessage: return BroadcastMediaMessageJobRecord.self
         case .incomingContactSync: return IncomingContactSyncJobRecord.self
-        case .incomingGroupSync: return IncomingGroupSyncJobRecord.self
+        case .deprecated_incomingGroupSync: return IncomingGroupSyncJobRecord.self
         case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
         case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
         case .messageSender: return MessageSenderJobRecord.self

@@ -85,9 +85,6 @@ public enum ContactDiscoveryMode {
     /// this lookup is complete.
     case outgoingMessage
 
-    /// Used when manually migrating a group from v1 to v2.
-    case groupMigration
-
     /// Used during contact intersection.
     case contactIntersection
 
@@ -95,7 +92,6 @@ public enum ContactDiscoveryMode {
         .oneOffUserRequest,
         .uuidBackfill,
         .outgoingMessage,
-        .groupMigration,
         .contactIntersection
     ]
 }
@@ -326,7 +322,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
             case .oneOffUserRequest, .uuidBackfill, .contactIntersection:
                 // These always perform a fetch -- no need to consult the cache.
                 return true
-            case .outgoingMessage, .groupMigration:
+            case .outgoingMessage:
                 // Fall through to check the cache before initiating the request.
                 break
             }

@@ -271,7 +271,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         }
 
         let disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: contactDetails.expireTimer)
-        GroupManager.remoteUpdateDisappearingMessages(withContactOrV1GroupThread: contactThread,
+        GroupManager.remoteUpdateDisappearingMessages(withContactThread: contactThread,
                                                       disappearingMessageToken: disappearingMessageToken,
                                                       groupUpdateSourceAddress: nil,
                                                       transaction: transaction)

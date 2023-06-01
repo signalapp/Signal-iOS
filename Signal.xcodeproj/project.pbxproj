@@ -254,7 +254,6 @@
 		344DAEDF248A7526000AD4FA /* DebugUIStress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344DAEDE248A7526000AD4FA /* DebugUIStress.swift */; };
 		3452851B26DE890400824983 /* DateUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452851A26DE890300824983 /* DateUtil.swift */; };
 		3452851D26DFD12300824983 /* PaymentsFormatTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452851C26DFD12300824983 /* PaymentsFormatTest.swift */; };
-		3452C15625348F1D00F69070 /* GroupsV2Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452C15525348F1D00F69070 /* GroupsV2Migration.swift */; };
 		34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34546F4F2649989C007C4958 /* ChatColorViewController.swift */; };
 		3456A73223D63EBE00947219 /* GroupsV2Protos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456A73123D63EBE00947219 /* GroupsV2Protos.swift */; };
 		345772B6257E4E01001D7D44 /* CVViewStateSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345772B5257E4E01001D7D44 /* CVViewStateSnapshot.swift */; };
@@ -341,7 +340,7 @@
 		347C384B252D085900F3D941 /* CVComponentUnreadIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C384A252D085900F3D941 /* CVComponentUnreadIndicator.swift */; };
 		347C384D252D0FDC00F3D941 /* CVComponentTypingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C384C252D0FDC00F3D941 /* CVComponentTypingIndicator.swift */; };
 		347C3857252E1E2300F3D941 /* CVComponentThreadDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C3856252E1E2300F3D941 /* CVComponentThreadDetails.swift */; };
-		347DE5BC2548967900C32CDC /* BlockingGroupMigrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347DE5BB2548967900C32CDC /* BlockingGroupMigrationView.swift */; };
+		347DE5BC2548967900C32CDC /* BlockingLegacyGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347DE5BB2548967900C32CDC /* BlockingLegacyGroupView.swift */; };
 		348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */; };
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
 		34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2A214FE295004DED45 /* MockEnvironment.m */; };
@@ -404,7 +403,6 @@
 		3499998122EF1E2100654932 /* SearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997E22EF1E2100654932 /* SearcherTest.swift */; };
 		3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */; };
 		349A5C5425CD7A6C00B30EE8 /* DebugContactsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349A5C5325CD7A6C00B30EE8 /* DebugContactsUtils.swift */; };
-		349BC861253A2651003C949A /* GroupsV2MigrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349BC860253A2651003C949A /* GroupsV2MigrationTest.swift */; };
 		349D21E9268E045500D98870 /* QRCodeParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349D21E7268E044700D98870 /* QRCodeParserTest.swift */; };
 		34A17D81253F7237009F8C02 /* ConversationSettingsViewController+LegacyGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A17D80253F7236009F8C02 /* ConversationSettingsViewController+LegacyGroups.swift */; };
 		34A4D56F24E4D342002F8044 /* UnfairLockPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D56E24E4D341002F8044 /* UnfairLockPerformanceTest.swift */; };
@@ -669,7 +667,7 @@
 		4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */; };
 		4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */; };
 		4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFD22E54AFA00469AE7 /* MediaInteractiveDismiss.swift */; };
-		4C9D347B23679C25006A4307 /* GroupAndContactStreamTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347923679C13006A4307 /* GroupAndContactStreamTest.swift */; };
+		4C9D347B23679C25006A4307 /* ContactStreamTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347923679C13006A4307 /* ContactStreamTest.swift */; };
 		4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */; };
 		4C9D34972369F0FC006A4307 /* notificationPermission.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D34962369F0FC006A4307 /* notificationPermission.json */; };
 		4C9D349B2369F11F006A4307 /* notificationPermission1.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D34982369F11E006A4307 /* notificationPermission1.png */; };
@@ -704,7 +702,6 @@
 		500FE4E2288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */; };
 		5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */; };
 		5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */; };
-		5011D9522A0191F9000FE8E5 /* MessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D9512A0191F9000FE8E5 /* MessageManagerTest.swift */; };
 		5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */; };
 		5011D9732A04721A000FE8E5 /* OWSOrphanDataCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */; };
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
@@ -1606,20 +1603,17 @@
 		F9C5C8AA289451B900548EEE /* SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9C5C897289451B900548EEE /* SignalServiceKit.framework */; };
 		F9C5C8AB289451B900548EEE /* SignalServiceKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F9C5C897289451B900548EEE /* SignalServiceKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F9C5CBAD289453B300548EEE /* OWSSyncConfigurationMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8B8289453B100548EEE /* OWSSyncConfigurationMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CBAE289453B300548EEE /* OWSSyncGroupsMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8B9289453B100548EEE /* OWSSyncGroupsMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBAF289453B300548EEE /* OWSSyncMessageRequestResponseMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8BA289453B100548EEE /* OWSSyncMessageRequestResponseMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB0289453B300548EEE /* OWSSyncFetchLatestMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8BB289453B100548EEE /* OWSSyncFetchLatestMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBB1289453B300548EEE /* OWSSyncRequestMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8BC289453B100548EEE /* OWSSyncRequestMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB2289453B300548EEE /* OWSSyncContactsMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8BD289453B100548EEE /* OWSSyncContactsMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB4289453B300548EEE /* OutgoingPaymentSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8BF289453B100548EEE /* OutgoingPaymentSyncMessage.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB5289453B300548EEE /* OWSOutgoingSentMessageTranscript.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8C0289453B100548EEE /* OWSOutgoingSentMessageTranscript.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CBB6289453B300548EEE /* OWSSyncGroupsMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8C1289453B100548EEE /* OWSSyncGroupsMessage.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB7289453B300548EEE /* OWSOutgoingSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8C2289453B100548EEE /* OWSOutgoingSyncMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB8289453B300548EEE /* OWSSyncContactsMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8C3289453B100548EEE /* OWSSyncContactsMessage.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB9289453B300548EEE /* OutgoingPaymentSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8C4289453B100548EEE /* OutgoingPaymentSyncMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBBA289453B300548EEE /* OWSIncomingSentMessageTranscript.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8C5289453B100548EEE /* OWSIncomingSentMessageTranscript.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBBB289453B300548EEE /* OWSSyncKeysMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8C6289453B100548EEE /* OWSSyncKeysMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CBBC289453B300548EEE /* OWSSyncGroupsMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8C7289453B100548EEE /* OWSSyncGroupsMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBBE289453B300548EEE /* OWSSyncConfigurationMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8C9289453B100548EEE /* OWSSyncConfigurationMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBBF289453B300548EEE /* OWSSyncRequestMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8CA289453B100548EEE /* OWSSyncRequestMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBC0289453B300548EEE /* OWSSyncFetchLatestMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8CB289453B100548EEE /* OWSSyncFetchLatestMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1733,7 +1727,6 @@
 		F9C5CC2D289453B300548EEE /* OWSOutgoingCallMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C93C289453B100548EEE /* OWSOutgoingCallMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC2E289453B300548EEE /* OWSDisappearingMessagesJob.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C93D289453B100548EEE /* OWSDisappearingMessagesJob.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC2F289453B300548EEE /* OWSOutgoingReceiptManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C93E289453B100548EEE /* OWSOutgoingReceiptManager.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CC30289453B300548EEE /* OWSGroupInfoRequestMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C93F289453B100548EEE /* OWSGroupInfoRequestMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC31289453B300548EEE /* BlockingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C940289453B100548EEE /* BlockingManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC32289453B300548EEE /* OWSProfileKeyMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C941289453B100548EEE /* OWSProfileKeyMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC33289453B300548EEE /* OWSOutgoingResendResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C942289453B100548EEE /* OWSOutgoingResendResponse.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1780,7 +1773,6 @@
 		F9C5CC5D289453B300548EEE /* TSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C96F289453B100548EEE /* TSCall.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC5E289453B300548EEE /* OWSDisappearingMessagesJob.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C970289453B100548EEE /* OWSDisappearingMessagesJob.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC5F289453B300548EEE /* OWSOutgoingReceiptManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C971289453B100548EEE /* OWSOutgoingReceiptManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CC60289453B300548EEE /* OWSGroupInfoRequestMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C972289453B100548EEE /* OWSGroupInfoRequestMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC61289453B300548EEE /* OWSMessageSend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C973289453B100548EEE /* OWSMessageSend.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC62289453B300548EEE /* OWSOutgoingCallMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C974289453B100548EEE /* OWSOutgoingCallMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC63289453B300548EEE /* MessageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C975289453B100548EEE /* MessageProcessor.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1912,12 +1904,9 @@
 		F9C5CCF1289453B300548EEE /* OWSProvisioningCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0D289453B100548EEE /* OWSProvisioningCipher.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0F289453B100548EEE /* ChunkedInputStream.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCF3289453B300548EEE /* OWSChunkedOutputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA10289453B100548EEE /* OWSChunkedOutputStream.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCF4289453B300548EEE /* GroupsInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA11289453B100548EEE /* GroupsInputStream.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCF5289453B300548EEE /* OWSContactsOutputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA12289453B100548EEE /* OWSContactsOutputStream.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCF6289453B300548EEE /* OWSGroupsOutputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA13289453B100548EEE /* OWSGroupsOutputStream.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCF7289453B300548EEE /* OWSChunkedOutputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA14289453B100548EEE /* OWSChunkedOutputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCF8289453B300548EEE /* ContactsInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA15289453B100548EEE /* ContactsInputStream.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCF9289453B300548EEE /* OWSGroupsOutputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA16289453B100548EEE /* OWSGroupsOutputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCFA289453B300548EEE /* OWSContactsOutputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA17289453B100548EEE /* OWSContactsOutputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCFB289453B300548EEE /* ProvisioningSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA18289453B100548EEE /* ProvisioningSocket.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCFC289453B300548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA19289453B100548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2602,7 +2591,6 @@
 		344DAEDE248A7526000AD4FA /* DebugUIStress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIStress.swift; sourceTree = "<group>"; };
 		3452851A26DE890300824983 /* DateUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateUtil.swift; sourceTree = "<group>"; };
 		3452851C26DFD12300824983 /* PaymentsFormatTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsFormatTest.swift; sourceTree = "<group>"; };
-		3452C15525348F1D00F69070 /* GroupsV2Migration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Migration.swift; sourceTree = "<group>"; };
 		34546F4F2649989C007C4958 /* ChatColorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatColorViewController.swift; sourceTree = "<group>"; };
 		3456A73123D63EBE00947219 /* GroupsV2Protos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Protos.swift; sourceTree = "<group>"; };
 		345772B5257E4E01001D7D44 /* CVViewStateSnapshot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVViewStateSnapshot.swift; sourceTree = "<group>"; };
@@ -2695,7 +2683,7 @@
 		347C384A252D085900F3D941 /* CVComponentUnreadIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentUnreadIndicator.swift; sourceTree = "<group>"; };
 		347C384C252D0FDC00F3D941 /* CVComponentTypingIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentTypingIndicator.swift; sourceTree = "<group>"; };
 		347C3856252E1E2300F3D941 /* CVComponentThreadDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentThreadDetails.swift; sourceTree = "<group>"; };
-		347DE5BB2548967900C32CDC /* BlockingGroupMigrationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingGroupMigrationView.swift; sourceTree = "<group>"; };
+		347DE5BB2548967900C32CDC /* BlockingLegacyGroupView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingLegacyGroupView.swift; sourceTree = "<group>"; };
 		348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaceAdminViewController.swift; sourceTree = "<group>"; };
 		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
 		34843B2321432293004DED45 /* SignalBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalBaseTest.h; sourceTree = "<group>"; };
@@ -2762,7 +2750,6 @@
 		3499997E22EF1E2100654932 /* SearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearcherTest.swift; sourceTree = "<group>"; };
 		3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBFullTextSearcherTest.swift; sourceTree = "<group>"; };
 		349A5C5325CD7A6C00B30EE8 /* DebugContactsUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugContactsUtils.swift; sourceTree = "<group>"; };
-		349BC860253A2651003C949A /* GroupsV2MigrationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2MigrationTest.swift; sourceTree = "<group>"; };
 		349C3636233D198300D52012 /* LaunchJobs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LaunchJobs.swift; sourceTree = "<group>"; };
 		349D21E7268E044700D98870 /* QRCodeParserTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRCodeParserTest.swift; sourceTree = "<group>"; };
 		34A17D80253F7236009F8C02 /* ConversationSettingsViewController+LegacyGroups.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationSettingsViewController+LegacyGroups.swift"; sourceTree = "<group>"; };
@@ -3141,7 +3128,7 @@
 		4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaZoomAnimationController.swift; sourceTree = "<group>"; };
 		4C8A6DFD22E54AFA00469AE7 /* MediaInteractiveDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaInteractiveDismiss.swift; sourceTree = "<group>"; };
 		4C9C50FF22F495F60054A33F /* BroadcastMediaMessageJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BroadcastMediaMessageJob.swift; sourceTree = "<group>"; };
-		4C9D347923679C13006A4307 /* GroupAndContactStreamTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupAndContactStreamTest.swift; sourceTree = "<group>"; };
+		4C9D347923679C13006A4307 /* ContactStreamTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStreamTest.swift; sourceTree = "<group>"; };
 		4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingContactSyncJobQueue.swift; sourceTree = "<group>"; };
 		4C9D34962369F0FC006A4307 /* notificationPermission.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = notificationPermission.json; sourceTree = "<group>"; };
 		4C9D34982369F11E006A4307 /* notificationPermission1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notificationPermission1.png; sourceTree = "<group>"; };
@@ -3197,7 +3184,6 @@
 		500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
 		5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainFrontingCountryViewController.swift; sourceTree = "<group>"; };
 		5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningURL.swift; sourceTree = "<group>"; };
-		5011D9512A0191F9000FE8E5 /* MessageManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageManagerTest.swift; sourceTree = "<group>"; };
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		502B1B54297B28AF00FDB3AE /* ErrorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTest.swift; sourceTree = "<group>"; };
@@ -4189,20 +4175,17 @@
 		F9C5C899289451B900548EEE /* SignalServiceKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalServiceKit.h; sourceTree = "<group>"; };
 		F9C5C89E289451B900548EEE /* SignalServiceKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalServiceKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F9C5C8B8289453B100548EEE /* OWSSyncConfigurationMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncConfigurationMessage.m; sourceTree = "<group>"; };
-		F9C5C8B9289453B100548EEE /* OWSSyncGroupsMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncGroupsMessage.m; sourceTree = "<group>"; };
 		F9C5C8BA289453B100548EEE /* OWSSyncMessageRequestResponseMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncMessageRequestResponseMessage.m; sourceTree = "<group>"; };
 		F9C5C8BB289453B100548EEE /* OWSSyncFetchLatestMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSyncFetchLatestMessage.h; sourceTree = "<group>"; };
 		F9C5C8BC289453B100548EEE /* OWSSyncRequestMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncRequestMessage.m; sourceTree = "<group>"; };
 		F9C5C8BD289453B100548EEE /* OWSSyncContactsMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncContactsMessage.m; sourceTree = "<group>"; };
 		F9C5C8BF289453B100548EEE /* OutgoingPaymentSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingPaymentSyncMessage.swift; sourceTree = "<group>"; };
 		F9C5C8C0289453B100548EEE /* OWSOutgoingSentMessageTranscript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOutgoingSentMessageTranscript.h; sourceTree = "<group>"; };
-		F9C5C8C1289453B100548EEE /* OWSSyncGroupsMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSyncGroupsMessage.swift; sourceTree = "<group>"; };
 		F9C5C8C2289453B100548EEE /* OWSOutgoingSyncMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingSyncMessage.m; sourceTree = "<group>"; };
 		F9C5C8C3289453B100548EEE /* OWSSyncContactsMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSyncContactsMessage.swift; sourceTree = "<group>"; };
 		F9C5C8C4289453B100548EEE /* OutgoingPaymentSyncMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OutgoingPaymentSyncMessage.m; sourceTree = "<group>"; };
 		F9C5C8C5289453B100548EEE /* OWSIncomingSentMessageTranscript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSIncomingSentMessageTranscript.h; sourceTree = "<group>"; };
 		F9C5C8C6289453B100548EEE /* OWSSyncKeysMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncKeysMessage.m; sourceTree = "<group>"; };
-		F9C5C8C7289453B100548EEE /* OWSSyncGroupsMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSyncGroupsMessage.h; sourceTree = "<group>"; };
 		F9C5C8C9289453B100548EEE /* OWSSyncConfigurationMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSyncConfigurationMessage.h; sourceTree = "<group>"; };
 		F9C5C8CA289453B100548EEE /* OWSSyncRequestMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSyncRequestMessage.h; sourceTree = "<group>"; };
 		F9C5C8CB289453B100548EEE /* OWSSyncFetchLatestMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncFetchLatestMessage.m; sourceTree = "<group>"; };
@@ -4316,7 +4299,6 @@
 		F9C5C93C289453B100548EEE /* OWSOutgoingCallMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOutgoingCallMessage.h; sourceTree = "<group>"; };
 		F9C5C93D289453B100548EEE /* OWSDisappearingMessagesJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisappearingMessagesJob.h; sourceTree = "<group>"; };
 		F9C5C93E289453B100548EEE /* OWSOutgoingReceiptManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingReceiptManager.m; sourceTree = "<group>"; };
-		F9C5C93F289453B100548EEE /* OWSGroupInfoRequestMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSGroupInfoRequestMessage.h; sourceTree = "<group>"; };
 		F9C5C940289453B100548EEE /* BlockingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingManager.swift; sourceTree = "<group>"; };
 		F9C5C941289453B100548EEE /* OWSProfileKeyMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProfileKeyMessage.m; sourceTree = "<group>"; };
 		F9C5C942289453B100548EEE /* OWSOutgoingResendResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingResendResponse.m; sourceTree = "<group>"; };
@@ -4363,7 +4345,6 @@
 		F9C5C96F289453B100548EEE /* TSCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSCall.m; sourceTree = "<group>"; };
 		F9C5C970289453B100548EEE /* OWSDisappearingMessagesJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisappearingMessagesJob.m; sourceTree = "<group>"; };
 		F9C5C971289453B100548EEE /* OWSOutgoingReceiptManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOutgoingReceiptManager.h; sourceTree = "<group>"; };
-		F9C5C972289453B100548EEE /* OWSGroupInfoRequestMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSGroupInfoRequestMessage.m; sourceTree = "<group>"; };
 		F9C5C973289453B100548EEE /* OWSMessageSend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSMessageSend.swift; sourceTree = "<group>"; };
 		F9C5C974289453B100548EEE /* OWSOutgoingCallMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingCallMessage.m; sourceTree = "<group>"; };
 		F9C5C975289453B100548EEE /* MessageProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageProcessor.swift; sourceTree = "<group>"; };
@@ -4495,12 +4476,9 @@
 		F9C5CA0D289453B100548EEE /* OWSProvisioningCipher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSProvisioningCipher.swift; sourceTree = "<group>"; };
 		F9C5CA0F289453B100548EEE /* ChunkedInputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkedInputStream.swift; sourceTree = "<group>"; };
 		F9C5CA10289453B100548EEE /* OWSChunkedOutputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSChunkedOutputStream.m; sourceTree = "<group>"; };
-		F9C5CA11289453B100548EEE /* GroupsInputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsInputStream.swift; sourceTree = "<group>"; };
 		F9C5CA12289453B100548EEE /* OWSContactsOutputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsOutputStream.m; sourceTree = "<group>"; };
-		F9C5CA13289453B100548EEE /* OWSGroupsOutputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSGroupsOutputStream.m; sourceTree = "<group>"; };
 		F9C5CA14289453B100548EEE /* OWSChunkedOutputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSChunkedOutputStream.h; sourceTree = "<group>"; };
 		F9C5CA15289453B100548EEE /* ContactsInputStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsInputStream.swift; sourceTree = "<group>"; };
-		F9C5CA16289453B100548EEE /* OWSGroupsOutputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSGroupsOutputStream.h; sourceTree = "<group>"; };
 		F9C5CA17289453B100548EEE /* OWSContactsOutputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsOutputStream.h; sourceTree = "<group>"; };
 		F9C5CA18289453B100548EEE /* ProvisioningSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningSocket.swift; sourceTree = "<group>"; };
 		F9C5CA19289453B100548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSViewedReceiptsForLinkedDevicesMessage.m; sourceTree = "<group>"; };
@@ -5324,7 +5302,7 @@
 				880D902824808830003D2B14 /* Emoji Picker */,
 				8855DF85238F1DEE0066D96F /* Reactions Details */,
 				3491899A269CD68D008A18AF /* BlockingAnnouncementOnlyView.swift */,
-				347DE5BB2548967900C32CDC /* BlockingGroupMigrationView.swift */,
+				347DE5BB2548967900C32CDC /* BlockingLegacyGroupView.swift */,
 				3457794226828A9A00732869 /* ConversationCollectionView.swift */,
 				45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */,
 				8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */,
@@ -5590,7 +5568,6 @@
 		349BC85F253A2651003C949A /* Groups */ = {
 			isa = PBXGroup;
 			children = (
-				349BC860253A2651003C949A /* GroupsV2MigrationTest.swift */,
 				17E6048F28A17BD200127680 /* ZkGroupIntegrationTest.swift */,
 			);
 			path = Groups;
@@ -6098,7 +6075,6 @@
 				341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */,
 				34BB3C5C23C6644B001651FC /* GroupsV2Impl.swift */,
 				34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */,
-				3452C15525348F1D00F69070 /* GroupsV2Migration.swift */,
 				34BB3C5923C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift */,
 				345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */,
 				3456A73123D63EBE00947219 /* GroupsV2Protos.swift */,
@@ -7638,6 +7614,7 @@
 				F9B3A92E293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift */,
 				34F1072126D045290053EF4D /* BatchUpdateTest.swift */,
 				3421981B21061D2E00C57195 /* ByteParserTest.swift */,
+				4C9D347923679C13006A4307 /* ContactStreamTest.swift */,
 				F93461BA291ED2B000366682 /* CreditAndDebitCardsTest.swift */,
 				3494BBDF26E66FC30079B11B /* DateUtilTest.swift */,
 				45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */,
@@ -7645,7 +7622,6 @@
 				F9952B3029F2D99500EA989E /* ExpirationNagViewTest.swift */,
 				B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */,
 				345AE2B52317048200DB6225 /* GRDBFinderTest.swift */,
-				4C9D347923679C13006A4307 /* GroupAndContactStreamTest.swift */,
 				34C1A93A2656E904004FA478 /* MiscTest.swift */,
 				F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */,
 				349D21E7268E044700D98870 /* QRCodeParserTest.swift */,
@@ -8228,7 +8204,6 @@
 				F9426233289B1B5500460798 /* DeliveryReceiptContextTests.swift */,
 				F925A3AC29493D35009024D0 /* DisappearingMessageFinderTest.swift */,
 				F942622A289B1B5500460798 /* MessageDecryptionTest.swift */,
-				5011D9512A0191F9000FE8E5 /* MessageManagerTest.swift */,
 				F942622F289B1B5500460798 /* MessagePipelineSupervisorTest.swift */,
 				F9426234289B1B5500460798 /* MessageProcessingIntegrationTest.swift */,
 				F942622B289B1B5500460798 /* MessageSendLogTests.swift */,
@@ -8506,8 +8481,6 @@
 				F9C5C956289453B100548EEE /* OWSGroupCallMessage+SDS.swift */,
 				F9C5C945289453B100548EEE /* OWSGroupCallMessage.h */,
 				F9C5C97D289453B100548EEE /* OWSGroupCallMessage.m */,
-				F9C5C93F289453B100548EEE /* OWSGroupInfoRequestMessage.h */,
-				F9C5C972289453B100548EEE /* OWSGroupInfoRequestMessage.m */,
 				F9C5C944289453B100548EEE /* OWSIdentityManager.h */,
 				F9C5C97E289453B100548EEE /* OWSIdentityManager.m */,
 				F9C5C93B289453B100548EEE /* OWSIdentityManager.swift */,
@@ -8588,9 +8561,6 @@
 				F9C5C8C3289453B100548EEE /* OWSSyncContactsMessage.swift */,
 				F9C5C8BB289453B100548EEE /* OWSSyncFetchLatestMessage.h */,
 				F9C5C8CB289453B100548EEE /* OWSSyncFetchLatestMessage.m */,
-				F9C5C8C7289453B100548EEE /* OWSSyncGroupsMessage.h */,
-				F9C5C8B9289453B100548EEE /* OWSSyncGroupsMessage.m */,
-				F9C5C8C1289453B100548EEE /* OWSSyncGroupsMessage.swift */,
 				F9C5C8CF289453B100548EEE /* OWSSyncKeysMessage.h */,
 				F9C5C8C6289453B100548EEE /* OWSSyncKeysMessage.m */,
 				F9C5C8CC289453B100548EEE /* OWSSyncMessageRequestResponseMessage.h */,
@@ -8991,13 +8961,10 @@
 			children = (
 				F9C5CA0F289453B100548EEE /* ChunkedInputStream.swift */,
 				F9C5CA15289453B100548EEE /* ContactsInputStream.swift */,
-				F9C5CA11289453B100548EEE /* GroupsInputStream.swift */,
 				F9C5CA14289453B100548EEE /* OWSChunkedOutputStream.h */,
 				F9C5CA10289453B100548EEE /* OWSChunkedOutputStream.m */,
 				F9C5CA17289453B100548EEE /* OWSContactsOutputStream.h */,
 				F9C5CA12289453B100548EEE /* OWSContactsOutputStream.m */,
-				F9C5CA16289453B100548EEE /* OWSGroupsOutputStream.h */,
-				F9C5CA13289453B100548EEE /* OWSGroupsOutputStream.m */,
 			);
 			path = ConversationSync;
 			sourceTree = "<group>";
@@ -9663,8 +9630,6 @@
 				F9C5CE6A289453B400548EEE /* OWSFingerprint.h in Headers */,
 				F9C5CE6B289453B400548EEE /* OWSFingerprintBuilder.h in Headers */,
 				F9C5CC36289453B300548EEE /* OWSGroupCallMessage.h in Headers */,
-				F9C5CC30289453B300548EEE /* OWSGroupInfoRequestMessage.h in Headers */,
-				F9C5CCF9289453B300548EEE /* OWSGroupsOutputStream.h in Headers */,
 				F9C5CE6C289453B400548EEE /* OWSHTTPSecurityPolicy.h in Headers */,
 				F9C5CC35289453B300548EEE /* OWSIdentityManager.h in Headers */,
 				F9C5CBBA289453B300548EEE /* OWSIncomingSentMessageTranscript.h in Headers */,
@@ -9701,7 +9666,6 @@
 				F9C5CBBE289453B300548EEE /* OWSSyncConfigurationMessage.h in Headers */,
 				F9C5CBC3289453B300548EEE /* OWSSyncContactsMessage.h in Headers */,
 				F9C5CBB0289453B300548EEE /* OWSSyncFetchLatestMessage.h in Headers */,
-				F9C5CBBC289453B300548EEE /* OWSSyncGroupsMessage.h in Headers */,
 				F9C5CBC4289453B300548EEE /* OWSSyncKeysMessage.h in Headers */,
 				F9C5CBC1289453B300548EEE /* OWSSyncMessageRequestResponseMessage.h in Headers */,
 				F9C5CBBF289453B300548EEE /* OWSSyncRequestMessage.h in Headers */,
@@ -11085,7 +11049,6 @@
 				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
 				34BB3C6123C6644B001651FC /* GroupsV2Impl.swift in Sources */,
 				34F0566A23DA209300265283 /* GroupsV2IncomingChanges.swift in Sources */,
-				3452C15625348F1D00F69070 /* GroupsV2Migration.swift in Sources */,
 				34BB3C5E23C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift in Sources */,
 				345DE96023ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift in Sources */,
 				3456A73223D63EBE00947219 /* GroupsV2Protos.swift in Sources */,
@@ -11228,7 +11191,7 @@
 				349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */,
 				34F1072026D005340053EF4D /* BatchUpdate.swift in Sources */,
 				3491899B269CD68E008A18AF /* BlockingAnnouncementOnlyView.swift in Sources */,
-				347DE5BC2548967900C32CDC /* BlockingGroupMigrationView.swift in Sources */,
+				347DE5BC2548967900C32CDC /* BlockingLegacyGroupView.swift in Sources */,
 				76847C962A1346A8008E2EAB /* BlockListViewController.swift in Sources */,
 				14E4A340278EE999008408FD /* BlurredToolbarContainer.swift in Sources */,
 				88D23D2C23CEC17400B0E74B /* CallAudioService.swift in Sources */,
@@ -11812,6 +11775,7 @@
 				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
 				F9C612B4284E466B00B2199A /* CGPointExtensionsTest.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
+				4C9D347B23679C25006A4307 /* ContactStreamTest.swift in Sources */,
 				4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */,
 				34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */,
 				F93461BB291ED2B000366682 /* CreditAndDebitCardsTest.swift in Sources */,
@@ -11828,8 +11792,6 @@
 				B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */,
 				345AE2B62317048300DB6225 /* GRDBFinderTest.swift in Sources */,
 				3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */,
-				4C9D347B23679C25006A4307 /* GroupAndContactStreamTest.swift in Sources */,
-				349BC861253A2651003C949A /* GroupsV2MigrationTest.swift in Sources */,
 				34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */,
 				34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */,
 				45C845AF291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift in Sources */,
@@ -12012,7 +11974,6 @@
 				506695EC29C5305900B6D8D0 /* GroupMemberStore.swift in Sources */,
 				506695EF29C533A400B6D8D0 /* GroupMemberUpdater.swift in Sources */,
 				F9C5CC90289453B300548EEE /* Groups.pb.swift in Sources */,
-				F9C5CCF4289453B300548EEE /* GroupsInputStream.swift in Sources */,
 				F9C5CC98289453B300548EEE /* GroupsProto.swift in Sources */,
 				F9C5CE78289453B400548EEE /* GroupsV2.swift in Sources */,
 				F9C5CDA1289453B400548EEE /* GroupsV2MessageJobFinder.swift in Sources */,
@@ -12174,8 +12135,6 @@
 				F9C5CBF9289453B300548EEE /* OWSGiftBadge.swift in Sources */,
 				F9C5CC46289453B300548EEE /* OWSGroupCallMessage+SDS.swift in Sources */,
 				F9C5CC6B289453B300548EEE /* OWSGroupCallMessage.m in Sources */,
-				F9C5CC60289453B300548EEE /* OWSGroupInfoRequestMessage.m in Sources */,
-				F9C5CCF6289453B300548EEE /* OWSGroupsOutputStream.m in Sources */,
 				F9C5CDC5289453B400548EEE /* OWSHttpHeaders.swift in Sources */,
 				F9C5CE69289453B400548EEE /* OWSHTTPSecurityPolicy.m in Sources */,
 				F9C5CC6C289453B300548EEE /* OWSIdentityManager.m in Sources */,
@@ -12239,8 +12198,6 @@
 				F9C5CBB2289453B300548EEE /* OWSSyncContactsMessage.m in Sources */,
 				F9C5CBB8289453B300548EEE /* OWSSyncContactsMessage.swift in Sources */,
 				F9C5CBC0289453B300548EEE /* OWSSyncFetchLatestMessage.m in Sources */,
-				F9C5CBAE289453B300548EEE /* OWSSyncGroupsMessage.m in Sources */,
-				F9C5CBB6289453B300548EEE /* OWSSyncGroupsMessage.swift in Sources */,
 				F9C5CBBB289453B300548EEE /* OWSSyncKeysMessage.m in Sources */,
 				F9C5CBAF289453B300548EEE /* OWSSyncMessageRequestResponseMessage.m in Sources */,
 				F9C5CBB1289453B300548EEE /* OWSSyncRequestMessage.m in Sources */,
@@ -12619,7 +12576,6 @@
 				66FC637229DF7A1500F00DAC /* MessageBodyRangesTests.swift in Sources */,
 				66883A3A29D7630A00E898CF /* MessageBodyTests.swift in Sources */,
 				F9426292289B1B5600460798 /* MessageDecryptionTest.swift in Sources */,
-				5011D9522A0191F9000FE8E5 /* MessageManagerTest.swift in Sources */,
 				F9426297289B1B5600460798 /* MessagePipelineSupervisorTest.swift in Sources */,
 				F942629C289B1B5600460798 /* MessageProcessingIntegrationTest.swift in Sources */,
 				F9426241289B1B5500460798 /* MessageSenderJobRecordTest.swift in Sources */,

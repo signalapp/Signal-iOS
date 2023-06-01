@@ -408,7 +408,7 @@ message DataMessage {
 
   optional string            body                    =  1;
   repeated AttachmentPointer attachments             =  2;
-  optional GroupContext      group                   =  3;
+  reserved                   /*groupV1Context*/         3;
   optional GroupContextV2    groupV2                 = 15;
   optional uint32            flags                   =  4;
   optional uint32            expireTimer             =  5;
@@ -491,10 +491,6 @@ message SyncMessage {
     optional bool              isComplete = 2 [default = false];
   }
 
-  message Groups {
-    optional AttachmentPointer blob = 1;
-  }
-
   message Blocked {
     repeated string numbers = 1;
     repeated bytes groupIds = 2;
@@ -503,13 +499,13 @@ message SyncMessage {
 
   message Request {
     enum Type {
-      UNKNOWN       = 0;
-      CONTACTS      = 1;
-      GROUPS        = 2;
-      BLOCKED       = 3;
-      CONFIGURATION = 4;
-      KEYS          = 5;
-      reserved        6; // Formerly, PNI_IDENTITY
+      UNKNOWN                 = 0;
+      CONTACTS                = 1;
+      reserved /*GROUPS*/       2;
+      BLOCKED                 = 3;
+      CONFIGURATION           = 4;
+      KEYS                    = 5;
+      reserved /*PNI_IDENTITY*/ 6;
     }
 
     optional Type type = 1;
@@ -644,7 +640,7 @@ message SyncMessage {
 
   optional Sent                   sent                   = 1;
   optional Contacts               contacts               = 2;
-  optional Groups                 groups                 = 3;
+  reserved                        /*groups*/               3;
   optional Request                request                = 4;
   repeated Read                   read                   = 5;
   optional Blocked                blocked                = 6;
@@ -695,28 +691,6 @@ message AttachmentPointer {
   // Next ID: 16
 }
 
-message GroupContext {
-  message Member {
-    reserved /* uuid */ 1;
-    optional string e164 = 2;
-  }
-
-  enum Type {
-    UNKNOWN      = 0;
-    UPDATE       = 1;
-    DELIVER      = 2;
-    QUIT         = 3;
-    REQUEST_INFO = 4;
-  }
-  // @required
-  optional bytes             id          = 1;
-  optional Type              type        = 2;
-  optional string            name        = 3;
-  repeated string            membersE164 = 4;
-  optional AttachmentPointer avatar      = 5;
-  repeated Member            members     = 6;
-}
-
 message GroupContextV2 {
   optional bytes  masterKey   = 1;
   optional uint32 revision    = 2;
@@ -740,31 +714,6 @@ message ContactDetails {
   optional uint32   expireTimer = 8;
   optional uint32   inboxPosition = 10;
   optional bool     archived      = 11;
-}
-
-message GroupDetails {
-  message Avatar {
-    optional string contentType = 1;
-    optional uint32 length      = 2;
-  }
-
-  message Member {
-    reserved /* uuid */ 1;
-    optional string e164 = 2;
-  }
-
-  // @required
-  optional bytes  id          = 1;
-  optional string name        = 2;
-  repeated string membersE164 = 3;
-  optional Avatar avatar      = 4;
-  optional bool   active      = 5 [default = true];
-  optional uint32 expireTimer = 6;
-  optional string color       = 7;
-  optional bool   blocked     = 8;
-  repeated Member members     = 9;
-  optional uint32 inboxPosition = 10;
-  optional bool archived = 11;
 }
 
 message Pack {

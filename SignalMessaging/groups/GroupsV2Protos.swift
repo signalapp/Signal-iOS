@@ -50,12 +50,7 @@ public class GroupsV2Protos {
         var memberBuilder = GroupsProtoMember.builder()
         memberBuilder.setRole(role)
         let userId = try groupV2Params.userId(forUuid: uuid)
-        if DebugFlags.groupsV2corruptInvites.get() {
-            let corruptUserId = Randomness.generateRandomBytes(Int32(userId.count))
-            memberBuilder.setUserID(corruptUserId)
-        } else {
-            memberBuilder.setUserID(userId)
-        }
+        memberBuilder.setUserID(userId)
         builder.setMember(try memberBuilder.build())
 
         return try builder.build()
@@ -362,11 +357,7 @@ public class GroupsV2Protos {
                     continue
                 }
                 groupMembershipBuilder.addInvalidInvite(userId: userId, addedByUserId: addedByUserId)
-                if DebugFlags.groupsV2ignoreCorruptInvites {
-                    Logger.warn("Error parsing uuid: \(error)")
-                } else {
-                    owsFailDebug("Error parsing uuid: \(error)")
-                }
+                owsFailDebug("Error parsing uuid: \(error)")
                 continue
             }
             let address = SignalServiceAddress(uuid: uuid)

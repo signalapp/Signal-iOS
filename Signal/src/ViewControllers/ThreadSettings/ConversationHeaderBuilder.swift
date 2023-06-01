@@ -313,7 +313,7 @@ struct ConversationHeaderBuilder: Dependencies {
             ))
         }
 
-        if options.contains(.search), !delegate.isBlockedByMigration {
+        if options.contains(.search), !delegate.isGroupV1Thread {
             buttons.append(buildIconButton(
                 icon: .settingsSearch,
                 text: OWSLocalizedString(
@@ -526,7 +526,7 @@ protocol ConversationHeaderDelegate: UIViewController, Dependencies, Conversatio
 
     var avatarView: PrimaryImageView? { get set }
 
-    var isBlockedByMigration: Bool { get }
+    var isGroupV1Thread: Bool { get }
     var canEditConversationAttributes: Bool { get }
 
     func updateTableContents(shouldReload: Bool)

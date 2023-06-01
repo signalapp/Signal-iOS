@@ -26,11 +26,6 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 sectionItems.append(OWSTableItem(title: "Kick other group members.") { [weak self] in
                     self?.kickOtherGroupMembers(groupModel: groupModelV2)
                 })
-            } else {
-                // v1 Group
-                sectionItems.append(OWSTableItem(title: "Send empty v1 group update.") { [weak self] in
-                    self?.sendEmptyV1GroupUpdate(groupThread: groupThread)
-                })
             }
         }
 
@@ -50,37 +45,10 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
             })
         }
 
-        if let groupThread = thread as? TSGroupThread {
-            sectionItems.append(OWSTableItem(title: "Try to migrate group (is already migrated on service).") {
-                Self.migrate(groupThread: groupThread,
-                             migrationMode: .isAlreadyMigratedOnService)
-            })
-            sectionItems.append(OWSTableItem(title: "Try to migrate group (aggressive manual migration).") {
-                Self.migrate(groupThread: groupThread,
-                             migrationMode: .manualMigrationAggressive)
-            })
-            sectionItems.append(OWSTableItem(title: "Try to migrate group (polite auto migration).") {
-                Self.migrate(groupThread: groupThread,
-                             migrationMode: .autoMigrationPolite)
-            })
-        }
-
         return OWSTableSection(title: "Groups v2", items: sectionItems)
     }
 
     // MARK: -
-
-    private static func migrate(groupThread: TSGroupThread,
-                                migrationMode: GroupsV2MigrationMode) {
-        _ = firstly { () -> Promise<TSGroupThread> in
-            GroupsV2Migration.tryToMigrate(groupThread: groupThread,
-                                           migrationMode: migrationMode)
-        }.done { _ in
-            Logger.verbose("Done.")
-        }.catch { error in
-            Logger.verbose("Error: \(error).")
-        }
-    }
 
     private func kickOtherGroupMembers(groupModel: TSGroupModelV2) {
         guard let localAddress = tsAccountManager.localAddress else {
@@ -446,42 +414,6 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
         contentBuilder.setDataMessage(dataProto)
         let plaintextData = try! contentBuilder.buildSerializedData()
         return plaintextData
-    }
-
-    private func sendEmptyV1GroupUpdate(groupThread: TSGroupThread) {
-
-        guard let localAddress = tsAccountManager.localAddress else {
-            return owsFailDebug("Missing localAddress.")
-        }
-
-        let groupModel = groupThread.groupModel
-        let timestamp = NSDate.ows_millisecondTimeStamp()
-
-        let message = databaseStorage.read { transaction in
-            OWSDynamicOutgoingMessage(thread: groupThread, transaction: transaction) {
-                let groupContextBuilder = SSKProtoGroupContext.builder(id: groupModel.groupId)
-                groupContextBuilder.setType(.update)
-                groupContextBuilder.addMembersE164(localAddress.phoneNumber!)
-
-                let memberBuilder = SSKProtoGroupContextMember.builder()
-                memberBuilder.setE164(localAddress.phoneNumber!)
-                groupContextBuilder.addMembers(try! memberBuilder.build())
-
-                let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setTimestamp(timestamp)
-                dataBuilder.setGroup(try! groupContextBuilder.build())
-                dataBuilder.setRequiredProtocolVersion(0)
-                return Self.contentProtoData(forDataBuilder: dataBuilder)
-            }
-        }
-
-        firstly { () -> Promise<Void> in
-            messageSender.sendMessage(.promise, message.asPreparer)
-        }.done { (_) -> Void in
-            Logger.info("Success.")
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
     }
 
     private func sendGroupUpdate(groupThread: TSGroupThread) {

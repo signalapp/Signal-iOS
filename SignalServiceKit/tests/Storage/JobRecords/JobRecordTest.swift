@@ -16,7 +16,7 @@ class JobRecordTest: XCTestCase {
         switch recordType {
         case .broadcastMediaMessage: return BroadcastMediaMessageJobRecord.self
         case .incomingContactSync: return IncomingContactSyncJobRecord.self
-        case .incomingGroupSync: return IncomingGroupSyncJobRecord.self
+        case .deprecated_incomingGroupSync: return IncomingGroupSyncJobRecord.self
         case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
         case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
         case .messageSender: return MessageSenderJobRecord.self

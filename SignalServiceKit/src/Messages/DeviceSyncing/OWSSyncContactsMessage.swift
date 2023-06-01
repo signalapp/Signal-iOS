@@ -98,3 +98,15 @@ extension OWSSyncContactsMessage {
         return fileUrl
     }
 }
+
+private class OWSStreamDelegate: NSObject, StreamDelegate {
+    private let _hadError = AtomicBool(false)
+    public var hadError: Bool { _hadError.get() }
+
+    @objc
+    public func stream(_ stream: Stream, handle eventCode: Stream.Event) {
+        if eventCode == .errorOccurred {
+            _hadError.set(true)
+        }
+    }
+}

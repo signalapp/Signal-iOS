@@ -33,8 +33,6 @@ public class SSKBaseTestSwift: XCTestCase {
         SetCurrentAppContext(TestAppContext(), true)
 
         MockSSKEnvironment.activate()
-
-        GroupManager.forceV1Groups()
     }
 
     @objc

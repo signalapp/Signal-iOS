@@ -231,68 +231,10 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
 
-    // We can use this to test recovery from "missed updates".
-    @objc
-    public static let groupsV2dontSendUpdates = TestableFlag(false,
-                                                             title: LocalizationNotNeeded("Groups v2: Don't Send Updates"),
-                                                             details: LocalizationNotNeeded("The app will not send 'group update' messages for v2 groups. " +
-                                                                                                "Other group members will only learn of group changes from normal group messages."))
-
-    // If set, v2 groups will be created and updated with invalid avatars
-    // so that we can test clients' robustness to this case.
-    @objc
-    public static let groupsV2corruptAvatarUrlPaths = TestableFlag(false,
-                                                                   title: LocalizationNotNeeded("Groups v2: Corrupt avatar URL paths"),
-                                                                   details: LocalizationNotNeeded("Client will update group state with corrupt avatar URL paths."))
-
-    // If set, v2 groups will be created and updated with
-    // corrupt avatars, group names, and/or dm state
-    // so that we can test clients' robustness to this case.
-    @objc
-    public static let groupsV2corruptBlobEncryption = TestableFlag(false,
-                                                                   title: LocalizationNotNeeded("Groups v2: Corrupt blobs"),
-                                                                   details: LocalizationNotNeeded("Client will update group state with corrupt blobs."))
-
-    // If set, client will invite instead of adding other users.
-    @objc
-    public static let groupsV2forceInvites = TestableFlag(false,
-                                                          title: LocalizationNotNeeded("Groups v2: Always Invite"),
-                                                          details: LocalizationNotNeeded("Members added to a v2 group will always be invited instead of added."))
-
-    // If set, client will always send corrupt invites.
-    @objc
-    public static let groupsV2corruptInvites = TestableFlag(false,
-                                                            title: LocalizationNotNeeded("Groups v2: Corrupt Invites"),
-                                                            details: LocalizationNotNeeded("Client will only emit corrupt invites to v2 groups."))
-
-    @objc
-    public static let groupsV2onlyCreateV1Groups = TestableFlag(false,
-                                                                title: LocalizationNotNeeded("Groups v2: Only create v1 groups"),
-                                                                details: LocalizationNotNeeded("Client will not try to create v2 groups."))
-
-    @objc
-    public static let groupsV2migrationsDropOtherMembers = TestableFlag(false,
-                                                                        title: LocalizationNotNeeded("Groups v2: Migrations drop others"),
-                                                                        details: LocalizationNotNeeded("Group migrations will drop other members."))
-
-    @objc
-    public static let groupsV2migrationsInviteOtherMembers = TestableFlag(false,
-                                                                          title: LocalizationNotNeeded("Groups v2: Migrations invite others"),
-                                                                          details: LocalizationNotNeeded("Group migrations will invite other members."))
-
-    @objc
-    public static let groupsV2migrationsIgnoreMigrationCapability = false
-
     @objc
     public static let aggressiveProfileFetching = TestableFlag(false,
                                                                title: LocalizationNotNeeded("Aggressive profile fetching"),
                                                                details: LocalizationNotNeeded("Client will update profiles aggressively."))
-
-    @objc
-    public static let groupsV2ignoreCorruptInvites = false
-
-    @objc
-    public static let groupsV2memberStatusIndicators = build.includes(.internal)
 
     // Currently this flag is only honored by NetworkManager,
     // but we could eventually honor in other places as well:

@@ -200,7 +200,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 {
     [super anyWillInsertWithTransaction:transaction];
 
-    [self protectV2Migration:transaction];
+    [TSGroupThread ensureGroupIdMappingForGroupId:self.groupModel.groupId transaction:transaction];
     [self updateGroupMemberRecordsWithTransaction:transaction];
 }
 
@@ -208,28 +208,10 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 {
     [super anyWillUpdateWithTransaction:transaction];
 
-    [self protectV2Migration:transaction];
-    // We used to update the group member records here, but there are many updates that don't touch membership.
-    // Now it's done explicitly where we update the group model, and not for other updates.
-}
-
-- (void)protectV2Migration:(SDSAnyWriteTransaction *)transaction
-{
-    if (self.groupModel.groupsVersion != GroupsVersionV1) {
-        return;
-    }
-
     [TSGroupThread ensureGroupIdMappingForGroupId:self.groupModel.groupId transaction:transaction];
 
-    TSGroupThread *_Nullable databaseCopy = [TSGroupThread anyFetchGroupThreadWithUniqueId:self.uniqueId
-                                                                               transaction:transaction];
-    if (databaseCopy == nil) {
-        return;
-    }
-
-    if (databaseCopy.groupModel.groupsVersion == GroupsVersionV2) {
-        OWSFail(@"v1-to-v2 group migration can not be reversed.");
-    }
+    // We used to update the group member records here, but there are many updates that don't touch membership.
+    // Now it's done explicitly where we update the group model, and not for other updates.
 }
 
 - (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction

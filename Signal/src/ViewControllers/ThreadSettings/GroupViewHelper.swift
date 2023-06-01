@@ -49,7 +49,7 @@ class GroupViewHelper: Dependencies {
             // Both users can edit contact threads.
             return true
         }
-        guard !isBlockedByMigration else {
+        guard !isGroupV1Thread else {
             return false
         }
         guard !threadViewModel.isBlocked else {
@@ -81,8 +81,8 @@ class GroupViewHelper: Dependencies {
         }
     }
 
-    var isBlockedByMigration: Bool {
-        thread.isBlockedByMigration
+    var isGroupV1Thread: Bool {
+        thread.isGroupV1Thread
     }
 
     // Can local user edit conversation attributes:

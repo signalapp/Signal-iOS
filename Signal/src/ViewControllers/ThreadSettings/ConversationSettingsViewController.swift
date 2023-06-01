@@ -115,8 +115,8 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     // MARK: - Accessors
 
-    var isBlockedByMigration: Bool {
-        groupViewHelper.isBlockedByMigration
+    var isGroupV1Thread: Bool {
+        groupViewHelper.isGroupV1Thread
     }
 
     var canEditConversationAttributes: Bool {

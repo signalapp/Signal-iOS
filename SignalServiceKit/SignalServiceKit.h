@@ -68,8 +68,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSGroupCallMessage.h>
-#import <SignalServiceKit/OWSGroupInfoRequestMessage.h>
-#import <SignalServiceKit/OWSGroupsOutputStream.h>
 #import <SignalServiceKit/OWSHTTPSecurityPolicy.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSIncomingSentMessageTranscript.h>
@@ -106,7 +104,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncFetchLatestMessage.h>
-#import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/OWSSyncKeysMessage.h>
 #import <SignalServiceKit/OWSSyncMessageRequestResponseMessage.h>
 #import <SignalServiceKit/OWSSyncRequestMessage.h>

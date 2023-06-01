@@ -41,118 +41,6 @@ class DebugUIStress: DebugUIPage, Dependencies {
                     return (contentBuilder.buildIgnoringErrors()?.serializedDataIgnoringErrors())!
                 })
             }))
-            items.append(OWSTableItem(title: "Send whitespace text data message", actionBlock: {
-                DebugUIStress.sendStressMessage(toThread: thread, block: {
-                    let contentBuilder = SSKProtoContent.builder()
-                    let dataMessageBuilder = SSKProtoDataMessage.builder()
-                    dataMessageBuilder.setBody(" ")
-                    DebugUIStress.ensureGroupOfDataBuilder(dataMessageBuilder, thread: thread)
-                    if let dataMessage = dataMessageBuilder.buildIgnoringErrors() {
-                        contentBuilder.setDataMessage(dataMessage)
-                    }
-                    return (contentBuilder.buildIgnoringErrors()?.serializedDataIgnoringErrors())!
-                })
-            }))
-            items.append(OWSTableItem(title: "Send normal text data message", actionBlock: {
-                DebugUIStress.sendStressMessage(toThread: thread, block: {
-                    let contentBuilder = SSKProtoContent.builder()
-                    let dataMessageBuilder = SSKProtoDataMessage.builder()
-                    dataMessageBuilder.setBody("alice")
-                    DebugUIStress.ensureGroupOfDataBuilder(dataMessageBuilder, thread: thread)
-                    if let dataMessage = dataMessageBuilder.buildIgnoringErrors() {
-                        contentBuilder.setDataMessage(dataMessage)
-                    }
-                    return (contentBuilder.buildIgnoringErrors()?.serializedDataIgnoringErrors())!
-                })
-            }))
-            items.append(OWSTableItem(title: "Send N text messages with same timestamp", actionBlock: {
-                let timestamp = Date.ows_millisecondTimestamp()
-                for i in 0...2 {
-                    DebugUIStress.sendStressMessage(toThread: thread, timestamp: timestamp, block: {
-                        let contentBuilder = SSKProtoContent.builder()
-                        let dataMessageBuilder = SSKProtoDataMessage.builder()
-                        dataMessageBuilder.setBody("\(UUID().uuidString) \(i)")
-                        DebugUIStress.ensureGroupOfDataBuilder(dataMessageBuilder, thread: thread)
-                        if let dataMessage = dataMessageBuilder.buildIgnoringErrors() {
-                            contentBuilder.setDataMessage(dataMessage)
-                        }
-                        return (contentBuilder.buildIgnoringErrors()?.serializedDataIgnoringErrors())!
-                    })
-                }
-            }))
-            items.append(OWSTableItem(title: "Send text message with current timestamp", actionBlock: {
-                let timestamp = Date.ows_millisecondTimestamp()
-                DebugUIStress.sendStressMessage(toThread: thread, timestamp: timestamp, block: {
-                    let contentBuilder = SSKProtoContent.builder()
-                    let dataMessageBuilder = SSKProtoDataMessage.builder()
-                    dataMessageBuilder.setBody("\(UUID().uuidString) now")
-                    DebugUIStress.ensureGroupOfDataBuilder(dataMessageBuilder, thread: thread)
-                    if let dataMessage = dataMessageBuilder.buildIgnoringErrors() {
-                        contentBuilder.setDataMessage(dataMessage)
-                    }
-                    return (contentBuilder.buildIgnoringErrors()?.serializedDataIgnoringErrors())!
-                })
-            }))
-            items.append(OWSTableItem(title: "Send text message with future timestamp", actionBlock: {
-                let timestamp = Date.ows_millisecondTimestamp() + kHourInMs
-                DebugUIStress.sendStressMessage(toThread: thread, timestamp: timestamp, block: {
-                    let contentBuilder = SSKProtoContent.builder()
-                    let dataMessageBuilder = SSKProtoDataMessage.builder()
-                    dataMessageBuilder.setBody("\(UUID().uuidString) now")
-                    DebugUIStress.ensureGroupOfDataBuilder(dataMessageBuilder, thread: thread)
-                    if let dataMessage = dataMessageBuilder.buildIgnoringErrors() {
-                        contentBuilder.setDataMessage(dataMessage)
-                    }
-                    return (contentBuilder.buildIgnoringErrors()?.serializedDataIgnoringErrors())!
-                })
-            }))
-            items.append(OWSTableItem(title: "Send text message with past timestamp", actionBlock: {
-                let timestamp = Date.ows_millisecondTimestamp() - kHourInMs
-                DebugUIStress.sendStressMessage(toThread: thread, timestamp: timestamp, block: {
-                    let contentBuilder = SSKProtoContent.builder()
-                    let dataMessageBuilder = SSKProtoDataMessage.builder()
-                    dataMessageBuilder.setBody("\(UUID().uuidString) now")
-                    DebugUIStress.ensureGroupOfDataBuilder(dataMessageBuilder, thread: thread)
-                    if let dataMessage = dataMessageBuilder.buildIgnoringErrors() {
-                        contentBuilder.setDataMessage(dataMessage)
-                    }
-                    return (contentBuilder.buildIgnoringErrors()?.serializedDataIgnoringErrors())!
-                })
-            }))
-            items.append(OWSTableItem(title: "Send N text messages with same timestamp", actionBlock: {
-                let contentBuilder = SSKProtoContent.builder()
-                let timestamp = Date.ows_millisecondTimestamp()
-                let dataMessageBuilder = SSKProtoDataMessage.builder()
-                dataMessageBuilder.setBody("alice")
-                DebugUIStress.ensureGroupOfDataBuilder(dataMessageBuilder, thread: thread)
-                if let dataMessage = dataMessageBuilder.buildIgnoringErrors() {
-                    contentBuilder.setDataMessage(dataMessage)
-                }
-                let data = (contentBuilder.buildIgnoringErrors()?.serializedDataIgnoringErrors())!
-                for _ in 0...2 {
-                    DebugUIStress.sendStressMessage(toThread: thread, timestamp: timestamp, block: { return data })
-                }
-            }))
-            items.append(OWSTableItem(title: "Send bad attachment data message", actionBlock: {
-                DebugUIStress.sendStressMessage(toThread: thread, block: {
-                    let contentBuilder = SSKProtoContent.builder()
-                    let dataMessageBuilder = SSKProtoDataMessage.builder()
-                    let attachmentPointerBuilder = SSKProtoAttachmentPointer.builder()
-                    attachmentPointerBuilder.setCdnID(.random(in: 1...32))
-                    attachmentPointerBuilder.setContentType("1")
-                    attachmentPointerBuilder.setSize(.random(in: 1...32))
-                    attachmentPointerBuilder.setDigest(Cryptography.generateRandomBytes(1))
-                    attachmentPointerBuilder.setFileName(" ")
-                    if let attachmentPointer = attachmentPointerBuilder.buildIgnoringErrors() {
-                        dataMessageBuilder.setAttachments([attachmentPointer])
-                    }
-                    DebugUIStress.ensureGroupOfDataBuilder(dataMessageBuilder, thread: thread)
-                    if let dataMessage = dataMessageBuilder.buildIgnoringErrors() {
-                        contentBuilder.setDataMessage(dataMessage)
-                    }
-                    return (contentBuilder.buildIgnoringErrors()?.serializedDataIgnoringErrors())!
-                })
-            }))
 
             // Sync
 
@@ -225,32 +113,6 @@ class DebugUIStress: DebugUIPage, Dependencies {
                     syncSentMessageBuilder.setTimestamp(0)
                     let dataMessageBuilder = SSKProtoDataMessage.builder()
                     dataMessageBuilder.setBody(" ")
-                    if let message = dataMessageBuilder.buildIgnoringErrors() {
-                        syncSentMessageBuilder.setMessage(message)
-                    }
-                    if let syncSentMessage = syncSentMessageBuilder.buildIgnoringErrors() {
-                        syncMessageBuilder.setSent(syncSentMessage)
-                    }
-                    if let syncMessage = SSKProtoSyncMessage.builder().buildIgnoringErrors() {
-                        contentBuilder.setSyncMessage(syncMessage)
-                    }
-                    return (contentBuilder.buildIgnoringErrors()?.serializedDataIgnoringErrors())!
-                })
-            }))
-            items.append(OWSTableItem(title: "Send malformed sync sent message 4", actionBlock: {
-                DebugUIStress.sendStressMessage(toThread: thread, block: {
-                    let contentBuilder = SSKProtoContent.builder()
-                    let syncMessageBuilder = SSKProtoSyncMessage.builder()
-                    let syncSentMessageBuilder = SSKProtoSyncMessageSent.builder()
-                    syncSentMessageBuilder.setDestinationUuid("abc")
-                    syncSentMessageBuilder.setTimestamp(0)
-                    let dataMessageBuilder = SSKProtoDataMessage.builder()
-                    dataMessageBuilder.setBody(" ")
-                    let groupBuilder = SSKProtoGroupContext.builder(id: Cryptography.generateRandomBytes(1))
-                    groupBuilder.setType(.deliver)
-                    if let group = groupBuilder.buildIgnoringErrors() {
-                        dataMessageBuilder.setGroup(group)
-                    }
                     if let message = dataMessageBuilder.buildIgnoringErrors() {
                         syncSentMessageBuilder.setMessage(message)
                     }
@@ -358,18 +220,6 @@ class DebugUIStress: DebugUIPage, Dependencies {
         sendStressMessage(message)
     }
 
-    private static func ensureGroupOfDataBuilder(_ dataBuilder: SSKProtoDataMessageBuilder, thread: TSThread) {
-        guard let groupThread = thread as? TSGroupThread else { return }
-        let groupBuilder = SSKProtoGroupContext.builder(id: groupThread.groupModel.groupId)
-        groupBuilder.setType(.deliver)
-        groupBuilder.setId(groupThread.groupModel.groupId)
-        guard let group = groupBuilder.buildIgnoringErrors() else {
-            owsFailDebug("Failed to build group")
-            return
-        }
-        dataBuilder.setGroup(group)
-    }
-
     // MARK: Groups
 
     private static func makeUnregisteredGroup() {
@@ -438,9 +288,6 @@ class DebugUIStress: DebugUIPage, Dependencies {
     // other members. This can be used to test "group info requests", etc.
     private static func cloneAsV2Group(_ oldGroupThread: TSGroupThread) {
         firstly { () -> Promise<TSGroupThread> in
-            guard GroupManager.defaultGroupsVersion == .V2 else {
-                throw OWSAssertionError("Groups v2 not enabled.")
-            }
             let members: [SignalServiceAddress] = oldGroupThread.groupModel.groupMembers.filter { address in
                 GroupManager.doesUserSupportGroupsV2(address: address)
             }

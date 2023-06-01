@@ -39,7 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t serverTimestamp;
 @property (nonatomic, readonly) uint64_t expirationStartedAt;
 @property (nonatomic, readonly) uint32_t expirationDuration;
-@property (nonatomic, readonly) BOOL isGroupUpdate;
 @property (nonatomic, readonly) BOOL isExpirationTimerUpdate;
 @property (nonatomic, readonly) BOOL isEndSessionMessage;
 @property (nonatomic, readonly, nullable) NSData *groupId;

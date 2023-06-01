@@ -655,18 +655,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
     private func updateGroupPromise(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
         // First, we try to update the group locally using changes embedded in
         // the group context (if any).
-        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            guard let groupContextInfo = jobInfo.groupContextInfo else {
-                owsFailDebug("Missing groupContextInfo.")
-                return Promise.value(())
-            }
-            return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-                self.groupsV2Swift.updateAlreadyMigratedGroupIfNecessary(v2GroupId: groupContextInfo.groupId)
-            }.recover(on: DispatchQueue.global()) {error -> Promise<Void> in
-                owsFailDebug("Error: \(error)")
-                throw GroupsV2Error.shouldRetry
-            }
-        }.then(on: DispatchQueue.global()) { () -> Promise<UpdateOutcome> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<UpdateOutcome> in
             self.tryToUpdateUsingEmbeddedGroupUpdate(jobInfo: jobInfo)
         }.recover(on: DispatchQueue.global()) { _ in
             owsFailDebug("tryToUpdateUsingEmbeddedGroupUpdate should never fail.")

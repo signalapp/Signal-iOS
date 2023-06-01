@@ -265,7 +265,7 @@ class MemberActionSheet: OWSTableSheetViewController {
 }
 
 extension MemberActionSheet: ConversationHeaderDelegate {
-    var isBlockedByMigration: Bool { groupViewHelper?.isBlockedByMigration == true }
+    var isGroupV1Thread: Bool { groupViewHelper?.isGroupV1Thread == true }
 
     func presentStoryViewController() {
         dismiss(animated: true) {

@@ -20,11 +20,9 @@ public protocol SyncManagerProtocolObjc {
     func syncAllContacts() -> AnyPromise
     @discardableResult
     func syncAllContactsIfFullSyncRequested() -> AnyPromise
-    func syncGroups(transaction: SDSAnyWriteTransaction, completion: @escaping Completion)
 
     func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction)
     func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: SDSAnyWriteTransaction)
-    func processIncomingGroupsSyncMessage(_ syncMessage: SSKProtoSyncMessageGroups, transaction: SDSAnyWriteTransaction)
     func processIncomingFetchLatestSyncMessage(_ syncMessage: SSKProtoSyncMessageFetchLatest, transaction: SDSAnyWriteTransaction)
 
     func sendFetchLatestProfileSyncMessage()

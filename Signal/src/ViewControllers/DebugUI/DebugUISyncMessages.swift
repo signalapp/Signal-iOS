@@ -17,8 +17,6 @@ class DebugUISyncMessages: DebugUIPage, Dependencies {
         return OWSTableSection(title: name, items: [
             OWSTableItem(title: "Send Contacts Sync Message",
                          actionBlock: { DebugUISyncMessages.sendContactsSyncMessage() }),
-            OWSTableItem(title: "Send Groups Sync Message",
-                         actionBlock: { DebugUISyncMessages.sendGroupSyncMessage() }),
             OWSTableItem(title: "Send Blocklist Sync Message",
                          actionBlock: { DebugUISyncMessages.sendBlockListSyncMessage() }),
             OWSTableItem(title: "Send Configuration Sync Message",
@@ -35,12 +33,6 @@ class DebugUISyncMessages: DebugUIPage, Dependencies {
             .catch(on: DispatchQueue.global()) { error in
                 Logger.info("Error: \(error)")
             }
-    }
-
-    private static func sendGroupSyncMessage() {
-        databaseStorage.asyncWrite { transaction in
-            SSKEnvironment.shared.syncManager.syncGroups(transaction: transaction, completion: { })
-        }
     }
 
     private static func sendBlockListSyncMessage() {

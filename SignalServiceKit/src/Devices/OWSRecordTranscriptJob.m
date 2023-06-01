@@ -135,11 +135,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (!transcript.thread.isGroupV2Thread) {
-        [GroupManager remoteUpdateDisappearingMessagesWithContactOrV1GroupThread:transcript.thread
-                                                        disappearingMessageToken:transcript.disappearingMessageToken
-                                                        groupUpdateSourceAddress:localAddress
-                                                                     transaction:transaction];
+    if (!transcript.thread.isGroupThread) {
+        [GroupManager remoteUpdateDisappearingMessagesWithContactThread:transcript.thread
+                                               disappearingMessageToken:transcript.disappearingMessageToken
+                                               groupUpdateSourceAddress:localAddress
+                                                            transaction:transaction];
     }
 
     if (transcript.isExpirationTimerUpdate) {

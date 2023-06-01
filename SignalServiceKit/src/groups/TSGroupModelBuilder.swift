@@ -114,7 +114,7 @@ public struct TSGroupModelBuilder: Dependencies {
         try checkUsers()
 
         let allUsers = groupMembership.allMembersOfAnyKind
-        let groupsVersion = buildGroupsVersion(for: allUsers)
+        let groupsVersion = self.groupsVersion ?? .V2
 
         let newGroupSeed = self.newGroupSeed ?? NewGroupSeed()
 
@@ -204,7 +204,7 @@ public struct TSGroupModelBuilder: Dependencies {
 
     public func buildAsV2() throws -> TSGroupModelV2 {
         guard let model = try build() as? TSGroupModelV2 else {
-            throw OWSAssertionError("Invalid group model.")
+            throw OWSAssertionError("[GV1] Should be impossible to create a V1 group!")
         }
         return model
     }
@@ -247,25 +247,6 @@ public struct TSGroupModelBuilder: Dependencies {
             return GroupAccess.defaultForV1
         case .V2:
             return GroupAccess.defaultForV2
-        }
-    }
-
-    private func buildGroupsVersion(for members: Set<SignalServiceAddress>) -> GroupsVersion {
-        if let value = groupsVersion {
-            return value
-        }
-
-        if DebugFlags.groupsV2onlyCreateV1Groups.get() {
-            Logger.info("Creating v1 group due to debug flag.")
-            return .V1
-        }
-        let canUseV2 = GroupManager.canUseV2(for: members)
-        if canUseV2 {
-            Logger.info("Creating v2 group.")
-            return GroupManager.defaultGroupsVersion
-        } else {
-            Logger.info("Creating v1 group due to members.")
-            return .V1
         }
     }
 }

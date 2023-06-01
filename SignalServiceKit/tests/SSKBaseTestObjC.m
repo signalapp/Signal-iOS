@@ -27,8 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
     SetCurrentAppContext([TestAppContext new], true);
 
     [MockSSKEnvironment activate];
-    
-    [GroupManager forceV1Groups];
 }
 
 - (void)tearDown

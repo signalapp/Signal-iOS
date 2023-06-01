@@ -165,10 +165,10 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         var caseCount = 0
         for mode in Set(ContactDiscoveryMode.allCasesOrderedByRateLimitPriority) {
             switch mode {
-            case .oneOffUserRequest, .uuidBackfill, .outgoingMessage, .groupMigration, .contactIntersection:
+            case .oneOffUserRequest, .uuidBackfill, .outgoingMessage, .contactIntersection:
                 caseCount += 1
             }
         }
-        XCTAssertEqual(caseCount, 5)  // every case appears
+        XCTAssertEqual(caseCount, 4)  // every case appears
     }
 }

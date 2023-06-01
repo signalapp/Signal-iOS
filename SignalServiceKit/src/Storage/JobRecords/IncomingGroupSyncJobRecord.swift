@@ -6,22 +6,26 @@
 import Foundation
 import GRDB
 
+/// Job record for processing an incoming group sync message.
+///
+/// These sync messages are long-since deprecated, and support has been removed.
+/// This class remains to facilitate cleaning up any currently-persisted
+/// records, although it is unlikely any still exist.
 public final class IncomingGroupSyncJobRecord: JobRecord, FactoryInitializableFromRecordType {
     public static let defaultLabel = "IncomingGroupSync"
 
-    override class var jobRecordType: JobRecordType { .incomingGroupSync }
+    override class var jobRecordType: JobRecordType { .deprecated_incomingGroupSync }
 
-    public let attachmentId: String
+    #if TESTABLE_BUILD
 
-    public init(
+    init(
         attachmentId: String,
         label: String,
-        exclusiveProcessIdentifier: String? = nil,
-        failureCount: UInt = 0,
-        status: Status = .ready
+        exclusiveProcessIdentifier: String?,
+        failureCount: UInt,
+        status: Status
     ) {
         self.attachmentId = attachmentId
-
         super.init(
             label: label,
             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
@@ -30,19 +34,19 @@ public final class IncomingGroupSyncJobRecord: JobRecord, FactoryInitializableFr
         )
     }
 
+    #endif
+
+    public let attachmentId: String
+
     required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-
         attachmentId = try container.decode(String.self, forKey: .attachmentId)
-
         try super.init(baseClassDuringFactoryInitializationFrom: container.superDecoder())
     }
 
     public override func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
         try super.encode(to: container.superEncoder())
-
         try container.encode(attachmentId, forKey: .attachmentId)
     }
 }

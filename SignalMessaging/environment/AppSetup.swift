@@ -221,7 +221,6 @@ public class AppSetup {
 
         // Register renamed classes.
         NSKeyedUnarchiver.setClass(OWSUserProfile.self, forClassName: OWSUserProfile.collection())
-        NSKeyedUnarchiver.setClass(OWSGroupInfoRequestMessage.self, forClassName: "OWSSyncGroupsRequestMessage")
         NSKeyedUnarchiver.setClass(TSGroupModelV2.self, forClassName: "TSGroupModelV2")
 
         Sounds.performStartupTasks()

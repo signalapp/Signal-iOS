@@ -269,10 +269,6 @@ extension OWSMessageManager {
                 }
             }
 
-        case .groups:
-            let pendingTask = Self.buildPendingTask(label: "syncGroups")
-            syncManager.syncGroups(transaction: transaction) { pendingTask.complete() }
-
         case .blocked:
             Logger.info("Received request for block list")
             let pendingTask = Self.buildPendingTask(label: "syncBlockList")
@@ -544,9 +540,6 @@ extension OWSMessageManager {
         if !dataMessage.attachments.isEmpty {
             splits.append("attachments: \(dataMessage.attachments.count)")
         }
-        if dataMessage.group != nil {
-            splits.append("groupV1")
-        }
         if dataMessage.groupV2 != nil {
             splits.append("groupV2")
         }
@@ -732,9 +725,6 @@ extension SSKProtoDataMessage {
     @objc
     var contentDescription: String {
         var parts = [String]()
-        if group != nil {
-            parts.append("(Group:YES) )")
-        }
         if Int64(flags) & Int64(SSKProtoDataMessageFlags.endSession.rawValue) != 0 {
             parts.append("EndSession")
         } else if Int64(flags) & Int64(SSKProtoDataMessageFlags.expirationTimerUpdate.rawValue) != 0 {
@@ -759,9 +749,6 @@ extension SSKProtoSyncMessage {
         if contacts != nil {
             return "Contacts"
         }
-        if groups != nil {
-            return "Groups"
-        }
         if let request = self.request {
             if !request.hasType {
                 return "Unknown sync request."
@@ -769,8 +756,6 @@ extension SSKProtoSyncMessage {
             switch request.unwrappedType {
             case .contacts:
                 return "ContactRequest"
-            case .groups:
-                return "GroupRequest"
             case .blocked:
                 return "BlockedRequest"
             case .configuration:
@@ -788,7 +773,7 @@ extension SSKProtoSyncMessage {
         if blocked != nil {
             return "Blocked"
         }
-        if let verified = verified {
+        if verified != nil {
             return "Verification"
         }
         if configuration != nil {

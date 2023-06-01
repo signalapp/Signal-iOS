@@ -15,7 +15,7 @@ enum CVCBottomViewType: Equatable {
     case messageRequestView(messageRequestType: MessageRequestType)
     case search
     case selection
-    case blockingGroupMigration
+    case blockingLegacyGroup
     case announcementOnlyGroup
 }
 
@@ -63,8 +63,8 @@ public extension ConversationViewController {
                 return .messageRequestView(messageRequestType: messageRequestType)
             } else if isLocalUserRequestingMember {
                 return .memberRequestView
-            } else if hasBlockingGroupMigration {
-                return .blockingGroupMigration
+            } else if hasBlockingLegacyGroup {
+                return .blockingLegacyGroup
             } else if isBlockedFromSendingByAnnouncementOnlyGroup {
                 return .announcementOnlyGroup
             } else {
@@ -118,10 +118,10 @@ public extension ConversationViewController {
             bottomView = selectionToolbar
         case .inputToolbar:
             bottomView = inputToolbar
-        case .blockingGroupMigration:
-            let migrationView = BlockingGroupMigrationView(fromViewController: self)
-            requestView = migrationView
-            bottomView = migrationView
+        case .blockingLegacyGroup:
+            let legacyGroupView = BlockingLegacyGroupView(fromViewController: self)
+            requestView = legacyGroupView
+            bottomView = legacyGroupView
         case .announcementOnlyGroup:
             let announcementOnlyView = BlockingAnnouncementOnlyView(threadViewModel: threadViewModel,
                                                                     fromViewController: self)
@@ -371,8 +371,8 @@ public extension ConversationViewController {
         return !groupThread.isLocalUserFullMember
     }
 
-    private var hasBlockingGroupMigration: Bool {
-        thread.isBlockedByMigration
+    private var hasBlockingLegacyGroup: Bool {
+        thread.isGroupV1Thread
     }
 
     private var isBlockedFromSendingByAnnouncementOnlyGroup: Bool {
