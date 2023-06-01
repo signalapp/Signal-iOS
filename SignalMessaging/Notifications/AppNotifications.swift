@@ -193,7 +193,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     var previewType: NotificationType {
-        return preferences.notificationPreviewType()
+        return preferences.notificationPreviewType
     }
 
     var shouldShowActions: Bool {
@@ -1146,7 +1146,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return true
         }
 
-        guard preferences.soundInForeground() else {
+        guard preferences.soundInForeground else {
             Logger.info("[Notification Sounds] foreground sound disabled")
             return false
         }

@@ -6,7 +6,6 @@
 #import "OWSSyncManager.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
-#import "OWSPreferences.h"
 #import "OWSProfileManager.h"
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/Cryptography.h>

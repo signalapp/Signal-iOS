@@ -21,11 +21,11 @@ class NotificationSettingsContentViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.footerTitle = OWSLocalizedString("NOTIFICATIONS_FOOTER_WARNING", comment: "")
 
-        let selectedType = preferences.notificationPreviewType()
+        let selectedType = preferences.notificationPreviewType
         let allTypes: [NotificationType] = [.namePreview, .nameNoPreview, .noNameNoPreview]
         for type in allTypes {
             section.add(.init(
-                text: preferences.name(forNotificationPreviewType: type),
+                text: type.displayName,
                 actionBlock: { [weak self] in
                     self?.preferences.setNotificationPreviewType(type)
 

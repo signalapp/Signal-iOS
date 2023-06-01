@@ -59,11 +59,11 @@ final class HelpViewController: OWSTableViewController2 {
         loggingSection.add(.switch(
             withText: OWSLocalizedString("SETTINGS_ADVANCED_DEBUGLOG", comment: ""),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "enable_debug_log"),
-            isOn: { OWSPreferences.isLoggingEnabled() },
+            isOn: { Preferences.isLoggingEnabled },
             target: self,
             selector: #selector(didToggleEnableLogSwitch)
         ))
-        if OWSPreferences.isLoggingEnabled() {
+        if Preferences.isLoggingEnabled {
             loggingSection.add(.actionItem(
                 name: OWSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: ""),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "submit_debug_log"),
@@ -102,7 +102,7 @@ final class HelpViewController: OWSTableViewController2 {
         let debugLogger = DebugLogger.shared()
         let mainAppContext = CurrentAppContext() as! MainAppContext
 
-        OWSPreferences.setIsLoggingEnabled(sender.isOn)
+        Preferences.setIsLoggingEnabled(sender.isOn)
         debugLogger.setUpFileLoggingIfNeeded(appContext: mainAppContext, canLaunchInBackground: true)
         debugLogger.wipeLogsIfDisabled(appContext: mainAppContext)
         updateTableContents()

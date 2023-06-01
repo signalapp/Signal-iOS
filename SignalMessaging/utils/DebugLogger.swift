@@ -4,7 +4,6 @@
 //
 
 import CocoaLumberjack
-import Foundation
 import SignalServiceKit
 
 extension DebugLogger {
@@ -12,7 +11,7 @@ extension DebugLogger {
 
     public func setUpFileLoggingIfNeeded(appContext: AppContext, canLaunchInBackground: Bool) {
         let oldValue = fileLogger != nil
-        let newValue = OWSPreferences.isLoggingEnabled()
+        let newValue = Preferences.isLoggingEnabled
 
         if newValue == oldValue {
             return

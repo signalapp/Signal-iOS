@@ -188,7 +188,6 @@ extension AppDelegate {
         setupNSEInteroperation()
         SUIEnvironment.shared.setup()
         AppEnvironment.shared.setup()
-        SignalApp.shared.setup()
         let result = databaseContinuation.prepareDatabase()
         OWSAnalytics.appLaunchDidBegin()
         return result.map(on: SyncScheduler()) { ($0, sleepBlockObject) }
@@ -368,7 +367,7 @@ extension AppDelegate {
             object: nil
         )
 
-        if !Environment.shared.preferences.hasGeneratedThumbnails() {
+        if !Environment.shared.preferences.hasGeneratedThumbnails {
             databaseStorage.asyncRead(
                 block: { transaction in
                     TSAttachment.anyEnumerate(transaction: transaction, batched: true) { (_, _) in

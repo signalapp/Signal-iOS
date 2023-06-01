@@ -148,7 +148,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE",
                 comment: "Table cell label"
             ),
-            isOn: { Self.preferences.doCallsHideIPAddress() },
+            isOn: { Self.preferences.doCallsHideIPAddress },
             target: self,
             selector: #selector(didToggleCallsHideIPAddressSwitch)
         ))
@@ -207,7 +207,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 stackView.addArrangedSubview(.spacer(withWidth: 60))
 
                 let cellSwitch = UISwitch()
-                cellSwitch.isOn = Self.preferences.shouldShowUnidentifiedDeliveryIndicators()
+                cellSwitch.isOn = Self.preferences.shouldShowUnidentifiedDeliveryIndicators
                 cellSwitch.addTarget(self, action: #selector(self.didToggleUDShowIndicatorsSwitch), for: .valueChanged)
                 cell.accessoryView = cellSwitch
 

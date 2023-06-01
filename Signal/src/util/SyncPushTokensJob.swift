@@ -70,7 +70,7 @@ class SyncPushTokensJob: NSObject {
 
             var shouldUploadTokens = false
 
-            if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {
+            if self.preferences.pushToken != pushToken || self.preferences.voipToken != voipToken {
                 Logger.info("Push tokens changed.")
                 shouldUploadTokens = true
             } else if self.mode == .forceUpload {
@@ -126,20 +126,20 @@ class SyncPushTokensJob: NSObject {
         assert(!Thread.isMainThread)
         Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
 
-        if pushToken != self.preferences.getPushToken() {
+        if pushToken != preferences.pushToken {
             Logger.info("Recording new plain push token")
-            self.preferences.setPushToken(pushToken)
+            preferences.setPushToken(pushToken)
 
             // Tokens should now be aligned with stored tokens.
-            owsAssertDebug(pushToken == self.preferences.getPushToken())
+            owsAssertDebug(pushToken == preferences.pushToken)
         }
 
-        if voipToken != self.preferences.getVoipToken() {
+        if voipToken != preferences.voipToken {
             Logger.info("Recording new voip token")
-            self.preferences.setVoipToken(voipToken)
+            preferences.setVoipToken(voipToken)
 
             // Tokens should now be aligned with stored tokens.
-            owsAssertDebug(voipToken == self.preferences.getVoipToken())
+            owsAssertDebug(voipToken == preferences.voipToken)
         }
     }
 }

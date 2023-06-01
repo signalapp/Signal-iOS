@@ -28,7 +28,7 @@ public final class APNSRotationStore: NSObject {
             transaction: transaction
         )
         // Mark the current token as one we know works!
-        guard let token = preferences.getPushToken(transaction) else {
+        guard let token = preferences.getPushToken(withTransaction: transaction) else {
             owsFailDebug("Got a push without a push token; not marking any token as working.")
             return
         }
@@ -133,7 +133,7 @@ public final class APNSRotationStore: NSObject {
 
     public static func canRotateAPNSToken(transaction: SDSAnyReadTransaction) -> Bool {
         Logger.info("Checking if push token should be rotated...")
-        guard let currentToken = self.preferences.getPushToken(transaction) else {
+        guard let currentToken = preferences.getPushToken(withTransaction: transaction) else {
             // No need to rotate if we don't even have a token yet.
             Logger.info("No push token available, not rotating.")
             return false

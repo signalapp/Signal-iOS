@@ -303,7 +303,7 @@ extension AttachmentApprovalToolbar {
         guard !configuration.isViewOnceOn && configuration.canToggleViewOnce else {
             return false
         }
-        guard !preferences.wasViewOnceTooltipShown() else {
+        guard !preferences.wasViewOnceTooltipShown else {
             return false
         }
         return true

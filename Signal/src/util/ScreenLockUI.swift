@@ -229,7 +229,7 @@ class ScreenLockUI {
             return .none
         }
 
-        guard Environment.shared.preferences.screenSecurityIsEnabled() else {
+        guard Environment.shared.preferences.isScreenSecurityEnabled else {
             Logger.verbose("desiredUIState: none 5.")
             return .none
         }

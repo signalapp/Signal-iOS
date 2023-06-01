@@ -45,7 +45,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 "NOTIFICATIONS_SECTION_INAPP",
                 comment: "Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground."
             ),
-            isOn: { Self.preferences.soundInForeground() },
+            isOn: { Self.preferences.soundInForeground },
             target: self,
             selector: #selector(didToggleSoundNotificationsSwitch)
         ))
@@ -62,7 +62,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
         )
         notificationContentSection.add(.disclosureItem(
             withText: OWSLocalizedString("NOTIFICATIONS_SHOW", comment: ""),
-            detailText: preferences.name(forNotificationPreviewType: preferences.notificationPreviewType()),
+            detailText: preferences.notificationPreviewType.displayName,
             actionBlock: { [weak self] in
                 let vc = NotificationSettingsContentViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
@@ -133,7 +133,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
     private func didToggleshouldNotifyOfNewAccountsSwitch(_ sender: UISwitch) {
         let currentValue = databaseStorage.read { Self.preferences.shouldNotifyOfNewAccounts(transaction: $0) }
         guard currentValue != sender.isOn else { return }
-        databaseStorage.write { Self.preferences.shouldNotifyOfNewAccounts(sender.isOn, transaction: $0) }
+        databaseStorage.write { Self.preferences.setShouldNotifyOfNewAccounts(sender.isOn, transaction: $0) }
     }
 
     private func syncPushTokens() {

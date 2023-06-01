@@ -109,8 +109,8 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
             return nil
         } else {
             Logger.info("using callkit adaptee for iOS11+")
-            let showNames = preferences.notificationPreviewType() != .noNameNoPreview
-            let useSystemCallLog = preferences.isSystemCallLogEnabled()
+            let showNames = preferences.notificationPreviewType != .noNameNoPreview
+            let useSystemCallLog = preferences.isSystemCallLogEnabled
 
             return CallKitCallUIAdaptee(showNamesOnCallScreen: showNames,
                                         useSystemCallLog: useSystemCallLog)

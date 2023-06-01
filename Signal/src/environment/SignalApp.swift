@@ -29,26 +29,12 @@ public class SignalApp: NSObject {
         }
     }
 
-    func setup() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didChangeCallLoggingPreference),
-            name: .OWSPreferencesCallLoggingDidChange,
-            object: nil
-        )
-    }
-
     private func warmCachesAsync() {
         DispatchQueue.sharedBackground.async {
             InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: "warmEmojiCache") {
                 Emoji.warmAvailableCache()
             }
         }
-    }
-
-    @objc
-    private func didChangeCallLoggingPreference(_ notification: NSNotification) {
-        AppEnvironment.shared.callService.createCallUIAdapter()
     }
 }
 

@@ -2362,7 +2362,7 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.dataMigration_turnScreenSecurityOnForExistingUsers) { transaction in
             // Declare the key value store here, since it's normally only
-            // available in SignalMessaging (OWSPreferences).
+            // available in SignalMessaging.Preferences.
             let preferencesKeyValueStore = SDSKeyValueStore(collection: "SignalPreferences")
             let screenSecurityKey = "Screen Security Key"
             guard !preferencesKeyValueStore.hasValue(
@@ -2549,7 +2549,7 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.dataMigration_repairAvatar) { transaction in
             // Declare the key value store here, since it's normally only
-            // available in SignalMessaging (OWSPreferences).
+            // available in SignalMessaging.Preferences.
             let preferencesKeyValueStore = SDSKeyValueStore(collection: Self.migrationSideEffectsCollectionName)
             let key = Self.avatarRepairAttemptCount
             preferencesKeyValueStore.setInt(0, key: key, transaction: transaction.asAnyWrite)

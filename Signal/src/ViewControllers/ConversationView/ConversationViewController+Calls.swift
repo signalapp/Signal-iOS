@@ -127,7 +127,7 @@ public extension ConversationViewController {
         if !hasIncrementedGroupCallTooltipShownCount {
             preferences.incrementGroupCallTooltipShownCount()
             viewState.didAlreadyShowGroupCallTooltipEnoughTimes = databaseStorage.read { tx in
-                preferences.wasGroupCallTooltipShown(with: tx)
+                preferences.wasGroupCallTooltipShown(withTransaction: tx)
             }
             hasIncrementedGroupCallTooltipShownCount = true
         }

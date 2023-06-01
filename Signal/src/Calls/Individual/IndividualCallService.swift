@@ -469,7 +469,7 @@ final public class IndividualCallService: NSObject {
                 }
             }
 
-            let useTurnOnly = isUnknownCaller || Self.preferences.doCallsHideIPAddress()
+            let useTurnOnly = isUnknownCaller || Self.preferences.doCallsHideIPAddress
 
             let useLowData = CallService.shouldUseLowDataWithSneakyTransaction(for: NetworkRoute(localAdapterType: .unknown))
             Logger.info("Configuring call for \(useLowData ? "low" : "standard") data")

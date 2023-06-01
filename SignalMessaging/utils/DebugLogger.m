@@ -4,7 +4,6 @@
 //
 
 #import "DebugLogger.h"
-#import "OWSPreferences.h"
 #import <AudioToolbox/AudioServices.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
 #import <SignalCoreKit/NSDate+OWS.h>

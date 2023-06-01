@@ -61,7 +61,7 @@ public extension TSMessage {
     }
 
     private func showDeleteForEveryoneConfirmationIfNecessary(completion: @escaping () -> Void) {
-        guard !Self.preferences.wasDeleteForEveryoneConfirmationShown() else { return completion() }
+        guard !Self.preferences.wasDeleteForEveryoneConfirmationShown else { return completion() }
 
         OWSActionSheets.showConfirmationAlert(
             title: OWSLocalizedString(

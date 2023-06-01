@@ -25,9 +25,8 @@ extension DebugLogger {
     }
 
     func wipeLogsIfDisabled(appContext: MainAppContext) {
-        guard !OWSPreferences.isLoggingEnabled() else {
-            return
-        }
+        guard !Preferences.isLoggingEnabled else { return }
+
         wipeLogsAlways(appContext: appContext)
     }
 

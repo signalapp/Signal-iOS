@@ -29,7 +29,7 @@ public class LogPickerViewController: OWSTableViewController2 {
 
     private func buildPreferenceSection() -> OWSTableSection {
         let enableItem = OWSTableItem.switch(withText: "🚂 Play Sound When Errors Occur",
-                                             isOn: { OWSPreferences.isAudibleErrorLoggingEnabled() },
+                                             isOn: { Preferences.isAudibleErrorLoggingEnabled},
                                              target: self,
                                              selector: #selector(didToggleAudiblePreference(_:)))
         return OWSTableSection(title: "Preferences", items: [enableItem])
@@ -86,7 +86,7 @@ public class LogPickerViewController: OWSTableViewController2 {
 
     @objc
     private func didToggleAudiblePreference(_ sender: UISwitch) {
-        OWSPreferences.setIsAudibleErrorLoggingEnabled(sender.isOn)
+        Preferences.setIsAudibleErrorLoggingEnabled(sender.isOn)
         if sender.isOn {
             ErrorLogger.playAlertSound()
         }

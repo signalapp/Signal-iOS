@@ -92,7 +92,7 @@ public final class ConversationViewController: OWSViewController {
 
         let conversationStyle = ConversationViewController.buildInitialConversationStyle(for: thread, tx: tx)
         let conversationViewModel = ConversationViewModel.load(for: thread, tx: tx)
-        let didAlreadyShowGroupCallTooltipEnoughTimes = preferences.wasGroupCallTooltipShown(with: tx)
+        let didAlreadyShowGroupCallTooltipEnoughTimes = preferences.wasGroupCallTooltipShown(withTransaction: tx)
 
         return ConversationViewController(
             threadViewModel: threadViewModel,

@@ -4,7 +4,6 @@
 //
 
 #import "Environment.h"
-#import "OWSPreferences.h"
 #import <SignalServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN

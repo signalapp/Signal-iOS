@@ -87,7 +87,7 @@ public class AppSetup {
 
         // MARK: SignalMessaging environment properties
 
-        let preferences = OWSPreferences()
+        let preferences = Preferences()
         let proximityMonitoringManager = OWSProximityMonitoringManagerImpl()
         let avatarBuilder = AvatarBuilder()
         let smJobQueues = SignalMessagingJobQueues()

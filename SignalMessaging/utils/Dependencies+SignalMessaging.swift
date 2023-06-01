@@ -9,11 +9,11 @@ import Foundation
 
 @objc
 public extension NSObject {
-    final var preferences: OWSPreferences {
+    final var preferences: Preferences {
         Environment.shared.preferencesRef
     }
 
-    static var preferences: OWSPreferences {
+    static var preferences: Preferences {
         Environment.shared.preferencesRef
     }
 
@@ -85,11 +85,11 @@ public extension NSObject {
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
-    var preferences: OWSPreferences {
+    var preferences: Preferences {
         Environment.shared.preferencesRef
     }
 
-    static var preferences: OWSPreferences {
+    static var preferences: Preferences {
         Environment.shared.preferencesRef
     }
 

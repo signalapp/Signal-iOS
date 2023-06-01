@@ -146,8 +146,8 @@ class InternalSettingsViewController: OWSTableViewController2 {
         infoSection.add(.label(withText: "Core count: \(LocalDevice.allCoreCount) (active: \(LocalDevice.activeCoreCount))"))
         infoSection.add(.label(withText: "isCensorshipCircumventionActive: \(self.signalService.isCensorshipCircumventionActive)"))
 
-        infoSection.add(.copyableItem(label: "Push Token", value: preferences.getPushToken()))
-        infoSection.add(.copyableItem(label: "VOIP Token", value: preferences.getVoipToken()))
+        infoSection.add(.copyableItem(label: "Push Token", value: preferences.pushToken))
+        infoSection.add(.copyableItem(label: "VOIP Token", value: preferences.voipToken))
 
         infoSection.add(.label(withText: "Audio Category: \(AVAudioSession.sharedInstance().category.rawValue.replacingOccurrences(of: "AVAudioSessionCategory", with: ""))"))
         infoSection.add(.label(withText: "Local Profile Key: \(profileManager.localProfileKey().keyData.hexadecimalString)"))

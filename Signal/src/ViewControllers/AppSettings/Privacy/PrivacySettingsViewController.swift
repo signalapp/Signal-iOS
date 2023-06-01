@@ -146,7 +146,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
         appSecuritySection.add(.switch(
             withText: OWSLocalizedString("SETTINGS_SCREEN_SECURITY", comment: ""),
-            isOn: { Self.preferences.screenSecurityIsEnabled() },
+            isOn: { Self.preferences.isScreenSecurityEnabled },
             target: self,
             selector: #selector(didToggleScreenSecuritySwitch)
         ))
@@ -214,7 +214,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                     "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
                     comment: "Short table cell label"
                 ),
-                isOn: { Self.preferences.isSystemCallLogEnabled() },
+                isOn: { Self.preferences.isSystemCallLogEnabled },
                 target: self,
                 selector: #selector(didToggleEnableSystemCallLogSwitch)
             ))
@@ -253,7 +253,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didToggleScreenSecuritySwitch(_ sender: UISwitch) {
-        preferences.setScreenSecurity(sender.isOn)
+        preferences.setIsScreenSecurityEnabled(sender.isOn)
     }
 
     @objc

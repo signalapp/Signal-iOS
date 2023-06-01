@@ -302,7 +302,7 @@ extension RecipientPickerViewController {
                 // Return false if we have any contacts; we want to show them!
                 return false
             }
-            if preferences.hasDeclinedNoContactsView() {
+            if preferences.hasDeclinedNoContactsView {
                 // Return false if the user has explicitly told us to hide the UX.
                 return false
             }

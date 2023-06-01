@@ -949,7 +949,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let authedAccount: AuthedAccount
     private let legacyChangePhoneNumber: LegacyChangePhoneNumber
     private let paymentsHelper: PaymentsHelperSwift
-    private let preferences: OWSPreferences
+    private let preferences: Preferences
     private let profileManager: OWSProfileManager
     private let receiptManager: OWSReceiptManager
     private let storageServiceManager: StorageServiceManager
@@ -966,7 +966,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         authedAccount: AuthedAccount,
         legacyChangePhoneNumber: LegacyChangePhoneNumber,
         paymentsHelper: PaymentsHelperSwift,
-        preferences: OWSPreferences,
+        preferences: Preferences,
         profileManager: OWSProfileManager,
         receiptManager: OWSReceiptManager,
         storageServiceManager: StorageServiceManager,
