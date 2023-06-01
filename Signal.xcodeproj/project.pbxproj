@@ -933,6 +933,8 @@
 		76387BF028F4ED73002C7BA5 /* CaseIterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */; };
 		763D7DDB27E155ED002EA7E6 /* RoundMediaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */; };
 		763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */; };
+		7647A33A2A26AB7C002EAC93 /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7647A3392A26AB7C002EAC93 /* FingerprintViewController.swift */; };
+		7647A33C2A270348002EAC93 /* FingerprintScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */; };
 		765283AE2A00D8B4004583A9 /* OWSTableContents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283AD2A00D8B4004583A9 /* OWSTableContents.swift */; };
 		765283B02A00D8CE004583A9 /* OWSTableSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283AF2A00D8CE004583A9 /* OWSTableSection.swift */; };
 		765283B22A00D8EC004583A9 /* OWSTableItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283B12A00D8EC004583A9 /* OWSTableItem.swift */; };
@@ -1166,10 +1168,6 @@
 		88B98700288088B800F8C74D /* BaseMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4717228664DE3001A3065 /* BaseMemberViewController.swift */; };
 		88B98701288088BC00F8C74D /* NewMembersBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947B2433B77700E5C510 /* NewMembersBar.swift */; };
 		88B987022880890800F8C74D /* SafetyNumberConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */; };
-		88B98703288089C200F8C74D /* FingerprintViewScanController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */; };
-		88B98704288089C200F8C74D /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */; };
-		88B98705288089C700F8C74D /* FingerprintViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 340FC89D204DAC8D007AEB0F /* FingerprintViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		88B98706288089CD00F8C74D /* FingerprintViewScanController.h in Headers */ = {isa = PBXBuildFile; fileRef = 340FC8A5204DAC8D007AEB0F /* FingerprintViewScanController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		88B9870928808A8A00F8C74D /* ScanQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345779402682464700732869 /* ScanQRCodeViewController.swift */; };
 		88B9870A28808BF600F8C74D /* CompareSafetyNumbersActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */; };
 		88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */; };
@@ -2520,10 +2518,6 @@
 		340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupV2UpdatesImpl.swift; sourceTree = "<group>"; };
 		340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupInviteLinksUI.swift; sourceTree = "<group>"; };
 		340E9ABF235F876800FA362C /* ForwardMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardMessageViewController.swift; sourceTree = "<group>"; };
-		340FC89D204DAC8D007AEB0F /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewController.h; sourceTree = "<group>"; };
-		340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewScanController.m; sourceTree = "<group>"; };
-		340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewController.m; sourceTree = "<group>"; };
-		340FC8A5204DAC8D007AEB0F /* FingerprintViewScanController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewScanController.h; sourceTree = "<group>"; };
 		3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadPerformanceTest.swift; sourceTree = "<group>"; };
 		341458471FBE11C4005ABCF9 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3414896825C9B6490098E3ED /* CurrencyPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyPickerViewController.swift; sourceTree = "<group>"; };
@@ -3424,6 +3418,8 @@
 		76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseIterable.swift; sourceTree = "<group>"; };
 		763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundMediaButton.swift; sourceTree = "<group>"; };
 		763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalTopBar.swift; sourceTree = "<group>"; };
+		7647A3392A26AB7C002EAC93 /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
+		7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintScanViewController.swift; sourceTree = "<group>"; };
 		765283AD2A00D8B4004583A9 /* OWSTableContents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableContents.swift; sourceTree = "<group>"; };
 		765283AF2A00D8CE004583A9 /* OWSTableSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableSection.swift; sourceTree = "<group>"; };
 		765283B12A00D8EC004583A9 /* OWSTableItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableItem.swift; sourceTree = "<group>"; };
@@ -7360,10 +7356,8 @@
 			isa = PBXGroup;
 			children = (
 				45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */,
-				340FC89D204DAC8D007AEB0F /* FingerprintViewController.h */,
-				340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */,
-				340FC8A5204DAC8D007AEB0F /* FingerprintViewScanController.h */,
-				340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */,
+				7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */,
+				7647A3392A26AB7C002EAC93 /* FingerprintViewController.swift */,
 			);
 			path = "Safety Numbers";
 			sourceTree = "<group>";
@@ -9535,8 +9529,6 @@
 				34A955B4271B53F600B05242 /* BlockListUIUtils.h in Headers */,
 				3402AA9E271D9E180084CBAE /* ContactsViewHelper.h in Headers */,
 				3402AA64271D9DEC0084CBAE /* CVItemViewModel.h in Headers */,
-				88B98705288089C700F8C74D /* FingerprintViewController.h in Headers */,
-				88B98706288089CD00F8C74D /* FingerprintViewScanController.h in Headers */,
 				3402A9FE271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.h in Headers */,
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */,
 				3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */,
@@ -10826,8 +10818,8 @@
 				3402AA49271D9DCD0084CBAE /* EditContactShareNameViewController.swift in Sources */,
 				7628DDC1280750BC009AA53D /* ExpandableContactListView.swift in Sources */,
 				3402AA56271D9DCD0084CBAE /* FindByPhoneNumberViewController.swift in Sources */,
-				88B98704288089C200F8C74D /* FingerprintViewController.m in Sources */,
-				88B98703288089C200F8C74D /* FingerprintViewScanController.m in Sources */,
+				7647A33C2A270348002EAC93 /* FingerprintScanViewController.swift in Sources */,
+				7647A33A2A26AB7C002EAC93 /* FingerprintViewController.swift in Sources */,
 				F963F818292D7E53007DBBBD /* FormattedNumberField.swift in Sources */,
 				34A955AE271B533000B05242 /* FullTextSearcher.swift in Sources */,
 				3402AA91271D9E180084CBAE /* GalleryRailView.swift in Sources */,

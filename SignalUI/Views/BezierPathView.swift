@@ -5,7 +5,6 @@
 
 import UIKit
 
-@objc(OWSBezierPathView)
 public class BezierPathView: UIView {
 
     public typealias ShapeLayerConfigurationBlock = (CAShapeLayer, CGRect) -> Void
@@ -15,7 +14,6 @@ public class BezierPathView: UIView {
         didSet { updateShapeLayer() }
     }
 
-    @objc(initWithConfigurationBlock:)
     public convenience init(configurationBlock: @escaping ShapeLayerConfigurationBlock) {
         self.init(frame: .zero)
         shapeLayerConfigurationBlock = configurationBlock

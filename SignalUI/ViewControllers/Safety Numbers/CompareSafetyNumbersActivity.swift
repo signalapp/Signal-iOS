@@ -3,24 +3,21 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
+import UIKit
 
 let CompareSafetyNumbersActivityType = "org.whispersystems.signal.activity.CompareSafetyNumbers"
 
-@objc(OWSCompareSafetyNumbersActivityDelegate)
-public protocol CompareSafetyNumbersActivityDelegate {
+public protocol CompareSafetyNumbersActivityDelegate: AnyObject {
     func compareSafetyNumbersActivitySucceeded(activity: CompareSafetyNumbersActivity)
     func compareSafetyNumbersActivity(_ activity: CompareSafetyNumbersActivity, failedWithError error: Error)
 }
 
-@objc(OWSCompareSafetyNumbersActivity)
 public class CompareSafetyNumbersActivity: UIActivity {
 
     var mySafetyNumbers: String?
     weak var delegate: CompareSafetyNumbersActivityDelegate?
 
-    @objc
     required init(delegate: CompareSafetyNumbersActivityDelegate) {
         self.delegate = delegate
         super.init()
