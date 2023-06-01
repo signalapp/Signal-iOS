@@ -69,7 +69,10 @@ extension ConversationSettingsViewController {
             contents.addSection(buildMutualGroupsSection(sectionIndex: contents.sections.count))
         }
 
-        if !isNoteToSelf {
+        if
+            !isNoteToSelf,
+            !thread.isGroupV1Thread
+        {
             contents.addSection(buildBlockAndLeaveSection())
         }
 
