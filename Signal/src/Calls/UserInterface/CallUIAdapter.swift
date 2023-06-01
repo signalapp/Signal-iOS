@@ -55,7 +55,7 @@ extension CallUIAdaptee {
         }
 
         callViewController.modalTransitionStyle = .crossDissolve
-        OWSWindowManager.shared.startCall(callViewController)
+        WindowManager.shared.startCall(viewController: callViewController)
     }
 
     internal func reportMissedCall(_ call: SignalCall) {

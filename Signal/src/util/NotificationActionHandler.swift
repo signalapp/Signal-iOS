@@ -264,7 +264,7 @@ public class NotificationActionHandler: Dependencies {
             let currentCall = Self.callService.currentCall
 
             if currentCall?.thread.uniqueId == thread.uniqueId {
-                OWSWindowManager.shared.returnToCallView()
+                WindowManager.shared.returnToCallView()
             } else if let thread = thread as? TSGroupThread, currentCall == nil {
                 GroupCallViewController.presentLobby(thread: thread)
             } else {

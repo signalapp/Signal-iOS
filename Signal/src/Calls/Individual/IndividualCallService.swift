@@ -1316,7 +1316,7 @@ final public class IndividualCallService: NSObject {
             return
         }
 
-        guard !OWSWindowManager.shared.hasCall else {
+        guard !WindowManager.shared.hasCall else {
             // call screen is visible
             return
         }

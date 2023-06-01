@@ -77,7 +77,7 @@ class ScreenLockUI {
     lazy var screenBlockingWindow: UIWindow = {
         let window = OWSWindow(frame: .zero)
         window.isHidden = false
-        window.windowLevel = ._Background
+        window.windowLevel = ._background
         window.isOpaque = true
         window.backgroundColor = Theme.launchScreenBackgroundColor
         return window
@@ -157,7 +157,7 @@ class ScreenLockUI {
 
         let shouldShowBlockWindow = uiState != .none
 
-        OWSWindowManager.shared.isScreenBlockActive = shouldShowBlockWindow
+        WindowManager.shared.isScreenBlockActive = shouldShowBlockWindow
 
         screenBlockingViewController.updateUIWithState(
             uiState,

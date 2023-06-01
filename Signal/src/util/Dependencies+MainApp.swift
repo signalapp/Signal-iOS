@@ -77,14 +77,6 @@ public extension NSObject {
     static var avatarHistoryManager: AvatarHistoryManager {
         AppEnvironment.shared.avatarHistorManagerRef
     }
-
-    var windowManager: OWSWindowManager {
-        AppEnvironment.shared.windowManagerRef
-    }
-
-    static var windowManager: OWSWindowManager {
-        AppEnvironment.shared.windowManagerRef
-    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -145,14 +137,6 @@ public extension Dependencies {
     static var avatarHistoryManager: AvatarHistoryManager {
         AppEnvironment.shared.avatarHistorManagerRef
     }
-
-    var windowManager: OWSWindowManager {
-        AppEnvironment.shared.windowManagerRef
-    }
-
-    static var windowManager: OWSWindowManager {
-        AppEnvironment.shared.windowManagerRef
-    }
 }
 
 // MARK: - Swift-only Dependencies
@@ -195,8 +179,8 @@ extension OWSSyncManager {
 
 // MARK: -
 
-public extension OWSWindowManager {
-    static var shared: OWSWindowManager {
+extension WindowManager {
+    static var shared: WindowManager {
         AppEnvironment.shared.windowManagerRef
     }
 }

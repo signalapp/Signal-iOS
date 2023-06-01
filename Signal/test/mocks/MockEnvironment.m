@@ -4,7 +4,6 @@
 //
 
 #import "MockEnvironment.h"
-#import "OWSWindowManager.h"
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalUI/ContactsViewHelper.h>

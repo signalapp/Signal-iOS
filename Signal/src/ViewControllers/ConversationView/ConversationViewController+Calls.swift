@@ -23,7 +23,7 @@ public extension ConversationViewController {
     @objc
     func showGroupLobbyOrActiveCall() {
         if isCurrentCallForThread {
-            OWSWindowManager.shared.returnToCallView()
+            WindowManager.shared.returnToCallView()
             return
         }
 

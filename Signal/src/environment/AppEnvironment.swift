@@ -49,7 +49,7 @@ public class AppEnvironment: NSObject {
 
     let speechManagerRef = SpeechManager()
 
-    public var windowManagerRef: OWSWindowManager = OWSWindowManager()
+    let windowManagerRef = WindowManager()
 
     private(set) var appIconBadgeUpdater: AppIconBadgeUpdater!
     private(set) var badgeManager: BadgeManager!

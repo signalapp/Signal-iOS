@@ -34,7 +34,7 @@ extension AppDelegate {
         ClearOldTemporaryDirectories()
 
         // Ensure that all windows have the correct frame.
-        windowManager.updateWindowFrames()
+        WindowManager.shared.updateWindowFrames()
 
         Logger.info("applicationDidBecomeActive completed.")
     }

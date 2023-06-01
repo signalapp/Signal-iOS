@@ -139,7 +139,7 @@ class GroupCallViewController: UIViewController {
                 let vc = GroupCallViewController(call: groupCall)
                 vc.modalTransitionStyle = .crossDissolve
 
-                OWSWindowManager.shared.startCall(vc)
+                WindowManager.shared.startCall(viewController: vc)
             }
 
             if videoMuted {
@@ -553,7 +553,7 @@ class GroupCallViewController: UIViewController {
             view.superview?.insertSubview(splitViewSnapshot, belowSubview: view) != nil
         else {
             // This can happen if we're in the background when the call is dismissed (say, from CallKit).
-            OWSWindowManager.shared.endCall(self)
+            WindowManager.shared.endCall(viewController: self)
             return
         }
 
@@ -563,7 +563,7 @@ class GroupCallViewController: UIViewController {
             self.view.alpha = 0
         }) { _ in
             splitViewSnapshot.removeFromSuperview()
-            OWSWindowManager.shared.endCall(self)
+            WindowManager.shared.endCall(viewController: self)
         }
     }
 
@@ -965,7 +965,7 @@ extension GroupCallViewController: CallHeaderDelegate {
     func didTapBackButton() {
         if groupCall.localDeviceState.joinState == .joined {
             isCallMinimized = true
-            OWSWindowManager.shared.leaveCallView()
+            WindowManager.shared.leaveCallView()
         } else {
             dismissCall()
         }

@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import WebRTC
-import SignalServiceKit
 import SignalMessaging
 import SignalRingRTC
+import SignalServiceKit
+import SignalUI
+import WebRTC
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.
@@ -1182,7 +1182,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
     @objc
     private func didTapLeaveCall(sender: UIButton) {
-        OWSWindowManager.shared.leaveCallView()
+        WindowManager.shared.leaveCallView()
     }
 
     // MARK: - CallObserver
@@ -1323,7 +1323,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     }
 
     internal func dismissImmediately(completion: (() -> Void)?) {
-        OWSWindowManager.shared.endCall(self)
+        WindowManager.shared.endCall(viewController: self)
         completion?()
     }
 }

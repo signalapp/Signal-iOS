@@ -9,6 +9,6 @@
 #import "FingerprintViewController.h"
 #import "OWSOrphanDataCleaner.h"
 #import "OWSQuotedMessageView.h"
-#import "OWSWindowManager.h"
 #import "RecipientPickerViewController.h"
 #import "RemoteVideoView.h"
+#import "WindowManagerFix.h"

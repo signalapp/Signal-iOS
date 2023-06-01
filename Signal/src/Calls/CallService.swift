@@ -275,7 +275,7 @@ public final class CallService: LightweightCallManager {
         // in either case we want to show the alert on the callViewWindow.
         guard let frontmostViewController =
                 UIApplication.shared.findFrontmostViewController(ignoringAlerts: true,
-                                                                 window: OWSWindowManager.shared.callViewWindow) else {
+                                                                 window: WindowManager.shared.callViewWindow) else {
             owsFailDebug("could not identify frontmostViewController")
             return
         }
@@ -336,7 +336,7 @@ public final class CallService: LightweightCallManager {
         // in either case we want to show the alert on the callViewWindow.
         guard let frontmostViewController =
                 UIApplication.shared.findFrontmostViewController(ignoringAlerts: true,
-                                                                 window: OWSWindowManager.shared.callViewWindow) else {
+                                                                 window: WindowManager.shared.callViewWindow) else {
             owsFailDebug("could not identify frontmostViewController")
             return
         }

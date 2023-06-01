@@ -579,7 +579,7 @@ extension ConversationHeaderDelegate {
 
         if let currentCall = callService.currentCall {
             if currentCall.thread.uniqueId == thread.uniqueId {
-                windowManager.returnToCallView()
+                WindowManager.shared.returnToCallView()
             } else {
                 owsFailDebug("Tried to start call while call was ongoing")
             }

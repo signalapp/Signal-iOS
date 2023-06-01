@@ -167,9 +167,8 @@ extension AppDelegate {
         Theme.setupSignalAppearance()
 
         let screenLockUI = ScreenLockUI.shared
-        let windowManager = OWSWindowManager.shared
         screenLockUI.setupWithRootWindow(window)
-        windowManager.setup(withRootWindow: window, screenBlockingWindow: screenLockUI.screenBlockingWindow)
+        WindowManager.shared.setupWithRootWindow(window, screenBlockingWindow: screenLockUI.screenBlockingWindow)
         screenLockUI.startObserving()
     }
 

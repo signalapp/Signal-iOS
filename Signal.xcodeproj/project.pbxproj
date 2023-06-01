@@ -209,7 +209,6 @@
 		342FFE59271DAA25000AC89F /* AudioSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE58271DAA25000AC89F /* AudioSession.swift */; };
 		342FFE62271DB2E7000AC89F /* AppContext+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */; };
 		342FFE6A271EF502000AC89F /* ConversationSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE67271EF4FF000AC89F /* ConversationSearch.swift */; };
-		342FFE6B271EF502000AC89F /* OWSWindowManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE69271EF500000AC89F /* OWSWindowManager.m */; };
 		342FFE76271EF581000AC89F /* CNContactViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE6E271EF580000AC89F /* CNContactViewController+OWS.m */; };
 		342FFE77271EF581000AC89F /* UIApplication+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE6F271EF580000AC89F /* UIApplication+OWS.swift */; };
 		342FFE7A271EF581000AC89F /* UIResponder+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE73271EF580000AC89F /* UIResponder+OWS.swift */; };
@@ -943,6 +942,8 @@
 		765283B02A00D8CE004583A9 /* OWSTableSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283AF2A00D8CE004583A9 /* OWSTableSection.swift */; };
 		765283B22A00D8EC004583A9 /* OWSTableItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283B12A00D8EC004583A9 /* OWSTableItem.swift */; };
 		766035A9286CE4CB00F6B71C /* MediaTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766035A8286CE4CB00F6B71C /* MediaTopBar.swift */; };
+		76616C9D2A266A05005F7001 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76616C9C2A266A05005F7001 /* WindowManager.swift */; };
+		76616C9F2A268073005F7001 /* WindowManagerFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE69271EF500000AC89F /* WindowManagerFix.m */; };
 		7666D54428331E1100A3BDB9 /* ImageEditorViewController+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */; };
 		7666D54628331E4800A3BDB9 /* ImageEditorViewController+Blur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */; };
 		7666D54828331E6900A3BDB9 /* ImageEditorViewController+Text.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */; };
@@ -2565,8 +2566,7 @@
 		342FFE58271DAA25000AC89F /* AudioSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioSession.swift; sourceTree = "<group>"; };
 		342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AppContext+SignalUI.swift"; sourceTree = "<group>"; };
 		342FFE67271EF4FF000AC89F /* ConversationSearch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ConversationSearch.swift; path = UserInterface/ConversationSearch.swift; sourceTree = "<group>"; };
-		342FFE68271EF500000AC89F /* OWSWindowManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSWindowManager.h; path = UserInterface/OWSWindowManager.h; sourceTree = "<group>"; };
-		342FFE69271EF500000AC89F /* OWSWindowManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSWindowManager.m; path = UserInterface/OWSWindowManager.m; sourceTree = "<group>"; };
+		342FFE69271EF500000AC89F /* WindowManagerFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WindowManagerFix.m; path = UserInterface/WindowManagerFix.m; sourceTree = "<group>"; };
 		342FFE6E271EF580000AC89F /* CNContactViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CNContactViewController+OWS.m"; sourceTree = "<group>"; };
 		342FFE6F271EF580000AC89F /* UIApplication+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+OWS.swift"; sourceTree = "<group>"; };
 		342FFE70271EF580000AC89F /* CNContactViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CNContactViewController+OWS.h"; sourceTree = "<group>"; };
@@ -3445,6 +3445,8 @@
 		765283AF2A00D8CE004583A9 /* OWSTableSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableSection.swift; sourceTree = "<group>"; };
 		765283B12A00D8EC004583A9 /* OWSTableItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableItem.swift; sourceTree = "<group>"; };
 		766035A8286CE4CB00F6B71C /* MediaTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTopBar.swift; sourceTree = "<group>"; };
+		76616C9C2A266A05005F7001 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
+		76616C9E2A2678C4005F7001 /* WindowManagerFix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WindowManagerFix.h; path = UserInterface/WindowManagerFix.h; sourceTree = "<group>"; };
 		7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Draw.swift"; sourceTree = "<group>"; };
 		7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Blur.swift"; sourceTree = "<group>"; };
 		7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Text.swift"; sourceTree = "<group>"; };
@@ -6230,9 +6232,10 @@
 				34B3F8331E8DF1700035BE1A /* ViewControllers */,
 				76EB052B18170B33006006FC /* Views */,
 				342FFE67271EF4FF000AC89F /* ConversationSearch.swift */,
-				342FFE68271EF500000AC89F /* OWSWindowManager.h */,
-				342FFE69271EF500000AC89F /* OWSWindowManager.m */,
 				F915A76F29CB6D4C00EB6F68 /* ShareActivityUtil.swift */,
+				76616C9C2A266A05005F7001 /* WindowManager.swift */,
+				76616C9E2A2678C4005F7001 /* WindowManagerFix.h */,
+				342FFE69271EF500000AC89F /* WindowManagerFix.m */,
 			);
 			name = UserInterface;
 			sourceTree = "<group>";
@@ -11619,7 +11622,6 @@
 				881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */,
 				34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */,
 				66FC638829E8B7CC00F00DAC /* OWSQuotedMessageView.swift in Sources */,
-				342FFE6B271EF502000AC89F /* OWSWindowManager.m in Sources */,
 				34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */,
 				66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */,
 				347030C625F66C24006C3BF5 /* PaymentsDeactivateViewController.swift in Sources */,
@@ -11793,6 +11795,8 @@
 				88D23D2723CEC0C700B0E74B /* WebRTCCallMessageHandler.swift in Sources */,
 				45069FC629D3A7C800D0DD14 /* WideMediaTileViewLayout.swift in Sources */,
 				45906C6B29D238560025906D /* WidePhotoCell.swift in Sources */,
+				76616C9D2A266A05005F7001 /* WindowManager.swift in Sources */,
+				76616C9F2A268073005F7001 /* WindowManagerFix.m in Sources */,
 				667EDE6428F8D6B7001FB487 /* YYAnimatedImage+Duration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -523,7 +523,7 @@ extension ConversationViewController {
         if nil != self.presentedViewController {
             return
         }
-        if OWSWindowManager.shared.shouldShowCallView {
+        if WindowManager.shared.shouldShowCallView {
             return
         }
         if navigationController?.topViewController != self {
