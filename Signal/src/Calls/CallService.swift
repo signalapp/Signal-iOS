@@ -168,7 +168,7 @@ public final class CallService: LightweightCallManager {
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(configureBandwidthMode),
+            selector: #selector(configureDataMode),
             name: Self.callServicePreferencesDidChange,
             object: nil)
         NotificationCenter.default.addObserver(
@@ -178,10 +178,10 @@ public final class CallService: LightweightCallManager {
             object: nil)
 
         // Note that we're not using the usual .owsReachabilityChanged
-        // We want to update our bandwidth mode if the app has been backgrounded
+        // We want to update our data mode if the app has been backgrounded
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(configureBandwidthMode),
+            selector: #selector(configureDataMode),
             name: .reachabilityChanged,
             object: nil)
 
@@ -389,36 +389,36 @@ public final class CallService: LightweightCallManager {
     }
 
     @objc
-    private func configureBandwidthMode() {
+    private func configureDataMode() {
         guard AppReadiness.isAppReady else { return }
         guard let currentCall = currentCall else { return }
 
         switch currentCall.mode {
         case let .group(call):
-            let useLowBandwidth = Self.shouldUseLowBandwidthWithSneakyTransaction(for: call.localDeviceState.networkRoute)
-            Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
-            call.updateBandwidthMode(bandwidthMode: useLowBandwidth ? .low : .normal)
+            let useLowData = Self.shouldUseLowDataWithSneakyTransaction(for: call.localDeviceState.networkRoute)
+            Logger.info("Configuring call for \(useLowData ? "low" : "standard") data")
+            call.updateDataMode(dataMode: useLowData ? .low : .normal)
         case let .individual(call) where call.state == .connected:
-            let useLowBandwidth = Self.shouldUseLowBandwidthWithSneakyTransaction(for: call.networkRoute)
-            Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
-            callManager.udpateBandwidthMode(bandwidthMode: useLowBandwidth ? .low : .normal)
+            let useLowData = Self.shouldUseLowDataWithSneakyTransaction(for: call.networkRoute)
+            Logger.info("Configuring call for \(useLowData ? "low" : "standard") data")
+            callManager.updateDataMode(dataMode: useLowData ? .low : .normal)
         default:
-            // Do nothing. We'll reapply the bandwidth mode once connected
+            // Do nothing. We'll reapply the data mode once connected
             break
         }
     }
 
-    static func shouldUseLowBandwidthWithSneakyTransaction(for networkRoute: NetworkRoute) -> Bool {
-        let highBandwidthInterfaces = databaseStorage.read { readTx in
-            Self.highBandwidthNetworkInterfaces(readTx: readTx)
+    static func shouldUseLowDataWithSneakyTransaction(for networkRoute: NetworkRoute) -> Bool {
+        let highDataInterfaces = databaseStorage.read { readTx in
+            Self.highDataNetworkInterfaces(readTx: readTx)
         }
-        if let allowsHighBandwidth = highBandwidthInterfaces.includes(networkRoute.localAdapterType) {
-            return !allowsHighBandwidth
+        if let allowsHighData = highDataInterfaces.includes(networkRoute.localAdapterType) {
+            return !allowsHighData
         }
-        // If we aren't sure whether the current route's high-bandwidth, fall back to checking reachability.
+        // If we aren't sure whether the current route's high-data, fall back to checking reachability.
         // This also handles the situation where WebRTC doesn't know what interface we're on,
         // which is always true on iOS 11.
-        return !Self.reachabilityManager.isReachable(with: highBandwidthInterfaces)
+        return !Self.reachabilityManager.isReachable(with: highDataInterfaces)
     }
 
     // MARK: -
@@ -810,27 +810,28 @@ public final class CallService: LightweightCallManager {
         }
     }
 
-    // MARK: - Bandwidth
+    // MARK: - Data Modes
 
     static let callServicePreferencesDidChange = Notification.Name("CallServicePreferencesDidChange")
     private static let keyValueStore = SDSKeyValueStore(collection: "CallService")
-    private static let highBandwidthPreferenceKey = "HighBandwidthPreferenceKey"
+    // This used to be called "high bandwidth", but "data" is more accurate.
+    private static let highDataPreferenceKey = "HighBandwidthPreferenceKey"
 
-    static func setHighBandwidthInterfaces(_ interfaceSet: NetworkInterfaceSet, writeTx: SDSAnyWriteTransaction) {
-        Logger.info("Updating preferred low bandwidth interfaces: \(interfaceSet.rawValue)")
+    static func setHighDataInterfaces(_ interfaceSet: NetworkInterfaceSet, writeTx: SDSAnyWriteTransaction) {
+        Logger.info("Updating preferred low data interfaces: \(interfaceSet.rawValue)")
 
-        keyValueStore.setUInt(interfaceSet.rawValue, key: highBandwidthPreferenceKey, transaction: writeTx)
+        keyValueStore.setUInt(interfaceSet.rawValue, key: highDataPreferenceKey, transaction: writeTx)
         writeTx.addSyncCompletion {
             NotificationCenter.default.postNotificationNameAsync(callServicePreferencesDidChange, object: nil)
         }
     }
 
-    static func highBandwidthNetworkInterfaces(readTx: SDSAnyReadTransaction) -> NetworkInterfaceSet {
-        guard let highBandwidthPreference = keyValueStore.getUInt(
-                highBandwidthPreferenceKey,
+    static func highDataNetworkInterfaces(readTx: SDSAnyReadTransaction) -> NetworkInterfaceSet {
+        guard let highDataPreference = keyValueStore.getUInt(
+                highDataPreferenceKey,
                 transaction: readTx) else { return .wifiAndCellular }
 
-        return NetworkInterfaceSet(rawValue: highBandwidthPreference)
+        return NetworkInterfaceSet(rawValue: highDataPreference)
     }
 
     // MARK: -
@@ -862,7 +863,7 @@ extension CallService: CallObserver {
     public func individualCallStateDidChange(_ call: SignalCall, state: CallState) {
         AssertIsOnMainThread()
         updateIsVideoEnabled()
-        configureBandwidthMode()
+        configureDataMode()
     }
 
     public func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
@@ -876,7 +877,7 @@ extension CallService: CallObserver {
         AssertIsOnMainThread()
         updateIsVideoEnabled()
         updateGroupMembersForCurrentCallIfNecessary()
-        configureBandwidthMode()
+        configureDataMode()
 
         if case .shouldRing = call.groupCallRingState,
            call.ringRestrictions.isEmpty,
@@ -1163,7 +1164,7 @@ extension CallService: CallManagerDelegate {
     ) {
         Logger.info("Network route changed for call: \(call): \(networkRoute.localAdapterType.rawValue)")
         call.individualCall.networkRoute = networkRoute
-        configureBandwidthMode()
+        configureDataMode()
     }
 
     public func callManager(

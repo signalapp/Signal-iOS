@@ -471,11 +471,11 @@ final public class IndividualCallService: NSObject {
 
             let useTurnOnly = isUnknownCaller || Self.preferences.doCallsHideIPAddress()
 
-            let useLowBandwidth = CallService.shouldUseLowBandwidthWithSneakyTransaction(for: NetworkRoute(localAdapterType: .unknown))
-            Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
+            let useLowData = CallService.shouldUseLowDataWithSneakyTransaction(for: NetworkRoute(localAdapterType: .unknown))
+            Logger.info("Configuring call for \(useLowData ? "low" : "standard") data")
 
             // Tell the Call Manager to proceed with its active call.
-            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, videoCaptureController: call.videoCaptureController, bandwidthMode: useLowBandwidth ? .low : .normal, audioLevelsIntervalMillis: nil)
+            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, videoCaptureController: call.videoCaptureController, dataMode: useLowData ? .low : .normal, audioLevelsIntervalMillis: nil)
         }.catch { error in
             owsFailDebug("\(error)")
             guard call === self.callService.currentCall else {

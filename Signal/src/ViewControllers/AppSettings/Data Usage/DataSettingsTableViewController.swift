@@ -124,20 +124,20 @@ class DataSettingsTableViewController: OWSTableViewController2 {
             comment: "Section footer for the call section in data settings"
         )
 
-        let currentCallBandwidthPreference = databaseStorage.read { transaction in
-            CallService.highBandwidthNetworkInterfaces(readTx: transaction).inverted
+        let currentCallDataPreference = databaseStorage.read { transaction in
+            CallService.highDataNetworkInterfaces(readTx: transaction).inverted
         }
-        let currentCallBandwidthPreferenceString = NetworkInterfacePreferenceViewController.name(
-            forInterfaceSet: currentCallBandwidthPreference
+        let currentCallDataPreferenceString = NetworkInterfacePreferenceViewController.name(
+            forInterfaceSet: currentCallDataPreference
         )
 
         callsSection.add(.disclosureItem(
             withText: OWSLocalizedString(
                 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE",
                 comment: "Item title for the low bandwidth call setting"),
-            detailText: currentCallBandwidthPreferenceString ?? "",
+            detailText: currentCallDataPreferenceString ?? "",
             actionBlock: { [weak self] in
-                self?.showCallBandwidthPreferences()
+                self?.showCallDataPreferences()
             }
         ))
 
@@ -146,18 +146,18 @@ class DataSettingsTableViewController: OWSTableViewController2 {
 
     // MARK: - Events
 
-    private func showCallBandwidthPreferences() {
-        let currentLowBandwidthPreference = databaseStorage.read { readTx in
-            CallService.highBandwidthNetworkInterfaces(readTx: readTx).inverted
+    private func showCallDataPreferences() {
+        let currentLowDataPreference = databaseStorage.read { readTx in
+            CallService.highDataNetworkInterfaces(readTx: readTx).inverted
         }
 
         let vc = NetworkInterfacePreferenceViewController(
-            selectedOption: currentLowBandwidthPreference,
+            selectedOption: currentLowDataPreference,
             availableOptions: [.none, .cellular, .wifiAndCellular],
-            updateHandler: { [weak self] newLowBandwidthPref in
+            updateHandler: { [weak self] newLowDataPref in
                 self?.databaseStorage.write { writeTx in
-                    let newHighBandwidthPref = newLowBandwidthPref.inverted
-                    CallService.setHighBandwidthInterfaces(newHighBandwidthPref, writeTx: writeTx)
+                    let newHighDataPref = newLowDataPref.inverted
+                    CallService.setHighDataInterfaces(newHighDataPref, writeTx: writeTx)
                 }
             })
 
