@@ -449,8 +449,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 }
 
                 let weakSelf = Weak(value: self)
+                let weakConnection = Weak(value: connection)
                 func continueWithExpose(backup: InProgressBackup) -> Promise<Void> {
-                    guard let self = weakSelf.value else {
+                    guard let self = weakSelf.value, let connection = weakConnection.value else {
                         return .init(error: SVR.SVRError.assertion)
                     }
                     return self
@@ -1077,7 +1078,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             self.onDisconnect = onDisconnect
         }
 
-        private var requestQueue = [() -> Promise<Void>]()
+        private var requestQueue = [(Error?) -> Promise<Void>]()
         private var isMakingRequest = false
 
         private func startNextRequestIfPossible() {
@@ -1088,9 +1089,18 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 self.scheduleDisconnectIfNeeded()
                 return
             }
+
+            let errorToReport: Error?
+            switch connectionState {
+            case .connected:
+                errorToReport = nil
+            case .disconnected(let error):
+                errorToReport = error
+            }
+
             let nextRequest = requestQueue.removeFirst()
             self.isMakingRequest = true
-            nextRequest().ensure(on: scheduler) { [weak self] in
+            nextRequest(errorToReport).ensure(on: scheduler) { [weak self] in
                 self?.isMakingRequest = false
                 self?.startNextRequestIfPossible()
             }.cauterize()
@@ -1106,12 +1116,29 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             handler: @escaping (() -> Promise<SVR2Proto_Response>) -> Guarantee<T>
         ) -> Guarantee<T> {
             let (returnedGuarantee, returnedFuture) = Guarantee<T>.pending()
-            requestQueue.append({ [weak self] () -> Promise<Void> in
+            let scheduler = self.scheduler
+            requestQueue.append({ [weak self] (initialError: Error?) -> Promise<Void> in
                 guard let self else {
-                    returnedFuture.resolve(unretainedError)
+                    let guarantee = handler({ return .init(error: SVR.SVRError.assertion) })
+                    returnedFuture.resolve(on: scheduler, with: guarantee)
                     return .init(error: SVR.SVRError.assertion)
                 }
-                let guarantee = handler({ self.connection.sendRequestAndReadResponse(request) })
+                if let initialError {
+                    let guarantee = handler({ return .init(error: initialError) })
+                    returnedFuture.resolve(on: self.scheduler, with: guarantee)
+                    return .init(error: SVR.SVRError.assertion)
+                }
+                let guarantee = handler({
+                    return Promise.race(on: self.scheduler, [
+                        self.connection.sendRequestAndReadResponse(request),
+                        self.deinitFuture.0
+                    ])
+                    .recover(on: self.scheduler) { [weak self] error in
+                        // Treat all errors as terminating the connection.
+                        self?.disconnect(error)
+                        return Promise<SVR2Proto_Response>.init(error: error)
+                    }
+                })
                 returnedFuture.resolve(on: self.scheduler, with: guarantee)
                 return guarantee.asVoid(on: SyncScheduler())
             })
@@ -1124,24 +1151,58 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             // which if nothing is happening we can close the connection.
             self.scheduler.asyncAfter(deadline: .now() + 0.1) { [weak self] in
                 if self?.requestQueue.isEmpty == true {
-                    self?.disconnect()
+                    self?.disconnect(SVR.SVRError.assertion)
                 }
             }
         }
 
-        private var isDisconnected = false
+        private enum ConnectionState {
+            case connected
+            case disconnected(Error)
 
-        private func disconnect() {
-            guard !isDisconnected else {
+            var isDisconnected: Bool {
+                switch self {
+                case .connected: return false
+                case .disconnected: return true
+                }
+            }
+        }
+
+        private var connectionState = ConnectionState.connected
+
+        private func disconnect(_ error: Error) {
+            guard !connectionState.isDisconnected else {
                 return
             }
-            isDisconnected = true
+            connectionState = .disconnected(error)
             connection.disconnect()
             onDisconnect()
         }
 
+        private let deinitFuture = Promise<SVR2Proto_Response>.pending()
+
         deinit {
-            disconnect()
+            disconnect(SVR.SVRError.assertion)
+            let error = SVR.SVRError.assertion
+            deinitFuture.1.reject(error)
+
+            // In normal disconnects, the chain of requests continues
+            // until all of the handlers are called with the failure.
+            // For the deinit case, that stops because the weak self
+            // reference dies.
+            // To ensure we fail all pending requests, make a copy
+            // and fail them in sequence without any self reference.
+            let scheduler = self.scheduler
+            var requestQueue = self.requestQueue
+            func failNextRequestInQueue() {
+                guard requestQueue.isEmpty.negated else {
+                    return
+                }
+                requestQueue.removeFirst()(error).ensure(on: scheduler) {
+                    failNextRequestInQueue()
+                }.cauterize()
+            }
+            failNextRequestInQueue()
         }
 
         func hashPin(

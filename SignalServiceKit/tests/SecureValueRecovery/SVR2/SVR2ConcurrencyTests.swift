@@ -194,6 +194,180 @@ class SVR2ConcurrencyTests: XCTestCase {
         ], timeout: 10, enforceOrder: true)
     }
 
+    func testWebsocketConnectionFailure() {
+
+        let firstMockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+        firstMockConnection.mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
+
+        let secondMockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+        secondMockConnection.mockAuth = RemoteAttestation.Auth(username: "username2", password: "password2")
+        let secondOpenExpectation = self.expectation(description: "open websocket 2")
+
+        var numOpenedConnections = 0
+        mockConnectionFactory.setOnConnectAndPerformHandshake { (_: SVR2WebsocketConfigurator) in
+            defer { numOpenedConnections += 1 }
+            switch numOpenedConnections {
+            case 0:
+                return .value(firstMockConnection)
+            case 1:
+                secondOpenExpectation.fulfill()
+                return .value(secondMockConnection)
+            default:
+                XCTFail("Unexpected number of opened connections")
+                return .init(error: OWSAssertionError(""))
+            }
+        }
+
+        let firstCloseExpectation = self.expectation(description: "close websocket 1")
+        firstMockConnection.onDisconnect = {
+            firstCloseExpectation.fulfill()
+        }
+
+        let (firstBackupPromise, firstBackupFuture) = Promise<SVR2Proto_Response>.pending()
+        // We won't make a first expose request; it will get cancelled because of the failure.
+        // We also won't make a second backup or expose request.
+
+        var requestCount = 0
+        let madeRequestExpectations = (0..<1).map { i in
+            return self.expectation(description: "request \(i)")
+        }
+        firstMockConnection.onSendRequestAndReadResponse = { request in
+            defer {
+                madeRequestExpectations[requestCount].fulfill()
+                requestCount += 1
+            }
+            switch requestCount {
+            case 0:
+                // First backup.
+                XCTAssert(request.hasBackup)
+                return firstBackupPromise
+            default:
+                XCTFail("Unexpected request")
+                return .init(error: OWSAssertionError(""))
+            }
+        }
+
+        let firstBackupError = WebSocketError.closeError(statusCode: 400, closeReason: nil)
+
+        let firstBackupExpectation = self.expectation(description: "first backup")
+        svr.generateAndBackupKeys(pin: "1234", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { result in
+            switch result {
+            case .success:
+                XCTFail("Expected error on second backup.")
+            case .failure:
+                break
+            }
+            firstBackupExpectation.fulfill()
+        }
+        let secondBackupExpectation = self.expectation(description: "second backup")
+        svr.generateAndBackupKeys(pin: "abcd", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { result in
+            switch result {
+            case .success:
+                XCTFail("Expected error on second backup.")
+            case .failure:
+                break
+            }
+            secondBackupExpectation.fulfill()
+        }
+
+        firstBackupFuture.reject(firstBackupError)
+        wait(for: [
+            madeRequestExpectations[0], // first backup
+            firstCloseExpectation,
+            firstBackupExpectation,
+            secondBackupExpectation
+        ], timeout: 10, enforceOrder: true)
+
+        XCTAssertEqual(numOpenedConnections, 1)
+
+        // If we do another backup, it should open a new connection.
+
+        secondMockConnection.onSendRequestAndReadResponse = { request in
+            // Just leave it pending.
+            return Promise<SVR2Proto_Response>.pending().0
+        }
+
+        svr.generateAndBackupKeys(pin: "zzzz", authMethod: .implicit, rotateMasterKey: true).cauterize()
+
+        wait(for: [secondOpenExpectation], timeout: 10)
+        XCTAssertEqual(numOpenedConnections, 2)
+    }
+
+    func testWebsocketFailure_Unretained() {
+        let closeExpectation = self.expectation(description: "close websocket")
+        // Never resolve the request future; deinitialization should reject all external promises.
+        let (requestPromise, _) = Promise<SVR2Proto_Response>.pending()
+
+        var firstBackupPromise: Promise<Void>!
+        var secondBackupPromise: Promise<Void>!
+
+        autoreleasepool {
+            let mockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+            mockConnection.mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
+            let mockConnectionFactory = MockSgxWebsocketConnectionFactory()
+
+            mockConnection.onDisconnect = {
+                closeExpectation.fulfill()
+            }
+
+            mockConnectionFactory.setOnConnectAndPerformHandshake { (_: SVR2WebsocketConfigurator) in
+                return .value(mockConnection)
+            }
+
+            let sendRequestExpectation = self.expectation(description: "send request")
+            mockConnection.onSendRequestAndReadResponse = { request in
+                sendRequestExpectation.fulfill()
+                return requestPromise
+            }
+
+            let svr = SecureValueRecovery2Impl(
+                clientWrapper: MockSVR2ClientWrapper(),
+                connectionFactory: mockConnectionFactory,
+                credentialStorage: credentialStorage,
+                db: db,
+                keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
+                schedulers: Schedulers(queue),
+                storageServiceManager: FakeStorageServiceManager(),
+                syncManager: OWSMockSyncManager(),
+                tsAccountManager: SVR.TestMocks.TSAccountManager(),
+                tsConstants: TSConstants.shared,
+                twoFAManager: SVR.TestMocks.OWS2FAManager()
+            )
+            firstBackupPromise = svr.generateAndBackupKeys(pin: "1234", authMethod: .implicit, rotateMasterKey: false)
+            secondBackupPromise = svr.generateAndBackupKeys(pin: "1234", authMethod: .implicit, rotateMasterKey: false)
+
+            wait(for: [sendRequestExpectation], timeout: 10)
+        }
+
+        let firstBackupExpectation = self.expectation(description: "backup 1")
+        firstBackupPromise.observe(on: SyncScheduler()) { result in
+            switch result {
+            case .success:
+                XCTFail("Expected failure")
+            case .failure:
+                break
+            }
+            firstBackupExpectation.fulfill()
+        }
+
+        let secondBackupExpectation = self.expectation(description: "backup 2")
+        secondBackupPromise.observe(on: SyncScheduler()) { result in
+            switch result {
+            case .success:
+                XCTFail("Expected failure")
+            case .failure:
+                break
+            }
+            secondBackupExpectation.fulfill()
+        }
+
+        wait(for: [
+            closeExpectation,
+            firstBackupExpectation,
+            secondBackupExpectation
+        ], timeout: 10)
+    }
+
     private func backupResponse() -> SVR2Proto_Response {
         var response = SVR2Proto_Response()
         var backup = SVR2Proto_BackupResponse()
