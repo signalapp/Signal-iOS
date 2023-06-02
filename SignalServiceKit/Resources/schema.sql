@@ -676,14 +676,6 @@ CREATE
 ;
 
 CREATE
-    UNIQUE INDEX "index_interactions_on_threadId_read_and_id"
-        ON "model_TSInteraction"("uniqueThreadId"
-    ,"read"
-    ,"id"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "indexable_text" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -1271,12 +1263,14 @@ WHERE
 ;
 
 CREATE
-    INDEX index_model_TSInteraction_UnreadCount
-        ON model_TSInteraction (
-        READ
-        ,isGroupStoryReply
-        ,uniqueThreadId
-        ,recordType
+    INDEX "index_model_TSInteraction_UnreadMessages"
+        ON "model_TSInteraction" (
+        "read"
+        ,"uniqueThreadId"
+        ,"id"
+        ,"isGroupStoryReply"
+        ,"editState"
+        ,"recordType"
     )
 ;
 

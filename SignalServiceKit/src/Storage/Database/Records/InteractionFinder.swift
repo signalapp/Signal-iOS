@@ -553,7 +553,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(sqlClauseForAllUnreadInteractions())
+            AND \(sqlClauseForAllUnreadInteractions(excludeAllEdits: true))
             ORDER BY \(interactionColumn: .id)
         """
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [threadUniqueId], transaction: transaction)
@@ -613,7 +613,9 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
     // MARK: - Unread
 
-    private func sqlClauseForAllUnreadInteractions() -> String {
+    private func sqlClauseForAllUnreadInteractions(
+        excludeAllEdits: Bool = false
+    ) -> String {
         let recordTypes: [SDSRecordType] = [
             .disappearingConfigurationUpdateInfoMessage,
             .unknownProtocolVersionMessage,
@@ -630,12 +632,11 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
         let recordTypesSql = recordTypes.map { "\($0.rawValue)" }.joined(separator: ",")
 
-        // We don't need filterEditHistoryClause because "read IS 0" implies
-        // "editState != 2", and it's much faster to check the former.
         return """
         (
             \(interactionColumn: .read) IS 0
             \(GRDBInteractionFinder.filterStoryRepliesClause())
+            \(GRDBInteractionFinder.filterEditHistoryClause(excludeAll: excludeAllEdits))
             AND \(interactionColumn: .recordType) IN (\(recordTypesSql))
         )
         """
@@ -649,11 +650,10 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             columnPrefix = ""
         }
 
-        // We don't need filterEditHistoryClause because "read IS 0" implies
-        // "editState != 2", and it's much faster to check the former.
         return """
         \(columnPrefix)\(interactionColumn: .read) IS 0
         \(GRDBInteractionFinder.filterStoryRepliesClause(interactionsAlias: interactionsAlias))
+        \(GRDBInteractionFinder.filterEditHistoryClause(excludeAll: true, interactionsAlias: interactionsAlias))
         AND (
             \(columnPrefix)\(interactionColumn: .recordType) IN (\(SDSRecordType.incomingMessage.rawValue), \(SDSRecordType.call.rawValue))
             OR (
@@ -1240,6 +1240,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     fileprivate static func filterEditHistoryClause(
+        excludeAll: Bool = false,
         interactionsAlias: String? = nil
     ) -> String {
         guard FeatureFlags.editMessageReceive else { return "" }
@@ -1251,7 +1252,12 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             columnPrefix = ""
         }
 
-        return "AND \(columnPrefix)\(interactionColumn: .editState) IS NOT \(TSEditState.pastRevision.rawValue)"
+        if excludeAll {
+            return "AND \(columnPrefix)\(interactionColumn: .editState) IS \(TSEditState.none.rawValue)"
+        } else {
+            return "AND \(columnPrefix)\(interactionColumn: .editState) IS NOT \(TSEditState.pastRevision.rawValue)"
+        }
+
     }
 
     func enumerateInteractionIds(transaction: GRDBReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {

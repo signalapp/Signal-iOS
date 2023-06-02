@@ -226,6 +226,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dropMessageSendLogTriggers
         case addEditMessageChanges
         case threadReplyInfoServiceIds
+        case updateEditMessageUnreadIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2280,6 +2281,21 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.threadReplyInfoServiceIds) { tx in
             try Self.migrateThreadReplyInfos(transaction: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.updateEditMessageUnreadIndex) { tx in
+            try tx.database.execute(sql: "DROP INDEX IF EXISTS index_interactions_on_threadId_read_and_id")
+            try tx.database.execute(sql: "DROP INDEX IF EXISTS index_model_TSInteraction_UnreadCount")
+
+            try tx.database.create(
+                index: "index_model_TSInteraction_UnreadMessages",
+                on: "\(InteractionRecord.databaseTableName)",
+                columns: [
+                    "read", "uniqueThreadId", "id", "isGroupStoryReply", "editState", "recordType"
+                ]
+            )
+
             return .success(())
         }
 

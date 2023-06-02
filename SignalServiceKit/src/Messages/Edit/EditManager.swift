@@ -327,7 +327,7 @@ extension TSIncomingMessage: MessageCopyable {
             contactShare: self.contactShare,
             linkPreview: self.linkPreview,
             messageSticker: self.messageSticker,
-            read: (self.wasRead || !isLatestRevision),
+            read: !isLatestRevision,
             serverTimestamp: self.serverTimestamp,
             serverDeliveryTimestamp: self.serverDeliveryTimestamp,
             serverGuid: self.serverGuid,
