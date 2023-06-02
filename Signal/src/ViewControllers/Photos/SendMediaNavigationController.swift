@@ -71,21 +71,6 @@ class SendMediaNavigationController: OWSNavigationController {
         topViewController
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        DispatchQueue.main.async {
-            // Pre-layout views for snappier response should the user decide to switch.
-
-            if PHPhotoLibrary.authorizationStatus() == .authorized {
-                self.mediaLibraryViewController.view.layoutIfNeeded()
-            }
-
-            if AVCaptureDevice.authorizationStatus(for: .video) == .authorized {
-                self.captureViewController.view.layoutIfNeeded()
-            }
-        }
-    }
-
     // MARK: -
 
     weak var sendMediaNavDelegate: SendMediaNavDelegate?

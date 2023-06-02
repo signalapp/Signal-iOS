@@ -34,7 +34,13 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     private let photoMediaSize = PhotoMediaSize()
 
     private var collectionViewFlowLayout: UICollectionViewFlowLayout
-    private var titleView: TitleView!
+    private lazy var titleView: TitleView = {
+        let titleView = TitleView()
+        titleView.delegate = self
+        titleView.tintColor = .ows_gray05
+        titleView.text = photoAlbum.localizedTitle()
+        return titleView
+    }()
 
     private lazy var doneButton: MediaDoneButton = {
         let button = MediaDoneButton()
@@ -83,17 +89,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancel))
         cancelButton.tintColor = .ows_gray05
         navigationItem.leftBarButtonItem = cancelButton
-
-        let titleView = TitleView()
-        titleView.delegate = self
-        titleView.tintColor = .ows_gray05
-        titleView.text = photoAlbum.localizedTitle()
-
-        // Add as a subview to the navigation bar so it appears on any pushed folder views
-        navigationController?.navigationBar.addSubview(titleView)
-        titleView.autoCenterInSuperview()
-
-        self.titleView = titleView
 
         view.addSubview(doneButton)
         doneButton.autoPinBottomToSuperviewMargin(withInset: UIDevice.current.hasIPhoneXNotch ? 8 : 16)
@@ -219,6 +214,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     private var hasEverAppeared: Bool = false
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        if let navigationBar = navigationController?.navigationBar {
+            // Add as a subview to the navigation bar so it appears on any pushed folder views
+            navigationBar.addSubview(titleView)
+            titleView.autoCenterInSuperview()
+        }
 
         // Determine the size of the thumbnails to request
         let scale = UIScreen.main.scale
