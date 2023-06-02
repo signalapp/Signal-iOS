@@ -68,6 +68,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let storageServiceManager = FakeStorageServiceManager()
         let syncManager = OWSMockSyncManager()
         let tsAccountManager = TSAccountManager()
+        let webSocketFactory = WebSocketFactoryMock()
 
         let dependenciesBridge = DependenciesBridge.setupSingleton(
             accountServiceClient: accountServiceClient,
@@ -88,7 +89,8 @@ public class MockSSKEnvironment: SSKEnvironment {
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
+            websocketFactory: webSocketFactory
         )
 
         // Set up ourselves
@@ -126,7 +128,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let spamChallengeResolver = SpamChallengeResolver()
         let senderKeyStore = SenderKeyStore()
         let phoneNumberUtil = PhoneNumberUtil()
-        let webSocketFactory = WebSocketFactoryMock()
         let legacyChangePhoneNumber = LegacyChangePhoneNumber()
         let subscriptionManager = MockSubscriptionManager()
         let systemStoryManager = SystemStoryManagerMock()

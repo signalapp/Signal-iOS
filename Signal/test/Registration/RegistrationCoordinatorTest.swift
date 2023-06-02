@@ -42,6 +42,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private var profileManagerMock: RegistrationCoordinatorImpl.TestMocks.ProfileManager!
     private var pushRegistrationManagerMock: RegistrationCoordinatorImpl.TestMocks.PushRegistrationManager!
     private var receiptManagerMock: RegistrationCoordinatorImpl.TestMocks.ReceiptManager!
+    private var remoteConfigMock: RegistrationCoordinatorImpl.TestMocks.RemoteConfig!
     private var sessionManager: RegistrationSessionManagerMock!
     private var storageServiceManagerMock: FakeStorageServiceManager!
     private var svr: SecureValueRecoveryMock!
@@ -68,6 +69,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         profileManagerMock = RegistrationCoordinatorImpl.TestMocks.ProfileManager()
         pushRegistrationManagerMock = RegistrationCoordinatorImpl.TestMocks.PushRegistrationManager()
         receiptManagerMock = RegistrationCoordinatorImpl.TestMocks.ReceiptManager()
+        remoteConfigMock = RegistrationCoordinatorImpl.TestMocks.RemoteConfig()
         sessionManager = RegistrationSessionManagerMock()
         storageServiceManagerMock = FakeStorageServiceManager()
         tsAccountManagerMock = RegistrationCoordinatorImpl.TestMocks.TSAccountManager()
@@ -100,6 +102,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             profileManager: profileManagerMock,
             pushRegistrationManager: pushRegistrationManagerMock,
             receiptManager: receiptManagerMock,
+            remoteConfig: remoteConfigMock,
             schedulers: TestSchedulers(scheduler: scheduler),
             sessionManager: sessionManager,
             signalService: mockSignalService,
@@ -868,7 +871,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // Put some auth credentials in storage.
             // We should prefer svr2 credentials if available.
-            let shouldPreferSVR2 = FeatureFlags.mirrorSVR2 || FeatureFlags.exclusiveSVR2
+            let shouldPreferSVR2 = FeatureFlags.svr2
 
             let svr2CredentialCandidates: [SVR2AuthCredential] = [
                 Stubs.svr2AuthCredential,
@@ -955,7 +958,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             let nextStepPromise = coordinator.submitPINCode(Stubs.pinCode)
 
             // At t=1, resolve the key restoration from SVR and have it start returning the key.
-            svr.restoreKeysAndBackupMock = { pin, authMethod in
+            svr.restoreKeysMock = { pin, authMethod in
                 XCTAssertEqual(self.scheduler.currentTime, 0)
                 XCTAssertEqual(pin, Stubs.pinCode)
                 if shouldPreferSVR2 {
@@ -1027,14 +1030,33 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 return .value(())
             }
 
-            // At t=3 once we sync push tokens, we should restore from storage service.
-            accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+            // At t=3 once we sync push tokens, we should back up to svr.
+            svr.generateAndBackupKeysMock = { (pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) in
                 XCTAssertEqual(self.scheduler.currentTime, 3)
-                XCTAssertEqual(auth, expectedAuthedAccount())
+                XCTAssertEqual(pin, Stubs.pinCode)
+                if shouldPreferSVR2 {
+                    XCTAssertEqual(authMethod, .svrAuth(
+                        .svr2Only(Stubs.svr2AuthCredential),
+                        backup: .chatServerAuth(expectedAuthedAccount())
+                    ))
+                } else {
+                    XCTAssertEqual(authMethod, .svrAuth(
+                        .kbsOnly(Stubs.kbsAuthCredential),
+                        backup: .chatServerAuth(expectedAuthedAccount())
+                    ))
+                }
+                XCTAssertFalse(rotateMasterKey)
                 return self.scheduler.promise(resolvingWith: (), atTime: 4)
             }
 
-            // And at t=4 once we do the storage service restore,
+            // At t=4 once we back up to svr, we should restore from storage service.
+            accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+                XCTAssertEqual(self.scheduler.currentTime, 4)
+                XCTAssertEqual(auth, expectedAuthedAccount())
+                return self.scheduler.promise(resolvingWith: (), atTime: 5)
+            }
+
+            // And at t=5 once we do the storage service restore,
             // we will sync account attributes and then we are finished!
             let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
                 Stubs.accountAttributes(),
@@ -1042,7 +1064,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
             self.mockURLSession.addResponse(
                 matcher: { request in
-                    XCTAssertEqual(self.scheduler.currentTime, 4)
+                    XCTAssertEqual(self.scheduler.currentTime, 5)
                     return request.url == expectedAttributesRequest.url
                 },
                 statusCode: 200
@@ -1055,7 +1077,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, 4)
+            XCTAssertEqual(scheduler.currentTime, 5)
 
             XCTAssertEqual(nextStepPromise.value, .done)
         }

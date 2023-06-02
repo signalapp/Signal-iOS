@@ -241,11 +241,11 @@ public extension NSObject {
         SSKEnvironment.shared.messageProcessorRef
     }
 
-    final var remoteConfigManager: RemoteConfigManager {
+    final var remoteConfigManagerObjc: RemoteConfigManagerObjc {
         SSKEnvironment.shared.remoteConfigManagerRef
     }
 
-    static var remoteConfigManager: RemoteConfigManager {
+    static var remoteConfigManagerObjc: RemoteConfigManagerObjc {
         SSKEnvironment.shared.remoteConfigManagerRef
     }
 
@@ -476,6 +476,14 @@ public extension NSObject {
 
     static var storageServiceManager: StorageServiceManager {
         SSKEnvironment.shared.storageServiceManagerRef
+    }
+
+    final var remoteConfigManager: RemoteConfigManager {
+        SSKEnvironment.shared.remoteConfigManagerRef
+    }
+
+    static var remoteConfigManager: RemoteConfigManager {
+        SSKEnvironment.shared.remoteConfigManagerRef
     }
 }
 

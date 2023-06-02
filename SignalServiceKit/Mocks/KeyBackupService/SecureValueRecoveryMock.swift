@@ -53,6 +53,12 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         return generateAndBackupKeysMock!(pin, authMethod, rotateMasterKey)
     }
 
+    public var restoreKeysMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>)?
+
+    public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
+        return restoreKeysMock!(pin, authMethod)
+    }
+
     public var restoreKeysAndBackupMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>)?
 
     public func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {

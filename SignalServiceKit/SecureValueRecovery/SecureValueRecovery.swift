@@ -143,6 +143,9 @@ public protocol SecureValueRecovery {
     func acquireRegistrationLockForNewNumber(with pin: String, and auth: SVRAuthCredential) -> Promise<String>
 
     /// Loads the users key, if any, from the SVR into the database.
+    func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>
+
+    /// Loads the users key, if any, from the SVR into the database, then backs them up again.
     func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>
 
     /// Backs up the user's master key to SVR and stores it locally in the database.

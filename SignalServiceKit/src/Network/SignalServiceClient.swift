@@ -32,7 +32,7 @@ public protocol SignalServiceClient {
     func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
     func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI>
     func requestStorageAuth(chatServiceAuth: ChatServiceAuth) -> Promise<(username: String, password: String)>
-    func getRemoteConfig() -> Promise<[String: RemoteConfigItem]>
+    func getRemoteConfig(auth: ChatServiceAuth) -> Promise<[String: RemoteConfigItem]>
 
     // MARK: - Secondary Devices
 
@@ -234,8 +234,9 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     }
 
     // yields a map of ["feature_name": isEnabled]
-    public func getRemoteConfig() -> Promise<[String: RemoteConfigItem]> {
+    public func getRemoteConfig(auth: ChatServiceAuth) -> Promise<[String: RemoteConfigItem]> {
         let request = OWSRequestFactory.getRemoteConfigRequest()
+        request.setAuth(auth)
 
         return firstly {
             networkManager.makePromise(request: request)

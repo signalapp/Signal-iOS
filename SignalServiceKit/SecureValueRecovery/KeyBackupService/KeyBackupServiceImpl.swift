@@ -150,10 +150,23 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         }
     }
 
+    public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
+        // When restoring your backup we want to check the current enclave first,
+        // and then fallback to previous enclaves if the current enclave has no
+        // record of you. It's important that these are ordered from newest enclave
+        // to oldest enclave, so we start with the newest enclave and then progressively
+        // check older enclaves.
+        let enclavesToCheck = [TSConstants.keyBackupEnclave] + TSConstants.keyBackupPreviousEnclaves
+        guard let authMethod = authMethod.kbs else {
+            return .value(.genericError(SVR.SVRError.assertion))
+        }
+        return restoreKeys(pin: pin, auth: authMethod, enclavesToCheck: enclavesToCheck)
+    }
+
     public func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
         // When restoring your backup we want to check the current enclave first,
         // and then fallback to previous enclaves if the current enclave has no
-        // record of you. It's important that these are ordered from neweset enclave
+        // record of you. It's important that these are ordered from newest enclave
         // to oldest enclave, so we start with the newest enclave and then progressively
         // check older enclaves.
         let enclavesToCheck = [TSConstants.keyBackupEnclave] + TSConstants.keyBackupPreviousEnclaves
@@ -176,6 +189,57 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         /// if invalid, falls back to getting a SVR auth credential from the chat server
         /// with the chat server auth credentials we have cached.
         case implicit
+    }
+
+    private func restoreKeys(
+        pin: String,
+        auth: AuthMethod,
+        enclavesToCheck: [KeyBackupEnclave]
+    ) -> Guarantee<SVR.RestoreKeysResult> {
+        guard let enclave = enclavesToCheck.first else {
+            owsFailDebug("Unexpectedly tried to restore keys with no specified enclaves")
+            return .value(.genericError(SVR.SVRError.assertion))
+        }
+        return restoreKeys(
+            pin: pin,
+            auth: auth,
+            enclave: enclave
+        ).map(on: schedulers.sync) { restoredKeys -> SVR.RestoreKeysResult in
+            let encodedVerificationString = try SVRUtil.deriveEncodedPINVerificationString(pin: pin)
+
+            // We successfully stored the new keys in KBS, save them in the database.
+            // We record the enclave we restored from since we aren't backing up right now;
+            // eventually it should migrate to the newest enclave (if this isn't the newest).
+            self.db.write { transaction in
+                self.store(
+                    masterKey: restoredKeys.masterKey,
+                    isMasterKeyBackedUp: true,
+                    pinType: SVR.PinType(forPin: pin),
+                    encodedVerificationString: encodedVerificationString,
+                    enclaveName: enclave.name,
+                    authedAccount: auth.authedAccount,
+                    transaction: transaction
+                )
+            }
+            return .success
+        }.recover(on: schedulers.sync) { error -> Guarantee<SVR.RestoreKeysResult> in
+            if error.isNetworkConnectivityFailure {
+                return .value(.networkError(error))
+            }
+            guard let kbsError = error as? SVR.SVRError else {
+                owsFailDebug("Unexpectedly surfacing a non KBS error \(error)")
+                return .value(.genericError(error))
+            }
+
+            switch kbsError {
+            case .assertion:
+                return .value(.genericError(error))
+            case .invalidPin(let remainingAttempts):
+                return .value(.invalidPin(remainingAttempts: remainingAttempts))
+            case .backupMissing:
+                return .value(.backupMissing)
+            }
+        }
     }
 
     private func restoreKeysAndBackup(
@@ -362,6 +426,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
                 // the given token has already been spent. we'll use the new token
                 // on the next attempt.
                 owsFailDebug("attempted restore with spent token")
+                self.db.write(block: self.clearNextToken(transaction:))
                 throw SVR.SVRError.assertion
             case .pinMismatch:
                 throw SVR.SVRError.invalidPin(remainingAttempts: response.tries)
@@ -388,6 +453,17 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         authMethod: SVR.AuthMethod,
         rotateMasterKey: Bool
     ) -> Promise<Void> {
+        return generateAndBackupKeys(pin: pin, authMethod: authMethod, masterKey: {
+            if rotateMasterKey { return self.generateMasterKey() }
+            return self.getOrLoadStateWithSneakyTransaction().masterKey ?? self.generateMasterKey()
+        }())
+    }
+
+    internal func generateAndBackupKeys(
+        pin: String,
+        authMethod: SVR.AuthMethod,
+        masterKey: @escaping @autoclosure () -> Data
+    ) -> Promise<Void> {
         guard let authMethod = authMethod.kbs else {
             return Promise.init(error: SVR.SVRError.assertion)
         }
@@ -395,10 +471,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             auth: authMethod,
             enclave: currentEnclave
         ).map(on: schedulers.global()) { backupId -> (Data, Data, Data) in
-            let masterKey: Data = {
-                if rotateMasterKey { return self.generateMasterKey() }
-                return self.getOrLoadStateWithSneakyTransaction().masterKey ?? self.generateMasterKey()
-            }()
+            let masterKey: Data = masterKey()
             let (encryptionKey, accessKey) = try SVRUtil.deriveSVR1EncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
             let encryptedMasterKey = try self.encryptMasterKey(masterKey, encryptionKey: encryptionKey)
 

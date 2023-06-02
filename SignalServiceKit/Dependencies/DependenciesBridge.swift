@@ -88,7 +88,8 @@ public class DependenciesBridge {
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
+        websocketFactory: WebSocketFactory
     ) -> DependenciesBridge {
         let result = DependenciesBridge(
             accountServiceClient: accountServiceClient,
@@ -110,7 +111,8 @@ public class DependenciesBridge {
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
-            tsConstants: TSConstants.shared // This is safe to hard-code.
+            tsConstants: TSConstants.shared, // This is safe to hard-code.
+            websocketFactory: websocketFactory
         )
         _shared = result
         return result
@@ -136,7 +138,8 @@ public class DependenciesBridge {
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager,
-        tsConstants: TSConstantsProtocol
+        tsConstants: TSConstantsProtocol,
+        websocketFactory: WebSocketFactory
     ) {
         self.schedulers = DispatchQueueSchedulers()
         self.db = SDSDB(databaseStorage: databaseStorage)
@@ -175,9 +178,10 @@ public class DependenciesBridge {
         )
 
         self.svrCredentialStorage = SVRAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
-        self.svr = KeyBackupServiceImpl(
+        self.svr = OrchestratingSVRImpl(
             accountManager: SVR.Wrappers.TSAccountManager(tsAccountManager),
             appContext: CurrentAppContext(),
+            connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: websocketFactory),
             credentialStorage: svrCredentialStorage,
             databaseStorage: db,
             keyValueStoreFactory: keyValueStoreFactory,

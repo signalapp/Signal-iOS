@@ -82,7 +82,8 @@ public class AppSetup {
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
+            websocketFactory: webSocketFactory
         )
 
         // MARK: SignalMessaging environment properties

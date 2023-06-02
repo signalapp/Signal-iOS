@@ -583,7 +583,8 @@ extension ExperienceUpgradeManifest {
         guard RemoteConfig.isCountryCodeBucketEnabled(
             csvString: megaphone.manifest.countries,
             key: megaphone.manifest.id,
-            csvDescription: "remoteMegaphoneCountries_\(megaphone.manifest.id)"
+            csvDescription: "remoteMegaphoneCountries_\(megaphone.manifest.id)",
+            account: .implicit()
         ) else {
             Logger.debug("Remote megaphone not enabled for this user, by country code!")
             return false

@@ -176,7 +176,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     public func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) -> Promise<Void> {
-        return firstly(on: scheduler) { [weak self] () -> Promise<Void> in
+        let promise: Promise<Data> = self.generateAndBackupKeys(pin: pin, authMethod: authMethod, rotateMasterKey: rotateMasterKey)
+        return promise.asVoid(on: schedulers.sync)
+    }
+
+    internal func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) -> Promise<Data> {
+        return firstly(on: scheduler) { [weak self] () -> Promise<Data> in
             guard let self else {
                 return .init(error: SVR.SVRError.assertion)
             }
@@ -188,6 +193,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             }()
             return self.doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: authMethod)
         }
+    }
+
+    public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
+        // When we restore, we remember which enclave it was from. On some future app startup, we check
+        // this enclave, and migrate to a new one if available. This code path relies on that happening
+        // asynchronously.
+        doRestore(pin: pin, authMethod: authMethod).map(on: schedulers.sync, \.asSVRResult)
     }
 
     public func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
@@ -210,7 +222,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             masterKey: masterKey,
                             authMethod: authMethod
                         )
-                        .map(on: self.schedulers.sync) { [weak self] in
+                        .map(on: self.schedulers.sync) { [weak self] _ in
                             // If the backup succeeds, and the restore was from some old enclave,
                             // delete from that older enclave.
                             if enclaveWeRestoredFrom.stringValue != self?.tsConstants.svr2Enclave.stringValue {
@@ -440,17 +452,17 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         pin: String,
         masterKey: Data,
         authMethod: SVR.AuthMethod
-    ) -> Promise<Void> {
+    ) -> Promise<Data> {
         let config = SVR2WebsocketConfigurator(mrenclave: tsConstants.svr2Enclave, authMethod: authMethod)
         return makeHandshakeAndOpenConnection(config)
-            .then(on: scheduler) { [weak self] connection -> Promise<Void> in
+            .then(on: scheduler) { [weak self] connection -> Promise<Data> in
                 guard let self else {
                     return .init(error: SVR.SVRError.assertion)
                 }
 
                 let weakSelf = Weak(value: self)
                 let weakConnection = Weak(value: connection)
-                func continueWithExpose(backup: InProgressBackup) -> Promise<Void> {
+                func continueWithExpose(backup: InProgressBackup) -> Promise<Data> {
                     guard let self = weakSelf.value, let connection = weakConnection.value else {
                         return .init(error: SVR.SVRError.assertion)
                     }
@@ -460,17 +472,17 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             authedAccount: authMethod.authedAccount,
                             connection: connection
                         )
-                        .then(on: self.schedulers.sync) { result -> Promise<Void> in
+                        .then(on: self.schedulers.sync) { result -> Promise<Data> in
                             switch result {
                             case .success:
-                                return .value(())
+                                return .value(backup.masterKey)
                             case .serverError, .networkError, .unretainedError, .localPersistenceError:
                                 return .init(error: SVR.SVRError.assertion)
                             }
                         }
                 }
 
-                func startFreshBackupExpose() -> Promise<Void> {
+                func startFreshBackupExpose() -> Promise<Data> {
                     return self
                         .performBackupRequest(
                             pin: pin,
@@ -478,7 +490,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             mrEnclave: config.mrenclave,
                             connection: connection
                         )
-                        .then(on: self.scheduler) { (backupResult: BackupResult) -> Promise<Void> in
+                        .then(on: self.scheduler) { (backupResult: BackupResult) -> Promise<Data> in
                             switch backupResult {
                             case .serverError, .networkError, .localPersistenceError, .localEncryptionError, .unretainedError:
                                 return .init(error: SVR.SVRError.assertion)
@@ -964,7 +976,15 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     private func wipeOldEnclavesIfNeeded(auth: SVR.AuthMethod) {
-        var enclavesToDeleteFrom = db.read(block: self.getOldEnclavesToDeleteFrom)
+        var (isRegistered, enclavesToDeleteFrom) = db.read { tx in
+            return (
+                self.tsAccountManager.isRegisteredAndReady(transaction: tx),
+                self.getOldEnclavesToDeleteFrom(tx)
+            )
+        }
+        guard isRegistered else {
+            return
+        }
         let weakSelf = Weak(value: self)
         func doNextDelete() -> Guarantee<DeleteResult> {
             guard
@@ -1027,7 +1047,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             Logger.info("Migrating SVR2 Enclaves")
             return self
                 .doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: .implicit)
-                .done(on: self.scheduler) { [weak self] in
+                .done(on: self.scheduler) { [weak self] _ in
                     Logger.info("Successfully migrated SVR2 enclave")
                     guard let self else {
                         return

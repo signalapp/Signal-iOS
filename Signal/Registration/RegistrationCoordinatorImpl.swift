@@ -533,6 +533,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // Every time we go through registration, we should back up our SVR master
         // secret's random bytes to SVR. Its safer to do this more than it is to do
         // it less, so keeping this state in memory.
+        var svrRemoteConfig: RemoteConfig.SVRConfiguration?
         var hasBackedUpToSVR = false
         var didSkipSVRBackup = false
         var shouldBackUpToSVR: Bool {
@@ -879,7 +880,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         Logger.info("")
 
         func finalizeRegistration(_ tx: DBWriteTransaction) {
-            if inMemoryState.hasBackedUpToSVR {
+            if inMemoryState.hasBackedUpToSVR || inMemoryState.didHaveSVRBackupsPriorToReg {
                 // No need to show the experience if we made the pin
                 // and backed up.
                 deps.experienceManager.clearIntroducingPinsExperience(tx)
@@ -1360,15 +1361,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         let svr2AuthCredentialCandidates: [SVR2AuthCredential] = deps.svrAuthCredentialStore.getAuthCredentials(tx)
         if
             svr2AuthCredentialCandidates.isEmpty.negated,
-            FeatureFlags.mirrorSVR2 || FeatureFlags.exclusiveSVR2
+            FeatureFlags.svr2
         {
             inMemoryState.svr2AuthCredentialCandidates = svr2AuthCredentialCandidates
         }
         let kbsAuthCredentialCandidates: [KBSAuthCredential] = deps.svrAuthCredentialStore.getAuthCredentials(tx)
-        if
-            kbsAuthCredentialCandidates.isEmpty.negated,
-            !FeatureFlags.exclusiveSVR2
-        {
+        if kbsAuthCredentialCandidates.isEmpty.negated {
             inMemoryState.kbsAuthCredentialCandidates = kbsAuthCredentialCandidates
         }
     }
@@ -1414,15 +1412,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         credential: SVRAuthCredential,
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
-        deps.svr.restoreKeysAndBackup(pin: pin, authMethod: .svrAuth(credential, backup: nil))
+        deps.svr.restoreKeys(pin: pin, authMethod: .svrAuth(credential, backup: nil))
             .then(on: schedulers.main) { [weak self] result -> Guarantee<RegistrationStep> in
                 guard let self = self else {
                     return unretainedSelfError()
                 }
                 switch result {
                 case .success:
-                    // This step also backs up, no need to do that again later.
-                    self.inMemoryState.hasBackedUpToSVR = true
                     self.db.write { self.loadLocalMasterKeyAndUpdateState($0) }
                     return self.nextStep()
                 case let .invalidPin(remainingAttempts):
@@ -2578,7 +2574,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         Logger.info("")
 
-        return deps.svr.restoreKeysAndBackup(
+        return deps.svr.restoreKeys(
             pin: pin,
             authMethod: .svrAuth(svrAuthCredential, backup: nil)
         )
@@ -2588,8 +2584,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 switch result {
                 case .success:
-                    // This step also backs up, no need to do that again later.
-                    self.inMemoryState.hasBackedUpToSVR = true
                     self.db.write { tx in
                         self.loadLocalMasterKeyAndUpdateState(tx)
                         self.updatePersistedSessionState(session: session, tx) {
@@ -2655,7 +2649,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return syncPushTokens(accountIdentity)
             }
 
-            if let stepGuarantee = performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+            guard let svrRemoteConfig = inMemoryState.svrRemoteConfig else {
+                return syncRemoteConfig(accountIdentity)
+            }
+
+            if let stepGuarantee = performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity, svrRemoteConfig: svrRemoteConfig) {
                 return stepGuarantee
             }
 
@@ -2708,33 +2706,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
         }
 
-        if let stepGuarantee = performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
+        guard let svrRemoteConfig = inMemoryState.svrRemoteConfig else {
+            return self.syncRemoteConfig(accountIdentity)
+        }
+
+        if let stepGuarantee = performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity, svrRemoteConfig: svrRemoteConfig) {
             return stepGuarantee
         }
 
         if shouldRestoreFromStorageService() {
-            return deps.accountManager.performInitialStorageServiceRestore(authedAccount: accountIdentity.authedAccount)
-                .map(on: schedulers.main) { [weak self] in
-                    self?.inMemoryState.hasRestoredFromStorageService = true
-                    return ()
-                }
-                .then(on: schedulers.sync) { [weak self] in
-                    guard let self else {
-                        return unretainedSelfError()
-                    }
-                    self.loadProfileState()
-                    return self.nextStep()
-                }
-                .recover(on: schedulers.main) { [weak self] error in
-                    guard let self else {
-                        return unretainedSelfError()
-                    }
-                    if error.isPostRegDeregisteredError {
-                        return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
-                    }
-                    self.inMemoryState.hasSkippedRestoreFromStorageService = true
-                    return self.nextStep()
-                }
+            return restoreFromStorageService(accountIdentity: accountIdentity)
         }
 
         if !inMemoryState.hasProfileName {
@@ -2851,9 +2832,49 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
     }
 
-    // returns nil if no steps needed.
-    private func performSVRBackupStepsIfNeeded(accountIdentity: AccountIdentity) -> Guarantee<RegistrationStep>? {
+    private func syncRemoteConfig(
+        _ accountIdentity: AccountIdentity,
+        retriesLeft: Int = Constants.networkErrorRetries
+    ) -> Guarantee<RegistrationStep> {
         Logger.info("")
+
+        return deps.remoteConfig.refreshRemoteConfig(account: accountIdentity.authedAccount)
+            .then(on: schedulers.main) { [weak self] config in
+                guard let strongSelf = self else {
+                    return unretainedSelfError()
+                }
+                strongSelf.inMemoryState.svrRemoteConfig = config
+                return strongSelf.nextStep()
+            }
+            .recover(on: schedulers.main) { [weak self] error -> Guarantee<RegistrationStep> in
+                guard let strongSelf = self else {
+                    return unretainedSelfError()
+                }
+                if error.isNetworkFailureOrTimeout {
+                    if retriesLeft > 0 {
+                        return strongSelf.syncRemoteConfig(
+                            accountIdentity,
+                            retriesLeft: retriesLeft - 1
+                        )
+                    } else {
+                        return .value(.showErrorSheet(.networkError))
+                    }
+                } else if error.isPostRegDeregisteredError {
+                    return strongSelf.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
+                }
+                return .value(.showErrorSheet(.genericError))
+            }
+    }
+
+    // returns nil if no steps needed.
+    private func performSVRBackupStepsIfNeeded(
+        accountIdentity: AccountIdentity,
+        svrRemoteConfig: RemoteConfig.SVRConfiguration
+    ) -> Guarantee<RegistrationStep>? {
+        Logger.info("")
+
+        // Set remote configuration so we back up to the right place.
+        (deps.svr as? OrchestratingSVRImpl)?.setRemoteConfiguration(svrRemoteConfig)
 
         let isRestoringPinBackup: Bool = (
             accountIdentity.hasPreviouslyUsedSVR &&
@@ -2937,7 +2958,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 switch result {
                 case .success:
                     self.inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
-                    // This backs up too, no need to do that again after.
                     self.inMemoryState.hasBackedUpToSVR = true
                     return self.nextStep()
                 case let .invalidPin(remainingAttempts):
@@ -3007,15 +3027,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 strongSelf.db.write { tx in
                     strongSelf.deps.ows2FAManager.markPinEnabled(pin, tx)
                 }
-                return strongSelf.deps.accountManager.performInitialStorageServiceRestore(authedAccount: accountIdentity.authedAccount)
-                    .map(on: strongSelf.schedulers.main) { [weak self] in
-                        self?.inMemoryState.hasRestoredFromStorageService = true
-                    }
-                    // Ignore errors. This matches the legacy registration flow.
-                    .recover(on: strongSelf.schedulers.sync) { _ in return .value(()) }
-                    .then(on: strongSelf.schedulers.sync) { [weak self] in
-                        return self?.nextStep() ?? unretainedSelfError()
-                    }
+                return strongSelf.restoreFromStorageService(accountIdentity: accountIdentity)
             }
             .recover(on: schedulers.main) { [weak self] error -> Guarantee<RegistrationStep> in
                 guard let self else {
@@ -3036,6 +3048,30 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // go wrong. Show an error but let the user continue when they try the next step.
                 self.inMemoryState.didSkipSVRBackup = true
                 return .value(.showErrorSheet(.genericError))
+            }
+    }
+
+    private func restoreFromStorageService(
+        accountIdentity: AccountIdentity
+    ) -> Guarantee<RegistrationStep> {
+        return deps.accountManager.performInitialStorageServiceRestore(authedAccount: accountIdentity.authedAccount)
+            .then(on: schedulers.sync) { [weak self] in
+                guard let self else {
+                    return unretainedSelfError()
+                }
+                self.loadProfileState()
+                self.inMemoryState.hasRestoredFromStorageService = true
+                return self.nextStep()
+            }
+            .recover(on: schedulers.main) { [weak self] error in
+                guard let self else {
+                    return unretainedSelfError()
+                }
+                if error.isPostRegDeregisteredError {
+                    return self.becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
+                }
+                self.inMemoryState.hasSkippedRestoreFromStorageService = true
+                return self.nextStep()
             }
     }
 

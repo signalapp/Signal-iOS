@@ -95,7 +95,7 @@ class SVR2ConcurrencyTests: XCTestCase {
         }
 
         let firstBackupExpectation = self.expectation(description: "first backup")
-        svr.generateAndBackupKeys(pin: "1234", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { _ in
+        svr.generateAndBackupKeys(pin: "1234", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { (_: Result<Void, Error>) in
             firstBackupExpectation.fulfill()
         }
 
@@ -107,7 +107,7 @@ class SVR2ConcurrencyTests: XCTestCase {
         ], timeout: 10, enforceOrder: true)
 
         let secondBackupExpectation = self.expectation(description: "second backup")
-        svr.generateAndBackupKeys(pin: "abcd", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { _ in
+        svr.generateAndBackupKeys(pin: "abcd", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { (_: Result<Void, Error>) in
             secondBackupExpectation.fulfill()
         }
 
@@ -171,11 +171,11 @@ class SVR2ConcurrencyTests: XCTestCase {
         }
 
         let firstBackupExpectation = self.expectation(description: "first backup")
-        svr.generateAndBackupKeys(pin: "1234", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { _ in
+        svr.generateAndBackupKeys(pin: "1234", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { (_: Result<Void, Error>) in
             firstBackupExpectation.fulfill()
         }
         let secondBackupExpectation = self.expectation(description: "first backup")
-        svr.generateAndBackupKeys(pin: "abcd", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { _ in
+        svr.generateAndBackupKeys(pin: "abcd", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { (_: Result<Void, Error>) in
             secondBackupExpectation.fulfill()
         }
 
@@ -250,7 +250,7 @@ class SVR2ConcurrencyTests: XCTestCase {
         let firstBackupError = WebSocketError.closeError(statusCode: 400, closeReason: nil)
 
         let firstBackupExpectation = self.expectation(description: "first backup")
-        svr.generateAndBackupKeys(pin: "1234", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { result in
+        svr.generateAndBackupKeys(pin: "1234", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { (result: Result<Void, Error>) in
             switch result {
             case .success:
                 XCTFail("Expected error on second backup.")
@@ -260,7 +260,7 @@ class SVR2ConcurrencyTests: XCTestCase {
             firstBackupExpectation.fulfill()
         }
         let secondBackupExpectation = self.expectation(description: "second backup")
-        svr.generateAndBackupKeys(pin: "abcd", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { result in
+        svr.generateAndBackupKeys(pin: "abcd", authMethod: .implicit, rotateMasterKey: true).observe(on: SyncScheduler()) { (result: Result<Void, Error>) in
             switch result {
             case .success:
                 XCTFail("Expected error on second backup.")
@@ -287,7 +287,7 @@ class SVR2ConcurrencyTests: XCTestCase {
             return Promise<SVR2Proto_Response>.pending().0
         }
 
-        svr.generateAndBackupKeys(pin: "zzzz", authMethod: .implicit, rotateMasterKey: true).cauterize()
+        let _: Promise<Void> = svr.generateAndBackupKeys(pin: "zzzz", authMethod: .implicit, rotateMasterKey: true)
 
         wait(for: [secondOpenExpectation], timeout: 10)
         XCTAssertEqual(numOpenedConnections, 2)
