@@ -179,6 +179,7 @@ public protocol GroupsV2Swift: GroupsV2 {
 
     func restoreGroupFromStorageServiceIfNecessary(
         groupRecord: StorageServiceProtoGroupV2Record,
+        account: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     )
 }
@@ -677,7 +678,11 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
         return nil
     }
 
-    public func restoreGroupFromStorageServiceIfNecessary(groupRecord: StorageServiceProtoGroupV2Record, transaction: SDSAnyWriteTransaction) {
+    public func restoreGroupFromStorageServiceIfNecessary(
+        groupRecord: StorageServiceProtoGroupV2Record,
+        account: AuthedAccount,
+        transaction: SDSAnyWriteTransaction
+    ) {
         owsFail("Not implemented.")
     }
 

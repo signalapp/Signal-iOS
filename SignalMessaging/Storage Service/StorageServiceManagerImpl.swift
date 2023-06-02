@@ -1507,6 +1507,7 @@ class StorageServiceOperation: OWSOperation {
     private func buildGroupV2Updater() -> MultipleElementStateUpdater<StorageServiceGroupV2RecordUpdater> {
         return MultipleElementStateUpdater(
             recordUpdater: StorageServiceGroupV2RecordUpdater(
+                authedAccount: authedAccount,
                 blockingManager: blockingManager,
                 groupsV2: groupsV2Swift,
                 profileManager: profileManager

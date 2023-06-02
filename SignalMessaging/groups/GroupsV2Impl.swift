@@ -39,7 +39,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
         }
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            Self.enqueueRestoreGroupPass()
+            Self.enqueueRestoreGroupPass(account: .implicit())
         }
 
         observeNotifications()
@@ -115,7 +115,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         AssertIsOnMainThread()
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            GroupsV2Impl.enqueueRestoreGroupPass()
+            GroupsV2Impl.enqueueRestoreGroupPass(account: .implicit())
         }
     }
 
@@ -123,7 +123,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
     private func reachabilityChanged() {
         AssertIsOnMainThread()
 
-        GroupsV2Impl.enqueueRestoreGroupPass()
+        GroupsV2Impl.enqueueRestoreGroupPass(account: .implicit())
     }
 
     // MARK: - Create Group
@@ -1657,9 +1657,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     public func restoreGroupFromStorageServiceIfNecessary(
         groupRecord: StorageServiceProtoGroupV2Record,
+        account: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     ) {
-        GroupsV2Impl.enqueueGroupRestore(groupRecord: groupRecord, transaction: transaction)
+        GroupsV2Impl.enqueueGroupRestore(groupRecord: groupRecord, account: account, transaction: transaction)
     }
 
     // MARK: - Groups Secrets

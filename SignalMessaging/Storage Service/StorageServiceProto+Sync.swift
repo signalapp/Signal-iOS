@@ -769,15 +769,18 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
     typealias IdType = Data
     typealias RecordType = StorageServiceProtoGroupV2Record
 
+    private let authedAccount: AuthedAccount
     private let blockingManager: BlockingManager
     private let groupsV2: GroupsV2Swift
     private let profileManager: ProfileManagerProtocol
 
     init(
+        authedAccount: AuthedAccount,
         blockingManager: BlockingManager,
         groupsV2: GroupsV2Swift,
         profileManager: ProfileManagerProtocol
     ) {
+        self.authedAccount = authedAccount
         self.blockingManager = blockingManager
         self.groupsV2 = groupsV2
         self.profileManager = profileManager
@@ -882,7 +885,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
                 needsUpdate = true
             }
         } else {
-            groupsV2.restoreGroupFromStorageServiceIfNecessary(groupRecord: record, transaction: transaction)
+            groupsV2.restoreGroupFromStorageServiceIfNecessary(groupRecord: record, account: authedAccount, transaction: transaction)
         }
 
         // Gather some local contact state to do comparisons against.

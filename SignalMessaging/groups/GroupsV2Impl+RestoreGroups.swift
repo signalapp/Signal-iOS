@@ -57,6 +57,7 @@ public extension GroupsV2Impl {
 
     static func enqueueGroupRestore(
         groupRecord: StorageServiceProtoGroupV2Record,
+        account: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     ) {
 
@@ -88,7 +89,7 @@ public extension GroupsV2Impl {
         groupsFromStorageService_EnqueuedRecordForRestore.setData(serializedData, key: key, transaction: transaction)
 
         transaction.addAsyncCompletionOffMain {
-            self.enqueueRestoreGroupPass()
+            self.enqueueRestoreGroupPass(account: account)
         }
     }
 
@@ -96,7 +97,7 @@ public extension GroupsV2Impl {
         return masterKeyData.hexadecimalString
     }
 
-    private static var canProcessGroupRestore: Bool {
+    private static func canProcessGroupRestore(account: AuthedAccount) -> Bool {
         // CurrentAppContext().isMainAppAndActive should
         // only be called on the main thread.
         guard CurrentAppContext().isMainApp,
@@ -106,17 +107,22 @@ public extension GroupsV2Impl {
         guard reachabilityManager.isReachable else {
             return false
         }
-        guard tsAccountManager.isRegisteredAndReady else {
-            return false
+        switch account.info {
+        case .explicit:
+            break
+        case .implicit:
+            guard tsAccountManager.isRegisteredAndReady else {
+                return false
+            }
         }
         return true
     }
 
-    static func enqueueRestoreGroupPass() {
-        guard canProcessGroupRestore else {
+    static func enqueueRestoreGroupPass(account: AuthedAccount) {
+        guard canProcessGroupRestore(account: account) else {
             return
         }
-        let operation = RestoreGroupOperation()
+        let operation = RestoreGroupOperation(account: account)
         GroupsV2Impl.restoreGroupsOperationQueue.addOperation(operation)
     }
 
@@ -153,8 +159,8 @@ public extension GroupsV2Impl {
     // Every invocation of this method should remove (up to) one group from the queue.
     //
     // This method should only be called on restoreGroupsOperationQueue.
-    private static func tryToRestoreNextGroup() -> Promise<RestoreGroupOutcome> {
-        guard canProcessGroupRestore else {
+    private static func tryToRestoreNextGroup(account: AuthedAccount) -> Promise<RestoreGroupOutcome> {
+        guard canProcessGroupRestore(account: account) else {
             return Promise.value(.cantProcess)
         }
         return Promise<RestoreGroupOutcome> { future in
@@ -188,6 +194,7 @@ public extension GroupsV2Impl {
                         // Now that the thread exists, re-apply the pending group record from storage service.
                         if let groupRecord {
                             let recordUpdater = StorageServiceGroupV2RecordUpdater(
+                                authedAccount: account,
                                 blockingManager: blockingManager,
                                 groupsV2: groupsV2Swift,
                                 profileManager: profileManager
@@ -252,20 +259,23 @@ public extension GroupsV2Impl {
 
     private class RestoreGroupOperation: OWSOperation {
 
-        required override init() {
+        private let account: AuthedAccount
+
+        required init(account: AuthedAccount) {
+            self.account = account
             super.init()
         }
 
         public override func run() {
-            firstly {
-                GroupsV2Impl.tryToRestoreNextGroup()
-            }.done(on: DispatchQueue.global()) { outcome in
+            firstly { [account] in
+                GroupsV2Impl.tryToRestoreNextGroup(account: account)
+            }.done(on: DispatchQueue.global()) { [account] outcome in
                 Logger.verbose("Group restore complete.")
 
                 switch outcome {
                 case .success, .unretryableFailure:
                     // Continue draining queue.
-                    GroupsV2Impl.enqueueRestoreGroupPass()
+                    GroupsV2Impl.enqueueRestoreGroupPass(account: account)
                 case .retryableFailure:
                     // Pause processing for now.
                     // Presumably network failures are preventing restores.
