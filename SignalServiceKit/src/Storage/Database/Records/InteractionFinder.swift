@@ -19,6 +19,8 @@ protocol InteractionFinderAdapter {
 
     static func fetch(uniqueId: String, transaction: ReadTransaction) throws -> TSInteraction?
 
+    static func fetch(rowId: Int64, transaction: ReadTransaction) throws -> TSInteraction?
+
     static func existsIncomingMessage(timestamp: UInt64, sourceServiceId: ServiceId, sourceDeviceId: UInt32, transaction: ReadTransaction) -> Bool
 
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
@@ -106,6 +108,13 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             return try GRDBInteractionFinder.fetch(uniqueId: uniqueId, transaction: grdbRead)
+        }
+    }
+
+    public class func fetch(rowId: Int64, transaction: SDSAnyReadTransaction) throws -> TSInteraction? {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdbRead):
+            return try GRDBInteractionFinder.fetch(rowId: rowId, transaction: grdbRead)
         }
     }
 
@@ -250,35 +259,6 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
                 storyTimestamp: storyTimestamp,
                 transaction: grdbRead
             )
-        }
-    }
-
-    public class func findEditHistory(
-        for message: TSMessage,
-        transaction: SDSAnyReadTransaction
-    ) -> SDSMappedCursor<TSInteractionCursor, TSMessage> {
-
-        let sql = """
-                SELECT * FROM \(InteractionRecord.databaseTableName) AS interaction
-                LEFT JOIN \(EditRecord.databaseTableName) AS editRecord
-                ON interaction.\(interactionColumn: .id) = editRecord.pastRevisionId
-                WHERE editRecord.latestRevisionId = ?
-                ORDER BY \(interactionColumn: .id) DESC
-            """
-        let arguments: StatementArguments = [message.grdbId]
-
-        let cursor = TSInteraction.grdbFetchCursor(
-            sql: sql,
-            arguments: arguments,
-            transaction: transaction.unwrapGrdbRead
-        )
-
-        return cursor.compactMap { interaction -> TSMessage? in
-            guard let message = interaction as? TSMessage else {
-                owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
-                return nil
-            }
-            return message
         }
     }
 
@@ -692,6 +672,19 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
 
     static func fetch(uniqueId: String, transaction: GRDBReadTransaction) throws -> TSInteraction? {
         return TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead)
+    }
+
+    static func fetch(rowId: Int64, transaction: GRDBReadTransaction) throws -> TSInteraction? {
+        let arguments: StatementArguments = [ rowId ]
+        return TSInteraction.grdbFetchOne(
+            sql: """
+                SELECT *
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .id) = ?
+            """,
+            arguments: arguments,
+            transaction: transaction
+        )
     }
 
     static func existsIncomingMessage(timestamp: UInt64, sourceServiceId: ServiceId, sourceDeviceId: UInt32, transaction: GRDBReadTransaction) -> Bool {

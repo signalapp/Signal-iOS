@@ -92,4 +92,35 @@ public class EditMessageFinder {
         }
     }
 
+    public class func findEditHistory(
+        for message: TSMessage,
+        transaction: SDSAnyReadTransaction
+    ) throws -> [(EditRecord, TSMessage?)] {
+
+        let recordSQL = """
+            SELECT * FROM \(EditRecord.databaseTableName)
+            WHERE latestRevisionId = ?
+            ORDER BY pastRevisionId DESC
+        """
+
+        let arguments: StatementArguments = [message.grdbId]
+
+        let records = try EditRecord.fetchAll(
+            transaction.unwrapGrdbRead.database,
+            sql: recordSQL,
+            arguments: arguments
+        )
+
+        return try records.map { record -> (EditRecord, TSMessage?) in
+            let interaction = try InteractionFinder.fetch(
+                rowId: record.pastRevisionId,
+                transaction: transaction
+            )
+            guard let message = interaction as? TSMessage else {
+                owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
+                return (record, nil)
+            }
+            return (record, message)
+        }
+    }
 }

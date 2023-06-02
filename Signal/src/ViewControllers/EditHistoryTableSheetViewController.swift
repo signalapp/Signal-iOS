@@ -42,10 +42,10 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
     private func loadEditHistory(message: TSMessage, database: SDSDatabaseStorage) throws {
         try database.read { tx in
-            var cursor = InteractionFinder.findEditHistory(
+            let edits = try EditMessageFinder.findEditHistory(
                 for: message,
                 transaction: tx
-            )
+            ).compactMap { $1 }
 
             guard let thread = TSThread.anyFetch(
                 uniqueId: message.uniqueThreadId,
@@ -67,7 +67,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
                 tx: tx)
 
             var renderItems = [CVRenderItem]()
-            while let edit = try cursor.next() {
+            for edit in edits {
                 if let item = buildRenderItem(
                     thread: thread,
                     threadAssociatedData: threadAssociatedData,

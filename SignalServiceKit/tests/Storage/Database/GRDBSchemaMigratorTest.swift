@@ -160,4 +160,108 @@ class GRDBSchemaMigratorTest: XCTestCase {
         XCTAssertEqual(rows[2]["key"], "00000000-0000-4000-8000-000000000001")
         XCTAssertEqual(rows[2]["value"], #"{"author":{"backingUuid":"00000000-0000-4000-8000-00000000000A","backingPhoneNumber":null},"timestamp":1683201600000}"#)
     }
+
+    func testMigrateEditRecords() throws {
+        let tableName = EditRecord.databaseTableName
+        let tempTableName = "\(EditRecord.databaseTableName)_temp"
+        let databaseQueue = DatabaseQueue()
+        let initialValues: [(Int64, Int64, Int64)] = [
+            (0, 0, 1),
+            (1, 0, 2),
+            (2, 3, 4),
+            (3, 4, 5),
+            (4, 6, 7),
+            (5, 6, 8)
+        ]
+        try setupEditRecordMigrationTables(
+            databaseQueue: databaseQueue,
+            initialRecords: initialValues,
+            initialInteractionIds: Array(0...8)
+        )
+
+        try databaseQueue.write { db in
+            let tx = GRDBWriteTransaction(database: db)
+            defer { tx.finalizeTransaction() }
+            try GRDBSchemaMigrator.migrateEditRecordTable(tx: tx)
+        }
+        let exists = checkTableExists(tableName: tableName, databaseQueue: databaseQueue)
+        let tempExists = checkTableExists(tableName: tempTableName, databaseQueue: databaseQueue)
+        let count = try databaseQueue.read({ db in
+            try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM \(tableName)")
+        })
+
+        XCTAssertTrue(exists)
+        XCTAssertFalse(tempExists)
+        XCTAssertEqual(count, initialValues.count)
+    }
+
+    func testMigrateEditRecordsEmptyExisting() throws {
+        let tableName = EditRecord.databaseTableName
+        let tempTableName = "\(EditRecord.databaseTableName)_temp"
+        let databaseQueue = DatabaseQueue()
+        try setupEditRecordMigrationTables(
+            databaseQueue: databaseQueue,
+            initialRecords: [],
+            initialInteractionIds: Array(0...8)
+        )
+
+        try databaseQueue.write { db in
+            let tx = GRDBWriteTransaction(database: db)
+            defer { tx.finalizeTransaction() }
+            try GRDBSchemaMigrator.migrateEditRecordTable(tx: tx)
+        }
+        let exists = checkTableExists(tableName: tableName, databaseQueue: databaseQueue)
+        let tempExists = checkTableExists(tableName: tempTableName, databaseQueue: databaseQueue)
+
+        XCTAssertTrue(exists)
+        XCTAssertFalse(tempExists)
+    }
+}
+
+extension GRDBSchemaMigratorTest {
+    fileprivate func checkTableExists(tableName: String, databaseQueue: DatabaseQueue) -> Bool {
+        do {
+            try databaseQueue.read({ db in
+                try db.execute(sql: "SELECT EXISTS (SELECT 1 FROM \(tableName));")
+            })
+            return true
+        } catch {
+            return false
+        }
+
+    }
+
+    fileprivate func setupEditRecordMigrationTables(
+        databaseQueue: DatabaseQueue,
+        initialRecords: [(Int64, Int64, Int64)],
+        initialInteractionIds: [Int64]
+    ) throws {
+        try databaseQueue.write { db in
+            try db.execute(
+                sql: """
+                    CREATE TABLE model_TSInteraction (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+                    );
+                """
+            )
+
+            for x in initialInteractionIds {
+                try db.execute(
+                    sql: "INSERT INTO model_TSInteraction (id) VALUES (?)",
+                    arguments: [x]
+                )
+            }
+
+            let tx = GRDBWriteTransaction(database: db)
+            try GRDBSchemaMigrator.createEditRecordTable(tx: tx)
+            tx.finalizeTransaction()
+
+            for (id, latest, past) in initialRecords {
+                try db.execute(
+                    sql: "INSERT INTO EditRecord (id, latestRevisionId, pastRevisionId) VALUES (?, ?, ?)",
+                    arguments: [id, latest, past]
+                )
+            }
+        }
+    }
 }

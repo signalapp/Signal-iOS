@@ -227,6 +227,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addEditMessageChanges
         case threadReplyInfoServiceIds
         case updateEditMessageUnreadIndex
+        case updateEditRecordTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2235,38 +2236,7 @@ public class GRDBSchemaMigrator: NSObject {
                 table.add(column: "editState", .integer).defaults(to: 0)
             }
 
-            try transaction.database.create(
-                table: "EditRecord"
-            ) { table in
-                table.autoIncrementedPrimaryKey("id")
-                    .notNull()
-                table.column("latestRevisionId", .text)
-                    .notNull()
-                    .references(
-                        "model_TSInteraction",
-                        column: "id",
-                        onDelete: .cascade
-                    )
-                table.column("pastRevisionId", .text)
-                    .notNull()
-                    .references(
-                        "model_TSInteraction",
-                        column: "id",
-                        onDelete: .cascade
-                    )
-            }
-
-            try transaction.database.create(
-                index: "index_edit_record_on_latest_revision_id",
-                on: "EditRecord",
-                columns: ["latestRevisionId"]
-            )
-
-            try transaction.database.create(
-                index: "index_edit_record_on_past_revision_id",
-                on: "EditRecord",
-                columns: ["pastRevisionId"]
-            )
+            try Self.createEditRecordTable(tx: transaction)
 
             return .success(())
         }
@@ -2295,7 +2265,11 @@ public class GRDBSchemaMigrator: NSObject {
                     "read", "uniqueThreadId", "id", "isGroupStoryReply", "editState", "recordType"
                 ]
             )
+            return .success(())
+        }
 
+        migrator.registerMigration(.updateEditRecordTable) { tx in
+            try Self.migrateEditRecordTable(tx: tx)
             return .success(())
         }
 
@@ -2801,6 +2775,97 @@ public class GRDBSchemaMigrator: NSObject {
                 ]
             )
         }
+    }
+
+    internal static func createEditRecordTable(tx: GRDBWriteTransaction) throws {
+        try tx.database.create(
+            table: "EditRecord"
+        ) { table in
+            table.autoIncrementedPrimaryKey("id")
+                .notNull()
+            table.column("latestRevisionId", .text)
+                .notNull()
+                .references(
+                    "model_TSInteraction",
+                    column: "id",
+                    onDelete: .cascade
+                )
+            table.column("pastRevisionId", .text)
+                .notNull()
+                .references(
+                    "model_TSInteraction",
+                    column: "id",
+                    onDelete: .cascade
+                )
+        }
+
+        try tx.database.create(
+            index: "index_edit_record_on_latest_revision_id",
+            on: "EditRecord",
+            columns: ["latestRevisionId"]
+        )
+
+        try tx.database.create(
+            index: "index_edit_record_on_past_revision_id",
+            on: "EditRecord",
+            columns: ["pastRevisionId"]
+        )
+    }
+
+    internal static func migrateEditRecordTable(tx: GRDBWriteTransaction) throws {
+        let finalTableName = EditRecord.databaseTableName
+        let tempTableName = "\(finalTableName)_temp"
+
+        // Create a temporary EditRecord with correct constraints/types
+        try tx.database.create(
+            table: tempTableName
+        ) { table in
+            table.autoIncrementedPrimaryKey("id")
+                .notNull()
+            table.column("latestRevisionId", .integer)
+                .notNull()
+                .references(
+                    "model_TSInteraction",
+                    column: "id",
+                    onDelete: .restrict
+                )
+            table.column("pastRevisionId", .integer)
+                .notNull()
+                .references(
+                    "model_TSInteraction",
+                    column: "id",
+                    onDelete: .restrict
+                )
+        }
+
+        // Migrate edit records from old table to new
+        try tx.database.execute(sql: """
+            INSERT INTO \(tempTableName)
+                (id, latestRevisionId, pastRevisionId)
+                SELECT id, latestRevisionId, pastRevisionId
+                FROM \(finalTableName);
+            """)
+
+        // Remove the old Edit record table & indexes
+        try tx.database.execute(sql: "DROP TABLE IF EXISTS \(finalTableName);")
+        try tx.database.execute(sql: "DROP INDEX IF EXISTS index_edit_record_on_latest_revision_id;")
+        try tx.database.execute(sql: "DROP INDEX IF EXISTS index_edit_record_on_past_revision_id;")
+
+        // Rename the new table to the correct name
+        try tx.database.execute(sql: "ALTER TABLE \(tempTableName) RENAME TO \(finalTableName);")
+
+        // Rebuild the indexes
+        try tx.database.create(
+            index: "index_edit_record_on_latest_revision_id",
+            on: "\(finalTableName)",
+            columns: ["latestRevisionId"]
+        )
+
+        try tx.database.create(
+            index: "index_edit_record_on_past_revision_id",
+            on: "\(finalTableName)",
+            columns: ["pastRevisionId"]
+        )
     }
 }
 

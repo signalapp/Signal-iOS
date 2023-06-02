@@ -1435,11 +1435,11 @@ CREATE
             ,"latestRevisionId" INTEGER NOT NULL REFERENCES "model_TSInteraction"("id"
         )
             ON DELETE
-                CASCADE
+                RESTRICT
             ,"pastRevisionId" INTEGER NOT NULL REFERENCES "model_TSInteraction"("id"
         )
             ON DELETE
-                CASCADE
+                RESTRICT
 )
 ;
 

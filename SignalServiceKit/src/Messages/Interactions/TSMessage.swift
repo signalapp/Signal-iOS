@@ -14,6 +14,15 @@ public extension TSMessage {
     @objc
     var isOutgoing: Bool { self as? TSOutgoingMessage != nil }
 
+    // MARK: - Any Transaction Hooks
+
+    // Override anyWillRemove to ensure any associated edits are deleted before
+    // removing the interaction
+    override func anyWillRemove(with transaction: SDSAnyWriteTransaction) {
+        removeEdits(transaction: transaction)
+        super.anyWillRemove(with: transaction)
+    }
+
     // MARK: - Attachments
 
     func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
@@ -134,6 +143,40 @@ public extension TSMessage {
         Self.notificationsManager?.cancelNotifications(reactionId: reaction.uniqueId)
     }
 
+    // MARK: - Edits
+
+    @objc
+    func removeEdits(transaction: SDSAnyWriteTransaction) {
+        try! processEdits(transaction: transaction) { record, message in
+            try record.delete(transaction.unwrapGrdbWrite.database)
+            message?.anyRemove(transaction: transaction)
+        }
+    }
+
+    /// Build a list of all related edits based on this message.  An array of record, message pairs are
+    /// returned, allowing the caller to operate on one or both of these items at the same time.
+    ///
+    /// The processing of edit records is unbounded, but the number of edits per message
+    /// is limited by both the sender and receiver.
+    private func processEdits(
+        transaction: SDSAnyWriteTransaction,
+        block: ((EditRecord, TSMessage?) throws -> Void)
+    ) throws {
+        switch editState {
+        case .latestRevision:
+            let editHistory = try EditMessageFinder.findEditHistory(
+                for: self,
+                transaction: transaction
+            )
+
+            for edit in editHistory {
+                try block(edit.0, edit.1)
+            }
+        case .none, .pastRevision:
+            break
+        }
+    }
+
     // MARK: - Remote Delete
 
     // A message can be remotely deleted iff:
@@ -236,25 +279,9 @@ public extension TSMessage {
         updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
 
         // Delete any past edit revisions.
-        // The below processing is unbounded, but the number of edits
-        // per message are limited by both the sender and receiver.
-        switch editState {
-        case .latestRevision:
-            var cursor = InteractionFinder.findEditHistory(
-                for: self,
-                transaction: transaction
-            )
-            do {
-                while let message = try cursor.next() {
-                    message.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
-                }
-            } catch {
-                Logger.warn("Error deleting edits for \(self.uniqueId)")
-            }
-        case .none, .pastRevision:
-            break
+        try! processEdits(transaction: transaction) { record, message in
+            message?.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
         }
-
         Self.notificationsManager?.cancelNotifications(messageIds: [self.uniqueId])
     }
 
