@@ -347,7 +347,15 @@ public class StoryFinder: NSObject {
                 )
             )
         """
-        return try! Bool.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? false
+        do {
+            return try Bool.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? false
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Fetch failed")
+        }
     }
 }
 

@@ -384,6 +384,10 @@ public extension OWSBackupFragment {
             let cursor = try BackupFragmentRecord.fetchCursor(database)
             return OWSBackupFragmentCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Read failed: \(error)")
             return OWSBackupFragmentCursor(transaction: transaction, cursor: nil)
         }
@@ -544,7 +548,15 @@ public extension OWSBackupFragment {
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(BackupFragmentRecord.databaseTableName) WHERE \(backupFragmentColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]
-            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            do {
+                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            } catch {
+                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                    userDefaults: CurrentAppContext().appUserDefaults(),
+                    error: error
+                )
+                owsFail("Missing instance.")
+            }
         }
     }
 }
@@ -560,6 +572,10 @@ public extension OWSBackupFragment {
             let cursor = try BackupFragmentRecord.fetchCursor(transaction.database, sqlRequest)
             return OWSBackupFragmentCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return OWSBackupFragmentCursor(transaction: transaction, cursor: nil)

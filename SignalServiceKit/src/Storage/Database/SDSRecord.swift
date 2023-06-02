@@ -124,6 +124,10 @@ extension BaseModel {
             }
             return value
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Could not find grdb id: \(error)")
             return nil
         }

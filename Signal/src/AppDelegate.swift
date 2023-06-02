@@ -14,6 +14,7 @@ enum LaunchPreflightError {
     case databaseUnrecoverablyCorrupted
     case lastAppLaunchCrashed
     case lowStorageSpaceAvailable
+    case possibleReadCorruptionCrashed
 
     var supportTag: String {
         switch self {
@@ -29,6 +30,8 @@ enum LaunchPreflightError {
             return "LaunchFailure_LastAppLaunchCrashed"
         case .lowStorageSpaceAvailable:
             return "LaunchFailure_NoDiskSpaceAvailable"
+        case .possibleReadCorruptionCrashed:
+            return "LaunchFailure_PossibleReadCorruption"
         }
     }
 }
@@ -496,7 +499,7 @@ extension AppDelegate {
 
         let databaseCorruptionState = DatabaseCorruptionState(userDefaults: userDefaults)
         switch databaseCorruptionState.status {
-        case .notCorrupted:
+        case .notCorrupted, .readCorrupted:
             break
         case .corrupted, .corruptedButAlreadyDumpedAndRestored:
             guard !UIDevice.current.isIPad else {
@@ -515,6 +518,9 @@ extension AppDelegate {
             appVersion.lastAppVersion == appVersion.currentAppReleaseVersion,
             userDefaults.integer(forKey: kAppLaunchesAttemptedKey) >= launchAttemptFailureThreshold
         {
+            if case .readCorrupted = databaseCorruptionState.status {
+                return .possibleReadCorruptionCrashed
+            }
             return .lastAppLaunchCrashed
         }
 
@@ -538,7 +544,7 @@ extension AppDelegate {
         let actions: [LaunchFailureActionSheetAction]
 
         switch preflightError {
-        case .databaseCorruptedAndMightBeRecoverable:
+        case .databaseCorruptedAndMightBeRecoverable, .possibleReadCorruptionCrashed:
             presentDatabaseRecovery(
                 from: viewController,
                 appContext: appContext,

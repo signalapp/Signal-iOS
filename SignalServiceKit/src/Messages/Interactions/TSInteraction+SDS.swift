@@ -4863,6 +4863,10 @@ public extension TSInteraction {
             let cursor = try InteractionRecord.fetchCursor(database)
             return TSInteractionCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Read failed: \(error)")
             return TSInteractionCursor(transaction: transaction, cursor: nil)
         }
@@ -5037,7 +5041,15 @@ public extension TSInteraction {
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(InteractionRecord.databaseTableName) WHERE \(interactionColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]
-            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            do {
+                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            } catch {
+                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                    userDefaults: CurrentAppContext().appUserDefaults(),
+                    error: error
+                )
+                owsFail("Missing instance.")
+            }
         }
     }
 }
@@ -5053,6 +5065,10 @@ public extension TSInteraction {
             let cursor = try InteractionRecord.fetchCursor(transaction.database, sqlRequest)
             return TSInteractionCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return TSInteractionCursor(transaction: transaction, cursor: nil)

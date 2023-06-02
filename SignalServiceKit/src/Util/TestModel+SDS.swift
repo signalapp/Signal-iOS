@@ -412,6 +412,10 @@ public extension TestModel {
             let cursor = try TestModelRecord.fetchCursor(database)
             return TestModelCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Read failed: \(error)")
             return TestModelCursor(transaction: transaction, cursor: nil)
         }
@@ -572,7 +576,15 @@ public extension TestModel {
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(TestModelRecord.databaseTableName) WHERE \(testModelColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]
-            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            do {
+                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            } catch {
+                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                    userDefaults: CurrentAppContext().appUserDefaults(),
+                    error: error
+                )
+                owsFail("Missing instance.")
+            }
         }
     }
 }
@@ -588,6 +600,10 @@ public extension TestModel {
             let cursor = try TestModelRecord.fetchCursor(transaction.database, sqlRequest)
             return TestModelCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return TestModelCursor(transaction: transaction, cursor: nil)

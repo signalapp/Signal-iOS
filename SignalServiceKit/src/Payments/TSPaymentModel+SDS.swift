@@ -473,6 +473,10 @@ public extension TSPaymentModel {
             let cursor = try PaymentModelRecord.fetchCursor(database)
             return TSPaymentModelCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Read failed: \(error)")
             return TSPaymentModelCursor(transaction: transaction, cursor: nil)
         }
@@ -633,7 +637,15 @@ public extension TSPaymentModel {
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(PaymentModelRecord.databaseTableName) WHERE \(paymentModelColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]
-            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            do {
+                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            } catch {
+                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                    userDefaults: CurrentAppContext().appUserDefaults(),
+                    error: error
+                )
+                owsFail("Missing instance.")
+            }
         }
     }
 }
@@ -649,6 +661,10 @@ public extension TSPaymentModel {
             let cursor = try PaymentModelRecord.fetchCursor(transaction.database, sqlRequest)
             return TSPaymentModelCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return TSPaymentModelCursor(transaction: transaction, cursor: nil)

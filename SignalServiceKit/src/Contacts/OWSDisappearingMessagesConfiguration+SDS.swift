@@ -348,6 +348,10 @@ public extension OWSDisappearingMessagesConfiguration {
             let cursor = try DisappearingMessagesConfigurationRecord.fetchCursor(database)
             return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Read failed: \(error)")
             return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: nil)
         }
@@ -508,7 +512,15 @@ public extension OWSDisappearingMessagesConfiguration {
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(DisappearingMessagesConfigurationRecord.databaseTableName) WHERE \(disappearingMessagesConfigurationColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]
-            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            do {
+                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            } catch {
+                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                    userDefaults: CurrentAppContext().appUserDefaults(),
+                    error: error
+                )
+                owsFail("Missing instance.")
+            }
         }
     }
 }
@@ -524,6 +536,10 @@ public extension OWSDisappearingMessagesConfiguration {
             let cursor = try DisappearingMessagesConfigurationRecord.fetchCursor(transaction.database, sqlRequest)
             return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: nil)

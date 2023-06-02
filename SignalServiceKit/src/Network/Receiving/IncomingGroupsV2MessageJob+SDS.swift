@@ -385,6 +385,10 @@ public extension IncomingGroupsV2MessageJob {
             let cursor = try IncomingGroupsV2MessageJobRecord.fetchCursor(database)
             return IncomingGroupsV2MessageJobCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Read failed: \(error)")
             return IncomingGroupsV2MessageJobCursor(transaction: transaction, cursor: nil)
         }
@@ -545,7 +549,15 @@ public extension IncomingGroupsV2MessageJob {
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName) WHERE \(incomingGroupsV2MessageJobColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]
-            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            do {
+                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            } catch {
+                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                    userDefaults: CurrentAppContext().appUserDefaults(),
+                    error: error
+                )
+                owsFail("Missing instance.")
+            }
         }
     }
 }
@@ -561,6 +573,10 @@ public extension IncomingGroupsV2MessageJob {
             let cursor = try IncomingGroupsV2MessageJobRecord.fetchCursor(transaction.database, sqlRequest)
             return IncomingGroupsV2MessageJobCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return IncomingGroupsV2MessageJobCursor(transaction: transaction, cursor: nil)

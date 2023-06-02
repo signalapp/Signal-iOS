@@ -240,7 +240,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         switch DatabaseCorruptionState(userDefaults: userDefaults).status {
         case .notCorrupted:
             owsFail("Database was not corrupted! Why are we on this screen?")
-        case .corrupted:
+        case .corrupted, .readCorrupted:
             promise = firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Bool> in
                 progress.performAsCurrent(withPendingUnitCount: 1) {
                     DatabaseRecovery.rebuildExistingDatabase(at: self.databaseFileUrl)

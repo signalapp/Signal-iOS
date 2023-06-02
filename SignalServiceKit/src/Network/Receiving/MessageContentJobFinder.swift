@@ -80,7 +80,15 @@ class GRDBMessageContentJobFinder: MessageContentJobFinder {
         let cursor = OWSMessageContentJob.grdbFetchCursor(sql: sql,
                                                           transaction: transaction)
 
-        return try! cursor.all()
+        do {
+            return try cursor.all()
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to fetch next batch")
+        }
     }
 
     func allJobs(transaction: GRDBReadTransaction) -> [OWSMessageContentJob] {
@@ -92,7 +100,15 @@ class GRDBMessageContentJobFinder: MessageContentJobFinder {
         let cursor = OWSMessageContentJob.grdbFetchCursor(sql: sql,
                                                           transaction: transaction)
 
-        return try! cursor.all()
+        do {
+            return try cursor.all()
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to fetch all jobs")
+        }
     }
 
     func removeJobs(withUniqueIds uniqueIds: [String], transaction: GRDBWriteTransaction) {

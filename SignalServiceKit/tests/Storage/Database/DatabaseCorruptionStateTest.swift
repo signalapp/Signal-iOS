@@ -22,6 +22,10 @@ class DatabaseCorruptionStateTest: XCTestCase {
         // Initial state
         XCTAssertEqual(fetch(), expected(.notCorrupted, count: 0))
 
+        // After flagging as read corrupted
+        DatabaseCorruptionState.flagDatabaseAsReadCorrupted(userDefaults: defaults)
+        XCTAssertEqual(fetch(), expected(.readCorrupted, count: 0))
+
         // After flagging as corrupted
         DatabaseCorruptionState.flagDatabaseAsCorrupted(userDefaults: defaults)
         XCTAssertEqual(fetch(), expected(.corrupted, count: 1))
@@ -36,6 +40,10 @@ class DatabaseCorruptionStateTest: XCTestCase {
 
         // After another corruption
         DatabaseCorruptionState.flagDatabaseAsCorrupted(userDefaults: defaults)
+        XCTAssertEqual(fetch(), expected(.corrupted, count: 2))
+
+        // Read corruption shouldn't change state after a corruption
+        DatabaseCorruptionState.flagDatabaseAsReadCorrupted(userDefaults: defaults)
         XCTAssertEqual(fetch(), expected(.corrupted, count: 2))
     }
 

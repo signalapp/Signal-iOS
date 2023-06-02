@@ -15,7 +15,15 @@ public class DonationReceiptFinder {
                 LIMIT 1
             )
         """
-        return try! Bool.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? false
+        do {
+            return try Bool.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? false
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to find donation receipt")
+        }
     }
 
     public static func fetchAllInReverseDateOrder(transaction: SDSAnyReadTransaction) -> [DonationReceipt] {
@@ -27,8 +35,11 @@ public class DonationReceiptFinder {
         do {
             return try DonationReceipt.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
         } catch {
-            owsFailDebug("Failed to fetch donation receipts \(error)")
-            return []
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to fetch donation receipts \(error)")
         }
     }
 }

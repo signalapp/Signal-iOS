@@ -148,8 +148,17 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
             """
 
-        try ThreadRecord.fetchCursor(transaction.database, sql: sql).forEach { threadRecord in
-            block(try TSThread.fromRecord(threadRecord))
+        do {
+            try ThreadRecord.fetchCursor(transaction.database, sql: sql).forEach { threadRecord in
+                block(try TSThread.fromRecord(threadRecord))
+            }
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            // rethrow the error after marking database
+            throw error
         }
     }
 
@@ -298,7 +307,15 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         )
         """
         let arguments: StatementArguments = [SDSRecordType.groupThread.rawValue]
-        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        do {
+            return try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to find group thread")
+        }
     }
 
     public func storyThreads(includeImplicitGroupThreads: Bool, transaction: GRDBReadTransaction) -> [TSThread] {

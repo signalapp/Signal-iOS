@@ -12,10 +12,11 @@ public class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertibl
         case notCorrupted = 0
         case corrupted = 1
         case corruptedButAlreadyDumpedAndRestored = 2
+        case readCorrupted = 3
 
         public var isCorrupted: Bool {
             switch self {
-            case .notCorrupted: return false
+            case .notCorrupted, .readCorrupted: return false
             case .corrupted, .corruptedButAlreadyDumpedAndRestored: return true
             }
         }
@@ -24,6 +25,8 @@ public class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertibl
             switch self {
             case .notCorrupted:
                 return "not corrupted"
+            case .readCorrupted:
+                return "read corrupted"
             case .corrupted:
                 return "corrupted"
             case .corruptedButAlreadyDumpedAndRestored:
@@ -84,12 +87,36 @@ public class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertibl
         }
     }
 
+    /// If the error is a `SQLITE_CORRUPT` error, set the "has database read corruption" flag, log, but don't crash.
+    /// We do this so we can attempt to perform diagnostics/recovery if this read error is coupled with a crash..
+    public static func flagDatabaseReadCorruptionIfNecessary(
+        userDefaults: UserDefaults,
+        error: Error,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
+            flagDatabaseAsReadCorrupted(userDefaults: userDefaults)
+        }
+    }
+
     public static func flagDatabaseAsCorrupted(userDefaults: UserDefaults) {
         let oldState = DatabaseCorruptionState(userDefaults: userDefaults)
         switch oldState.status {
-        case .notCorrupted:
+        case .notCorrupted, .readCorrupted:
             Self(status: .corrupted, count: oldState.count + 1).save(to: userDefaults)
         case .corrupted, .corruptedButAlreadyDumpedAndRestored:
+            return
+        }
+    }
+
+    public static func flagDatabaseAsReadCorrupted(userDefaults: UserDefaults) {
+        let oldState = DatabaseCorruptionState(userDefaults: userDefaults)
+        switch oldState.status {
+        case .notCorrupted:
+            Self(status: .readCorrupted, count: oldState.count).save(to: userDefaults)
+        case .corrupted, .readCorrupted, .corruptedButAlreadyDumpedAndRestored:
             return
         }
     }
@@ -97,7 +124,7 @@ public class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertibl
     public static func flagCorruptedDatabaseAsDumpedAndRestored(userDefaults: UserDefaults) {
         let oldState = DatabaseCorruptionState(userDefaults: userDefaults)
         switch oldState.status {
-        case .corrupted:
+        case .corrupted, .readCorrupted:
             DatabaseCorruptionState(status: .corruptedButAlreadyDumpedAndRestored, count: oldState.count).save(to: userDefaults)
         case .notCorrupted, .corruptedButAlreadyDumpedAndRestored:
             owsFailDebug("Flagging database as partially recovered, but it was not in the right state previously")
@@ -109,7 +136,7 @@ public class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertibl
         switch oldState.status {
         case .notCorrupted:
             owsFailDebug("Flagging database as recovered from corruption, but it wasn't marked corrupted")
-        case .corrupted, .corruptedButAlreadyDumpedAndRestored:
+        case .corrupted, .readCorrupted, .corruptedButAlreadyDumpedAndRestored:
             Self(status: .notCorrupted, count: oldState.count).save(to: userDefaults)
         }
     }

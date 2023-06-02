@@ -129,7 +129,15 @@ private class SendGiftBadgeJobFinder {
                 SendGiftBadgeJobRecord.Status.permanentlyFailed.rawValue,
                 SendGiftBadgeJobRecord.Status.obsolete.rawValue
             ]
-            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            do {
+                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            } catch {
+                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                    userDefaults: CurrentAppContext().appUserDefaults(),
+                    error: error
+                )
+                owsFail("Unable to find job")
+            }
         }
     }
 }

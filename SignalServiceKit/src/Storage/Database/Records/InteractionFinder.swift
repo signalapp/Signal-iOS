@@ -713,7 +713,15 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             SignalServiceAddress(sourceServiceId).phoneNumber,
             sourceDeviceId
         ]
-        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        do {
+            return try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to find incoming message")
+        }
     }
 
     static func interactions(withTimestamp timestamp: UInt64, filter: (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
@@ -766,7 +774,15 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         )
         """
         let arguments: StatementArguments = [thread.uniqueId, eraId]
-        return try! Bool.fetchOne(transaction.unwrapGrdbRead.database, sql: sql, arguments: arguments) ?? false
+        do {
+            return try Bool.fetchOne(transaction.unwrapGrdbRead.database, sql: sql, arguments: arguments) ?? false
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to find group call")
+        }
     }
 
     public static func unendedCallsForGroupThread(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> [OWSGroupCallMessage] {
@@ -1375,7 +1391,15 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         )
         """
         let arguments: StatementArguments = [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]
-        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        do {
+            return try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to find outgoing message")
+        }
     }
 
     func hasGroupUpdateInfoMessage(transaction: GRDBReadTransaction) -> Bool {
@@ -1390,7 +1414,15 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         )
         """
         let arguments: StatementArguments = [threadUniqueId]
-        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)!
+        do {
+            return try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)!
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to find info message")
+        }
     }
 
     func hasUserInitiatedInteraction(transaction: GRDBReadTransaction) -> Bool {
@@ -1448,7 +1480,15 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         )
         """
         let arguments: StatementArguments = [threadUniqueId]
-        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)!
+        do {
+            return try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)!
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to determine interaction")
+        }
     }
 
     func possiblyHasIncomingMessages(transaction: GRDBReadTransaction) -> Bool {
@@ -1483,7 +1523,15 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         )
         """
         let arguments: StatementArguments = [threadUniqueId]
-        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)!
+        do {
+            return try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)!
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to find Incoming message")
+        }
     }
 
     #if DEBUG
@@ -1527,7 +1575,15 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         AND \(interactionColumn: .recordType) = ?
         """
         let arguments: StatementArguments = [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]
-        return try! UInt.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? 0
+        do {
+            return try UInt.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? 0
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to determine message count")
+        }
     }
 
     func fetchUniqueIds(
@@ -1575,6 +1631,14 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     public static func maxRowId(transaction: GRDBReadTransaction) -> Int {
-        try! Int.fetchOne(transaction.database, sql: "SELECT MAX(id) FROM model_TSInteraction") ?? 0
+        do {
+            return try Int.fetchOne(transaction.database, sql: "SELECT MAX(id) FROM model_TSInteraction") ?? 0
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to find max row id")
+        }
     }
 }

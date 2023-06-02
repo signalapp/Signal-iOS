@@ -376,6 +376,10 @@ public extension OWSMessageContentJob {
             let cursor = try MessageContentJobRecord.fetchCursor(database)
             return OWSMessageContentJobCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Read failed: \(error)")
             return OWSMessageContentJobCursor(transaction: transaction, cursor: nil)
         }
@@ -536,7 +540,15 @@ public extension OWSMessageContentJob {
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(MessageContentJobRecord.databaseTableName) WHERE \(messageContentJobColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]
-            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            do {
+                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            } catch {
+                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                    userDefaults: CurrentAppContext().appUserDefaults(),
+                    error: error
+                )
+                owsFail("Missing instance.")
+            }
         }
     }
 }
@@ -552,6 +564,10 @@ public extension OWSMessageContentJob {
             let cursor = try MessageContentJobRecord.fetchCursor(transaction.database, sqlRequest)
             return OWSMessageContentJobCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return OWSMessageContentJobCursor(transaction: transaction, cursor: nil)

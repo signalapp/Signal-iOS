@@ -91,6 +91,10 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
                 arguments: [address.uuidString, address.phoneNumber, groupThreadId]
             )
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Failed to fetch group member \(error)")
             return nil
         }
@@ -109,15 +113,23 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
             AND NOT (\(columnName(.serviceId)) IS NULL AND \(columnName(.phoneNumber)) IS NULL)
         """
 
-        let cursor = try! fetchCursor(
-            transaction.unwrapGrdbRead.database,
-            sql: sql,
-            arguments: [address.uuidString, address.phoneNumber]
-        )
-        while let member = try! cursor.next() {
-            var stop: ObjCBool = false
-            block(member, &stop)
-            if stop.boolValue { break }
+        do {
+            let cursor = try fetchCursor(
+                transaction.unwrapGrdbRead.database,
+                sql: sql,
+                arguments: [address.uuidString, address.phoneNumber]
+            )
+            while let member = try cursor.next() {
+                var stop: ObjCBool = false
+                block(member, &stop)
+                if stop.boolValue { break }
+            }
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to enumerate group membership.")
         }
     }
 
@@ -144,20 +156,29 @@ public extension TSGroupThread {
             ORDER BY \(TSGroupMember.columnName(.lastInteractionTimestamp)) DESC
         """
 
-        let cursor = try! String.fetchCursor(
-            transaction.unwrapGrdbRead.database,
-            sql: sql,
-            arguments: [address.uuidString, address.phoneNumber]
-        )
-
         var groupThreads = [TSGroupThread]()
-        while let groupThreadId = try! cursor.next() {
-            guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId,
-                                                                      transaction: transaction) else {
-                owsFailDebug("Missing group thread")
-                continue
+
+        do {
+            let cursor = try String.fetchCursor(
+                transaction.unwrapGrdbRead.database,
+                sql: sql,
+                arguments: [address.uuidString, address.phoneNumber]
+            )
+
+            while let groupThreadId = try cursor.next() {
+                guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId,
+                                                                          transaction: transaction) else {
+                    owsFailDebug("Missing group thread")
+                    continue
+                }
+                groupThreads.append(groupThread)
             }
-            groupThreads.append(groupThread)
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to find group thread")
         }
 
         return groupThreads

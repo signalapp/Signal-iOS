@@ -387,6 +387,10 @@ public extension TSPaymentRequestModel {
             let cursor = try PaymentRequestModelRecord.fetchCursor(database)
             return TSPaymentRequestModelCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Read failed: \(error)")
             return TSPaymentRequestModelCursor(transaction: transaction, cursor: nil)
         }
@@ -547,7 +551,15 @@ public extension TSPaymentRequestModel {
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(PaymentRequestModelRecord.databaseTableName) WHERE \(paymentRequestModelColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]
-            return try! Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            do {
+                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+            } catch {
+                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                    userDefaults: CurrentAppContext().appUserDefaults(),
+                    error: error
+                )
+                owsFail("Missing instance.")
+            }
         }
     }
 }
@@ -563,6 +575,10 @@ public extension TSPaymentRequestModel {
             let cursor = try PaymentRequestModelRecord.fetchCursor(transaction.database, sqlRequest)
             return TSPaymentRequestModelCursor(transaction: transaction, cursor: cursor)
         } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             Logger.verbose("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
             return TSPaymentRequestModelCursor(transaction: transaction, cursor: nil)

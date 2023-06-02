@@ -420,7 +420,15 @@ extension MediaGalleryFinder {
                                   order: ascending ? .ascending : .descending,
                                   offset: offset,
                                   allowedMediaType: allowedMediaType)
-        return try! Int64.fetchAll(transaction.database, sql: sql, arguments: [threadId])
+        do {
+            return try Int64.fetchAll(transaction.database, sql: sql, arguments: [threadId])
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to fetch row ids")
+        }
     }
 
     public func rowIdsAndDates(in givenInterval: DateInterval? = nil,
@@ -436,7 +444,15 @@ extension MediaGalleryFinder {
                                   order: ascending ? .ascending : .descending,
                                   offset: offset,
                                   allowedMediaType: allowedMediaType)
-        return try! RowIdAndDate.fetchAll(transaction.database, sql: sql, arguments: [threadId])
+        do {
+            return try RowIdAndDate.fetchAll(transaction.database, sql: sql, arguments: [threadId])
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Missing instance.")
+        }
     }
 
     public func recentMediaAttachments(limit: Int, transaction: GRDBReadTransaction) -> [TSAttachment] {
@@ -490,11 +506,20 @@ extension MediaGalleryFinder {
                 timestamp = row[1]
             }
         }
-        let cursor = try! RowIDAndTimestamp.fetchCursor(transaction.database, sql: sql, arguments: [threadId])
+
         var actualCount = 0
-        while let next = try! cursor.next() {
-            actualCount += 1
-            block(Date(millisecondsSince1970: next.timestamp), next.rowid)
+        do {
+            let cursor = try RowIDAndTimestamp.fetchCursor(transaction.database, sql: sql, arguments: [threadId])
+            while let next = try cursor.next() {
+                actualCount += 1
+                block(Date(millisecondsSince1970: next.timestamp), next.rowid)
+            }
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to enumerate timestamps")
         }
         if actualCount < count {
             return .reachedEnd
@@ -548,7 +573,15 @@ extension MediaGalleryFinder {
                 AND media_gallery_items.attachmentId = ?
         """
 
-        return try! Int64.fetchOne(transaction.database, sql: sql, arguments: [threadId, attachmentRowId])
+        do {
+            return try Int64.fetchOne(transaction.database, sql: sql, arguments: [threadId, attachmentRowId])
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Failed to get row ID")
+        }
     }
 
     /// Returns the number of attachments attached to `interaction`, whether or not they are media attachments. Disregards allowedMediaType.

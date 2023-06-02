@@ -77,11 +77,19 @@ public class EditMessageFinder {
 
         let arguments: StatementArguments = [message.grdbId]
 
-        return try! Int.fetchOne(
-            transaction.unwrapGrdbRead.database,
-            sql: sql,
-            arguments: arguments
-        ) ?? 0
+        do {
+            return try Int.fetchOne(
+                transaction.unwrapGrdbRead.database,
+                sql: sql,
+                arguments: arguments
+            ) ?? 0
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Missing instance.")
+        }
     }
 
 }

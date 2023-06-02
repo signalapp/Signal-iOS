@@ -112,6 +112,10 @@ extension SDSCodableModelDatabaseInterfaceImpl {
                 block(value, stop)
             }
         } catch let error {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Failed to fetch models: \(error)!")
         }
     }
@@ -140,6 +144,10 @@ extension SDSCodableModelDatabaseInterfaceImpl {
                 block(uniqueId, stop)
             }
         } catch let error {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Failed to fetch uniqueIds: \(error)!")
         }
     }

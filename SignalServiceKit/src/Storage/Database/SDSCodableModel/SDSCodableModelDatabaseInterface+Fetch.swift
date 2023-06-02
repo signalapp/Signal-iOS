@@ -43,6 +43,10 @@ extension SDSCodableModelDatabaseInterfaceImpl {
             model?.anyDidFetchOne(transaction: transaction)
             return model
         } catch let error {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Failed to fetch model \(modelType): \(error)")
             return nil
         }
@@ -65,6 +69,10 @@ extension SDSCodableModelDatabaseInterfaceImpl {
                 sql: sql
             )
         } catch let error {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFailDebug("Failed to fetch \(modelType) models: \(error)")
             return []
         }
