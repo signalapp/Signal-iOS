@@ -732,7 +732,8 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
             )
         }
         if TSAccountManager.shared.isRegisteredAndReady {
-            _ = cacheCurrent(isEnabledFlags: isEnabledFlags, valueFlags: valueFlags, account: .implicit())
+            let remoteConfig = cacheCurrent(isEnabledFlags: isEnabledFlags, valueFlags: valueFlags, account: .implicit())
+            (DependenciesBridge.shared.svr as? OrchestratingSVRImpl)?.setRemoteConfiguration(remoteConfig.svrConfiguration)
         }
         warmSecondaryCaches(isEnabledFlags: isEnabledFlags, valueFlags: valueFlags, isUsingBarrierFsync: isUsingBarrierFsync)
 
