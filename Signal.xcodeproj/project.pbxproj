@@ -339,7 +339,6 @@
 		347C3857252E1E2300F3D941 /* CVComponentThreadDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C3856252E1E2300F3D941 /* CVComponentThreadDetails.swift */; };
 		347DE5BC2548967900C32CDC /* BlockingLegacyGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347DE5BB2548967900C32CDC /* BlockingLegacyGroupView.swift */; };
 		348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */; };
-		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
 		34848D5E25D43ADD00E5034B /* cash-out.json in Resources */ = {isa = PBXBuildFile; fileRef = 34848D5A25D43ADD00E5034B /* cash-out.json */; };
 		34848D5F25D43ADD00E5034B /* about-mobilecoin.json in Resources */ = {isa = PBXBuildFile; fileRef = 34848D5B25D43ADD00E5034B /* about-mobilecoin.json */; };
 		34848D6025D43ADD00E5034B /* activate-payments.json in Resources */ = {isa = PBXBuildFile; fileRef = 34848D5C25D43ADD00E5034B /* activate-payments.json */; };
@@ -659,7 +658,7 @@
 		4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */; };
 		4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */; };
 		4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */; };
-		4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */; };
+		4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest.swift */; };
 		4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */; };
 		4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFD22E54AFA00469AE7 /* MediaInteractiveDismiss.swift */; };
 		4C9D347B23679C25006A4307 /* ContactStreamTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347923679C13006A4307 /* ContactStreamTest.swift */; };
@@ -961,6 +960,7 @@
 		76995F15283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */; };
 		76A2EB1028B578B800A29C24 /* MediaTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A2EB0F28B578B800A29C24 /* MediaTextView.swift */; };
 		76A2EB1228B57AEE00A29C24 /* ColorPickerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */; };
+		76BA0DEE2A29572C00751107 /* FunctionalUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 76BA0DED2A29572C00751107 /* FunctionalUtilTest.m */; };
 		76BB06FA29AD84DB00978856 /* MediaItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BB06F929AD84DB00978856 /* MediaItemViewController.swift */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C87FE028BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift */; };
@@ -1229,7 +1229,6 @@
 		B0E5FF35E928F74474D1EF08 /* Pods_SignalNSE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D9B34F0D33764222824AE9 /* Pods_SignalNSE.framework */; };
 		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
 		B660F6D41C29868000687D6E /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B660F69F1C29868000687D6E /* whisperFake.cer */; };
-		B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */; };
 		B660F6E01C29868000687D6E /* UtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6B41C29868000687D6E /* UtilTest.m */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
@@ -2675,8 +2674,6 @@
 		347C3856252E1E2300F3D941 /* CVComponentThreadDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentThreadDetails.swift; sourceTree = "<group>"; };
 		347DE5BB2548967900C32CDC /* BlockingLegacyGroupView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingLegacyGroupView.swift; sourceTree = "<group>"; };
 		348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaceAdminViewController.swift; sourceTree = "<group>"; };
-		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
-		34843B2321432293004DED45 /* SignalBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalBaseTest.h; sourceTree = "<group>"; };
 		34848D5A25D43ADD00E5034B /* cash-out.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "cash-out.json"; sourceTree = "<group>"; };
 		34848D5B25D43ADD00E5034B /* about-mobilecoin.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "about-mobilecoin.json"; sourceTree = "<group>"; };
 		34848D5C25D43ADD00E5034B /* activate-payments.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "activate-payments.json"; sourceTree = "<group>"; };
@@ -3021,7 +3018,6 @@
 		4585B4A2291B2BFB003A8F8E /* MediaGalleryCollectionViewUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryCollectionViewUpdater.swift; sourceTree = "<group>"; };
 		4585B4A4291B39F9003A8F8E /* MediaGalleryCollectionViewUpdaterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryCollectionViewUpdaterTest.swift; sourceTree = "<group>"; };
 		4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafetyNumberConfirmationSheet.swift; sourceTree = "<group>"; };
-		4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SignalTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		458967101DC117CC00E9DD21 /* AccountManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountManagerTest.swift; path = Models/AccountManagerTest.swift; sourceTree = "<group>"; };
 		45906C6A29D238560025906D /* WidePhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidePhotoCell.swift; sourceTree = "<group>"; };
 		45A2F004204473A3002E978A /* NewMessage.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; name = NewMessage.aifc; path = Signal/AudioFiles/NewMessage.aifc; sourceTree = SOURCE_ROOT; };
@@ -3111,7 +3107,7 @@
 		4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewControllerTest.swift; sourceTree = "<group>"; };
 		4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalUBSan.supp; sourceTree = "<group>"; };
 		4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportAlert.swift; sourceTree = "<group>"; };
-		4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalBaseTest+Swift.swift"; sourceTree = "<group>"; };
+		4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalBaseTest.swift; sourceTree = "<group>"; };
 		4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaZoomAnimationController.swift; sourceTree = "<group>"; };
 		4C8A6DFD22E54AFA00469AE7 /* MediaInteractiveDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaInteractiveDismiss.swift; sourceTree = "<group>"; };
 		4C9C50FF22F495F60054A33F /* BroadcastMediaMessageJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BroadcastMediaMessageJob.swift; sourceTree = "<group>"; };
@@ -3444,6 +3440,7 @@
 		76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+StrokeWidthSlider.swift"; sourceTree = "<group>"; };
 		76A2EB0F28B578B800A29C24 /* MediaTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTextView.swift; sourceTree = "<group>"; };
 		76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerBar.swift; sourceTree = "<group>"; };
+		76BA0DED2A29572C00751107 /* FunctionalUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtilTest.m; sourceTree = "<group>"; };
 		76BB06F929AD84DB00978856 /* MediaItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItemViewController.swift; sourceTree = "<group>"; };
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76C87FE028BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewAttachmentViewController.swift; sourceTree = "<group>"; };
@@ -3777,7 +3774,6 @@
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
 		B660F69E1C29868000687D6E /* SignalTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "SignalTests-Info.plist"; sourceTree = "<group>"; };
 		B660F69F1C29868000687D6E /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
-		B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtilTest.m; sourceTree = "<group>"; };
 		B660F6B31C29868000687D6E /* UtilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilTest.h; sourceTree = "<group>"; };
 		B660F6B41C29868000687D6E /* UtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilTest.m; sourceTree = "<group>"; };
 		B66DBF4919D5BBC8006EA940 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -7566,10 +7562,7 @@
 				34B3F8951E8DF1B90035BE1A /* ViewControllers */,
 				34BEDB0F21C41E71007B0EAE /* views */,
 				F9B93CDF28E246D900B3F8A0 /* AppDelegateTest.swift */,
-				4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */,
-				34843B2321432293004DED45 /* SignalBaseTest.h */,
-				34843B2221432292004DED45 /* SignalBaseTest.m */,
-				4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */,
+				4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest.swift */,
 			);
 			path = test;
 			sourceTree = "<group>";
@@ -7607,7 +7600,6 @@
 				45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */,
 				3485434426BC598800FB9C38 /* EmojiTests.swift */,
 				F9952B3029F2D99500EA989E /* ExpirationNagViewTest.swift */,
-				B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */,
 				345AE2B52317048200DB6225 /* GRDBFinderTest.swift */,
 				34C1A93A2656E904004FA478 /* MiscTest.swift */,
 				F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */,
@@ -8114,6 +8106,7 @@
 				F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */,
 				502B1B54297B28AF00FDB3AE /* ErrorTest.swift */,
 				F94261E7289B1B5400460798 /* FeatureFlagsTests.swift */,
+				76BA0DED2A29572C00751107 /* FunctionalUtilTest.m */,
 				50D5E2422980B53000899660 /* LinkValidatorTest.swift */,
 				F94261F2289B1B5400460798 /* LRUCacheTest.swift */,
 				F94261FC289B1B5400460798 /* MathOWSTests.swift */,
@@ -11774,7 +11767,6 @@
 				F90B7BC02912B8E000F50A59 /* DonationUtilitiesTest.swift in Sources */,
 				3485434526BC598800FB9C38 /* EmojiTests.swift in Sources */,
 				F9952B3129F2D99500EA989E /* ExpirationNagViewTest.swift in Sources */,
-				B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */,
 				345AE2B62317048300DB6225 /* GRDBFinderTest.swift in Sources */,
 				3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */,
 				34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */,
@@ -11800,8 +11792,7 @@
 				3499998122EF1E2100654932 /* SearcherTest.swift in Sources */,
 				505C2ED92997422D00C23FB2 /* SelfSignedIdentityTest.swift in Sources */,
 				1704690A25D4C326000793D8 /* SignalAttachmentTest.swift in Sources */,
-				4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift in Sources */,
-				34843B2421432293004DED45 /* SignalBaseTest.m in Sources */,
+				4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest.swift in Sources */,
 				F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */,
 				4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */,
 				505C2EDB29974D2000C23FB2 /* StorageServiceContactTest.swift in Sources */,
@@ -12544,6 +12535,7 @@
 				502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */,
 				D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */,
 				F9426254289B1B5500460798 /* FeatureFlagsTests.swift in Sources */,
+				76BA0DEE2A29572C00751107 /* FunctionalUtilTest.m in Sources */,
 				F908179628EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift in Sources */,
 				F97217FE28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift in Sources */,
 				5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */,
@@ -14212,7 +14204,6 @@
 				PRODUCT_NAME = SignalTests;
 				PROVISIONING_PROFILE = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
@@ -14422,7 +14413,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "$(SIGNAL_BUNDLEID_PREFIX).${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
@@ -14486,7 +14476,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
@@ -14550,7 +14539,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
@@ -14744,7 +14732,6 @@
 				PRODUCT_NAME = SignalTests;
 				PROVISIONING_PROFILE = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
@@ -14953,7 +14940,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
@@ -15286,7 +15272,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "$(SIGNAL_BUNDLEID_PREFIX).${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = SignalTests;
 				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
@@ -15351,7 +15336,6 @@
 				PRODUCT_NAME = SignalTests;
 				PROVISIONING_PROFILE = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";

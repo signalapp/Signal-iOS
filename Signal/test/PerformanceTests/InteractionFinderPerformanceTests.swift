@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import XCTest
+
 @testable import SignalServiceKit
-import Foundation
 
 class InteractionFinderPerformanceTests: PerformanceBaseTest {
 

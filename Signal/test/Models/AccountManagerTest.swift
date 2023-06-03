@@ -4,8 +4,9 @@
 //
 
 import XCTest
-import SignalServiceKit
+
 @testable import Signal
+@testable import SignalServiceKit
 
 struct VerificationFailedError: Error { }
 struct FailedToGetRPRegistrationTokenError: Error { }

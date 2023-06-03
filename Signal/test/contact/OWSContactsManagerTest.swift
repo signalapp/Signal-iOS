@@ -60,8 +60,8 @@ class OWSContactsManagerTest: SignalBaseTest {
     private func createContacts(_ contacts: [Contact]) {
         write { transaction in
             (self.contactsManager as! OWSContactsManager).setContactsMaps(
-                .build(contacts: contacts, localNumber: localAddress.phoneNumber),
-                localNumber: localAddress.phoneNumber,
+                .build(contacts: contacts, localNumber: self.localAddress.phoneNumber),
+                localNumber: self.localAddress.phoneNumber,
                 transaction: transaction
             )
         }

@@ -5,6 +5,7 @@
 
 import UIKit
 import QuartzCore
+import SignalMessaging
 
 @IBDesignable
 open class MarqueeLabel: UILabel, CAAnimationDelegate {

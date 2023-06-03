@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import "SignalBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import <SignalServiceKit/FunctionalUtil.h>
 
-@interface FunctionalUtilTest : SignalBaseTest
+@interface FunctionalUtilTest : SSKBaseTestObjC
 
 @end
 

@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import BonMot
+import XCTest
+
 @testable import Signal
 @testable import SignalUI
-import BonMot
 
 class CVTextTest: XCTestCase {
     func testTextViewMeasurement() {

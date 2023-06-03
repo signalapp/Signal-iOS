@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import "SignalBaseTest.h"
+#import <XCTest/XCTestCase.h>
 
-@interface UtilTest : SignalBaseTest
+@interface UtilTest : XCTestCase
 
 @end
