@@ -6,7 +6,6 @@
 #import "OWSQuotedMessageView.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/NSString+OWS.h>
-#import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
@@ -512,8 +511,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     if (self.quotedMessage.authorAddress.isLocalAddress) {
         quotedAuthorText = CommonStrings.you;
     } else {
-        OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-        NSString *quotedAuthor = [contactsManager displayNameForAddress:self.quotedMessage.authorAddress];
+        NSString *quotedAuthor = [self.contactsManager displayNameForAddress:self.quotedMessage.authorAddress];
         quotedAuthorText = [NSString
             stringWithFormat:
                 NSLocalizedString(@"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",

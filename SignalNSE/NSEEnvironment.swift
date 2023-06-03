@@ -142,7 +142,7 @@ class NSEEnvironment: Dependencies {
             notificationPresenter: NotificationPresenter()
         )
 
-        Environment.shared.lightweightCallManagerRef = LightweightCallManager()
+        SMEnvironment.shared.lightweightCallManagerRef = LightweightCallManager()
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalSetupContinuation in
             switch finalSetupContinuation.finish(willResumeInProgressRegistration: false) {

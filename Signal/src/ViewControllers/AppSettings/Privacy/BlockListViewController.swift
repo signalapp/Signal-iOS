@@ -100,7 +100,7 @@ class BlockListViewController: OWSTableViewController2 {
 
         // Groups
         let groupsSectionItems = groups.map { group in
-            let image = group.avatarImage ?? self.avatarBuilder.avatarImage(forGroupId: group.groupId,
+            let image = group.avatarImage ?? Self.avatarBuilder.avatarImage(forGroupId: group.groupId,
                                                                             diameterPoints: AvatarBuilder.standardAvatarSizePoints)
             return OWSTableItem(
                 customCellBlock: {

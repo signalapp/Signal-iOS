@@ -370,7 +370,7 @@ extension AppDelegate {
             object: nil
         )
 
-        if !Environment.shared.preferences.hasGeneratedThumbnails {
+        if !preferences.hasGeneratedThumbnails {
             databaseStorage.asyncRead(
                 block: { transaction in
                     TSAttachment.anyEnumerate(transaction: transaction, batched: true) { (_, _) in
@@ -378,7 +378,7 @@ extension AppDelegate {
                     }
                 },
                 completion: {
-                    Environment.shared.preferences.setHasGeneratedThumbnails(true)
+                    self.preferences.setHasGeneratedThumbnails(true)
                 }
             )
         }

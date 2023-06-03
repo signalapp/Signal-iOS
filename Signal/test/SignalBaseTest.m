@@ -4,7 +4,6 @@
 //
 
 #import "SignalBaseTest.h"
-#import <SignalMessaging/Environment.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -20,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     SetCurrentAppContext([TestAppContext new], YES);
     [MockSSKEnvironment activate];
-    [MockEnvironment activate];
+    [MockSMEnvironment activate];
 
     [SSKEnvironment.shared setGroupsV2ForUnitTests:[GroupsV2Impl new]];
 }

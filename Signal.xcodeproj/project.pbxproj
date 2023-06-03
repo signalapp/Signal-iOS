@@ -261,8 +261,6 @@
 		345AE2B62317048300DB6225 /* GRDBFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345AE2B52317048200DB6225 /* GRDBFinderTest.swift */; };
 		345DE96023ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */; };
 		3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461284A1FD0B93F00532771 /* SAELoadViewController.swift */; };
-		3461295A1FD1D74C00532771 /* Environment.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129401FD1D74B00532771 /* Environment.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3461295B1FD1D74C00532771 /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129411FD1D74B00532771 /* Environment.m */; };
 		346129A51FD1F09100532771 /* OWSContactsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129A21FD1F09100532771 /* OWSContactsManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129A31FD1F09100532771 /* OWSContactsManager.m */; };
 		346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129AE1FD1F5D900532771 /* SystemContactsFetcher.swift */; };
@@ -342,7 +340,6 @@
 		347DE5BC2548967900C32CDC /* BlockingLegacyGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347DE5BB2548967900C32CDC /* BlockingLegacyGroupView.swift */; };
 		348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */; };
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
-		34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2A214FE295004DED45 /* MockEnvironment.m */; };
 		34848D5E25D43ADD00E5034B /* cash-out.json in Resources */ = {isa = PBXBuildFile; fileRef = 34848D5A25D43ADD00E5034B /* cash-out.json */; };
 		34848D5F25D43ADD00E5034B /* about-mobilecoin.json in Resources */ = {isa = PBXBuildFile; fileRef = 34848D5B25D43ADD00E5034B /* about-mobilecoin.json */; };
 		34848D6025D43ADD00E5034B /* activate-payments.json in Resources */ = {isa = PBXBuildFile; fileRef = 34848D5C25D43ADD00E5034B /* activate-payments.json */; };
@@ -618,7 +615,6 @@
 		4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */; };
 		4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C046AA6236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift */; };
 		4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C0CF6F92386295400C9F818 /* tap_to_focus.json */; };
-		4C10B19423176D250099396B /* MockEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2A214FE295004DED45 /* MockEnvironment.m */; };
 		4C10B19523176D250099396B /* MarqueeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */; };
 		4C10B19623176D250099396B /* OWSAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */; };
 		4C10B1A723176D250099396B /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
@@ -932,6 +928,8 @@
 		76387BF028F4ED73002C7BA5 /* CaseIterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */; };
 		763D7DDB27E155ED002EA7E6 /* RoundMediaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */; };
 		763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */; };
+		7649813F2A2306DA00EC1287 /* SMEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7649813E2A2306DA00EC1287 /* SMEnvironment.swift */; };
+		764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764981422A230F2C00EC1287 /* MockSMEnvironment.swift */; };
 		764981452A23194F00EC1287 /* CVItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764981442A23194F00EC1287 /* CVItemViewModel.swift */; };
 		7647A33A2A26AB7C002EAC93 /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7647A3392A26AB7C002EAC93 /* FingerprintViewController.swift */; };
 		7647A33C2A270348002EAC93 /* FingerprintScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */; };
@@ -2594,8 +2592,6 @@
 		345AE2B52317048200DB6225 /* GRDBFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBFinderTest.swift; sourceTree = "<group>"; };
 		345DE95F23ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2ProfileKeyUpdater.swift; sourceTree = "<group>"; };
 		3461284A1FD0B93F00532771 /* SAELoadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAELoadViewController.swift; sourceTree = "<group>"; };
-		346129401FD1D74B00532771 /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
-		346129411FD1D74B00532771 /* Environment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Environment.m; sourceTree = "<group>"; };
 		346129A21FD1F09100532771 /* OWSContactsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsManager.h; sourceTree = "<group>"; };
 		346129A31FD1F09100532771 /* OWSContactsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsManager.m; sourceTree = "<group>"; };
 		346129AE1FD1F5D900532771 /* SystemContactsFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemContactsFetcher.swift; sourceTree = "<group>"; };
@@ -2681,8 +2677,6 @@
 		348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaceAdminViewController.swift; sourceTree = "<group>"; };
 		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
 		34843B2321432293004DED45 /* SignalBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalBaseTest.h; sourceTree = "<group>"; };
-		34843B2A214FE295004DED45 /* MockEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MockEnvironment.m; sourceTree = "<group>"; };
-		34843B2B214FE295004DED45 /* MockEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MockEnvironment.h; sourceTree = "<group>"; };
 		34848D5A25D43ADD00E5034B /* cash-out.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "cash-out.json"; sourceTree = "<group>"; };
 		34848D5B25D43ADD00E5034B /* about-mobilecoin.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "about-mobilecoin.json"; sourceTree = "<group>"; };
 		34848D5C25D43ADD00E5034B /* activate-payments.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "activate-payments.json"; sourceTree = "<group>"; };
@@ -3417,6 +3411,8 @@
 		76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseIterable.swift; sourceTree = "<group>"; };
 		763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundMediaButton.swift; sourceTree = "<group>"; };
 		763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalTopBar.swift; sourceTree = "<group>"; };
+		7649813E2A2306DA00EC1287 /* SMEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMEnvironment.swift; sourceTree = "<group>"; };
+		764981422A230F2C00EC1287 /* MockSMEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSMEnvironment.swift; sourceTree = "<group>"; };
 		764981442A23194F00EC1287 /* CVItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVItemViewModel.swift; sourceTree = "<group>"; };
 		7647A3392A26AB7C002EAC93 /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
 		7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintScanViewController.swift; sourceTree = "<group>"; };
@@ -5352,10 +5348,9 @@
 			isa = PBXGroup;
 			children = (
 				5033D46A29DB9F17007FEADA /* AppSetup.swift */,
-				346129401FD1D74B00532771 /* Environment.h */,
-				346129411FD1D74B00532771 /* Environment.m */,
 				4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */,
 				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
+				7649813E2A2306DA00EC1287 /* SMEnvironment.swift */,
 				7634F08C2A21963600BB93D5 /* Sounds.swift */,
 			);
 			path = environment;
@@ -5472,8 +5467,6 @@
 		34843B29214FE295004DED45 /* mocks */ = {
 			isa = PBXGroup;
 			children = (
-				34843B2B214FE295004DED45 /* MockEnvironment.h */,
-				34843B2A214FE295004DED45 /* MockEnvironment.m */,
 				D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */,
 			);
 			path = mocks;
@@ -9494,6 +9487,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */,
+				764981422A230F2C00EC1287 /* MockSMEnvironment.swift */,
 				505C2EDA29974D2000C23FB2 /* StorageServiceContactTest.swift */,
 				F992ACC328F8C9D900906038 /* StripeTest.swift */,
 				503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */,
@@ -9549,7 +9543,6 @@
 			files = (
 				179E8C33276A713300AF640F /* AFQueryString.h in Headers */,
 				34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */,
-				3461295A1FD1D74C00532771 /* Environment.h in Headers */,
 				346129A51FD1F09100532771 /* OWSContactsManager.h in Headers */,
 				346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */,
 				34612A061FD7238600532771 /* OWSSyncManager.h in Headers */,
@@ -11036,7 +11029,6 @@
 				D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */,
 				F98ED2D829255F4D008483DC /* DonationPaymentMethod.swift in Sources */,
 				F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */,
-				3461295B1FD1D74C00532771 /* Environment.m in Sources */,
 				347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */,
 				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
 				34BB3C6123C6644B001651FC /* GroupsV2Impl.swift in Sources */,
@@ -11053,6 +11045,7 @@
 				32525F9527C74B1A0099E801 /* LightweightCallManager.swift in Sources */,
 				4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */,
 				34BB78B5272C510900DA0D04 /* MobileCoinHelperMinimal.swift in Sources */,
+				764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */,
 				50086B9F29DF60D900F9C072 /* NameResolver.swift in Sources */,
 				4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */,
 				3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */,
@@ -11081,6 +11074,7 @@
 				66AF4D7328D1377E008A156E /* SignalAttachment+VideoSegmenting.swift in Sources */,
 				454A965A1FD6017E008D2A0E /* SignalAttachment.swift in Sources */,
 				D9668B35291B088200665298 /* SignalMessagingJobQueues.swift in Sources */,
+				7649813F2A2306DA00EC1287 /* SMEnvironment.swift in Sources */,
 				7634F08D2A21963600BB93D5 /* Sounds.swift in Sources */,
 				340B06C723C8DA2600929588 /* StorageService+GroupsV2.swift in Sources */,
 				88E34F2722F269E900966CC2 /* StorageServiceManagerImpl.swift in Sources */,
@@ -11114,7 +11108,6 @@
 				34B14D8B24F0012100CC3A9A /* GroupsPerfTest.swift in Sources */,
 				D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */,
 				4C10B19523176D250099396B /* MarqueeLabel.swift in Sources */,
-				4C10B19423176D250099396B /* MockEnvironment.m in Sources */,
 				D925F56A298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */,
 				4C10B19623176D250099396B /* OWSAnalytics.swift in Sources */,
 				4C10B1C9231778880099396B /* PerformanceBaseTest.swift in Sources */,
@@ -11793,7 +11786,6 @@
 				50D8796A2A16D2C20031345D /* MessageLoaderBatchTest.swift in Sources */,
 				4C2A538C23C5462300D28CD8 /* MessageLoaderTest.swift in Sources */,
 				34C1A93B2656E905004FA478 /* MiscTest.swift in Sources */,
-				34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */,
 				D925F56B298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */,
 				454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */,
 				45D062F527D7F49800BD505E /* OWSContactsManagerTest.swift in Sources */,

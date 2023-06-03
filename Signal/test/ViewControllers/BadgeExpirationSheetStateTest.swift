@@ -4,8 +4,8 @@
 //
 
 import XCTest
-import Foundation
-import Signal
+@testable import Signal
+@testable import SignalMessaging
 
 class BadgeExpirationSheetStateTest: XCTestCase {
     typealias State = BadgeExpirationSheetState

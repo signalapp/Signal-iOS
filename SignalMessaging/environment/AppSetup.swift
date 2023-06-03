@@ -149,12 +149,13 @@ public class AppSetup {
             dateProvider: { Date() }
         )
 
-        Environment.shared = Environment(
+        let smEnvironment = SMEnvironment(
             preferences: preferences,
             proximityMonitoringManager: proximityMonitoringManager,
             avatarBuilder: avatarBuilder,
             smJobQueues: smJobQueues
         )
+        SMEnvironment.setShared(smEnvironment)
 
         let sskEnvironment = SSKEnvironment(
             contactsManager: contactsManager,

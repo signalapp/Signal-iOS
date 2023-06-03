@@ -500,7 +500,7 @@ extension TSThread {
     // Use the same point size as chat list avatars, so it's likely cached and ready for the NSE.
     // The NSE cannot read the device scale, so we rely on a cached scale to correctly calculate
     // the appropriate pixel size for our avatars.
-    private static let intentAvatarDiameterPixels: CGFloat = 56 * Environment.preferences.cachedDeviceScale
+    private static let intentAvatarDiameterPixels: CGFloat = 56 * preferences.cachedDeviceScale
 
     private func intentRecipientAvatarImage(recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> INImage? {
         // Generate avatar

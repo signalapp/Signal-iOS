@@ -7,7 +7,7 @@ import Foundation
 
 public class SignalMessagingJobQueues: NSObject {
 
-    override init() {
+    public override init() {
         incomingContactSyncJobQueue = IncomingContactSyncJobQueue()
         incomingGroupSyncJobQueue = IncomingGroupSyncJobQueue()
         sessionResetJobQueue = SessionResetJobQueue()

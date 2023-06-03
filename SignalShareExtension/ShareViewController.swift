@@ -66,7 +66,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // Configure the rest of the globals before preparing the database.
         SUIEnvironment.shared.setup()
-        Environment.shared.lightweightCallManagerRef = LightweightCallManager()
+        SMEnvironment.shared.lightweightCallManagerRef = LightweightCallManager()
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalContinuation in
             switch finalContinuation.finish(willResumeInProgressRegistration: false) {
@@ -164,7 +164,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 // We don't need to use the SocketManager in the SAE.
 
                 // TODO: Re-enable when system contact fetching uses less memory.
-                // Environment.shared.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
+                // self.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
                 // We don't need to fetch messages in the SAE.
 

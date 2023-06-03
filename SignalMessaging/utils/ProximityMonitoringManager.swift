@@ -6,14 +6,12 @@
 import Foundation
 import SignalServiceKit
 
-@objc
 public protocol OWSProximityMonitoringManager: AnyObject {
     func add(lifetime: AnyObject)
     func remove(lifetime: AnyObject)
 }
 
-@objc
-public class OWSProximityMonitoringManagerImpl: NSObject, OWSProximityMonitoringManager {
+public class OWSProximityMonitoringManagerImpl: OWSProximityMonitoringManager {
 
     private struct State {
         var didAddObserver = false

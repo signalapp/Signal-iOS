@@ -4,7 +4,6 @@
 //
 
 #import "OWSSyncManager.h"
-#import "Environment.h"
 #import "OWSContactsManager.h"
 #import "OWSProfileManager.h"
 #import <Contacts/Contacts.h>
@@ -170,8 +169,8 @@ NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVer
         return;
     }
 
-    BOOL areReadReceiptsEnabled = SSKEnvironment.shared.receiptManager.areReadReceiptsEnabled;
-    BOOL showUnidentifiedDeliveryIndicators = Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators;
+    BOOL areReadReceiptsEnabled = self.receiptManager.areReadReceiptsEnabled;
+    BOOL showUnidentifiedDeliveryIndicators = self.preferences.shouldShowUnidentifiedDeliveryIndicators;
     BOOL showTypingIndicators = self.typingIndicatorsImpl.areTypingIndicatorsEnabled;
 
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
@@ -204,8 +203,7 @@ NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVer
     }
     if (syncMessage.hasUnidentifiedDeliveryIndicators) {
         BOOL updatedValue = syncMessage.unidentifiedDeliveryIndicators;
-        [Environment.shared.preferences setShouldShowUnidentifiedDeliveryIndicators:updatedValue
-                                                                        transaction:transaction];
+        [self.preferences setShouldShowUnidentifiedDeliveryIndicators:updatedValue transaction:transaction];
     }
     if (syncMessage.hasTypingIndicators) {
         [self.typingIndicatorsImpl setTypingIndicatorsEnabledWithValue:syncMessage.typingIndicators

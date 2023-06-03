@@ -103,7 +103,7 @@ public class AppEnvironment: NSObject {
             }.cauterize()
         }
 
-        // Hang certain singletons on Environment too.
-        Environment.shared.lightweightCallManagerRef = callServiceRef
+        // Hang certain singletons on SMEnvironment too.
+        SMEnvironment.shared.lightweightCallManagerRef = callServiceRef
     }
 }

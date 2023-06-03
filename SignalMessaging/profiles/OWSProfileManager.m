@@ -4,7 +4,6 @@
 //
 
 #import "OWSProfileManager.h"
-#import "Environment.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>

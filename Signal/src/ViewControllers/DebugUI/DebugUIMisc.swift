@@ -50,7 +50,7 @@ class DebugUIMisc: DebugUIPage, Dependencies {
                 DebugUIMisc.showPinReminder()
             }),
             OWSTableItem(title: "Reset 2FA Repetition Interval", actionBlock: {
-                self.databaseStorage.write { transaction in
+                SDSDatabaseStorage.shared.write { transaction in
                     OWS2FAManager.shared.setDefaultRepetitionIntervalWith(transaction)
                 }
             }),
@@ -70,7 +70,7 @@ class DebugUIMisc: DebugUIPage, Dependencies {
             }),
 
             OWSTableItem(title: "Fetch system contacts", actionBlock: {
-                Environment.shared.contactsManagerImpl.requestSystemContactsOnce()
+                SSKEnvironment.shared.contactsManagerImpl.requestSystemContactsOnce()
             }),
             OWSTableItem(title: "Cycle websockets", actionBlock: {
                 SSKEnvironment.shared.socketManager.cycleSocket()

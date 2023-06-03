@@ -14,7 +14,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 // The public headers of the framework
 #import <SignalMessaging/AFQueryString.h>
 #import <SignalMessaging/DebugLogger.h>
-#import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/OWSSyncManager.h>

@@ -9,20 +9,13 @@ import Foundation
 
 @objc
 public extension NSObject {
+
     final var preferences: Preferences {
-        Environment.shared.preferencesRef
+        SMEnvironment.shared.preferencesRef
     }
 
     static var preferences: Preferences {
-        Environment.shared.preferencesRef
-    }
-
-    final var proximityMonitoringManager: OWSProximityMonitoringManager {
-        Environment.shared.proximityMonitoringManagerRef
-    }
-
-    static var proximityMonitoringManager: OWSProximityMonitoringManager {
-        Environment.shared.proximityMonitoringManagerRef
+        SMEnvironment.shared.preferencesRef
     }
 
     final var profileManagerImpl: OWSProfileManager {
@@ -58,47 +51,40 @@ public extension NSObject {
     }
 
     var avatarBuilder: AvatarBuilder {
-        Environment.shared.avatarBuilderRef
+        SMEnvironment.shared.avatarBuilderRef
     }
 
     static var avatarBuilder: AvatarBuilder {
-        Environment.shared.avatarBuilderRef
+        SMEnvironment.shared.avatarBuilderRef
     }
 
     var lightweightCallManager: LightweightCallManager? {
-        Environment.shared.lightweightCallManagerRef
+        SMEnvironment.shared.lightweightCallManagerRef
     }
 
     static var lightweightCallManager: LightweightCallManager? {
-        Environment.shared.lightweightCallManagerRef
+        SMEnvironment.shared.lightweightCallManagerRef
     }
 
     var smJobQueues: SignalMessagingJobQueues {
-        Environment.shared.signalMessagingJobQueuesRef
+        SMEnvironment.shared.smJobQueuesRef
     }
 
     static var smJobQueues: SignalMessagingJobQueues {
-        Environment.shared.signalMessagingJobQueuesRef
+        SMEnvironment.shared.smJobQueuesRef
     }
 }
 
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
+
     var preferences: Preferences {
-        Environment.shared.preferencesRef
+        SMEnvironment.shared.preferencesRef
     }
 
     static var preferences: Preferences {
-        Environment.shared.preferencesRef
-    }
-
-    var proximityMonitoringManager: OWSProximityMonitoringManager {
-        Environment.shared.proximityMonitoringManagerRef
-    }
-
-    static var proximityMonitoringManager: OWSProximityMonitoringManager {
-        Environment.shared.proximityMonitoringManagerRef
+        SMEnvironment.shared.preferencesRef
     }
 
     var profileManagerImpl: OWSProfileManager {
@@ -134,19 +120,19 @@ public extension Dependencies {
     }
 
     var avatarBuilder: AvatarBuilder {
-        Environment.shared.avatarBuilderRef
+        SMEnvironment.shared.avatarBuilderRef
     }
 
     static var avatarBuilder: AvatarBuilder {
-        Environment.shared.avatarBuilderRef
+        SMEnvironment.shared.avatarBuilderRef
     }
 
     var smJobQueues: SignalMessagingJobQueues {
-        Environment.shared.signalMessagingJobQueuesRef
+        SMEnvironment.shared.smJobQueuesRef
     }
 
     static var smJobQueues: SignalMessagingJobQueues {
-        Environment.shared.signalMessagingJobQueuesRef
+        SMEnvironment.shared.smJobQueuesRef
     }
 }
 

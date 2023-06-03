@@ -4,6 +4,7 @@
 //
 
 import XCTest
+@testable import SignalMessaging
 
 class CGPointExtensionsTest: XCTestCase {
     func testPlusEquals() throws {

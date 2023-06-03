@@ -6,7 +6,6 @@
 #import "RecipientPickerViewController.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
-#import <SignalMessaging/Environment.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>

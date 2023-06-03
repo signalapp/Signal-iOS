@@ -6,7 +6,6 @@
 #import "ViewControllerUtils.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalCoreKit/NSString+OWS.h>
-#import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

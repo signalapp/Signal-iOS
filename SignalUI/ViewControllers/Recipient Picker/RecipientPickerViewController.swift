@@ -438,7 +438,7 @@ extension RecipientPickerViewController {
 
     @objc
     func hideBackgroundView() {
-        Environment.shared.preferences.setHasDeclinedNoContactsView(true)
+        self.preferences.setHasDeclinedNoContactsView(true)
         showContactAppropriateViews()
     }
 

@@ -243,7 +243,7 @@ extension SignalApp {
         DispatchSyncMainThreadSafe {
             databaseStorage.resetAllStorage()
             OWSUserProfile.resetProfileStorage()
-            Environment.shared.preferences.removeAllValues()
+            preferences.removeAllValues()
             AppEnvironment.shared.notificationPresenter.clearAllNotifications()
             OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appSharedDataDirectoryPath())
             OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appDocumentDirectoryPath())

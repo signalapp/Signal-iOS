@@ -7,7 +7,7 @@ import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
-class ScreenLockUI {
+class ScreenLockUI: Dependencies {
 
     static let shared = ScreenLockUI()
 
@@ -229,7 +229,7 @@ class ScreenLockUI {
             return .none
         }
 
-        guard Environment.shared.preferences.isScreenSecurityEnabled else {
+        guard preferences.isScreenSecurityEnabled else {
             Logger.verbose("desiredUIState: none 5.")
             return .none
         }

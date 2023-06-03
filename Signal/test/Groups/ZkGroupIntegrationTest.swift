@@ -5,6 +5,7 @@
 
 import XCTest
 @testable import Signal
+@testable import SignalMessaging
 
 class ZkGroupIntegrationTest: XCTestCase {
     func testServerParamsAreUpToDate() {
