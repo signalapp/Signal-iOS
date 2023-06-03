@@ -205,11 +205,11 @@ class SVR2ConcurrencyTests: XCTestCase {
 
         var numOpenedConnections = 0
         mockConnectionFactory.setOnConnectAndPerformHandshake { (_: SVR2WebsocketConfigurator) in
-            defer { numOpenedConnections += 1 }
+            numOpenedConnections += 1
             switch numOpenedConnections {
-            case 0:
-                return .value(firstMockConnection)
             case 1:
+                return .value(firstMockConnection)
+            case 2:
                 secondOpenExpectation.fulfill()
                 return .value(secondMockConnection)
             default:
