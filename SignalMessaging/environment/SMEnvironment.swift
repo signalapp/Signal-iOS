@@ -13,7 +13,7 @@ import SignalServiceKit
  *
  **/
 
-public class SMEnvironment: NSObject {
+public class SMEnvironment {
 
     private static var _shared: SMEnvironment?
 
@@ -46,8 +46,6 @@ public class SMEnvironment: NSObject {
         proximityMonitoringManagerRef = proximityMonitoringManager
         avatarBuilderRef = avatarBuilder
         smJobQueuesRef = smJobQueues
-
-        super.init()
 
         SwiftSingletons.register(self)
     }

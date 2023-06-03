@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import LibSignalClient
 
-public class GroupV2UpdatesImpl: NSObject {
+public class GroupV2UpdatesImpl: Dependencies {
 
     // This tracks the last time that groups were updated to the current
     // revision.
@@ -30,9 +30,7 @@ public class GroupV2UpdatesImpl: NSObject {
         return operationQueue
     }()
 
-    public required override init() {
-        super.init()
-
+    public required init() {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
@@ -338,7 +336,7 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
         }
     }
 
-    private class GroupV2UpdateOperation: OWSOperation {
+    private class GroupV2UpdateOperation: OWSOperation, Dependencies {
 
         let groupId: Data
         let groupSecretParamsData: Data

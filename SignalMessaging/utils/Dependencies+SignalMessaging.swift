@@ -34,22 +34,6 @@ public extension NSObject {
         contactsManager as! OWSContactsManager
     }
 
-    final var groupsV2Impl: GroupsV2Impl {
-        groupsV2 as! GroupsV2Impl
-    }
-
-    static var groupsV2Impl: GroupsV2Impl {
-        groupsV2 as! GroupsV2Impl
-    }
-
-    final var groupV2UpdatesImpl: GroupV2UpdatesImpl {
-        groupV2Updates as! GroupV2UpdatesImpl
-    }
-
-    static var groupV2UpdatesImpl: GroupV2UpdatesImpl {
-        groupV2Updates as! GroupV2UpdatesImpl
-    }
-
     var avatarBuilder: AvatarBuilder {
         SMEnvironment.shared.avatarBuilderRef
     }

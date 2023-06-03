@@ -7,10 +7,8 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-@objc
 public class MockSMEnvironment: SMEnvironment {
 
-    @objc
     public static func activate() {
         setShared(MockSMEnvironment())
     }

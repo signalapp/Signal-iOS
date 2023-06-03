@@ -7,17 +7,13 @@ import Foundation
 import SignalServiceKit
 import LibSignalClient
 
-@objc
-public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
+public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
     private var urlSession: OWSURLSessionProtocol {
         return self.signalService.urlSessionForStorageService()
     }
 
-    @objc
-    public required override init() {
-        super.init()
-
+    public required init() {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
@@ -1051,17 +1047,14 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     private let profileKeyUpdater = GroupsV2ProfileKeyUpdater()
 
-    @objc
     public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction) {
         profileKeyUpdater.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: transaction)
     }
 
-    @objc
     public func processProfileKeyUpdates() {
         profileKeyUpdater.processProfileKeyUpdates()
     }
 
-    @objc
     public func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
         profileKeyUpdater.updateLocalProfileKeyInGroup(groupId: groupId, transaction: transaction)
     }
@@ -1713,8 +1706,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         }
     }
 
-    public func
-    groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo {
+    public func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo {
         guard let masterKeyData = masterKeyData else {
             throw OWSAssertionError("Missing masterKeyData.")
         }
