@@ -4,6 +4,7 @@
 //
 
 import SignalMessaging
+import SignalUI
 
 public struct CVSelectionType: OptionSet {
     public let rawValue: UInt

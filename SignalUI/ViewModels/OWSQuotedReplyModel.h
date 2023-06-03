@@ -4,7 +4,6 @@
 //
 
 #import <SignalServiceKit/TSQuotedMessage.h>
-#import <SignalUI/CVItemViewModel.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSInteraction;
 @class TSMessage;
 
+@protocol CVItemViewModel;
 @protocol CVItemViewModelImpl;
 
 // View model which has already fetched any attachments.
