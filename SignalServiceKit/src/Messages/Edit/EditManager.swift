@@ -197,12 +197,26 @@ public class EditManager {
         tx: DBReadTransaction
     ) -> Bool {
 
-        // check edit window (using incoming server timestamp)
+        // check edit window (by comparing target message server timestamp
+        // and incoming edit server timestamp)
         // drop silent and warn if outside of valid range
-        let editWindow = Constants.editWindow
-        let endEditTime = targetMessage.receivedAtTimestamp
-        if endEditTime + editWindow < serverTimestamp {
-            Logger.warn("Edit message outside of allowed timeframe")
+        switch targetMessage {
+        case let incomingMessage as TSIncomingMessage:
+            guard let originalServerTimestamp = incomingMessage.serverTimestamp?.uint64Value else {
+                Logger.warn("Edit message target doesn't have a server timestamp")
+                return false
+            }
+
+            let (result, isOverflow) = originalServerTimestamp.addingReportingOverflow(Constants.editWindow)
+            guard !isOverflow && serverTimestamp <= result else {
+                Logger.warn("Message edit outside of allowed timeframe")
+                return false
+            }
+        case is TSOutgoingMessage:
+            // Don't validate the edit window for outgoing/sync messages
+            break
+        default:
+            owsFailDebug("Can't edit message of type \(type(of: targetMessage))")
             return false
         }
 

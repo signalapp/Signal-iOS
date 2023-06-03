@@ -39,7 +39,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                serverTimestamp: 0,
+                serverTimestamp: 1,
                 targetTimestamp: 0,
                 author: author,
                 tx: tx
@@ -80,7 +80,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                serverTimestamp: 0,
+                serverTimestamp: 1,
                 targetTimestamp: 0,
                 author: author,
                 tx: tx
@@ -109,7 +109,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                serverTimestamp: 0,
+                serverTimestamp: 1,
                 targetTimestamp: 0,
                 author: author,
                 tx: tx
@@ -133,7 +133,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                serverTimestamp: 0,
+                serverTimestamp: 1,
                 targetTimestamp: 0,
                 author: author,
                 tx: tx
@@ -165,6 +165,36 @@ class EditManagerTests: SSKBaseTestSwift {
                 thread: thread,
                 serverTimestamp: expiredTS,
                 targetTimestamp: 0,
+                author: author,
+                tx: tx
+            )
+            XCTAssertNil(result)
+        }
+    }
+
+    func testOverflowEditWindow() {
+        let bigInt: UInt64 = .max - 100
+        let targetMessage = createIncomingMessage(with: thread) {
+            $0.authorAddress = author
+            $0.serverTimestamp = NSNumber(value: bigInt)
+        }
+        let editMessage = createEditDataMessage { _ in }
+        let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
+
+        let editManager = EditManager(context:
+            .init(
+                dataStore: dataStoreMock,
+                groupsShim: GroupsMock(),
+                linkPreviewShim: LinkPreviewMock()
+            )
+        )
+
+        db.write { tx in
+            let result = editManager.processIncomingEditMessage(
+                editMessage,
+                thread: thread,
+                serverTimestamp: bigInt + 1,
+                targetTimestamp: bigInt,
                 author: author,
                 tx: tx
             )
@@ -249,6 +279,7 @@ class EditManagerTests: SSKBaseTestSwift {
         let messageBuilder = TSIncomingMessageBuilder.incomingMessageBuilder(
             thread: thread
         )
+        messageBuilder.serverTimestamp = NSNumber(value: 0)
         customizeBlock(messageBuilder)
         let targetMessage = messageBuilder.build()
         targetMessage.replaceRowId(1, uniqueId: "1")
