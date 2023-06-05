@@ -347,14 +347,7 @@ extension OWSNavigationController: UINavigationControllerDelegate {
 extension UIViewController {
 
     func getFinalNavigationChildController() -> OWSNavigationChildController? {
-        let child: OWSNavigationChildController
-        if let vc = self as? OWSViewControllerObjc {
-            child = ObjcControllerWrapper(vc)
-        } else if let vc = self as? OWSNavigationChildController {
-            child = vc
-        } else {
-            return nil
-        }
+        guard let child = self as? OWSNavigationChildController else { return nil }
         return child.getFinalChild()
     }
 }
@@ -367,29 +360,4 @@ extension OWSNavigationChildController {
         }
         return self
     }
-}
-
-private class ObjcControllerWrapper: OWSNavigationChildController {
-
-    private let objcController: OWSViewControllerObjc
-
-    init(_ objcController: OWSViewControllerObjc) {
-        self.objcController = objcController
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    var childForOWSNavigationConfiguration: OWSNavigationChildController? { nil }
-
-    var shouldCancelNavigationBack: Bool { objcController.shouldCancelNavigationBack }
-
-    var preferredNavigationBarStyle: OWSNavigationBarStyle {
-        OWSNavigationBarStyle(rawValue: objcController.preferredNavigationBarStyle) ?? .blur
-    }
-
-    var navbarBackgroundColorOverride: UIColor? { objcController.navbarBackgroundColorOverride }
-
-    var prefersNavigationBarHidden: Bool { objcController.prefersNavigationBarHidden }
 }

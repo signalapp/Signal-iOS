@@ -82,7 +82,6 @@
 		3402AA4D271D9DCD0084CBAE /* StickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9556F271B510500B05242 /* StickerView.swift */; };
 		3402AA4E271D9DCD0084CBAE /* ApprovalFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558E271B510500B05242 /* ApprovalFooterView.swift */; };
 		3402AA4F271D9DCD0084CBAE /* SpamCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557E271B510500B05242 /* SpamCaptchaViewController.swift */; };
-		3402AA50271D9DCD0084CBAE /* OWSViewControllerObjc.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95588271B510500B05242 /* OWSViewControllerObjc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AA51271D9DCD0084CBAE /* UIViewController+Permissions.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A9556A271B510500B05242 /* UIViewController+Permissions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AA52271D9DCD0084CBAE /* ViewControllerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95586271B510500B05242 /* ViewControllerUtils.m */; };
 		3402AA54271D9DCD0084CBAE /* LinearHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9556E271B510500B05242 /* LinearHorizontalLayout.swift */; };
@@ -90,7 +89,6 @@
 		3402AA56271D9DCD0084CBAE /* FindByPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557D271B510500B05242 /* FindByPhoneNumberViewController.swift */; };
 		3402AA57271D9DCD0084CBAE /* MediaMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95578271B510500B05242 /* MediaMessageView.swift */; };
 		3402AA58271D9DCD0084CBAE /* OWSNavigationControllerBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A9556B271B510500B05242 /* OWSNavigationControllerBase.m */; };
-		3402AA59271D9DCD0084CBAE /* OWSViewControllerObjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95575271B510500B05242 /* OWSViewControllerObjc.m */; };
 		3402AA5A271D9DCD0084CBAE /* OWSTableViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558B271B510500B05242 /* OWSTableViewController2.swift */; };
 		3402AA5B271D9DCD0084CBAE /* StickerPackCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95570271B510500B05242 /* StickerPackCollectionView.swift */; };
 		3402AA5C271D9DCD0084CBAE /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95583271B510500B05242 /* UIViewController+Permissions.m */; };
@@ -2842,7 +2840,6 @@
 		34A95571271B510500B05242 /* StickerPackDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPackDataSource.swift; sourceTree = "<group>"; };
 		34A95572271B510500B05242 /* StickerHorizontalListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerHorizontalListView.swift; sourceTree = "<group>"; };
 		34A95573271B510500B05242 /* StickerKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerKeyboard.swift; sourceTree = "<group>"; };
-		34A95575271B510500B05242 /* OWSViewControllerObjc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSViewControllerObjc.m; sourceTree = "<group>"; };
 		34A95576271B510500B05242 /* ViewControllerUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerUtils.h; sourceTree = "<group>"; };
 		34A95578271B510500B05242 /* MediaMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaMessageView.swift; sourceTree = "<group>"; };
 		34A9557B271B510500B05242 /* ConversationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPicker.swift; sourceTree = "<group>"; };
@@ -2853,7 +2850,6 @@
 		34A95582271B510500B05242 /* OWSNavigationControllerBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSNavigationControllerBase.h; sourceTree = "<group>"; };
 		34A95583271B510500B05242 /* UIViewController+Permissions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Permissions.m"; sourceTree = "<group>"; };
 		34A95586271B510500B05242 /* ViewControllerUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerUtils.m; sourceTree = "<group>"; };
-		34A95588271B510500B05242 /* OWSViewControllerObjc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSViewControllerObjc.h; sourceTree = "<group>"; };
 		34A9558A271B510500B05242 /* ContactFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFieldView.swift; sourceTree = "<group>"; };
 		34A9558B271B510500B05242 /* OWSTableViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewController2.swift; sourceTree = "<group>"; };
 		34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactShareNameViewController.swift; sourceTree = "<group>"; };
@@ -5840,8 +5836,6 @@
 				34A9556B271B510500B05242 /* OWSNavigationControllerBase.m */,
 				8868A08B287F4F81000E74A5 /* OWSTableSheetViewController.swift */,
 				66F44B4A2909EEDA004CF66C /* OWSViewController.swift */,
-				34A95588271B510500B05242 /* OWSViewControllerObjc.h */,
-				34A95575271B510500B05242 /* OWSViewControllerObjc.m */,
 				34A95567271B510500B05242 /* OWSWindow.swift */,
 				34ACA7F42733183000E47AD4 /* RegistrationValues.swift */,
 				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */,
@@ -9520,7 +9514,6 @@
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */,
 				3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */,
 				3402AA85271D9E180084CBAE /* OWSSearchBar.h in Headers */,
-				3402AA50271D9DCD0084CBAE /* OWSViewControllerObjc.h in Headers */,
 				34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */,
 				34A954BA271A471300B05242 /* SignalUI.h in Headers */,
 				3402A9E9271D97090084CBAE /* UIView+SignalUI.h in Headers */,
@@ -10888,7 +10881,6 @@
 				F9C8CFD0293580D00094469C /* OWSTextField.swift in Sources */,
 				7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */,
 				66F44B4B2909EEDA004CF66C /* OWSViewController.swift in Sources */,
-				3402AA59271D9DCD0084CBAE /* OWSViewControllerObjc.m in Sources */,
 				3402AA3B271D9DCD0084CBAE /* OWSWindow.swift in Sources */,
 				6688E602298232A4004467C8 /* PaymentActionSheets.swift in Sources */,
 				66CE755F28C332AF00D5FA79 /* PaymentOnboarding.swift in Sources */,
