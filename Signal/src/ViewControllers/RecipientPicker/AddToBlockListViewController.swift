@@ -23,7 +23,7 @@ class AddToBlockListViewController: RecipientPickerContainerViewController {
                                   comment: "Title for the 'add to block list' view.")
 
         recipientPicker.selectionMode = .blocklist
-        recipientPicker.groupsToShow = .showAllGroupsWhenSearching
+        recipientPicker.groupsToShow = .allGroupsWhenSearching
         recipientPicker.findByPhoneNumberButtonTitle = OWSLocalizedString(
             "BLOCK_LIST_VIEW_BLOCK_BUTTON",
             comment: "A label for the block button in the block list view"
@@ -117,6 +117,18 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
             return MessageStrings.conversationIsBlocked
         }
     }
+
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        accessoryViewForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> ContactCellAccessoryView? { nil }
+
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        attributedSubtitleForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> NSAttributedString? { nil }
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
 

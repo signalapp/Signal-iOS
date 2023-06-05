@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
-@objc
 public enum RecipientPickerRecipientState: Int {
     case canBeSelected
     case duplicateGroupMember
@@ -14,7 +13,6 @@ public enum RecipientPickerRecipientState: Int {
     case unknownError
 }
 
-@objc
 public protocol RecipientPickerDelegate: AnyObject {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          getRecipientState recipient: PickedRecipient) -> RecipientPickerRecipientState
@@ -30,15 +28,13 @@ public protocol RecipientPickerDelegate: AnyObject {
                          accessoryMessageForRecipient recipient: PickedRecipient,
                          transaction: SDSAnyReadTransaction) -> String?
 
-    @objc
-    optional func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                                  accessoryViewForRecipient recipient: PickedRecipient,
-                                  transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView?
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         accessoryViewForRecipient recipient: PickedRecipient,
+                         transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView?
 
-    @objc
-    optional func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                                  attributedSubtitleForRecipient recipient: PickedRecipient,
-                                  transaction: SDSAnyReadTransaction) -> NSAttributedString?
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         attributedSubtitleForRecipient recipient: PickedRecipient,
+                         transaction: SDSAnyReadTransaction) -> NSAttributedString?
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController)
 
@@ -47,8 +43,8 @@ public protocol RecipientPickerDelegate: AnyObject {
     func recipientPickerCustomHeaderViews() -> [UIView]
 }
 
-@objc
-public class PickedRecipient: NSObject {
+public class PickedRecipient: Hashable {
+
     public let identifier: Identifier
     public enum Identifier: Hashable {
         case address(_ address: SignalServiceAddress)
@@ -59,34 +55,29 @@ public class PickedRecipient: NSObject {
         self.identifier = identifier
     }
 
-    @objc
     public var isGroup: Bool {
         guard case .group = identifier else { return false }
         return true
     }
 
-    @objc
     public var address: SignalServiceAddress? {
         guard case .address(let address) = identifier else { return nil }
         return address
     }
 
-    @objc
     public static func `for`(groupThread: TSGroupThread) -> PickedRecipient {
         return .init(.group(groupThread))
     }
 
-    @objc
     public static func `for`(address: SignalServiceAddress) -> PickedRecipient {
         return .init(.address(address))
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let otherRecipient = object as? PickedRecipient else { return false }
-        return identifier == otherRecipient.identifier
+    public static func == (lhs: PickedRecipient, rhs: PickedRecipient) -> Bool {
+        return lhs.identifier == rhs.identifier
     }
 
-    public override var hash: Int {
-        return identifier.hashValue
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
     }
 }

@@ -24,7 +24,7 @@ open class RecipientPickerContainerViewController: OWSViewController, OWSNavigat
         super.viewWillDisappear(animated)
     }
 
-    public var objcChildForOWSNavigationConfiguration: OWSViewControllerObjc? {
+    public var childForOWSNavigationConfiguration: OWSNavigationChildController? {
         return recipientPicker
     }
 }

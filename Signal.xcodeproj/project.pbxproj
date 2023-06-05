@@ -1158,8 +1158,6 @@
 		88B6D674280770C4005D86EC /* StoryMessage+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B6D67128076F37005D86EC /* StoryMessage+SignalUI.swift */; };
 		88B986F4287F5B6500F8C74D /* NewGroupStoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B986F3287F5B6500F8C74D /* NewGroupStoryViewController.swift */; };
 		88B986F528807D6F00F8C74D /* RecipientPickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */; };
-		88B986F628807D6F00F8C74D /* RecipientPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */; };
-		88B986F828807E9000F8C74D /* RecipientPickerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8835DDF7230CEDC300DC6B66 /* RecipientPickerViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		88B986F928807ED500F8C74D /* GroupTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A663C41F92EC760027B59E /* GroupTableViewCell.swift */; };
 		88B986FA28807EEA00F8C74D /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* ReminderView.swift */; };
 		88B986FB28807F1D00F8C74D /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
@@ -3516,8 +3514,6 @@
 		8829883A25B9FD6700DEE1E3 /* MockConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockConversationView.swift; sourceTree = "<group>"; };
 		882BDAAD249050F000C14587 /* AddToGroupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToGroupViewController.swift; sourceTree = "<group>"; };
 		882F8DE5251AB23600AA4359 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
-		8835DDF7230CEDC300DC6B66 /* RecipientPickerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecipientPickerViewController.h; sourceTree = "<group>"; };
-		8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RecipientPickerViewController.m; sourceTree = "<group>"; };
 		8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerDelegate.swift; sourceTree = "<group>"; };
 		8835DE00230DBF7E00DC6B66 /* ComposeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewController.swift; sourceTree = "<group>"; };
 		8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToBlockListViewController.swift; sourceTree = "<group>"; };
@@ -7336,8 +7332,6 @@
 			children = (
 				506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */,
 				8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */,
-				8835DDF7230CEDC300DC6B66 /* RecipientPickerViewController.h */,
-				8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */,
 				F9B652BB28D514E6006914CA /* RecipientPickerViewController.swift */,
 			);
 			path = "Recipient Picker";
@@ -9523,7 +9517,6 @@
 				3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */,
 				3402AA85271D9E180084CBAE /* OWSSearchBar.h in Headers */,
 				3402AA50271D9DCD0084CBAE /* OWSViewControllerObjc.h in Headers */,
-				88B986F828807E9000F8C74D /* RecipientPickerViewController.h in Headers */,
 				34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */,
 				34A954BA271A471300B05242 /* SignalUI.h in Headers */,
 				3402A9E9271D97090084CBAE /* UIView+SignalUI.h in Headers */,
@@ -10905,7 +10898,6 @@
 				32FAB92A2727A57100FB76A6 /* PrimaryImageView.swift in Sources */,
 				506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */,
 				88B986F528807D6F00F8C74D /* RecipientPickerDelegate.swift in Sources */,
-				88B986F628807D6F00F8C74D /* RecipientPickerViewController.m in Sources */,
 				F9B652BC28D514E6006914CA /* RecipientPickerViewController.swift in Sources */,
 				34ACA7F62733183000E47AD4 /* RegistrationValues.swift in Sources */,
 				88B986FA28807EEA00F8C74D /* ReminderView.swift in Sources */,

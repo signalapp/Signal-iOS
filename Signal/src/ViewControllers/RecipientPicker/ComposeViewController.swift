@@ -8,6 +8,7 @@ import SignalUI
 
 @objc
 class ComposeViewController: RecipientPickerContainerViewController {
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -17,7 +18,7 @@ class ComposeViewController: RecipientPickerContainerViewController {
 
         recipientPicker.shouldShowInvites = true
         recipientPicker.shouldShowNewGroup = true
-        recipientPicker.groupsToShow = .showGroupsThatUserIsMemberOfWhenSearching
+        recipientPicker.groupsToShow = .groupsThatUserIsMemberOfWhenSearching
         recipientPicker.shouldHideLocalRecipient = false
 
         recipientPicker.delegate = self
@@ -135,6 +136,12 @@ extension ComposeViewController: RecipientPickerDelegate {
             return MessageStrings.conversationIsBlocked
         }
     }
+
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        accessoryViewForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> ContactCellAccessoryView? { nil }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient,

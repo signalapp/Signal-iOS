@@ -8,18 +8,490 @@ import MessageUI
 import SignalMessaging
 import SignalServiceKit
 
+public class RecipientPickerViewController: OWSViewController, OWSNavigationChildController {
+
+    public enum SelectionMode {
+        case `default`
+
+        // The .blocklist selection mode changes the behavior in a few ways:
+        //
+        // - If numbers aren't registered, allow them to be chosen. You may want to
+        //   block someone even if they aren't registered.
+        //
+        // - If numbers aren't registered, don't offer to invite them to Signal. If
+        //   you want to block someone, you probably don't want to invite them.
+        case blocklist
+    }
+
+    public enum GroupsToShow {
+        case noGroups
+        case groupsThatUserIsMemberOfWhenSearching
+        case allGroupsWhenSearching
+    }
+
+    public weak var delegate: RecipientPickerDelegate?
+
+    // MARK: Configuration
+
+    public var allowsAddByPhoneNumber = true
+    public var shouldHideLocalRecipient = true
+    public var selectionMode = SelectionMode.default
+    public var groupsToShow = GroupsToShow.groupsThatUserIsMemberOfWhenSearching
+    public var shouldShowInvites = false
+    public var shouldShowAlphabetSlider = true
+    public var shouldShowNewGroup = false
+    public var shouldUseAsyncSelection = false
+    public var findByPhoneNumberButtonTitle: String?
+
+    // MARK: Picker
+
+    public var pickedRecipients: [PickedRecipient] = []
+
+    // MARK: UIViewController
+
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
+        title = OWSLocalizedString("MESSAGE_COMPOSEVIEW_TITLE", comment: "")
+
+        contactsViewHelper.addObserver(self)
+
+        // Stack View
+        signalContactsStackView.isHidden = isNoContactsModeActive
+        view.addSubview(signalContactsStackView)
+        signalContactsStackView.autoPinEdgesToSuperviewEdges()
+
+        // Search Bar
+        signalContactsStackView.addArrangedSubview(searchBar)
+
+        // Custom Header Views
+        if let customHeaderViews = delegate?.recipientPickerCustomHeaderViews() {
+            customHeaderViews.forEach { signalContactsStackView.addArrangedSubview($0) }
+        }
+
+        // Table View
+        addChild(tableViewController)
+        signalContactsStackView.addArrangedSubview(tableView)
+
+        // "No Signal Contacts"
+        noSignalContactsView.isHidden = !isNoContactsModeActive
+        view.addSubview(noSignalContactsView)
+        noSignalContactsView.autoPinWidthToSuperview()
+        noSignalContactsView.autoPinEdge(toSuperviewEdge: .top)
+        noSignalContactsView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+
+        // Pull to Refresh
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = .gray
+        refreshControl.accessibilityIdentifier = "RecipientPickerViewController.pullToRefreshView"
+        refreshControl.addTarget(self, action: #selector(pullToRefreshPerformed), for: .valueChanged)
+        tableView.refreshControl = refreshControl
+
+        updateTableContents()
+
+        applyTheme()
+    }
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // Make sure we have requested contact access at this point if, e.g.
+        // the user has no messages in their inbox and they choose to compose
+        // a message.
+        contactsManagerImpl.requestSystemContactsOnce()
+
+        showContactAppropriateViews()
+    }
+
+    public override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        updateSearchBarMargins()
+    }
+
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateSearchBarMargins()
+    }
+
+    public override func themeDidChange() {
+        super.themeDidChange()
+        applyTheme()
+    }
+
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
+
+    public var navbarBackgroundColorOverride: UIColor? { tableViewController.tableBackgroundColor }
+
+    // MARK: Search
+
+    private static let minimumSearchLength = 1
+
+    private var searchText: String { searchBar.text?.stripped ?? "" }
+
+    private var lastSearchText: String?
+
+    private var _searchResults = Atomic<ComposeScreenSearchResultSet?>(wrappedValue: nil)
+
+    private var searchResults: ComposeScreenSearchResultSet? {
+        get { _searchResults.wrappedValue }
+        set {
+            if let newValue {
+                if searchText != newValue.searchText {
+                    Logger.verbose("user has changed text since search started. Skipping stale results.")
+                    return
+                }
+            } else {
+                if searchText.count >= Self.minimumSearchLength {
+                    Logger.verbose("user has entered text since clearing results. Skipping stale results.")
+                    return
+                }
+            }
+            guard _searchResults.wrappedValue != newValue else { return }
+
+            _searchResults.wrappedValue = newValue
+            Logger.verbose("showing search results for term: \(String(describing: newValue?.searchText))")
+            updateTableContents()
+        }
+    }
+
+    private func searchTextDidChange() {
+        let searchText = self.searchText
+
+        guard searchText.count >= Self.minimumSearchLength else {
+            searchResults = nil
+            lastSearchText = nil
+            return
+        }
+
+        guard lastSearchText != searchText else { return }
+
+        lastSearchText = searchText
+
+        var searchResults: ComposeScreenSearchResultSet?
+        databaseStorage.asyncRead(
+            block: { transaction in
+                searchResults = self.fullTextSearcher.searchForComposeScreen(
+                    searchText: searchText,
+                    omitLocalUser: self.shouldHideLocalRecipient,
+                    transaction: transaction
+                )
+            },
+            completion: { [weak self] in
+                guard let self else { return }
+                guard self.lastSearchText == searchText else {
+                    // Discard obsolete search results.
+                    return
+                }
+                self.searchResults = searchResults
+                BenchManager.completeEvent(eventId: "Compose Search - \(searchResults?.searchText ?? "")")
+            }
+        )
+    }
+
+    private func updateSearchBarMargins() {
+        // This should ideally compute the insets for self.tableView, but that
+        // view's size hasn't been updated when the viewDidLayoutSubviews method is
+        // called. As a quick fix, use self.view's size, which matches the eventual
+        // width of self.tableView. (A more complete fix would likely add a
+        // callback when self.tableView’s size is available.)
+        searchBar.layoutMargins = OWSTableViewController2.cellOuterInsets(in: view)
+    }
+
+    internal func clearSearchText() {
+        searchBar.text = ""
+        searchTextDidChange()
+    }
+
+    // MARK: UI
+
+    private var inviteFlow: InviteFlow?
+
+    private var isNoContactsModeActive = false {
+        didSet {
+            guard oldValue != isNoContactsModeActive else { return }
+
+            signalContactsStackView.isHidden = isNoContactsModeActive
+            noSignalContactsView.isHidden = !isNoContactsModeActive
+
+            updateTableContents()
+        }
+    }
+
+    private let collation = UILocalizedIndexedCollation.current()
+
+    private lazy var signalContactsStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        return stackView
+    }()
+
+    private lazy var searchBar: OWSSearchBar = {
+        let searchBar = OWSSearchBar()
+        searchBar.delegate = self
+        if FeatureFlags.usernames {
+            searchBar.placeholder = OWSLocalizedString(
+                "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
+                comment: "Placeholder text indicating the user can search for contacts by name, username, or phone number."
+            )
+        } else {
+            searchBar.placeholder = OWSLocalizedString(
+                "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
+                comment: "Placeholder text indicating the user can search for contacts by name or phone number."
+            )
+        }
+        searchBar.accessibilityIdentifier = "RecipientPickerViewController.searchBar"
+        searchBar.textField?.accessibilityIdentifier = "RecipientPickerViewController.contact_search"
+        searchBar.sizeToFit()
+        searchBar.setCompressionResistanceVerticalHigh()
+        searchBar.setContentHuggingVerticalHigh()
+        return searchBar
+    }()
+
+    private lazy var tableViewController: OWSTableViewController2 = {
+        let viewController = OWSTableViewController2()
+        viewController.delegate = self
+        viewController.defaultSeparatorInsetLeading = OWSTableViewController2.cellHInnerMargin
+            + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
+        viewController.tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
+        viewController.tableView.register(NonContactTableViewCell.self, forCellReuseIdentifier: NonContactTableViewCell.reuseIdentifier)
+        viewController.view.setCompressionResistanceVerticalHigh()
+        viewController.view.setContentHuggingVerticalHigh()
+        return viewController
+    }()
+
+    private lazy var noSignalContactsView = createNoSignalContactsView()
+
+    private var tableView: UITableView { tableViewController.tableView }
+
+    private func applyTheme() {
+        tableViewController.applyTheme(to: self)
+        searchBar.searchFieldBackgroundColorOverride = Theme.searchFieldElevatedBackgroundColor
+        tableViewController.tableView.sectionIndexColor = Theme.primaryTextColor
+        if let owsNavigationController = navigationController as? OWSNavigationController {
+            owsNavigationController.updateNavbarAppearance()
+        }
+    }
+
+    public func applyTheme(to viewController: UIViewController) {
+        tableViewController.applyTheme(to: viewController)
+    }
+
+    // MARK: Table Contents
+
+    public func reloadContent() {
+        updateTableContents()
+    }
+
+    private func updateTableContents() {
+        AssertIsOnMainThread()
+
+        guard !isNoContactsModeActive else {
+            tableViewController.contents = OWSTableContents()
+            return
+        }
+
+        let tableContents = OWSTableContents()
+
+        // App is killed and restarted when the user changes their contact
+        // permissions, so no need to "observe" anything to re-render this.
+        if let reminderSection = contactAccessReminderSection() {
+            tableContents.addSection(reminderSection)
+        }
+
+        let staticSection = OWSTableSection()
+        staticSection.separatorInsetLeading = (OWSTableViewController2.cellHInnerMargin + 24 + OWSTableItem.iconSpacing) as NSNumber
+
+        let isSearching = searchResults != nil
+
+        if shouldShowNewGroup && !isSearching {
+            staticSection.add(OWSTableItem.disclosureItem(
+                icon: .composeNewGroup,
+                name: OWSLocalizedString(
+                    "NEW_GROUP_BUTTON",
+                    comment: "Label for the 'create new group' button."
+                ),
+                accessibilityIdentifier: "RecipientPickerViewController.new_group",
+                actionBlock: { [weak self] in
+                    self?.newGroupButtonPressed()
+                }
+            ))
+        }
+
+        // Find Non-Contacts by Phone Number
+        if allowsAddByPhoneNumber && !isSearching {
+            staticSection.add(OWSTableItem.disclosureItem(
+                icon: .composeFindByPhoneNumber,
+                name: OWSLocalizedString(
+                    "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
+                    comment: "A label the cell that lets you add a new member to a group."
+                ),
+                accessibilityIdentifier: "RecipientPickerViewController.find_by_phone",
+                actionBlock: { [weak self] in
+                    guard let self else { return }
+                    let viewController = FindByPhoneNumberViewController(
+                        delegate: self,
+                        buttonText: self.findByPhoneNumberButtonTitle,
+                        requiresRegisteredNumber: self.selectionMode != .blocklist
+                    )
+                    self.navigationController?.pushViewController(viewController, animated: true)
+                }
+            ))
+        }
+
+        // Invite Contacts
+        if shouldShowInvites && !isSearching && contactsManagerImpl.sharingAuthorization != .denied {
+            staticSection.add(OWSTableItem.disclosureItem(
+                icon: .composeInvite,
+                name: OWSLocalizedString(
+                    "INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+                    comment: "Label for the cell that presents the 'invite contacts' workflow."
+                ),
+                accessibilityIdentifier: "RecipientPickerViewController.invite_contacts",
+                actionBlock: { [weak self] in
+                    self?.presentInviteFlow()
+                }
+            ))
+        }
+
+        if staticSection.itemCount > 0 {
+            tableContents.addSection(staticSection)
+        }
+
+        // Render any non-contact picked recipients
+        if !pickedRecipients.isEmpty && !isSearching {
+            let sectionRecipients = pickedRecipients.filter { recipient in
+                guard let recipientAddress = recipient.address else { return false }
+
+                if shouldHideLocalRecipient && recipientAddress == contactsViewHelper.localAddress() {
+                    return false
+                }
+                if contactsViewHelper.fetchSignalAccount(for: recipientAddress) != nil {
+                    return false
+                }
+                return true
+            }
+            if !sectionRecipients.isEmpty {
+                tableContents.addSection(OWSTableSection(
+                    title: OWSLocalizedString(
+                        "NEW_GROUP_NON_CONTACTS_SECTION_TITLE",
+                        comment: "a title for the selected section of the 'recipient picker' view."
+                    ),
+                    items: sectionRecipients.map { item(forRecipient: $0) }
+                ))
+            }
+        }
+
+        if let searchResults {
+            tableContents.addSections(contactsSections(for: searchResults))
+        } else {
+            // Count the non-collated sections, before we add our collated sections.
+            // Later we'll need to offset which sections our collation indexes reference
+            // by this amount. e.g. otherwise the "B" index will reference names starting with "A"
+            // And the "A" index will reference the static non-collated section(s).
+            let beforeContactsSectionCount = tableContents.sections.count
+            tableContents.addSections(contactsSection())
+
+            if shouldShowAlphabetSlider {
+                tableContents.sectionForSectionIndexTitleBlock = { [weak tableContents, weak self] title, index in
+                    guard let self, let tableContents else { return 0 }
+
+                    // Offset the collation section to account for the noncollated sections.
+                    let sectionIndex = self.collation.section(forSectionIndexTitle: index) + beforeContactsSectionCount
+                    guard sectionIndex >= 0 else {
+                        // Sentinel in case we change our section ordering in a surprising way.
+                        owsFailDebug("Unexpected negative section index")
+                        return 0
+                    }
+                    guard sectionIndex < tableContents.sections.count else {
+                        // Sentinel in case we change our section ordering in a surprising way.
+                        owsFailDebug("Unexpectedly large index")
+                        return 0
+                    }
+                    return sectionIndex
+                }
+                tableContents.sectionIndexTitlesForTableViewBlock = { [weak self] in
+                    guard let self else { return [] }
+                    return self.collation.sectionTitles
+                }
+            }
+        }
+
+        tableViewController.contents = tableContents
+    }
+
+    // MARK: -
+
+    @objc
+    private func pullToRefreshPerformed(_ refreshControl: UIRefreshControl) {
+        AssertIsOnMainThread()
+        Logger.info("Beginning refreshing")
+
+        let refreshPromise: AnyPromise
+        if tsAccountManager.isRegisteredPrimaryDevice {
+            refreshPromise = contactsManagerImpl.userRequestedSystemContactsRefresh()
+        } else {
+            refreshPromise = syncManager.sendAllSyncRequestMessages(timeout: 20)
+        }
+        _ = refreshPromise.ensure {
+            Logger.info("ending refreshing")
+            refreshControl.endRefreshing()
+        }
+    }
+}
+
+extension RecipientPickerViewController: OWSTableViewControllerDelegate {
+
+    public func tableViewWillBeginDragging(_ tableView: UITableView) {
+        searchBar.resignFirstResponder()
+        delegate?.recipientPickerTableViewWillBeginDragging(self)
+    }
+}
+
+extension RecipientPickerViewController: UISearchBarDelegate {
+
+    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        BenchManager.startEvent(title: "Compose Search", eventId: "Compose Search - \(searchText)")
+        searchTextDidChange()
+    }
+
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchTextDidChange()
+    }
+
+    public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchTextDidChange()
+    }
+
+    public func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {
+        searchTextDidChange()
+    }
+
+    public func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        searchTextDidChange()
+    }
+}
+
+extension RecipientPickerViewController: ContactsViewHelperObserver {
+
+    public func contactsViewHelperDidUpdateContacts() {
+        updateTableContents()
+        showContactAppropriateViews()
+    }
+}
+
 extension RecipientPickerViewController {
-    @objc(groupSectionForSearchResults:)
+
     public func groupSection(for searchResults: ComposeScreenSearchResultSet) -> OWSTableSection? {
         let groupThreads: [TSGroupThread]
         switch groupsToShow {
-        case .showNoGroups:
+        case .noGroups:
             return nil
-        case .showGroupsThatUserIsMemberOfWhenSearching:
+        case .groupsThatUserIsMemberOfWhenSearching:
             groupThreads = searchResults.groupThreads.filter { thread in
                 thread.isLocalUserFullMember
             }
-        case .showAllGroupsWhenSearching:
+        case .allGroupsWhenSearching:
             groupThreads = searchResults.groupThreads
         }
 
@@ -40,7 +512,8 @@ extension RecipientPickerViewController {
 // MARK: - Selecting Recipients
 
 private extension RecipientPickerViewController {
-    func tryToSelectRecipient(_ recipient: PickedRecipient) {
+
+    private func tryToSelectRecipient(_ recipient: PickedRecipient) {
         if let address = recipient.address, address.isLocalAddress, shouldHideLocalRecipient {
             owsFailDebug("Trying to select recipient that shouldn't be visible")
             return
@@ -116,8 +589,8 @@ private extension RecipientPickerViewController {
 // MARK: - No Contacts
 
 extension RecipientPickerViewController {
-    @objc
-    func createNoSignalContactsView() -> UIView {
+
+    private func createNoSignalContactsView() -> UIView {
         let heroImageView = UIImageView(image: .init(named: "uiEmptyContact"))
         heroImageView.layer.minificationFilter = .trilinear
         heroImageView.layer.magnificationFilter = .trilinear
@@ -251,8 +724,7 @@ extension RecipientPickerViewController {
         return result
     }
 
-    @objc
-    func filteredSignalAccounts() -> [SignalAccount] {
+    private func filteredSignalAccounts() -> [SignalAccount] {
         Array(lazyFilteredSignalAccounts())
     }
 
@@ -285,7 +757,6 @@ extension RecipientPickerViewController {
     /// contacts. So, if the user doesn't have any contacts but has also
     /// prevented Signal from accessing their contacts, we don't show the
     /// special UX and instead allow the banner to be visible.
-    @objc
     private func shouldNoContactsModeBeActive() -> Bool {
         switch contactsManagerImpl.editingAuthorization {
         case .denied, .restricted:
@@ -310,8 +781,7 @@ extension RecipientPickerViewController {
         }
     }
 
-    @objc
-    func showContactAppropriateViews() {
+    private func showContactAppropriateViews() {
         isNoContactsModeActive = shouldNoContactsModeBeActive()
     }
 
@@ -319,8 +789,7 @@ extension RecipientPickerViewController {
     ///
     /// Works closely with `shouldNoContactsModeBeActive` and therefore might
     /// not be invoked even if the user has no contacts.
-    @objc
-    func noContactsTableSection() -> OWSTableSection {
+    private func noContactsTableSection() -> OWSTableSection {
         switch contactsManagerImpl.editingAuthorization {
         case .denied, .restricted:
             return OWSTableSection()
@@ -334,8 +803,7 @@ extension RecipientPickerViewController {
     /// Returns a section with a banner at the top of the picker.
     ///
     /// Works closely with `shouldNoContactsModeBeActive`.
-    @objc
-    func contactAccessReminderSection() -> OWSTableSection? {
+    private func contactAccessReminderSection() -> OWSTableSection? {
         let tableItem: OWSTableItem
         switch contactsManagerImpl.editingAuthorization {
         case .denied:
@@ -432,18 +900,18 @@ extension RecipientPickerViewController {
     }
 
     @objc
-    func newGroupButtonPressed() {
+    private func newGroupButtonPressed() {
         delegate?.recipientPickerNewGroupButtonWasPressed()
     }
 
     @objc
-    func hideBackgroundView() {
+    private func hideBackgroundView() {
         self.preferences.setHasDeclinedNoContactsView(true)
         showContactAppropriateViews()
     }
 
     @objc
-    func presentInviteFlow() {
+    private func presentInviteFlow() {
         let inviteFlow = InviteFlow(presentingViewController: self)
         self.inviteFlow = inviteFlow
         inviteFlow.present(isAnimated: true, completion: nil)
@@ -453,8 +921,106 @@ extension RecipientPickerViewController {
 // MARK: - Contacts, Connections, & Groups
 
 extension RecipientPickerViewController {
-    @objc
-    func item(forRecipient recipient: PickedRecipient) -> OWSTableItem {
+
+    private func contactsSection() -> [OWSTableSection] {
+        let signalAccountsToShow = filteredSignalAccounts()
+
+        guard !signalAccountsToShow.isEmpty else {
+            return [ noContactsTableSection() ]
+        }
+
+        // All contacts in one section
+        guard !shouldShowAlphabetSlider else {
+            return [OWSTableSection(
+                title: OWSLocalizedString(
+                    "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
+                    comment: "Table section header for contact listing when composing a new message"
+                ),
+                items: signalAccountsToShow.map { item(forRecipient: PickedRecipient.for(address: $0.recipientAddress)) }
+            )]
+        }
+
+        var collatedSignalAccounts: [[SignalAccount]] = collation.sectionTitles.map { _ in [SignalAccount]() }
+        for signalAccount in signalAccountsToShow {
+            let section = collation.section(for: signalAccount, collationStringSelector: #selector(SignalAccount.stringForCollation))
+            guard section >= 0 else {
+                owsFailDebug("Unexpected collation for name:\(signalAccount.stringForCollation())")
+                continue
+            }
+            collatedSignalAccounts[section].append(signalAccount)
+        }
+
+        let contactSections = collatedSignalAccounts.enumerated().map { index, signalAccounts in
+            // Don't show empty sections.
+            // To accomplish this we add a section with a blank title rather than omitting the section altogether,
+            // in order for section indexes to match up correctly
+            guard !signalAccounts.isEmpty else { return OWSTableSection() }
+
+            return OWSTableSection(
+                title: collation.sectionTitles[index].uppercased(),
+                items: signalAccounts.map { item(forRecipient: PickedRecipient.for(address: $0.recipientAddress)) }
+            )
+        }
+
+        return contactSections
+    }
+
+    private func contactsSections(for searchResults: ComposeScreenSearchResultSet) -> [OWSTableSection] {
+        AssertIsOnMainThread()
+
+        var sections = [OWSTableSection]()
+
+        // Contacts, with blocked contacts removed.
+        var matchedAccountPhoneNumbers = Set<String>()
+        var contactsSectionItems = [OWSTableItem]()
+        let addressesToSkip = databaseStorage.read { transaction in return self.blockingManager.blockedAddresses(transaction: transaction) }
+        for recipientAddress in searchResults.signalAccounts.map({ $0.recipientAddress }) {
+            guard !addressesToSkip.contains(recipientAddress) else { continue }
+
+            if let phoneNumber = recipientAddress.phoneNumber {
+                matchedAccountPhoneNumbers.insert(phoneNumber)
+            }
+
+            contactsSectionItems.append(item(forRecipient: PickedRecipient.for(address: recipientAddress)))
+        }
+        if !contactsSectionItems.isEmpty {
+            sections.append(OWSTableSection(
+                title: OWSLocalizedString(
+                    "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
+                    comment: "Table section header for contact listing when composing a new message"
+                ),
+                items: contactsSectionItems
+            ))
+        }
+
+        if let groupSection = groupSection(for: searchResults) {
+            sections.append(groupSection)
+        }
+
+        if let findByNumberSection = findByNumberSection(for: searchResults, skipping: matchedAccountPhoneNumbers) {
+            sections.append(findByNumberSection)
+        }
+
+        if let usernameSection = findByUsernameSection(for: searchResults) {
+            sections.append(usernameSection)
+        }
+
+        guard !sections.isEmpty else {
+            // No Search Results
+             return [
+                OWSTableSection(items: [
+                    OWSTableItem.softCenterLabel(withText: OWSLocalizedString(
+                        "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS",
+                        comment: "A label that indicates the user's search has no matching results."
+                    ))
+                ])
+            ]
+        }
+
+        return sections
+    }
+
+    private func item(forRecipient recipient: PickedRecipient) -> OWSTableItem {
         switch recipient.identifier {
         case .address(let address):
             return OWSTableItem(
@@ -485,13 +1051,13 @@ extension RecipientPickerViewController {
         databaseStorage.read { transaction in
             let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .noteToSelf)
             if let delegate {
-                if let accessoryView = delegate.recipientPicker?(self, accessoryViewForRecipient: recipient, transaction: transaction) {
+                if let accessoryView = delegate.recipientPicker(self, accessoryViewForRecipient: recipient, transaction: transaction) {
                     configuration.accessoryView = accessoryView
                 } else {
                     let accessoryMessage = delegate.recipientPicker(self, accessoryMessageForRecipient: recipient, transaction: transaction)
                     configuration.accessoryMessage = accessoryMessage
                 }
-                if let attributedSubtitle = delegate.recipientPicker?(self, attributedSubtitleForRecipient: recipient, transaction: transaction) {
+                if let attributedSubtitle = delegate.recipientPicker(self, attributedSubtitleForRecipient: recipient, transaction: transaction) {
                     configuration.attributedSubtitle = attributedSubtitle
                 }
             }
@@ -706,7 +1272,6 @@ extension RecipientPickerViewController {
         return cell
     }
 
-    @objc(findByNumberSectionForSearchResults:skippingPhoneNumbers:)
     public func findByNumberSection(
         for searchResults: ComposeScreenSearchResultSet,
         skipping alreadyMatchedPhoneNumbers: Set<String>
@@ -856,6 +1421,7 @@ extension RecipientPickerViewController {
 // ^^ This refers to the *separate* "Find by Phone Number" row that you can tap.
 
 extension RecipientPickerViewController: FindByPhoneNumberDelegate {
+
     public func findByPhoneNumber(
         _ findByPhoneNumber: FindByPhoneNumberViewController,
         didSelectAddress address: SignalServiceAddress
@@ -895,8 +1461,7 @@ extension RecipientPickerViewController {
         return cell
     }
 
-    @objc(findByUsernameSectionForSearchResults:)
-    public func findByUsernameSection(for searchResults: ComposeScreenSearchResultSet) -> OWSTableSection? {
+    private func findByUsernameSection(for searchResults: ComposeScreenSearchResultSet) -> OWSTableSection? {
         guard FeatureFlags.usernames else {
             return nil
         }
@@ -943,5 +1508,13 @@ extension RecipientPickerViewController {
                 self.tryToSelectRecipient(.for(address: SignalServiceAddress(aci)))
             }
         )
+    }
+}
+
+fileprivate extension SignalAccount {
+
+    @objc
+    func stringForCollation() -> String {
+        contactsManagerImpl.comparableNameForSignalAccountWithSneakyTransaction(self)
     }
 }

@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewController {
     typealias PaymentMethodsConfiguration = SubscriptionManagerImpl.DonationConfiguration.PaymentMethodsConfiguration
@@ -34,7 +34,7 @@ class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewCon
 
         recipientPicker.allowsAddByPhoneNumber = false
         recipientPicker.shouldHideLocalRecipient = true
-        recipientPicker.groupsToShow = .showNoGroups
+        recipientPicker.groupsToShow = .noGroups
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
@@ -57,6 +57,7 @@ class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewCon
 }
 
 extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
+
     private static func getRecipientAddress(_ recipient: PickedRecipient) -> SignalServiceAddress? {
         guard let address = recipient.address, address.isValid, !address.isLocalAddress else {
             owsFailBeta("Invalid recipient. Did a group make its way in?")
@@ -97,6 +98,12 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          accessoryMessageForRecipient recipient: PickedRecipient,
                          transaction: SDSAnyReadTransaction) -> String? { nil }
+
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        accessoryViewForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> ContactCellAccessoryView? { nil }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient,

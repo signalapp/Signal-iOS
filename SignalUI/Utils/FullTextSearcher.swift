@@ -9,6 +9,7 @@ import SignalServiceKit
 import SignalMessaging
 
 public typealias MessageSortKey = UInt64
+
 public struct ConversationSortKey: Comparable {
     let isContactThread: Bool
     let creationDate: Date?
@@ -70,7 +71,8 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
 
 // MARK: -
 
-public class ContactSearchResult: NSObject, Comparable {
+public class ContactSearchResult: Comparable, Dependencies {
+
     public let signalAccount: SignalAccount
     private let comparableName: String
 
@@ -97,19 +99,15 @@ public class ContactSearchResult: NSObject, Comparable {
 
     // MARK: Equatable
 
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? Self else {
-            return false
-        }
-
-        return recipientAddress == other.recipientAddress
+    public static func == (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
+        return lhs.recipientAddress == rhs.recipientAddress
     }
 }
 
 // MARK: -
 
 /// Can represent either a group thread with stories, or a private story thread.
-public class StorySearchResult: NSObject, Comparable {
+public class StorySearchResult: Comparable {
 
     public let thread: TSThread
 
@@ -128,12 +126,8 @@ public class StorySearchResult: NSObject, Comparable {
 
     // MARK: Equatable
 
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? Self else {
-            return false
-        }
-
-        return thread.uniqueId == other.thread.uniqueId
+    public static func == (lhs: StorySearchResult, rhs: StorySearchResult) -> Bool {
+        return lhs.thread.uniqueId == rhs.thread.uniqueId
     }
 }
 
@@ -171,7 +165,8 @@ public class HomeScreenSearchResultSet: NSObject {
 
 // MARK: -
 
-public class GroupSearchResult: NSObject, Comparable {
+public class GroupSearchResult: Comparable {
+
     public let thread: ThreadViewModel
     public let matchedMembersSnippet: String?
 
@@ -212,20 +207,15 @@ public class GroupSearchResult: NSObject, Comparable {
 
     // MARK: Equatable
 
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? Self else {
-            return false
-        }
-
-        return thread.threadRecord.uniqueId == other.thread.threadRecord.uniqueId
+    public static func == (lhs: GroupSearchResult, rhs: GroupSearchResult) -> Bool {
+        return lhs.thread.threadRecord.uniqueId == rhs.thread.threadRecord.uniqueId
     }
 }
 
 // MARK: -
 
-public class ComposeScreenSearchResultSet: NSObject {
+public class ComposeScreenSearchResultSet: Equatable {
 
-    @objc
     public let searchText: String
 
     public let groups: [GroupSearchResult]
@@ -236,7 +226,6 @@ public class ComposeScreenSearchResultSet: NSObject {
 
     public let signalContacts: [ContactSearchResult]
 
-    @objc
     public var signalAccounts: [SignalAccount] {
         return signalContacts.map { $0.signalAccount }
     }
@@ -270,6 +259,13 @@ public class ComposeScreenSearchResultSet: NSObject {
             sections.append("signalAccounts: " + splits.joined(separator: ","))
         }
         return "[" + sections.joined(separator: ",") + "]"
+    }
+
+    public static func == (lhs: ComposeScreenSearchResultSet, rhs: ComposeScreenSearchResultSet) -> Bool {
+        guard lhs.searchText == rhs.searchText else { return false }
+        guard lhs.groups == rhs.groups else { return false }
+        guard lhs.signalAccounts == rhs.signalAccounts else { return false }
+        return true
     }
 }
 
@@ -387,12 +383,10 @@ public class ConversationScreenSearchResultSet: NSObject {
 
 public class FullTextSearcher: NSObject {
 
-    @objc
     public static let kDefaultMaxResults: UInt = 500
 
     public static let shared: FullTextSearcher = FullTextSearcher()
 
-    @objc
     public func searchForComposeScreen(
         searchText: String,
         omitLocalUser: Bool,

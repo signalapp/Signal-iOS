@@ -31,7 +31,7 @@ class PaymentsSendRecipientViewController: RecipientPickerContainerViewControlle
 
         recipientPicker.allowsAddByPhoneNumber = false
         recipientPicker.shouldHideLocalRecipient = true
-        recipientPicker.groupsToShow = .showNoGroups
+        recipientPicker.groupsToShow = .noGroups
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
@@ -103,6 +103,12 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
         accessoryMessageForRecipient recipient: PickedRecipient,
         transaction: SDSAnyReadTransaction
     ) -> String? { nil }
+
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        accessoryViewForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> ContactCellAccessoryView? { nil }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient,

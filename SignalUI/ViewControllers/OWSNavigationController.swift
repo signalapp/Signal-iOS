@@ -14,10 +14,6 @@ public protocol OWSNavigationChildController: AnyObject {
     /// all other protocol methods.
     var childForOWSNavigationConfiguration: OWSNavigationChildController? { get }
 
-    /// If non-nil, will use the provided child (should be a child view controller) for
-    /// all other protocol methods.
-    var objcChildForOWSNavigationConfiguration: OWSViewControllerObjc? { get }
-
     /// Will be called if the back button was pressed or if a back gesture
     /// was performed but not if the view is popped programmatically.
     /// Default false.
@@ -39,8 +35,6 @@ public protocol OWSNavigationChildController: AnyObject {
 extension OWSNavigationChildController {
 
     public var childForOWSNavigationConfiguration: OWSNavigationChildController? { nil }
-
-    public var objcChildForOWSNavigationConfiguration: OWSViewControllerObjc? { nil }
 
     public var shouldCancelNavigationBack: Bool { false }
 
@@ -369,9 +363,7 @@ extension UIViewController {
 extension OWSNavigationChildController {
 
     func getFinalChild() -> OWSNavigationChildController {
-        if let child = self.objcChildForOWSNavigationConfiguration {
-            return ObjcControllerWrapper(child)
-        } else if let child = self.childForOWSNavigationConfiguration {
+        if let child = childForOWSNavigationConfiguration {
             return child.getFinalChild()
         }
         return self
@@ -391,8 +383,6 @@ private class ObjcControllerWrapper: OWSNavigationChildController {
     }
 
     var childForOWSNavigationConfiguration: OWSNavigationChildController? { nil }
-
-    var objcChildForOWSNavigationConfiguration: OWSViewControllerObjc? { nil }
 
     var shouldCancelNavigationBack: Bool { objcController.shouldCancelNavigationBack }
 

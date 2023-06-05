@@ -8,6 +8,5 @@
 #import "ChatListViewController.h"
 #import "OWSOrphanDataCleaner.h"
 #import "OWSQuotedMessageView.h"
-#import "RecipientPickerViewController.h"
 #import "RemoteVideoView.h"
 #import "WindowManagerFix.h"
