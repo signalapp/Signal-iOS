@@ -84,7 +84,6 @@ class AttachmentApprovalToolbar: UIView {
 
         galleryRailView = GalleryRailView()
         galleryRailView.itemSize = 44
-        galleryRailView.hidesAutomatically = false
         galleryRailView.scrollFocusMode = .keepWithinBounds
 
         super.init(frame: frame)

@@ -959,6 +959,7 @@
 		76995F15283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */; };
 		76A2EB1028B578B800A29C24 /* MediaTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A2EB0F28B578B800A29C24 /* MediaTextView.swift */; };
 		76A2EB1228B57AEE00A29C24 /* ColorPickerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */; };
+		76AE4D9D2A14611C000D98A4 /* MediaControlPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76AE4D9C2A14611C000D98A4 /* MediaControlPanelView.swift */; };
 		76BA0DF02A29B27100751107 /* ChatListViewController+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA0DEF2A29B27100751107 /* ChatListViewController+Search.swift */; };
 		76BB06FA29AD84DB00978856 /* MediaItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BB06F929AD84DB00978856 /* MediaItemViewController.swift */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -3437,6 +3438,7 @@
 		76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+StrokeWidthSlider.swift"; sourceTree = "<group>"; };
 		76A2EB0F28B578B800A29C24 /* MediaTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTextView.swift; sourceTree = "<group>"; };
 		76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerBar.swift; sourceTree = "<group>"; };
+		76AE4D9C2A14611C000D98A4 /* MediaControlPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaControlPanelView.swift; sourceTree = "<group>"; };
 		76BA0DEF2A29B27100751107 /* ChatListViewController+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+Search.swift"; sourceTree = "<group>"; };
 		76BB06F929AD84DB00978856 /* MediaItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItemViewController.swift; sourceTree = "<group>"; };
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
@@ -6318,6 +6320,7 @@
 				45D49114296F69AA00B92BB1 /* AllMediaViewController.swift */,
 				45C845AC291466C0005F6EA5 /* JournalingOrderedDictionary.swift */,
 				4CA46F4B219CCC630038ABDE /* MediaCaptionView.swift */,
+				76AE4D9C2A14611C000D98A4 /* MediaControlPanelView.swift */,
 				452EC6DE205E9E30000E787C /* MediaGallery.swift */,
 				45DDD06629C1365100FD9670 /* MediaGalleryAccessoriesHelper.swift */,
 				4585B4A2291B2BFB003A8F8E /* MediaGalleryCollectionViewUpdater.swift */,
@@ -11493,6 +11496,7 @@
 				349767E325B8744700ECE1B0 /* ManageStickersViewController.swift in Sources */,
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				4CA46F4C219CCC630038ABDE /* MediaCaptionView.swift in Sources */,
+				76AE4D9D2A14611C000D98A4 /* MediaControlPanelView.swift in Sources */,
 				76FCCDBC27AB8FBE00BAA7F0 /* MediaControls.swift in Sources */,
 				4CD675BE22E7BE35008010D2 /* MediaDismissAnimationController.swift in Sources */,
 				346C19E125ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift in Sources */,

@@ -7,21 +7,16 @@ import AVFoundation
 import CoreMedia
 import SignalServiceKit
 import SignalUI
-import UIKit
 
-class VideoPlaybackControlView: UIView, VideoPlaybackStatusObserver {
+protocol VideoPlaybackControlViewDelegate: AnyObject {
+    func videoPlaybackControlViewDidTapPlayPause(_ videoPlaybackControlView: VideoPlaybackControlView)
+    func videoPlaybackControlViewDidTapRewind(_ videoPlaybackControlView: VideoPlaybackControlView)
+    func videoPlaybackControlViewDidTapFastForward(_ videoPlaybackControlView: VideoPlaybackControlView)
+}
+
+class VideoPlaybackControlView: UIView {
 
     // MARK: Subviews
-
-    private let buttonStack: UIStackView = {
-        let buttonStack = UIStackView(arrangedSubviews: [])
-        buttonStack.alignment = .center
-        buttonStack.axis = .horizontal
-        buttonStack.distribution = .fillEqually
-        buttonStack.semanticContentAttribute = .forceLeftToRight
-        buttonStack.spacing = 24
-        return buttonStack
-    }()
 
     private lazy var buttonPlay: UIButton = {
         let button = UIButton(type: .system)
@@ -41,6 +36,7 @@ class VideoPlaybackControlView: UIView, VideoPlaybackStatusObserver {
         let button = UIButton(type: .system)
         button.setImage(.init(imageLiteralResourceName: "video_rewind_15"), for: .normal)
         button.addTarget(self, action: #selector(didTapRewind), for: .touchUpInside)
+        button.isHidden = true
         return button
     }()
 
@@ -48,6 +44,7 @@ class VideoPlaybackControlView: UIView, VideoPlaybackStatusObserver {
         let button = UIButton(type: .system)
         button.setImage(.init(imageLiteralResourceName: "video_forward_15"), for: .normal)
         button.addTarget(self, action: #selector(didTapFastForward), for: .touchUpInside)
+        button.isHidden = true
         return button
     }()
 
@@ -56,118 +53,154 @@ class VideoPlaybackControlView: UIView, VideoPlaybackStatusObserver {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        semanticContentAttribute = .forceLeftToRight
+
         // Order must match default value of `isLandscapeLayout`.
         let buttons = [ buttonRewind, buttonPlay, buttonPause, buttonFastForward ]
         buttons.forEach { button in
+            button.translatesAutoresizingMaskIntoConstraints = false
             button.contentEdgeInsets = UIEdgeInsets(margin: 8)
-            button.autoPin(toAspectRatio: 1)
+            addSubview(button)
         }
-        buttonStack.addArrangedSubviews(buttons)
-        addSubview(buttonStack)
-        buttonStack.autoPinEdgesToSuperviewEdges()
+
+        // Permanent layout constraints.
+        addConstraints([
+            buttonPlay.centerYAnchor.constraint(equalTo: centerYAnchor),
+            buttonPlay.topAnchor.constraint(equalTo: topAnchor),
+            buttonPlay.heightAnchor.constraint(equalTo: buttonPlay.widthAnchor),
+
+            buttonPause.centerXAnchor.constraint(equalTo: buttonPlay.centerXAnchor),
+            buttonPause.centerYAnchor.constraint(equalTo: buttonPlay.centerYAnchor),
+            buttonPause.heightAnchor.constraint(equalTo: buttonPlay.heightAnchor),
+            buttonPause.widthAnchor.constraint(equalTo: buttonPause.heightAnchor),
+
+            buttonRewind.centerYAnchor.constraint(equalTo: buttonPlay.centerYAnchor),
+            buttonRewind.heightAnchor.constraint(equalTo: buttonPlay.heightAnchor),
+            buttonRewind.widthAnchor.constraint(equalTo: buttonRewind.heightAnchor),
+
+            buttonFastForward.centerYAnchor.constraint(equalTo: buttonPlay.centerYAnchor),
+            buttonFastForward.heightAnchor.constraint(equalTo: buttonPlay.heightAnchor),
+            buttonFastForward.widthAnchor.constraint(equalTo: buttonFastForward.heightAnchor)
+        ])
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func updateConstraints() {
+        super.updateConstraints()
+        if let buttonLayoutConstraints {
+            removeConstraints(buttonLayoutConstraints)
+        }
+        let constraints = layoutConstraintsForCurrentConfiguration()
+        addConstraints(constraints)
+        buttonLayoutConstraints = constraints
+    }
+
     // MARK: Public
 
     var isLandscapeLayout: Bool = false {
         didSet {
-            updateButtonOrdering()
+            guard oldValue != isLandscapeLayout else { return }
+            setNeedsUpdateConstraints()
         }
     }
 
-    func updateWithMediaItem(_ mediaItem: MediaGalleryItem) {
-        self.mediaItem = mediaItem
+    weak var delegate: VideoPlaybackControlViewDelegate?
 
+    func updateWithMediaItem(_ mediaItem: MediaGalleryItem) {
+        let durationThreshold: TimeInterval = 30
         if let videoDuration = mediaItem.attachmentStream.videoDuration as? TimeInterval {
-            showRewindAndFastForward = videoDuration >= 30
+            showRewindAndFastForward = videoDuration >= durationThreshold
         } else {
             showRewindAndFastForward = false
+            self.mediaItem = mediaItem
 
             VideoDurationHelper.shared.promisedDuration(attachment: mediaItem.attachmentStream).observe { [weak self] result in
-                guard let self, self.mediaItem == mediaItem, case .success(let duration) = result else { return }
-                self.showRewindAndFastForward = duration >= 30
+                guard let self, self.mediaItem === mediaItem, case .success(let duration) = result else {
+                    self?.mediaItem = nil
+                    return
+                }
+                self.showRewindAndFastForward = duration >= durationThreshold
+
+                // Only hold on to mediaItem for as long as it is necessary.
+                self.mediaItem = nil
             }
         }
+    }
+
+    func updateStatusWithPlayer(_ videoPlayer: VideoPlayer) {
+        let isPlaying = videoPlayer.isPlaying
+        buttonPlay.isHidden = isPlaying
+        buttonPause.isHidden = !isPlaying
     }
 
     // MARK: Helpers
 
     private var mediaItem: MediaGalleryItem?
 
-    var videoPlayer: VideoPlayer? {
+    private var showRewindAndFastForward = false {
         didSet {
-            updatePlayPauseStatus()
-        }
-    }
-
-    private var showRewindAndFastForward = true {
-        didSet {
+            guard oldValue != showRewindAndFastForward else { return }
             buttonRewind.isHidden = !showRewindAndFastForward
             buttonFastForward.isHidden = !showRewindAndFastForward
+            setNeedsUpdateConstraints()
         }
     }
 
-    private func updateButtonOrdering() {
-        buttonStack.removeArrangedSubview(buttonRewind)
-        if isLandscapeLayout {
-            buttonStack.insertArrangedSubview(buttonRewind, at: 2) // after Play and Pause
-        } else {
-            buttonStack.insertArrangedSubview(buttonRewind, at: 0)
+    private var buttonLayoutConstraints: [NSLayoutConstraint]?
+
+    private func layoutConstraintsForCurrentConfiguration() -> [NSLayoutConstraint] {
+        guard showRewindAndFastForward else {
+            // |[Play]|
+            return [
+                buttonPlay.leadingAnchor.constraint(equalTo: leadingAnchor),
+                buttonPlay.trailingAnchor.constraint(equalTo: trailingAnchor)
+            ]
         }
-   }
 
-    private func updatePlayPauseStatus() {
-        guard let videoPlayer else { return }
-
-        let isPlaying = videoPlayer.isPlaying
-        buttonPlay.isHiddenInStackView = isPlaying
-        buttonPause.isHiddenInStackView = !isPlaying
+        if isLandscapeLayout {
+            let buttonSpacing: CGFloat = 14
+            // |[Play] [Rewind] [FastF]|
+            return [
+                buttonPlay.leadingAnchor.constraint(equalTo: leadingAnchor),
+                buttonRewind.leadingAnchor.constraint(equalTo: buttonPlay.trailingAnchor, constant: buttonSpacing),
+                buttonFastForward.leadingAnchor.constraint(equalTo: buttonRewind.trailingAnchor, constant: buttonSpacing),
+                buttonFastForward.trailingAnchor.constraint(equalTo: trailingAnchor)
+            ]
+        } else {
+            let buttonSpacing: CGFloat = 24
+            // |[Rewind] [Play] [FastF]|
+            return [
+                buttonRewind.leadingAnchor.constraint(equalTo: leadingAnchor),
+                buttonPlay.leadingAnchor.constraint(equalTo: buttonRewind.trailingAnchor, constant: buttonSpacing),
+                buttonFastForward.leadingAnchor.constraint(equalTo: buttonPlay.trailingAnchor, constant: buttonSpacing),
+                buttonFastForward.trailingAnchor.constraint(equalTo: trailingAnchor)
+            ]
+        }
     }
 
     // MARK: Actions
 
     @objc
     private func didTapPlay() {
-        videoPlayer?.play()
+        delegate?.videoPlaybackControlViewDidTapPlayPause(self)
     }
 
     @objc
     private func didTapPause() {
-        videoPlayer?.pause()
+        delegate?.videoPlaybackControlViewDidTapPlayPause(self)
     }
 
     @objc
     private func didTapRewind() {
-        videoPlayer?.rewind(15)
+        delegate?.videoPlaybackControlViewDidTapRewind(self)
     }
 
     @objc
     private func didTapFastForward() {
-        videoPlayer?.fastForward(15)
-    }
-
-    // MARK: VideoPlaybackStatusObserver
-
-    private weak var videoPlaybackStatusProvider: VideoPlaybackStatusProvider?
-
-    func registerWithVideoPlaybackStatusProvider(_ provider: VideoPlaybackStatusProvider?) {
-        if let videoPlaybackStatusProvider {
-            videoPlaybackStatusProvider.videoPlaybackStatusObserver = nil
-        }
-
-        videoPlaybackStatusProvider = provider
-
-        if let videoPlaybackStatusProvider {
-            videoPlaybackStatusProvider.videoPlaybackStatusObserver = self
-        }
-    }
-
-    func videoPlayerStatusChanged(_ videoPlayer: VideoPlayer) {
-        updatePlayPauseStatus()
+        delegate?.videoPlaybackControlViewDidTapFastForward(self)
     }
 }
 
@@ -238,9 +271,26 @@ class PlayerProgressView: UIView {
 
     private static let preferredTimeScale: CMTimeScale = 100
 
+    var isVerticallyCompactLayout: Bool {
+        didSet {
+            if isVerticallyCompactLayout {
+                removeConstraints(normalLayoutConstraints)
+                addConstraints(compactLayoutConstraints)
+            } else {
+                removeConstraints(compactLayoutConstraints)
+                addConstraints(normalLayoutConstraints)
+            }
+        }
+    }
+
+    private var compactLayoutConstraints = [NSLayoutConstraint]()
+    private var normalLayoutConstraints = [NSLayoutConstraint]()
+
     // MARK: UIView
 
     init(forVerticallyCompactLayout compactLayout: Bool) {
+        isVerticallyCompactLayout = compactLayout
+
         super.init(frame: .zero)
 
         semanticContentAttribute = .forceLeftToRight
@@ -253,33 +303,42 @@ class PlayerProgressView: UIView {
         // Layout
         positionLabel.autoPinEdge(toSuperviewEdge: .leading)
         remainingLabel.autoPinEdge(toSuperviewEdge: .trailing)
-        if compactLayout {
-            // |[X:XX] ========================= [X:XX]|
-            positionLabel.autoVCenterInSuperview()
-            remainingLabel.autoVCenterInSuperview()
-            slider.autoAlignAxis(.horizontal, toSameAxisOf: positionLabel, withOffset: -CGHairlineWidth())
+        slider.autoSetDimension(.height, toSize: 35)
 
-            slider.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-            positionLabel.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-            remainingLabel.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        // Compact Layout (landscape screen orientation).
+        // |[X:XX] ========================= [X:XX]|
+        compactLayoutConstraints = [
+            positionLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            remainingLabel.centerYAnchor.constraint(equalTo: positionLabel.centerYAnchor),
+            slider.centerYAnchor.constraint(equalTo: positionLabel.centerYAnchor, constant: -CGHairlineWidth()),
 
-            slider.autoPinEdge(.leading, to: .trailing, of: positionLabel, withOffset: 12)
-            slider.autoPinEdge(.trailing, to: .leading, of: remainingLabel, withOffset: -12)
+            positionLabel.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
+            remainingLabel.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
+            slider.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
+
+            slider.leadingAnchor.constraint(equalTo: positionLabel.trailingAnchor, constant: 12),
+            slider.trailingAnchor.constraint(equalTo: remainingLabel.leadingAnchor, constant: -12)
+        ]
+
+        // Two-row layout (portrait screen orientation).
+        // |=======================================|
+        // |[X:XX]                           [X:XX]|
+        normalLayoutConstraints = [
+            slider.topAnchor.constraint(equalTo: topAnchor),
+            slider.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 2),
+            slider.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -2),
+
+            positionLabel.topAnchor.constraint(equalTo: slider.bottomAnchor, constant: 1),
+            positionLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
+
+            remainingLabel.centerYAnchor.constraint(equalTo: positionLabel.centerYAnchor),
+            remainingLabel.leadingAnchor.constraint(greaterThanOrEqualTo: positionLabel.trailingAnchor, constant: 8)
+        ]
+
+        if isVerticallyCompactLayout {
+            addConstraints(compactLayoutConstraints)
         } else {
-            // |=======================================|
-            // |[X:XX]                           [X:XX]|
-            slider.autoPinEdge(toSuperviewEdge: .top)
-
-            positionLabel.autoPinEdge(toSuperviewEdge: .bottom)
-            positionLabel.autoPinEdge(.top, to: .bottom, of: slider, withOffset: 6)
-
-            remainingLabel.autoPinEdge(toSuperviewEdge: .bottom)
-            remainingLabel.autoPinEdge(.top, to: .bottom, of: slider, withOffset: 6)
-
-            remainingLabel.autoPinEdge(.leading, to: .trailing, of: positionLabel, withOffset: 8, relation: .greaterThanOrEqual)
-
-            slider.autoPinEdge(.leading, to: .leading, of: positionLabel, withOffset: 2)
-            slider.autoPinEdge(.trailing, to: .trailing, of: remainingLabel, withOffset: -2)
+            addConstraints(normalLayoutConstraints)
         }
 
         // Panning is a no-op. We just absorb pan gesture's originating in the video controls
@@ -290,11 +349,6 @@ class PlayerProgressView: UIView {
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override var intrinsicContentSize: CGSize {
-        // This will make PlayerProgressView use all available width in a stack view.
-        return CGSize(width: UIScreen.main.bounds.width, height: UIView.noIntrinsicMetric)
     }
 
     // MARK: Slider Handling

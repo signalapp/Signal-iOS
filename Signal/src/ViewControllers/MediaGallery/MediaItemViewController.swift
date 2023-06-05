@@ -26,9 +26,8 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     let galleryItem: MediaGalleryItem
 
-    init(galleryItem: MediaGalleryItem, shouldAutoPlayVideo: Bool) {
+    init(galleryItem: MediaGalleryItem) {
         self.galleryItem = galleryItem
-        self.shouldAutoPlayVideo = shouldAutoPlayVideo
 
         super.init()
 
@@ -332,7 +331,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     // MARK: - Video Playback
 
-    private let shouldAutoPlayVideo: Bool
+    var shouldAutoPlayVideo: Bool = false
 
     private var hasAutoPlayedVideo = false
 
@@ -396,7 +395,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     // MARK: - VideoPlaybackStatusProvider
 
-    var videoPlaybackStatusObserver: VideoPlaybackStatusObserver?
+    weak var videoPlaybackStatusObserver: VideoPlaybackStatusObserver?
 }
 
 extension MediaItemViewController: UIScrollViewDelegate {
@@ -418,6 +417,7 @@ extension MediaItemViewController: LoopingVideoViewDelegate {
 }
 
 extension MediaItemViewController: VideoPlayerDelegate {
+
     func videoPlayerDidPlayToCompletion(_ videoPlayer: VideoPlayer) {
         guard isVideo, let videoPlayerView else { return }
 
@@ -427,6 +427,7 @@ extension MediaItemViewController: VideoPlayerDelegate {
 }
 
 extension MediaItemViewController: VideoPlayerViewDelegate {
+
     func videoPlayerViewStatusDidChange(_ view: VideoPlayerView) {
         if let buttonPlayVideo, view.isPlaying {
             buttonPlayVideo.isHidden = true

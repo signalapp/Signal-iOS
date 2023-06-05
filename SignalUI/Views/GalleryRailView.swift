@@ -159,19 +159,6 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
     private(set) var cellViews: [GalleryRailCellView] = []
 
-    /**
-     * If enabled, `GalleryRailView` will hide itself if there is less than two items.
-     */
-    public var hidesAutomatically = true {
-        didSet {
-            guard let itemProvider else { return }
-            // Unhide automatically if there's more than 1 item.
-            if hidesAutomatically && isHiddenInStackView && itemProvider.railItems.count > 1 {
-                isHiddenInStackView = false
-            }
-        }
-    }
-
     public var isScrollEnabled: Bool {
         get { scrollView.isScrollEnabled }
         set { scrollView.isScrollEnabled = newValue }
@@ -238,30 +225,6 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
         self.itemProvider = itemProvider
 
-        let duration: TimeInterval = animated ? 0.2 : 0
-
-        guard itemProvider.railItems.count > 1 || !hidesAutomatically else {
-            guard !isHiddenInStackView else { return }
-
-            let existingStackView = stackView
-            if animated {
-                UIView.animate(
-                    withDuration: duration,
-                    animations: {
-                        self.isHiddenInStackView = true
-                    },
-                    completion: { _ in
-                        existingStackView?.removeFromSuperview()
-                    }
-                )
-            } else {
-                existingStackView?.removeFromSuperview()
-                isHiddenInStackView = true
-            }
-            cellViews = []
-            return
-        }
-
         if let stackView {
             stackView.removeFromSuperview()
         }
@@ -274,18 +237,6 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
         UIView.performWithoutAnimation {
             self.layoutIfNeeded()
-        }
-
-        // Unhide only if view is hidden automatically.
-        if hidesAutomatically {
-            if animated && isHiddenInStackView {
-                UIView.animate(withDuration: duration) {
-                    self.isHiddenInStackView = false
-                    self.superview?.layoutIfNeeded()
-                }
-            } else {
-                isHiddenInStackView = false
-            }
         }
 
         updateFocusedItem(focusedItem, animated: animated)

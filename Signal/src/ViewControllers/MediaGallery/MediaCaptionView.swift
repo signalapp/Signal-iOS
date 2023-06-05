@@ -87,62 +87,6 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
         set { captionTextView.isExpanded = newValue }
     }
 
-    // MARK: Interactive Transition
-
-    private(set) var isTransitionInProgress: Bool = false
-
-    func beginInteractiveTransition(content: Content?) {
-        // Do not start the transition if next item's caption is the same as current one's.
-        guard self.content != content else {
-            owsAssertDebug(!isTransitionInProgress)
-            isTransitionInProgress = false
-            return
-        }
-
-        isTransitionInProgress = true
-        heightConstraint.isActive = true
-        pendingCaptionTextView.content = content
-        updateTransitionProgress(0)
-    }
-
-    func updateTransitionProgress(_ progress: CGFloat) {
-        // Do nothing until transition has been started explicitly.
-        // This tweak fixes minor UI imperfections when quickly scrolling between items.
-        guard isTransitionInProgress else { return }
-
-        captionTextView.alpha = 1 - progress
-        pendingCaptionTextView.alpha = progress
-
-        // This constraint defines height of `MediaCaptionView` during
-        // an interactive transition from one caption to another.
-        // The constraint has a `required` priority and will
-        // override constraint on the bottom edge of the `currentCaptionView`,
-        // making "current" text slide up or down while being attached to
-        // the top edge of `MediaCaptionView`.
-        let currentViewHeight = captionTextView.intrinsicContentSize.height
-        let pendingViewHeight = pendingCaptionTextView.intrinsicContentSize.height
-        heightConstraint.constant = CGFloatLerp(currentViewHeight, pendingViewHeight, progress)
-    }
-
-    func finishInteractiveTransition(_ isTransitionComplete: Bool) {
-        guard isTransitionInProgress else { return }
-
-        captionTextView.alpha = 1
-        if isTransitionComplete {
-            captionTextView.isExpanded = false
-            captionTextView.content = pendingCaptionTextView.content
-        }
-
-        pendingCaptionTextView.alpha = 0
-        pendingCaptionTextView.content = nil
-
-        heightConstraint.isActive = false
-
-        isTransitionInProgress = false
-    }
-
-    private lazy var heightConstraint = heightAnchor.constraint(equalToConstant: 0)
-
     // MARK: Initializers
 
     init(
@@ -157,22 +101,7 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
 
         addSubview(captionTextView)
         captionTextView.autoPinWidthToSuperviewMargins()
-        captionTextView.autoPinEdge(toSuperviewEdge: .top)
-        // This constraint is designed to be overridden by `heightConstraint`
-        // during interactive transition between captions.
-        // At the same time it must have a priority high enough
-        // so that `currentCaptionView` defines height of the `MediaCaptionView`.
-        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            captionTextView.autoPinEdge(toSuperviewEdge: .bottom)
-        }
-
-        pendingCaptionTextView.alpha = 0
-        addSubview(pendingCaptionTextView)
-        pendingCaptionTextView.autoPinWidthToSuperviewMargins()
-        pendingCaptionTextView.autoPinEdge(toSuperviewEdge: .top)
-        // `pendingCaptionView` does not have constraint for the bottom edge
-        // because we want the "pending" text to have its final height
-        // while we slide it up during interactive transition between captions.
+        captionTextView.autoPinHeightToSuperview()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -180,8 +109,6 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
     }
 
     func handleTap(_ gestureRecognizer: UITapGestureRecognizer) -> Bool {
-        guard !isTransitionInProgress else { return false }
-
         let messageBody: HydratedMessageBody
         let interactionIdentifier: InteractionSnapshotIdentifier
         switch content {
@@ -226,7 +153,7 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
 
     // MARK: Subviews
 
-    private static let captionTextContainerInsets = UIEdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0)
+    private static let captionTextContainerInsets = UIEdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0)
 
     private class func buildCaptionTextView(spoilerReveal: SpoilerRevealState) -> CaptionTextView {
         let textView = CaptionTextView(spoilerReveal: spoilerReveal)
@@ -237,7 +164,6 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
         return textView
     }
     private lazy var captionTextView = MediaCaptionView.buildCaptionTextView(spoilerReveal: spoilerReveal)
-    private lazy var pendingCaptionTextView = MediaCaptionView.buildCaptionTextView(spoilerReveal: spoilerReveal)
 
     private class CaptionTextView: UITextView, NSLayoutManagerDelegate {
 
