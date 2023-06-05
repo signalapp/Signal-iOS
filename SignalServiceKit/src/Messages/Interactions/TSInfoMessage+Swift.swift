@@ -5,9 +5,9 @@
 
 import Foundation
 
-@objc
 public extension TSInfoMessage {
 
+    @objc
     func groupUpdateDescription(transaction: SDSAnyReadTransaction) -> NSAttributedString {
         // for legacy group updates we persisted a pre-rendered string, rather than the details
         // to generate that string
@@ -20,7 +20,8 @@ public extension TSInfoMessage {
             return GroupUpdateCopy.defaultGroupUpdateDescription(
                 groupUpdateSourceAddress: groupUpdateSourceAddress,
                 localIdentifiers: tsAccountManager.localIdentifiers(transaction: transaction),
-                transaction: transaction
+                contactsManager: GroupUpdateCopy.Wrappers.ContactsManager(contactsManager),
+                tx: transaction.asV2Read
             )
         }
 
@@ -44,6 +45,7 @@ public extension TSInfoMessage {
                                 transaction: transaction)
     }
 
+    @objc
     func profileChangeDescription(transaction: SDSAnyReadTransaction) -> String {
         guard let profileChanges = profileChanges,
             let updateDescription = profileChanges.descriptionForUpdate(transaction: transaction) else {
@@ -83,7 +85,8 @@ extension TSInfoMessage {
             return GroupUpdateCopy.defaultGroupUpdateDescription(
                 groupUpdateSourceAddress: groupUpdateSourceAddress,
                 localIdentifiers: tsAccountManager.localIdentifiers(transaction: transaction),
-                transaction: transaction
+                contactsManager: GroupUpdateCopy.Wrappers.ContactsManager(contactsManager),
+                tx: transaction.asV2Read
             )
         }
 
@@ -152,7 +155,8 @@ extension TSInfoMessage {
             groupUpdateSourceAddress: groupUpdateSourceAddress,
             updaterKnownToBeLocalUser: updaterWasLocalUser,
             updateMessages: updateMessages,
-            transaction: transaction
+            contactsManager: GroupUpdateCopy.Wrappers.ContactsManager(contactsManager),
+            tx: transaction.asV2Read
         )
     }
 

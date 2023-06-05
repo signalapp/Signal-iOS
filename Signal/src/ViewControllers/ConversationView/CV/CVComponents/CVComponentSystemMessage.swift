@@ -822,50 +822,162 @@ extension CVComponentSystemMessage {
 
     private static func iconName(forGroupUpdateType groupUpdateType: GroupUpdateType) -> String {
         switch groupUpdateType {
-        case .userMembershipState_left:
+        case
+                .localUserLeft,
+                .otherUserLeft:
             return Theme.iconName(.leave16)
-        case .userMembershipState_removed:
+        case
+                .localUserRemoved,
+                .localUserRemovedByUnknownUser,
+                .otherUserRemovedByLocalUser,
+                .otherUserRemoved:
             return Theme.iconName(.memberRemove16)
-        case .userMembershipState_invited,
-             .userMembershipState_added,
-             .userMembershipState_invitesNew:
+        case
+                .unnamedUsersWereInvitedByLocalUser,
+                .unnamedUsersWereInvitedByOtherUser,
+                .unnamedUsersWereInvitedByUnknownUser,
+                .localUserWasInvitedByLocalUser,
+                .localUserWasInvitedByOtherUser,
+                .localUserWasInvitedByUnknownUser,
+                .otherUserWasInvitedByLocalUser,
+                .localUserAddedByLocalUser,
+                .localUserAddedByOtherUser,
+                .localUserAddedByUnknownUser,
+                .localUserAcceptedInviteFromUnknownUser,
+                .localUserAcceptedInviteFromInviter,
+                .localUserJoined,
+                .localUserJoinedViaInviteLink,
+                .localUserRequestApproved,
+                .localUserRequestApprovedByUnknownUser,
+                .otherUserAddedByLocalUser,
+                .otherUserAddedByOtherUser,
+                .otherUserAddedByUnknownUser,
+                .otherUserAcceptedInviteFromLocalUser,
+                .otherUserAcceptedInviteFromInviter,
+                .otherUserAcceptedInviteFromUnknownUser,
+                .otherUserJoined,
+                .otherUserJoinedViaInviteLink,
+                .otherUserRequestApprovedByLocalUser,
+                .otherUserRequestApproved:
             return Theme.iconName(.memberAdded16)
-        case .groupCreated,
-             .generic,
-             .debug,
-             .sequenceOfInviteLinkRequestAndCancels,
-             .userMembershipState,
-             .userMembershipState_invalidInvitesRemoved,
-             .userMembershipState_invalidInvitesAdded,
-             .groupInviteLink,
-             .groupGroupLinkPromotion:
+        case
+                .createdByLocalUser,
+                .createdByOtherUser,
+                .createdByUnknownUser,
+                .genericUpdateByLocalUser,
+                .genericUpdateByOtherUser,
+                .genericUpdateByUnknownUser,
+                .localUserRequestedToJoin,
+                .localUserRequestCanceledByLocalUser,
+                .localUserRequestRejectedByUnknownUser,
+                .otherUserRequestedToJoin,
+                .otherUserRequestCanceledByOtherUser,
+                .otherUserRequestRejectedByLocalUser,
+                .otherUserRequestRejectedByOtherUser,
+                .otherUserRequestRejectedByUnknownUser,
+                .invalidInvitesAddedByLocalUser,
+                .invalidInvitesAddedByOtherUser,
+                .invalidInvitesAddedByUnknownUser,
+                .invalidInvitesRemovedByLocalUser,
+                .invalidInvitesRemovedByOtherUser,
+                .invalidInvitesRemovedByUnknownUser,
+                .sequenceOfInviteLinkRequestAndCancels,
+                .inviteLinkResetByLocalUser,
+                .inviteLinkResetByOtherUser,
+                .inviteLinkResetByUnknownUser,
+                .inviteLinkDisabledByLocalUser,
+                .inviteLinkDisabledByOtherUser,
+                .inviteLinkDisabledByUnknownUser,
+                .inviteLinkEnabledWithApprovalByLocalUser,
+                .inviteLinkEnabledWithApprovalByOtherUser,
+                .inviteLinkEnabledWithApprovalByUnknownUser,
+                .inviteLinkEnabledWithoutApprovalByLocalUser,
+                .inviteLinkEnabledWithoutApprovalByOtherUser,
+                .inviteLinkEnabledWithoutApprovalByUnknownUser,
+                .inviteLinkApprovalEnabledByLocalUser,
+                .inviteLinkApprovalEnabledByOtherUser,
+                .inviteLinkApprovalEnabledByUnknownUser,
+                .inviteLinkApprovalDisabledByLocalUser,
+                .inviteLinkApprovalDisabledByOtherUser,
+                .inviteLinkApprovalDisabledByUnknownUser,
+                .wasJustCreatedByLocalUser:
             return Theme.iconName(.group16)
-        case .userMembershipState_invitesDeclined,
-             .userMembershipState_invitesRevoked:
+        case
+                .unnamedUserInvitesWereRevokedByLocalUser,
+                .unnamedUserInvitesWereRevokedByOtherUser,
+                .unnamedUserInvitesWereRevokedByUnknownUser,
+                .localUserDeclinedInviteFromInviter,
+                .localUserDeclinedInviteFromUnknownUser,
+                .localUserInviteRevoked,
+                .localUserInviteRevokedByUnknownUser,
+                .otherUserDeclinedInviteFromLocalUser,
+                .otherUserDeclinedInviteFromInviter,
+                .otherUserDeclinedInviteFromUnknownUser,
+                .otherUserInviteRevokedByLocalUser:
             return Theme.iconName(.memberDeclined16)
-        case .accessAttributes,
-             .accessMembers,
-             .userRole:
+        case
+                .wasMigrated,
+                .attributesAccessChangedByLocalUser,
+                .attributesAccessChangedByOtherUser,
+                .attributesAccessChangedByUnknownUser,
+                .membersAccessChangedByLocalUser,
+                .membersAccessChangedByOtherUser,
+                .membersAccessChangedByUnknownUser,
+                .localUserWasGrantedAdministratorByLocalUser,
+                .localUserWasGrantedAdministratorByOtherUser,
+                .localUserWasGrantedAdministratorByUnknownUser,
+                .localUserWasRevokedAdministratorByLocalUser,
+                .localUserWasRevokedAdministratorByOtherUser,
+                .localUserWasRevokedAdministratorByUnknownUser,
+                .otherUserWasGrantedAdministratorByLocalUser,
+                .otherUserWasGrantedAdministratorByOtherUser,
+                .otherUserWasGrantedAdministratorByUnknownUser,
+                .otherUserWasRevokedAdministratorByLocalUser,
+                .otherUserWasRevokedAdministratorByOtherUser,
+                .otherUserWasRevokedAdministratorByUnknownUser,
+                .announcementOnlyEnabledByLocalUser,
+                .announcementOnlyEnabledByOtherUser,
+                .announcementOnlyEnabledByUnknownUser,
+                .announcementOnlyDisabledByLocalUser,
+                .announcementOnlyDisabledByOtherUser,
+                .announcementOnlyDisabledByUnknownUser:
             return Theme.iconName(.megaphone16)
-        case .groupName,
-             .groupDescriptionUpdated,
-             .groupDescriptionRemoved:
+        case
+                .nameChangedByLocalUser,
+                .nameChangedByOtherUser,
+                .nameChangedByUnknownUser,
+                .nameRemovedByLocalUser,
+                .nameRemovedByOtherUser,
+                .nameRemovedByUnknownUser,
+                .descriptionChangedByLocalUser,
+                .descriptionChangedByOtherUser,
+                .descriptionChangedByUnknownUser,
+                .descriptionRemovedByLocalUser,
+                .descriptionRemovedByOtherUser,
+                .descriptionRemovedByUnknownUser:
             return Theme.iconName(.compose16)
-        case .groupAvatar:
+        case
+                .avatarChangedByLocalUser,
+                .avatarChangedByOtherUser,
+                .avatarChangedByUnknownUser,
+                .avatarRemovedByLocalUser,
+                .avatarRemovedByOtherUser,
+                .avatarRemovedByUnknownUser:
             return Theme.iconName(.photo16)
-        case .disappearingMessagesState,
-             .disappearingMessagesState_enabled:
+        case
+            .disappearingMessagesUpdatedNoOldTokenByLocalUser,
+            .disappearingMessagesUpdatedNoOldTokenByUnknownUser:
             return Theme.iconName(.timer16)
-        case .disappearingMessagesState_disabled:
+        case
+            .disappearingMessagesEnabledByLocalUser,
+            .disappearingMessagesEnabledByOtherUser,
+            .disappearingMessagesEnabledByUnknownUser:
+            return Theme.iconName(.timer16)
+        case
+            .disappearingMessagesDisabledByLocalUser,
+            .disappearingMessagesDisabledByOtherUser,
+            .disappearingMessagesDisabledByUnknownUser:
             return Theme.iconName(.timerDisabled16)
-        case .groupMigrated:
-            return Theme.iconName(.megaphone16)
-        case .groupMigrated_usersInvited:
-            return Theme.iconName(.memberAdded16)
-        case .groupMigrated_usersDropped:
-            return Theme.iconName(.group16)
-        case .isAnnouncementOnly:
-            return Theme.iconName(.megaphone16)
         }
     }
 
@@ -1056,19 +1168,22 @@ extension CVComponentSystemMessage {
 
             for groupUpdate in groupUpdates {
                 switch groupUpdate.type {
-                case .groupMigrated:
+                case .wasMigrated:
                     return Action(
                         title: CommonStrings.learnMore,
                         accessibilityIdentifier: "group_migration_learn_more",
                         action: .didTapGroupMigrationLearnMore
                     )
-                case .groupDescriptionUpdated:
+                case
+                        .descriptionChangedByLocalUser,
+                        .descriptionChangedByOtherUser,
+                        .descriptionChangedByUnknownUser:
                     return Action(
                         title: CommonStrings.viewButton,
                         accessibilityIdentifier: "group_description_view",
                         action: .didTapViewGroupDescription(groupModel: newGroupModel)
                     )
-                case .sequenceOfInviteLinkRequestAndCancels(let isTail):
+                case let .sequenceOfInviteLinkRequestAndCancels(_, _, _, isTail):
                     guard isTail else { return nil }
 
                     guard

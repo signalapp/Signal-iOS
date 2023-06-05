@@ -1278,6 +1278,7 @@
 		D925F56A298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
 		D925F56B298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
+		D92C57552A2925AD00A03BB7 /* TSInfoMessage+GroupUpdateTypeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+GroupUpdateTypeTest.swift */; };
 		D938CD6029283402006FB16A /* Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938CD5F29283402006FB16A /* Paypal.swift */; };
 		D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */; };
 		D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */; };
@@ -1315,7 +1316,7 @@
 		D9A3E2302A0DABDF00E2A8B5 /* UsernameQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */; };
 		D9A3E2322A0DBDFC00E2A8B5 /* Usernames+UsernameLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F55429834BC900158EE4 /* Usernames+UsernameLinkTests.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
-		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */; };
+		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift */; };
 		D9AE0ACB29162C160063488B /* BroadcastMediaMessageJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ACA29162C160063488B /* BroadcastMediaMessageJobRecord.swift */; };
 		D9AE0ACF29186D7F0063488B /* IncomingContactSyncJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ACE29186D7F0063488B /* IncomingContactSyncJobRecord.swift */; };
 		D9AE0AD1291870220063488B /* IncomingGroupSyncJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD0291870220063488B /* IncomingGroupSyncJobRecord.swift */; };
@@ -1325,6 +1326,7 @@
 		D9AE0AD929187F850063488B /* MessageSenderJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD829187F850063488B /* MessageSenderJobRecord.swift */; };
 		D9AE0ADB29188A170063488B /* LegacyMessageDecryptJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ADA29188A170063488B /* LegacyMessageDecryptJobRecord.swift */; };
 		D9AE0ADD2918B2960063488B /* JobRecord+Columns.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ADC2918B2960063488B /* JobRecord+Columns.swift */; };
+		D9B0AC7429EF42960070F31C /* TSInfoMessage+GroupUpdateType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B0AC7329EF42960070F31C /* TSInfoMessage+GroupUpdateType.swift */; };
 		D9B8541229137C150058F97B /* JobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B8541129137C150058F97B /* JobRecord.swift */; };
 		D9B95A9629E6830B00D7CB95 /* JobRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */; };
 		D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */; };
@@ -3834,6 +3836,7 @@
 		D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameLookupManager.swift; sourceTree = "<group>"; };
 		D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupRecordTest.swift; sourceTree = "<group>"; };
 		D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManager.swift; sourceTree = "<group>"; };
+		D92C57542A2925AD00A03BB7 /* TSInfoMessage+GroupUpdateTypeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateTypeTest.swift"; sourceTree = "<group>"; };
 		D938CD5F29283402006FB16A /* Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paypal.swift; sourceTree = "<group>"; };
 		D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManager.swift; sourceTree = "<group>"; };
 		D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManagerTest.swift; sourceTree = "<group>"; };
@@ -3871,7 +3874,7 @@
 		D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkOpener.swift; sourceTree = "<group>"; };
 		D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameQuerier.swift; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
-		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
+		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
 		D9AE0ACA29162C160063488B /* BroadcastMediaMessageJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastMediaMessageJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0ACE29186D7F0063488B /* IncomingContactSyncJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingContactSyncJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0AD0291870220063488B /* IncomingGroupSyncJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingGroupSyncJobRecord.swift; sourceTree = "<group>"; };
@@ -3881,6 +3884,7 @@
 		D9AE0AD829187F850063488B /* MessageSenderJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSenderJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0ADA29188A170063488B /* LegacyMessageDecryptJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyMessageDecryptJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0ADC2918B2960063488B /* JobRecord+Columns.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JobRecord+Columns.swift"; sourceTree = "<group>"; };
+		D9B0AC7329EF42960070F31C /* TSInfoMessage+GroupUpdateType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateType.swift"; sourceTree = "<group>"; };
 		D9B8541129137C150058F97B /* JobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRecord.swift; sourceTree = "<group>"; };
 		D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRecordTest.swift; sourceTree = "<group>"; };
 		D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceTest.swift; sourceTree = "<group>"; };
@@ -8193,7 +8197,7 @@
 				F942622E289B1B5500460798 /* SMKTestUtils.swift */,
 				F9426230289B1B5500460798 /* SMKUDAccessKeyTest.swift */,
 				F942621E289B1B5500460798 /* TestProtocolRunnerTest.swift */,
-				D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */,
+				D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift */,
 				F9426227289B1B5500460798 /* TypingIndicatorMessageTest.swift */,
 			);
 			name = Messages;
@@ -8203,6 +8207,7 @@
 		F942621F289B1B5500460798 /* Interactions */ = {
 			isa = PBXGroup;
 			children = (
+				D92C57542A2925AD00A03BB7 /* TSInfoMessage+GroupUpdateTypeTest.swift */,
 				D9CD40612A155C4800545803 /* TSInfoMessage+UpdateMessagesTest.swift */,
 				F9426221289B1B5500460798 /* TSMessageTest.swift */,
 				F9426220289B1B5500460798 /* TSOutgoingMessageTest.swift */,
@@ -8580,6 +8585,7 @@
 				F9C5C8E8289453B100548EEE /* TSIncomingMessage.h */,
 				F9C5C8FC289453B100548EEE /* TSIncomingMessage.m */,
 				F9C5C8F3289453B100548EEE /* TSInfoMessage+GroupUpdateCopy.swift */,
+				D9B0AC7329EF42960070F31C /* TSInfoMessage+GroupUpdateType.swift */,
 				F9C5C8FA289453B100548EEE /* TSInfoMessage+ProfileChanges.swift */,
 				F9C5C8EE289453B100548EEE /* TSInfoMessage+SDS.swift */,
 				F9C5C8E2289453B100548EEE /* TSInfoMessage+Swift.swift */,
@@ -12424,6 +12430,7 @@
 				F9C5CBD5289453B300548EEE /* TSIncomingMessage+SDS.swift in Sources */,
 				F9C5CBF0289453B300548EEE /* TSIncomingMessage.m in Sources */,
 				F9C5CBE7289453B300548EEE /* TSInfoMessage+GroupUpdateCopy.swift in Sources */,
+				D9B0AC7429EF42960070F31C /* TSInfoMessage+GroupUpdateType.swift in Sources */,
 				F9C5CBEE289453B300548EEE /* TSInfoMessage+ProfileChanges.swift in Sources */,
 				F9C5CBE2289453B300548EEE /* TSInfoMessage+SDS.swift in Sources */,
 				F9C5CBD6289453B300548EEE /* TSInfoMessage+Swift.swift in Sources */,
@@ -12630,7 +12637,8 @@
 				F903C29B28EC7AE60035B42B /* TSAccountManagerTest.swift in Sources */,
 				F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */,
 				F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */,
-				D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */,
+				D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift in Sources */,
+				D92C57552A2925AD00A03BB7 /* TSInfoMessage+GroupUpdateTypeTest.swift in Sources */,
 				D9CD40622A155C4800545803 /* TSInfoMessage+UpdateMessagesTest.swift in Sources */,
 				F9426258289B1B5500460798 /* TSMessageStorageTests.m in Sources */,
 				F942628A289B1B5600460798 /* TSMessageTest.swift in Sources */,
