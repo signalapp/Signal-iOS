@@ -70,50 +70,126 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     }
 
     private enum ReadStrategy {
-        case kbsOnly
-        case fallbackToKBSForNonInvalidPinFailure
-        case fallbackToKBSForNoBackupFailureOnly
-        case svr2Only
+        case kbsOnly(SVR.AuthMethod)
+        case fallbackToKBSForNonInvalidPinFailure(kbsAuth: SVR.AuthMethod, svr2Auth: SVR.AuthMethod)
+        case fallbackToKBSForNoBackupFailureOnly(kbsAuth: SVR.AuthMethod, svr2Auth: SVR.AuthMethod)
+        case svr2Only(SVR.AuthMethod)
+        case reportNoBackup
     }
 
-    private var readStrategy: ReadStrategy {
-        guard FeatureFlags.svr2 else {
-            return .kbsOnly
+    private func readStrategy(for authMethod: SVR.AuthMethod) -> ReadStrategy {
+
+        let kbsAuth = authMethod.kbsCompatible
+        let svr2Auth = authMethod.svr2Compatible
+        func kbsOnlyIfPossible() -> ReadStrategy {
+            return kbsAuth.map { .kbsOnly($0) } ?? .reportNoBackup
         }
+        func svr2OnlyIfPossible() -> ReadStrategy {
+            return svr2Auth.map { .svr2Only($0) } ?? .reportNoBackup
+        }
+        func fallbackToKBSForNonInvalidPinFailureIfPossible() -> ReadStrategy {
+            if let kbsAuth, let svr2Auth {
+                return .fallbackToKBSForNonInvalidPinFailure(kbsAuth: kbsAuth, svr2Auth: svr2Auth)
+            } else if let kbsAuth {
+                return .kbsOnly(kbsAuth)
+            } else if let svr2Auth {
+                return .svr2Only(svr2Auth)
+            } else {
+                return .reportNoBackup
+            }
+        }
+        func fallbackToKBSForNoBackupFailureOnlyIfPossible() -> ReadStrategy {
+            if let kbsAuth, let svr2Auth {
+                return .fallbackToKBSForNoBackupFailureOnly(kbsAuth: kbsAuth, svr2Auth: svr2Auth)
+            } else if let kbsAuth {
+                return .kbsOnly(kbsAuth)
+            } else if let svr2Auth {
+                return .svr2Only(svr2Auth)
+            } else {
+                return .reportNoBackup
+            }
+        }
+
+        guard FeatureFlags.svr2 else {
+            return kbsOnlyIfPossible()
+        }
+
         switch remoteSVRConfig {
         case .none:
-            // We do reads before registering, which means before
-            // we have any remote config flags.
-            // In this case, we want to try SVR2 but fall back to
-            // KBS if _anything_ goes wrong (besides an explicit wrong PIN).
-            return .fallbackToKBSForNonInvalidPinFailure
+            // No config; we are probably in registration.
+            // Don't accept backups; if we get explicit credentials,
+            // but don't get a kbs credential, don't try and fetch one
+            // via chat service auth or whatever. Ditto for svr2.
+            // If we have both, or are given non-explicit auth credentials,
+            // we want to try SVR2 but fall back to KBS if _anything_ goes
+            // wrong (besides an explicit wrong PIN).
+            switch authMethod {
+            case .svrAuth(let authCredential, _):
+                if authCredential.kbs != nil, authCredential.svr2 != nil {
+                    return fallbackToKBSForNonInvalidPinFailureIfPossible()
+                } else if authCredential.kbs != nil {
+                    return kbsOnlyIfPossible()
+                } else if authCredential.svr2 != nil {
+                    return svr2OnlyIfPossible()
+                } else {
+                    return .reportNoBackup
+                }
+            case .chatServerAuth, .implicit:
+                return fallbackToKBSForNonInvalidPinFailureIfPossible()
+            }
         case .kbsOnly:
-            return .kbsOnly
+            return kbsOnlyIfPossible()
         case .mirroring:
-            return .fallbackToKBSForNoBackupFailureOnly
+            return fallbackToKBSForNoBackupFailureOnlyIfPossible()
         case .svr2Only:
-            return .svr2Only
+            return  svr2OnlyIfPossible()
         }
     }
 
     private enum WriteStrategy {
-        case kbsOnly
-        case mirroring
-        case svr2Only
+        case kbsOnly(SVR.AuthMethod)
+        case mirroring(kbsAuth: SVR.AuthMethod, svr2Auth: SVR.AuthMethod)
+        case svr2Only(SVR.AuthMethod)
+        case reportGenericError
     }
 
-    private var writeStrategy: WriteStrategy {
+    private func writeStrategy(for authMethod: SVR.AuthMethod) -> WriteStrategy {
+
+        let kbsAuth = authMethod.kbsCompatible
+        let svr2Auth = authMethod.svr2Compatible
+
+        func kbsOnlyIfPossible() -> WriteStrategy {
+            return kbsAuth.map { .kbsOnly($0) } ?? .reportGenericError
+        }
+        func svr2OnlyIfPossible() -> WriteStrategy {
+            return svr2Auth.map { .svr2Only($0) } ?? .reportGenericError
+        }
+        func mirroringIfPossible() -> WriteStrategy {
+            if let kbsAuth, let svr2Auth {
+                return .mirroring(kbsAuth: kbsAuth, svr2Auth: svr2Auth)
+            } else if let kbsAuth {
+                return .kbsOnly(kbsAuth)
+            } else if let svr2Auth {
+                return .svr2Only(svr2Auth)
+            } else {
+                return .reportGenericError
+            }
+        }
+
         guard let remoteSVRConfig else {
             owsFailBeta("Should only be writing after setting remote config")
-            return FeatureFlags.svr2 ? .mirroring : .kbsOnly
+            guard FeatureFlags.svr2 else {
+                return kbsOnlyIfPossible()
+            }
+            return mirroringIfPossible()
         }
         switch remoteSVRConfig {
         case .kbsOnly:
-            return .kbsOnly
+            return kbsOnlyIfPossible()
         case .mirroring:
-            return .mirroring
+            return mirroringIfPossible()
         case .svr2Only:
-            return .svr2Only
+            return svr2OnlyIfPossible()
         }
     }
 
@@ -150,8 +226,9 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     }
 
     public func hasMasterKey(transaction: DBReadTransaction) -> Bool {
-        switch readStrategy {
-        case .kbsOnly:
+        // Local read; auth is irrelevant
+        switch readStrategy(for: .implicit) {
+        case .kbsOnly, .reportNoBackup:
             return kbs.hasMasterKey(transaction: transaction)
         case .svr2Only:
             return svr2.hasMasterKey(transaction: transaction)
@@ -166,8 +243,9 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     }
 
     public func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool {
-        switch readStrategy {
-        case .kbsOnly:
+        // Local read; auth is irrelevant
+        switch readStrategy(for: .implicit) {
+        case .kbsOnly, .reportNoBackup:
             return kbs.hasBackedUpMasterKey(transaction: transaction)
         case .svr2Only:
             return svr2.hasBackedUpMasterKey(transaction: transaction)
@@ -178,8 +256,11 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     }
 
     public func useDeviceLocalMasterKey(authedAccount: AuthedAccount, transaction: DBWriteTransaction) {
-        switch writeStrategy {
-        case .kbsOnly:
+        // Local write; auth is irrelevant
+        // (yes its confusing there's an authed account; thats just to trigger storage service ops,
+        // not to use to talk to kbs/svr2)
+        switch writeStrategy(for: .implicit) {
+        case .kbsOnly, .reportGenericError:
             kbs.useDeviceLocalMasterKey(authedAccount: authedAccount, transaction: transaction)
         case .svr2Only:
             svr2.useDeviceLocalMasterKey(authedAccount: authedAccount, transaction: transaction)
@@ -196,8 +277,9 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     }
 
     public func currentPinType(transaction: DBReadTransaction) -> SVR.PinType? {
-        switch readStrategy {
-        case .kbsOnly:
+        // Local read; auth is irrelevant
+        switch readStrategy(for: .implicit) {
+        case .kbsOnly, .reportNoBackup:
             return kbs.currentPinType(transaction: transaction)
         case .svr2Only:
             return svr2.currentPinType(transaction: transaction)
@@ -208,8 +290,9 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     }
 
     public func verifyPin(_ pin: String, resultHandler: @escaping (Bool) -> Void) {
-        switch readStrategy {
-        case .kbsOnly:
+        // Local read; auth is irrelevant
+        switch readStrategy(for: .implicit) {
+        case .kbsOnly, .reportNoBackup:
             kbs.verifyPin(pin, resultHandler: resultHandler)
         case .svr2Only:
             svr2.verifyPin(pin, resultHandler: resultHandler)
@@ -230,7 +313,9 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     // MARK: - Key Management
 
     public func acquireRegistrationLockForNewNumber(with pin: String, and auth: SVRAuthCredential) -> Promise<String> {
-        switch readStrategy {
+        switch readStrategy(for: .svrAuth(auth, backup: nil)) {
+        case .reportNoBackup:
+            return .init(error: SVR.SVRError.backupMissing)
         case .kbsOnly:
             return kbs.acquireRegistrationLockForNewNumber(with: pin, and: auth)
         case .svr2Only:
@@ -255,40 +340,44 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     }
 
     public func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) -> Promise<Void> {
-        switch writeStrategy {
-        case .kbsOnly:
+        switch writeStrategy(for: authMethod) {
+        case .reportGenericError:
+            return .init(error: SVR.SVRError.assertion)
+        case .kbsOnly(let authMethod):
             return kbs.generateAndBackupKeys(pin: pin, authMethod: authMethod, rotateMasterKey: rotateMasterKey)
-        case .svr2Only:
+        case .svr2Only(let authMethod):
             return svr2.generateAndBackupKeys(pin: pin, authMethod: authMethod, rotateMasterKey: rotateMasterKey)
-        case .mirroring:
-            return svr2.generateAndBackupKeys(pin: pin, authMethod: authMethod, rotateMasterKey: rotateMasterKey).then(on: schedulers.main) { [kbs] (masterKey: Data) in
-                return kbs.generateAndBackupKeys(pin: pin, authMethod: authMethod, masterKey: masterKey)
+        case .mirroring(let kbsAuthMethod, let svr2AuthMethod):
+            return svr2.generateAndBackupKeys(pin: pin, authMethod: svr2AuthMethod, rotateMasterKey: rotateMasterKey).then(on: schedulers.main) { [kbs] (masterKey: Data) in
+                return kbs.generateAndBackupKeys(pin: pin, authMethod: kbsAuthMethod, masterKey: masterKey)
             }
         }
     }
 
     public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
-        switch readStrategy {
-        case .kbsOnly:
+        switch readStrategy(for: authMethod) {
+        case .reportNoBackup:
+            return .value(.backupMissing)
+        case .kbsOnly(let authMethod):
             return kbs.restoreKeys(pin: pin, authMethod: authMethod)
-        case .svr2Only:
+        case .svr2Only(let authMethod):
             return svr2.restoreKeys(pin: pin, authMethod: authMethod)
-        case .fallbackToKBSForNoBackupFailureOnly:
-            return svr2.restoreKeys(pin: pin, authMethod: authMethod).then(on: schedulers.main) { [kbs] result in
+        case .fallbackToKBSForNoBackupFailureOnly(let kbsAuthMethod, let svr2AuthMethod):
+            return svr2.restoreKeys(pin: pin, authMethod: svr2AuthMethod).then(on: schedulers.main) { [kbs] result in
                 switch result {
                 case .success, .invalidPin, .genericError, .networkError:
                     return .value(result)
                 case .backupMissing:
-                    return kbs.restoreKeys(pin: pin, authMethod: authMethod)
+                    return kbs.restoreKeys(pin: pin, authMethod: kbsAuthMethod)
                 }
             }
-        case .fallbackToKBSForNonInvalidPinFailure:
-            return svr2.restoreKeys(pin: pin, authMethod: authMethod).then(on: schedulers.main) { [kbs] result in
+        case .fallbackToKBSForNonInvalidPinFailure(let kbsAuthMethod, let svr2AuthMethod):
+            return svr2.restoreKeys(pin: pin, authMethod: svr2AuthMethod).then(on: schedulers.main) { [kbs] result in
                 switch result {
                 case .success, .invalidPin:
                     return .value(result)
                 case .backupMissing, .genericError, .networkError:
-                    return kbs.restoreKeys(pin: pin, authMethod: authMethod)
+                    return kbs.restoreKeys(pin: pin, authMethod: kbsAuthMethod)
                 }
             }
         }
@@ -318,7 +407,10 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     }
 
     public func deleteKeys() -> Promise<Void> {
-        switch writeStrategy {
+        // Auth is always implicit for this method.
+        switch writeStrategy(for: .implicit) {
+        case .reportGenericError:
+            return .init(error: SVR.SVRError.assertion)
         case .kbsOnly:
             return kbs.deleteKeys()
         case .svr2Only:
@@ -331,7 +423,10 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     }
 
     public func clearKeys(transaction: DBWriteTransaction) {
-        switch writeStrategy {
+        // Local write; auth is irrelevant
+        switch writeStrategy(for: .implicit) {
+        case .reportGenericError:
+            return
         case .kbsOnly:
             kbs.clearKeys(transaction: transaction)
         case .svr2Only:
@@ -349,8 +444,9 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         data: Data,
         transaction: DBReadTransaction
     ) -> SVR.ApplyDerivedKeyResult {
-        switch readStrategy {
-        case .kbsOnly:
+        // Local read; auth is irrelevant
+        switch readStrategy(for: .implicit) {
+        case .kbsOnly, .reportNoBackup:
             return kbs.encrypt(keyType: keyType, data: data, transaction: transaction)
         case .svr2Only:
             return svr2.encrypt(keyType: keyType, data: data, transaction: transaction)
@@ -370,8 +466,9 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         encryptedData: Data,
         transaction: DBReadTransaction
     ) -> SVR.ApplyDerivedKeyResult {
-        switch readStrategy {
-        case .kbsOnly:
+        // Local read; auth is irrelevant
+        switch readStrategy(for: .implicit) {
+        case .kbsOnly, .reportNoBackup:
             return kbs.decrypt(keyType: keyType, encryptedData: encryptedData, transaction: transaction)
         case .svr2Only:
             return svr2.decrypt(keyType: keyType, encryptedData: encryptedData, transaction: transaction)
@@ -391,12 +488,14 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
-        switch readStrategy {
+        switch writeStrategy(for: .chatServerAuth(authedAccount)) {
+        case .reportGenericError:
+            return
         case .kbsOnly:
             kbs.storeSyncedStorageServiceKey(data: data, authedAccount: authedAccount, transaction: transaction)
         case .svr2Only:
             svr2.storeSyncedStorageServiceKey(data: data, authedAccount: authedAccount, transaction: transaction)
-        case .fallbackToKBSForNoBackupFailureOnly, .fallbackToKBSForNonInvalidPinFailure:
+        case .mirroring:
             // NOTE: this will trigger multiple storage service syncs.
             // However, those happen asynchronously, and StorageService code
             // should dedupe the requests. So this should be fine in the
@@ -409,7 +508,10 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     // MARK: - Value Derivation
 
     public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> SVR.DerivedKeyData? {
-        switch readStrategy {
+        // Local read; auth is irrelevant
+        switch readStrategy(for: .implicit) {
+        case .reportNoBackup:
+            return nil
         case .kbsOnly:
             return kbs.data(for: key, transaction: transaction)
         case .svr2Only:
@@ -427,7 +529,10 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     }
 
     public func isKeyAvailable(_ key: SVR.DerivedKey, transaction: DBReadTransaction) -> Bool {
-        switch readStrategy {
+        // Local read; auth is irrelevant
+        switch readStrategy(for: .implicit) {
+        case .reportNoBackup:
+            return false
         case .kbsOnly:
             return kbs.isKeyAvailable(key, transaction: transaction)
         case .svr2Only:
@@ -435,6 +540,35 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         case .fallbackToKBSForNoBackupFailureOnly, .fallbackToKBSForNonInvalidPinFailure:
             // Local only operation; no different error behavior.
             return svr2.isKeyAvailable(key, transaction: transaction) || kbs.isKeyAvailable(key, transaction: transaction)
+        }
+    }
+}
+
+// MARK: - AuthMethod
+
+extension SVR.AuthMethod {
+
+    var kbsCompatible: SVR.AuthMethod? {
+        switch self {
+        case .svrAuth(let authCredential, let backup):
+            if authCredential.kbs != nil {
+                return self
+            }
+            return backup?.kbsCompatible
+        case .chatServerAuth, .implicit:
+            return self
+        }
+    }
+
+    var svr2Compatible: SVR.AuthMethod? {
+        switch self {
+        case .svrAuth(let authCredential, let backup):
+            if authCredential.svr2 != nil {
+                return self
+            }
+            return backup?.svr2Compatible
+        case .chatServerAuth, .implicit:
+            return self
         }
     }
 }

@@ -341,12 +341,12 @@ public enum RegistrationServiceResponses {
         /// recover the KBS master key, and from it the reglock token,
         /// using the user's PIN.
         /// NOTE: this is NOT an SVR2 credential.
-        public let kbsAuthCredential: KBSAuthCredential
+        public let kbsAuthCredential: KBSAuthCredential?
         /// A credential with which the client can talk to SVR2 server to
         /// recover the SVR master key, and from it the reglock token,
         /// using the user's PIN.
         /// NOTE: this is NOT an KBS/SVR1 credential.
-        public let svr2AuthCredential: SVR2AuthCredential
+        public let svr2AuthCredential: SVR2AuthCredential?
 
         public enum CodingKeys: String, CodingKey {
             case timeRemainingMs = "timeRemaining"
@@ -367,17 +367,23 @@ public enum RegistrationServiceResponses {
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             timeRemainingMs = try container.decode(Int.self, forKey: .timeRemainingMs)
-            let credential = try container.decode(RemoteAttestation.Auth.self, forKey: .kbsAuthCredential)
-            kbsAuthCredential = KBSAuthCredential(credential: credential)
-            let svr2Credential = try container.decode(RemoteAttestation.Auth.self, forKey: .svr2AuthCredential)
-            self.svr2AuthCredential = SVR2AuthCredential(credential: svr2Credential)
+            if let credential = try container.decodeIfPresent(RemoteAttestation.Auth.self, forKey: .kbsAuthCredential) {
+                kbsAuthCredential = KBSAuthCredential(credential: credential)
+            } else {
+                self.kbsAuthCredential = nil
+            }
+            if let svr2Credential = try container.decodeIfPresent(RemoteAttestation.Auth.self, forKey: .svr2AuthCredential) {
+                self.svr2AuthCredential = SVR2AuthCredential(credential: svr2Credential)
+            } else {
+                self.svr2AuthCredential = nil
+            }
         }
 
         public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(timeRemainingMs, forKey: .timeRemainingMs)
-            try container.encode(kbsAuthCredential.credential, forKey: .kbsAuthCredential)
-            try container.encode(svr2AuthCredential.credential, forKey: .svr2AuthCredential)
+            try container.encodeIfPresent(kbsAuthCredential?.credential, forKey: .kbsAuthCredential)
+            try container.encodeIfPresent(svr2AuthCredential?.credential, forKey: .svr2AuthCredential)
         }
     }
 

@@ -2853,7 +2853,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // )
         let reglockStateReglockedData = "7b227265676c6f636b6564223a7b2265787069726174696f6e44617465223a2d3937383239373230302c2263726564656e7469616c223a7b2263726564656e7469616c223a7b22757365726e616d65223a2261626364222c2270617373776f7264223a2278797a227d7d7d7d"
         XCTAssertEqual(
-            ReglockState.reglocked(credential: .init(kbs: Stubs.kbsAuthCredential, svr2: nil), expirationDate: reglockExpirationDate),
+            ReglockState.reglocked(credential: .testOnly(kbs: Stubs.kbsAuthCredential, svr2: nil), expirationDate: reglockExpirationDate),
             try decoder.decode(ReglockState.self, from: Data.data(fromHex: reglockStateReglockedData)!)
         )
 

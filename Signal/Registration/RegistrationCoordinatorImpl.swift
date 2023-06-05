@@ -658,15 +658,29 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     let kbs: KBSAuthCredential?
                     let svr2: SVR2AuthCredential?
 
+                    private init(kbs: KBSAuthCredential?, svr2: SVR2AuthCredential?) {
+                        self.kbs = kbs
+                        self.svr2 = svr2
+                    }
+
                     init(kbs: KBSAuthCredential, svr2: SVR2AuthCredential) {
                         self.kbs = kbs
                         self.svr2 = svr2
                     }
 
-                    #if TESTABLE_BUILD
-                    init(kbs: KBSAuthCredential?, svr2: SVR2AuthCredential?) {
+                    init(kbs: KBSAuthCredential) {
                         self.kbs = kbs
+                        self.svr2 = nil
+                    }
+
+                    init(svr2: SVR2AuthCredential) {
+                        self.kbs = nil
                         self.svr2 = svr2
+                    }
+
+                    #if TESTABLE_BUILD
+                    static func testOnly(kbs: KBSAuthCredential?, svr2: SVR2AuthCredential?) -> Self {
+                        return .init(kbs: kbs, svr2: svr2)
                     }
                     #endif
 
@@ -1236,7 +1250,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             return nextStep()
 
-        case .reglockFailure(let reglockFailure):
+        case .reglockFailure:
             switch twoFaModeUsedInRequest {
             case .none, .v1:
                 // We failed reglock because we didn't even try it!
@@ -1256,10 +1270,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // but the reglock token is wrong, but lets assume our SVR master secret is just
                     // wrong entirely and reset _all_ SVR state so we go through sms verification.
                     db.write { tx in
-                        // Store it and wipe it so we also overwrite any existing credential for the same user.
-                        // We want to wipe the credential on disk too; we don't want to retry it on next app launch.
-                        deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
-                        deps.svrAuthCredentialStore.deleteInvalidCredentials([reglockFailure.kbsAuthCredential], tx)
+                        // We want to wipe credentials on disk too; we don't want to retry it on next app launch.
+                        // Its possible we tried svr2 and kbs has the right info, or vice versa, but this is all
+                        // best effort anyway; just fall back to session-based registration.
+                        deps.svrAuthCredentialStore.removeSVR2CredentialsForCurrentUser(tx)
+                        deps.svrAuthCredentialStore.removeKBSCredentialsForCurrentUser(tx)
                         // Clear the SVR master key locally; we failed reglock so we know its wrong
                         // and useless anyway.
                         deps.svr.clearKeys(transaction: tx)
@@ -1568,7 +1583,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         self.inMemoryState.kbsAuthCredentialCandidates = nil
         // If this is nil, the next time we call `nextStepForSVRAuthCredentialPath`
         // will just return an empty promise.
-        self.inMemoryState.svrAuthCredential = matchedCredential.map { .kbsOnly($0) }
+        switch inMemoryState.svrAuthCredential {
+        case .none, .kbsOnly:
+            self.inMemoryState.svrAuthCredential = matchedCredential.map { .kbsOnly($0) }
+        case .svr2Only(let svr2Credential), .both(_, let svr2Credential):
+            if let matchedCredential {
+                self.inMemoryState.svrAuthCredential = .both(matchedCredential, svr2Credential)
+            }
+        }
         self.db.write { tx in
             self.deps.svrAuthCredentialStore.deleteInvalidCredentials(credentialsToDelete, tx)
         }
@@ -1641,6 +1663,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         self.inMemoryState.svr2AuthCredentialCandidates = nil
         // If this is nil, the next time we call `nextStepForSVRAuthCredentialPath`
         // will just return an empty promise.
+        switch inMemoryState.svrAuthCredential {
+        case .none, .svr2Only:
+            self.inMemoryState.svrAuthCredential = matchedCredential.map { .svr2Only($0) }
+        case .kbsOnly(let kbsCredential), .both(let kbsCredential, _):
+            if let matchedCredential {
+                self.inMemoryState.svrAuthCredential = .both(kbsCredential, matchedCredential)
+            }
+        }
         self.inMemoryState.svrAuthCredential = matchedCredential.map { .svr2Only($0) }
         self.db.write { tx in
             self.deps.svrAuthCredentialStore.deleteInvalidCredentials(credentialsToDelete, tx)
@@ -1659,9 +1689,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 kbs: svrAuthCredential.kbs,
                 svr2: svrAuthCredential.svr2
             ) else {
-                // Pretend we don't have any reglock state if we don't have
-                // a credential.
-                break
+                // If we don't have a useable credential, we are stuck.
+                db.write { tx in
+                    self.updatePersistedSessionState(session: session, tx) {
+                        $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
+                    }
+                }
+                return self.nextStep()
             }
             if let pinFromUser = inMemoryState.pinFromUser {
                 return restoreSVRMasterSecretForSessionPathReglock(
@@ -1923,7 +1957,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // If we have already exhausted our SVR backup attempts, we are stuck.
                 db.write { tx in
                     // May as well store credentials, anyway.
-                    deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                    reglockFailure.kbsAuthCredential.map { deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername($0, tx) }
+                    reglockFailure.svr2AuthCredential.map { deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername($0, tx) }
                     self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                         $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
                     }
@@ -1942,7 +1977,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // that means the whole thing is stuck. wait out the reglock.
                 db.write { tx in
                     // May as well store credentials, anyway.
-                    deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                    reglockFailure.kbsAuthCredential.map { deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername($0, tx) }
+                    reglockFailure.svr2AuthCredential.map { deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername($0, tx) }
                     self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                         $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
                     }
@@ -1953,15 +1989,33 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return nextStep()
 
             case .none, .v1:
+                let jointCredential: PersistedState.SessionState.ReglockState.SVRAuthCredential
+                let kbsAuthCredential = reglockFailure.kbsAuthCredential
+                let svr2AuthCredential = FeatureFlags.svr2 ? reglockFailure.svr2AuthCredential : nil
+                if let kbsAuthCredential, let svr2AuthCredential {
+                    jointCredential = .init(kbs: kbsAuthCredential, svr2: svr2AuthCredential)
+                } else if let kbsAuthCredential {
+                    jointCredential = .init(kbs: kbsAuthCredential)
+                } else if let svr2AuthCredential {
+                    jointCredential = .init(svr2: svr2AuthCredential)
+                } else {
+                    // If we have no credentials we can use, we are stuck. wait out the reglock.
+                    db.write { tx in
+                        self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
+                            $0.reglockState = .waitingTimeout(expirationDate: reglockExpirationDate)
+                        }
+                        self.updatePersistedState(tx) {
+                            $0.e164WithKnownReglockEnabled = sessionFromBeforeRequest.e164
+                        }
+                    }
+                    return nextStep()
+                }
                 db.write { tx in
-
-                    deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername(reglockFailure.kbsAuthCredential, tx)
+                    reglockFailure.kbsAuthCredential.map { deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername($0, tx) }
+                    reglockFailure.svr2AuthCredential.map { deps.svrAuthCredentialStore.storeAuthCredentialForCurrentUsername($0, tx) }
                     self.updatePersistedSessionState(session: sessionFromBeforeRequest, tx) {
                         $0.reglockState = .reglocked(
-                            credential: .init(
-                                kbs: reglockFailure.kbsAuthCredential,
-                                svr2: reglockFailure.svr2AuthCredential
-                            ),
+                            credential: jointCredential,
                             expirationDate: reglockExpirationDate
                         )
                     }

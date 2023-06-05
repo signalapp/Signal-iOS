@@ -1368,7 +1368,9 @@ extension SVR.AuthMethod {
             case .kbsOnly(let kBSAuthCredential):
                 return .kbsAuth(kBSAuthCredential, backup: backup?.kbs)
             case .svr2Only:
-                return backup?.kbs
+                // We explicitly opted to svr2 only, don't try
+                // the backup (its probably a chat service auth credential).
+                return nil
             case .both(let kBSAuthCredential, _):
                 return .kbsAuth(kBSAuthCredential, backup: backup?.kbs)
             }

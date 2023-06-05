@@ -86,6 +86,15 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         }
     }
 
+    public func removeKBSCredentialsForCurrentUser(_ transaction: DBWriteTransaction) {
+        let currentUsername = currentUsername(for: .kbs, transaction)
+        updateCredentials(for: .kbs, transaction) {
+            $0.removeAll(where: { existingCredential in
+                existingCredential.username == currentUsername
+            })
+        }
+    }
+
     // MARK: - Local Storage
 
     // Also write any KBS auth credentials we know about to local, encrypted database storage,

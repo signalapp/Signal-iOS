@@ -152,6 +152,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     // MARK: - Key Management
 
     public func acquireRegistrationLockForNewNumber(with pin: String, and auth: SVRAuthCredential) -> Promise<String> {
+        guard let auth = auth.svr2 else {
+            return .init(error: SVR.SVRError.assertion)
+        }
         return doRestore(pin: pin, authMethod: .svrAuth(auth, backup: nil)).then(on: scheduler) { restoreResult -> Promise<String> in
             switch restoreResult {
             case .success(let masterKey, _):
@@ -181,6 +184,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     internal func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) -> Promise<Data> {
+        guard let authMethod = authMethod.svr2 else {
+            return .init(error: SVR.SVRError.assertion)
+        }
         return firstly(on: scheduler) { [weak self] () -> Promise<Data> in
             guard let self else {
                 return .init(error: SVR.SVRError.assertion)
@@ -196,14 +202,20 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
+        guard let authMethod = authMethod.svr2 else {
+            return .value(.genericError(SVR.SVRError.assertion))
+        }
         // When we restore, we remember which enclave it was from. On some future app startup, we check
         // this enclave, and migrate to a new one if available. This code path relies on that happening
         // asynchronously.
-        doRestore(pin: pin, authMethod: authMethod).map(on: schedulers.sync, \.asSVRResult)
+        return doRestore(pin: pin, authMethod: authMethod).map(on: schedulers.sync, \.asSVRResult)
     }
 
     public func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
-        doRestore(pin: pin, authMethod: authMethod)
+        guard let authMethod = authMethod.svr2 else {
+            return .value(.genericError(SVR.SVRError.assertion))
+        }
+        return doRestore(pin: pin, authMethod: authMethod)
             .then(on: scheduler) { [weak self] restoreResult in
                 switch restoreResult {
                 case .backupMissing, .invalidPin, .genericError, .networkError, .decryptionError, .unretainedError, .serverError:
@@ -451,7 +463,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private func doBackupAndExpose(
         pin: String,
         masterKey: Data,
-        authMethod: SVR.AuthMethod
+        authMethod: SVR2.AuthMethod
     ) -> Promise<Data> {
         let config = SVR2WebsocketConfigurator(mrenclave: tsConstants.svr2Enclave, authMethod: authMethod)
         return makeHandshakeAndOpenConnection(config)
@@ -733,7 +745,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private func doRestore(
         pin: String,
-        authMethod: SVR.AuthMethod
+        authMethod: SVR2.AuthMethod
     ) -> Guarantee<RestoreResult> {
         var enclavesToTry = [tsConstants.svr2Enclave] + tsConstants.svr2PreviousEnclaves
         let weakSelf = Weak(value: self)
@@ -774,7 +786,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private func doRestoreForSpecificEnclave(
         pin: String,
         mrEnclave: MrEnclave,
-        authMethod: SVR.AuthMethod
+        authMethod: SVR2.AuthMethod
     ) -> Guarantee<RestoreResult> {
         let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
         return makeHandshakeAndOpenConnection(config)
@@ -877,7 +889,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private func doDelete(
         mrEnclave: MrEnclave,
-        authMethod: SVR.AuthMethod
+        authMethod: SVR2.AuthMethod
     ) -> Guarantee<DeleteResult> {
         let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
         return makeHandshakeAndOpenConnection(config)
@@ -975,7 +987,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         enclaveStrings.formIntersection(knownEnclaves)
     }
 
-    private func wipeOldEnclavesIfNeeded(auth: SVR.AuthMethod) {
+    private func wipeOldEnclavesIfNeeded(auth: SVR2.AuthMethod) {
         var (isRegistered, enclavesToDeleteFrom) = db.read { tx in
             return (
                 self.tsAccountManager.isRegisteredAndReady(transaction: tx),
@@ -1259,7 +1271,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         case .implicit:
             // If implicit, use any cached values.
             if let cachedCredential: SVR2AuthCredential = db.read(block: credentialStorage.getAuthCredentialForCurrentUser) {
-                config.authMethod = .svrAuth(.svr2Only(cachedCredential), backup: .implicit)
+                config.authMethod = .svrAuth(cachedCredential, backup: .implicit)
             }
         }
 
@@ -1313,7 +1325,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     switch config.authMethod {
                     case .svrAuth(let attemptedCredential, let backup):
                         self.db.write { tx in
-                            self.credentialStorage.deleteInvalidCredentials([attemptedCredential.svr2].compacted(), tx)
+                            self.credentialStorage.deleteInvalidCredentials([attemptedCredential].compacted(), tx)
                         }
                         if let backup {
                             config.authMethod = backup
@@ -1398,6 +1410,29 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 }
 
 fileprivate extension SVR.AuthMethod {
+
+    var svr2: SVR2.AuthMethod? {
+        switch self {
+        case .svrAuth(let authCredential, let backup):
+            switch authCredential {
+            case .svr2Only(let svr2AuthCredential):
+                return .svrAuth(svr2AuthCredential, backup: backup?.svr2)
+            case .both(_, let svr2AuthCredential):
+                return .svrAuth(svr2AuthCredential, backup: backup?.svr2)
+            case .kbsOnly:
+                // We explicitly opted to kbs only, don't try
+                // the backup (its probably a chat service auth credential).
+                return nil
+            }
+        case .chatServerAuth(let authedAccount):
+            return .chatServerAuth(authedAccount)
+        case .implicit:
+            return .implicit
+        }
+    }
+}
+
+fileprivate extension SVR2.AuthMethod {
 
     var authedAccount: AuthedAccount {
         switch self {

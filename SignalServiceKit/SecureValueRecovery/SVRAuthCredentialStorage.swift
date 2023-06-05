@@ -75,4 +75,8 @@ public protocol SVRAuthCredentialStorage {
     /// Removes the provided credentials from storage.
     /// Should be called when the server tells the client the credential(s) are invalid.
     func deleteInvalidCredentials(_: [KBSAuthCredential], _ transaction: DBWriteTransaction)
+
+    /// Removes all KBS credentials for the current user from storage.
+    /// Called when we e.g. wipe all SVR info, or learn it has been wiped on the server.
+    func removeKBSCredentialsForCurrentUser(_ transaction: DBWriteTransaction)
 }

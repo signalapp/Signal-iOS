@@ -14,9 +14,9 @@ internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
     internal typealias Client = Svr2Client
 
     internal let mrenclave: MrEnclave
-    internal var authMethod: SVR.AuthMethod
+    internal var authMethod: SVR2.AuthMethod
 
-    init(mrenclave: MrEnclave = TSConstants.svr2Enclave, authMethod: SVR.AuthMethod) {
+    init(mrenclave: MrEnclave = TSConstants.svr2Enclave, authMethod: SVR2.AuthMethod) {
         self.mrenclave = mrenclave
         self.authMethod = authMethod
     }
@@ -28,10 +28,14 @@ internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
     }
 
     internal func fetchAuth() -> Promise<RemoteAttestation.Auth> {
-        if let credential = authMethod.svr2Auth {
+        switch authMethod {
+        case .svrAuth(let credential, _):
             return .value(credential.credential)
+        case .chatServerAuth(let authedAccount):
+            return RemoteAttestation.authForSVR2(chatServiceAuth: authedAccount.chatServiceAuth)
+        case .implicit:
+            return RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
         }
-        return RemoteAttestation.authForSVR2(chatServiceAuth: authMethod.chatServiceAuth)
     }
 
     internal static func client(
@@ -44,31 +48,5 @@ internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
             attestationMessage: attestationMessage,
             currentDate: currentDate
         )
-    }
-}
-
-fileprivate extension SVR.AuthMethod {
-
-    var svr2Auth: SVR2AuthCredential? {
-        switch self {
-        case .svrAuth(let svrAuthCredential, let backup):
-            if let svr2 = svrAuthCredential.svr2 {
-                return svr2
-            }
-            return backup?.svr2Auth
-        case .chatServerAuth, .implicit:
-            return nil
-        }
-    }
-
-    var chatServiceAuth: ChatServiceAuth {
-        switch self {
-        case .svrAuth(_, let backup):
-            return backup?.chatServiceAuth ?? .implicit()
-        case .chatServerAuth(let authedAccount):
-            return authedAccount.chatServiceAuth
-        case .implicit:
-            return .implicit()
-        }
     }
 }

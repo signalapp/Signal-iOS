@@ -74,5 +74,10 @@ public class SVRAuthCredentialStorageMock: SVRAuthCredentialStorage {
     public func deleteInvalidCredentials(_ invalidCredentials: [KBSAuthCredential], _ transaction: DBWriteTransaction) {
         invalidCredentials.lazy.map(\.credential.username).forEach { kbsDict[$0] = nil }
     }
+
+    public func removeKBSCredentialsForCurrentUser(_ transaction: DBWriteTransaction) {
+        guard let currentKBSUsername else { return }
+        dict[currentKBSUsername] = nil
+    }
 }
 #endif
