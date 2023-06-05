@@ -6,7 +6,7 @@
 import Foundation
 import SignalCoreKit
 
-public enum GroupUpdateType {
+public enum GroupUpdateItem {
     case genericUpdateByLocalUser
     case genericUpdateByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
     case genericUpdateByUnknownUser
@@ -187,7 +187,21 @@ public enum GroupUpdateType {
 
     case sequenceOfInviteLinkRequestAndCancels(userName: String, userAddress: SignalServiceAddress, count: UInt, isTail: Bool)
 
-    var copy: NSAttributedString {
+    /// Should this update appear as a group preview in the inbox?
+    var shouldAppearInInbox: Bool {
+        switch self {
+        case
+                .wasMigrated,
+                .localUserLeft,
+                .otherUserLeft:
+            return false
+        default:
+            return true
+        }
+    }
+
+    /// Localized text representing this update.
+    public var localizedText: NSAttributedString {
         switch self {
         case .genericUpdateByLocalUser:
             return OWSLocalizedString(
@@ -1190,8 +1204,8 @@ public enum GroupUpdateType {
 
 // MARK: - NSAttributedString
 
-extension GroupUpdateType {
-    enum ItemFormatArg {
+extension GroupUpdateItem {
+    enum FormatArg {
         case raw(_ value: CVarArg)
         case name(_ string: String, _ address: SignalServiceAddress)
 
@@ -1216,7 +1230,7 @@ public extension NSAttributedString.Key {
 extension NSAttributedString {
     static func make(
         fromFormat format: String,
-        groupUpdateFormatArgs: [GroupUpdateType.ItemFormatArg]
+        groupUpdateFormatArgs: [GroupUpdateItem.FormatArg]
     ) -> NSAttributedString {
         make(
             fromFormat: format,

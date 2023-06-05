@@ -6,8 +6,8 @@
 import XCTest
 @testable import SignalServiceKit
 
-final class GroupUpdateTypeCopyTest: XCTestCase {
-    private let groupUpdateTypeExamples: [GroupUpdateType] = [
+final class GroupUpdateItemCopyTest: XCTestCase {
+    private let groupUpdateItemExamples: [GroupUpdateItem] = [
         .genericUpdateByLocalUser,
         .genericUpdateByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1),
         .genericUpdateByUnknownUser,
@@ -206,9 +206,9 @@ final class GroupUpdateTypeCopyTest: XCTestCase {
     /// another, manually. This test ensures that none of them were "broken",
     /// for example a format string missing the correct format args.
     func testGroupUpdateTypeCopyIsConstructedCorrectly() {
-        for example in groupUpdateTypeExamples {
+        for example in groupUpdateItemExamples {
             // If we have a "(null)" in a string, we missed a format arg.
-            XCTAssertFalse(example.copy.string.contains("(null)"))
+            XCTAssertFalse(example.localizedText.string.contains("(null)"))
         }
     }
 }

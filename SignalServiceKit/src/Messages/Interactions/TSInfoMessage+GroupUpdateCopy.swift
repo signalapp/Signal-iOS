@@ -6,35 +6,94 @@
 import Foundation
 import SignalCoreKit
 
-public struct GroupUpdateCopyItem {
-    public let type: GroupUpdateType
+public protocol GroupUpdateItemBuilder {
+    /// Build a list of group updates by "diffing" the old and new group states
+    /// alongside the other relevant properties given here.
+    ///
+    /// - Returns
+    /// A list of updates. Each update item can present itself as localized
+    /// text.
+    func buildUpdateItems(
+        oldGroupModel: TSGroupModel?,
+        newGroupModel: TSGroupModel,
+        oldDisappearingMessageToken: DisappearingMessageToken?,
+        newDisappearingMessageToken: DisappearingMessageToken?,
+        localIdentifiers: LocalIdentifiers,
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        updaterKnownToBeLocalUser: Bool,
+        updateMessages: TSInfoMessage.UpdateMessagesWrapper?,
+        tx: DBReadTransaction
+    ) -> [GroupUpdateItem]
 
-    public var text: NSAttributedString {
-        type.copy
+    /// Get a default group update item, if the values to build more specific
+    /// group updates are not available.
+    func defaultGroupUpdateItem(
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        localIdentifiers: LocalIdentifiers?,
+        tx: DBReadTransaction
+    ) -> GroupUpdateItem
+}
+
+public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
+    private let contactsManager: Shims.ContactsManager
+
+    init(contactsManager: Shims.ContactsManager) {
+        self.contactsManager = contactsManager
     }
 
-    init(type: GroupUpdateType) {
-        self.type = type
+    public func buildUpdateItems(
+        oldGroupModel: TSGroupModel?,
+        newGroupModel: TSGroupModel,
+        oldDisappearingMessageToken: DisappearingMessageToken?,
+        newDisappearingMessageToken: DisappearingMessageToken?,
+        localIdentifiers: LocalIdentifiers,
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        updaterKnownToBeLocalUser: Bool,
+        updateMessages: TSInfoMessage.UpdateMessagesWrapper?,
+        tx: DBReadTransaction
+    ) -> [GroupUpdateItem] {
+        return SingleUseGroupUpdateItemBuilderImpl(
+            oldGroupModel: oldGroupModel,
+            newGroupModel: newGroupModel,
+            oldDisappearingMessageToken: oldDisappearingMessageToken,
+            newDisappearingMessageToken: newDisappearingMessageToken,
+            localIdentifiers: localIdentifiers,
+            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            updaterKnownToBeLocalUser: updaterKnownToBeLocalUser,
+            updateMessages: updateMessages,
+            contactsManager: contactsManager,
+            tx: tx
+        ).itemList
     }
 
-    var shouldAppearInInbox: Bool {
-        switch type {
-        case
-                .wasMigrated,
-                .localUserLeft,
-                .otherUserLeft:
-            return false
-        default:
-            return true
-        }
+    public func defaultGroupUpdateItem(
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        localIdentifiers: LocalIdentifiers?,
+        tx: DBReadTransaction
+    ) -> GroupUpdateItem {
+        return SingleUseGroupUpdateItemBuilderImpl.defaultGroupUpdateItem(
+            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            localIdentifiers: localIdentifiers,
+            contactsManager: contactsManager,
+            tx: tx
+        )
     }
 }
 
-// MARK: -
-
-public struct GroupUpdateCopy {
-
-    // MARK: -
+/// This type populates itself, on initialization, with items representing the
+/// updates made to a group. These updates are determined by "diffing" the old
+/// and new group states, alongside information such as who the "updater" was.
+///
+/// The returned updates map to user-presentable localized strings.
+///
+/// - Note:
+/// Historically, group update items were computed using a struct that populated
+/// itself with update items during initialization. Rather than refactor many,
+/// many call sites to pass through the historically stored-as-properties values
+/// used by that computation, we preserve that pattern here and wrap it in a
+/// protocolized type above.
+private struct SingleUseGroupUpdateItemBuilderImpl {
+    typealias Shims = GroupUpdateItemBuilderImpl.Shims
 
     private let contactsManager: Shims.ContactsManager
 
@@ -42,10 +101,8 @@ public struct GroupUpdateCopy {
     private let updater: Updater
     private let isReplacingJoinRequestPlaceholder: Bool
 
-    // The update items, in order.
-    public private(set) var itemList = [GroupUpdateCopyItem]()
-
-    public var isEmptyUpdate = false
+    /// The update items, in order.
+    private(set) var itemList = [GroupUpdateItem]()
 
     /// Create a ``GroupUpdateCopy``.
     ///
@@ -135,18 +192,27 @@ public struct GroupUpdateCopy {
     // MARK: - Is local user?
 
     /// Returns whether the given address matches the local user's ACI or PNI.
-    func isLocalUser(address: SignalServiceAddress?) -> Bool {
+    private func isLocalUser(address: SignalServiceAddress?) -> Bool {
         guard let address else { return false }
         return localIdentifiers.contains(address: address)
     }
 
     /// Returns whether the local user is contained in the given addresses.
-    func isLocalUser(inAddresses addresses: any Sequence<SignalServiceAddress>) -> Bool {
+    private func isLocalUser(inAddresses addresses: any Sequence<SignalServiceAddress>) -> Bool {
         return addresses.contains { isLocalUser(address: $0) }
     }
 
-    // MARK: -
+    private mutating func addItem(_ item: GroupUpdateItem) {
+        itemList.append(item)
+    }
+}
 
+// MARK: - Population
+
+private extension SingleUseGroupUpdateItemBuilderImpl {
+
+    /// Populate this builder's list of update items, by diffing the provided
+    /// values.
     mutating func populate(
         oldGroupModel: TSGroupModel?,
         newGroupModel: TSGroupModel,
@@ -236,8 +302,6 @@ public struct GroupUpdateCopy {
         if itemList.count < 1 {
             owsFailDebug("Empty group update!")
 
-            isEmptyUpdate = true
-
             switch updater {
             case .localUser:
                 addItem(.genericUpdateByLocalUser)
@@ -248,63 +312,6 @@ public struct GroupUpdateCopy {
             }
         }
     }
-
-    // MARK: -
-
-    var updateDescription: NSAttributedString {
-        guard let first = itemList.first else {
-            return NSAttributedString()
-        }
-
-        let starterString = NSMutableAttributedString(attributedString: first.text)
-
-        return itemList.dropFirst().reduce(starterString) { partialResult, item in
-            partialResult.append("\n")
-            partialResult.append(item.text)
-            return partialResult
-        }
-    }
-}
-
-// MARK: - Adding items and NSAttributedString
-
-extension GroupUpdateCopy {
-    mutating private func addItem(_ type: GroupUpdateType) {
-        itemList.append(GroupUpdateCopyItem(type: type))
-    }
-}
-
-// MARK: -
-
-// When deciding which copy to render and how to format it, we usually take into account 3-5 pieces of information:
-//
-// * The old state
-// * The new state
-// * Who made the update (the updater)
-// * Which user was affected (often the local variable "account")
-// * Whether or not the updater or "account" is the local user.
-// * Some other info like "who did the inviting".
-//
-// e.g. if Alice sees that Bob declined his invite (invited by Carol) to a group...
-//
-// * The old state was "invited to the group".
-// * The new state is "in the group".
-//
-// ...We infer that Bob declined an invite OR had their invite revoked.
-//
-// * "Bob" made the update.
-// * "Bob" was affected.
-//
-// ...We infer that Bob declined the invite; it wasn't revoked by another user.
-//
-// * Neither the updater or "account" is the local user.
-//
-// ...So we don't want to special-case and say something like "You declined..." or "Your invite was revoked...", etc.
-//
-// * Carol "did the inviting".
-//
-// ...So the final copy should be something like "Bob declined his invitation from Carol."
-extension GroupUpdateCopy {
 
     // MARK: - Precomputed update messages
 
@@ -1722,14 +1729,14 @@ extension GroupUpdateCopy {
 
     // MARK: - Membership Status
 
-    fileprivate enum MembershipStatus {
+    enum MembershipStatus {
         case normalMember
         case invited(invitedBy: UUID?)
         case requesting
         case none
     }
 
-    fileprivate func localMembershipStatus(for groupMembership: GroupMembership) -> MembershipStatus {
+    func localMembershipStatus(for groupMembership: GroupMembership) -> MembershipStatus {
         let aciMembership = Self.membershipStatus(serviceId: localIdentifiers.aci, in: groupMembership)
 
         switch aciMembership {
@@ -1746,7 +1753,7 @@ extension GroupUpdateCopy {
         return .none
     }
 
-    fileprivate static func membershipStatus(
+    static func membershipStatus(
         of address: SignalServiceAddress,
         in groupMembership: GroupMembership
     ) -> MembershipStatus {
@@ -1757,7 +1764,7 @@ extension GroupUpdateCopy {
         return membershipStatus(serviceId: serviceId, in: groupMembership)
     }
 
-    fileprivate static func membershipStatus(
+    static func membershipStatus(
         serviceId: ServiceId,
         in groupMembership: GroupMembership
     ) -> MembershipStatus {
@@ -1782,47 +1789,37 @@ extension GroupUpdateCopy {
 
     // MARK: - Defaults
 
-    var defaultGroupUpdateDescription: NSAttributedString {
-        Self.defaultGroupUpdateDescription(updater: updater)
-    }
-
-    static func defaultGroupUpdateDescription(
+    static func defaultGroupUpdateItem(
         groupUpdateSourceAddress: SignalServiceAddress?,
         localIdentifiers: LocalIdentifiers?,
         contactsManager: Shims.ContactsManager,
         tx: DBReadTransaction
-    ) -> NSAttributedString {
-        defaultGroupUpdateDescription(updater: buildUpdater(
+    ) -> GroupUpdateItem {
+        let updater = buildUpdater(
             groupUpdateSourceAddress: groupUpdateSourceAddress,
             updaterKnownToBeLocalUser: false,
             localIdentifiers: localIdentifiers,
             contactsManager: contactsManager,
             tx: tx
-        ))
-    }
+        )
 
-    static func defaultGroupUpdateDescription(updater: Updater) -> NSAttributedString {
-        let update: GroupUpdateType = {
-            switch updater {
-            case .localUser:
-                return .genericUpdateByLocalUser
-            case let .otherUser(updaterName, updaterAddress):
-                return .genericUpdateByOtherUser(
-                    updaterName: updaterName,
-                    updaterAddress: updaterAddress
-                )
-            case .unknown:
-                return .genericUpdateByUnknownUser
-            }
-        }()
-
-        return update.copy
+        switch updater {
+        case .localUser:
+            return .genericUpdateByLocalUser
+        case let .otherUser(updaterName, updaterAddress):
+            return .genericUpdateByOtherUser(
+                updaterName: updaterName,
+                updaterAddress: updaterAddress
+            )
+        case .unknown:
+            return .genericUpdateByUnknownUser
+        }
     }
 }
 
 // MARK: - Dependencies
 
-extension GroupUpdateCopy {
+extension GroupUpdateItemBuilderImpl {
     enum Shims {
         typealias ContactsManager = _GroupUpdateCopy_ContactsManager_Shim
     }

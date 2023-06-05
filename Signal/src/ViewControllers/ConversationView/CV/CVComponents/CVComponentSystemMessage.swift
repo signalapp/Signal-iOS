@@ -610,13 +610,13 @@ extension CVComponentSystemMessage {
            let groupUpdates = infoMessage.groupUpdateItems(transaction: transaction),
            !groupUpdates.isEmpty {
 
-            for (index, update) in groupUpdates.enumerated() {
-                let iconName = Self.iconName(forGroupUpdateType: update.type)
+            for (index, updateItem) in groupUpdates.enumerated() {
+                let iconName = Self.iconName(forGroupUpdateItem: updateItem)
                 labelText.appendTemplatedImage(named: iconName,
                                                font: font,
                                                heightReference: ImageAttachmentHeightReference.lineHeight)
                 labelText.append("  ", attributes: [:])
-                labelText.append(update.text)
+                labelText.append(updateItem.localizedText)
 
                 let isLast = index == groupUpdates.count - 1
                 if !isLast {
@@ -820,8 +820,8 @@ extension CVComponentSystemMessage {
         }
     }
 
-    private static func iconName(forGroupUpdateType groupUpdateType: GroupUpdateType) -> String {
-        switch groupUpdateType {
+    private static func iconName(forGroupUpdateItem groupUpdateItem: GroupUpdateItem) -> String {
+        switch groupUpdateItem {
         case
                 .localUserLeft,
                 .otherUserLeft:
@@ -1160,14 +1160,14 @@ extension CVComponentSystemMessage {
 
             guard
                 let oldGroupModel = infoMessage.oldGroupModel,
-                let groupUpdates = infoMessage.groupUpdateItems(transaction: transaction),
-                !groupUpdates.isEmpty
+                let groupUpdateItems = infoMessage.groupUpdateItems(transaction: transaction),
+                !groupUpdateItems.isEmpty
             else {
                 return nil
             }
 
-            for groupUpdate in groupUpdates {
-                switch groupUpdate.type {
+            for updateItem in groupUpdateItems {
+                switch updateItem {
                 case .wasMigrated:
                     return Action(
                         title: CommonStrings.learnMore,
