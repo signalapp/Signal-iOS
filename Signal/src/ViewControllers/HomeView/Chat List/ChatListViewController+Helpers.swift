@@ -6,28 +6,17 @@
 import SignalMessaging
 import SignalUI
 
-// TODO: Decompose into multiple source files?
-@objc
 public extension ChatListViewController {
 
-    var renderState: CLVRenderState { viewState.tableDataSource.renderState }
+    var presentedChatListViewController: ChatListViewController? {
+        AssertIsOnMainThread()
 
-    func threadViewModel(forThread thread: TSThread) -> ThreadViewModel {
-        tableDataSource.threadViewModel(forThread: thread)
+        guard let topViewController = navigationController?.topViewController as? ChatListViewController,
+              topViewController != self else {
+            return nil
+        }
+        return topViewController
     }
-
-    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
-        tableDataSource.thread(forIndexPath: indexPath)
-    }
-
-    func threadViewModel(forIndexPath indexPath: IndexPath) -> ThreadViewModel? {
-        tableDataSource.threadViewModel(forIndexPath: indexPath)
-    }
-
-    var numberOfInboxThreads: UInt { renderState.inboxCount }
-    var numberOfArchivedThreads: UInt { renderState.archiveCount }
-
-    // MARK: -
 
     func isConversationActive(forThread thread: TSThread) -> Bool {
         AssertIsOnMainThread()
@@ -39,17 +28,86 @@ public extension ChatListViewController {
         return conversationSplitViewController.selectedThread?.uniqueId == thread.uniqueId
     }
 
-    func dismissSearchKeyboard() {
+    func updateLastViewedThread(_ thread: TSThread, animated: Bool) {
+        lastViewedThread = thread
+        ensureSelectedThread(thread, animated: animated)
+    }
+
+    /// Verifies that the currently selected cell matches the provided thread.
+    /// If it does or if the user's in multi-select: Do nothing.
+    /// If it doesn't: Select the first cell matching the provided thread, if one exists. Otherwise, deselect the current row.
+    private func ensureSelectedThread(_ targetThread: TSThread, animated: Bool) {
+        // Ignore any updates if we're in multiselect mode. I don't think this can happen,
+        // but if it does let's avoid stepping over the user's manual selection.
+        let currentSelection = tableView.indexPathsForSelectedRows ?? []
+        guard viewState.multiSelectState.isActive == false, currentSelection.count < 2 else {
+            return
+        }
+
+        let currentlySelectedThread = currentSelection.first.flatMap {
+            self.tableDataSource.thread(forIndexPath: $0, expectsSuccess: false)
+        }
+
+        if currentlySelectedThread?.uniqueId != targetThread.uniqueId {
+            if let targetPath = tableDataSource.renderState.indexPath(forUniqueId: targetThread.uniqueId) {
+                tableView.selectRow(at: targetPath, animated: animated, scrollPosition: .none)
+                tableView.scrollToRow(at: targetPath, at: .none, animated: animated)
+            } else if let stalePath = currentSelection.first {
+                tableView.deselectRow(at: stalePath, animated: animated)
+            }
+        }
+    }
+
+    // MARK: Archive
+
+    func archiveSelectedConversation() {
         AssertIsOnMainThread()
 
-        searchBar.resignFirstResponder()
-        owsAssertDebug(!searchBar.isFirstResponder)
+        Logger.info("")
+
+        guard let selectedThread = conversationSplitViewController?.selectedThread else { return }
+
+        let threadAssociatedData = databaseStorage.read { transaction in
+            ThreadAssociatedData.fetchOrDefault(for: selectedThread, transaction: transaction)
+        }
+
+        guard !threadAssociatedData.isArchived else { return }
+
+        conversationSplitViewController?.closeSelectedConversation(animated: true)
+
+        databaseStorage.write { transaction in
+            threadAssociatedData.updateWith(isArchived: true, updateStorageService: true, transaction: transaction)
+        }
+
+        updateViewState()
+    }
+
+    func unarchiveSelectedConversation() {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        guard let selectedThread = conversationSplitViewController?.selectedThread else { return }
+
+        let threadAssociatedData = databaseStorage.read { transaction in
+            ThreadAssociatedData.fetchOrDefault(for: selectedThread, transaction: transaction)
+        }
+
+        guard threadAssociatedData.isArchived else { return }
+
+        conversationSplitViewController?.closeSelectedConversation(animated: true)
+
+        databaseStorage.write { transaction in
+            threadAssociatedData.updateWith(isArchived: false, updateStorageService: true, transaction: transaction)
+        }
+
+        updateViewState()
     }
 
     func showArchivedConversations(offerMultiSelectMode: Bool = true) {
         AssertIsOnMainThread()
 
-        owsAssertDebug(self.chatListMode == .inbox)
+        owsAssertDebug(chatListMode == .inbox)
 
         // When showing archived conversations, we want to use a conventional "back" button
         // to return to the "inbox" conversation list.
@@ -68,35 +126,7 @@ public extension ChatListViewController {
                 action: #selector(chatList.switchMultiSelectState),
                 accessibilityIdentifier: "select")
         }
-        self.show(chatList, sender: self)
-    }
-
-    var presentedChatListViewController: ChatListViewController? {
-        AssertIsOnMainThread()
-
-        guard let topViewController = navigationController?.topViewController as? ChatListViewController,
-              topViewController != self else {
-            return nil
-        }
-        return topViewController
-    }
-
-    func applyDefaultBackButton() {
-        AssertIsOnMainThread()
-
-        // We don't show any text for the back button, so there's no need to localize it. But because we left align the
-        // conversation title view, we add a little tappable padding after the back button, by having a title of spaces.
-        // Admittedly this is kind of a hack and not super fine grained, but it's simple and results in the interactive pop
-        // gesture animating our title view nicely vs. creating our own back button bar item with custom padding, which does
-        // not properly animate with the "swipe to go back" or "swipe left for info" gestures.
-        let paddingLength: Int = 3
-        let paddingString = "".padding(toLength: paddingLength, withPad: " ", startingAt: 0)
-
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: paddingString,
-                                                           style: .plain,
-                                                           target: nil,
-                                                           action: nil,
-                                                           accessibilityIdentifier: "back")
+        show(chatList, sender: self)
     }
 
     func applyArchiveBackButton() {
@@ -108,8 +138,33 @@ public extension ChatListViewController {
                                                            action: nil,
                                                            accessibilityIdentifier: "back")
     }
+}
 
-    // MARK: - Previews
+// MARK: Previews
+
+extension ChatListViewController: UIViewControllerPreviewingDelegate {
+
+    public func previewingContext(
+        _ previewingContext: UIViewControllerPreviewing,
+        viewControllerForLocation location: CGPoint
+    ) -> UIViewController? {
+
+        guard let indexPath = tableView.indexPathForRow(at: location),
+              canPresentPreview(fromIndexPath: indexPath)
+        else {
+            return nil
+        }
+
+        previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
+        return createPreviewController(atIndexPath: indexPath)
+    }
+
+    public func previewingContext(
+        _ previewingContext: UIViewControllerPreviewing,
+        commit viewControllerToCommit: UIViewController
+    ) {
+        commitPreviewController(viewControllerToCommit)
+    }
 
     func canPresentPreview(fromIndexPath indexPath: IndexPath?) -> Bool {
         AssertIsOnMainThread()
@@ -117,7 +172,7 @@ public extension ChatListViewController {
         guard !tableView.isEditing else {
             return false
         }
-        guard let indexPath = indexPath else {
+        guard let indexPath else {
             return false
         }
         guard let section = ChatListSection(rawValue: indexPath.section) else {
@@ -126,8 +181,8 @@ public extension ChatListViewController {
         }
         switch section {
         case .pinned, .unpinned:
-            let currentSelectedThreadId = self.conversationSplitViewController?.selectedThread?.uniqueId
-            if self.thread(forIndexPath: indexPath)?.uniqueId == currentSelectedThreadId {
+            let currentSelectedThreadId = conversationSplitViewController?.selectedThread?.uniqueId
+            if thread(forIndexPath: indexPath)?.uniqueId == currentSelectedThreadId {
                 // Currently, no previewing the currently selected thread.
                 // Though, in a scene-aware, multiwindow world, we may opt to permit this.
                 // If only to allow the user to pick up and drag a conversation to a new window.

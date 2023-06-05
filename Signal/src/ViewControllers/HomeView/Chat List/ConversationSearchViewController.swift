@@ -12,24 +12,20 @@ import SignalUI
  If you're an existing user of BonMot using Xcode 13, you may want to add the following `typealias` somewhere in your project to avoid a conflict with `Foundation.StringStyle`: */
 typealias StringStyle = BonMot.StringStyle
 
-@objc
 public protocol ConversationSearchViewDelegate: AnyObject {
     func conversationSearchViewWillBeginDragging()
 }
 
-@objc
-public class ConversationSearchViewController: UITableViewController, ThreadSwipeHandler {
+public class ConversationSearchViewController: UITableViewController {
 
     // MARK: -
 
-    @objc
     public weak var delegate: ConversationSearchViewDelegate?
 
     private var hasEverAppeared = false
     private var lastReloadDate: Date?
     private let cellContentCache = LRUCache<String, CLVCellContentToken>(maxSize: 256)
 
-    @objc
     public var searchText = "" {
         didSet {
             AssertIsOnMainThread()
@@ -704,4 +700,11 @@ extension ConversationSearchViewController: DatabaseChangeDelegate {
 
         refreshSearchResults()
     }
+}
+
+// MARK: -
+
+extension ConversationSearchViewController: ThreadSwipeHandler {
+
+    func updateUIAfterSwipeAction() { }
 }

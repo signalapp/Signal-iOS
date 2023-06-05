@@ -6,7 +6,6 @@
 import SignalServiceKit
 import SignalUI
 
-@objc(OWSGetStartedBannerViewControllerDelegate)
 protocol GetStartedBannerViewControllerDelegate: AnyObject {
     func getStartedBannerDidTapInviteFriends(_ banner: GetStartedBannerViewController)
     func getStartedBannerDidTapCreateGroup(_ banner: GetStartedBannerViewController)
@@ -15,7 +14,6 @@ protocol GetStartedBannerViewControllerDelegate: AnyObject {
     func getStartedBannerDidTapAvatarBuilder(_ banner: GetStartedBannerViewController)
 }
 
-@objc(OWSGetStartedBannerViewController)
 class GetStartedBannerViewController: UIViewController, UICollectionViewDelegateFlowLayout {
 
     // MARK: - Views
@@ -55,9 +53,8 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
 
     // MARK: - Data
 
-    @objc
     public var hasIncompleteCards: Bool { bannerContent.count > 0 }
-    @objc
+
     public var opaqueHeight: CGFloat { view.height - gradientBackdrop.height }
 
     private weak var delegate: GetStartedBannerViewControllerDelegate?
@@ -66,7 +63,6 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
 
     // MARK: - Lifecycle
 
-    @objc
     init(delegate: GetStartedBannerViewControllerDelegate) {
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
@@ -275,7 +271,6 @@ extension GetStartedBannerViewController {
     private static let keyValueStore = SDSKeyValueStore(collection: "GetStartedBannerViewController")
     private static let completePrefix = "ActiveCard."
 
-    @objc(enableAllCardsWithTransaction:)
     static func enableAllCards(writeTx: SDSAnyWriteTransaction) {
         var didChange = false
 

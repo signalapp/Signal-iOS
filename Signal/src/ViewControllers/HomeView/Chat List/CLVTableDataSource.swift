@@ -6,18 +6,16 @@
 import SignalMessaging
 import SignalUI
 
-@objc
 public class CLVTableDataSource: NSObject {
+
     private var viewState: CLVViewState!
 
     public let tableView = CLVTableView()
 
-    @objc
     public weak var viewController: ChatListViewController?
 
     fileprivate var splitViewController: UISplitViewController? { viewController?.splitViewController }
 
-    @objc
     public var renderState: CLVRenderState = .empty
 
     fileprivate var lastReloadDate: Date? { tableView.lastReloadDate }
@@ -45,10 +43,6 @@ public class CLVTableDataSource: NSObject {
                 }
             }
         }
-    }
-
-    public required override init() {
-        super.init()
     }
 
     func configure(viewState: CLVViewState) {
@@ -81,12 +75,11 @@ extension CLVTableDataSource {
         return threadViewModel
     }
 
-    @objc
     func threadViewModel(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> ThreadViewModel? {
-        guard let thread = self.thread(forIndexPath: indexPath, expectsSuccess: expectsSuccess) else {
+        guard let thread = thread(forIndexPath: indexPath, expectsSuccess: expectsSuccess) else {
             return nil
         }
-        return self.threadViewModel(forThread: thread)
+        return threadViewModel(forThread: thread)
     }
 
     func thread(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> TSThread? {
@@ -210,7 +203,6 @@ extension CLVTableDataSource: UIScrollViewDelegate {
 
 // MARK: -
 
-@objc
 public enum ChatListMode: Int, CaseIterable {
     case archive
     case inbox
@@ -218,7 +210,6 @@ public enum ChatListMode: Int, CaseIterable {
 
 // MARK: -
 
-@objc
 public enum ChatListSection: Int, CaseIterable {
     case reminders
     case pinned
@@ -669,7 +660,7 @@ extension CLVTableDataSource: UITableViewDataSource {
             owsFailDebug("Invalid cell.")
             return UITableViewCell()
         }
-        if let cell = cell as? ArchivedConversationsCell, let viewController = viewController {
+        if let cell = cell as? ArchivedConversationsCell {
             cell.configure(enabled: !viewState.multiSelectState.isActive)
         }
         return cell
@@ -775,12 +766,10 @@ extension CLVTableDataSource {
         }
     }
 
-    @objc
     public func stopRefreshTimer() {
         nextUpdateAt = nil
     }
 
-    @objc
     public func updateAndSetRefreshTimer() {
         for path in tableView.indexPathsForVisibleRows ?? [] {
             updateVisibleCellContent(at: path, for: tableView)
@@ -952,7 +941,6 @@ public class CLVTableView: UITableView {
 
     fileprivate var lastReloadDate: Date?
 
-    @objc
     public override func reloadData() {
         AssertIsOnMainThread()
 
@@ -961,7 +949,6 @@ public class CLVTableView: UITableView {
         (dataSource as? CLVTableDataSource)?.calcRefreshTimer()
     }
 
-    @objc
     public required init() {
         super.init(frame: .zero, style: .grouped)
     }
@@ -969,5 +956,22 @@ public class CLVTableView: UITableView {
     @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: -
+
+extension ChatListViewController {
+
+    func threadViewModel(forThread thread: TSThread) -> ThreadViewModel {
+        tableDataSource.threadViewModel(forThread: thread)
+    }
+
+    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
+        tableDataSource.thread(forIndexPath: indexPath)
+    }
+
+    func threadViewModel(forIndexPath indexPath: IndexPath) -> ThreadViewModel? {
+        tableDataSource.threadViewModel(forIndexPath: indexPath)
     }
 }

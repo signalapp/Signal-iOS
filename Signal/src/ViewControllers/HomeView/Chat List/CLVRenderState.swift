@@ -5,7 +5,7 @@
 
 import SignalServiceKit
 
-public class CLVRenderState: NSObject {
+public class CLVRenderState {
 
     let viewInfo: CLVViewInfo
 
@@ -73,7 +73,6 @@ public class CLVRenderState: NSObject {
         }
     }
 
-    @objc
     func indexPath(forUniqueId uniqueId: String) -> IndexPath? {
         if let index = (unpinnedThreads.firstIndex { $0.uniqueId == uniqueId}) {
             return IndexPath(item: index, section: ChatListSection.unpinned.rawValue)

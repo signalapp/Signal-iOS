@@ -6,10 +6,8 @@
 import SignalMessaging
 import SignalUI
 
-@objc
 protocol ThreadSwipeHandler {
-    @objc
-    optional func updateUIAfterSwipeAction()
+    func updateUIAfterSwipeAction()
 }
 
 extension ThreadSwipeHandler where Self: UIViewController {
@@ -137,7 +135,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
                                                       updateStorageService: true,
                                                       transaction: transaction)
         }
-        updateUIAfterSwipeAction?()
+        updateUIAfterSwipeAction()
     }
 
     fileprivate func deleteThreadWithConfirmation(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
@@ -163,7 +161,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
         databaseStorage.write { transaction in
             threadViewModel.threadRecord.softDelete(with: transaction)
         }
-        updateUIAfterSwipeAction?()
+        updateUIAfterSwipeAction()
     }
 
     func markThreadAsRead(threadViewModel: ThreadViewModel) {

@@ -5,7 +5,6 @@
 
 // Separate iOS Frameworks from other imports.
 #import "AppDelegate.h"
-#import "ChatListViewController.h"
 #import "OWSOrphanDataCleaner.h"
 #import "OWSQuotedMessageView.h"
 #import "RemoteVideoView.h"

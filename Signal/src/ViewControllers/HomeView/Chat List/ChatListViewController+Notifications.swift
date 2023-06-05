@@ -11,7 +11,6 @@ extension ChatListViewController {
 
     public static let clearSearch = Notification.Name("clearSearch")
 
-    @objc
     public func observeNotifications() {
         AssertIsOnMainThread()
 

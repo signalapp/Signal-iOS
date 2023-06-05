@@ -158,7 +158,6 @@ open class OWSNavigationController: OWSNavigationControllerBase {
     /// Apply any changes to navbar appearance from the top view controller in the stack.
     /// Changes will be automatically applied when a view controller is pushed or popped;
     /// this method is just for use if state changes while the view is on screen.
-    @objc
     public func updateNavbarAppearance(animated: Bool = false) {
         if let topViewController = topViewController {
             updateNavbarAppearance(for: topViewController, fromViewControllerTransition: false, animated: animated)

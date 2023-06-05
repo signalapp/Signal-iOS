@@ -6,8 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-@objc
-public class CLVReminderViews: NSObject {
+public class CLVReminderViews: Dependencies {
 
     fileprivate let reminderViewCell = UITableViewCell()
     fileprivate let reminderStackView = UIStackView()
@@ -23,13 +22,10 @@ public class CLVReminderViews: NSObject {
     fileprivate let paymentsReminderView = UIView()
     fileprivate var usernameValidationFailedView = UIView()
 
-    @objc
     public weak var viewController: ChatListViewController?
 
-    required override init() {
+    required init() {
         AssertIsOnMainThread()
-
-        super.init()
 
         reminderStackView.axis = .vertical
         reminderStackView.spacing = 0
@@ -196,10 +192,8 @@ extension ChatListViewController {
     fileprivate var paymentsReminderView: UIView { reminderViews.paymentsReminderView }
     fileprivate var usernameValidationFailedView: UIView { reminderViews.usernameValidationFailedView }
 
-    @objc
     public var reminderViews: CLVReminderViews { viewState.reminderViews }
 
-    @objc
     public func updateReminderViews() {
         AssertIsOnMainThread()
 
@@ -233,7 +227,6 @@ extension ChatListViewController {
         loadCoordinator.loadIfNecessary()
     }
 
-    @objc
     public func updateUnreadPaymentNotificationsCountWithSneakyTransaction() {
         AssertIsOnMainThread()
 

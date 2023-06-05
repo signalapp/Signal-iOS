@@ -57,7 +57,7 @@ enum CLVLoadResult {
 
 // MARK: -
 
-public class CLVLoader: NSObject {
+public class CLVLoader: Dependencies {
 
     static func loadRenderStateForReset(viewInfo: CLVViewInfo,
                                         transaction: SDSAnyReadTransaction) -> CLVLoadResult {

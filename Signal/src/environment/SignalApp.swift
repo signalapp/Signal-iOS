@@ -97,7 +97,7 @@ extension SignalApp {
         UIViewController.attemptRotationToDeviceOrientation()
     }
 
-    func showAppSettings(mode: ShowAppSettingsMode) {
+    func showAppSettings(mode: ChatListViewController.ShowAppSettingsMode) {
         guard let conversationSplitViewController else {
             owsFailDebug("Missing conversationSplitViewController.")
             return

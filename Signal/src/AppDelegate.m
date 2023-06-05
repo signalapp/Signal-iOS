@@ -4,7 +4,6 @@
 //
 
 #import "AppDelegate.h"
-#import "ChatListViewController.h"
 #import "Signal-Swift.h"
 #import <Intents/Intents.h>
 #import <SignalCoreKit/Cryptography.h>

@@ -6,8 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-@objc
-class ExperienceUpgradeManager: NSObject {
+class ExperienceUpgradeManager: Dependencies {
 
     private static weak var lastPresented: ExperienceUpgradeView?
 
@@ -15,7 +14,6 @@ class ExperienceUpgradeManager: NSObject {
     // before we display the splash.
     static let splashStartDay = 7
 
-    @objc
     static func presentNext(fromViewController: UIViewController) -> Bool {
         let optionalNext = databaseStorage.read(block: { transaction in
             return ExperienceUpgradeFinder.next(transaction: transaction.unwrapGrdbRead)

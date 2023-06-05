@@ -3,14 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import SignalUI
 
-@objc
-public class CLVViewState: NSObject {
+public class CLVViewState {
 
     public let tableDataSource = CLVTableDataSource()
 
-    @objc
     public let multiSelectState = MultiSelectState()
 
     public let loadCoordinator = CLVLoadCoordinator()
@@ -23,32 +22,26 @@ public class CLVViewState: NSObject {
 
     // MARK: - Views
 
-    public let searchBar = OWSSearchBar()
-    public let searchResultsController = ConversationSearchViewController()
-    public let reminderViews = CLVReminderViews()
+    let searchBar = OWSSearchBar()
+    let searchResultsController = ConversationSearchViewController()
+    let reminderViews = CLVReminderViews()
 
     // MARK: - State
 
     // TODO: We should make this a let.
-    public var chatListMode: ChatListMode = .inbox
+    var chatListMode: ChatListMode = .inbox
 
-    public var shouldBeUpdatingView = false
+    var shouldBeUpdatingView = false
 
-    public var isViewVisible = false
-    public var hasEverAppeared = false
+    var isViewVisible = false
+    var hasEverAppeared = false
 
-    public var unreadPaymentNotificationsCount: UInt = 0
-    public var firstUnreadPaymentModel: TSPaymentModel?
-    public var lastKnownTableViewContentOffset: CGPoint?
+    var unreadPaymentNotificationsCount: UInt = 0
+    var firstUnreadPaymentModel: TSPaymentModel?
+    var lastKnownTableViewContentOffset: CGPoint?
 
     // MARK: - Initializer
 
-    @objc
-    public override required init() {
-        super.init()
-    }
-
-    @objc
     public func configure() {
         tableDataSource.configure(viewState: self)
     }
@@ -56,7 +49,6 @@ public class CLVViewState: NSObject {
 
 // MARK: -
 
-@objc
 public extension ChatListViewController {
 
     var tableDataSource: CLVTableDataSource { viewState.tableDataSource }
@@ -65,13 +57,10 @@ public extension ChatListViewController {
 
     // MARK: - Caches
 
-    @nonobjc
     var threadViewModelCache: LRUCache<String, ThreadViewModel> { viewState.threadViewModelCache }
 
-    @nonobjc
     internal var cellContentCache: LRUCache<String, CLVCellContentToken> { viewState.cellContentCache }
 
-    @nonobjc
     var conversationCellHeightCache: CGFloat? {
         get { viewState.conversationCellHeightCache }
         set { viewState.conversationCellHeightCache = newValue }
@@ -85,6 +74,11 @@ public extension ChatListViewController {
 
     // MARK: - State
 
+    var renderState: CLVRenderState { viewState.tableDataSource.renderState }
+
+    var numberOfInboxThreads: UInt { renderState.inboxCount }
+    var numberOfArchivedThreads: UInt { renderState.archiveCount }
+
     var chatListMode: ChatListMode {
         get { viewState.chatListMode }
         set { viewState.chatListMode = newValue }
@@ -95,7 +89,6 @@ public extension ChatListViewController {
         set { viewState.hasEverAppeared = newValue }
     }
 
-    @nonobjc
     var lastKnownTableViewContentOffset: CGPoint? {
         get { viewState.lastKnownTableViewContentOffset }
         set { viewState.lastKnownTableViewContentOffset = newValue }

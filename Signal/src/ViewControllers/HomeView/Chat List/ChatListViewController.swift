@@ -7,9 +7,381 @@ import SignalCoreKit
 import SignalMessaging
 import SignalServiceKit
 import SignalUI
+import StoreKit
 
-@objc
-public extension ChatListViewController {
+public class ChatListViewController: OWSViewController {
+
+    // MARK: Init
+
+    override init() {
+        super.init()
+
+        tableDataSource.viewController = self
+        loadCoordinator.viewController = self
+        reminderViews.viewController = self
+        viewState.configure()
+    }
+
+    // MARK: View Lifecycle
+
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
+        switch chatListMode {
+        case .inbox:
+            title = NSLocalizedString("CHAT_LIST_TITLE_INBOX", comment: "Title for the chat list's default mode.")
+        case .archive:
+            title = NSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode.")
+        }
+
+        if !viewState.multiSelectState.isActive {
+            applyDefaultBackButton()
+        }
+
+        // Table View
+        view.addSubview(tableView)
+        tableView.autoPinEdgesToSuperviewEdges()
+        tableView.accessibilityIdentifier = "ChatListViewController.tableView"
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 60
+        tableView.allowsSelectionDuringEditing = true
+        tableView.allowsMultipleSelectionDuringEditing = true
+
+        // iOS 13 and later:
+        // Automatically handled by UITableViewDelegate callbacks
+        // -tableView:contextMenuConfigurationForRowAtIndexPath:point:
+        // -tableView:willPerformPreviewActionForMenuWithConfiguration:animator:
+        if #unavailable(iOS 13) {
+            registerForPreviewing(with: self, sourceView: tableView)
+        }
+
+        addPullToRefreshIfNeeded()
+
+        // Empty Inbox
+        view.addSubview(emptyInboxView)
+        emptyInboxView.autoPinWidthToSuperviewMargins()
+        emptyInboxView.autoAlignAxis(.horizontal, toSameAxisOf: view, withMultiplier: 0.85)
+
+        // First Conversation Cue
+        view.addSubview(firstConversationCueView)
+        firstConversationCueView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        // This inset bakes in assumptions about UINavigationBar layout, but I'm not sure
+        // there's a better way to do it, since it isn't safe to use iOS auto layout with
+        // UINavigationBar contents.
+        firstConversationCueView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
+        firstConversationCueView.autoPinEdge(toSuperviewEdge: .leading, withInset: 10, relation: .greaterThanOrEqual)
+        firstConversationCueView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
+
+        // Search
+        searchBar.placeholder = NSLocalizedString(
+            "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
+            comment: "Placeholder text for search bar which filters conversations."
+        )
+        searchBar.delegate = self
+        searchBar.accessibilityIdentifier = "ChatListViewController.searchBar"
+        searchBar.textField?.accessibilityIdentifier = "ChatListViewController.conversation_search"
+        searchBar.sizeToFit()
+        searchBar.layoutMargins = .zero
+        let searchBarContainer = UIView()
+        searchBarContainer.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 0)
+        searchBarContainer.frame = searchBar.frame
+        searchBarContainer.addSubview(searchBar)
+        searchBar.autoPinEdgesToSuperviewMargins()
+
+        // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
+        owsAssertDebug(tableView.tableHeaderView == nil)
+        tableView.tableHeaderView = searchBarContainer
+        // Hide search bar by default.  User can pull down to search.
+        tableView.contentOffset = CGPoint(x: 0, y: searchBar.frame.height)
+
+        searchResultsController.delegate = self
+        addChild(searchResultsController)
+        view.addSubview(searchResultsController.view)
+        searchResultsController.view.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        searchResultsController.view.autoPinTopToSuperviewMargin(withInset: 56)
+        searchResultsController.view.isHidden = true
+
+        updateReminderViews()
+        applyTheme()
+        observeNotifications()
+    }
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        isViewVisible = true
+
+        // Ensure the tabBar is always hidden if stories is disabled or we're in the archive.
+        let shouldHideTabBar = !StoryManager.areStoriesEnabled || chatListMode == .archive
+        if shouldHideTabBar {
+            tabBarController?.tabBar.isHidden = true
+            extendedLayoutIncludesOpaqueBars = true
+        }
+
+        let isShowingSearchResults = !searchResultsController.view.isHidden
+        if isShowingSearchResults {
+            owsAssertDebug(!(searchBar.text ?? "").stripped.isEmpty)
+            scrollSearchBarToTop()
+            searchBar.becomeFirstResponder()
+        } else if let lastViewedThread {
+            owsAssertDebug((searchBar.text ?? "").stripped.isEmpty)
+
+            // When returning to conversation list, try to ensure that the "last" thread is still
+            // visible.  The threads often change ordering while in conversation view due
+            // to incoming & outgoing messages.
+            if let indexPathOfLastThread = renderState.indexPath(forUniqueId: lastViewedThread.uniqueId) {
+                tableView.scrollToRow(at: indexPathOfLastThread, at: .none, animated: false)
+            }
+        }
+
+        if viewState.multiSelectState.isActive {
+            tableView.setEditing(true, animated: false)
+            reloadTableData()
+            willEnterMultiselectMode()
+        } else {
+            applyDefaultBackButton()
+        }
+
+        searchResultsController.viewWillAppear(animated)
+        ensureSearchBarCancelButton()
+
+        updateUnreadPaymentNotificationsCountWithSneakyTransaction()
+
+        // During main app launch, the chat list becomes visible _before_
+        // app is foreground and active.  Therefore we need to make an
+        // exception and update the view contents; otherwise, the home
+        // view will briefly appear empty after launch. But to avoid
+        // hurting first launch perf, we only want to make an exception
+        // for a single load.
+        if !hasEverAppeared {
+            loadCoordinator.ensureFirstLoad()
+        } else {
+            ensureCellAnimations()
+        }
+
+        if let selectedIndexPath = tableView.indexPathForSelectedRow {
+            // Deselect row when swiping back/returning to chat list.
+            tableView.deselectRow(at: selectedIndexPath, animated: false)
+        }
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        BenchManager.completeEvent(eventId: "AppStart", logIfAbsent: false)
+        InstrumentsMonitor.trackEvent(name: "ChatListViewController.viewDidAppear")
+        AppReadiness.setUIIsReady()
+
+        if getStartedBanner == nil && !hasEverPresentedExperienceUpgrade && ExperienceUpgradeManager.presentNext(fromViewController: self) {
+            hasEverPresentedExperienceUpgrade = true
+        } else if !hasEverAppeared {
+            presentGetStartedBannerIfNecessary()
+        }
+
+        // Whether or not the theme has changed, always ensure
+        // the right theme is applied. The initial collapsed
+        // state of the split view controller is determined between
+        // `viewWillAppear` and `viewDidAppear`, so this is the soonest
+        // we can know the right thing to display.
+        applyTheme()
+
+        requestReviewIfAppropriate()
+
+        searchResultsController.viewDidAppear(animated)
+
+        showBadgeExpirationSheetIfNeeded()
+
+        hasEverAppeared = true
+        if viewState.multiSelectState.isActive {
+            showToolbar()
+        } else {
+            applyDefaultBackButton()
+        }
+        tableDataSource.updateAndSetRefreshTimer()
+    }
+
+    public override func viewWillDisappear(_ animated: Bool) {
+        leaveMultiselectMode()
+        tableDataSource.stopRefreshTimer()
+
+        super.viewWillDisappear(animated)
+
+        isViewVisible = false
+        searchResultsController.viewWillDisappear(animated)
+    }
+
+    public override func viewDidDisappear(_ animated: Bool) {
+        InstrumentsMonitor.trackEvent(name: "ChatListViewController.viewDidDisappear")
+
+        super.viewDidDisappear(animated)
+
+        searchResultsController.viewDidDisappear(animated)
+    }
+
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        var contentInset = UIEdgeInsets.zero
+        if let getStartedBanner, getStartedBanner.isViewLoaded, !getStartedBanner.view.isHidden {
+            contentInset.bottom = getStartedBanner.opaqueHeight
+        }
+        if tableView.contentInset != contentInset {
+            UIView.animate(withDuration: 0.25) {
+                self.tableView.contentInset = contentInset
+            }
+        }
+    }
+
+    // MARK: Theme
+
+    public override func themeDidChange() {
+        super.themeDidChange()
+
+        applyTheme()
+        reloadTableDataAndResetCellContentCache()
+        applyThemeToContextMenuAndToolbar()
+    }
+
+    private func applyTheme() {
+        view.backgroundColor = Theme.backgroundColor
+        tableView.backgroundColor = Theme.backgroundColor
+        updateBarButtonItems()
+    }
+
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        guard isViewLoaded else { return }
+
+        // There is a subtle difference in when the split view controller
+        // transitions between collapsed and expanded state on iPad vs
+        // when it does on iPhone. We reloadData here in order to ensure
+        // the background color of all of our cells is updated to reflect
+        // the current state, so it's important that we're only doing this
+        // once the state is ready, otherwise there will be a flash of the
+        // wrong background color. For iPad, this moment is _before_ the
+        // transition occurs. For iPhone, this moment is _during_ the
+        // transition. We reload in the right places accordingly.
+        if UIDevice.current.isIPad {
+            reloadTableDataAndResetCellContentCache()
+        }
+
+        coordinator.animate { context in
+            self.applyTheme()
+
+            if !UIDevice.current.isIPad {
+                self.reloadTableDataAndResetCellContentCache()
+            }
+
+            // The Get Started banner will occupy most of the screen in landscape
+            // If we're transitioning to landscape, fade out the view (if it exists)
+            if let getStartedBanner = self.getStartedBanner, getStartedBanner.isViewLoaded {
+                if size.width > size.height {
+                    getStartedBanner.view.alpha = 0
+                } else {
+                    getStartedBanner.view.alpha = 1
+                }
+            }
+        }
+    }
+
+    // MARK: UI Components
+
+    private lazy var emptyInboxView: UIView = {
+        let emptyInboxLabel = UILabel()
+        emptyInboxLabel.text = NSLocalizedString(
+            "INBOX_VIEW_EMPTY_INBOX",
+            comment: "Message shown in the conversation list when the inbox is empty."
+        )
+        emptyInboxLabel.font = .dynamicTypeSubheadlineClamped
+        emptyInboxLabel.textColor
+            = Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryTextAndIconColor : UIColor.ows_gray45
+        emptyInboxLabel.textAlignment = .center
+        emptyInboxLabel.numberOfLines = 0
+        emptyInboxLabel.lineBreakMode = .byWordWrapping
+        emptyInboxLabel.accessibilityIdentifier = "ChatListViewController.emptyInboxView"
+        return emptyInboxLabel
+    }()
+
+    private lazy var firstConversationLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = .dynamicTypeBodyClamped
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.accessibilityIdentifier = "ChatListViewController.firstConversationLabel"
+        return label
+    }()
+
+    lazy var firstConversationCueView: UIView = {
+        let kTailWidth: CGFloat = 16
+        let kTailHeight: CGFloat = 8
+        let kTailHMargin: CGFloat = 12
+
+        let layerView = OWSLayerView()
+        layerView.isUserInteractionEnabled = true
+        layerView.accessibilityIdentifier = "ChatListViewController.firstConversationCueView"
+        layerView.layoutMargins = UIEdgeInsets(top: 11 + kTailHeight, leading: 16, bottom: 11, trailing: 16)
+
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.fillColor = UIColor.ows_accentBlue.cgColor
+        layerView.layer.addSublayer(shapeLayer)
+        layerView.layoutCallback = { view in
+            let bezierPath = UIBezierPath()
+
+            // Bubble
+            var bubbleBounds = view.bounds
+            bubbleBounds.origin.y += kTailHeight
+            bubbleBounds.size.height -= kTailHeight
+            bezierPath.append(UIBezierPath(roundedRect: bubbleBounds, cornerRadius: 9))
+
+            // Tail
+            var tailTop = CGPoint(x: kTailHMargin + kTailWidth * 0.5, y: 0)
+            var tailLeft = CGPoint(x: kTailHMargin, y: kTailHeight)
+            var tailRight = CGPoint(x: kTailHMargin + kTailWidth, y: kTailHeight)
+            if !CurrentAppContext().isRTL {
+                tailTop.x = view.width - tailTop.x
+                tailLeft.x = view.width - tailLeft.x
+                tailRight.x = view.width - tailRight.x
+            }
+            bezierPath.move(to: tailTop)
+            bezierPath.addLine(to: tailLeft)
+            bezierPath.addLine(to: tailRight)
+            bezierPath.addLine(to: tailTop)
+            shapeLayer.path = bezierPath.cgPath
+            shapeLayer.frame = view.bounds
+        }
+
+        layerView.addSubview(firstConversationLabel)
+        firstConversationLabel.autoPinEdgesToSuperviewMargins()
+
+        layerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(firstConversationCueWasTapped)))
+
+        return layerView
+    }()
+
+    private lazy var settingsBarButtonItem: UIBarButtonItem = {
+        let contextButton = ContextMenuButton()
+        contextButton.showsContextMenuAsPrimaryAction = true
+        contextButton.contextMenu = settingsContextMenu()
+        contextButton.accessibilityLabel = CommonStrings.openSettingsButton
+
+        let avatarImageView = createAvatarBarButtonViewWithSneakyTransaction()
+        contextButton.addSubview(avatarImageView)
+        avatarImageView.autoPinEdgesToSuperviewEdges()
+
+        let wrapper = UIView.container()
+        wrapper.addSubview(contextButton)
+        contextButton.autoPinEdgesToSuperviewEdges()
+
+        if unreadPaymentNotificationsCount > 0 {
+            PaymentsViewUtils.addUnreadBadge(toView: wrapper)
+        }
+
+        return .init(customView: wrapper)
+    }()
+
+    // MARK: Table View
 
     func reloadTableDataAndResetCellContentCache() {
         AssertIsOnMainThread()
@@ -63,10 +435,10 @@ public extension ChatListViewController {
     func updateCellVisibility(cell: ChatListCell, isCellVisible: Bool) {
         AssertIsOnMainThread()
 
-        cell.isCellVisible = self.isViewVisible && isCellVisible
+        cell.isCellVisible = isViewVisible && isCellVisible
     }
 
-    func ensureCellAnimations() {
+    private func ensureCellAnimations() {
         AssertIsOnMainThread()
 
         for cell in tableView.visibleCells {
@@ -77,9 +449,142 @@ public extension ChatListViewController {
         }
     }
 
-    // MARK: -
+    // MARK: UI Helpers
 
-    func addPullToRefreshIfNeeded() {
+    private var inviteFlow: InviteFlow?
+
+    private var getStartedBanner: GetStartedBannerViewController?
+
+    private var hasEverPresentedExperienceUpgrade = false
+
+    var lastViewedThread: TSThread?
+
+    @objc
+    func updateBarButtonItems() {
+        guard chatListMode == .inbox && viewState.multiSelectState.isActive else { return }
+
+        // Settings button.
+        navigationItem.leftBarButtonItem = settingsBarButtonItem
+        settingsBarButtonItem.accessibilityLabel = CommonStrings.openSettingsButton
+        settingsBarButtonItem.accessibilityIdentifier = "ChatListViewController.settingsButton"
+
+        var rightBarButtonItems = [UIBarButtonItem]()
+
+        let compose = UIBarButtonItem(
+            image: Theme.iconImage(.compose24),
+            style: .plain,
+            target: self,
+            action: #selector(showNewConversationView),
+            accessibilityIdentifier: "ChatListViewController.compose"
+        )
+        compose.accessibilityLabel = NSLocalizedString("COMPOSE_BUTTON_LABEL", comment: "Accessibility label from compose button.")
+        compose.accessibilityHint = NSLocalizedString(
+            "COMPOSE_BUTTON_HINT",
+            comment: "Accessibility hint describing what you can do with the compose button"
+        )
+        rightBarButtonItems.append(compose)
+
+        let camera = UIBarButtonItem(
+            image: Theme.iconImage(.cameraButton),
+            style: .plain,
+            target: self,
+            action: #selector(showCameraView),
+            accessibilityIdentifier: "ChatListViewController.camera"
+        )
+        camera.accessibilityLabel = NSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
+        camera.accessibilityHint = NSLocalizedString(
+            "CAMERA_BUTTON_HINT",
+            comment: "Accessibility hint describing what you can do with the camera button"
+        )
+        rightBarButtonItems.append(camera)
+
+        if SignalProxy.isEnabled {
+            let proxyStatusImage: UIImage?
+            let tintColor: UIColor
+            switch socketManager.socketState(forType: .identified) {
+            case .open:
+                proxyStatusImage = UIImage(named: "proxy_connected_24")
+                tintColor = UIColor.ows_accentGreen
+
+            case .closed:
+                proxyStatusImage = UIImage(named: "proxy_failed_24")
+                tintColor = UIColor.ows_accentRed
+
+            case .connecting:
+                proxyStatusImage = UIImage(named: "proxy_failed_24")
+                tintColor = UIColor.ows_middleGray
+            }
+
+            let proxy = UIBarButtonItem(
+                image: proxyStatusImage,
+                style: .plain,
+                target: self,
+                action: #selector(showAppSettingsInProxyMode)
+            )
+            proxy.tintColor = tintColor
+            rightBarButtonItems.append(proxy)
+        }
+
+        navigationItem.rightBarButtonItems = rightBarButtonItems
+    }
+
+    @objc
+    func showNewConversationView() {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        // Dismiss any message actions if they're presented
+        conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
+
+        let viewController = ComposeViewController()
+        contactsManagerImpl.requestSystemContactsOnce { error in
+            if let error {
+                Logger.error("Error when requesting contacts: \(error)")
+            }
+
+            // Even if there is an error fetching contacts we proceed to the next screen.
+            // As the compose view will present the proper thing depending on contact access.
+            //
+            // We just want to make sure contact access is *complete* before showing the compose
+            // screen to avoid flicker.
+            let modal = OWSNavigationController(rootViewController: viewController)
+            self.navigationController?.presentFormSheet(modal, animated: true)
+        }
+    }
+
+    func showNewGroupView() {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        // Dismiss any message actions if they're presented
+        conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
+
+        let newGroupViewController = NewGroupMembersViewController()
+        contactsManagerImpl.requestSystemContactsOnce { error in
+            if let error {
+                Logger.error("Error when requesting contacts: \(error)")
+            }
+
+            // Even if there is an error fetching contacts we proceed to the next screen.
+            // As the compose view will present the proper thing depending on contact access.
+            //
+            // We just want to make sure contact access is *complete* before showing the compose
+            // screen to avoid flicker.
+            let modal = OWSNavigationController(rootViewController: newGroupViewController)
+            self.navigationController?.presentFormSheet(modal, animated: true)
+        }
+    }
+
+    @objc
+    private func firstConversationCueWasTapped(_ gestureRecognizer: UITapGestureRecognizer) {
+        Logger.info("")
+
+        showNewConversationView()
+    }
+
+    private func addPullToRefreshIfNeeded() {
         if tsAccountManager.isPrimaryDevice {
             return
         }
@@ -88,9 +593,10 @@ public extension ChatListViewController {
         pullToRefreshView.tintColor = .gray
         pullToRefreshView.addTarget(self, action: #selector(pullToRefreshPerformed), for: .valueChanged)
         pullToRefreshView.accessibilityIdentifier = "ChatListViewController.pullToRefreshView"
-        self.tableView.refreshControl = pullToRefreshView
+        tableView.refreshControl = pullToRefreshView
     }
 
+    @objc
     private func pullToRefreshPerformed(_ refreshControl: UIRefreshControl) {
         AssertIsOnMainThread()
         owsAssert(!tsAccountManager.isPrimaryDevice)
@@ -100,7 +606,85 @@ public extension ChatListViewController {
         }.cauterize()
     }
 
-    // MARK: -
+    private func applyDefaultBackButton() {
+        AssertIsOnMainThread()
+
+        // We don't show any text for the back button, so there's no need to localize it. But because we left align the
+        // conversation title view, we add a little tappable padding after the back button, by having a title of spaces.
+        // Admittedly this is kind of a hack and not super fine grained, but it's simple and results in the interactive pop
+        // gesture animating our title view nicely vs. creating our own back button bar item with custom padding, which does
+        // not properly animate with the "swipe to go back" or "swipe left for info" gestures.
+        let paddingLength: Int = 3
+        let paddingString = "".padding(toLength: paddingLength, withPad: " ", startingAt: 0)
+
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: paddingString,
+                                                           style: .plain,
+                                                           target: nil,
+                                                           action: nil,
+                                                           accessibilityIdentifier: "back")
+    }
+
+    // We want to delay asking for a review until an opportune time.
+    // If the user has *just* launched Signal they intend to do something, we don't want to interrupt them.
+
+    private static var callCount: UInt = 0
+    private static var reviewRequested = false
+
+    func requestReviewIfAppropriate() {
+        Self.callCount += 1
+
+        if hasEverAppeared && Self.callCount > 25 {
+            Logger.debug("requesting review")
+            // In Debug this pops up *every* time, which is helpful, but annoying.
+            // In Production this will pop up at most 3 times per 365 days.
+    #if !DEBUG
+            if !Self.reviewRequested {
+                // Despite `SKStoreReviewController` docs, some people have reported seeing the "request review" prompt
+                // repeatedly after first installation. Let's make sure it only happens at most once per launch.
+                SKStoreReviewController.requestReview()
+                Self.reviewRequested = true
+            }
+    #endif
+        } else {
+            Logger.debug("not requesting review")
+        }
+    }
+
+    // MARK: View State
+
+    let viewState = CLVViewState()
+
+    private func shouldShowFirstConversationCue() -> Bool {
+        let hasSavedThread = databaseStorage.read { transaction in
+            return SSKPreferences.hasSavedThread(transaction: transaction)
+        }
+        return shouldShowEmptyInboxView && !hasSavedThread
+    }
+
+    private var shouldShowEmptyInboxView: Bool {
+        return chatListMode == .inbox && numberOfInboxThreads == 0 && numberOfArchivedThreads == 0
+    }
+
+    func updateViewState() {
+        if shouldShowEmptyInboxView {
+            tableView.isHidden = true
+            emptyInboxView.isHidden = false
+            if shouldShowFirstConversationCue() {
+                firstConversationCueView.isHidden = false
+                updateFirstConversationLabel()
+            } else {
+                firstConversationCueView.isHidden = true
+            }
+        } else {
+            tableView.isHidden = false
+            emptyInboxView.isHidden = true
+            firstConversationCueView.isHidden = true
+        }
+    }
+
+    // MARK: Badge Expiration
+
+    private var hasShownBadgeExpiration = false
 
     func showBadgeExpirationSheetIfNeeded() {
         Logger.info("[Donations] Checking whether we should show badge expiration sheet...")
@@ -207,7 +791,7 @@ public extension ChatListViewController {
         }
     }
 
-    // MARK: -
+    // MARK: Payments
 
     func configureUnreadPaymentsBannerSingle(_ paymentsReminderView: UIView,
                                              paymentModel: TSPaymentModel,
@@ -375,22 +959,21 @@ public extension ChatListViewController {
     }
 }
 
-// MARK: -
+// MARK: Settings Button
 
-enum ShowAppSettingsMode {
-    case none
-    case payments
-    case payment(paymentsHistoryItem: PaymentsHistoryItem)
-    case paymentsTransferIn
-    case appearance
-    case avatarBuilder
-    case donate(donateMode: DonateViewController.DonateMode)
-    case proxy
-}
+extension ChatListViewController {
 
-// MARK: -
+    enum ShowAppSettingsMode {
+        case none
+        case payments
+        case payment(paymentsHistoryItem: PaymentsHistoryItem)
+        case paymentsTransferIn
+        case appearance
+        case avatarBuilder
+        case donate(donateMode: DonateViewController.DonateMode)
+        case proxy
+    }
 
-public extension ChatListViewController {
     func createAvatarBarButtonViewWithSneakyTransaction() -> UIView {
         let avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser)
         databaseStorage.read { readTx in
@@ -402,28 +985,6 @@ public extension ChatListViewController {
             }
         }
         return avatarView
-    }
-
-    @objc
-    func createSettingsBarButtonItem() -> UIBarButtonItem {
-        let contextButton = ContextMenuButton()
-        contextButton.showsContextMenuAsPrimaryAction = true
-        contextButton.contextMenu = settingsContextMenu()
-        contextButton.accessibilityLabel = CommonStrings.openSettingsButton
-
-        let avatarImageView = createAvatarBarButtonViewWithSneakyTransaction()
-        contextButton.addSubview(avatarImageView)
-        avatarImageView.autoPinEdgesToSuperviewEdges()
-
-        let wrapper = UIView.container()
-        wrapper.addSubview(contextButton)
-        contextButton.autoPinEdgesToSuperviewEdges()
-
-        if unreadPaymentNotificationsCount > 0 {
-            PaymentsViewUtils.addUnreadBadge(toView: wrapper)
-        }
-
-        return .init(customView: wrapper)
     }
 
     func settingsContextMenu() -> ContextMenu {
@@ -459,12 +1020,10 @@ public extension ChatListViewController {
         return .init(contextMenuActions)
     }
 
-    @objc
     func showAppSettings() {
         showAppSettings(mode: .none)
     }
 
-    @objc
     func showAppSettingsInAppearanceMode() {
         showAppSettings(mode: .appearance)
     }
@@ -474,12 +1033,11 @@ public extension ChatListViewController {
         showAppSettings(mode: .proxy)
     }
 
-    @objc
     func showAppSettingsInAvatarBuilderMode() {
         showAppSettings(mode: .avatarBuilder)
     }
 
-    internal func showAppSettings(mode: ShowAppSettingsMode) {
+    func showAppSettings(mode: ShowAppSettingsMode) {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -542,35 +1100,10 @@ public extension ChatListViewController {
         navigationController.setViewControllers(viewControllers, animated: false)
         presentFormSheet(navigationController, animated: true, completion: completion)
     }
-
-    /// Verifies that the currently selected cell matches the provided thread.
-    /// If it does or if the user's in multi-select: Do nothing.
-    /// If it doesn't: Select the first cell matching the provided thread, if one exists. Otherwise, deselect the current row.
-    @objc
-    func ensureSelectedThread(_ targetThread: TSThread, animated: Bool) {
-        // Ignore any updates if we're in multiselect mode. I don't think this can happen,
-        // but if it does let's avoid stepping over the user's manual selection.
-        let currentSelection = tableView.indexPathsForSelectedRows ?? []
-        guard viewState.multiSelectState.isActive == false, currentSelection.count < 2 else {
-            return
-        }
-
-        let currentlySelectedThread = currentSelection.first.flatMap {
-            self.tableDataSource.thread(forIndexPath: $0, expectsSuccess: false)
-        }
-
-        if currentlySelectedThread?.uniqueId != targetThread.uniqueId {
-            if let targetPath = tableDataSource.renderState.indexPath(forUniqueId: targetThread.uniqueId) {
-                tableView.selectRow(at: targetPath, animated: animated, scrollPosition: .none)
-                tableView.scrollToRow(at: targetPath, at: .none, animated: animated)
-            } else if let stalePath = currentSelection.first {
-                tableView.deselectRow(at: stalePath, animated: animated)
-            }
-        }
-    }
 }
 
 extension ChatListViewController: BadgeExpirationSheetDelegate {
+
     func badgeExpirationSheetActionTapped(_ action: BadgeExpirationSheetAction) {
         switch action {
         case .dismiss:
@@ -582,15 +1115,71 @@ extension ChatListViewController: BadgeExpirationSheetDelegate {
 }
 
 extension ChatListViewController: ThreadSwipeHandler {
+
     func updateUIAfterSwipeAction() {
         updateViewState()
+    }
+}
+
+extension ChatListViewController: GetStartedBannerViewControllerDelegate {
+
+    func presentGetStartedBannerIfNecessary() {
+        guard getStartedBanner == nil && chatListMode == .inbox else { return }
+
+        let getStartedVC = GetStartedBannerViewController(delegate: self)
+        if getStartedVC.hasIncompleteCards {
+            getStartedBanner = getStartedVC
+
+            addChild(getStartedVC)
+            view.addSubview(getStartedVC.view)
+            getStartedVC.view.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+
+            // If we're in landscape, the banner covers most of the screen
+            // Hide it until we transition to portrait
+            if view.bounds.width > view.bounds.height {
+                getStartedVC.view.alpha = 0
+            }
+        }
+    }
+
+    func getStartedBannerDidTapInviteFriends(_ banner: GetStartedBannerViewController) {
+        inviteFlow = InviteFlow(presentingViewController: self)
+        inviteFlow?.present(isAnimated: true, completion: nil)
+    }
+
+    func getStartedBannerDidTapCreateGroup(_ banner: GetStartedBannerViewController) {
+        showNewGroupView()
+    }
+
+    func getStartedBannerDidTapAppearance(_ banner: GetStartedBannerViewController) {
+        showAppSettingsInAppearanceMode()
+    }
+
+    func getStartedBannerDidDismissAllCards(_ banner: GetStartedBannerViewController, animated: Bool) {
+        let dismissBlock = {
+            banner.view.removeFromSuperview()
+            banner.removeFromParent()
+            self.getStartedBanner = nil
+        }
+
+        if animated {
+            banner.view.setIsHidden(true, withAnimationDuration: 0.5) { _ in
+                dismissBlock()
+            }
+        } else {
+            dismissBlock()
+        }
+    }
+
+    func getStartedBannerDidTapAvatarBuilder(_ banner: GetStartedBannerViewController) {
+        showAppSettingsInAvatarBuilderMode()
     }
 }
 
 // MARK: - First conversation label
 
 extension ChatListViewController {
-    @objc
+
     func updateFirstConversationLabel() {
         let signalAccounts = suggestedAccountsForFirstContact(maxCount: 3)
 

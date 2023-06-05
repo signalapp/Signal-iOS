@@ -18,14 +18,12 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     private lazy var detailNavController = OWSNavigationController()
     private lazy var lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
 
-    @objc
     private(set) weak var selectedConversationViewController: ConversationViewController?
 
     weak var navigationTransitionDelegate: UINavigationControllerDelegate?
 
     /// The thread, if any, that is currently presented in the view hieararchy. It may be currently
     /// covered by a modal presentation or a pushed view controller.
-    @objc
     var selectedThread: TSThread? {
         // If the placeholder view is in the view hierarchy, there is no selected thread.
         guard detailPlaceholderVC.view.superview == nil else { return nil }
@@ -120,7 +118,6 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         firstSubview.isHidden = true
     }
 
-    @objc(closeSelectedConversationAnimated:)
     func closeSelectedConversation(animated: Bool) {
         guard let selectedConversationViewController = selectedConversationViewController else { return }
 
@@ -442,7 +439,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         homeVC.chatListViewController.showAppSettings()
     }
 
-    func showAppSettingsWithMode(_ mode: ShowAppSettingsMode) {
+    func showAppSettingsWithMode(_ mode: ChatListViewController.ShowAppSettingsMode) {
         homeVC.chatListViewController.showAppSettings(mode: mode)
     }
 
@@ -601,7 +598,6 @@ extension ConversationSplitViewController: UINavigationControllerDelegate {
     }
 }
 
-@objc
 extension ChatListViewController {
     var conversationSplitViewController: ConversationSplitViewController? {
         return splitViewController as? ConversationSplitViewController
@@ -614,7 +610,6 @@ extension StoriesViewController {
     }
 }
 
-@objc
 extension ConversationViewController {
     var conversationSplitViewController: ConversationSplitViewController? {
         return splitViewController as? ConversationSplitViewController
@@ -641,7 +636,6 @@ private class NoSelectedConversationViewController: OWSViewController {
         applyTheme()
     }
 
-    @objc
     override func themeDidChange() {
         super.themeDidChange()
         applyTheme()

@@ -7,7 +7,6 @@ import SignalServiceKit
 
 extension ChatListViewController {
 
-    @objc
     public var isViewVisible: Bool {
         get { viewState.isViewVisible }
         set {
@@ -33,19 +32,16 @@ extension ChatListViewController {
         }
     }
 
-    @objc
     public var hasVisibleReminders: Bool {
         renderState.hasVisibleReminders
     }
 
-    @objc
     public var hasArchivedThreadsRow: Bool {
         renderState.hasArchivedThreadsRow
     }
 
     // MARK: -
 
-    @objc
     public func loadIfNecessary() {
         loadCoordinator.loadIfNecessary()
     }
@@ -214,9 +210,8 @@ private enum CLVLoadType {
 
 // MARK: -
 
-@objc
-public class CLVLoadCoordinator: NSObject {
-    @objc
+public class CLVLoadCoordinator: Dependencies {
+
     public weak var viewController: ChatListViewController?
 
     private struct CLVLoadInfo {
@@ -254,8 +249,7 @@ public class CLVLoadCoordinator: NSObject {
     }
     private var loadInfoBuilder = CLVLoadInfoBuilder()
 
-    @objc
-    public override required init() {
+    public required init() {
         loadInfoBuilder.shouldResetAll = true
     }
 
@@ -276,11 +270,10 @@ public class CLVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
-    @objc
     public func ensureFirstLoad() {
         AssertIsOnMainThread()
 
-        guard let viewController = viewController else {
+        guard let viewController else {
             owsFailDebug("Missing viewController.")
             return
         }
@@ -319,15 +312,12 @@ public class CLVLoadCoordinator: NSObject {
                                 shouldForceLoad: Bool = false) {
         AssertIsOnMainThread()
 
-        guard let viewController = viewController else {
+        guard let viewController else {
             owsFailDebug("Missing viewController.")
             return
         }
 
-        let shouldLoad = viewController.shouldBeUpdatingView || shouldForceLoad
-        guard shouldLoad else {
-            return
-        }
+        guard viewController.shouldBeUpdatingView || shouldForceLoad else { return }
 
         // Copy the "current" load info, reset "next" load info.
 

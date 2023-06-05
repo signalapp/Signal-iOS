@@ -6,7 +6,6 @@
 import SignalMessaging
 import SignalUI
 
-@objc
 extension ChatListViewController {
 
     // MARK: - multi select mode
@@ -26,7 +25,13 @@ extension ChatListViewController {
         searchBar.delegate?.searchBarCancelButtonClicked?(searchBar)
         viewState.multiSelectState.title = title
         if chatListMode == .inbox {
-            let doneButton = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(done), accessibilityIdentifier: CommonStrings.cancelButton)
+            let doneButton = UIBarButtonItem(
+                title: CommonStrings.cancelButton,
+                style: .plain,
+                target: self,
+                action: #selector(done),
+                accessibilityIdentifier: CommonStrings.cancelButton
+            )
             navigationItem.setLeftBarButton(doneButton, animated: true)
             navigationItem.setRightBarButtonItems(nil, animated: true)
         } else {
@@ -98,6 +103,7 @@ extension ChatListViewController {
         updateCaptions()
     }
 
+    @objc
     func switchMultiSelectState(_ sender: UIBarButtonItem) {
         AssertIsOnMainThread()
 
@@ -116,6 +122,7 @@ extension ChatListViewController {
 
     // MARK: private helper
 
+    @objc
     private func done() {
         leaveMultiselectMode()
         updateBarButtonItems()
@@ -143,7 +150,15 @@ extension ChatListViewController {
                 }
             }
         } else {
-            readButton = UIBarButtonItem(title: OWSLocalizedString("HOME_VIEW_TOOLBAR_READ_ALL", comment: "Title 'Read All' button in the toolbar of the ChatList if multi-section is active."), style: .plain, target: self, action: #selector(performReadAll))
+            readButton = UIBarButtonItem(
+                title: OWSLocalizedString(
+                    "HOME_VIEW_TOOLBAR_READ_ALL",
+                    comment: "Title 'Read All' button in the toolbar of the ChatList if multi-section is active."
+                ),
+                style: .plain,
+                target: self,
+                action: #selector(performReadAll)
+            )
             readButton.isEnabled = hasUnreadEntry(threads: Array(renderState.pinnedThreads.orderedValues)) || hasUnreadEntry(threads: Array(renderState.unpinnedThreads))
         }
 
@@ -208,6 +223,7 @@ extension ChatListViewController {
 
     // MARK: toolbar button actions
 
+    @objc
     func performArchive() {
         performOnAllSelectedEntries { thread in
             archiveThread(threadViewModel: thread, closeConversationBlock: nil)
@@ -215,6 +231,7 @@ extension ChatListViewController {
         done()
     }
 
+    @objc
     func performUnarchive() {
         performOnAllSelectedEntries { thread in
             archiveThread(threadViewModel: thread, closeConversationBlock: nil)
@@ -222,6 +239,7 @@ extension ChatListViewController {
         done()
     }
 
+    @objc
     func performRead() {
         performOnAllSelectedEntries { thread in
             markThreadAsRead(threadViewModel: thread)
@@ -229,6 +247,7 @@ extension ChatListViewController {
         done()
     }
 
+    @objc
     func performReadAll() {
         var entries: [ThreadViewModel] = []
         var threads = Array(renderState.pinnedThreads.orderedValues)
@@ -246,6 +265,7 @@ extension ChatListViewController {
         done()
     }
 
+    @objc
     func performDelete() {
         AssertIsOnMainThread()
 
@@ -296,10 +316,10 @@ extension ChatListViewController {
 }
 
 // MARK: - object encapsulating the complete state of the MultiSelect process
-@objc
-public class MultiSelectState: NSObject {
-    @objc
-    public static let multiSelectionModeDidChange = Notification.Name("multiSelectionModeDidChange")
+
+public class MultiSelectState {
+
+    static let multiSelectionModeDidChange = Notification.Name("multiSelectionModeDidChange")
 
     fileprivate var title: String?
     fileprivate var toolbar: BlurredToolbarContainer?
@@ -307,7 +327,6 @@ public class MultiSelectState: NSObject {
     var actionPerformed = false
     var locked = false
 
-    @objc
     var isActive: Bool { return _isActive }
 
     fileprivate func setIsActive(_ active: Bool, tableView: UITableView? = nil, cancelCurrentEditAction: Bool = true) {
