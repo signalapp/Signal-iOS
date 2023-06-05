@@ -223,7 +223,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
                                         self?.show(packInfo: packInfo)
             }))
         }
-        contents.addSection(installedSection)
+        contents.add(installedSection)
 
         let itemForAvailablePack = { (dataSource: StickerPackDataSource) -> OWSTableItem in
             OWSTableItem(customCellBlock: { [weak self] in
@@ -246,7 +246,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
             for dataSource in availableBuiltInStickerPackSources {
                 section.add(itemForAvailablePack(dataSource))
             }
-            contents.addSection(section)
+            contents.add(section)
         }
 
         // Sticker packs whose manifest is available.
@@ -291,7 +291,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
                                          comment: "Label indicating that one or more known sticker packs failed to load.")
             knownSection.add(buildEmptySectionItem(labelText: text))
         }
-        contents.addSection(knownSection)
+        contents.add(knownSection)
 
         self.contents = contents
         needsTableUpdate = false

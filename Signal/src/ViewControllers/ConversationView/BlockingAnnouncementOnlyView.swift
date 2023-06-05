@@ -158,7 +158,7 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
             .font: UIFont.dynamicTypeBodyClamped.semibold(),
             .foregroundColor: forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
             ])
-        contents.addSection(section)
+        contents.add(section)
         for address in addresses {
             section.add(OWSTableItem(
                             dequeueCellBlock: { [weak self] tableView in

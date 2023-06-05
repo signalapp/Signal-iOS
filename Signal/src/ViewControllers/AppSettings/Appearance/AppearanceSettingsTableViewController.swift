@@ -44,7 +44,7 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
             self.navigationController?.pushViewController(vc, animated: true)
         })
 
-        contents.addSection(firstSection)
+        contents.add(firstSection)
 
         // TODO iOS 13 – maybe expose the preferred language settings here to match android
         // It not longer seems to exist in iOS 13.1 so not sure if Apple got rid of it

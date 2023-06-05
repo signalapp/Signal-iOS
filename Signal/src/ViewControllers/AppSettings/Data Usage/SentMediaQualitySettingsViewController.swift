@@ -41,7 +41,7 @@ class SentMediaQualitySettingsViewController: OWSTableViewController2 {
         section.add(qualityItem(.standard))
         section.add(qualityItem(.high))
 
-        contents.addSection(section)
+        contents.add(section)
 
     }
 

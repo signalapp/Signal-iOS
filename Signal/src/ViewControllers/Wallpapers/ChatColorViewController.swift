@@ -167,7 +167,7 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
 
             return cell
         } actionBlock: {})
-        contents.addSection(previewSection)
+        contents.add(previewSection)
 
         let colorsSection = OWSTableSection()
         colorsSection.customHeaderHeight = 14
@@ -182,7 +182,7 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
             chatColorPicker.autoPinEdgesToSuperviewMargins()
             return cell
         } actionBlock: {})
-        contents.addSection(colorsSection)
+        contents.add(colorsSection)
 
         self.contents = contents
     }

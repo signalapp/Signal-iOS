@@ -74,8 +74,8 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
             comment: "Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }}"
         )
         viewersSection.footerTitle = String.localizedStringWithFormat(format, thread.groupNameOrDefault)
-        viewersSection.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing))
-        contents.addSection(viewersSection)
+        viewersSection.separatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
+        contents.add(viewersSection)
 
         let fullMembers = thread.groupMembership.fullMembers.filter { !$0.isLocalAddress }
         let totalViewersCount = fullMembers.count
@@ -150,7 +150,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         }
 
         let deleteSection = OWSTableSection()
-        contents.addSection(deleteSection)
+        contents.add(deleteSection)
         deleteSection.add(.actionItem(
             withText: OWSLocalizedString(
                 "GROUP_STORY_SETTINGS_DELETE_BUTTON",

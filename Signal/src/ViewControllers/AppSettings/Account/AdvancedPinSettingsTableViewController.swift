@@ -46,7 +46,7 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 self?.enableOrDisablePin()
         }))
-        contents.addSection(pinsSection)
+        contents.add(pinsSection)
 
         self.contents = contents
     }

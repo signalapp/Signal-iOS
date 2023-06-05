@@ -53,8 +53,8 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
             "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER",
             comment: "Section footer for the 'viewers' section on the 'story settings' view"
         )
-        viewersSection.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing))
-        contents.addSection(viewersSection)
+        viewersSection.separatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
+        contents.add(viewersSection)
 
         // "Add Viewers" cell.
         viewersSection.add(OWSTableItem(customCellBlock: {
@@ -165,7 +165,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
         let repliesSection = OWSTableSection()
         repliesSection.headerTitle = StoryStrings.repliesAndReactionsHeader
         repliesSection.footerTitle = StoryStrings.repliesAndReactionsFooter
-        contents.addSection(repliesSection)
+        contents.add(repliesSection)
 
         repliesSection.add(.switch(
             withText: StoryStrings.repliesAndReactionsToggle,
@@ -175,7 +175,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
         ))
 
         let deleteSection = OWSTableSection()
-        contents.addSection(deleteSection)
+        contents.add(deleteSection)
         deleteSection.add(.actionItem(
             withText: OWSLocalizedString(
                 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON",

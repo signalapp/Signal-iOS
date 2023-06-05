@@ -44,7 +44,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
         let metadataSection = OWSTableSection()
         metadataSection.hasBackground = false
-        contents.addSection(metadataSection)
+        contents.add(metadataSection)
 
         metadataSection.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
@@ -59,9 +59,9 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
         switch storyMessage.manifest {
         case .outgoing(let recipientStates):
-            contents.addSections(buildStatusSections(for: recipientStates))
+            contents.add(sections: buildStatusSections(for: recipientStates))
         case .incoming:
-            contents.addSection(buildSenderSection())
+            contents.add(buildSenderSection())
         }
     }
 

@@ -222,7 +222,7 @@ class ProfileBioViewController: OWSTableViewController2 {
             return cell
         },
         actionBlock: nil))
-        contents.addSection(bioSection)
+        contents.add(bioSection)
 
         let defaultBiosSection = OWSTableSection()
         for defaultBio in DefaultBio.values {
@@ -258,7 +258,7 @@ class ProfileBioViewController: OWSTableViewController2 {
                 self?.didTapDefaultBio(defaultBio)
             }))
         }
-        contents.addSection(defaultBiosSection)
+        contents.add(defaultBiosSection)
 
         self.contents = contents
     }

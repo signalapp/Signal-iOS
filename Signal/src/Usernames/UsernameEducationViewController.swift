@@ -127,7 +127,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
 
         section.add(createLearnMore())
 
-        contents.addSections([
+        contents.add(sections: [
             headerSection,
             section
         ])

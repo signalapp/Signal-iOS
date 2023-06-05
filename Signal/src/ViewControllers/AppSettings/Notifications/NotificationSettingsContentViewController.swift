@@ -38,7 +38,7 @@ class NotificationSettingsContentViewController: OWSTableViewController2 {
             ))
         }
 
-        contents.addSection(section)
+        contents.add(section)
 
         self.contents = contents
     }

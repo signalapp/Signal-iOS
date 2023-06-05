@@ -414,7 +414,7 @@ private class GroupThreadPicker: OWSTableViewController {
                 })
             }
         }
-        contents.addSection(section)
+        contents.add(section)
         self.contents = contents
     }
 

@@ -46,10 +46,10 @@ public class AllSignalConnectionsViewController: OWSTableViewController2 {
 
         for (idx, title) in collation.sectionTitles.enumerated() {
             if let connections = collatedConnections[idx] {
-                contents.addSection(OWSTableSection(title: title, items: items(for: connections)))
+                contents.add(OWSTableSection(title: title, items: items(for: connections)))
             } else {
                 // Add an empty section to maintain collation
-                contents.addSection(OWSTableSection())
+                contents.add(OWSTableSection())
             }
         }
 

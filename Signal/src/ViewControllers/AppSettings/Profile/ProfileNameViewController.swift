@@ -165,7 +165,7 @@ class ProfileNameViewController: OWSTableViewController2 {
             addTextField(familyNameTextField)
         }
 
-        contents.addSection(namesSection)
+        contents.add(namesSection)
 
         self.contents = contents
     }

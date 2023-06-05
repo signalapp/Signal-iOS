@@ -94,7 +94,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
             return cell
         },
         actionBlock: nil))
-        contents.addSection(section)
+        contents.add(section)
 
         self.contents = contents
     }

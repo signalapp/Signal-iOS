@@ -62,7 +62,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             guard let self = self else { return UITableViewCell() }
             return self.buildHeaderCell()
         }))
-        contents.addSection(headerSection)
+        contents.add(headerSection)
 
         let confirmSection = OWSTableSection()
         confirmSection.headerTitle = OWSLocalizedString(
@@ -91,7 +91,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
                 self?.phoneNumberTextField.becomeFirstResponder()
             }
         ))
-        contents.addSection(confirmSection)
+        contents.add(confirmSection)
 
         self.contents = contents
     }

@@ -66,7 +66,7 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
         let contents = OWSTableContents()
 
         let headerSection = OWSTableSection()
-        headerSection.separatorInsetLeading = NSNumber(value: OWSTableViewController2.cellHInnerMargin + 32)
+        headerSection.separatorInsetLeading = OWSTableViewController2.cellHInnerMargin + 32
 
         let headerTitle: String
         let headerSubtitle: String
@@ -100,7 +100,7 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
             subtitle: headerSubtitle
         )
         headerSection.customHeaderView = headerView
-        contents.addSection(headerSection)
+        contents.add(headerSection)
 
         let failedStoriesSection = OWSTableSection()
         failedStoriesSection.headerTitle = OWSLocalizedString(
@@ -119,7 +119,7 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
                 return cell
             }))
         }
-        contents.addSection(failedStoriesSection)
+        contents.add(failedStoriesSection)
 
         if !remainingConversationItems.isEmpty {
             let remainingConversationsSection = OWSTableSection()
@@ -139,7 +139,7 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
                     return cell
                 }))
             }
-            contents.addSection(remainingConversationsSection)
+            contents.add(remainingConversationsSection)
         }
 
         return contents

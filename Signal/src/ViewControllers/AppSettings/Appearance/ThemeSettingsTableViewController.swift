@@ -25,7 +25,7 @@ class ThemeSettingsTableViewController: OWSTableViewController2 {
         themeSection.add(appearanceItem(.light))
         themeSection.add(appearanceItem(.dark))
 
-        contents.addSection(themeSection)
+        contents.add(themeSection)
 
         self.contents = contents
     }

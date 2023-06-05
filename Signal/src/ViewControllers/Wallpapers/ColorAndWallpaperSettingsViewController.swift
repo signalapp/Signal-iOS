@@ -79,7 +79,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         } actionBlock: {}
         previewSection.add(previewItem)
 
-        contents.addSection(previewSection)
+        contents.add(previewSection)
 
         do {
             let chatColorSection = OWSTableSection()
@@ -129,7 +129,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                 })
             }
 
-            contents.addSection(chatColorSection)
+            contents.add(chatColorSection)
         }
 
         let wallpaperSection = OWSTableSection()
@@ -177,7 +177,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             })
         }
 
-        contents.addSection(wallpaperSection)
+        contents.add(wallpaperSection)
 
         self.contents = contents
     }

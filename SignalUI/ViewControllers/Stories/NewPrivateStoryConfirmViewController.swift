@@ -105,12 +105,12 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
             },
             actionBlock: {}
         ))
-        contents.addSection(nameAndAvatarSection)
+        contents.add(nameAndAvatarSection)
 
         let repliesSection = OWSTableSection()
         repliesSection.headerTitle = StoryStrings.repliesAndReactionsHeader
         repliesSection.footerTitle = StoryStrings.repliesAndReactionsFooter
-        contents.addSection(repliesSection)
+        contents.add(repliesSection)
 
         repliesSection.add(.switch(
             withText: StoryStrings.repliesAndReactionsToggle,
@@ -150,7 +150,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
                     return cell
                 }))
         }
-        contents.addSection(viewersSection)
+        contents.add(viewersSection)
 
         self.contents = contents
     }

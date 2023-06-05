@@ -88,7 +88,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
         let topSection = OWSTableSection()
         topSection.add(createMessageListTableItem(items: [parentItem]))
-        contents.addSection(topSection)
+        contents.add(topSection)
 
         let header = OWSLocalizedString(
             "EDIT_HISTORY_LABEL",
@@ -103,7 +103,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         section.hasBackground = true
         section.hasSeparators = false
         section.add(createMessageListTableItem(items: renderItems))
-        contents.addSection(section)
+        contents.add(section)
     }
 
     // MARK: - Utility Methods

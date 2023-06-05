@@ -56,7 +56,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             return cell
         },
         actionBlock: nil))
-        contents.addSection(addressSection)
+        contents.add(addressSection)
 
         let infoSection = OWSTableSection()
         infoSection.hasBackground = false
@@ -77,7 +77,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         },
         actionBlock: nil))
 
-        contents.addSection(infoSection)
+        contents.add(infoSection)
 
         self.contents = contents
     }

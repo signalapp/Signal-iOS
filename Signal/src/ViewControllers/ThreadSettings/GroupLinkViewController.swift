@@ -82,13 +82,13 @@ public class GroupLinkViewController: OWSTableViewController2 {
                 }
             }
 
-            contents.addSection(section)
+            contents.add(section)
         }
 
         // MARK: - Sharing
         if groupModelV2.isGroupInviteLinkEnabled {
             let section = OWSTableSection()
-            section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing))
+            section.separatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
             section.add(OWSTableItem.actionItem(icon: .messageActionShare24,
                                                 name: OWSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
                                                                         comment: "Label for the 'share link' button in the 'group link' view."),
@@ -103,7 +103,7 @@ public class GroupLinkViewController: OWSTableViewController2 {
                                                 actionBlock: { [weak self] in
                                                     self?.resetLinkPressed()
                                                 }))
-            contents.addSection(section)
+            contents.add(section)
         }
 
         // MARK: - Member Requests
@@ -122,7 +122,7 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
             }
 
-            contents.addSection(section)
+            contents.add(section)
         }
 
         self.contents = contents

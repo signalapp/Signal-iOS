@@ -79,10 +79,10 @@ class MemberActionSheet: OWSTableSheetViewController {
 
         let topSpacerSection = OWSTableSection()
         topSpacerSection.customHeaderHeight = 12
-        contents.addSection(topSpacerSection)
+        contents.add(topSpacerSection)
 
         let section = OWSTableSection()
-        contents.addSection(section)
+        contents.add(section)
 
         section.customHeaderView = ConversationHeaderBuilder.buildHeader(
             for: thread,

@@ -54,35 +54,35 @@ extension ConversationSettingsViewController {
         addSystemContactItemIfNecessary(to: mainSection)
         addSafetyNumberItemIfNecessary(to: mainSection)
 
-        contents.addSection(mainSection)
+        contents.add(mainSection)
 
         addAllMediaSectionIfNecessary(to: contents)
         addBadgesItemIfNecessary(to: contents)
 
         if let groupModel = currentGroupModel, !groupModel.isPlaceholder {
-            contents.addSection(buildGroupMembershipSection(groupModel: groupModel, sectionIndex: contents.sections.count))
+            contents.add(buildGroupMembershipSection(groupModel: groupModel, sectionIndex: contents.sections.count))
 
             if let groupModelV2 = groupModel as? TSGroupModelV2 {
                 buildGroupSettingsSection(groupModelV2: groupModelV2, contents: contents)
             }
         } else if isContactThread, hasGroupThreads, !isNoteToSelf {
-            contents.addSection(buildMutualGroupsSection(sectionIndex: contents.sections.count))
+            contents.add(buildMutualGroupsSection(sectionIndex: contents.sections.count))
         }
 
         if
             !isNoteToSelf,
             !thread.isGroupV1Thread
         {
-            contents.addSection(buildBlockAndLeaveSection())
+            contents.add(buildBlockAndLeaveSection())
         }
 
         if DebugFlags.internalSettings {
-            contents.addSection(buildInternalSection())
+            contents.add(buildInternalSection())
         }
 
         let emptySection = OWSTableSection()
         emptySection.customFooterHeight = 24
-        contents.addSection(emptySection)
+        contents.add(emptySection)
 
         setContents(contents, shouldReload: shouldReload)
 
@@ -151,7 +151,7 @@ extension ConversationSettingsViewController {
             }
         ))
 
-        contents.addSection(section)
+        contents.add(section)
     }
 
     private func addBadgesItemIfNecessary(to contents: OWSTableContents) {
@@ -166,7 +166,7 @@ extension ConversationSettingsViewController {
         guard !visibleBadges.isEmpty else { return }
 
         availableBadges = visibleBadges
-        contents.addSection(.init(
+        contents.add(.init(
             title: OWSLocalizedString("CONVERSATION_SETTINGS_BADGES_HEADER", comment: "Header title for a contact's badges in conversation settings"),
             items: [
                 OWSTableItem(customCellBlock: { [weak self] in
@@ -447,7 +447,7 @@ extension ConversationSettingsViewController {
 
     private func buildGroupMembershipSection(groupModel: TSGroupModel, sectionIndex: Int) -> OWSTableSection {
         let section = OWSTableSection()
-        section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing))
+        section.separatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 
         let groupMembership = groupModel.groupMembership
 
@@ -651,12 +651,12 @@ extension ConversationSettingsViewController {
             ))
         }
 
-        contents.addSection(section)
+        contents.add(section)
     }
 
     private func buildMutualGroupsSection(sectionIndex: Int) -> OWSTableSection {
         let section = OWSTableSection()
-        section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing))
+        section.separatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 
         // "Add to a Group" cell.
         section.add(OWSTableItem(

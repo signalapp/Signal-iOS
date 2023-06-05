@@ -79,8 +79,7 @@ class PaymentsHistoryViewController: OWSTableViewController2 {
 
         let section = OWSTableSection()
         section.customHeaderHeight = 16
-        section.separatorInsetLeading = NSNumber(value: Double(cellOuterInsets.leading +
-                                                                PaymentModelCell.separatorInsetLeading))
+        section.separatorInsetLeading = cellOuterInsets.leading + PaymentModelCell.separatorInsetLeading
         for paymentItem in dataSource.items {
             section.add(OWSTableItem(customCellBlock: {
                 let cell = PaymentModelCell()
@@ -91,7 +90,7 @@ class PaymentsHistoryViewController: OWSTableViewController2 {
                 self?.didTapPaymentItem(paymentItem: paymentItem)
             }))
         }
-        contents.addSection(section)
+        contents.add(section)
 
         self.contents = contents
     }

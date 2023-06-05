@@ -29,7 +29,7 @@ public class NewStorySheet: OWSTableSheetViewController {
         let headerSection = OWSTableSection()
         headerSection.customHeaderHeight = 2
         headerSection.hasBackground = false
-        contents.addSection(headerSection)
+        contents.add(headerSection)
         headerSection.add(.init(customCellBlock: {
             let label = UILabel()
             label.font = UIFont.dynamicTypeHeadlineClamped
@@ -46,7 +46,7 @@ public class NewStorySheet: OWSTableSheetViewController {
 
         let optionsSection = OWSTableSection()
         optionsSection.customHeaderHeight = 28
-        contents.addSection(optionsSection)
+        contents.add(optionsSection)
         optionsSection.add(buildOptionItem(
             icon: .settingsStories,
             title: OWSLocalizedString("NEW_STORY_SHEET_CUSTOM_STORY_TITLE",

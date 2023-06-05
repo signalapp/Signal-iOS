@@ -193,7 +193,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             self.configureAvatarsCell(cell)
             return cell
         } actionBlock: {})
-        contents.addSection(section)
+        contents.add(section)
     }
 
     private func updateNavigation() {

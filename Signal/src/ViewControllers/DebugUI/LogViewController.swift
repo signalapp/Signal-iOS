@@ -21,9 +21,9 @@ public class LogPickerViewController: OWSTableViewController2 {
 
     public func updateTableContents() {
         let contents = OWSTableContents()
-        contents.addSection(buildPreferenceSection())
-        contents.addSection(buildActionsSection())
-        contents.addSection(buildLogsSection())
+        contents.add(buildPreferenceSection())
+        contents.add(buildActionsSection())
+        contents.add(buildLogsSection())
         self.contents = contents
     }
 

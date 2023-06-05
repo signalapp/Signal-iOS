@@ -96,7 +96,7 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
             },
             actionBlock: {}
         ))
-        contents.addSection(nameSection)
+        contents.add(nameSection)
 
         self.contents = contents
     }

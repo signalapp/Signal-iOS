@@ -77,7 +77,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
 
         let focusedBadgeSection = OWSTableSection()
         focusedBadgeSection.hasBackground = false
-        contents.addSection(focusedBadgeSection)
+        contents.add(focusedBadgeSection)
 
         focusedBadgeSection.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
@@ -155,7 +155,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
                 return cell
             })])
             buttonSection.hasBackground = false
-            contents.addSection(buttonSection)
+            contents.add(buttonSection)
         }
 
     }

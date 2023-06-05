@@ -98,7 +98,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
             return cell
         },
         actionBlock: nil))
-        contents.addSection(section)
+        contents.add(section)
 
         self.contents = contents
     }

@@ -44,7 +44,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(didToggleLinkPreviewsEnabled)
         ))
-        contents.addSection(linkPreviewSection)
+        contents.add(linkPreviewSection)
 
         let sharingSuggestionsSection = OWSTableSection()
         if #available(iOS 15, *) {
@@ -70,7 +70,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(didToggleSharingSuggestionsEnabled)
         ))
-        contents.addSection(sharingSuggestionsSection)
+        contents.add(sharingSuggestionsSection)
 
         let contactSection = OWSTableSection()
         contactSection.footerTitle = OWSLocalizedString(
@@ -86,7 +86,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(didToggleAvatarPreference)
         ))
-        contents.addSection(contactSection)
+        contents.add(contactSection)
 
         let keepMutedChatsArchived = OWSTableSection()
         keepMutedChatsArchived.add(.switch(
@@ -101,7 +101,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION",
             comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings."
         )
-        contents.addSection(keepMutedChatsArchived)
+        contents.add(keepMutedChatsArchived)
 
         let clearHistorySection = OWSTableSection()
         clearHistorySection.add(.actionItem(
@@ -112,7 +112,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 self?.didTapClearHistory()
             }
         ))
-        contents.addSection(clearHistorySection)
+        contents.add(clearHistorySection)
 
         self.contents = contents
     }

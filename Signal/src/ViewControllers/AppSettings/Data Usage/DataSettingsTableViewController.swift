@@ -91,7 +91,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
                 accessibilityIdentifier: resetAccessibilityIdentifier
             ))
         }
-        contents.addSection(autoDownloadSection)
+        contents.add(autoDownloadSection)
 
         let sentMediaSection = OWSTableSection()
         sentMediaSection.headerTitle = OWSLocalizedString(
@@ -112,7 +112,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
                 self?.showSentMediaQualityPreferences()
             }
         ))
-        contents.addSection(sentMediaSection)
+        contents.add(sentMediaSection)
 
         let callsSection = OWSTableSection()
         callsSection.headerTitle = OWSLocalizedString(
@@ -141,7 +141,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
             }
         ))
 
-        contents.addSection(callsSection)
+        contents.add(callsSection)
     }
 
     // MARK: - Events

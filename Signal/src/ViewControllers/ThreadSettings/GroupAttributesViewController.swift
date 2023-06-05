@@ -80,7 +80,7 @@ class GroupAttributesViewController: OWSTableViewController2 {
                 self?.didTapAvatarView()
             }
         ))
-        contents.addSection(avatarSection)
+        contents.add(avatarSection)
 
         let nameAndDescriptionSection = OWSTableSection()
         nameAndDescriptionSection.add(.disclosureItem(
@@ -119,7 +119,7 @@ class GroupAttributesViewController: OWSTableViewController2 {
                 self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
-        contents.addSection(nameAndDescriptionSection)
+        contents.add(nameAndDescriptionSection)
 
         self.contents = contents
     }

@@ -298,7 +298,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         let headerSection = OWSTableSection()
         headerSection.hasBackground = false
         headerSection.customHeaderHeight = 1
-        contents.addSection(headerSection)
+        contents.add(headerSection)
 
         headerSection.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
@@ -363,14 +363,14 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         }, actionBlock: nil))
 
         if let displayBadgeSection = self.buildDisplayBadgeSection() {
-            contents.addSection(displayBadgeSection)
+            contents.add(displayBadgeSection)
         }
 
         switch self.badgeType {
         case let .gift(_, notNowAction, incomingMessage):
-            contents.addSection(self.buildRedeemButtonSection(notNowAction: notNowAction, incomingMessage: incomingMessage))
+            contents.add(self.buildRedeemButtonSection(notNowAction: notNowAction, incomingMessage: incomingMessage))
         case .boost, .subscription:
-            contents.addSection(self.buildDoneButtonSection())
+            contents.add(self.buildDoneButtonSection())
         }
     }
 

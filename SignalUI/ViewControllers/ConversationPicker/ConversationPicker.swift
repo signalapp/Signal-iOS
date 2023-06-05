@@ -569,7 +569,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             {
                 addMediaPreview(to: section, textAttachment: textAttachment)
             }
-            contents.addSection(section)
+            contents.add(section)
         }
 
         // Stories Section
@@ -596,7 +596,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 }
                 hasContents = true
             }
-            contents.addSection(section)
+            contents.add(section)
         }
 
         // Recents Section
@@ -609,7 +609,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 addConversations(to: section, conversations: conversationCollection.recentConversations)
                 hasContents = true
             }
-            contents.addSection(section)
+            contents.add(section)
         }
 
         // Contacts Section
@@ -622,7 +622,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 addConversations(to: section, conversations: conversationCollection.contactConversations)
                 hasContents = true
             }
-            contents.addSection(section)
+            contents.add(section)
         }
 
         // Groups Section
@@ -635,7 +635,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 addConversations(to: section, conversations: conversationCollection.groupConversations)
                 hasContents = true
             }
-            contents.addSection(section)
+            contents.add(section)
         }
 
         // "No matches" Section
@@ -644,7 +644,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             let section = OWSTableSection()
             section.add(.label(withText: OWSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS",
                                                            comment: "keyboard toolbar label when no messages match the search string")))
-            contents.addSection(section)
+            contents.add(section)
         }
 
         setContents(contents, shouldReload: shouldReload)

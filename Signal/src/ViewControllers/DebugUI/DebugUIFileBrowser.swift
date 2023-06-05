@@ -95,7 +95,7 @@ class DebugUIFileBrowser: OWSTableViewController {
             }
 
             let filesSection = OWSTableSection(title: "Dir with \(fileItems.count) files", items: fileItems)
-            contents.addSection(filesSection)
+            contents.add(filesSection)
         } // end `if isDirectory`
 
         let attributeItems: [OWSTableItem] = {

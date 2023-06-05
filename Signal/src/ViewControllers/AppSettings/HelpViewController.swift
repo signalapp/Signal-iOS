@@ -51,7 +51,7 @@ final class HelpViewController: OWSTableViewController2 {
                 self.presentFormSheet(navVC, animated: true)
             }
         ))
-        contents.addSection(helpSection)
+        contents.add(helpSection)
 
         let loggingSection = OWSTableSection()
         loggingSection.headerTitle = OWSLocalizedString("LOGGING_SECTION", comment: "Title for the 'logging' help section.")
@@ -74,7 +74,7 @@ final class HelpViewController: OWSTableViewController2 {
                 }
             ))
         }
-        contents.addSection(loggingSection)
+        contents.add(loggingSection)
 
         let aboutSection = OWSTableSection()
         aboutSection.headerTitle = OWSLocalizedString("ABOUT_SECTION_TITLE", comment: "Title for the 'about' help section")
@@ -92,7 +92,7 @@ final class HelpViewController: OWSTableViewController2 {
                 self?.present(vc, animated: true, completion: nil)
             }
         ))
-        contents.addSection(aboutSection)
+        contents.add(aboutSection)
 
         self.contents = contents
     }

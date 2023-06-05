@@ -87,7 +87,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             }, actionBlock: nil)
         ])
         avatarSection.hasBackground = false
-        contents.addSection(avatarSection)
+        contents.add(avatarSection)
 
         let mainSection = OWSTableSection()
         mainSection.footerAttributedTitle = NSAttributedString.composed(of: [
@@ -165,7 +165,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 }
             ))
         }
-        contents.addSection(mainSection)
+        contents.add(mainSection)
 
         self.contents = contents
     }

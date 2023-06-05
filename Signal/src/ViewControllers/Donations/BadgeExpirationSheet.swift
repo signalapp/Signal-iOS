@@ -189,7 +189,7 @@ class BadgeExpirationSheet: OWSTableSheetViewController {
         let headerSection = OWSTableSection()
         headerSection.hasBackground = false
         headerSection.customHeaderHeight = 1
-        contents.addSection(headerSection)
+        contents.add(headerSection)
 
         headerSection.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
@@ -252,7 +252,7 @@ class BadgeExpirationSheet: OWSTableSheetViewController {
 
         let buttonSection = OWSTableSection()
         buttonSection.hasBackground = false
-        contents.addSection(buttonSection)
+        contents.add(buttonSection)
         buttonSection.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none

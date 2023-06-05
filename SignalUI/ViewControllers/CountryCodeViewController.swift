@@ -76,7 +76,7 @@ public class CountryCodeViewController: OWSTableViewController2 {
                 self?.countryWasSelected(countryState: countryState)
             })
         }
-        contents.addSection(section)
+        contents.add(section)
 
         self.contents = contents
     }

@@ -64,7 +64,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
 
             sections.append(findByNumberSection)
         }
-        contents.addSections(sections)
+        contents.add(sections: sections)
 
         self.contents = contents
     }

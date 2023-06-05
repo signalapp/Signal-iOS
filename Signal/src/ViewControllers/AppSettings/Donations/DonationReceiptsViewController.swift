@@ -98,6 +98,6 @@ class DonationReceiptsViewController: OWSTableViewController2 {
         )
         sections.append(footerSection)
 
-        contents.addSections(sections)
+        contents.add(sections: sections)
     }
 }

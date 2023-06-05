@@ -384,7 +384,7 @@ extension ContactSupportViewController {
             // UITableViewCell.separatorInset looks like it would work, but it only applies to separators
             // between cells, not between the header and the footer
 
-            OWSTableSection(title: emojiHeaderText, footerView: createEmojiFooterView())
+            OWSTableSection(title: emojiHeaderText, headerView: nil, footerView: createEmojiFooterView())
         ])
     }
 

@@ -50,7 +50,7 @@ class BlockListViewController: OWSTableViewController2 {
             "BLOCK_USER_BEHAVIOR_EXPLANATION",
             comment: "An explanation of the consequences of blocking another user."
         )
-        contents.addSection(sectionAddContact)
+        contents.add(sectionAddContact)
 
         let (addresses, groups) = databaseStorage.read { transaction in
             let addresses = blockingManager.blockedAddresses(transaction: transaction)
@@ -89,7 +89,7 @@ class BlockListViewController: OWSTableViewController2 {
             )
         }
         if !contactsSectionItems.isEmpty {
-            contents.addSection(OWSTableSection(
+            contents.add(OWSTableSection(
                 title: NSLocalizedString(
                     "BLOCK_LIST_BLOCKED_USERS_SECTION",
                     comment: "Section header for users that have been blocked"
@@ -123,7 +123,7 @@ class BlockListViewController: OWSTableViewController2 {
             )
         }
         if !groupsSectionItems.isEmpty {
-            contents.addSection(OWSTableSection(
+            contents.add(OWSTableSection(
                 title: NSLocalizedString(
                     "BLOCK_LIST_BLOCKED_GROUPS_SECTION",
                     comment: "Section header for groups that have been blocked"

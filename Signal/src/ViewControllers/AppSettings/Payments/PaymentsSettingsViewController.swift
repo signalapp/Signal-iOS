@@ -409,17 +409,19 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         let headerSection = OWSTableSection()
         headerSection.hasBackground = false
         headerSection.shouldDisableCellSelection = true
-        headerSection.add(OWSTableItem(customCellBlock: { [weak self] in
-            let cell = OWSTableItem.newCell()
-            self?.configureEnabledHeader(cell: cell)
-            return cell
-        },
-        actionBlock: nil))
-        contents.addSection(headerSection)
+        headerSection.add(OWSTableItem(
+            customCellBlock: { [weak self] in
+                let cell = OWSTableItem.newCell()
+                self?.configureEnabledHeader(cell: cell)
+                return cell
+            },
+            actionBlock: nil
+        ))
+        contents.add(headerSection)
 
         let historySection = OWSTableSection()
         configureHistorySection(historySection, paymentsHistoryDataSource: paymentsHistoryDataSource)
-        contents.addSection(historySection)
+        contents.add(historySection)
 
         addHelpCards(contents: contents,
                      helpCards: helpCardsForEnabled)
@@ -630,8 +632,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         section.headerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_RECENT_PAYMENTS",
                                                 comment: "Label for the 'recent payments' section in the payment settings.")
 
-        section.separatorInsetLeading = NSNumber(value: Double(OWSTableViewController2.cellHInnerMargin +
-                                                                PaymentModelCell.separatorInsetLeading))
+        section.separatorInsetLeading = OWSTableViewController2.cellHInnerMargin + PaymentModelCell.separatorInsetLeading
 
         var hasMoreItems = false
         for (index, paymentItem) in paymentsHistoryDataSource.items.enumerated() {
@@ -689,7 +690,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             return cell
         },
         actionBlock: nil))
-        contents.addSection(headerSection)
+        contents.add(headerSection)
 
         addHelpCards(contents: contents,
                      helpCards: helpCardsForNotEnabled)
@@ -776,56 +777,56 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         for helpCard in helpCards {
             switch helpCard {
             case .saveRecoveryPhrase:
-                contents.addSection(buildHelpCard(helpCard: helpCard,
-                                                  title: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE",
-                                                                           comment: "Title for the 'Save Passphrase' help card in the payments settings."),
-                                                  body: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION",
-                                                                          comment: "Description for the 'Save Passphrase' help card in the payments settings."),
-                                                  buttonText: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON",
-                                                                                comment: "Label for button in the 'Save Passphrase' help card in the payments settings."),
-                                                  iconName: (Theme.isDarkThemeEnabled
-                                                                ? "restore-dark"
-                                                                : "restore"),
-                                                  selector: #selector(didTapSavePassphraseCard)))
+                contents.add(buildHelpCard(helpCard: helpCard,
+                                           title: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE",
+                                                                     comment: "Title for the 'Save Passphrase' help card in the payments settings."),
+                                           body: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION",
+                                                                    comment: "Description for the 'Save Passphrase' help card in the payments settings."),
+                                           buttonText: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON",
+                                                                          comment: "Label for button in the 'Save Passphrase' help card in the payments settings."),
+                                           iconName: (Theme.isDarkThemeEnabled
+                                                      ? "restore-dark"
+                                                      : "restore"),
+                                           selector: #selector(didTapSavePassphraseCard)))
             case .updatePin:
-                contents.addSection(buildHelpCard(helpCard: helpCard,
-                                                  title: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE",
-                                                                           comment: "Title for the 'Update PIN' help card in the payments settings."),
-                                                  body: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION",
-                                                                          comment: "Description for the 'Update PIN' help card in the payments settings."),
-                                                  buttonText: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON",
-                                                                                comment: "Label for button in the 'Update PIN' help card in the payments settings."),
-                                                  iconName: (Theme.isDarkThemeEnabled
-                                                                ? "update-pin-dark"
-                                                                : "update-pin"),
-                                                  selector: #selector(didTapUpdatePinCard)))
+                contents.add(buildHelpCard(helpCard: helpCard,
+                                           title: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE",
+                                                                     comment: "Title for the 'Update PIN' help card in the payments settings."),
+                                           body: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION",
+                                                                    comment: "Description for the 'Update PIN' help card in the payments settings."),
+                                           buttonText: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON",
+                                                                          comment: "Label for button in the 'Update PIN' help card in the payments settings."),
+                                           iconName: (Theme.isDarkThemeEnabled
+                                                      ? "update-pin-dark"
+                                                      : "update-pin"),
+                                           selector: #selector(didTapUpdatePinCard)))
             case .aboutMobileCoin:
-                contents.addSection(buildHelpCard(helpCard: helpCard,
-                                                  title: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE",
-                                                                           comment: "Title for the 'About MobileCoin' help card in the payments settings."),
-                                                  body: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION",
-                                                                          comment: "Description for the 'About MobileCoin' help card in the payments settings."),
-                                                  buttonText: CommonStrings.learnMore,
-                                                  iconName: "about-mobilecoin",
-                                                  selector: #selector(didTapAboutMobileCoinCard)))
+                contents.add(buildHelpCard(helpCard: helpCard,
+                                           title: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE",
+                                                                     comment: "Title for the 'About MobileCoin' help card in the payments settings."),
+                                           body: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION",
+                                                                    comment: "Description for the 'About MobileCoin' help card in the payments settings."),
+                                           buttonText: CommonStrings.learnMore,
+                                           iconName: "about-mobilecoin",
+                                           selector: #selector(didTapAboutMobileCoinCard)))
             case .addMoney:
-                contents.addSection(buildHelpCard(helpCard: helpCard,
-                                                  title: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE",
-                                                                           comment: "Title for the 'Adding to your wallet' help card in the payments settings."),
-                                                  body: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION",
-                                                                          comment: "Description for the 'Adding to your wallet' help card in the payments settings."),
-                                                  buttonText: CommonStrings.learnMore,
-                                                  iconName: "add-money",
-                                                  selector: #selector(didTapAddingToYourWalletCard)))
+                contents.add(buildHelpCard(helpCard: helpCard,
+                                           title: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE",
+                                                                     comment: "Title for the 'Adding to your wallet' help card in the payments settings."),
+                                           body: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION",
+                                                                    comment: "Description for the 'Adding to your wallet' help card in the payments settings."),
+                                           buttonText: CommonStrings.learnMore,
+                                           iconName: "add-money",
+                                           selector: #selector(didTapAddingToYourWalletCard)))
             case .cashOut:
-                contents.addSection(buildHelpCard(helpCard: helpCard,
-                                                  title: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE",
-                                                                           comment: "Title for the 'Cashing Out' help card in the payments settings."),
-                                                  body: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION",
-                                                                          comment: "Description for the 'Cashing Out' help card in the payments settings."),
-                                                  buttonText: CommonStrings.learnMore,
-                                                  iconName: "cash-out",
-                                                  selector: #selector(didTapCashingOutCoinCard)))
+                contents.add(buildHelpCard(helpCard: helpCard,
+                                           title: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE",
+                                                                     comment: "Title for the 'Cashing Out' help card in the payments settings."),
+                                           body: OWSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION",
+                                                                    comment: "Description for the 'Cashing Out' help card in the payments settings."),
+                                           buttonText: CommonStrings.learnMore,
+                                           iconName: "cash-out",
+                                           selector: #selector(didTapCashingOutCoinCard)))
             }
         }
     }

@@ -43,6 +43,6 @@ public class CreditOrDebitCardReadMoreSheetViewController: OWSTableSheetViewCont
             return cell
         }))
 
-        contents.addSection(section)
+        contents.add(section)
     }
 }

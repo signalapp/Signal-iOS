@@ -514,7 +514,7 @@ private extension UsernameSelectionViewController {
             return section
         }()
 
-        contents.addSections([
+        contents.add(sections: [
             headerSection,
             usernameTextFieldSection
         ])

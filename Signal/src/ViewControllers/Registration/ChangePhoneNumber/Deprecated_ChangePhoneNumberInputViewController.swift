@@ -65,8 +65,8 @@ class Deprecated_ChangePhoneNumberInputViewController: OWSTableViewController2 {
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        contents.addSection(buildTableSection(valueViews: oldValueViews))
-        contents.addSection(buildTableSection(valueViews: newValueViews))
+        contents.add(buildTableSection(valueViews: oldValueViews))
+        contents.add(buildTableSection(valueViews: newValueViews))
 
         self.contents = contents
 

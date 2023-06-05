@@ -190,16 +190,16 @@ class MessageDetailViewController: OWSTableViewController2 {
     private func updateTableContents() {
         let contents = OWSTableContents()
 
-        contents.addSection(buildMessageSection())
+        contents.add(buildMessageSection())
 
         if let editHistorySection = buildEditHistorySection() {
-            contents.addSection(editHistorySection)
+            contents.add(editHistorySection)
         }
 
         if isIncoming {
-            contents.addSection(buildSenderSection())
+            contents.add(buildSenderSection())
         } else {
-            contents.addSections(buildStatusSections())
+            contents.add(sections: buildStatusSections())
         }
 
         self.contents = contents
@@ -458,7 +458,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 section.headerTitle = sectionTitle
             }
 
-            section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing))
+            section.separatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 
             for recipient in recipients {
                 section.add(contactItem(

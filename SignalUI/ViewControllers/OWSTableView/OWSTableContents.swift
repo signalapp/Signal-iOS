@@ -5,35 +5,26 @@
 
 import Foundation
 
-public class OWSTableContents: NSObject {
+public class OWSTableContents {
 
     public private(set) var title: String?
 
-    @objc
     public private(set) var sections: [OWSTableSection] = []
 
-    @objc
     public var sectionForSectionIndexTitleBlock: ((String, Int) -> Int)?
 
-    @objc
     public var sectionIndexTitlesForTableViewBlock: (() -> [String])?
 
     public init(title: String? = nil, sections: [OWSTableSection] = []) {
         self.title = title
         self.sections = sections
-        super.init()
     }
 
-    public convenience override init() {
-        self.init(title: nil, sections: [])
-    }
-
-    @objc
-    public func addSection(_ section: OWSTableSection) {
+    public func add(_ section: OWSTableSection) {
         sections.append(section)
     }
 
-    public func addSections<T: Sequence>(_ sections: T) where T.Element == OWSTableSection {
+    public func add<T: Sequence>(sections: T) where T.Element == OWSTableSection {
         self.sections.append(contentsOf: sections)
     }
 }

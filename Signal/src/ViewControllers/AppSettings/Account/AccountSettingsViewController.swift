@@ -83,7 +83,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 ))
             }
 
-            contents.addSection(pinSection)
+            contents.add(pinSection)
 
             let regLockSection = OWSTableSection()
             regLockSection.footerTitle = OWSLocalizedString(
@@ -101,7 +101,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 selector: #selector(isRegistrationLockV2EnabledDidChange)
             ))
 
-            contents.addSection(regLockSection)
+            contents.add(regLockSection)
 
             let advancedSection = OWSTableSection()
             advancedSection.add(.disclosureItem(
@@ -115,7 +115,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             ))
-            contents.addSection(advancedSection)
+            contents.add(advancedSection)
         }
 
         let accountSection = OWSTableSection()
@@ -197,7 +197,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             ))
         }
 
-        contents.addSection(accountSection)
+        contents.add(accountSection)
 
         self.contents = contents
     }

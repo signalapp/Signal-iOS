@@ -7,7 +7,7 @@ import Foundation
 import SignalMessaging
 import UIKit
 
-public class OWSTableItemEditAction: NSObject {
+public class OWSTableItemEditAction {
 
     public var title: String
 
@@ -16,11 +16,10 @@ public class OWSTableItemEditAction: NSObject {
     public init(title: String, block: @escaping () -> Void) {
         self.title = title
         self.block = block
-        super.init()
     }
 }
 
-public class OWSTableItem: NSObject {
+public class OWSTableItem {
 
     public weak var tableViewController: UIViewController?
 
@@ -39,10 +38,9 @@ public class OWSTableItem: NSObject {
     public init(title: String?, actionBlock: (() -> Void)?) {
         self.title = title
         self.actionBlock = actionBlock
-        super.init()
     }
 
-    public convenience override init() {
+    public convenience init() {
         self.init(title: nil, actionBlock: nil)
     }
 
@@ -172,7 +170,6 @@ public class OWSTableItem: NSObject {
         return item
     }
 
-    @objc(softCenterLabelItemWithText:)
     public static func softCenterLabel(
         withText text: String
     ) -> OWSTableItem {
@@ -298,32 +295,6 @@ public class OWSTableItem: NSObject {
     }
 }
 
-@objc
-@available(swift, obsoleted: 1.0)
-public extension OWSTableItem {
-
-    static func itemWithTitle(
-        _ title: String,
-        actionBlock: @escaping (() -> Void)
-    ) -> OWSTableItem {
-        return OWSTableItem(title: title, actionBlock: actionBlock)
-    }
-
-    static func itemWithCustomCellBlock(
-        _ customCellBlock: @escaping () -> UITableViewCell,
-        actionBlock: @escaping (() -> Void)
-    ) -> OWSTableItem {
-        return OWSTableItem(customCellBlock: customCellBlock, actionBlock: actionBlock)
-    }
-
-    static func subPageItemWithText(
-        _ text: String,
-        actionBlock: @escaping (UIViewController) -> Void
-    ) -> OWSTableItem {
-        return subpage(withText: text, actionBlock: actionBlock)
-    }
-}
-
 public extension OWSTableItem {
 
     enum AccessoryImageTint: Int {
@@ -334,7 +305,6 @@ public extension OWSTableItem {
     static var primaryLabelFont: UIFont { .dynamicTypeBodyClamped }
     static var accessoryLabelFont: UIFont { .dynamicTypeBodyClamped }
 
-    @objc
     static var iconSpacing: CGFloat { 16 }
     static var iconSize: CGFloat { 24 }
 
@@ -423,21 +393,6 @@ public extension OWSTableItem {
         item(icon: icon,
              name: name,
              maxNameLines: maxNameLines,
-             accessoryText: accessoryText,
-             accessoryType: .disclosureIndicator,
-             accessibilityIdentifier: accessibilityIdentifier,
-             actionBlock: actionBlock)
-    }
-
-    @available(swift, obsoleted: 1.0)
-    @objc
-    static func disclosureItem(icon: ThemeIcon,
-                               name: String,
-                               accessoryText: String?,
-                               accessibilityIdentifier: String,
-                               actionBlock: (() -> Void)?) -> OWSTableItem {
-        item(icon: icon,
-             name: name,
              accessoryText: accessoryText,
              accessoryType: .disclosureIndicator,
              accessibilityIdentifier: accessibilityIdentifier,
@@ -739,6 +694,7 @@ public extension OWSTableItem {
 // MARK: -
 
 public extension OWSTableItem {
+
     static func buildIconInCircleView(icon: ThemeIcon,
                                       iconSize iconSizeParam: UInt? = nil,
                                       innerIconSize innerIconSizeParam: CGFloat? = nil,

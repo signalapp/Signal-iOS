@@ -5,17 +5,13 @@
 
 import Foundation
 
-public class OWSTableSection: NSObject {
+public class OWSTableSection {
 
     public private(set) var items: [OWSTableItem]
 
-    @objc
     public var itemCount: Int { items.count }
 
-    @objc
     public var headerTitle: String?
-
-    @objc
     public var footerTitle: String?
 
     public var headerAttributedTitle: NSAttributedString?
@@ -30,42 +26,35 @@ public class OWSTableSection: NSObject {
     public var hasBackground = true
     public var hasSeparators = true
 
-    @objc
-    public var separatorInsetLeading: NSNumber?
-
-    public var separatorInsetTrailing: NSNumber?
+    public var separatorInsetLeading: CGFloat?
+    public var separatorInsetTrailing: CGFloat?
 
     public var shouldDisableCellSelection = false
 
-    public init(title: String?, items: [OWSTableItem], footerTitle: String?) {
+    public init(title: String?, items: [OWSTableItem], footerTitle: String? = nil) {
         self.headerTitle = title
         self.items = items
         self.footerTitle = footerTitle
-        super.init()
     }
 
-    public convenience override init() {
-        self.init(title: nil, items: [], footerTitle: nil)
+    public convenience init() {
+        self.init(title: nil, items: [])
     }
 
     public convenience init(title: String?) {
-        self.init(title: title, items: [], footerTitle: nil)
+        self.init(title: title, items: [])
     }
 
     public convenience init(items: [OWSTableItem]) {
-        self.init(title: nil, items: items, footerTitle: nil)
-    }
-
-    public convenience init(title: String?, items: [OWSTableItem]) {
-        self.init(title: title, items: items, footerTitle: nil)
+        self.init(title: nil, items: items)
     }
 
     public convenience init(
         title: String?,
-        headerView: UIView? = nil,
-        footerView: UIView? = nil
+        headerView: UIView?,
+        footerView: UIView?
     ) {
-        self.init(title: title, items: [], footerTitle: nil)
+        self.init(title: title)
         self.customHeaderView = headerView
         self.customFooterView = footerView
     }
@@ -74,25 +63,13 @@ public class OWSTableSection: NSObject {
         header: (() -> UIView?),
         footer: (() -> UIView?) = {nil}
     ) {
-        self.init(title: nil, items: [], footerTitle: nil)
+        self.init(title: nil, items: [])
         self.customHeaderView = header()
         self.customFooterView = footer()
     }
 
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public static func sectionWithTitle(_ title: String?, items: [OWSTableItem]) -> OWSTableSection {
-        return OWSTableSection(title: title, items: items)
-    }
-
-    @objc(addItem:)
     public func add(_ item: OWSTableItem) {
         items.append(item)
-    }
-
-    @objc(addItems:)
-    func addItems(_ items: [OWSTableItem]) {
-        add(items: items)
     }
 
     public func add<T: Sequence>(items: T) where T.Element == OWSTableItem {

@@ -56,7 +56,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
                 "STORIES_SETTINGS_TURN_ON_FOOTER",
                 comment: "Footer for the 'turn on' section of the stories settings"
             )
-            contents.addSection(turnOnSection)
+            contents.add(turnOnSection)
             turnOnSection.add(.actionItem(
                 withText: OWSLocalizedString(
                     "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON",
@@ -83,7 +83,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
             "STORIES_SETTINGS_STORIES_FOOTER",
             comment: "Footer for the 'Stories' section of the stories settings"
         )
-        contents.addSection(myStoriesSection)
+        contents.add(myStoriesSection)
 
         let storyItems = databaseStorage.read { transaction -> [StoryConversationItem] in
             StoryConversationItem
@@ -129,14 +129,14 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(didToggleViewReceipts)
         ))
-        contents.addSection(viewReceiptsSection)
+        contents.add(viewReceiptsSection)
 
         let turnOffStoriesSection = OWSTableSection()
         turnOffStoriesSection.footerTitle = OWSLocalizedString(
             "STORIES_SETTINGS_TURN_OFF_FOOTER",
             comment: "Footer for the 'turn off' section of the stories settings"
         )
-        contents.addSection(turnOffStoriesSection)
+        contents.add(turnOffStoriesSection)
         turnOffStoriesSection.add(.actionItem(
             withText: OWSLocalizedString(
                 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON",

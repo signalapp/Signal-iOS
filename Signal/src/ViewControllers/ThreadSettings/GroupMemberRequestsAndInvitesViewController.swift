@@ -98,7 +98,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         modeHeader.layoutMargins = UIEdgeInsets(top: 20, leading: 20, bottom: 0, trailing: 20)
         modeHeader.isLayoutMarginsRelativeArrangement = true
         modeSection.customHeaderView = modeHeader
-        contents.addSection(modeSection)
+        contents.add(modeSection)
 
         guard let mode = Mode(rawValue: segmentedControl.selectedSegmentIndex) else {
             owsFailDebug("Invalid mode.")
@@ -167,7 +167,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                              comment: "Label indicating that a group has no pending member requests.")
             ))
         }
-        contents.addSection(section)
+        contents.add(section)
     }
 
     private func buildMemberRequestButtons(address: SignalServiceAddress) -> ContactCellAccessoryView {
@@ -283,7 +283,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                              comment: "Label indicating that a group has no pending members.")
             ))
         }
-        contents.addSection(localSection)
+        contents.add(localSection)
 
         // MARK: - Other Users
 
@@ -335,7 +335,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                              comment: "Label indicating that a group has no pending members.")
             ))
         }
-        contents.addSection(otherUsersSection)
+        contents.add(otherUsersSection)
 
         // MARK: - Invalid Invites
 
@@ -352,7 +352,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             invalidInvitesSection.add(OWSTableItem.disclosureItem(withText: cellTitle) { [weak self] in
                 self?.revokeInvalidInvites()
             })
-            contents.addSection(invalidInvitesSection)
+            contents.add(invalidInvitesSection)
         }
     }
 

@@ -33,7 +33,7 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
         let headerSection = OWSTableSection()
         headerSection.hasBackground = false
         headerSection.customHeaderHeight = 1
-        contents.addSection(headerSection)
+        contents.add(headerSection)
 
         headerSection.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()

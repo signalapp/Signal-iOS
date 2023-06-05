@@ -252,11 +252,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
     private func updateTableContents() {
         let contents = OWSTableContents()
 
-        contents.addSection(heroSection())
+        contents.add(heroSection())
 
         switch state {
         case .initializing, .loading:
-            contents.addSection(loadingSection())
+            contents.add(loadingSection())
         case let .loadFinished(subscriptionStatus, profileBadgeLookup, hasAnyBadges, hasAnyDonationReceipts):
             let sections = loadFinishedSections(
                 subscriptionStatus: subscriptionStatus,
@@ -264,7 +264,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 hasAnyBadges: hasAnyBadges,
                 hasAnyDonationReceipts: hasAnyDonationReceipts
             )
-            contents.addSections(sections)
+            contents.add(sections: sections)
         }
 
         self.contents = contents

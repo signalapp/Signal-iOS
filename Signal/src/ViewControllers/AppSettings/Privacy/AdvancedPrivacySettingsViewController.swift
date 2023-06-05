@@ -114,7 +114,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             ))
         }
 
-        contents.addSection(censorshipCircumventionSection)
+        contents.add(censorshipCircumventionSection)
 
         let proxySection = OWSTableSection()
         proxySection.footerAttributedTitle = .composed(of: [
@@ -136,7 +136,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        contents.addSection(proxySection)
+        contents.add(proxySection)
 
         let relayCallsSection = OWSTableSection()
         relayCallsSection.footerTitle = OWSLocalizedString(
@@ -152,7 +152,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(didToggleCallsHideIPAddressSwitch)
         ))
-        contents.addSection(relayCallsSection)
+        contents.add(relayCallsSection)
 
         let sealedSenderSection = OWSTableSection()
         sealedSenderSection.headerTitle = OWSLocalizedString(
@@ -230,7 +230,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             ))
         }
 
-        contents.addSection(sealedSenderSection)
+        contents.add(sealedSenderSection)
 
         self.contents = contents
     }

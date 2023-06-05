@@ -132,7 +132,7 @@ class ShareMyUsernameSheetViewController: OWSTableSheetViewController {
             return section
         }()
 
-        contents.addSections([
+        contents.add(sections: [
             copySection,
             shareSection
         ])

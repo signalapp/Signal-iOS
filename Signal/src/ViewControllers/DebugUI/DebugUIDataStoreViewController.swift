@@ -29,7 +29,7 @@ class DebugUIReportsViewController: OWSTableViewController2 {
     public func updateTableContents() {
         let contents = OWSTableContents()
 
-        contents.addSection(
+        contents.add(
             OWSTableSection(title: "Print Reports", items: [
                 OWSTableItem.init(title: "Signal Recipients") { [weak self] in
                     guard let self = self else { return }
@@ -55,7 +55,7 @@ class DebugUIReportsViewController: OWSTableViewController2 {
                 })
             item.customRowHeight = 400
 
-            contents.addSection(
+            contents.add(
                 OWSTableSection(title: "Report: \(report.title)", items: [ item ])
             )
         }

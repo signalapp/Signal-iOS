@@ -23,7 +23,7 @@ class TestingViewController: OWSTableViewController2 {
         do {
             let section = OWSTableSection()
             section.footerTitle = LocalizationNotNeeded("These values are temporary and will reset on next launch of the app.")
-            contents.addSection(section)
+            contents.add(section)
         }
 
         do {
@@ -33,7 +33,7 @@ class TestingViewController: OWSTableViewController2 {
                 NotificationCenter.default.post(name: TestableFlag.ResetAllTestableFlagsNotification, object: nil)
                 self?.updateTableContents()
             })
-            contents.addSection(section)
+            contents.add(section)
         }
 
         func buildSwitchItem(title: String, testableFlag: TestableFlag) -> OWSTableItem {
@@ -52,7 +52,7 @@ class TestingViewController: OWSTableViewController2 {
             let section = OWSTableSection()
             section.footerTitle = testableFlag.details
             section.add(buildSwitchItem(title: testableFlag.title, testableFlag: testableFlag))
-            contents.addSection(section)
+            contents.add(section)
         }
 
         // MARK: - Other
@@ -67,7 +67,7 @@ class TestingViewController: OWSTableViewController2 {
                         SubscriptionManagerImpl.setSubscriberCurrencyCode(nil, transaction: transaction)
                     }
                 })
-                contents.addSection(subscriberIDSection)
+                contents.add(subscriberIDSection)
             }
         }
 

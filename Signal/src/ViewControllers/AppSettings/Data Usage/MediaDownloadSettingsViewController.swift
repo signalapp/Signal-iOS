@@ -50,7 +50,7 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
                         accessoryType: preference == currentPreference ? .checkmark : .none))
         }
 
-        contents.addSection(section)
+        contents.add(section)
 
         self.contents = contents
     }

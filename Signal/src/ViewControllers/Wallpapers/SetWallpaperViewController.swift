@@ -86,7 +86,7 @@ class SetWallpaperViewController: OWSTableViewController2 {
         }
         photosSection.add(choosePhotoItem)
 
-        contents.addSection(photosSection)
+        contents.add(photosSection)
 
         let presetsSection = OWSTableSection()
         presetsSection.headerTitle = OWSLocalizedString("SET_WALLPAPER_PRESETS",
@@ -101,7 +101,7 @@ class SetWallpaperViewController: OWSTableViewController2 {
         } actionBlock: {}
         presetsSection.add(presetsItem)
 
-        contents.addSection(presetsSection)
+        contents.add(presetsSection)
 
         self.contents = contents
     }

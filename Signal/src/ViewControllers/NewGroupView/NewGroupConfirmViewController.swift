@@ -137,7 +137,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
             },
             actionBlock: {}
         ))
-        contents.addSection(nameAndAvatarSection)
+        contents.add(nameAndAvatarSection)
 
         let disappearingMessagesSection = OWSTableSection()
         disappearingMessagesSection.add(.init(
@@ -168,7 +168,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                 self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
-        contents.addSection(disappearingMessagesSection)
+        contents.add(disappearingMessagesSection)
 
         if members.count > 0 {
             let section = OWSTableSection()
@@ -192,7 +192,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                         return cell
                 }))
             }
-            contents.addSection(section)
+            contents.add(section)
         }
 
         self.contents = contents

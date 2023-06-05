@@ -101,7 +101,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
                 "DISAPPEARING_MESSAGES_DESCRIPTION",
                 comment: "subheading in conversation settings"
             )
-        contents.addSection(footerHeaderSection)
+        contents.add(footerHeaderSection)
 
         guard !useCustomPicker else {
             let section = OWSTableSection()
@@ -118,7 +118,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
                 },
                 actionBlock: {}
             ))
-            contents.addSection(section)
+            contents.add(section)
             return
         }
 
@@ -172,7 +172,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
             }
         ))
 
-        contents.addSection(section)
+        contents.add(section)
     }
 
     var disappearingMessagesDurations: [UInt32] {

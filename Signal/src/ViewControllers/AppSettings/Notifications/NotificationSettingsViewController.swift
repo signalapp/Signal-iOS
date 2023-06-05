@@ -49,7 +49,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(didToggleSoundNotificationsSwitch)
         ))
-        contents.addSection(soundsSection)
+        contents.add(soundsSection)
 
         let notificationContentSection = OWSTableSection()
         notificationContentSection.headerTitle = OWSLocalizedString(
@@ -68,7 +68,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        contents.addSection(notificationContentSection)
+        contents.add(notificationContentSection)
 
         let badgeCountSection = OWSTableSection()
         badgeCountSection.headerTitle = OWSLocalizedString(
@@ -86,7 +86,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(didToggleIncludesMutedConversationsInBadgeCountSwitch)
         ))
-        contents.addSection(badgeCountSection)
+        contents.add(badgeCountSection)
 
         let notifyWhenSection = OWSTableSection()
         notifyWhenSection.headerTitle = OWSLocalizedString(
@@ -104,7 +104,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(didToggleshouldNotifyOfNewAccountsSwitch)
         ))
-        contents.addSection(notifyWhenSection)
+        contents.add(notifyWhenSection)
 
         let reregisterPushSection = OWSTableSection()
         reregisterPushSection.add(.actionItem(
@@ -113,7 +113,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 self?.syncPushTokens()
             }
         ))
-        contents.addSection(reregisterPushSection)
+        contents.add(reregisterPushSection)
 
         self.contents = contents
     }

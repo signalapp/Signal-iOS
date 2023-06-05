@@ -296,11 +296,11 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         // App is killed and restarted when the user changes their contact
         // permissions, so no need to "observe" anything to re-render this.
         if let reminderSection = contactAccessReminderSection() {
-            tableContents.addSection(reminderSection)
+            tableContents.add(reminderSection)
         }
 
         let staticSection = OWSTableSection()
-        staticSection.separatorInsetLeading = (OWSTableViewController2.cellHInnerMargin + 24 + OWSTableItem.iconSpacing) as NSNumber
+        staticSection.separatorInsetLeading = OWSTableViewController2.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
         let isSearching = searchResults != nil
 
@@ -355,7 +355,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         }
 
         if staticSection.itemCount > 0 {
-            tableContents.addSection(staticSection)
+            tableContents.add(staticSection)
         }
 
         // Render any non-contact picked recipients
@@ -372,7 +372,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
                 return true
             }
             if !sectionRecipients.isEmpty {
-                tableContents.addSection(OWSTableSection(
+                tableContents.add(OWSTableSection(
                     title: OWSLocalizedString(
                         "NEW_GROUP_NON_CONTACTS_SECTION_TITLE",
                         comment: "a title for the selected section of the 'recipient picker' view."
@@ -383,14 +383,14 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         }
 
         if let searchResults {
-            tableContents.addSections(contactsSections(for: searchResults))
+            tableContents.add(sections: contactsSections(for: searchResults))
         } else {
             // Count the non-collated sections, before we add our collated sections.
             // Later we'll need to offset which sections our collation indexes reference
             // by this amount. e.g. otherwise the "B" index will reference names starting with "A"
             // And the "A" index will reference the static non-collated section(s).
             let beforeContactsSectionCount = tableContents.sections.count
-            tableContents.addSections(contactsSection())
+            tableContents.add(sections: contactsSection())
 
             if shouldShowAlphabetSlider {
                 tableContents.sectionForSectionIndexTitleBlock = { [weak tableContents, weak self] title, index in

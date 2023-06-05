@@ -92,7 +92,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         ))
 
-        contents.addSection(debugSection)
+        contents.add(debugSection)
 
         let infoSection = OWSTableSection()
         infoSection.add(.label(withText: "Environment: \(TSConstants.isUsingProductionService ? "Production" : "Staging")"))
@@ -180,7 +180,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             infoSection.add(.copyableItem(label: "", value: "Subscriber ID: \(subscriberID.asBase64Url)"))
         }
 
-        contents.addSection(infoSection)
+        contents.add(infoSection)
 
         self.contents = contents
     }

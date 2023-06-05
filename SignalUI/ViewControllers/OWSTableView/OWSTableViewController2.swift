@@ -11,10 +11,8 @@ import Foundation
 // retain a view model for each cell in memory at all times.
 open class OWSTableViewController2: OWSViewController {
 
-    @objc
     public weak var delegate: OWSTableViewControllerDelegate?
 
-    @objc
     public var contents: OWSTableContents {
         get {
             _contents
@@ -32,7 +30,6 @@ open class OWSTableViewController2: OWSViewController {
         applyContents(shouldReload: shouldReload)
     }
 
-    @objc
     public let tableView = OWSTableView(frame: .zero, style: .grouped)
 
     // This is an alternative to/replacement for UITableView.tableHeaderView.
@@ -66,7 +63,6 @@ open class OWSTableViewController2: OWSViewController {
     public var defaultSpacingBetweenSections: CGFloat? = 20
     public var defaultLastSectionFooter: CGFloat = 20
 
-    @objc
     public lazy var defaultSeparatorInsetLeading: CGFloat = Self.cellHInnerMargin
 
     public var defaultSeparatorInsetTrailing: CGFloat = 0
@@ -79,7 +75,6 @@ open class OWSTableViewController2: OWSViewController {
 
     private static let cellIdentifier = "cellIdentifier"
 
-    @objc
     public override init() {
         super.init()
 
@@ -150,6 +145,15 @@ open class OWSTableViewController2: OWSViewController {
 
         applyTheme()
         applyContents()
+    }
+
+    open var tableBackgroundColor: UIColor {
+        AssertIsOnMainThread()
+
+        return Self.tableBackgroundColor(
+            isUsingPresentedStyle: isUsingPresentedStyle,
+            forceDarkMode: forceDarkMode
+        )
     }
 
     private func applyTheme() {
@@ -481,19 +485,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
                 separatorFrame.y = pillFrame.height - separatorThickness
                 separatorFrame.size.height = separatorThickness
 
-                let separatorInsetLeading: CGFloat
-                if let sectionSeparatorInsetLeading = sectionSeparatorInsetLeading {
-                    separatorInsetLeading = CGFloat(sectionSeparatorInsetLeading.floatValue)
-                } else {
-                    separatorInsetLeading = self.defaultSeparatorInsetLeading
-                }
-
-                let separatorInsetTrailing: CGFloat
-                if let sectionSeparatorInsetTrailing = sectionSeparatorInsetTrailing {
-                    separatorInsetTrailing = CGFloat(sectionSeparatorInsetTrailing.floatValue)
-                } else {
-                    separatorInsetTrailing = self.defaultSeparatorInsetTrailing
-                }
+                let separatorInsetLeading = sectionSeparatorInsetLeading ?? self.defaultSeparatorInsetLeading
+                let separatorInsetTrailing = sectionSeparatorInsetTrailing ?? self.defaultSeparatorInsetTrailing
 
                 separatorFrame.x += separatorInsetLeading
                 separatorFrame.size.width -= (separatorInsetLeading + separatorInsetTrailing)
@@ -578,7 +571,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     }
 
     // The distance from the edge of the view to the cell border.
-    @objc
     public static func cellOuterInsets(in view: UIView) -> UIEdgeInsets {
         var insets = UIEdgeInsets()
 
@@ -628,7 +620,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     public var cellHOuterRightMargin: CGFloat { Self.cellHOuterRightMargin(in: view) }
 
     // The distance from the cell border to the cell content.
-    @objc
     public static var cellHInnerMargin: CGFloat {
         UIDevice.current.isPlusSizePhone ? 20 : 16
     }
@@ -1000,16 +991,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
     // MARK: - Theme
 
-    @objc
-    open var tableBackgroundColor: UIColor {
-        AssertIsOnMainThread()
-
-        return Self.tableBackgroundColor(
-            isUsingPresentedStyle: isUsingPresentedStyle,
-            forceDarkMode: forceDarkMode
-        )
-    }
-
     public static func tableBackgroundColor(
         isUsingPresentedStyle: Bool,
         forceDarkMode: Bool = false
@@ -1057,7 +1038,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         }
     }
 
-    @objc(applyThemeToViewController:)
     public func applyTheme(to viewController: UIViewController) {
         AssertIsOnMainThread()
 
@@ -1081,7 +1061,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         viewController.navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)
     }
 
-    func updateNavbarStyling() {
+    private func updateNavbarStyling() {
         if lifecycle == .appeared {
             owsNavigationController?.updateNavbarAppearance(animated: true)
         }

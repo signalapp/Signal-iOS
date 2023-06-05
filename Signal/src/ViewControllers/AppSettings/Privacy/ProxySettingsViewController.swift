@@ -119,7 +119,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(didToggleUseProxy)
         ))
-        contents.addSection(useProxySection)
+        contents.add(useProxySection)
 
         let proxyAddressSection = OWSTableSection()
         proxyAddressSection.headerAttributedTitle = OWSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy").styled(
@@ -144,7 +144,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
             },
             actionBlock: {}
         ))
-        contents.addSection(proxyAddressSection)
+        contents.add(proxyAddressSection)
 
         let shareSection = OWSTableSection()
         shareSection.add(.init(
@@ -165,7 +165,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
                 AttachmentSharing.showShareUI(for: URL(string: "https://signal.tube/#\(self.host ?? "")")!, sender: self.view)
             }
         ))
-        contents.addSection(shareSection)
+        contents.add(shareSection)
     }
 
     @objc

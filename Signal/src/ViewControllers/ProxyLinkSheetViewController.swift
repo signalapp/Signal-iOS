@@ -27,7 +27,7 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
 
         let avatarSection = OWSTableSection()
         avatarSection.hasBackground = false
-        contents.addSection(avatarSection)
+        contents.add(avatarSection)
         avatarSection.add(.init(customCellBlock: {
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
@@ -57,13 +57,13 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
         let addressSection = OWSTableSection()
         addressSection.hasBackground = false
         addressSection.headerTitle = OWSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy")
-        contents.addSection(addressSection)
+        contents.add(addressSection)
         addressSection.add(.label(withText: proxyHost))
 
         let actionsSection = OWSTableSection()
         actionsSection.hasBackground = false
         actionsSection.headerTitle = OWSLocalizedString("DO_YOU_WANT_TO_USE_PROXY", comment: "Title for the proxy confirmation")
-        contents.addSection(actionsSection)
+        contents.add(actionsSection)
         actionsSection.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none

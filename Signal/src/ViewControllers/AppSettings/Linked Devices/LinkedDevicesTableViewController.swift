@@ -210,7 +210,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
                 self?.getCameraPermissionsThenShowLinkNewDeviceView()
             }
         ))
-        contents.addSection(addDeviceSection)
+        contents.add(addDeviceSection)
 
         if !displayableDevices.isEmpty {
             let devicesSection = OWSTableSection()
@@ -228,7 +228,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
                 })
                 devicesSection.add(item)
             }
-            contents.addSection(devicesSection)
+            contents.add(devicesSection)
         }
 
         self.contents = contents

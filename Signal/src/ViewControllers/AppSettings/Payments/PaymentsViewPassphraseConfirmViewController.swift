@@ -231,8 +231,8 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         section1.add(buildWordRow(wordTextfield: wordTextfield1,
                                   correctnessIconView: correctnessIconView1,
                                   isCorrect: isWordCorrect1))
-        contents.addSection(section0)
-        contents.addSection(section1)
+        contents.add(section0)
+        contents.add(section1)
 
         self.contents = contents
 

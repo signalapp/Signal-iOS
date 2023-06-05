@@ -117,7 +117,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        contents.addSection(profileSection)
+        contents.add(profileSection)
 
         let section1 = OWSTableSection()
         section1.add(.disclosureItem(
@@ -161,7 +161,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         }, actionBlock: { [weak self] in
             self?.didTapDonate()
         }))
-        contents.addSection(section1)
+        contents.add(section1)
 
         let section2 = OWSTableSection()
         section2.add(.disclosureItem(
@@ -223,7 +223,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        contents.addSection(section2)
+        contents.add(section2)
 
         if payments.shouldShowPaymentsUI {
             let paymentsSection = OWSTableSection()
@@ -301,7 +301,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             ))
-            contents.addSection(paymentsSection)
+            contents.add(paymentsSection)
         }
 
         let section3 = OWSTableSection()
@@ -322,7 +322,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.showInviteFlow()
             }
         ))
-        contents.addSection(section3)
+        contents.add(section3)
 
         if DebugFlags.internalSettings {
             let internalSection = OWSTableSection()
@@ -335,7 +335,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             ))
-            contents.addSection(internalSection)
+            contents.add(internalSection)
         }
 
         self.contents = contents

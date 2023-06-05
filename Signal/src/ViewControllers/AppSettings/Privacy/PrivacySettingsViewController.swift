@@ -52,7 +52,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         }
 
         if !whoCanSection.items.isEmpty {
-            contents.addSection(whoCanSection)
+            contents.add(whoCanSection)
         }
 
         let blockedSection = OWSTableSection()
@@ -66,7 +66,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        contents.addSection(blockedSection)
+        contents.add(blockedSection)
 
         let messagingSection = OWSTableSection()
         messagingSection.footerTitle = OWSLocalizedString(
@@ -91,7 +91,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(didToggleTypingIndicatorsSwitch)
         ))
-        contents.addSection(messagingSection)
+        contents.add(messagingSection)
 
         let disappearingMessagesSection = OWSTableSection()
         disappearingMessagesSection.footerTitle = OWSLocalizedString(
@@ -129,7 +129,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
-        contents.addSection(disappearingMessagesSection)
+        contents.add(disappearingMessagesSection)
 
         let appSecuritySection = OWSTableSection()
         appSecuritySection.headerTitle = OWSLocalizedString("SETTINGS_SECURITY_TITLE", comment: "Section header")
@@ -172,7 +172,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 }
             ))
         }
-        contents.addSection(appSecuritySection)
+        contents.add(appSecuritySection)
 
         // Payments
         let paymentsSection = OWSTableSection()
@@ -198,7 +198,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(didTogglePaymentsLockSwitch)
         ))
-        contents.addSection(paymentsSection)
+        contents.add(paymentsSection)
 
         if !CallUIAdapter.isCallkitDisabledForLocale {
             let callsSection = OWSTableSection()
@@ -219,7 +219,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 target: self,
                 selector: #selector(didToggleEnableSystemCallLogSwitch)
             ))
-            contents.addSection(callsSection)
+            contents.add(callsSection)
         }
 
         let advancedSection = OWSTableSection()
@@ -237,7 +237,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        contents.addSection(advancedSection)
+        contents.add(advancedSection)
 
         self.contents = contents
     }

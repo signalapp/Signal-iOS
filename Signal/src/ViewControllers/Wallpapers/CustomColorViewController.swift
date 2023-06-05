@@ -218,7 +218,7 @@ class CustomColorViewController: OWSTableViewController2 {
 
             return cell
         } actionBlock: {})
-        contents.addSection(previewSection)
+        contents.add(previewSection)
 
         // Sliders
 
@@ -238,7 +238,7 @@ class CustomColorViewController: OWSTableViewController2 {
                 comment: "Title for the 'hue' section in the chat color settings view."
             )
         ))
-        contents.addSection(hueSection)
+        contents.add(hueSection)
 
         saturationSlider.delegate = self
         let saturationSection = OWSTableSection()
@@ -251,7 +251,7 @@ class CustomColorViewController: OWSTableViewController2 {
                 comment: "Title for the 'Saturation' section in the chat color settings view."
             )
         ))
-        contents.addSection(saturationSection)
+        contents.add(saturationSection)
 
         self.contents = contents
     }

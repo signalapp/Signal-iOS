@@ -73,15 +73,15 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
 
         let preferredSection = OWSTableSection()
         preferredSection.customHeaderHeight = 12
-        preferredSection.separatorInsetLeading = NSNumber(value: Double(OWSTableViewController2.cellHInnerMargin))
+        preferredSection.separatorInsetLeading = OWSTableViewController2.cellHInnerMargin
         for currencyInfo in preferredCurrencyInfos {
             preferredSection.add(buildTableItem(forCurrencyInfo: currencyInfo,
                                                 currentCurrencyCode: currentCurrencyCode))
         }
-        contents.addSection(preferredSection)
+        contents.add(preferredSection)
 
         let supportedSection = OWSTableSection()
-        supportedSection.separatorInsetLeading = NSNumber(value: Double(OWSTableViewController2.cellHInnerMargin))
+        supportedSection.separatorInsetLeading = OWSTableViewController2.cellHInnerMargin
         supportedSection.headerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES",
                                                          comment: "Label for 'all currencies' section in the payment currency settings.")
         if supportedCurrencyInfos.isEmpty {
@@ -107,7 +107,7 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
                                                     currentCurrencyCode: currentCurrencyCode))
             }
         }
-        contents.addSection(supportedSection)
+        contents.add(supportedSection)
 
         self.contents = contents
     }
@@ -143,7 +143,7 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
                                                   currentCurrencyCode: currentCurrencyCode))
             }
         }
-        contents.addSection(resultsSection)
+        contents.add(resultsSection)
 
         self.contents = contents
     }

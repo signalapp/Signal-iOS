@@ -123,7 +123,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             accessoryType: newAccessMembers == .administrator ? .checkmark : .none
         ))
 
-        contents.addSection(accessMembersSection)
+        contents.add(accessMembersSection)
 
         let accessAttributesSection = OWSTableSection()
         accessAttributesSection.headerTitle = OWSLocalizedString(
@@ -156,7 +156,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             accessoryType: newAccessAttributes == .administrator ? .checkmark : .none
         ))
 
-        contents.addSection(accessAttributesSection)
+        contents.add(accessAttributesSection)
 
         let isAnnouncementsOnly = self.newIsAnnouncementsOnly
 
@@ -191,7 +191,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             accessoryType: isAnnouncementsOnly ? .checkmark : .none
         ))
 
-        contents.addSection(announcementOnlySection)
+        contents.add(announcementOnlySection)
     }
 
     private func tryToSetAccessMembers(_ value: GroupV2Access) {

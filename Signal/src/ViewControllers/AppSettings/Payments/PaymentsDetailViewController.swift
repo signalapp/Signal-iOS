@@ -78,12 +78,12 @@ class PaymentsDetailViewController: OWSTableViewController2 {
             return cell
         },
         actionBlock: nil))
-        contents.addSection(headerSection)
+        contents.add(headerSection)
 
-        contents.addSection(buildStatusSection())
+        contents.add(buildStatusSection())
 
         if DebugFlags.internalSettings {
-            contents.addSection(buildInternalSection())
+            contents.add(buildInternalSection())
         }
 
         self.contents = contents

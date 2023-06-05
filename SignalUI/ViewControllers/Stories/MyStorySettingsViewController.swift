@@ -86,7 +86,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
         }
 
         let visibilitySection = OWSTableSection()
-        visibilitySection.separatorInsetLeading = NSNumber(value: OWSTableViewController2.cellHInnerMargin + 32)
+        visibilitySection.separatorInsetLeading = OWSTableViewController2.cellHInnerMargin + 32
         switch style {
         case .sheet:
             let headerView = SheetHeaderView(frame: .zero, dataSource: self)
@@ -103,7 +103,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
             footerTextView.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 32, vMargin: 16))
             visibilitySection.customFooterView = footerContainer
         }
-        contents.addSection(visibilitySection)
+        contents.add(visibilitySection)
 
         let storyViewMode: TSThreadStoryViewMode?
         if hasSetMyStoriesPrivacy {
@@ -209,7 +209,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
             let repliesSection = OWSTableSection()
             repliesSection.headerTitle = StoryStrings.repliesAndReactionsHeader
             repliesSection.footerTitle = StoryStrings.repliesAndReactionsFooter
-            contents.addSection(repliesSection)
+            contents.add(repliesSection)
 
             repliesSection.add(.switch(
                 withText: StoryStrings.repliesAndReactionsToggle,
