@@ -20,8 +20,8 @@ class DebugUIMisc: DebugUIPage, Dependencies {
         if let thread {
             items.append(OWSTableItem(title: "Delete disappearing messages config", actionBlock: {
                 self.databaseStorage.write { transaction in
-                    let config = thread.disappearingMessagesConfiguration(with: transaction)
-                    config.anyRemove(transaction: transaction)
+                    let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                    dmConfigurationStore.remove(for: thread, tx: transaction.asV2Write)
                 }
             }))
         }

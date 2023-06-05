@@ -285,7 +285,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             updateDescription: "Update group permissions",
             updateBlock: { () -> Promise<Void> in
                 // We're sending a message, so we're accepting any pending message request.
-                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: self.thread)
+                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
                 return firstly { () -> Promise<Void> in
                     if self.newAccessMembers != self.oldAccessMembers {

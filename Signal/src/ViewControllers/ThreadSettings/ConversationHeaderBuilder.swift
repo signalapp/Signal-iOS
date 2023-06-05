@@ -585,7 +585,7 @@ extension ConversationHeaderDelegate {
             }
         } else {
             // We initiated a call, so if there was a pending message request we should accept it.
-            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
+            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
             callService.initiateCall(thread: thread, isVideo: withVideo)
         }
     }

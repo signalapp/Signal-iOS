@@ -40,7 +40,9 @@ public class ThreadViewModel: NSObject {
 
     public init(thread: TSThread, forChatList: Bool, transaction: SDSAnyReadTransaction) {
         self.threadRecord = thread
-        self.disappearingMessagesConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
+
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        self.disappearingMessagesConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
 
         self.isGroupThread = thread.isGroupThread
         self.name = Self.contactsManager.displayName(for: thread, transaction: transaction)

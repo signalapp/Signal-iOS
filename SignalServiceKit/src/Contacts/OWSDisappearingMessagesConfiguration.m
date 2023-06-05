@@ -10,8 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
-
 @interface OWSDisappearingMessagesConfiguration ()
 
 @property (nonatomic, getter=isEnabled) BOOL enabled;
@@ -74,45 +72,6 @@ static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
 
 // --- CODE GENERATION MARKER
 
-- (BOOL)isUrgent
-{
-    return NO;
-}
-
-+ (nullable instancetype)fetchWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self fetchWithThreadId:thread.uniqueId transaction:transaction];
-}
-
-+ (instancetype)fetchOrBuildDefaultWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self fetchOrBuildDefaultWithThreadId:thread.uniqueId transaction:transaction];
-}
-
-+ (nullable instancetype)fetchWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction
-{
-    // Thread id == configuration id.
-    return [self anyFetchWithUniqueId:threadId transaction:transaction];
-}
-
-+ (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSDisappearingMessagesConfiguration *_Nullable configuration = [self fetchWithThreadId:threadId
-                                                                                transaction:transaction];
-    if (configuration != nil) {
-        return configuration;
-    }
-
-    return [[self alloc] initWithThreadId:threadId
-                                  enabled:OWSDisappearingMessagesConfigurationDefaultExpirationDuration > 0
-                          durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
-}
-
-+ (instancetype)fetchOrBuildDefaultUniversalConfigurationWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self fetchOrBuildDefaultWithThreadId:kUniversalTimerThreadId transaction:transaction];
-}
-
 + (NSArray<NSNumber *> *)presetDurationsSeconds
 {
     return @[
@@ -134,17 +93,6 @@ static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
 - (NSString *)durationString
 {
     return [NSString formatDurationLosslessWithDurationSeconds:self.durationSeconds];
-}
-
-- (BOOL)hasChangedWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction != nil);
-
-    // Thread id == configuration id.
-    OWSDisappearingMessagesConfiguration *oldConfiguration =
-        [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
-
-    return (self.isEnabled != oldConfiguration.isEnabled || self.durationSeconds != oldConfiguration.durationSeconds);
 }
 
 - (instancetype)copyWithIsEnabled:(BOOL)isEnabled

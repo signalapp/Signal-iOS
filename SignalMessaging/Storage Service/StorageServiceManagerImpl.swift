@@ -1455,6 +1455,7 @@ class StorageServiceOperation: OWSOperation {
             recordUpdater: StorageServiceAccountRecordUpdater(
                 localIdentifiers: localIdentifiers,
                 authedAccount: authedAccount,
+                dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
                 legacyChangePhoneNumber: legacyChangePhoneNumber,
                 paymentsHelper: paymentsHelperSwift,
                 preferences: preferences,

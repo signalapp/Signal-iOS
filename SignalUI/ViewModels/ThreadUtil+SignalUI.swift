@@ -118,7 +118,8 @@ extension OutgoingMessagePreparer {
             bodyRanges = nil
         }
 
-        let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
 
         assert(attachments.allSatisfy { !$0.hasError && !$0.mimeType.isEmpty })
 

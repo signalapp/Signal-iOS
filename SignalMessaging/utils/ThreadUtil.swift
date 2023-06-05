@@ -24,12 +24,13 @@ public final class ThreadUtil: Dependencies {
     }
 
     @discardableResult
-    class func enqueueMessage(outgoingMessageBuilder builder: TSOutgoingMessageBuilder,
-                              thread: TSThread) -> TSOutgoingMessage {
-
-        let message: TSOutgoingMessage = databaseStorage.read { transaction in
-            builder.expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
-            return builder.build(transaction: transaction)
+    class func enqueueMessage(
+        outgoingMessageBuilder builder: TSOutgoingMessageBuilder,
+        thread: TSThread
+    ) -> TSOutgoingMessage {
+        let message: TSOutgoingMessage = databaseStorage.read { tx in
+            applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)
+            return builder.build(transaction: tx)
         }
 
         Self.enqueueSendAsyncWrite { transaction in
@@ -42,19 +43,24 @@ public final class ThreadUtil: Dependencies {
     }
 
     @discardableResult
-    class func enqueueMessage(outgoingMessageBuilder builder: TSOutgoingMessageBuilder,
-                              thread: TSThread,
-                              transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
-
-        builder.expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
-
+    class func enqueueMessage(
+        outgoingMessageBuilder builder: TSOutgoingMessageBuilder,
+        thread: TSThread,
+        transaction: SDSAnyWriteTransaction
+    ) -> TSOutgoingMessage {
+        applyDisappearingMessagesConfiguration(to: builder, tx: transaction.asV2Read)
         let message = builder.build(transaction: transaction)
+
         message.anyInsert(transaction: transaction)
         self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
-
         if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
 
         return message
+    }
+
+    private static func applyDisappearingMessagesConfiguration(to builder: TSOutgoingMessageBuilder, tx: DBReadTransaction) {
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: builder.thread, tx: tx)
     }
 
     public class func enqueueMessagePromise(
@@ -103,7 +109,12 @@ public extension ThreadUtil {
     class func enqueueMessage(withInstalledSticker stickerInfo: StickerInfo, thread: TSThread) -> TSOutgoingMessage {
         AssertIsOnMainThread()
 
-        let message = buildOutgoingMessageForSticker(stickerInfo, thread: thread)
+        let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
+        let message = databaseStorage.read { tx in
+            applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)
+            return builder.build(transaction: tx)
+        }
+
         DispatchQueue.global().async {
             guard let stickerMetadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo) else {
                 owsFailDebug("Could not find sticker file.")
@@ -134,7 +145,12 @@ public extension ThreadUtil {
     ) -> TSOutgoingMessage {
         AssertIsOnMainThread()
 
-        let message = buildOutgoingMessageForSticker(stickerMetadata.stickerInfo, thread: thread)
+        let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
+        let message = databaseStorage.read { tx in
+            applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)
+            return builder.build(transaction: tx)
+        }
+
         let stickerDraft = MessageStickerDraft(
             info: stickerMetadata.stickerInfo,
             stickerData: stickerData,
@@ -145,142 +161,85 @@ public extension ThreadUtil {
         enqueueMessage(message, stickerDraft: stickerDraft, thread: thread)
 
         return message
-   }
-
-    private class func buildOutgoingMessageForSticker(_ stickerInfo: StickerInfo, thread: TSThread) -> TSOutgoingMessage {
-        AssertIsOnMainThread()
-
-        let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
-        let message = databaseStorage.read { transaction in
-            builder.expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
-            return builder.build(transaction: transaction)
-        }
-        return message
     }
 
     private class func enqueueMessage(_ message: TSOutgoingMessage, stickerDraft: MessageStickerDraft, thread: TSThread) {
         AssertIsOnMainThread()
-
-        enqueueSendAsyncWrite { transaction in
-            guard let messageSticker = messageStickerForStickerDraft(stickerDraft, transaction: transaction) else {
-                owsFailDebug("Couldn't send sticker.")
-                return
+        enqueueSendAsyncWrite { tx in
+            let messageSticker: MessageSticker
+            do {
+                messageSticker = try MessageSticker.buildValidatedMessageSticker(fromDraft: stickerDraft, transaction: tx)
+            } catch {
+                return owsFailDebug("Couldn't send sticker: \(error)")
             }
 
-            message.anyInsert(transaction: transaction)
-            message.update(with: messageSticker, transaction: transaction)
+            message.anyInsert(transaction: tx)
+            message.update(with: messageSticker, transaction: tx)
 
-            self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: tx)
 
-            thread.donateSendMessageIntent(for: message, transaction: transaction)
-        }
-
-    }
-
-    private class func messageStickerForStickerDraft(
-        _ stickerDraft: MessageStickerDraft,
-        transaction: SDSAnyWriteTransaction
-    ) -> MessageSticker? {
-        do {
-            let messageSticker = try MessageSticker.buildValidatedMessageSticker(fromDraft: stickerDraft, transaction: transaction)
-            return messageSticker
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return nil
+            thread.donateSendMessageIntent(for: message, transaction: tx)
         }
     }
 }
 
 // MARK: - Profile Whitelist
 
-public extension ThreadUtil {
-
-    @discardableResult
-    class func addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(
-        thread: TSThread
-    ) -> Bool {
-
-        let (hasPendingMessageRequest, needsDefaultTimerSet, defaultTimerToken) = databaseStorage.read { transaction in
-            let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
-            let needsDefaultTimerSet = GRDBThreadFinder.shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: transaction.unwrapGrdbRead)
-            let defaultTimerToken = OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction).asToken
-
-            return (hasPendingMessageRequest, needsDefaultTimerSet, defaultTimerToken)
-        }
-
-        if needsDefaultTimerSet {
-            databaseStorage.write { transaction in
-                let configuration = OWSDisappearingMessagesConfiguration.applyToken(
-                    defaultTimerToken,
-                    toThread: thread,
-                    transaction: transaction
-                )
-                let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
-                    thread: thread,
-                    configuration: configuration,
-                    createdByRemoteName: nil,
-                    createdInExistingGroup: false
-                )
-                infoMessage.anyInsert(transaction: transaction)
-            }
-        }
-
-        // If we're creating this thread or we have a pending message request,
-        // any action we trigger should share our profile.
-        if !thread.shouldThreadBeVisible || hasPendingMessageRequest {
-            OWSProfileManager.shared.addThread(toProfileWhitelist: thread)
-            return true
-        }
-
-        return false
+extension ThreadUtil {
+    private static func shouldSetUniversalTimer(for thread: TSThread, tx: SDSAnyReadTransaction) -> Bool {
+        GRDBThreadFinder.shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: tx.unwrapGrdbRead)
     }
 
-    @discardableResult
-    class func addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(
-        thread: TSThread,
-        transaction: SDSAnyWriteTransaction
-    ) -> Bool {
-        addThreadToProfileWhitelistIfEmptyOrPendingRequest(
+    private static func setUniversalTimer(for thread: TSThread, tx: SDSAnyWriteTransaction) {
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        let dmUniversalToken = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asV2Read).asToken
+        let dmResult = dmConfigurationStore.set(token: dmUniversalToken, for: .thread(thread), tx: tx.asV2Write)
+        OWSDisappearingConfigurationUpdateInfoMessage(
             thread: thread,
-            setDefaultTimerIfNecessary: true,
-            transaction: transaction
-        )
+            configuration: dmResult.newConfiguration,
+            createdByRemoteName: nil,
+            createdInExistingGroup: false
+        ).anyInsert(transaction: tx)
+    }
+
+    private static func shouldAddThreadToProfileWhitelist(_ thread: TSThread, tx: SDSAnyReadTransaction) -> Bool {
+        let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: tx.unwrapGrdbRead)
+
+        // If we're creating this thread or we have a pending message request,
+        // any action we trigger should share our profile.
+        return !thread.shouldThreadBeVisible || hasPendingMessageRequest
     }
 
     @discardableResult
-    class func addThreadToProfileWhitelistIfEmptyOrPendingRequest(
-        thread: TSThread,
-        setDefaultTimerIfNecessary: Bool,
-        transaction: SDSAnyWriteTransaction
+    public class func addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(
+        _ thread: TSThread
     ) -> Bool {
-
-        let defaultTimerToken = OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction).asToken
-        let needsDefaultTimerSest = GRDBThreadFinder.shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: transaction.unwrapGrdbRead)
-
-        if needsDefaultTimerSest && setDefaultTimerIfNecessary {
-            let configuration = OWSDisappearingMessagesConfiguration.applyToken(
-                defaultTimerToken,
-                toThread: thread,
-                transaction: transaction
-            )
-            let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
-                thread: thread,
-                configuration: configuration,
-                createdByRemoteName: nil,
-                createdInExistingGroup: false
-            )
-            infoMessage.anyInsert(transaction: transaction)
+        let (shouldSetUniversalTimer, shouldAddToProfileWhitelist) = databaseStorage.read { tx in
+            (Self.shouldSetUniversalTimer(for: thread, tx: tx), shouldAddThreadToProfileWhitelist(thread, tx: tx))
         }
-
-        let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
-        // If we're creating this thread or we have a pending message request,
-        // any action we trigger should share our profile.
-        if !thread.shouldThreadBeVisible || hasPendingMessageRequest {
-            OWSProfileManager.shared.addThread(toProfileWhitelist: thread, transaction: transaction)
-            return true
+        if shouldSetUniversalTimer {
+            databaseStorage.write { tx in setUniversalTimer(for: thread, tx: tx) }
         }
+        if shouldAddToProfileWhitelist {
+            profileManager.addThread(toProfileWhitelist: thread)
+        }
+        return shouldAddToProfileWhitelist
+    }
 
-        return false
+    @discardableResult
+    public class func addThreadToProfileWhitelistIfEmptyOrPendingRequest(
+        _ thread: TSThread,
+        setDefaultTimerIfNecessary: Bool,
+        tx: SDSAnyWriteTransaction
+    ) -> Bool {
+        if shouldSetUniversalTimer(for: thread, tx: tx) {
+            setUniversalTimer(for: thread, tx: tx)
+        }
+        let shouldAddToProfileWhitelist = shouldAddThreadToProfileWhitelist(thread, tx: tx)
+        if shouldAddToProfileWhitelist {
+            profileManager.addThread(toProfileWhitelist: thread, transaction: tx)
+        }
+        return shouldAddToProfileWhitelist
     }
 }
 

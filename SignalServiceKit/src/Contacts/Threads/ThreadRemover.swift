@@ -11,6 +11,7 @@ public protocol ThreadRemover {
 
 class ThreadRemoverImpl: ThreadRemover {
     private let databaseStorage: Shims.DatabaseStorage
+    private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     private let fullTextSearchFinder: Shims.FullTextSearchFinder
     private let interactionRemover: Shims.InteractionRemover
     private let threadAssociatedDataStore: ThreadAssociatedDataStore
@@ -20,6 +21,7 @@ class ThreadRemoverImpl: ThreadRemover {
 
     init(
         databaseStorage: Shims.DatabaseStorage,
+        disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         fullTextSearchFinder: Shims.FullTextSearchFinder,
         interactionRemover: Shims.InteractionRemover,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
@@ -28,6 +30,7 @@ class ThreadRemoverImpl: ThreadRemover {
         threadStore: ThreadStore
     ) {
         self.databaseStorage = databaseStorage
+        self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.fullTextSearchFinder = fullTextSearchFinder
         self.interactionRemover = interactionRemover
         self.threadAssociatedDataStore = threadAssociatedDataStore
@@ -39,6 +42,7 @@ class ThreadRemoverImpl: ThreadRemover {
     func remove(_ thread: TSPrivateStoryThread, tx: DBWriteTransaction) {
         databaseStorage.updateIdMapping(thread: thread, tx: tx)
         interactionRemover.removeAllInteractions(in: thread, tx: tx)
+        disappearingMessagesConfigurationStore.remove(for: thread, tx: tx)
         threadAssociatedDataStore.remove(for: thread.uniqueId, tx: tx)
         threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)
         threadStore.removeThread(thread, tx: tx)

@@ -319,8 +319,11 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
 
         Self.databaseStorage.write { transaction in
             // We updated the group, so if there was a pending message request we should accept it.
-            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: self.thread,
-                                                                                            transaction: transaction)
+            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
+                thread,
+                setDefaultTimerIfNecessary: true,
+                tx: transaction
+            )
         }
     }
 

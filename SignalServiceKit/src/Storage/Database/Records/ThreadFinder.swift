@@ -254,27 +254,26 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
     @objc
     public class func shouldSetDefaultDisappearingMessageTimer(
         thread: TSThread,
-        transaction: GRDBReadTransaction
+        transaction tx: GRDBReadTransaction
     ) -> Bool {
         // We never set the default timer for group threads. Group thread timers
         // are set during group creation.
         guard !thread.isGroupThread else { return false }
 
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+
         // Make sure the universal timer is enabled.
-        guard OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(
-            with: transaction.asAnyRead
-        ).isEnabled else {
+        guard dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asAnyRead.asV2Read).isEnabled else {
             return false
         }
 
         // Make sure there the current timer is disabled.
-        guard !thread.disappearingMessagesConfiguration(with: transaction.asAnyRead).isEnabled else {
+        guard !dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: tx.asAnyRead.asV2Read).isEnabled else {
             return false
         }
 
         // Make sure there has been no user initiated interactions.
-        return !GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
-            .hasUserInitiatedInteraction(transaction: transaction)
+        return !GRDBInteractionFinder(threadUniqueId: thread.uniqueId).hasUserInitiatedInteraction(transaction: tx)
     }
 
     @objc

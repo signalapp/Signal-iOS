@@ -62,25 +62,28 @@ extension OWSSyncContactsMessage {
                                                                       transaction: transaction)
             var isArchived: NSNumber?
             var inboxPosition: NSNumber?
-            var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration?
+            var dmConfiguration: OWSDisappearingMessagesConfiguration?
             if let contactThread = contactThread {
                 let associatedData = ThreadAssociatedData.fetchOrDefault(for: contactThread,
                                                                             ignoreMissing: false,
                                                                             transaction: transaction)
                 isArchived = NSNumber(value: associatedData.isArchived)
                 inboxPosition = AnyThreadFinder().sortIndexObjc(thread: contactThread, transaction: transaction)
-                disappearingMessagesConfiguration = contactThread.disappearingMessagesConfiguration(with: transaction)
+                let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(contactThread), tx: transaction.asV2Read)
             }
             let isBlocked = blockingManager.isAddressBlocked(signalAccount.recipientAddress, transaction: transaction)
 
-            contactsOutputStream.write(signalAccount,
-                                       recipientIdentity: recipientIdentity,
-                                       profileKeyData: profileKeyData,
-                                       contactsManager: Self.contactsManager,
-                                       disappearingMessagesConfiguration: disappearingMessagesConfiguration,
-                                       isArchived: isArchived,
-                                       inboxPosition: inboxPosition,
-                                       isBlocked: isBlocked)
+            contactsOutputStream.write(
+                signalAccount,
+                recipientIdentity: recipientIdentity,
+                profileKeyData: profileKeyData,
+                contactsManager: Self.contactsManager,
+                disappearingMessagesConfiguration: dmConfiguration,
+                isArchived: isArchived,
+                inboxPosition: inboxPosition,
+                isBlocked: isBlocked
+            )
         }
 
         closeOutputStream()

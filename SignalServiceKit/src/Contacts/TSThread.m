@@ -534,26 +534,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     return [GRDBThreadFinder hasPendingMessageRequestWithThread:self transaction:transaction];
 }
 
-#pragma mark - Disappearing Messages
-
-- (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
-    (SDSAnyReadTransaction *)transaction
-{
-    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:self transaction:transaction];
-}
-
-- (uint32_t)disappearingMessagesDurationWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-
-    OWSDisappearingMessagesConfiguration *config = [self disappearingMessagesConfigurationWithTransaction:transaction];
-
-    if (!config.isEnabled) {
-        return 0;
-    } else {
-        return config.durationSeconds;
-    }
-}
-
 #pragma mark - Archival
 
 + (BOOL)legacyIsArchivedWithLastMessageDate:(nullable NSDate *)lastMessageDate

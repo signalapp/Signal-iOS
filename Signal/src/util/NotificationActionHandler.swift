@@ -151,7 +151,8 @@ public class NotificationActionHandler: Dependencies {
                     } else {
                         // We only use the thread's DM timer for normal messages & 1:1 story
                         // replies -- group story replies last for the lifetime of the story.
-                        builder.expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
+                        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                        builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
                     }
 
                     let message = TSOutgoingMessage(outgoingMessageWithBuilder: builder, transaction: transaction)

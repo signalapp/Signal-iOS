@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Mantle
 
 @objc
 public class DisappearingMessageToken: MTLModel {
@@ -70,29 +71,5 @@ public extension OWSDisappearingMessagesConfiguration {
     @objc
     var asToken: DisappearingMessageToken {
         return DisappearingMessageToken(isEnabled: isEnabled, durationSeconds: durationSeconds)
-    }
-
-    @objc
-    @discardableResult
-    static func applyToken(_ token: DisappearingMessageToken,
-                           toThread thread: TSThread,
-                           transaction: SDSAnyWriteTransaction) -> OWSDisappearingMessagesConfiguration {
-        let oldConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: thread,
-                                                                                        transaction: transaction)
-        return oldConfiguration.applyToken(token, transaction: transaction)
-    }
-
-    @objc
-    @discardableResult
-    func applyToken(_ token: DisappearingMessageToken,
-                    transaction: SDSAnyWriteTransaction) -> OWSDisappearingMessagesConfiguration {
-        let newConfiguration: OWSDisappearingMessagesConfiguration
-        if token.isEnabled {
-            newConfiguration = self.copyAsEnabled(withDurationSeconds: token.durationSeconds)
-        } else {
-            newConfiguration = self.copy(withIsEnabled: false)
-        }
-        newConfiguration.anyUpsert(transaction: transaction)
-        return newConfiguration
     }
 }

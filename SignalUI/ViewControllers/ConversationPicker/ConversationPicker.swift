@@ -275,32 +275,34 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private func buildGroupItem(
         _ groupThread: TSGroupThread,
         isBlocked: Bool,
-        transaction: SDSAnyReadTransaction
+        transaction tx: SDSAnyReadTransaction
     ) -> GroupConversationItem {
-        let dmConfig = groupThread.disappearingMessagesConfiguration(with: transaction)
-        return GroupConversationItem(groupThreadId: groupThread.uniqueId,
-                                     isBlocked: isBlocked,
-                                     disappearingMessagesConfig: dmConfig)
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: tx.asV2Read)
+        return GroupConversationItem(
+            groupThreadId: groupThread.uniqueId,
+            isBlocked: isBlocked,
+            disappearingMessagesConfig: dmConfig
+        )
     }
 
     private func buildContactItem(
         _ address: SignalServiceAddress,
         isBlocked: Bool,
-        transaction: SDSAnyReadTransaction
+        transaction tx: SDSAnyReadTransaction
     ) -> ContactConversationItem {
-        let dmConfig = TSContactThread.getWithContactAddress(address, transaction: transaction)?.disappearingMessagesConfiguration(with: transaction)
-
-        let contactName = contactsManager.displayName(for: address,
-                                                      transaction: transaction)
-
-        let comparableName = contactsManager.comparableName(for: address,
-                                                            transaction: transaction)
-
-        return ContactConversationItem(address: address,
-                                       isBlocked: isBlocked,
-                                       disappearingMessagesConfig: dmConfig,
-                                       contactName: contactName,
-                                       comparableName: comparableName)
+        let thread = TSContactThread.getWithContactAddress(address, transaction: tx)
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        let dmConfig = thread.map { dmConfigurationStore.fetchOrBuildDefault(for: .thread($0), tx: tx.asV2Read) }
+        let contactName = contactsManager.displayName(for: address, transaction: tx)
+        let comparableName = contactsManager.comparableName(for: address, transaction: tx)
+        return ContactConversationItem(
+            address: address,
+            isBlocked: isBlocked,
+            disappearingMessagesConfig: dmConfig,
+            contactName: contactName,
+            comparableName: comparableName
+        )
     }
 
     fileprivate func buildConversationCollection() -> ConversationCollection {

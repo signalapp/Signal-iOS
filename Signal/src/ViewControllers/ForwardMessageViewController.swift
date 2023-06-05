@@ -299,8 +299,11 @@ extension ForwardMessageViewController {
             try Self.databaseStorage.write { transaction in
                 for recipientThread in outgoingMessageRecipientThreads {
                     // We're sending a message to this thread, approve any pending message request
-                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: recipientThread,
-                                                                                                    transaction: transaction)
+                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
+                        recipientThread,
+                        setDefaultTimerIfNecessary: true,
+                        tx: transaction
+                    )
                 }
 
                 func hasRenderableContent(interaction: TSInteraction) -> Bool {

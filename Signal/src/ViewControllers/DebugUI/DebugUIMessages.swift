@@ -3127,8 +3127,9 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         // Disappearing Messages
 
         if let durationSeconds = OWSDisappearingMessagesConfiguration.presetDurationsSeconds().first?.uint32Value {
-            let disappearingMessagesConfiguration = thread
-                .disappearingMessagesConfiguration(with: transaction)
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            let disappearingMessagesConfiguration = dmConfigurationStore
+                .fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
                 .copyAsEnabled(withDurationSeconds: durationSeconds)
             results.append(OWSDisappearingConfigurationUpdateInfoMessage(
                 thread: thread,
@@ -3145,8 +3146,9 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         }
 
         if let durationSeconds = OWSDisappearingMessagesConfiguration.presetDurationsSeconds().last?.uint32Value {
-            let disappearingMessagesConfiguration = thread
-                .disappearingMessagesConfiguration(with: transaction)
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            let disappearingMessagesConfiguration = dmConfigurationStore
+                .fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
                 .copyAsEnabled(withDurationSeconds: durationSeconds)
             results.append(OWSDisappearingConfigurationUpdateInfoMessage(
                 thread: thread,
@@ -3156,8 +3158,9 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             ))
         }
 
-        let disappearingMessagesConfiguration = thread
-            .disappearingMessagesConfiguration(with: transaction)
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        let disappearingMessagesConfiguration = dmConfigurationStore
+            .fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
             .copy(withIsEnabled: false)
         results.append(OWSDisappearingConfigurationUpdateInfoMessage(
             thread: thread,
@@ -3548,7 +3551,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         Logger.info("deleteRandomMessages: \(count)")
 
         let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
-        var uniqueIds = try! interactionFinder.fetchUniqueIds(
+        let uniqueIds = try! interactionFinder.fetchUniqueIds(
             filter: .newest,
             excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
             limit: 100_000,
@@ -3624,8 +3627,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let messages: [TSOutgoingMessage] = (1...count).map { _ in
             let text = randomText()
-            let configuration = thread.disappearingMessagesConfiguration(with: transaction)
-            let expiresInSeconds = configuration.isEnabled ? configuration.durationSeconds : 0
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
             let message = TSOutgoingMessage(in: thread, messageBody: text, attachmentId: nil, expiresInSeconds: expiresInSeconds)
             Logger.info("insertAndDeleteNewOutgoingMessages timestamp: \(message.timestamp)")
             return message
@@ -3645,8 +3648,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let messages: [TSOutgoingMessage] = (1...count).map { _ in
             let text = randomText()
-            let configuration = thread.disappearingMessagesConfiguration(with: transaction)
-            let expiresInSeconds = configuration.isEnabled ? configuration.durationSeconds : 0
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
             let message = TSOutgoingMessage(in: thread, messageBody: text, attachmentId: nil, expiresInSeconds: expiresInSeconds)
             Logger.info("resurrectNewOutgoingMessages1 timestamp: \(message.timestamp)")
             return message
@@ -3674,9 +3677,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let messages: [TSOutgoingMessage] = (1...count).map { _ in
             let text = randomText()
-            let configuration = thread.disappearingMessagesConfiguration(with: transaction)
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: text)
-            messageBuilder.apply(configuration: configuration)
+            messageBuilder.expiresInSeconds = expiresInSeconds
             let message = messageBuilder.build(transaction: transaction)
             Logger.info("resurrectNewOutgoingMessages2 timestamp: \(message.timestamp)")
             return message

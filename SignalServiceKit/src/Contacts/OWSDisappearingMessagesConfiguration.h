@@ -7,8 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define OWSDisappearingMessagesConfigurationDefaultExpirationDuration 0
-
 @class SDSAnyReadTransaction;
 @class TSThread;
 
@@ -45,16 +43,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:durationSeconds:ena
 @property (nonatomic, readonly) uint32_t durationSeconds;
 @property (nonatomic, readonly) NSString *durationString;
 
-// These methods are the only correct way to load configurations
-// for a given thread; do not use anyFetchWithUniqueId.
-+ (instancetype)fetchOrBuildDefaultWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
-
-+ (instancetype)fetchOrBuildDefaultUniversalConfigurationWithTransaction:(SDSAnyReadTransaction *)transaction;
-
 + (NSArray<NSNumber *> *)presetDurationsSeconds;
 + (uint32_t)maxDurationSeconds;
-
-- (BOOL)hasChangedWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 // It's critical that we only modify copies.
 // Otherwise any modifications will be made to the

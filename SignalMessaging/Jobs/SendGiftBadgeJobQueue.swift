@@ -359,29 +359,35 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
 // MARK: - Outgoing message preparer
 
 extension OutgoingMessagePreparer {
-    fileprivate convenience init(giftBadgeReceiptCredentialPresentation: ReceiptCredentialPresentation,
-                                 thread: TSThread,
-                                 transaction: SDSAnyReadTransaction) {
+    fileprivate convenience init(
+        giftBadgeReceiptCredentialPresentation: ReceiptCredentialPresentation,
+        thread: TSThread,
+        transaction tx: SDSAnyReadTransaction
+    ) {
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         self.init(
             builder: TSOutgoingMessageBuilder(
                 thread: thread,
-                expiresInSeconds: thread.disappearingMessagesDuration(with: transaction),
+                expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read),
                 giftBadge: OWSGiftBadge(redemptionCredential: Data(giftBadgeReceiptCredentialPresentation.serialize()))
             ),
-            transaction: transaction
+            transaction: tx
         )
     }
 
-    fileprivate convenience init(messageBody: String,
-                                 thread: TSThread,
-                                 transaction: SDSAnyReadTransaction) {
+    fileprivate convenience init(
+        messageBody: String,
+        thread: TSThread,
+        transaction tx: SDSAnyReadTransaction
+    ) {
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         self.init(
             builder: TSOutgoingMessageBuilder(
                 thread: thread,
                 messageBody: messageBody,
-                expiresInSeconds: thread.disappearingMessagesDuration(with: transaction)
+                expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read)
             ),
-            transaction: transaction
+            transaction: tx
         )
     }
 

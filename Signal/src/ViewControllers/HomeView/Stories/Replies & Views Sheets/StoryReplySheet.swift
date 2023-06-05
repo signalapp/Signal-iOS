@@ -52,10 +52,15 @@ extension StoryReplySheet {
         let shouldUseThreadDMTimer = !thread.isGroupThread
 
         ThreadUtil.enqueueSendAsyncWrite { [weak self] transaction in
-            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(thread: thread, setDefaultTimerIfNecessary: shouldUseThreadDMTimer, transaction: transaction)
+            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
+                thread,
+                setDefaultTimerIfNecessary: shouldUseThreadDMTimer,
+                tx: transaction
+            )
 
             if shouldUseThreadDMTimer {
-                builder.expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
+                let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
             }
 
             let message = builder.build(transaction: transaction)

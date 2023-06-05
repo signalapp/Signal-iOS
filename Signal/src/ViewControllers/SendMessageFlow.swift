@@ -417,7 +417,7 @@ extension SendMessageFlow {
                 try enqueueBlock(thread)
 
                 // We're sending a message to this thread, approve any pending message request
-                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
+                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
             }
             return threads
         }

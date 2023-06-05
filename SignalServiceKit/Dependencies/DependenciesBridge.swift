@@ -37,6 +37,7 @@ public class DependenciesBridge {
     public let schedulers: Schedulers
 
     public let db: DB
+    public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     public let keyValueStoreFactory: KeyValueStoreFactory
     let threadAssociatedDataStore: ThreadAssociatedDataStore
     public let threadRemover: ThreadRemover
@@ -239,8 +240,11 @@ public class DependenciesBridge {
             signalServiceAddressCache: signalServiceAddressCache
         )
 
+        self.disappearingMessagesConfigurationStore = DisappearingMessagesConfigurationStoreImpl()
+
         self.threadRemover = ThreadRemoverImpl(
             databaseStorage: ThreadRemoverImpl.Wrappers.DatabaseStorage(databaseStorage),
+            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             fullTextSearchFinder: ThreadRemoverImpl.Wrappers.FullTextSearchFinder(),
             interactionRemover: ThreadRemoverImpl.Wrappers.InteractionRemover(),
             threadAssociatedDataStore: self.threadAssociatedDataStore,

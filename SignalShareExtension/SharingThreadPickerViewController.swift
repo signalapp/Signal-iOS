@@ -266,7 +266,8 @@ extension SharingThreadPickerViewController {
                     return self.databaseStorage.write { transaction in
                         let builder = TSOutgoingMessageBuilder(thread: thread)
                         builder.contactShare = contactShare.dbRecord
-                        builder.expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
+                        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                        builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
                         let message = builder.build(transaction: transaction)
                         message.anyInsert(transaction: transaction)
                         self.outgoingMessages.append(message)
@@ -395,7 +396,7 @@ extension SharingThreadPickerViewController {
         }.done { threads in
             for thread in threads {
                 // We're sending a message to this thread, approve any pending message request
-                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
+                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
             }
         }
     }
@@ -412,7 +413,7 @@ extension SharingThreadPickerViewController {
                 sendPromises.append(enqueueBlock(thread))
 
                 // We're sending a message to this thread, approve any pending message request
-                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
+                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
             }
             return Promise.when(fulfilled: sendPromises)
         }

@@ -488,61 +488,51 @@ public class GroupManager: NSObject {
     }
 
     private struct UpdateDMConfigurationResult {
-        enum Action: UInt {
-            case updated
-            case unchanged
-        }
-
-        let action: Action
-        let oldDisappearingMessageToken: DisappearingMessageToken?
-        let newDisappearingMessageToken: DisappearingMessageToken
+        let oldConfiguration: OWSDisappearingMessagesConfiguration
         let newConfiguration: OWSDisappearingMessagesConfiguration
     }
 
-    private static func updateDisappearingMessagesInDatabaseAndCreateMessages(token newToken: DisappearingMessageToken,
-                                                                              thread: TSThread,
-                                                                              shouldInsertInfoMessage: Bool,
-                                                                              groupUpdateSourceAddress: SignalServiceAddress?,
-                                                                              transaction: SDSAnyWriteTransaction) -> UpdateDMConfigurationResult {
+    private static func updateDisappearingMessagesInDatabaseAndCreateMessages(
+        token newToken: DisappearingMessageToken,
+        thread: TSThread,
+        shouldInsertInfoMessage: Bool,
+        groupUpdateSourceAddress: SignalServiceAddress?,
+        transaction: SDSAnyWriteTransaction
+    ) -> UpdateDMConfigurationResult {
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        let result = dmConfigurationStore.set(token: newToken, for: .thread(thread), tx: transaction.asV2Write)
 
-        let oldConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: thread, transaction: transaction)
-        let oldToken = oldConfiguration.asToken
-        let hasUnsavedChanges = oldToken != newToken
-        guard hasUnsavedChanges else {
-            // Skip redundant updates.
-            return UpdateDMConfigurationResult(action: .unchanged,
-                                               oldDisappearingMessageToken: oldToken,
-                                               newDisappearingMessageToken: newToken,
-                                               newConfiguration: oldConfiguration)
-        }
-        let newConfiguration = oldConfiguration.applyToken(newToken, transaction: transaction)
-
-        if shouldInsertInfoMessage {
-            var remoteContactName: String?
-            if let groupUpdateSourceAddress = groupUpdateSourceAddress,
-               groupUpdateSourceAddress.isValid,
-               !groupUpdateSourceAddress.isLocalAddress {
-                remoteContactName = contactsManager.displayName(for: groupUpdateSourceAddress, transaction: transaction)
+        // Skip redundant updates.
+        if result.newConfiguration != result.oldConfiguration {
+            if shouldInsertInfoMessage {
+                var remoteContactName: String?
+                if let groupUpdateSourceAddress, groupUpdateSourceAddress.isValid, !groupUpdateSourceAddress.isLocalAddress {
+                    remoteContactName = contactsManager.displayName(for: groupUpdateSourceAddress, transaction: transaction)
+                }
+                let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
+                    thread: thread,
+                    configuration: result.newConfiguration,
+                    createdByRemoteName: remoteContactName,
+                    createdInExistingGroup: false
+                )
+                infoMessage.anyInsert(transaction: transaction)
             }
-            let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(thread: thread,
-                                                                            configuration: newConfiguration,
-                                                                            createdByRemoteName: remoteContactName,
-                                                                            createdInExistingGroup: false)
-            infoMessage.anyInsert(transaction: transaction)
+
+            databaseStorage.touch(thread: thread, shouldReindex: false, transaction: transaction)
         }
 
-        databaseStorage.touch(thread: thread, shouldReindex: false, transaction: transaction)
-
-        return UpdateDMConfigurationResult(action: .updated,
-                                           oldDisappearingMessageToken: oldToken,
-                                           newDisappearingMessageToken: newToken,
-                                           newConfiguration: newConfiguration)
+        return UpdateDMConfigurationResult(
+            oldConfiguration: result.oldConfiguration,
+            newConfiguration: result.newConfiguration
+        )
     }
 
-    private static func sendDisappearingMessagesConfigurationMessage(updateResult: UpdateDMConfigurationResult,
-                                                                     thread: TSThread,
-                                                                     transaction: SDSAnyWriteTransaction) {
-        guard updateResult.action == .updated else {
+    private static func sendDisappearingMessagesConfigurationMessage(
+        updateResult: UpdateDMConfigurationResult,
+        thread: TSThread,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard updateResult.newConfiguration != updateResult.oldConfiguration else {
             // The update was redundant, don't send an update message.
             return
         }
@@ -908,10 +898,12 @@ public class GroupManager: NSObject {
         }
 
         return databaseStorage.write(.promise) { transaction in
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+
             let message = OutgoingGroupUpdateMessage(
                 in: thread,
                 groupMetaMessage: .update,
-                expiresInSeconds: thread.disappearingMessagesDuration(with: transaction),
+                expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read),
                 changeActionsProtoData: changeActionsProtoData,
                 additionalRecipients: Self.invitedMembers(in: thread),
                 transaction: transaction
@@ -926,15 +918,16 @@ public class GroupManager: NSObject {
             owsFail("[GV1] Should be impossible to send V1 group messages!")
         }
 
-        return databaseStorage.write(.promise) { transaction in
+        return databaseStorage.write(.promise) { tx in
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
             let message = OutgoingGroupUpdateMessage(
                 in: thread,
                 groupMetaMessage: .new,
-                expiresInSeconds: thread.disappearingMessagesDuration(with: transaction),
+                expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read),
                 additionalRecipients: Self.invitedMembers(in: thread),
-                transaction: transaction
+                transaction: tx
             )
-            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: tx)
         }
     }
 
@@ -1022,12 +1015,6 @@ public class GroupManager: NSObject {
 
         notifyStorageServiceOfInsertedGroup(groupModel: groupModel,
                                             transaction: transaction)
-
-        if DebugFlags.internalLogging {
-            let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread,
-                                                                                           transaction: transaction)
-            owsAssertDebug(dmConfiguration.asToken == newDisappearingMessageToken)
-        }
 
         return groupThread
     }
@@ -1138,12 +1125,9 @@ public class GroupManager: NSObject {
                                                                                    groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                    transaction: transaction)
         } else {
-            let oldConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread, transaction: transaction)
-            let oldToken = oldConfiguration.asToken
-            updateDMResult = UpdateDMConfigurationResult(action: .unchanged,
-                                                         oldDisappearingMessageToken: oldToken,
-                                                         newDisappearingMessageToken: oldToken,
-                                                         newConfiguration: oldConfiguration)
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read)
+            updateDMResult = UpdateDMConfigurationResult(oldConfiguration: dmConfiguration, newConfiguration: dmConfiguration)
         }
 
         // Step 3: If any member was removed, make sure we rotate our sender key session
@@ -1201,9 +1185,20 @@ public class GroupManager: NSObject {
             return UpsertGroupResult(action: action, groupThread: groupThread)
         }()
 
-        if updateDMResult.action == .unchanged &&
-            (updateThreadResult.action == .unchanged ||
-                updateThreadResult.action == .updatedWithoutUserFacingChanges) {
+        let hadUserFacingChanges: Bool = {
+            if updateDMResult.newConfiguration != updateDMResult.oldConfiguration {
+                return true
+            }
+            switch updateThreadResult.action {
+            case .inserted, .updatedWithUserFacingChanges:
+                return true
+            case .unchanged, .updatedWithoutUserFacingChanges:
+                break
+            }
+            return false
+        }()
+
+        guard hadUserFacingChanges else {
             // Neither DM config nor thread model had user-facing changes.
             return updateThreadResult
         }
@@ -1214,20 +1209,14 @@ public class GroupManager: NSObject {
                 groupThread: groupThread,
                 oldGroupModel: oldGroupModel,
                 newGroupModel: newGroupModel,
-                oldDisappearingMessageToken: updateDMResult.oldDisappearingMessageToken,
-                newDisappearingMessageToken: updateDMResult.newDisappearingMessageToken,
+                oldDisappearingMessageToken: updateDMResult.oldConfiguration.asToken,
+                newDisappearingMessageToken: updateDMResult.newConfiguration.asToken,
                 newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
                 groupUpdateSourceAddress: groupUpdateSourceAddress,
                 transaction: transaction
             )
         default:
             break
-        }
-
-        if DebugFlags.internalLogging {
-            let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread,
-                                                                                           transaction: transaction)
-            owsAssertDebug(dmConfiguration.asToken == updateDMResult.newDisappearingMessageToken)
         }
 
         return UpsertGroupResult(action: .updatedWithUserFacingChanges, groupThread: groupThread)

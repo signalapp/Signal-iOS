@@ -950,6 +950,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
     private let localIdentifiers: LocalIdentifiers
     private let authedAccount: AuthedAccount
+    private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let legacyChangePhoneNumber: LegacyChangePhoneNumber
     private let paymentsHelper: PaymentsHelperSwift
     private let preferences: Preferences
@@ -967,6 +968,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     init(
         localIdentifiers: LocalIdentifiers,
         authedAccount: AuthedAccount,
+        dmConfigurationStore: DisappearingMessagesConfigurationStore,
         legacyChangePhoneNumber: LegacyChangePhoneNumber,
         paymentsHelper: PaymentsHelperSwift,
         preferences: Preferences,
@@ -983,6 +985,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     ) {
         self.localIdentifiers = localIdentifiers
         self.authedAccount = authedAccount
+        self.dmConfigurationStore = dmConfigurationStore
         self.legacyChangePhoneNumber = legacyChangePhoneNumber
         self.paymentsHelper = paymentsHelper
         self.preferences = preferences
@@ -1090,8 +1093,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             builder.setUnknownFields(unknownFields)
         }
 
-        let dmConfiguration = OWSDisappearingMessagesConfiguration
-            .fetchOrBuildDefaultUniversalConfiguration(with: transaction)
+        let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: transaction.asV2Read)
         builder.setUniversalExpireTimer(dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0)
 
         if profileManager.localProfileIsPniCapable() {
@@ -1298,12 +1300,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             )
         }
 
-        let localConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)
-        let localExpireToken = localConfiguration.asToken
         let remoteExpireToken = DisappearingMessageToken.token(forProtoExpireTimer: record.universalExpireTimer)
-        if localExpireToken != remoteExpireToken {
-            localConfiguration.applyToken(remoteExpireToken, transaction: transaction)
-        }
+        dmConfigurationStore.set(token: remoteExpireToken, for: .universal, tx: transaction.asV2Write)
 
         if !record.preferredReactionEmoji.isEmpty {
             // Treat new preferred emoji as a full source of truth (if not empty). Note

@@ -211,7 +211,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
             updateDescription: "Update disappearing messages configuration",
             updateBlock: { () -> Promise<Void> in
                 // We're sending a message, so we're accepting any pending message request.
-                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
+                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
 
                 return GroupManager.localUpdateDisappearingMessages(thread: thread,
                                                                     disappearingMessageToken: configuration.asToken)

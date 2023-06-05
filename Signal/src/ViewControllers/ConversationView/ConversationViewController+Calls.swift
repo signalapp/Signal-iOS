@@ -50,7 +50,7 @@ public extension ConversationViewController {
         removeGroupCallTooltip()
 
         // We initiated a call, so if there was a pending message request we should accept it.
-        ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
+        ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
 
         GroupCallViewController.presentLobby(thread: groupThread)
     }
@@ -97,7 +97,7 @@ public extension ConversationViewController {
         }
 
         // We initiated a call, so if there was a pending message request we should accept it.
-        ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
+        ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
 
         callService.initiateCall(thread: contactThread, isVideo: withVideo)
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)

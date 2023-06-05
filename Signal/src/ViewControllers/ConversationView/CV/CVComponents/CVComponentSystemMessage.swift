@@ -905,9 +905,10 @@ extension CVComponentSystemMessage {
     static func buildDefaultDisappearingMessageTimerState(
         interaction: TSInteraction,
         threadViewModel: ThreadViewModel,
-        transaction: SDSAnyReadTransaction
+        transaction tx: SDSAnyReadTransaction
     ) -> CVComponentState.SystemMessage {
-        let configuration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        let configuration = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asV2Read)
 
         let labelText = NSMutableAttributedString()
         labelText.appendImage(

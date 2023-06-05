@@ -144,13 +144,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 - (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(removeAllThreadInteractions(transaction:));
 
-
-#pragma mark Disappearing Messages
-
-- (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
-    (SDSAnyReadTransaction *)transaction;
-- (uint32_t)disappearingMessagesDurationWithTransaction:(SDSAnyReadTransaction *)transaction;
-
 /**
  *  Sets the draft of a thread. Typically called when leaving a conversation view.
  *

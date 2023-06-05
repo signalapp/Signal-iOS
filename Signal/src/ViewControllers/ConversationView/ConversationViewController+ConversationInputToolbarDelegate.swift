@@ -98,7 +98,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
 
-        let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
+        let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
 
         let message = Self.databaseStorage.read { transaction in
             ThreadUtil.enqueueMessage(body: messageBody,
@@ -347,7 +347,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 }
             }
 
-            let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: self.thread)
+            let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
             let message = Self.databaseStorage.read { transaction in
                 ThreadUtil.enqueueMessage(body: messageBody,
@@ -646,7 +646,7 @@ extension ConversationViewController: LocationPickerDelegate {
 
             guard let self = self else { return }
 
-            let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: self.thread)
+            let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
             let message = Self.databaseStorage.read { transaction in
                 ThreadUtil.enqueueMessage(body: MessageBody(text: location.messageText,

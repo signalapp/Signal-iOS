@@ -25,8 +25,9 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         return helper.nameTextField
     }
 
-    private lazy var disappearingMessagesConfiguration = databaseStorage.read { transaction in
-        OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)
+    private lazy var disappearingMessagesConfiguration = databaseStorage.read { tx in
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        return dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asV2Read)
     }
 
     required init(newGroupState: NewGroupState) {

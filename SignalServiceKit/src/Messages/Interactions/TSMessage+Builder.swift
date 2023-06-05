@@ -117,13 +117,6 @@ public class TSMessageBuilder: NSObject {
                                 messageBody: messageBody)
     }
 
-    @objc(applyDisappearingMessagesConfiguration:)
-    public func apply(configuration: OWSDisappearingMessagesConfiguration) {
-        expiresInSeconds = (configuration.isEnabled
-            ? configuration.durationSeconds
-            : 0)
-    }
-
     #if TESTABLE_BUILD
     @objc
     public func addAttachmentId(_ attachmentId: String) {

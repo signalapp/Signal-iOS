@@ -69,9 +69,9 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         self.spoilerReveal = spoilerReveal
         groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
 
-        disappearingMessagesConfiguration = Self.databaseStorage.read { transaction in
-            OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: threadViewModel.threadRecord,
-                                                                     transaction: transaction)
+        disappearingMessagesConfiguration = Self.databaseStorage.read { tx in
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            return dmConfigurationStore.fetchOrBuildDefault(for: .thread(threadViewModel.threadRecord), tx: tx.asV2Read)
         }
 
         super.init()

@@ -348,12 +348,13 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         shouldForceRefreshProfileKeyCredentials: Bool = false,
         forceFailOn400: Bool = false
     ) -> Promise<(GroupsV2BuiltGroupChange, HTTPResponse)> {
-        self.databaseStorage.read(.promise) { transaction throws -> (TSGroupThread, DisappearingMessageToken) in
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+        self.databaseStorage.read(.promise) { tx throws -> (TSGroupThread, DisappearingMessageToken) in
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) else {
                 throw OWSAssertionError("Thread does not exist.")
             }
 
-            let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread, transaction: transaction)
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: tx.asV2Read)
 
             return (groupThread, dmConfiguration.asToken)
         }.then(on: DispatchQueue.global()) { (groupThread, dmToken) throws -> Promise<GroupsV2BuiltGroupChange> in
@@ -2110,17 +2111,19 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
                 groupThread.update(with: newGroupModel, transaction: transaction)
 
-                let dmConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
-                let disappearingMessageToken = dmConfiguration.asToken
+                let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
                 let localAddress = SignalServiceAddress(uuid: localUuid)
-                GroupManager.insertGroupUpdateInfoMessage(groupThread: groupThread,
-                                                          oldGroupModel: oldGroupModel,
-                                                          newGroupModel: newGroupModel,
-                                                          oldDisappearingMessageToken: disappearingMessageToken,
-                                                          newDisappearingMessageToken: disappearingMessageToken,
-                                                          newlyLearnedPniToAciAssociations: [:],
-                                                          groupUpdateSourceAddress: localAddress,
-                                                          transaction: transaction)
+                GroupManager.insertGroupUpdateInfoMessage(
+                    groupThread: groupThread,
+                    oldGroupModel: oldGroupModel,
+                    newGroupModel: newGroupModel,
+                    oldDisappearingMessageToken: dmToken,
+                    newDisappearingMessageToken: dmToken,
+                    newlyLearnedPniToAciAssociations: [:],
+                    groupUpdateSourceAddress: localAddress,
+                    transaction: transaction
+                )
 
                 return groupThread
             } else {
@@ -2156,17 +2159,19 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                                                 transaction: transaction)
                 groupThread.anyInsert(transaction: transaction)
 
-                let dmConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
-                let disappearingMessageToken = dmConfiguration.asToken
+                let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
                 let localAddress = SignalServiceAddress(uuid: localUuid)
-                GroupManager.insertGroupUpdateInfoMessage(groupThread: groupThread,
-                                                          oldGroupModel: nil,
-                                                          newGroupModel: groupModel,
-                                                          oldDisappearingMessageToken: nil,
-                                                          newDisappearingMessageToken: disappearingMessageToken,
-                                                          newlyLearnedPniToAciAssociations: [:],
-                                                          groupUpdateSourceAddress: localAddress,
-                                                          transaction: transaction)
+                GroupManager.insertGroupUpdateInfoMessage(
+                    groupThread: groupThread,
+                    oldGroupModel: nil,
+                    newGroupModel: groupModel,
+                    oldDisappearingMessageToken: nil,
+                    newDisappearingMessageToken: dmToken,
+                    newlyLearnedPniToAciAssociations: [:],
+                    groupUpdateSourceAddress: localAddress,
+                    transaction: transaction
+                )
 
                 return groupThread
             }
@@ -2305,17 +2310,19 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
             groupThread.update(with: newGroupModel, transaction: transaction)
 
-            let dmConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
-            let disappearingMessageToken = dmConfiguration.asToken
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
             let localAddress = SignalServiceAddress(uuid: localUuid)
-            GroupManager.insertGroupUpdateInfoMessage(groupThread: groupThread,
-                                                      oldGroupModel: oldGroupModel,
-                                                      newGroupModel: newGroupModel,
-                                                      oldDisappearingMessageToken: disappearingMessageToken,
-                                                      newDisappearingMessageToken: disappearingMessageToken,
-                                                      newlyLearnedPniToAciAssociations: [:],
-                                                      groupUpdateSourceAddress: localAddress,
-                                                      transaction: transaction)
+            GroupManager.insertGroupUpdateInfoMessage(
+                groupThread: groupThread,
+                oldGroupModel: oldGroupModel,
+                newGroupModel: newGroupModel,
+                oldDisappearingMessageToken: dmToken,
+                newDisappearingMessageToken: dmToken,
+                newlyLearnedPniToAciAssociations: [:],
+                groupUpdateSourceAddress: localAddress,
+                transaction: transaction
+            )
 
             return groupThread
         }
@@ -2457,17 +2464,19 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
                 groupThread.update(with: newGroupModel, transaction: transaction)
 
-                let dmConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
-                let disappearingMessageToken = dmConfiguration.asToken
+                let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
                 // groupUpdateSourceAddress is nil; we don't know who did the update.
-                GroupManager.insertGroupUpdateInfoMessage(groupThread: groupThread,
-                                                          oldGroupModel: oldGroupModel,
-                                                          newGroupModel: newGroupModel,
-                                                          oldDisappearingMessageToken: disappearingMessageToken,
-                                                          newDisappearingMessageToken: disappearingMessageToken,
-                                                          newlyLearnedPniToAciAssociations: [:],
-                                                          groupUpdateSourceAddress: nil,
-                                                          transaction: transaction)
+                GroupManager.insertGroupUpdateInfoMessage(
+                    groupThread: groupThread,
+                    oldGroupModel: oldGroupModel,
+                    newGroupModel: newGroupModel,
+                    oldDisappearingMessageToken: dmToken,
+                    newDisappearingMessageToken: dmToken,
+                    newlyLearnedPniToAciAssociations: [:],
+                    groupUpdateSourceAddress: nil,
+                    transaction: transaction
+                )
             }
         }.catch { (error: Error) in
             owsFailDebug("Error: \(error)")

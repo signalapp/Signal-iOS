@@ -98,8 +98,9 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             "SETTINGS_DISAPPEARING_MESSAGES_FOOTER",
             comment: "Explanation for the 'disappearing messages' privacy settings."
         )
-        let disappearingMessagesConfiguration = databaseStorage.read { transaction in
-            OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)
+        let disappearingMessagesConfiguration = databaseStorage.read { tx in
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            return dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asV2Read)
         }
         disappearingMessagesSection.add(.init(
             customCellBlock: { [weak self] in

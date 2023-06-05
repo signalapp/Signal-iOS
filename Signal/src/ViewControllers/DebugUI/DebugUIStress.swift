@@ -145,12 +145,6 @@ class DebugUIStress: DebugUIPage, Dependencies {
         // Groups
 
         if let groupThread = thread as? TSGroupThread {
-            items.append(OWSTableItem(title: "Clone as v1 group", actionBlock: {
-                DebugUIStress.cloneAsV1Group(groupThread)
-            }))
-            items.append(OWSTableItem(title: "Clone as v2 group", actionBlock: {
-                DebugUIStress.cloneAsV2Group(groupThread)
-            }))
             items.append(OWSTableItem(title: "Copy members to another group", actionBlock: {
                 guard let fromViewController = UIApplication.shared.frontmostViewController else { return }
                 DebugUIStress.copyToAnotherGroup(groupThread, fromViewController: fromViewController)
@@ -245,79 +239,6 @@ class DebugUIStress: DebugUIPage, Dependencies {
         ).done { groupThread in
             SignalApp.shared.presentConversationForThread(groupThread, animated: true)
         }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    private static func nameForClonedGroup(_ groupThread: TSGroupThread) -> String {
-        guard let groupName = groupThread.groupModel.groupName else {
-            return "Cloned Group"
-        }
-        return groupName + " Copy"
-    }
-
-    // Creates a new group (by cloning the current group) without informing the,
-    // other members. This can be used to test "group info requests", etc.
-    private static func cloneAsV1Group(_ oldGroupThread: TSGroupThread) {
-        do {
-            let groupName = Self.nameForClonedGroup(oldGroupThread) + " (v1)"
-            let newGroupThread = try self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
-                let newGroupThread = try GroupManager.createGroupForTests(members: oldGroupThread.groupModel.groupMembers,
-                                                                          name: groupName,
-                                                                          avatarData: oldGroupThread.groupModel.avatarData,
-                                                                          groupId: nil,
-                                                                          groupsVersion: .V1,
-                                                                          transaction: transaction)
-
-                let oldDMConfig = oldGroupThread.disappearingMessagesConfiguration(with: transaction)
-                _ = OWSDisappearingMessagesConfiguration.applyToken(oldDMConfig.asToken,
-                                                                    toThread: newGroupThread,
-                                                                    transaction: transaction)
-
-                return newGroupThread
-            }
-            assert(newGroupThread.groupModel.groupsVersion == .V1)
-
-            SignalApp.shared.presentConversationForThread(newGroupThread, animated: true)
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    // Creates a new group (by cloning the current group) without informing the,
-    // other members. This can be used to test "group info requests", etc.
-    private static func cloneAsV2Group(_ oldGroupThread: TSGroupThread) {
-        firstly { () -> Promise<TSGroupThread> in
-            let members: [SignalServiceAddress] = oldGroupThread.groupModel.groupMembers.filter { address in
-                GroupManager.doesUserSupportGroupsV2(address: address)
-            }
-            for member in members {
-                Logger.verbose("Member: \(member)")
-            }
-            var groupName = Self.nameForClonedGroup(oldGroupThread) + " (v2)"
-            groupName = groupName.trimToGlyphCount(GroupManager.maxGroupNameGlyphCount)
-
-            return GroupManager.localCreateNewGroup(members: members,
-                                                    groupId: nil,
-                                                    name: groupName,
-                                                    avatarData: oldGroupThread.groupModel.avatarData,
-                                                    disappearingMessageToken: .disabledToken,
-                                                    newGroupSeed: nil,
-                                                    shouldSendMessage: false)
-        }.done { (newGroupThread) in
-            assert(newGroupThread.groupModel.groupsVersion == .V2)
-
-            self.databaseStorage.write { transaction in
-                let oldDMConfig = oldGroupThread.disappearingMessagesConfiguration(with: transaction)
-                _ = OWSDisappearingMessagesConfiguration.applyToken(oldDMConfig.asToken,
-                                                                    toThread: newGroupThread,
-                                                                    transaction: transaction)
-            }
-
-            Logger.info("Complete.")
-
-            SignalApp.shared.presentConversationForThread(newGroupThread, animated: true)
-        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")
         }
     }

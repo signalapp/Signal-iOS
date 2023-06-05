@@ -1048,7 +1048,8 @@ public extension PaymentsImpl {
             let paymentRequest = TSPaymentRequest(requestUuidString: requestUuidString,
                                                   paymentAmount: paymentAmount,
                                                   memoMessage: memoMessage)
-            let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
+            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
             let message = OWSOutgoingPaymentMessage(thread: thread,
                                                     paymentCancellation: nil,
                                                     paymentNotification: nil,
@@ -1083,7 +1084,8 @@ public extension PaymentsImpl {
         let paymentNotification = TSPaymentNotification(memoMessage: memoMessage,
                                                         requestUuidString: requestUuidString,
                                                         mcReceiptData: mcReceiptData)
-        let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
         let message = OWSOutgoingPaymentMessage(thread: thread,
                                                 paymentCancellation: nil,
                                                 paymentNotification: paymentNotification,
@@ -1110,7 +1112,8 @@ public extension PaymentsImpl {
         let thread = TSContactThread.getOrCreateThread(withContactAddress: address,
                                                        transaction: transaction)
         let paymentCancellation = TSPaymentCancellation(requestUuidString: requestUuidString)
-        let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+        let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
         let message = OWSOutgoingPaymentMessage(thread: thread,
                                                 paymentCancellation: paymentCancellation,
                                                 paymentNotification: nil,
