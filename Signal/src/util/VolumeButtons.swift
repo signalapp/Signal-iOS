@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import MediaPlayer
+import SignalServiceKit
 
 protocol VolumeButtonObserver: AnyObject {
     func didPressVolumeButton(with identifier: VolumeButtons.Identifier)

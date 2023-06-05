@@ -6,6 +6,7 @@
 import XCTest
 
 @testable import Signal
+@testable import SignalServiceKit
 
 private extension Date {
     /// Initialize a date using a compressed notation: `Date(compressedDate: 2022_04_28)`

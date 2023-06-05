@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import PassKit
 import SignalMessaging
+import SignalUI
 
 extension DonationViewsUtil {
     /// Utilities for sending gift donations.

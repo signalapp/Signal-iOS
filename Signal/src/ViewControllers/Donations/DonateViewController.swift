@@ -3,12 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import PassKit
 import Lottie
-import SignalUI
-import SignalServiceKit
+import PassKit
 import SignalMessaging
+import SignalServiceKit
+import SignalUI
 
 class DonateViewController: OWSViewController, OWSNavigationChildController {
     private static func canMakeNewDonations(

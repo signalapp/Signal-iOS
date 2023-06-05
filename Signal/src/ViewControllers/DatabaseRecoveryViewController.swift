@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     private let setupSskEnvironment: () -> Guarantee<SetupResult>

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import Lottie
+import SignalUI
 
 class AnimatedProgressView: UIView {
     var hidesWhenStopped = true

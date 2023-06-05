@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import AuthenticationServices
+import SignalCoreKit
 
 extension ASWebAuthenticationSession {
     /// Convert an ``ASWebAuthenticationSession`` completion's arguments into a single ``Result``.

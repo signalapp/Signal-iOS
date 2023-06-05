@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import SafariServices
+import SignalUI
 
 protocol Deprecated_RegistrationPinAttemptsExhaustedViewDelegate: AnyObject {
     var hasPendingRestoration: Bool { get }

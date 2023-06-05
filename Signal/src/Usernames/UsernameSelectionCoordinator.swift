@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import SignalUI
 
 class UsernameSelectionCoordinator {
     struct Context {

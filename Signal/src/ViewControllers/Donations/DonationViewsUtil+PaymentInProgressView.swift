@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
+import SignalUI
 
 extension DonationViewsUtil {
     public static func wrapPromiseInProgressView<T>(

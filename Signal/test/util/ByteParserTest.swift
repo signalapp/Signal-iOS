@@ -4,7 +4,9 @@
 //
 
 import XCTest
+
 @testable import Signal
+@testable import SignalServiceKit
 
 class ByteParserTest: XCTestCase {
     func testGetShort_Empty() {

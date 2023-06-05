@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 enum CreditAndDebitCards {
     /// The type of the credit card as useful for Signal's purposes.

@@ -6,7 +6,7 @@
 import Contacts
 import Lottie
 import SignalMessaging
-import UIKit
+import SignalUI
 
 public class Deprecated_OnboardingPermissionsViewController: Deprecated_OnboardingBaseViewController {
 

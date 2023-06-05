@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import SignalUI
 
 @objc
 class ExperienceUpgradeManager: NSObject {

@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Photos
 import SignalMessaging
 import SignalServiceKit
-import UIKit
+import SignalUI
 
 protocol StoryContextMenuDelegate: AnyObject {
 

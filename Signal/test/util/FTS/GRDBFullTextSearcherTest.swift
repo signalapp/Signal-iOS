@@ -8,6 +8,7 @@ import Contacts
 @testable import Signal
 @testable import SignalMessaging
 @testable import SignalServiceKit
+@testable import SignalUI
 
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {

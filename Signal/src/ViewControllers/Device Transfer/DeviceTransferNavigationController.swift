@@ -4,6 +4,7 @@
 //
 
 import SignalCoreKit
+import SignalUI
 
 class DeviceTransferNavigationController: UINavigationController {
 

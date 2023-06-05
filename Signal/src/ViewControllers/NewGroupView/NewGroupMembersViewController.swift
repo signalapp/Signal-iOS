@@ -4,6 +4,7 @@
 //
 
 import SignalMessaging
+import SignalUI
 
 // TODO: Rename to NewGroupViewController; remove old view.
 public class NewGroupMembersViewController: BaseGroupMemberViewController {

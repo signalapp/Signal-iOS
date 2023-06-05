@@ -6,6 +6,7 @@
 import AVFoundation
 import SignalMessaging
 import SignalRingRTC
+import SignalUI
 
 // All Observer methods will be invoked from the main thread.
 protocol CallServiceObserver: AnyObject {

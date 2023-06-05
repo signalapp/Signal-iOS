@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import SignalUI
 
 protocol AddGroupMembersViewControllerDelegate: AnyObject {
     func addGroupMembersViewDidUpdate()

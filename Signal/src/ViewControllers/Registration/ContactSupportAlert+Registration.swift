@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
 
 public enum ContactSupportRegistrationPINMode: String, Equatable {
     case v1 = "Signal PIN - iOS (V1 PIN)"

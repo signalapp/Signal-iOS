@@ -4,7 +4,7 @@
 //
 
 import SignalMessaging
-import UIKit
+import SignalUI
 
 #if targetEnvironment(simulator)
 import GameController

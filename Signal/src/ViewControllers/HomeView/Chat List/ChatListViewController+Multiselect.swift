@@ -4,7 +4,7 @@
 //
 
 import SignalMessaging
-import UIKit
+import SignalUI
 
 @objc
 extension ChatListViewController {

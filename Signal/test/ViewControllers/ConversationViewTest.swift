@@ -4,7 +4,9 @@
 //
 
 import XCTest
+
 @testable import Signal
+@testable import SignalUI
 
 class ConversationViewTest: SignalBaseTest {
     func testConversationStyleComparison() throws {

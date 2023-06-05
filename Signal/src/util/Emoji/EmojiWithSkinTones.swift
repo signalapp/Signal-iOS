@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
+
 public struct EmojiWithSkinTones: Hashable {
     let baseEmoji: Emoji
     let skinTones: [Emoji.SkinTone]?

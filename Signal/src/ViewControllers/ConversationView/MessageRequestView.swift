@@ -5,6 +5,7 @@
 
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 protocol MessageRequestDelegate: AnyObject {
     func messageRequestViewDidTapBlock(mode: MessageRequestMode)

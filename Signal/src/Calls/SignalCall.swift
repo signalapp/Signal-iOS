@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalMessaging
 import SignalRingRTC
 import SignalServiceKit
-import SignalMessaging
+import SignalUI
 
 // All Observer methods will be invoked from the main thread.
 public protocol CallObserver: AnyObject {

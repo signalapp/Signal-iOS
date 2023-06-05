@@ -4,7 +4,7 @@
 //
 
 import Lottie
-import UIKit
+import SignalUI
 
 class AudioMessageView: ManualStackView {
 

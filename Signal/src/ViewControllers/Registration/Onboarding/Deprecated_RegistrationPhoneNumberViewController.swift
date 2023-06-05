@@ -4,7 +4,7 @@
 //
 
 import SignalMessaging
-import UIKit
+import SignalUI
 
 public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_OnboardingBaseViewController {
 

@@ -4,7 +4,10 @@
 //
 
 import XCTest
+
 @testable import Signal
+@testable import SignalCoreKit
+@testable import SignalUI
 
 class QRCodeParserTest: XCTestCase {
     func testParse() {

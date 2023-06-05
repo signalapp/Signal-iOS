@@ -4,7 +4,7 @@
 //
 
 import SignalCoreKit
-import UIKit
+import SignalServiceKit
 
 /// This class exists to be a drop-in replacement for the Context-menu related APIs available on UIButton
 /// in iOS 14 and above.

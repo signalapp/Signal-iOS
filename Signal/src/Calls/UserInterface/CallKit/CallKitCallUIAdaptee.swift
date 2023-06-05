@@ -3,12 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
-import CallKit
 import AVFoundation
-import SignalServiceKit
+import CallKit
 import SignalMessaging
+import SignalServiceKit
+import SignalUI
 
 /**
  * Connects user interface to the CallService using CallKit.

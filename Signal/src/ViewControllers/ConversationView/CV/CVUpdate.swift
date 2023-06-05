@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 // The outcome of a CVC load is an update that describes how to 
 // transition from the last render state to the new render state.

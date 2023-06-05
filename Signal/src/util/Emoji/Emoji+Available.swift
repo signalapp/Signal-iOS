@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 extension Emoji {
     private static let availableCache = AtomicDictionary<Emoji, Bool>()

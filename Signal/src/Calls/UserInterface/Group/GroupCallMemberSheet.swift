@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalRingRTC
 import SignalMessaging
+import SignalUI
 
 class GroupCallMemberSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [tableView] }

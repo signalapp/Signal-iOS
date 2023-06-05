@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import ContactsUI
+import SignalUI
 
 protocol NameCollisionResolutionDelegate: AnyObject {
     // For message requests, we should piggyback on the same action sheet that's presented

@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import AVFoundation
+import SignalServiceKit
 
 class LocalVideoView: UIView {
     private let localVideoCapturePreview = RTCCameraPreviewView()

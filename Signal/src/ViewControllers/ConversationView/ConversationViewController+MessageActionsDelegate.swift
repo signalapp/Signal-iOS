@@ -4,6 +4,8 @@
 //
 
 import AVFAudio
+import SignalServiceKit
+import SignalUI
 
 extension ConversationViewController: MessageActionsDelegate {
     func messageActionsShowDetailsForItem(_ itemViewModel: CVItemViewModelImpl) {

@@ -4,10 +4,12 @@
 //
 
 import XCTest
-@testable import SignalServiceKit
-@testable import SignalMessaging
-@testable import Signal
+
 @testable import MobileCoin
+@testable import Signal
+@testable import SignalMessaging
+@testable import SignalServiceKit
+@testable import SignalUI
 
 class PaymentsTest: SignalBaseTest {
     override func setUp() {

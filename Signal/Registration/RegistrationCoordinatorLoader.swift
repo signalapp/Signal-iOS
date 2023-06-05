@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 /// Loads a `RegistrationCoordinator`.
 /// This class exists separately from the coordinator itself so that we separate

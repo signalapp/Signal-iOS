@@ -4,8 +4,8 @@
 //
 
 import BonMot
-import Foundation
 import SignalMessaging
+import SignalUI
 
 protocol UsernameSelectionDelegate: AnyObject {
     func usernameDidChange(to newValue: String?)

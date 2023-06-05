@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalRingRTC
+import SignalServiceKit
 
 protocol GroupCallVideoOverflowDelegate: AnyObject {
     var firstOverflowMemberIndex: Int { get }

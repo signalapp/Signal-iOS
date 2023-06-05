@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 /// Container for manager (business logic) objects that view controllers (or, better yet,
 /// view models) interact with to query data and apply updates.

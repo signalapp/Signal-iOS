@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
+import SignalUI
 
 public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
     case unknown

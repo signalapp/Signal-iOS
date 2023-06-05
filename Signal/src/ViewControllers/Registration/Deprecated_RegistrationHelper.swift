@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalServiceKit
 import SignalMessaging
+import SignalUI
 
 public protocol Deprecated_RegistrationHelperDelegate: AnyObject {
     func registrationRequestVerificationDidSucceed(fromViewController: UIViewController)

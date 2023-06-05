@@ -4,7 +4,7 @@
 //
 
 import Lottie
-import UIKit
+import SignalUI
 
 // TODO: Convert to manual layout.
 class AudioWaveformProgressView: UIView {

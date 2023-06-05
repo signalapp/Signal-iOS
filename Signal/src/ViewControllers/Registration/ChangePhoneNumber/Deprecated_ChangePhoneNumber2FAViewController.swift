@@ -6,7 +6,7 @@
 import Logging
 import SignalCoreKit
 import SignalMessaging
-import UIKit
+import SignalUI
 
 public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_RegistrationBaseViewController {
 

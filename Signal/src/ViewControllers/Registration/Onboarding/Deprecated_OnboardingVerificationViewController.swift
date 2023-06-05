@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import SignalCoreKit
+import SignalUI
 
 // Most of the logic for the verification views resides in RegistrationVerificationViewController.
 public class Deprecated_OnboardingVerificationViewController: Deprecated_OnboardingBaseViewController {

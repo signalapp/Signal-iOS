@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import MultipeerConnectivity
 import SignalMessaging
+import SignalUI
 
 public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_OnboardingBaseViewController {
 

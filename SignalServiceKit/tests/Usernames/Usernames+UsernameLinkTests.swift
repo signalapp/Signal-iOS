@@ -4,7 +4,9 @@
 //
 
 import XCTest
+
 @testable import Signal
+@testable import SignalServiceKit
 
 class UsernamesUsernameLinkTests: XCTestCase {
     private typealias Username = String

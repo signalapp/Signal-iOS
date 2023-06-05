@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
-import UIKit
+import SignalServiceKit
+import SignalUI
 
 protocol GroupAttributesViewControllerDelegate: AnyObject {
     func groupAttributesDidUpdate()

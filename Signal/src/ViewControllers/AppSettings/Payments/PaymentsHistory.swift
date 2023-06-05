@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 public struct PaymentsHistoryItem {
     let paymentModel: TSPaymentModel

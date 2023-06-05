@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 // Accommodates remaining scrolled to the same "apparent" position when new content is inserted
 // into the top of a collectionView. There are multiple ways to solve this problem, but this

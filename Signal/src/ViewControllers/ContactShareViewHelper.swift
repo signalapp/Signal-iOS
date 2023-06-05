@@ -7,6 +7,7 @@ import ContactsUI
 import MessageUI
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 public protocol ContactShareViewHelperDelegate: AnyObject {
     func didCreateOrEditContact()

@@ -4,7 +4,9 @@
 //
 
 import XCTest
-import Signal
+
+@testable import Signal
+@testable import SignalServiceKit
 
 class PhoneNumberValidatorTest: SignalBaseTest {
 

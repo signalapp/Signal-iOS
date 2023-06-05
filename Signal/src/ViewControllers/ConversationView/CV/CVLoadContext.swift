@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
+import SignalUI
 
 // Conversation view loads have been decomposed into a series
 // of discrete phases. There's a bunch of common state used

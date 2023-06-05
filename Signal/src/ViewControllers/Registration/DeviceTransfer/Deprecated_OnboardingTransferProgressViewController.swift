@@ -5,7 +5,7 @@
 
 import MultipeerConnectivity
 import SignalMessaging
-import UIKit
+import SignalUI
 
 public class Deprecated_OnboardingTransferProgressViewController: Deprecated_OnboardingBaseViewController {
 

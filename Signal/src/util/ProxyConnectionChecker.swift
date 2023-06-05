@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 enum ProxyConnectionChecker: Dependencies {
     static func checkConnectionAndNotify(completion: @escaping (Bool) -> Void) {

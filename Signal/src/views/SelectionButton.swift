@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 /// A checkmark in a circle to indicate an item (typically in a table view or collection view) is
 /// selected.

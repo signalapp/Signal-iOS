@@ -6,6 +6,7 @@
 import Contacts
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 #if USE_DEBUG_UI
 

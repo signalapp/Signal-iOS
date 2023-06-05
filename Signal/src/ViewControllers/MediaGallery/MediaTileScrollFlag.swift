@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
 // The view next to the scroll indicator that shows the currently visible month.
 class MediaTileScrollFlag: UIView {
