@@ -780,30 +780,20 @@ extension MediaPageViewController: MediaPresentationContextProvider {
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
-        defer {
-            UIGraphicsEndImageContext()
-        }
+        guard let snapshotView = view.snapshotView(afterScreenUpdates: true) else { return nil }
 
-        // Snapshot the entire view and then apply masking to only show top and bottom panels.
-        UIGraphicsBeginImageContextWithOptions(view.bounds.size, false, 0)
-        view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
-        guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
-            return nil
-        }
-
-        let snapshot = UIImageView(image: image)
-        snapshot.frame = view.bounds
+        // Apply masking to only show top and bottom panels.
         let maskLayer = CAShapeLayer()
-        maskLayer.frame = snapshot.layer.bounds
-        snapshot.layer.mask = maskLayer
+        maskLayer.frame = snapshotView.layer.bounds
         let path = UIBezierPath()
         path.append(UIBezierPath(rect: topPanel.frame))
         path.append(UIBezierPath(rect: bottomMediaPanel.frame))
         maskLayer.path = path.cgPath
+        snapshotView.layer.mask = maskLayer
 
-        let presentationFrame = coordinateSpace.convert(snapshot.frame, from: view.superview!)
+        let presentationFrame = coordinateSpace.convert(snapshotView.frame, from: view.superview!)
 
-        return (snapshot, presentationFrame)
+        return (snapshotView, presentationFrame)
     }
 }
 
