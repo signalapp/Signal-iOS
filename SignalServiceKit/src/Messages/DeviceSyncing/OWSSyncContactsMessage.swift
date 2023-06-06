@@ -9,7 +9,7 @@ import ContactsUI
 extension OWSSyncContactsMessage {
 
     @objc
-    public func buildPlainTextAttachmentFile(transaction: SDSAnyReadTransaction) -> URL? {
+    public func buildPlainTextAttachmentFile(transaction tx: SDSAnyReadTransaction) -> URL? {
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("Missing localAddress.")
             return nil
@@ -52,38 +52,34 @@ extension OWSSyncContactsMessage {
 
         let contactsOutputStream = OWSContactsOutputStream(outputStream: outputStream)
         // We use batching to place an upper bound on memory usage.
-        Batching.enumerate(signalAccounts, batchSize: 12) { signalAccount in
-            let recipientIdentity: OWSRecipientIdentity? = Self.identityManager.recipientIdentity(for: signalAccount.recipientAddress,
-                                                                                                     transaction: transaction)
-            let profileKeyData: Data? = Self.profileManager.profileKeyData(for: signalAccount.recipientAddress,
-                                                                              transaction: transaction)
+        for signalAccount in signalAccounts {
+            autoreleasepool {
+                let recipientIdentity: OWSRecipientIdentity? = Self.identityManager.recipientIdentity(for: signalAccount.recipientAddress, transaction: tx)
+                let profileKeyData: Data? = Self.profileManager.profileKeyData(for: signalAccount.recipientAddress, transaction: tx)
+                let contactThread = TSContactThread.getWithContactAddress(signalAccount.recipientAddress, transaction: tx)
+                var isArchived: NSNumber?
+                var inboxPosition: NSNumber?
+                var dmConfiguration: OWSDisappearingMessagesConfiguration?
+                if let contactThread {
+                    let associatedData = ThreadAssociatedData.fetchOrDefault(for: contactThread, ignoreMissing: false, transaction: tx)
+                    isArchived = NSNumber(value: associatedData.isArchived)
+                    inboxPosition = AnyThreadFinder().sortIndexObjc(thread: contactThread, transaction: tx)
+                    let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                    dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(contactThread), tx: tx.asV2Read)
+                }
+                let isBlocked = blockingManager.isAddressBlocked(signalAccount.recipientAddress, transaction: tx)
 
-            let contactThread = TSContactThread.getWithContactAddress(signalAccount.recipientAddress,
-                                                                      transaction: transaction)
-            var isArchived: NSNumber?
-            var inboxPosition: NSNumber?
-            var dmConfiguration: OWSDisappearingMessagesConfiguration?
-            if let contactThread = contactThread {
-                let associatedData = ThreadAssociatedData.fetchOrDefault(for: contactThread,
-                                                                            ignoreMissing: false,
-                                                                            transaction: transaction)
-                isArchived = NSNumber(value: associatedData.isArchived)
-                inboxPosition = AnyThreadFinder().sortIndexObjc(thread: contactThread, transaction: transaction)
-                let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(contactThread), tx: transaction.asV2Read)
+                contactsOutputStream.write(
+                    signalAccount,
+                    recipientIdentity: recipientIdentity,
+                    profileKeyData: profileKeyData,
+                    contactsManager: Self.contactsManager,
+                    disappearingMessagesConfiguration: dmConfiguration,
+                    isArchived: isArchived,
+                    inboxPosition: inboxPosition,
+                    isBlocked: isBlocked
+                )
             }
-            let isBlocked = blockingManager.isAddressBlocked(signalAccount.recipientAddress, transaction: transaction)
-
-            contactsOutputStream.write(
-                signalAccount,
-                recipientIdentity: recipientIdentity,
-                profileKeyData: profileKeyData,
-                contactsManager: Self.contactsManager,
-                disappearingMessagesConfiguration: dmConfiguration,
-                isArchived: isArchived,
-                inboxPosition: inboxPosition,
-                isBlocked: isBlocked
-            )
         }
 
         closeOutputStream()

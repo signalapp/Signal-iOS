@@ -638,7 +638,7 @@ extension OWSContactsManager {
     var intersectionQueue: DispatchQueue { Self.intersectionQueue }
 
     private static func buildContactAvatarHash(contact: Contact) -> Data? {
-        func buildHash() -> Data? {
+        return autoreleasepool {
             guard let cnContactId: String = contact.cnContactId else {
                 owsFailDebug("Missing cnContactId.")
                 return nil
@@ -651,13 +651,6 @@ extension OWSContactsManager {
                 return nil
             }
             return contactAvatarHash
-        }
-        if CurrentAppContext().isMainApp {
-            return buildHash()
-        } else {
-            return autoreleasepool {
-                buildHash()
-            }
         }
     }
 
@@ -674,11 +667,9 @@ extension OWSContactsManager {
             }
             // TODO: Confirm ordering.
             signalRecipients.sort { $0.address.compare($1.address) == .orderedAscending }
-            // We use Batching since contact avatars could be large.
-            Batching.enumerate(signalRecipients, batchSize: 12) { signalRecipient in
+            for signalRecipient in signalRecipients {
                 if seenAddresses.contains(signalRecipient.address) {
-                    Logger.verbose("Ignoring duplicate contact: \(signalRecipient.address), \(contact.fullName)")
-                    return
+                    continue
                 }
                 seenAddresses.insert(signalRecipient.address)
 
