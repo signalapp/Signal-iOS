@@ -83,6 +83,7 @@ public class VideoPlayer: Dependencies {
     }
 
     public func seek(to time: CMTime) {
+        owsAssertBeta(avPlayer.rate == 0 || avPlayer.rate == 1)
         // Seek with a tolerance (or precision) of a hundredth of a second.
         let tolerance = CMTime(seconds: 0.01, preferredTimescale: Self.preferredTimescale)
         avPlayer.seek(to: time, toleranceBefore: tolerance, toleranceAfter: tolerance)
@@ -98,7 +99,34 @@ public class VideoPlayer: Dependencies {
         seek(to: newTime)
     }
 
-    public var isPlaying: Bool { avPlayer.timeControlStatus == .playing }
+    private var playbackRateToRestore: Float?
+
+    // Specify negative rate to rewind.
+    public func changePlaybackRate(to rate: Float) {
+        owsAssertBeta(abs(rate) > 1)
+        playbackRateToRestore = avPlayer.rate
+        if rate < 0 {
+            avPlayer.isMuted = true
+        }
+        avPlayer.rate = rate
+    }
+
+    public func restorePlaybackRate() {
+        avPlayer.isMuted = false
+        if let playbackRateToRestore {
+            avPlayer.rate = playbackRateToRestore
+            self.playbackRateToRestore = nil
+        }
+    }
+
+    public var isPlaying: Bool {
+        if let playbackRateToRestore {
+            // For UI consistency's sake, if currently playing at non-default speed
+            // return `true` if rewind/fast forward started when player was playing.
+            return playbackRateToRestore == 1
+        }
+        return avPlayer.timeControlStatus == .playing
+    }
 
     public var currentTimeSeconds: Double {
         return avPlayer.currentTime().seconds
@@ -110,6 +138,7 @@ public class VideoPlayer: Dependencies {
 
     @objc
     private func playerItemDidPlayToCompletion(_ notification: Notification) {
+        playbackRateToRestore = nil
         delegate?.videoPlayerDidPlayToCompletion(self)
         if shouldLoop {
             avPlayer.seek(to: CMTime.zero)

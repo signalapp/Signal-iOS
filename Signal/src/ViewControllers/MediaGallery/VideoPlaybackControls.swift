@@ -9,14 +9,32 @@ import SignalServiceKit
 import SignalUI
 
 protocol VideoPlaybackControlViewDelegate: AnyObject {
+    // Single Actions
     func videoPlaybackControlViewDidTapPlayPause(_ videoPlaybackControlView: VideoPlaybackControlView)
-    func videoPlaybackControlViewDidTapRewind(_ videoPlaybackControlView: VideoPlaybackControlView)
-    func videoPlaybackControlViewDidTapFastForward(_ videoPlaybackControlView: VideoPlaybackControlView)
+    func videoPlaybackControlViewDidTapRewind(_ videoPlaybackControlView: VideoPlaybackControlView, duration: TimeInterval)
+    func videoPlaybackControlViewDidTapFastForward(_ videoPlaybackControlView: VideoPlaybackControlView, duration: TimeInterval)
+
+    // Continuous Actions
+    func videoPlaybackControlViewDidStartRewind(_ videoPlaybackControlView: VideoPlaybackControlView)
+    func videoPlaybackControlViewDidStartFastForward(_ videoPlaybackControlView: VideoPlaybackControlView)
+    func videoPlaybackControlViewDidStopRewindOrFastForward(_ videoPlaybackControlView: VideoPlaybackControlView)
 }
 
 class VideoPlaybackControlView: UIView {
 
     // MARK: Subviews
+
+    private func titleForRewindAndFFBUttons() -> NSAttributedString {
+        let fontSize: CGFloat = isLandscapeLayout ? 7 : 9
+        let string = NumberFormatter.localizedString(from: Int(Self.rewindAndFastForwardSkipDuration) as NSNumber, number: .decimal)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .center
+        return NSAttributedString(string: string, attributes: [
+            .kern: -1,
+            .font: UIFont.monospacedDigitSystemFont(ofSize: fontSize, weight: .bold),
+            .paragraphStyle: paragraphStyle
+        ])
+    }
 
     private lazy var buttonPlay: UIButton = {
         let button = UIButton(type: .system)
@@ -33,17 +51,23 @@ class VideoPlaybackControlView: UIView {
     }()
 
     private lazy var buttonRewind: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(.init(imageLiteralResourceName: "video_rewind_15"), for: .normal)
-        button.addTarget(self, action: #selector(didTapRewind), for: .touchUpInside)
+        let button = RewindAndFFButton(type: .system)
+        button.setImage(.init(imageLiteralResourceName: "video_rewind"), for: .normal)
+        button.setAttributedTitle(titleForRewindAndFFBUttons(), for: .normal)
+        button.addTarget(self, action: #selector(didTapRewind), for: .touchDown)
+        button.addTarget(self, action: #selector(didReleaseRewind), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didCancelRewindOrFF), for: [.touchCancel, .touchUpOutside])
         button.isHidden = true
         return button
     }()
 
     private lazy var buttonFastForward: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(.init(imageLiteralResourceName: "video_forward_15"), for: .normal)
-        button.addTarget(self, action: #selector(didTapFastForward), for: .touchUpInside)
+        let button = RewindAndFFButton(type: .system)
+        button.setImage(.init(imageLiteralResourceName: "video_forward"), for: .normal)
+        button.setAttributedTitle(titleForRewindAndFFBUttons(), for: .normal)
+        button.addTarget(self, action: #selector(didTapFastForward), for: .touchDown)
+        button.addTarget(self, action: #selector(didReleaseFastForward), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didCancelRewindOrFF), for: [.touchCancel, .touchUpOutside])
         button.isHidden = true
         return button
     }()
@@ -62,6 +86,10 @@ class VideoPlaybackControlView: UIView {
             button.contentEdgeInsets = UIEdgeInsets(margin: 8)
             addSubview(button)
         }
+
+        // Default state for Play / Pause
+        buttonPlay.isHidden = isVideoPlaying
+        buttonPause.isHidden = !isVideoPlaying
 
         // Permanent layout constraints.
         addConstraints([
@@ -103,6 +131,9 @@ class VideoPlaybackControlView: UIView {
     var isLandscapeLayout: Bool = false {
         didSet {
             guard oldValue != isLandscapeLayout else { return }
+            // Update buttons with larger or smaller font.
+            buttonRewind.setAttributedTitle(titleForRewindAndFFBUttons(), for: .normal)
+            buttonFastForward.setAttributedTitle(titleForRewindAndFFBUttons(), for: .normal)
             setNeedsUpdateConstraints()
         }
     }
@@ -130,10 +161,70 @@ class VideoPlaybackControlView: UIView {
         }
     }
 
+    private var isVideoPlaying = false
+    private var animatePlayPauseTransition = false
+    private var playPauseButtonAnimator: UIViewPropertyAnimator?
+
     func updateStatusWithPlayer(_ videoPlayer: VideoPlayer) {
         let isPlaying = videoPlayer.isPlaying
-        buttonPlay.isHidden = isPlaying
-        buttonPause.isHidden = !isPlaying
+
+        guard isVideoPlaying != isPlaying else { return }
+
+        isVideoPlaying = isPlaying
+
+        // Only user-initiated playback state changes cause animated Play/Pause transition.
+        guard animatePlayPauseTransition else {
+            // Do nothing if there is an active animation in progress.
+            // Playback status will be refreshed upon animation completion.
+            if playPauseButtonAnimator == nil {
+                buttonPlay.isHidden = isPlaying
+                buttonPause.isHidden = !isPlaying
+            }
+            return
+        }
+
+        // User might tap Play/Pause again before animation completes.
+        // In that case previous animations are stopped and are replaced by new animations.
+        if let playPauseButtonAnimator {
+            playPauseButtonAnimator.stopAnimation(true)
+            self.playPauseButtonAnimator = nil
+        }
+
+        let fromButton: UIButton // button that is currently visible, reflecting opposite to `isPlaying`
+        let toButton: UIButton   // button that should reflect `isPlaying` upon animation completion
+        if isPlaying {
+            fromButton = buttonPlay
+            toButton = buttonPause
+        } else {
+            fromButton = buttonPause
+            toButton = buttonPlay
+        }
+        // Prepare initial state for appearing button
+        toButton.isHidden = false
+        toButton.alpha = 0
+        toButton.transform = .scale(0.1).rotated(by: -0.5 * .pi)
+
+        let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 0.7, springResponse: 0.3)
+        animator.addAnimations {
+            toButton.alpha = 1
+            toButton.transform = .identity
+        }
+        animator.addAnimations {
+            fromButton.alpha = 0
+            fromButton.transform = .scale(0.1).rotated(by: 0.5 * .pi)
+        }
+        animator.addCompletion { [weak self] _ in
+            fromButton.isHidden = true
+            fromButton.alpha = 1
+            fromButton.transform = .identity
+
+            self?.playPauseButtonAnimator = nil
+            self?.updateStatusWithPlayer(videoPlayer)
+        }
+        animator.startAnimation()
+
+        playPauseButtonAnimator = animator
+        animatePlayPauseTransition = false
     }
 
     // MARK: Helpers
@@ -181,26 +272,141 @@ class VideoPlaybackControlView: UIView {
         }
     }
 
+    private var tapAndHoldTimer: Timer?
+    private var isRewindInProgress = false
+    private var isFastForwardInProgress = false
+    private static let rewindAndFastForwardSkipDuration: TimeInterval = 15
+
+    private func startContinuousRewind() {
+        guard !isRewindInProgress, !isFastForwardInProgress else { return }
+
+        let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 0.7, springResponse: 0.3)
+        animator.addAnimations {
+            self.buttonRewind.imageView?.transform = .rotate(-0.5 * .pi)
+        }
+        animator.startAnimation()
+
+        isRewindInProgress = true
+        delegate?.videoPlaybackControlViewDidStartRewind(self)
+    }
+
+    private func startContinuousFastForward() {
+        guard !isRewindInProgress, !isFastForwardInProgress else { return }
+
+        let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 0.7, springResponse: 0.3)
+        animator.addAnimations {
+            self.buttonFastForward.imageView?.transform = .rotate(0.5 * .pi)
+        }
+        animator.startAnimation()
+
+        isFastForwardInProgress = true
+        delegate?.videoPlaybackControlViewDidStartFastForward(self)
+    }
+
+    private func stopContinuousRewindOrFastForward() {
+        guard isRewindInProgress || isFastForwardInProgress else { return }
+
+        let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 0.7, springResponse: 0.3)
+        if isRewindInProgress {
+            animator.addAnimations {
+                self.buttonRewind.imageView?.transform = .identity
+            }
+            isRewindInProgress = false
+        }
+        if isFastForwardInProgress {
+            animator.addAnimations {
+                self.buttonFastForward.imageView?.transform = .identity
+            }
+            isFastForwardInProgress = false
+        }
+        animator.startAnimation()
+
+        delegate?.videoPlaybackControlViewDidStopRewindOrFastForward(self)
+    }
+
     // MARK: Actions
 
     @objc
     private func didTapPlay() {
+        guard !isRewindInProgress, !isFastForwardInProgress else { return }
+
+        animatePlayPauseTransition = true
         delegate?.videoPlaybackControlViewDidTapPlayPause(self)
     }
 
     @objc
     private func didTapPause() {
+        guard !isRewindInProgress, !isFastForwardInProgress else { return }
+
+        animatePlayPauseTransition = true
         delegate?.videoPlaybackControlViewDidTapPlayPause(self)
     }
 
     @objc
     private func didTapRewind() {
-        delegate?.videoPlaybackControlViewDidTapRewind(self)
+        guard !isRewindInProgress, !isFastForwardInProgress, tapAndHoldTimer == nil else { return }
+
+        tapAndHoldTimer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false, block: { [weak self] timer in
+            guard let self else { return }
+            self.startContinuousRewind()
+            self.tapAndHoldTimer = nil
+        })
+    }
+
+    @objc
+    private func didReleaseRewind() {
+        // Timer not yet fired - single tap.
+        if let tapAndHoldTimer {
+            tapAndHoldTimer.invalidate()
+            self.tapAndHoldTimer = nil
+            delegate?.videoPlaybackControlViewDidTapRewind(self, duration: Self.rewindAndFastForwardSkipDuration)
+            return
+        }
+        stopContinuousRewindOrFastForward()
     }
 
     @objc
     private func didTapFastForward() {
-        delegate?.videoPlaybackControlViewDidTapFastForward(self)
+        guard !isRewindInProgress, !isFastForwardInProgress, tapAndHoldTimer == nil else { return }
+
+        tapAndHoldTimer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: false, block: { [weak self] timer in
+            guard let self else { return }
+            self.startContinuousFastForward()
+            self.tapAndHoldTimer = nil
+        })
+    }
+
+    @objc
+    private func didReleaseFastForward() {
+        // Timer not yet fired - single tap.
+        if let tapAndHoldTimer {
+            tapAndHoldTimer.invalidate()
+            self.tapAndHoldTimer = nil
+            delegate?.videoPlaybackControlViewDidTapFastForward(self, duration: Self.rewindAndFastForwardSkipDuration)
+            return
+        }
+        stopContinuousRewindOrFastForward()
+    }
+
+    @objc
+    private func didCancelRewindOrFF() {
+        if let tapAndHoldTimer {
+            tapAndHoldTimer.invalidate()
+            self.tapAndHoldTimer = nil
+        }
+        stopContinuousRewindOrFastForward()
+    }
+
+    private class RewindAndFFButton: UIButton {
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            if let titleLabel, let imageView {
+                imageView.center = bounds.center
+                titleLabel.bounds = imageView.bounds
+                titleLabel.center = imageView.center.offsetBy(dx: -1)
+            }
+        }
     }
 }
 

@@ -531,18 +531,35 @@ extension MediaControlPanelView: VideoPlaybackControlViewDelegate {
         } else {
             videoPlayer.play()
         }
-        videoPlaybackControlView.updateStatusWithPlayer(videoPlayer)
     }
 
-    func videoPlaybackControlViewDidTapRewind(_ videoPlaybackControlView: VideoPlaybackControlView) {
+    func videoPlaybackControlViewDidTapRewind(_ videoPlaybackControlView: VideoPlaybackControlView, duration: TimeInterval) {
         guard let videoPlayer else { return }
 
-        videoPlayer.rewind(15)
+        videoPlayer.rewind(duration)
     }
 
-    func videoPlaybackControlViewDidTapFastForward(_ videoPlaybackControlView: VideoPlaybackControlView) {
+    func videoPlaybackControlViewDidTapFastForward(_ videoPlaybackControlView: VideoPlaybackControlView, duration: TimeInterval) {
         guard let videoPlayer else { return }
 
-        videoPlayer.fastForward(15)
+        videoPlayer.fastForward(duration)
+    }
+
+    func videoPlaybackControlViewDidStartRewind(_ videoPlaybackControlView: VideoPlaybackControlView) {
+        guard let videoPlayer else { return }
+
+        videoPlayer.changePlaybackRate(to: -2)
+    }
+
+    func videoPlaybackControlViewDidStartFastForward(_ videoPlaybackControlView: VideoPlaybackControlView) {
+        guard let videoPlayer else { return }
+
+        videoPlayer.changePlaybackRate(to: 2)
+    }
+
+    func videoPlaybackControlViewDidStopRewindOrFastForward(_ videoPlaybackControlView: VideoPlaybackControlView) {
+        guard let videoPlayer else { return }
+
+        videoPlayer.restorePlaybackRate()
     }
 }
