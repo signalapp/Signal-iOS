@@ -1276,7 +1276,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             // Give a little leeway to start another request, after
             // which if nothing is happening we can close the connection.
             self.scheduler.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                if self?.requestQueue.isEmpty == true {
+                if self?.requestQueue.isEmpty == true, self?.isMakingRequest != true {
                     self?.disconnect(SVR.SVRError.assertion)
                 }
             }

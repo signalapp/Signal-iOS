@@ -1447,18 +1447,34 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         exitConfiguration: self.pinCodeEntryExitConfiguration()
                     )))
                 case .backupMissing:
-                    // If we are unable to talk to SVR, it got wiped and we can't
-                    // recover. Give it all up and wipe our SVR info.
-                    self.wipeInMemoryStateToPreventSVRPathAttempts()
-                    self.inMemoryState.pinFromUser = nil
-                    self.db.write { tx in
-                        self.updatePersistedState(tx) {
-                            $0.hasGivenUpTryingToRestoreWithSVR = true
+
+                    switch credential {
+                    case .svr2Only:
+                        // If we failed with just svr2, and we have kbs credentials,
+                        // try again but with kbs credentials available.
+                        guard
+                            let kbsAuthCredentialCandidates = self.inMemoryState.kbsAuthCredentialCandidates?.nilIfEmpty,
+                            let e164 = self.persistedState.e164
+                        else {
+                            fallthrough
                         }
+                        Logger.info("Checking KBS credential since we had SVR2 only.")
+                        return self.makeKBSAuthCredentialCheckRequest(kbsAuthCredentialCandidates: kbsAuthCredentialCandidates, e164: e164)
+                    case .both, .kbsOnly:
+                        // If we are unable to talk to SVR, it got wiped and we can't
+                        // recover. Give it all up and wipe our SVR info.
+                        self.wipeInMemoryStateToPreventSVRPathAttempts()
+                        self.inMemoryState.pinFromUser = nil
+                        self.db.write { tx in
+                            self.updatePersistedState(tx) {
+                                $0.hasGivenUpTryingToRestoreWithSVR = true
+                            }
+                        }
+                        return .value(.pinAttemptsExhaustedWithoutReglock(
+                            .init(mode: .restoringRegistrationRecoveryPassword)
+                        ))
                     }
-                    return .value(.pinAttemptsExhaustedWithoutReglock(
-                        .init(mode: .restoringRegistrationRecoveryPassword)
-                    ))
+
                 case .networkError:
                     if retriesLeft > 0 {
                         return self.restoreSVRMasterSecretForAuthCredentialPath(
@@ -1467,11 +1483,37 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             retriesLeft: retriesLeft - 1
                         )
                     }
-                    return .value(.showErrorSheet(.networkError))
+                    return self.retryRestoreSVRMasterSecretWithKBSIfNeededForAuthCredentialPath(
+                        credential: credential,
+                        fallbackResult: .showErrorSheet(.networkError)
+                    )
                 case .genericError:
-                    return .value(.showErrorSheet(.genericError))
+                    return self.retryRestoreSVRMasterSecretWithKBSIfNeededForAuthCredentialPath(
+                        credential: credential,
+                        fallbackResult: .showErrorSheet(.genericError)
+                    )
                 }
             }
+    }
+
+    private func retryRestoreSVRMasterSecretWithKBSIfNeededForAuthCredentialPath(
+        credential: SVRAuthCredential,
+        fallbackResult: RegistrationStep
+    ) -> Guarantee<RegistrationStep> {
+        switch credential {
+        case .both, .kbsOnly:
+            return .value(fallbackResult)
+        case .svr2Only:
+            break
+        }
+        guard
+            let kbsAuthCredentialCandidates = inMemoryState.kbsAuthCredentialCandidates?.nilIfEmpty,
+            let e164 = persistedState.e164
+        else {
+            return .value(fallbackResult)
+        }
+        Logger.info("Checking KBS credential since we had SVR2 only.")
+        return makeKBSAuthCredentialCheckRequest(kbsAuthCredentialCandidates: kbsAuthCredentialCandidates, e164: e164)
     }
 
     private func loadLocalMasterKeyAndUpdateState(_ tx: DBWriteTransaction) {
