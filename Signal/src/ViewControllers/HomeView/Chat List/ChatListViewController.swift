@@ -461,7 +461,7 @@ public class ChatListViewController: OWSViewController {
 
     @objc
     func updateBarButtonItems() {
-        guard chatListMode == .inbox && viewState.multiSelectState.isActive else { return }
+        guard chatListMode == .inbox && !viewState.multiSelectState.isActive else { return }
 
         // Settings button.
         navigationItem.leftBarButtonItem = settingsBarButtonItem
