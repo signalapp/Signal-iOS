@@ -89,7 +89,7 @@ class MediaControlPanelView: UIView {
 
     private lazy var buttonForwardMedia: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(.init(imageLiteralResourceName: "forward-outline-24"), for: .normal)
+        button.setImage(.init(imageLiteralResourceName: "media-viewer-forward-24"), for: .normal)
         button.addTarget(self, action: #selector(didPressForward), for: .touchUpInside)
         button.contentVerticalAlignment = .center
         button.contentHorizontalAlignment = .center
@@ -100,7 +100,7 @@ class MediaControlPanelView: UIView {
 
     private lazy var buttonShareMedia: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(.init(imageLiteralResourceName: "share-outline-24"), for: .normal)
+        button.setImage(.init(imageLiteralResourceName: "media-viewer-share-24"), for: .normal)
         button.addTarget(self, action: #selector(didPressShare), for: .touchUpInside)
         button.contentVerticalAlignment = .center
         button.contentHorizontalAlignment = .center

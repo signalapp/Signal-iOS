@@ -328,14 +328,9 @@ class MediaPageViewController: UIPageViewController {
             owsFailDebug("button is nil")
             return
         }
-        if #available(iOS 13, *) {
-            let iconSize: CGFloat = needsCompactToolbars ? 18 : 22
-            let buttonImage = UIImage(systemName: "ellipsis.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: iconSize))
-            button.setImage(buttonImage, for: .normal)
-        } else {
-            button.setImage(UIImage(imageLiteralResourceName: "ellipsis-circle-20"), for: .normal)
-            // TODO: 24 pt icon for portrait orientation
-        }
+        let imageResourceName = needsCompactToolbars ? "ellipsis-circle-20" : "ellipsis-circle-24"
+        let buttonImage = UIImage(imageLiteralResourceName: imageResourceName)
+        button.setImage(buttonImage, for: .normal)
     }
 
     private func updateContextMenuActions() {
@@ -363,16 +358,16 @@ class MediaPageViewController: UIPageViewController {
     // MARK: Bar Buttons
 
     private lazy var barButtonShareMedia = UIBarButtonItem(
-        image: UIImage(imageLiteralResourceName: "share-outline-24"),
-        landscapeImagePhone: UIImage(imageLiteralResourceName: "share-outline-20"),
+        image: UIImage(imageLiteralResourceName: "media-viewer-share-24"),
+        landscapeImagePhone: UIImage(imageLiteralResourceName: "media-viewer-share-20"),
         style: .plain,
         target: self,
         action: #selector(didPressShare)
     )
 
     private lazy var barButtonForwardMedia = UIBarButtonItem(
-        image: UIImage(imageLiteralResourceName: "forward-outline-24"),
-        landscapeImagePhone: UIImage(imageLiteralResourceName: "forward-outline-20"),
+        image: UIImage(imageLiteralResourceName: "media-viewer-forward-24"),
+        landscapeImagePhone: UIImage(imageLiteralResourceName: "media-viewer-forward-20"),
         style: .plain,
         target: self,
         action: #selector(didPressForward)
