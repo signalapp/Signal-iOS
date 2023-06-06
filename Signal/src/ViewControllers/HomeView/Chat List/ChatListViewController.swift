@@ -360,7 +360,7 @@ public class ChatListViewController: OWSViewController {
         return layerView
     }()
 
-    private lazy var settingsBarButtonItem: UIBarButtonItem = {
+    private func settingsBarButtonItem() -> UIBarButtonItem {
         let contextButton = ContextMenuButton()
         contextButton.showsContextMenuAsPrimaryAction = true
         contextButton.contextMenu = settingsContextMenu()
@@ -378,8 +378,11 @@ public class ChatListViewController: OWSViewController {
             PaymentsViewUtils.addUnreadBadge(toView: wrapper)
         }
 
-        return .init(customView: wrapper)
-    }()
+        let barButtonItem = UIBarButtonItem(customView: wrapper)
+        barButtonItem.accessibilityLabel = CommonStrings.openSettingsButton
+        barButtonItem.accessibilityIdentifier = "ChatListViewController.settingsButton"
+        return barButtonItem
+    }
 
     // MARK: Table View
 
@@ -464,9 +467,7 @@ public class ChatListViewController: OWSViewController {
         guard chatListMode == .inbox && !viewState.multiSelectState.isActive else { return }
 
         // Settings button.
-        navigationItem.leftBarButtonItem = settingsBarButtonItem
-        settingsBarButtonItem.accessibilityLabel = CommonStrings.openSettingsButton
-        settingsBarButtonItem.accessibilityIdentifier = "ChatListViewController.settingsButton"
+        navigationItem.leftBarButtonItem = settingsBarButtonItem()
 
         var rightBarButtonItems = [UIBarButtonItem]()
 
