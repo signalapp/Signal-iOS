@@ -55,8 +55,6 @@
 		3402A9E9271D97090084CBAE /* UIView+SignalUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 3402A9E6271D97090084CBAE /* UIView+SignalUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402A9EA271D97090084CBAE /* UIView+SignalUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9E7271D97090084CBAE /* UIView+SignalUI.m */; };
 		3402A9EC271D98440084CBAE /* AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9EB271D98440084CBAE /* AttachmentMultisend.swift */; };
-		3402A9FE271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95504271B510400B05242 /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3402A9FF271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95503271B510400B05242 /* OWSAnyTouchGestureRecognizer.m */; };
 		3402AA02271D9DAF0084CBAE /* GroupViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95507271B510400B05242 /* GroupViewUtils.swift */; };
 		3402AA03271D9DB50084CBAE /* ConversationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95506271B510400B05242 /* ConversationStyle.swift */; };
 		3402AA30271D9DCD0084CBAE /* ContactFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558A271B510500B05242 /* ContactFieldView.swift */; };
@@ -2762,8 +2760,6 @@
 		34A954EC271B4FB000B05242 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+OWS.m"; sourceTree = "<group>"; };
 		34A954F2271B4FB000B05242 /* UIViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+OWS.h"; sourceTree = "<group>"; };
 		34A95500271B503E00B05242 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
-		34A95503271B510400B05242 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
-		34A95504271B510400B05242 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34A95506271B510400B05242 /* ConversationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationStyle.swift; sourceTree = "<group>"; };
 		34A95507271B510400B05242 /* GroupViewUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupViewUtils.swift; sourceTree = "<group>"; };
 		34A95509271B510400B05242 /* TappableStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableStackView.swift; sourceTree = "<group>"; };
@@ -5648,8 +5644,6 @@
 				5003BB3E299DA0F10037159B /* LinkPreviewFetcher.swift */,
 				34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */,
 				34A955BC271B560000B05242 /* NameCollisionFinder.swift */,
-				34A95504271B510400B05242 /* OWSAnyTouchGestureRecognizer.h */,
-				34A95503271B510400B05242 /* OWSAnyTouchGestureRecognizer.m */,
 				342FFE56271DA8C9000AC89F /* Sounds+SignalUI.swift */,
 				88B6D67128076F37005D86EC /* StoryMessage+SignalUI.swift */,
 				88F5FA9228EBD484007AA1BF /* StorySharing.swift */,
@@ -9510,7 +9504,6 @@
 				34A954E6271B4F6A00B05242 /* AttachmentSharing.h in Headers */,
 				34A955B4271B53F600B05242 /* BlockListUIUtils.h in Headers */,
 				3402AA9E271D9E180084CBAE /* ContactsViewHelper.h in Headers */,
-				3402A9FE271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.h in Headers */,
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */,
 				3402AA85271D9E180084CBAE /* OWSSearchBar.h in Headers */,
 				34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */,
@@ -10860,7 +10853,6 @@
 				3402AAAC271D9E180084CBAE /* NonContactTableViewCell.swift in Sources */,
 				8803C2F528B02FDB00183D2B /* OutgoingStoryMessage+AttachmentMultisend.swift in Sources */,
 				3402AAAB271D9E180084CBAE /* OWSActionSheets.swift in Sources */,
-				3402A9FF271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.m in Sources */,
 				3402AA74271D9E180084CBAE /* OWSBubbleShapeView.swift in Sources */,
 				3402AA99271D9E180084CBAE /* OWSButton.swift in Sources */,
 				3402AA83271D9E180084CBAE /* OWSFlatButton.swift in Sources */,
