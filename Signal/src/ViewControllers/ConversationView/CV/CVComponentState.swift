@@ -101,8 +101,7 @@ public class CVComponentState: Equatable, Dependencies {
     struct QuotedReply: Equatable {
         let viewState: QuotedMessageView.State
 
-        // TODO: convert OWSQuotedReplyModel to Swift.
-        var quotedReplyModel: OWSQuotedReplyModel { viewState.quotedReplyModel }
+        var quotedReplyModel: QuotedReplyModel { viewState.quotedReplyModel }
         var displayableQuotedText: DisplayableText? { viewState.displayableQuotedText }
     }
     let quotedReply: QuotedReply?
@@ -1020,7 +1019,7 @@ fileprivate extension CVComponentState.Builder {
         message: TSMessage,
         spoilerReveal: SpoilerRevealState
     ) {
-        guard let quotedReplyModel = OWSQuotedReplyModel.quotedReply(from: message, transaction: transaction) else {
+        guard let quotedReplyModel = QuotedReplyModel(message: message, transaction: transaction) else {
             return
         }
         var displayableQuotedText: DisplayableText?

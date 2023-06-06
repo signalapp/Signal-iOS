@@ -337,7 +337,7 @@ extension MockConversationView: CVComponentDelegate {
 
     func didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction { .default }
 
-    func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {}
+    func didTapQuotedReply(_ quotedReply: QuotedReplyModel) {}
 
     func didTapLinkPreview(_ linkPreview: OWSLinkPreview) {}
 

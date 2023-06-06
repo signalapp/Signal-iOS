@@ -8,7 +8,7 @@ import SignalUI
 
 public protocol QuotedMessageViewDelegate: AnyObject {
 
-    func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel,
+    func didTapQuotedReply(_ quotedReply: QuotedReplyModel,
                            failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer)
 
     func didCancelQuotedReply()
@@ -20,7 +20,7 @@ public protocol QuotedMessageViewDelegate: AnyObject {
 public class QuotedMessageView: ManualStackViewWithLayer {
 
     public struct State: Equatable {
-        let quotedReplyModel: OWSQuotedReplyModel
+        let quotedReplyModel: QuotedReplyModel
         let displayableQuotedText: DisplayableText?
         let conversationStyle: ConversationStyle
         let spoilerReveal: SpoilerRevealState
@@ -60,7 +60,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     private let tintView = ManualLayoutViewWithLayer(name: "tintView")
 
     static func stateForConversation(
-        quotedReplyModel: OWSQuotedReplyModel,
+        quotedReplyModel: QuotedReplyModel,
         displayableQuotedText: DisplayableText?,
         conversationStyle: ConversationStyle,
         spoilerReveal: SpoilerRevealState,
@@ -81,7 +81,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     }
 
     static func stateForPreview(
-        quotedReplyModel: OWSQuotedReplyModel,
+        quotedReplyModel: QuotedReplyModel,
         conversationStyle: ConversationStyle,
         spoilerReveal: SpoilerRevealState,
         transaction: SDSAnyReadTransaction
@@ -125,7 +125,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     private struct Configurator {
         let state: State
 
-        var quotedReplyModel: OWSQuotedReplyModel { state.quotedReplyModel }
+        var quotedReplyModel: QuotedReplyModel { state.quotedReplyModel }
         var displayableQuotedText: DisplayableText? { state.displayableQuotedText }
         var conversationStyle: ConversationStyle { state.conversationStyle }
         var revealedSpoilerIds: Set<StyleIdType> {

@@ -13,7 +13,7 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
     var bottomBar: UIView { inputToolbar }
     lazy var inputToolbar: StoryReplyInputToolbar = {
         let quotedReplyModel = databaseStorage.read {
-            OWSQuotedReplyModel.quotedReply(from: storyMessage, transaction: $0)
+            QuotedReplyModel(storyMessage: storyMessage, transaction: $0)
         }
         let toolbar = StoryReplyInputToolbar(quotedReplyModel: quotedReplyModel)
         toolbar.delegate = self

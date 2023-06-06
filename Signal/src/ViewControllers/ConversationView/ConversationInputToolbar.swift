@@ -70,7 +70,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         spoilerReveal: SpoilerRevealState,
         mediaCache: CVMediaCache,
         messageDraft: MessageBody?,
-        quotedReply: OWSQuotedReplyModel?,
+        quotedReply: QuotedReplyModel?,
         inputToolbarDelegate: ConversationInputToolbarDelegate,
         inputTextViewDelegate: ConversationInputTextViewDelegate,
         mentionDelegate: MentionTextViewDelegate
@@ -299,7 +299,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private func createContentsWithMessageDraft(
         _ messageDraft: MessageBody?,
-        quotedReply: OWSQuotedReplyModel?,
+        quotedReply: QuotedReplyModel?,
         inputTextViewDelegate: ConversationInputTextViewDelegate,
         mentionDelegate: MentionTextViewDelegate
     ) {
@@ -896,7 +896,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     // MARK: Quoted Reply
 
-    var quotedReply: OWSQuotedReplyModel? {
+    var quotedReply: QuotedReplyModel? {
         didSet {
             guard oldValue != quotedReply else { return }
 

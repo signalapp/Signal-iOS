@@ -13,7 +13,7 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate, SpoilerRevealSta
 
     public weak var delegate: QuotedReplyPreviewDelegate?
 
-    private let quotedReply: OWSQuotedReplyModel
+    private let quotedReply: QuotedReplyModel
     private let conversationStyle: ConversationStyle
     private let spoilerReveal: SpoilerRevealState
     private var quotedMessageView: OWSQuotedMessageView?
@@ -30,7 +30,7 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate, SpoilerRevealSta
     }
 
     init(
-        quotedReply: OWSQuotedReplyModel,
+        quotedReply: QuotedReplyModel,
         conversationStyle: ConversationStyle,
         spoilerReveal: SpoilerRevealState
     ) {
@@ -109,7 +109,8 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate, SpoilerRevealSta
 
     // MARK: - OWSQuotedMessageViewDelegate
 
-    public func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel, failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
+    public func didTapQuotedReply(_ quotedReply: QuotedReplyModel,
+                                  failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
         // Do nothing.
     }
 

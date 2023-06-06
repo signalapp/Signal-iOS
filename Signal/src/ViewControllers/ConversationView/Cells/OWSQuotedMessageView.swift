@@ -8,7 +8,7 @@ import SignalUI
 extension OWSQuotedMessageView {
 
     static func forPreview(
-        _ quotedMessage: OWSQuotedReplyModel,
+        _ quotedMessage: QuotedReplyModel,
         conversationStyle: ConversationStyle,
         spoilerReveal: SpoilerRevealState
     ) -> OWSQuotedMessageView {
@@ -33,7 +33,7 @@ extension OWSQuotedMessageView {
     }
 
     static func displayableTextWithSneakyTransaction(
-        forPreview quotedMessage: OWSQuotedReplyModel,
+        forPreview quotedMessage: QuotedReplyModel,
         spoilerReveal: SpoilerRevealState
     ) -> DisplayableText? {
         guard let text = quotedMessage.body else {
@@ -63,7 +63,7 @@ extension OWSQuotedMessageView {
         _ displayableQuotedText: DisplayableText,
         font: UIFont,
         textColor: UIColor,
-        quotedReplyModel: OWSQuotedReplyModel,
+        quotedReplyModel: QuotedReplyModel,
         spoilerReveal: SpoilerRevealState
     ) -> NSAttributedString {
         let mutableCopy = NSMutableAttributedString(attributedString: displayableQuotedText.displayAttributedText)

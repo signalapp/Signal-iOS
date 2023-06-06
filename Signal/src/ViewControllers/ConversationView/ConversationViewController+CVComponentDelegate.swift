@@ -247,7 +247,7 @@ extension ConversationViewController: CVComponentDelegate {
         }
     }
 
-    public func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {
+    public func didTapQuotedReply(_ quotedReply: QuotedReplyModel) {
         AssertIsOnMainThread()
         owsAssertDebug(quotedReply.timestamp > 0)
         owsAssertDebug(quotedReply.authorAddress.isValid)

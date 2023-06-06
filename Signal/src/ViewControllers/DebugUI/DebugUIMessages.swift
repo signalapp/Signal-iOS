@@ -1727,8 +1727,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 )
                 let itemViewModel = CVItemViewModelImpl(renderItem: renderItem!)
 
-                let quotedMessage = OWSQuotedReplyModel.quotedReplyForSending(
-                    withItem: itemViewModel,
+                let quotedMessage = QuotedReplyModel.forSending(
+                    item: itemViewModel,
                     transaction: transaction
                 )!.buildQuotedMessageForSending()
 

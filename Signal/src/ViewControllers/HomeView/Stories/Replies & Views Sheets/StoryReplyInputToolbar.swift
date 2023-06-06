@@ -25,7 +25,7 @@ protocol StoryReplyInputToolbarDelegate: AnyObject {
 class StoryReplyInputToolbar: UIView {
 
     weak var delegate: StoryReplyInputToolbarDelegate?
-    let quotedReplyModel: OWSQuotedReplyModel?
+    let quotedReplyModel: QuotedReplyModel?
 
     var messageBody: MessageBody? {
         get { textView.messageBody }
@@ -52,7 +52,7 @@ class StoryReplyInputToolbar: UIView {
 
     // MARK: - Initializers
 
-    init(quotedReplyModel: OWSQuotedReplyModel? = nil) {
+    init(quotedReplyModel: QuotedReplyModel? = nil) {
         self.quotedReplyModel = quotedReplyModel
         super.init(frame: CGRect.zero)
 

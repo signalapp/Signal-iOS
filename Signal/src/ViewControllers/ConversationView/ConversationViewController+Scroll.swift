@@ -277,8 +277,7 @@ extension ConversationViewController {
         updateLastKnownDistanceFromBottom()
     }
 
-    func scrollToQuotedMessage(_ quotedReply: OWSQuotedReplyModel,
-                               isAnimated: Bool) {
+    func scrollToQuotedMessage(_ quotedReply: QuotedReplyModel, isAnimated: Bool) {
         if quotedReply.isRemotelySourced {
             presentRemotelySourcedQuotedReplyToast()
             return

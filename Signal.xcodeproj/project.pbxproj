@@ -96,8 +96,6 @@
 		3402AA62271D9DEC0084CBAE /* ThreadUtil+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */; };
 		3402AA63271D9DEC0084CBAE /* ContactShareViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A5271B510500B05242 /* ContactShareViewModel.swift */; };
 		3402AA65271D9DEC0084CBAE /* ThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A7271B510500B05242 /* ThreadViewModel.swift */; };
-		3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 3402A9F6271D9C700084CBAE /* OWSQuotedReplyModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3402AA69271D9DEC0084CBAE /* OWSQuotedReplyModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9F7271D9C700084CBAE /* OWSQuotedReplyModel.m */; };
 		3402AA6A271D9DFC0084CBAE /* Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A9271B510500B05242 /* Wallpaper.swift */; };
 		3402AA6B271D9DFC0084CBAE /* Wallpaper+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AA271B510500B05242 /* Wallpaper+Constants.swift */; };
 		3402AA6C271D9E180084CBAE /* ImageEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95562271B510400B05242 /* ImageEditorView.swift */; };
@@ -931,6 +929,7 @@
 		7649813F2A2306DA00EC1287 /* SMEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7649813E2A2306DA00EC1287 /* SMEnvironment.swift */; };
 		764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764981422A230F2C00EC1287 /* MockSMEnvironment.swift */; };
 		764981452A23194F00EC1287 /* CVItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764981442A23194F00EC1287 /* CVItemViewModel.swift */; };
+		764FE0452A2F0C0F004D2804 /* QuotedReplyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FE0442A2F0C0F004D2804 /* QuotedReplyModel.swift */; };
 		765283AE2A00D8B4004583A9 /* OWSTableContents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283AD2A00D8B4004583A9 /* OWSTableContents.swift */; };
 		765283B02A00D8CE004583A9 /* OWSTableSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283AF2A00D8CE004583A9 /* OWSTableSection.swift */; };
 		765283B22A00D8EC004583A9 /* OWSTableItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765283B12A00D8EC004583A9 /* OWSTableItem.swift */; };
@@ -2494,8 +2493,6 @@
 		3402A9E6271D97090084CBAE /* UIView+SignalUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+SignalUI.h"; sourceTree = "<group>"; };
 		3402A9E7271D97090084CBAE /* UIView+SignalUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SignalUI.m"; sourceTree = "<group>"; };
 		3402A9EB271D98440084CBAE /* AttachmentMultisend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentMultisend.swift; sourceTree = "<group>"; };
-		3402A9F6271D9C700084CBAE /* OWSQuotedReplyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQuotedReplyModel.h; sourceTree = "<group>"; };
-		3402A9F7271D9C700084CBAE /* OWSQuotedReplyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQuotedReplyModel.m; sourceTree = "<group>"; };
 		3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ThreadUtil+SignalUI.swift"; sourceTree = "<group>"; };
 		3402AABE271DA2720084CBAE /* VoiceMessageInterruptedDraftStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceMessageInterruptedDraftStore.swift; sourceTree = "<group>"; };
 		3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Banners.swift"; sourceTree = "<group>"; };
@@ -3410,6 +3407,7 @@
 		7649813E2A2306DA00EC1287 /* SMEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMEnvironment.swift; sourceTree = "<group>"; };
 		764981422A230F2C00EC1287 /* MockSMEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSMEnvironment.swift; sourceTree = "<group>"; };
 		764981442A23194F00EC1287 /* CVItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVItemViewModel.swift; sourceTree = "<group>"; };
+		764FE0442A2F0C0F004D2804 /* QuotedReplyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyModel.swift; sourceTree = "<group>"; };
 		765283AD2A00D8B4004583A9 /* OWSTableContents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableContents.swift; sourceTree = "<group>"; };
 		765283AF2A00D8CE004583A9 /* OWSTableSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableSection.swift; sourceTree = "<group>"; };
 		765283B12A00D8EC004583A9 /* OWSTableItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableItem.swift; sourceTree = "<group>"; };
@@ -5899,8 +5897,7 @@
 			children = (
 				34A955A5271B510500B05242 /* ContactShareViewModel.swift */,
 				764981442A23194F00EC1287 /* CVItemViewModel.swift */,
-				3402A9F6271D9C700084CBAE /* OWSQuotedReplyModel.h */,
-				3402A9F7271D9C700084CBAE /* OWSQuotedReplyModel.m */,
+				764FE0442A2F0C0F004D2804 /* QuotedReplyModel.swift */,
 				3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */,
 				34A955A7271B510500B05242 /* ThreadViewModel.swift */,
 				50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */,
@@ -9515,7 +9512,6 @@
 				3402AA9E271D9E180084CBAE /* ContactsViewHelper.h in Headers */,
 				3402A9FE271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.h in Headers */,
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */,
-				3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */,
 				3402AA85271D9E180084CBAE /* OWSSearchBar.h in Headers */,
 				34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */,
 				34A954BA271A471300B05242 /* SignalUI.h in Headers */,
@@ -10872,7 +10868,6 @@
 				3402AAB1271D9E180084CBAE /* OWSNavigationBar.swift in Sources */,
 				665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */,
 				3402AA58271D9DCD0084CBAE /* OWSNavigationControllerBase.m in Sources */,
-				3402AA69271D9DEC0084CBAE /* OWSQuotedReplyModel.m in Sources */,
 				3402AA6E271D9E180084CBAE /* OWSSearchBar.m in Sources */,
 				3402AA70271D9E180084CBAE /* OWSStackView.swift in Sources */,
 				765283AE2A00D8B4004583A9 /* OWSTableContents.swift in Sources */,
@@ -10895,6 +10890,7 @@
 				34A955BB271B55BA00B05242 /* PaymentsUI.swift in Sources */,
 				3402AA79271D9E180084CBAE /* PermissiveGestureRecognizer.swift in Sources */,
 				32FAB92A2727A57100FB76A6 /* PrimaryImageView.swift in Sources */,
+				764FE0452A2F0C0F004D2804 /* QuotedReplyModel.swift in Sources */,
 				506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */,
 				88B986F528807D6F00F8C74D /* RecipientPickerDelegate.swift in Sources */,
 				F9B652BC28D514E6006914CA /* RecipientPickerViewController.swift in Sources */,

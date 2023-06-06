@@ -81,8 +81,7 @@ extension ConversationViewController: MessageActionsDelegate {
 
         let load = {
             Self.databaseStorage.read { transaction in
-                OWSQuotedReplyModel.quotedReplyForSending(withItem: itemViewModel,
-                                                          transaction: transaction)
+                QuotedReplyModel.forSending(item: itemViewModel, transaction: transaction)
             }
         }
         guard let quotedReply = load() else {

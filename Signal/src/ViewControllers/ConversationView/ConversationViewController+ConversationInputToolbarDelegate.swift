@@ -279,7 +279,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
     private static func draftHasChanged(
         currentDraft: MessageBody?,
-        quotedReply: OWSQuotedReplyModel?,
+        quotedReply: QuotedReplyModel?,
         thread: TSThread,
         transaction: SDSAnyReadTransaction
     ) -> Bool {

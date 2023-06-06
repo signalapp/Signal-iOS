@@ -13,7 +13,7 @@ public extension ThreadUtil {
     class func enqueueMessage(body messageBody: MessageBody?,
                               mediaAttachments: [SignalAttachment] = [],
                               thread: TSThread,
-                              quotedReplyModel: OWSQuotedReplyModel? = nil,
+                              quotedReplyModel: QuotedReplyModel? = nil,
                               linkPreviewDraft: OWSLinkPreviewDraft? = nil,
                               persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
                               transaction readTransaction: SDSAnyReadTransaction) -> TSOutgoingMessage {
@@ -69,7 +69,7 @@ public extension ThreadUtil {
     class func createUnsentMessage(body messageBody: MessageBody?,
                                    mediaAttachments: [SignalAttachment],
                                    thread: TSThread,
-                                   quotedReplyModel: OWSQuotedReplyModel? = nil,
+                                   quotedReplyModel: QuotedReplyModel? = nil,
                                    linkPreviewDraft: OWSLinkPreviewDraft? = nil,
                                    transaction: SDSAnyWriteTransaction) throws -> TSOutgoingMessage {
 
@@ -90,7 +90,7 @@ extension OutgoingMessagePreparer {
     public convenience init(messageBody: MessageBody?,
                             mediaAttachments: [SignalAttachment] = [],
                             thread: TSThread,
-                            quotedReplyModel: OWSQuotedReplyModel? = nil,
+                            quotedReplyModel: QuotedReplyModel? = nil,
                             transaction: SDSAnyReadTransaction) {
 
         var attachments = mediaAttachments
