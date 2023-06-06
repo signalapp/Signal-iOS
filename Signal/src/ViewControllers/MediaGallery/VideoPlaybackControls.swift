@@ -259,8 +259,9 @@ class PlayerProgressView: UIView {
         let slider = TrackingSlider()
         slider.semanticContentAttribute = .playback
         slider.setThumbImage(#imageLiteral(resourceName: "sliderProgressThumb"), for: .normal)
+        slider.setThumbImage(#imageLiteral(resourceName: "sliderProgressThumbLarge"), for: .highlighted)
         slider.maximumTrackTintColor = .ows_whiteAlpha20
-        slider.minimumTrackTintColor = .ows_whiteAlpha20
+        slider.minimumTrackTintColor = .ows_gray05
         slider.addTarget(self, action: #selector(handleSliderTouchDown), for: .touchDown)
         slider.addTarget(self, action: #selector(handleSliderTouchUp), for: [ .touchUpInside, .touchUpOutside ])
         slider.addTarget(self, action: #selector(handleSliderValueChanged), for: .valueChanged)
