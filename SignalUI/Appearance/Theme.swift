@@ -262,7 +262,6 @@ final public class Theme: NSObject {
         isDarkThemeEnabled ? darkThemeWashColor : .ows_gray05
     }
 
-    @objc
     public class var primaryTextColor: UIColor {
         isDarkThemeEnabled ? darkThemePrimaryColor : lightThemePrimaryColor
     }
@@ -428,7 +427,6 @@ final public class Theme: NSObject {
 
     // MARK: - Keyboard
 
-    @objc
     public class var keyboardAppearance: UIKeyboardAppearance {
         isDarkThemeEnabled ? darkThemeKeyboardAppearance : .default
     }
@@ -449,15 +447,12 @@ final public class Theme: NSObject {
 
     // MARK: - Search Bar
 
-    @objc
     public class var barStyle: UIBarStyle {
         isDarkThemeEnabled ? .black : .default
     }
 
-    @objc
     public class var searchFieldBackgroundColor: UIColor { washColor }
 
-    @objc
     public class var searchFieldElevatedBackgroundColor: UIColor {
         isDarkThemeEnabled ? .ows_gray75 : .ows_gray12
     }
