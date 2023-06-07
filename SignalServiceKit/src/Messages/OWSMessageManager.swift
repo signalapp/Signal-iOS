@@ -388,10 +388,6 @@ extension OWSMessageManager {
         syncMessage: SSKProtoSyncMessage,
         transaction tx: SDSAnyWriteTransaction
     ) {
-        guard FeatureFlags.editMessageReceive else {
-            return
-        }
-
         guard let sentMessage = syncMessage.sent else {
             return
         }
@@ -442,10 +438,6 @@ extension OWSMessageManager {
         wasReceivedByUD: Bool,
         transaction tx: SDSAnyWriteTransaction
     ) {
-        guard FeatureFlags.editMessageReceive else {
-            return
-        }
-
         guard let dataMessage = editMessage.dataMessage else {
             Logger.warn("Missing edit message data.")
             return

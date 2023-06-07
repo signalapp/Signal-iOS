@@ -194,12 +194,10 @@ NS_ASSUME_NONNULL_BEGIN
             // See: OWSMessageManager.preprocessEnvelope(envelope:plaintext:transaction:)
             break;
         case OWSMessageManagerMessageTypeEditMessage:
-            if (SSKFeatureFlags.editMessageReceive) {
-                [self handleIncomingEnvelope:request.envelope
-                             withEditMessage:contentProto.editMessage
-                             wasReceivedByUD:request.wasReceivedByUD
-                                 transaction:transaction];
-            }
+            [self handleIncomingEnvelope:request.envelope
+                         withEditMessage:contentProto.editMessage
+                         wasReceivedByUD:request.wasReceivedByUD
+                             transaction:transaction];
         case OWSMessageManagerMessageTypeUnknown:
             OWSLogWarn(@"Ignoring envelope. Content with no known payload");
             break;
@@ -976,9 +974,7 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
         } else if (syncMessage.sent.editMessage) {
-            if (SSKFeatureFlags.editMessageReceive) {
-                [self handleIncomingEnvelope:envelope syncMessage:syncMessage transaction:transaction];
-            }
+            [self handleIncomingEnvelope:envelope syncMessage:syncMessage transaction:transaction];
         }
     } else if (syncMessage.request) {
         [self handleIncomingSyncRequest:syncMessage.request transaction:transaction];

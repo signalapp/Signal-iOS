@@ -1236,8 +1236,6 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         excludeAll: Bool = false,
         interactionsAlias: String? = nil
     ) -> String {
-        guard FeatureFlags.editMessageReceive else { return "" }
-
         let columnPrefix: String
         if let interactionsAlias = interactionsAlias {
             columnPrefix = interactionsAlias + "."
