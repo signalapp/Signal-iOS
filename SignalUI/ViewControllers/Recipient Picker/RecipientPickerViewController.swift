@@ -930,7 +930,7 @@ extension RecipientPickerViewController {
         }
 
         // All contacts in one section
-        guard !shouldShowAlphabetSlider else {
+        guard shouldShowAlphabetSlider else {
             return [OWSTableSection(
                 title: OWSLocalizedString(
                     "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
