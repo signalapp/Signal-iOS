@@ -38,6 +38,10 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         /// before kicking off a reservation attempt.
         static let reservationDebounceTimeInternal: TimeInterval = 0.5
 
+        /// Amount of time to wait after the username text field is edited with
+        /// a too-short value before showing the corresponding error.
+        static let tooShortDebounceTimeInterval: TimeInterval = 1
+
         /// Size of the header view's icon.
         static let headerViewIconSize: CGFloat = 64
 
@@ -59,10 +63,9 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     private enum UsernameSelectionState: Equatable {
         /// The user's existing username is unchanged.
         case noChangesToExisting
-        /// The username is pending reservation. Stores an attempt ID, to
-        /// disambiguate multiple potentially-overlapping reservation
-        /// attempts.
-        case reservationPending(attemptId: UUID)
+        /// Username state is pending. Stores an ID, to disambiguate multiple
+        /// potentially-overlapping state updates.
+        case pending(id: UUID)
         /// The username has been successfully reserved.
         case reservationSuccessful(reservation: API.SuccessfulReservation)
         /// The username was rejected by the server during reservation.
@@ -314,7 +317,7 @@ private extension UsernameSelectionViewController {
                 return true
             case
                     .noChangesToExisting,
-                    .reservationPending,
+                    .pending,
                     .reservationRejected,
                     .reservationFailed,
                     .tooShort,
@@ -345,7 +348,7 @@ private extension UsernameSelectionViewController {
             case let .reservationSuccessful(reservation):
                 return reservation.username.reassembled
             case
-                    .reservationPending,
+                    .pending,
                     .reservationRejected,
                     .reservationFailed,
                     .tooShort,
@@ -367,8 +370,8 @@ private extension UsernameSelectionViewController {
         switch self.currentUsernameState {
         case .noChangesToExisting:
             self.usernameTextFieldWrapper.textField.configure(forConfirmedUsername: self.existingUsername)
-        case .reservationPending:
-            self.usernameTextFieldWrapper.textField.configureForReservationInProgress()
+        case .pending:
+            self.usernameTextFieldWrapper.textField.configureForSomethingPending()
         case let .reservationSuccessful(reservation):
             self.usernameTextFieldWrapper.textField.configure(forConfirmedUsername: reservation.username)
         case
@@ -391,7 +394,7 @@ private extension UsernameSelectionViewController {
             switch currentUsernameState {
             case
                     .noChangesToExisting,
-                    .reservationPending,
+                    .pending,
                     .reservationSuccessful:
                 return nil
             case .reservationRejected:
@@ -482,7 +485,7 @@ private extension UsernameSelectionViewController {
             )
         case
                 .noChangesToExisting,
-                .reservationPending,
+                .pending,
                 .reservationRejected,
                 .reservationFailed,
                 .tooShort,
@@ -617,7 +620,23 @@ private extension UsernameSelectionViewController {
             } catch CandidateError.nicknameTooLong {
                 currentUsernameState = .tooLong
             } catch CandidateError.nicknameTooShort {
-                currentUsernameState = .tooShort
+                // Wait a beat before showing a "too short" error, in case the
+                // user is going to enter more text that renders the error
+                // irrelevant.
+
+                let debounceId = UUID()
+                currentUsernameState = .pending(id: debounceId)
+
+                firstly(on: context.schedulers.sync) { () -> Guarantee<Void> in
+                    return Guarantee.after(wallInterval: Constants.tooShortDebounceTimeInterval)
+                }.done(on: context.schedulers.main) {
+                    if
+                        case let .pending(id) = self.currentUsernameState,
+                        debounceId == id
+                    {
+                        self.currentUsernameState = .tooShort
+                    }
+                }
             } catch CandidateError.nicknameCannotBeEmpty {
                 owsFail("We should never get here with an empty username string. Did something upstream break?")
             } catch let error {
@@ -651,7 +670,7 @@ private extension UsernameSelectionViewController {
         firstly { () -> Guarantee<UUID> in
             let attemptId = UUID()
 
-            currentUsernameState = .reservationPending(attemptId: attemptId)
+            currentUsernameState = .pending(id: attemptId)
 
             // Delay to detect multiple rapid consecutive edits.
             return Guarantee
@@ -661,10 +680,9 @@ private extension UsernameSelectionViewController {
             // If this attempt is no longer current after debounce, we should
             // bail out without firing a reservation.
             guard
-                case let .reservationPending(currentAttemptId) = self.currentUsernameState,
-                thisAttemptId == currentAttemptId
+                case let .pending(id) = self.currentUsernameState,
+                thisAttemptId == id
             else {
-                UsernameLogger.shared.debug("Not attempting to reserve, attempt is outdated. Attempt ID: \(thisAttemptId)")
                 throw ReservationNotAttemptedError(attemptId: thisAttemptId)
             }
 
@@ -680,8 +698,8 @@ private extension UsernameSelectionViewController {
             // If the reservation we just attempted is not current, we should
             // drop it and bail out.
             guard
-                case let .reservationPending(attemptId) = self.currentUsernameState,
-                reservationResult.attemptId == attemptId
+                case let .pending(id) = self.currentUsernameState,
+                reservationResult.attemptId == id
             else {
                 UsernameLogger.shared.info("Dropping reservation result, attempt is outdated. Attempt ID: \(reservationResult.attemptId)")
                 return
@@ -689,15 +707,15 @@ private extension UsernameSelectionViewController {
 
             switch reservationResult.state {
             case let .successful(reservation):
-                UsernameLogger.shared.info("Successfully reserved nickname! Attempt ID: \(attemptId)")
+                UsernameLogger.shared.info("Successfully reserved nickname! Attempt ID: \(id)")
 
                 self.currentUsernameState = .reservationSuccessful(reservation: reservation)
             case .rejected:
-                UsernameLogger.shared.warn("Reservation rejected. Attempt ID: \(attemptId)")
+                UsernameLogger.shared.warn("Reservation rejected. Attempt ID: \(id)")
 
                 self.currentUsernameState = .reservationRejected
             case .rateLimited:
-                UsernameLogger.shared.error("Reservation rate-limited. Attempt ID: \(attemptId)")
+                UsernameLogger.shared.error("Reservation rate-limited. Attempt ID: \(id)")
 
                 // Hides the rate-limited error, but not incorrect.
                 self.currentUsernameState = .reservationFailed
@@ -705,8 +723,7 @@ private extension UsernameSelectionViewController {
         }.catch(on: self.context.schedulers.main) { [weak self] error in
             guard let self else { return }
 
-            if let error = error as? ReservationNotAttemptedError {
-                UsernameLogger.shared.debug("Reservation was not attempted. Attempt ID: \(error.attemptId)")
+            if error is ReservationNotAttemptedError {
                 return
             }
 

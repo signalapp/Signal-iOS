@@ -229,7 +229,7 @@ extension UsernameSelectionViewController {
         }
 
         /// Configure the text field for an in-progress reservation.
-        func configureForReservationInProgress() {
+        func configureForSomethingPending() {
             if let lastKnownGoodDiscriminator {
                 setDiscriminatorViewMode(to: .spinningWithDiscriminator(value: lastKnownGoodDiscriminator))
             } else {
