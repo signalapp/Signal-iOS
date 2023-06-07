@@ -6,6 +6,36 @@
 import SignalUI
 
 extension UsernameSelectionViewController {
+    class UsernameTextFieldWrapper: UIView {
+        let textField: UsernameTextField
+
+        init(username: ParsedUsername?) {
+            textField = UsernameTextField(forUsername: username)
+
+            super.init(frame: .zero)
+
+            addSubview(textField)
+            textField.autoPinEdgesToSuperviewMargins()
+
+            layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 14)
+            layer.cornerRadius = 10
+        }
+
+        required init?(coder: NSCoder) {
+            owsFail("Not implemented!")
+        }
+
+        func updateFontsForCurrentPreferredContentSize() {
+            textField.updateFontsForCurrentPreferredContentSize()
+        }
+
+        func setColorsForCurrentTheme() {
+            backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
+
+            textField.setColorsForCurrentTheme()
+        }
+    }
+
     class UsernameTextField: OWSTextField {
         /// Presents state related to a username discriminator, such as the
         /// discriminator itself and state indicators such as a spinner.
@@ -188,12 +218,12 @@ extension UsernameSelectionViewController {
 
         // MARK: - Configure views
 
-        func updateFontsForCurrentPreferredContentSize() {
+        fileprivate func updateFontsForCurrentPreferredContentSize() {
             font = .dynamicTypeBodyClamped
             discriminatorView.updateFontsForCurrentPreferredContentSize()
         }
 
-        func setColorsForCurrentTheme() {
+        fileprivate func setColorsForCurrentTheme() {
             textColor = Theme.primaryTextColor
             discriminatorView.setColorsForCurrentTheme()
         }

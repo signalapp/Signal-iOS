@@ -17,8 +17,19 @@ extension UsernameSelectionViewController {
 
             super.init(frame: .zero)
 
-            addSubview(stackView)
-            stackView.autoPinEdgesToSuperviewEdges()
+            layoutMargins = UIEdgeInsets(top: 34, leading: 32, bottom: 24, trailing: 32)
+
+            addSubview(iconView)
+            addSubview(usernameDisplayLabel)
+
+            iconView.autoPinTopToSuperviewMargin()
+            iconView.autoHCenterInSuperview()
+
+            iconView.autoPinEdge(.bottom, to: .top, of: usernameDisplayLabel, withOffset: -16)
+
+            usernameDisplayLabel.autoPinLeadingToSuperviewMargin()
+            usernameDisplayLabel.autoPinTrailingToSuperviewMargin()
+            usernameDisplayLabel.autoPinBottomToSuperviewMargin()
 
             updateFontsForCurrentPreferredContentSize()
             setColorsForCurrentTheme()
@@ -29,9 +40,9 @@ extension UsernameSelectionViewController {
             fatalError("Use other initializer!")
         }
 
-        private let iconImage: UIImage = Theme.iconImage(.settingsMention)
-
         // MARK: Views
+
+        private let iconImage: UIImage = Theme.iconImage(.settingsMention)
 
         private lazy var iconImageView: UIImageView = {
             UIImageView(image: iconImage)
@@ -58,25 +69,9 @@ extension UsernameSelectionViewController {
             let label = UILabel()
 
             label.numberOfLines = 0
+            label.textAlignment = .center
 
             return label
-        }()
-
-        private lazy var stackView: OWSStackView = {
-            let stack = OWSStackView(
-                name: "Username Selection Header Stack",
-                arrangedSubviews: [
-                    iconView,
-                    usernameDisplayLabel
-                ]
-            )
-
-            stack.axis = .vertical
-            stack.alignment = .center
-            stack.distribution = .equalSpacing
-            stack.spacing = 16
-
-            return stack
         }()
 
         // MARK: - Configure views
