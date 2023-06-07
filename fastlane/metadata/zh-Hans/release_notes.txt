@@ -1,1 +1,3 @@
-• 我们修复了注册过程中的一些小漏洞，让更多人可以轻松顺畅地注册 Signal 账户。 
+• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
+• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
+• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
