@@ -745,28 +745,6 @@
 			<string>%1$d Ball</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Tugadh cuireadh do %1$d duine chun dul isteach sa ghrúpa.</string>
-			<key>two</key>
-			<string>Tugadh cuireadh do %1$d dhuine chun dul isteach sa ghrúpa.</string>
-			<key>few</key>
-			<string>Tugadh cuireadh do %1$d dhuine chun dul isteach sa ghrúpa.</string>
-			<key>many</key>
-			<string>Tugadh cuireadh do %1$d nduine chun dul isteach sa ghrúpa.</string>
-			<key>other</key>
-			<string>Tugadh cuireadh do %1$d duine chun dul isteach sa ghrúpa.</string>
-		</dict>
-	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -875,50 +853,6 @@
 			<string>Scéal Grúpa · %1$d nAmharcóir</string>
 			<key>other</key>
 			<string>Scéal Grúpa · %1$d Amharcóir</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Níorbh fhéidir ball a chur leis an nGrúpa Nua agus baineadh an duine sin den ghrúpa.</string>
-			<key>two</key>
-			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua agus baineadh den ghrúpa iad.</string>
-			<key>few</key>
-			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua agus baineadh den ghrúpa iad.</string>
-			<key>many</key>
-			<string>Níorbh fhéidir %1$d mball a chur leis an nGrúpa Nua agus baineadh den ghrúpa iad.</string>
-			<key>other</key>
-			<string>Níorbh fhéidir %1$d ball a chur leis an nGrúpa Nua agus baineadh den ghrúpa iad.</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Níorbh fhéidir ball a chur leis an nGrúpa Nua agus tugadh cuireadh don duine sin chun dul isteach ann.</string>
-			<key>two</key>
-			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua agus tugadh cuireadh dóibh chun dul isteach ann.</string>
-			<key>few</key>
-			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua agus tugadh cuireadh dóibh chun dul isteach ann.</string>
-			<key>many</key>
-			<string>Níorbh fhéidir %1$d mball a chur leis an nGrúpa Nua agus tugadh cuireadh dóibh chun dul isteach ann.</string>
-			<key>other</key>
-			<string>Níorbh fhéidir %1$d ball a chur leis an nGrúpa Nua agus tugadh cuireadh dóibh chun dul isteach ann.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

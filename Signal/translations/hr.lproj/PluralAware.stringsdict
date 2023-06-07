@@ -677,26 +677,6 @@
 			<string>%1$d članova</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d osoba je pozvana u grupu.</string>
-			<key>few</key>
-			<string>%1$d osobe su pozvane u grupu.</string>
-			<key>many</key>
-			<string>%1$d osoba je pozvano u grupu.</string>
-			<key>other</key>
-			<string>%1$d osoba je pozvano u grupu.</string>
-		</dict>
-	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -795,46 +775,6 @@
 			<string>Grupna priča · %1$d gledatelja</string>
 			<key>other</key>
 			<string>Grupna priča · %1$d gledatelja</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d člana nije bilo moguće dodati u Novu grupu te je uklonjen iz grupe.</string>
-			<key>few</key>
-			<string>%1$d člana nije bilo moguće dodati u Novu grupu te su uklonjeni iz grupe.</string>
-			<key>many</key>
-			<string>%1$d članova nije bilo moguće dodati u Novu grupu te su uklonjeni iz grupe.</string>
-			<key>other</key>
-			<string>%1$d članova nije bilo moguće dodati u Novu grupu te su uklonjeni iz grupe.</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d člana nije bilo moguće dodati u Novu grupu, stoga je pozvan da se pridruži.</string>
-			<key>few</key>
-			<string>%1$d člana nije moguće dodati u Novu grupu, stoga su pozvani da se pridruže.</string>
-			<key>many</key>
-			<string>%1$d članova nije moguće dodati u Novu grupu, stoga su pozvani da se pridruže.</string>
-			<key>other</key>
-			<string>%1$d članova nije moguće dodati u Novu grupu, stoga su pozvani da se pridruže.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

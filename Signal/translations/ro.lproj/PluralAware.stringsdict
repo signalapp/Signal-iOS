@@ -609,24 +609,6 @@
 			<string>%1$d de membri</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d persoană a fost invitată la grup.</string>
-			<key>few</key>
-			<string>%1$d persoane au fost invitate la grup.</string>
-			<key>other</key>
-			<string>%1$d de persoane au fost invitate la grup.</string>
-		</dict>
-	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -715,42 +697,6 @@
 			<string>Poveste de grup · %1$d spectatori</string>
 			<key>other</key>
 			<string>Poveste de grup · %1$d de spectatori</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Un membru nu a putut fi adăugat Noului Grup și a fost eliminat din grup.</string>
-			<key>few</key>
-			<string>%1$d membri nu au putut fi adăugați Noului Grup și au fost eliminați din grup.</string>
-			<key>other</key>
-			<string>%1$d de membri nu au putut fi adăugați Noului Grup și au fost eliminați din grup.</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Un membru nu a putut fi adăugat noului grup și a fost invitat să se alăture.</string>
-			<key>few</key>
-			<string>%1$d membri nu au putut fi adăugați noului grup și au fost invitați să se alăture.</string>
-			<key>other</key>
-			<string>%1$d de membri nu au putut fi adăugați noului grup și au fost invitați să se alăture.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

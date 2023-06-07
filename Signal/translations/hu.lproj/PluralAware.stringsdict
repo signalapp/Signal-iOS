@@ -541,22 +541,6 @@
 			<string>%1$d tag</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d személyt meghívtak a csoportba.</string>
-			<key>other</key>
-			<string>%1$d személyt meghívtak a csoportba.</string>
-		</dict>
-	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -635,38 +619,6 @@
 			<string>Csoport Történet · %1$d néző</string>
 			<key>other</key>
 			<string>Csoport történet · %1$d néző</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d tagot nem lehetett közvetlenül az Új csoporthoz adni, és így el lett távolítva.</string>
-			<key>other</key>
-			<string>%1$d tagot nem lehetett közvetlenül az Új csoporthoz adni, és így el lettek távolítva.</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d tagot nem lehetett közvetlenül az új csoporthoz adni, ezért ehelyett meg lett hívva.</string>
-			<key>other</key>
-			<string>%1$d tagot nem lehetett közvetlenül az új csoporthoz adni, ezért ehelyett meg lettek hívva.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

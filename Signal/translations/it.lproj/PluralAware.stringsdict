@@ -541,22 +541,6 @@
 			<string>%1$d persone</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d persona è stata invitata a entrare nel gruppo.</string>
-			<key>other</key>
-			<string>%1$d persone sono state invitate a entrare nel gruppo.</string>
-		</dict>
-	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -635,38 +619,6 @@
 			<string>Storia di gruppo · %1$d Persona l&apos;ha vista</string>
 			<key>other</key>
 			<string>Storia di gruppo · %1$d Persone l&apos;hanno vista</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Non è stato possibile aggiungere %1$d persona al nuovo gruppo ed è stata rimossa dal gruppo.</string>
-			<key>other</key>
-			<string>Non è stato possibile aggiungere %1$d persone al nuovo gruppo e sono state rimosse dal gruppo.</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d persona non può essere aggiunta al nuovo gruppo anche se è stata invitata a unirsi.</string>
-			<key>other</key>
-			<string>%1$d persone non possono essere aggiunte al nuovo gruppo anche se sono state invitate a unirsi.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

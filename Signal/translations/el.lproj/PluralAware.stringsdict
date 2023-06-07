@@ -541,22 +541,6 @@
 			<string>%1$d μέλη</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d άτομο προσκλήθηκε στην ομάδα.</string>
-			<key>other</key>
-			<string>%1$d άτομα προσκλήθηκαν στην ομάδα.</string>
-		</dict>
-	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -635,38 +619,6 @@
 			<string>Ιστορία ομάδας · %1$d θεατής</string>
 			<key>other</key>
 			<string>Ιστορία ομάδας · %1$d θεατές</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Ένα μέλος δεν ήταν δυνατό να προστεθεί στη Νέα Ομάδα και αφαιρέθηκε από την ομάδα.</string>
-			<key>other</key>
-			<string>%1$d μέλη δεν ήταν δυνατό να προστεθούν στη Νέα Ομάδα και αφαιρέθηκαν από την ομάδα.</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d μέλος δεν ήταν δυνατό να προστεθεί στη Νέα Ομάδα και προσκλήθηκε για συμμετοχή.</string>
-			<key>other</key>
-			<string>%1$d μέλη δεν ήταν δυνατό να προστεθούν στη Νέα Ομάδα και προσκλήθηκαν για συμμετοχή.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

@@ -2155,6 +2155,9 @@
 /* The name for the emoji category 'Objects' */
 "EMOJI_CATEGORY_OBJECTS_NAME" = "วัตถุ";
 
+/* The name for the emoji section for emojis already used on the message */
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "ล่าสุด";
 
@@ -2971,9 +2974,6 @@
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "คำเชิญเข้ากลุ่มถูกเพิกถอนสำหรับ %1$@";
 
-/* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%1$@ ถูกเชิญเข้ากลุ่ม";
-
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "คุณได้เชิญ %1$@ เข้ากลุ่ม";
 
@@ -3004,7 +3004,7 @@
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "คุณได้ปฏิเสธคำขอเข้ากลุ่มของ %1$@";
 
-/* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
+/* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ rejecting user name }}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ ได้ปฏิเสธคำขอเข้ากลุ่มของ %1$@";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
@@ -3111,12 +3111,6 @@
 
 /* Message indicating that the group was migrated. */
 "GROUP_WAS_MIGRATED" = "กลุ่มนี้ได้ปรับรุ่นเป็นกลุ่มแบบใหม่แล้ว";
-
-/* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "คุณเข้ากลุ่มแบบใหม่ไม่ได้และได้ถูกลบออกจากกลุ่มแล้ว";
-
-/* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "คุณไม่สามารถถูกเพิ่มไปยังกลุ่มแบบใหม่ได้และได้ถูกเชิญให้เข้าร่วม";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "คุณได้ออกจากกลุ่ม";
@@ -4930,7 +4924,7 @@
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "ตรวจยืนยันแล้ว";
 
-/* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
+/* Label indicating that the user is verified. Embeds  user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%1$@ ถูกตรวจยืนยันแล้ว";
 
 /* Button that shows the 'scan with camera' view. */

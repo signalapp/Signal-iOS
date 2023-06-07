@@ -2155,6 +2155,9 @@
 /* The name for the emoji category 'Objects' */
 "EMOJI_CATEGORY_OBJECTS_NAME" = "অবজেক্ট";
 
+/* The name for the emoji section for emojis already used on the message */
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "সাম্প্রতিক";
 
@@ -2971,9 +2974,6 @@
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "গ্রুপটিতে %1$@-এর জন্য আমন্ত্রণ বাতিল করা হয়েছে।";
 
-/* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%1$@-কে গ্রুপটিতে আমন্ত্রণ জানানো হয়েছে।";
-
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "আপনি %1$@-কে এই গ্রুপে আমন্ত্রণ জানিয়েছেন।";
 
@@ -3004,7 +3004,7 @@
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "আপনি %1$@-এর গ্রুপটিতে যোগদানের অনুরোধ প্রত্যাখ্যান করেছেন।";
 
-/* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
+/* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ rejecting user name }}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ গ্রুপটিতে যোগদান করার জন্য %1$@-এর অনুরোধ প্রত্যাখ্যান করেছেন।";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
@@ -3111,12 +3111,6 @@
 
 /* Message indicating that the group was migrated. */
 "GROUP_WAS_MIGRATED" = "গ্রুপটি আপগ্রেড হয়ে একটি নতুন গ্রুপ হয়েছে।";
-
-/* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "নতুন গ্রুপটিতে আপনাকে যোগ করা যায়নি এবং আপনাকে গ্রুপটি থেকে বাদ দেওয়া হয়েছে।";
-
-/* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "নতুন গ্রুপটিতে আপনাকে যোগ করা যায়নি এবং আপনাকে গ্রুপটিতে যোগদান করার জন্য আমন্ত্রণ জানানো হয়েছে।";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "আপনি গ্রুপ ত্যাগ করেছেন।";
@@ -4930,7 +4924,7 @@
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "যাচাইকৃত";
 
-/* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
+/* Label indicating that the user is verified. Embeds  user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%1$@ যাচাইকৃত";
 
 /* Button that shows the 'scan with camera' view. */

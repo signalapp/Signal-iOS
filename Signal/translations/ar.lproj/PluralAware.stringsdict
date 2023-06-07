@@ -813,30 +813,6 @@
 			<string>%1$d عضو</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>zero</key>
-			<string>دُعي %1$d شخص إلى المجموعة.</string>
-			<key>one</key>
-			<string>دُعي %1$d شخص إلى المجموعة.</string>
-			<key>two</key>
-			<string>دُعي شخصين %1$d إلى المجموعة.</string>
-			<key>few</key>
-			<string>دُعي %1$d أشخاص إلى المجموعة.</string>
-			<key>many</key>
-			<string>دُعي %1$d شخصًا إلى المجموعة.</string>
-			<key>other</key>
-			<string>دُعي %1$d شخصٍ إلى المجموعة.</string>
-		</dict>
-	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -955,54 +931,6 @@
 			<string>قصة جماعية · %1$d مشاهدًا</string>
 			<key>other</key>
 			<string>قِصة جماعية · %1$d مشاهد</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>zero</key>
-			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت إزِالته منها.</string>
-			<key>one</key>
-			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت إزِالته منها.</string>
-			<key>two</key>
-			<string>تعذّر إضافة %1$d عضوين إلى المجموعة الجديدة وقد تمت إزِالتهما منها.</string>
-			<key>few</key>
-			<string>تعذّر إضافة %1$d أعضاء إلى المجموعة الجديدة وقد تمت إزِالتهم منها.</string>
-			<key>many</key>
-			<string>تعذّر إضافة %1$d عضوا إلى المجموعة الجديدة وقد تمت إزِالتهم منها.</string>
-			<key>other</key>
-			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت إزِالتهم منها.</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>zero</key>
-			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت دعوته للانضمام.</string>
-			<key>one</key>
-			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت دعوته للانضمام.</string>
-			<key>two</key>
-			<string>تعذّر إضافة %1$d عضوين إلى المجموعة الجديدة وقد تمت دعوتهما للانضمام.</string>
-			<key>few</key>
-			<string>تعذّر إضافة %1$d أعضاء إلى المجموعة الجديدة وقد تمت دعوتهم للانضمام.</string>
-			<key>many</key>
-			<string>تعذّر إضافة %1$d عضوا إلى المجموعة الجديدة وقد تمت دعوتهم للانضمام.</string>
-			<key>other</key>
-			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت دعوتهم للانضمام.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

@@ -541,22 +541,6 @@
 			<string>%1$d জন সদস্য</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d জন ব্যক্তিকে গ্রুপে আমন্ত্রণ জানানো হয়েছে।</string>
-			<key>other</key>
-			<string>%1$d জন ব্যক্তিকে গ্রুপে আমন্ত্রণ জানানো হয়েছে।</string>
-		</dict>
-	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -635,38 +619,6 @@
 			<string>গ্ৰুপ স্টোরি · %1$d জন দর্শক</string>
 			<key>other</key>
 			<string>গ্ৰুপ স্টোরি · %1$d জন দর্শক</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>নতুন গ্রুপটিতে একজন সদস্যকে যোগ করা যায়নি এবং তাকে গ্রুপ থেকে বাদ দেওয়া হয়েছে।</string>
-			<key>other</key>
-			<string>নতুন গ্রুপটিতে %1$d জন সদস্যকে যোগ করা যায়নি এবং তাদেরকে গ্রুপ থেকে বাদ দেওয়া হয়েছে।</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>একজন সদস্যকে নতুন গ্রুপে যোগ করা যায়নি এবং তাকে যোগ দেওয়ার আমন্ত্রণ জানানো হয়েছে।</string>
-			<key>other</key>
-			<string>%1$d জন সদস্যকে নতুন গ্রুপে যোগ করা যায়নি এবং তাদেরকে যোগ দেওয়ার আমন্ত্রণ জানানো হয়েছে।</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

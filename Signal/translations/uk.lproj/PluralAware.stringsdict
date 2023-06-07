@@ -677,26 +677,6 @@
 			<string>%1$d учасника</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>До групи запрошено %1$d людину.</string>
-			<key>few</key>
-			<string>До групи запрошено %1$d людей.</string>
-			<key>many</key>
-			<string>До групи запрошено %1$d людей.</string>
-			<key>other</key>
-			<string>До групи запрошено %1$d людини.</string>
-		</dict>
-	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -795,46 +775,6 @@
 			<string>Групова сторі · %1$d глядачів</string>
 			<key>other</key>
 			<string>Групова сторі · %1$d глядача</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Не вдалося додати %1$d учасника до нової групи, тому було вилучено з групи.</string>
-			<key>few</key>
-			<string>Не вдалося додати %1$d учасників до нової групи, тому їх було вилучено з групи.</string>
-			<key>many</key>
-			<string>Не вдалося додати %1$d учасників до нової групи, тому їх було вилучено з групи.</string>
-			<key>other</key>
-			<string>Не вдалося додати %1$d учасника до нової групи, тому їх було вилучено з групи.</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Не вдалося додати %1$d учасника до нової групи, тому було надіслано запрошення приєднатися.</string>
-			<key>few</key>
-			<string>Не вдалося додати %1$d учасників до нової групи, тому було надіслано запрошення приєднатися.</string>
-			<key>many</key>
-			<string>Не вдалося додати %1$d учасників до нової групи, тому було надіслано запрошення приєднатися.</string>
-			<key>other</key>
-			<string>Не вдалося додати %1$d учасника до нової групи, тому було надіслано запрошення приєднатися.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
