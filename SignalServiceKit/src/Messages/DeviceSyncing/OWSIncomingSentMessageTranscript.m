@@ -35,10 +35,12 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    BOOL isEdit = NO;
     if (sentProto.message != nil) {
         _dataMessage = sentProto.message;
     } else if (sentProto.editMessage.dataMessage != nil) {
         _dataMessage = sentProto.editMessage.dataMessage;
+        isEdit = YES;
     } else {
         OWSFailDebug(@"Missing message.");
         return nil;
@@ -105,7 +107,10 @@ NS_ASSUME_NONNULL_BEGIN
         _requiredProtocolVersion = @(_dataMessage.requiredProtocolVersion);
     }
 
-    if (self.isRecipientUpdate) {
+    // There were scenarios where isRecipientUpdate would be true for edit sync
+    // messages, but would be missing the groupId. isRecipientUpdate has no effect
+    // on edit messages, so can be safely ignored here to avoid an unnecessary failure.
+    if (!isEdit && self.isRecipientUpdate) {
         // Fetch, don't create.  We don't want recipient updates to resurrect messages or threads.
         if (_groupId != nil) {
             _thread = [TSGroupThread fetchWithGroupId:_groupId transaction:transaction];
