@@ -6,11 +6,11 @@
 import Foundation
 import SignalMessaging
 
-@objc
-public class AppContextUtils: NSObject {
+public class AppContextUtils {
 
-    @objc
-    public static func openSystemSettingsAction(completion: (() -> Void)?) -> ActionSheetAction? {
+    private init() {}
+
+    public static func openSystemSettingsAction(completion: (() -> Void)? = nil) -> ActionSheetAction? {
         guard CurrentAppContext().isMainApp else {
             return nil
         }

@@ -22,7 +22,6 @@ public class CommonStrings: NSObject {
         OWSLocalizedString("BUTTON_CONTINUE", comment: "Label for 'continue' button.")
     }
 
-    @objc
     static public var dismissButton: String {
         OWSLocalizedString("DISMISS_BUTTON_TEXT",
                           comment: "Short text to dismiss current modal / actionsheet / screen")
@@ -113,7 +112,6 @@ public class CommonStrings: NSObject {
         OWSLocalizedString("SETTINGS_HELP", comment: "Title for help button and help pages in app settings.")
     }
 
-    @objc
     static public var openSettingsButton: String {
         OWSLocalizedString("OPEN_SETTINGS_BUTTON", comment: "Button text which opens the settings app")
     }
