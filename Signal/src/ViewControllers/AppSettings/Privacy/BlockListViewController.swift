@@ -75,16 +75,12 @@ class BlockListViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     guard let self else { return }
-                    BlockListUIUtils.showUnblockAddressActionSheet(
-                        address,
-                        from: self,
-                        completionBlock: { isBlocked in
-                            if !isBlocked {
-                                // Reload if unblocked.
-                                self.updateContactList(reloadTableView: true)
-                            }
+                    BlockListUIUtils.showUnblockAddressActionSheet(address, from: self) { isBlocked in
+                        if !isBlocked {
+                            // Reload if unblocked.
+                            self.updateContactList(reloadTableView: true)
                         }
-                    )
+                    }
                 }
             )
         }
@@ -110,15 +106,11 @@ class BlockListViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     guard let self else { return }
-                    BlockListUIUtils.showUnblockGroupActionSheet(
-                        group,
-                        from: self,
-                        completionBlock: { isBlocked in
-                            if !isBlocked {
-                                self.updateContactList(reloadTableView: true)
-                            }
+                    BlockListUIUtils.showUnblockGroupActionSheet(group, from: self) { isBlocked in
+                        if !isBlocked {
+                            self.updateContactList(reloadTableView: true)
                         }
-                    )
+                    }
                 }
             )
         }

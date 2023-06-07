@@ -6,7 +6,6 @@
 import Foundation
 import SignalCoreKit
 
-@objc
 public enum BlockMode: UInt {
     case remote
     case localShouldLeaveGroups
@@ -30,7 +29,6 @@ public class BlockingManager: NSObject {
     private let lock = UnfairLock()
     private var state = State()
 
-    @objc
     public required override init() {
         super.init()
         SwiftSingletons.register(self)
@@ -39,7 +37,6 @@ public class BlockingManager: NSObject {
         }
     }
 
-    @objc
     public func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
         loadStateOnLaunch()
@@ -149,7 +146,6 @@ extension BlockingManager {
 
     // MARK: Writers
 
-    @objc
     public func addBlockedAddress(_ address: SignalServiceAddress, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
         guard address.isValid else {
             owsFailDebug("Invalid address: \(address).")
@@ -167,7 +163,6 @@ extension BlockingManager {
         }
     }
 
-    @objc
     public func removeBlockedAddress(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
         guard address.isValid else {
             owsFailDebug("Invalid address: \(address).")
@@ -185,7 +180,6 @@ extension BlockingManager {
         }
     }
 
-    @objc
     public func addBlockedGroup(groupModel: TSGroupModel, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
         let groupId = groupModel.groupId
         guard GroupManager.isValidGroupIdOfAnyKind(groupId) else {
@@ -216,7 +210,6 @@ extension BlockingManager {
         }
     }
 
-    @objc
     public func removeBlockedGroup(groupId: Data, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
         guard GroupManager.isValidGroupIdOfAnyKind(groupId) else {
             owsFailDebug("Invalid group: \(groupId)")
@@ -242,7 +235,6 @@ extension BlockingManager {
 
     // MARK: Other convenience access
 
-    @objc
     public func isThreadBlocked(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
         if let contactThread = thread as? TSContactThread {
             return isAddressBlocked(contactThread.contactAddress, transaction: transaction)
@@ -256,7 +248,6 @@ extension BlockingManager {
         }
     }
 
-    @objc
     public func addBlockedThread(_ thread: TSThread,
                                  blockMode: BlockMode,
                                  transaction: SDSAnyWriteTransaction) {
@@ -269,7 +260,6 @@ extension BlockingManager {
         }
     }
 
-    @objc
     public func removeBlockedThread(_ thread: TSThread,
                                     wasLocallyInitiated: Bool,
                                     transaction: SDSAnyWriteTransaction) {
@@ -286,7 +276,6 @@ extension BlockingManager {
         }
     }
 
-    @objc
     public func addBlockedGroup(groupId: Data, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
         // Since we're in a write transaction, current state shouldn't have updated between this read
         // and the following write. I'm just using the `withCurrentState` method here to avoid reenterancy

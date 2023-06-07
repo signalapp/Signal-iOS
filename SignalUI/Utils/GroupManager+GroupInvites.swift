@@ -7,7 +7,6 @@ import SignalServiceKit
 
 public extension GroupManager {
 
-    @objc
     static func leaveGroupOrDeclineInviteAsyncWithUI(
         groupThread: TSGroupThread,
         fromViewController: UIViewController,

@@ -230,7 +230,8 @@ extension ConversationViewController {
                     BlockListUIUtils.showUnblockAddressActionSheet(
                         address,
                         from: self,
-                        completionBlock: nil)
+                        completion: nil
+                    )
                 })
 
         } else {

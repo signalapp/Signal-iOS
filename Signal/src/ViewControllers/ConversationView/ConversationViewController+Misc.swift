@@ -21,7 +21,7 @@ public extension ConversationViewController {
         groupV2UpdatesObjc.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
     }
 
-    func showUnblockConversationUI(completion: BlockActionCompletionBlock?) {
+    func showUnblockConversationUI(completion: BlockListUIUtils.Completion?) {
         self.userHasScrolled = false
 
         // To avoid "noisy" animations (hiding the keyboard before showing
@@ -32,7 +32,7 @@ public extension ConversationViewController {
         // hidden.
         dismissKeyBoard()
 
-        BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self, completionBlock: completion)
+        BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self, completion: completion)
     }
 
     // MARK: - Identity

@@ -6,14 +6,12 @@
 import SignalMessaging
 import SignalUI
 
-@objc
 protocol AddToBlockListDelegate: AnyObject {
     func addToBlockListComplete()
 }
 
-@objc
 class AddToBlockListViewController: RecipientPickerContainerViewController {
-    @objc
+
     weak var delegate: AddToBlockListDelegate?
 
     override func viewDidLoad() {
@@ -38,25 +36,17 @@ class AddToBlockListViewController: RecipientPickerContainerViewController {
     }
 
     func block(address: SignalServiceAddress) {
-        BlockListUIUtils.showBlockAddressActionSheet(
-            address,
-            from: self,
-            completionBlock: { [weak self] isBlocked in
-                guard isBlocked else { return }
-                self?.delegate?.addToBlockListComplete()
-            }
-        )
+        BlockListUIUtils.showBlockAddressActionSheet(address, from: self) { [weak self] isBlocked in
+            guard isBlocked else { return }
+            self?.delegate?.addToBlockListComplete()
+        }
     }
 
     func block(thread: TSThread) {
-        BlockListUIUtils.showBlockThreadActionSheet(
-            thread,
-            from: self,
-            completionBlock: { [weak self] isBlocked in
-                guard isBlocked else { return }
-                self?.delegate?.addToBlockListComplete()
-            }
-        )
+        BlockListUIUtils.showBlockThreadActionSheet(thread, from: self) { [weak self] isBlocked in
+            guard isBlocked else { return }
+            self?.delegate?.addToBlockListComplete()
+        }
     }
 }
 

@@ -123,7 +123,7 @@ class MemberActionSheet: OWSTableSheetViewController {
                     BlockListUIUtils.showBlockAddressActionSheet(
                         self.address,
                         from: fromViewController,
-                        completionBlock: nil
+                        completion: nil
                     )
                 }
             }
