@@ -220,7 +220,7 @@ extension CVItemViewModelImpl {
         guard !attachments.isEmpty else {
             return
         }
-        AttachmentSharing.showShareUI(forAttachments: attachments, sender: sender)
+        AttachmentSharing.showShareUI(for: attachments, sender: sender)
     }
 
     var canForwardMessage: Bool {

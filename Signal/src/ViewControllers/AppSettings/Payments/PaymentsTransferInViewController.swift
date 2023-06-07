@@ -204,6 +204,6 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             owsFailDebug("Missing walletAddressBase58.")
             return
         }
-        AttachmentSharing.showShareUI(forText: walletAddressBase58, sender: self)
+        AttachmentSharing.showShareUI(for: walletAddressBase58, sender: self)
     }
 }

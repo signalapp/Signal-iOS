@@ -221,7 +221,7 @@ public class LongTextViewController: OWSViewController {
 
     @objc
     private func shareButtonPressed(_ sender: UIBarButtonItem) {
-        AttachmentSharing.showShareUI(forText: fullAttributedText.string, sender: sender)
+        AttachmentSharing.showShareUI(for: fullAttributedText.string, sender: sender)
     }
 
     @objc

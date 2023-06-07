@@ -93,7 +93,7 @@ class DebugLogs: NSObject {
                 style: .default,
                 handler: { _ in
                     AttachmentSharing.showShareUI(
-                        forText: url.absoluteString,
+                        for: url.absoluteString,
                         sender: nil,
                         completion: submitLogsCompletion
                     )

@@ -747,7 +747,7 @@ extension StoryContextMenuGenerator {
                         return owsFailDebug("Unexpectedly tried to share undownloaded attachment")
                     }
                     self?.isDisplayingFollowup = true
-                    AttachmentSharing.showShareUI(forAttachment: attachment, sender: sourceView) { [weak self] in
+                    AttachmentSharing.showShareUI(for: attachment, sender: sourceView) { [weak self] in
                         self?.isDisplayingFollowup = false
                         completion(true)
                     }
@@ -773,7 +773,7 @@ extension StoryContextMenuGenerator {
                         }
                         if let text {
                             self?.isDisplayingFollowup = true
-                            AttachmentSharing.showShareUI(forText: text, sender: sourceView) { [weak self] in
+                            AttachmentSharing.showShareUI(for: text, sender: sourceView) { [weak self] in
                                 self?.isDisplayingFollowup = false
                                 completion(true)
                             }

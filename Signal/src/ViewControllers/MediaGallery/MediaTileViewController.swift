@@ -1267,7 +1267,7 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
             return
         }
 
-        AttachmentSharing.showShareUI(forAttachments: items, sender: sender)
+        AttachmentSharing.showShareUI(for: items, sender: sender)
     }
 
     func mediaGalleryAccessoriesHelperToolbarHeightWillChange(to height: CGFloat) {

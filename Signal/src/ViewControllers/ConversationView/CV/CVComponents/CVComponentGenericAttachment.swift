@@ -336,7 +336,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             return
         }
         // TODO: Ensure share UI is shown from correct location.
-        AttachmentSharing.showShareUI(forAttachment: attachmentStream, sender: view)
+        AttachmentSharing.showShareUI(for: attachmentStream, sender: view)
     }
 
     // MARK: -

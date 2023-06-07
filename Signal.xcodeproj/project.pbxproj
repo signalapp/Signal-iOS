@@ -413,8 +413,6 @@
 		34A954DE271B4F3E00B05242 /* ChatColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D6271B4F3E00B05242 /* ChatColors.swift */; };
 		34A954E0271B4F3E00B05242 /* ColorOrGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D8271B4F3E00B05242 /* ColorOrGradient.swift */; };
 		34A954E2271B4F3E00B05242 /* ColorOrGradientSwatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */; };
-		34A954E6271B4F6A00B05242 /* AttachmentSharing.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A954E3271B4F6900B05242 /* AttachmentSharing.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		34A954E7271B4F6A00B05242 /* AttachmentSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A954E4271B4F6A00B05242 /* AttachmentSharing.m */; };
 		34A954E8271B4F6A00B05242 /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954E5271B4F6A00B05242 /* VideoPlayer.swift */; };
 		34A954F7271B4FB000B05242 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A954EC271B4FB000B05242 /* UIViewController+OWS.m */; };
 		34A954FD271B4FB000B05242 /* UIViewController+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A954F2271B4FB000B05242 /* UIViewController+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -914,6 +912,7 @@
 		7628DDC1280750BC009AA53D /* ExpandableContactListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDC0280750BC009AA53D /* ExpandableContactListView.swift */; };
 		7628DDC32807609F009AA53D /* ImageEditorToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDC22807609F009AA53D /* ImageEditorToolbar.swift */; };
 		7628DDC5280A01B8009AA53D /* ImageEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDC4280A01B8009AA53D /* ImageEditorViewController.swift */; };
+		762EBBD02A2FB759002FD28F /* AttachmentSharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */; };
 		7634F08D2A21963600BB93D5 /* Sounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7634F08C2A21963600BB93D5 /* Sounds.swift */; };
 		76387BF028F4ED73002C7BA5 /* CaseIterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */; };
 		763D7DDB27E155ED002EA7E6 /* RoundMediaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */; };
@@ -2752,8 +2751,6 @@
 		34A954D6271B4F3E00B05242 /* ChatColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatColors.swift; sourceTree = "<group>"; };
 		34A954D8271B4F3E00B05242 /* ColorOrGradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorOrGradient.swift; sourceTree = "<group>"; };
 		34A954DA271B4F3E00B05242 /* ColorOrGradientSwatchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorOrGradientSwatchView.swift; sourceTree = "<group>"; };
-		34A954E3271B4F6900B05242 /* AttachmentSharing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentSharing.h; sourceTree = "<group>"; };
-		34A954E4271B4F6A00B05242 /* AttachmentSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentSharing.m; sourceTree = "<group>"; };
 		34A954E5271B4F6A00B05242 /* VideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
 		34A954EC271B4FB000B05242 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+OWS.m"; sourceTree = "<group>"; };
 		34A954F2271B4FB000B05242 /* UIViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+OWS.h"; sourceTree = "<group>"; };
@@ -3388,6 +3385,7 @@
 		7628DDC0280750BC009AA53D /* ExpandableContactListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpandableContactListView.swift; sourceTree = "<group>"; };
 		7628DDC22807609F009AA53D /* ImageEditorToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorToolbar.swift; sourceTree = "<group>"; };
 		7628DDC4280A01B8009AA53D /* ImageEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorViewController.swift; sourceTree = "<group>"; };
+		762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentSharing.swift; sourceTree = "<group>"; };
 		7634F08C2A21963600BB93D5 /* Sounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sounds.swift; sourceTree = "<group>"; };
 		76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseIterable.swift; sourceTree = "<group>"; };
 		763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundMediaButton.swift; sourceTree = "<group>"; };
@@ -5584,8 +5582,7 @@
 		34A954C9271B4BE600B05242 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				34A954E3271B4F6900B05242 /* AttachmentSharing.h */,
-				34A954E4271B4F6A00B05242 /* AttachmentSharing.m */,
+				762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */,
 				34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */,
 				34A954E5271B4F6A00B05242 /* VideoPlayer.swift */,
 			);
@@ -9495,7 +9492,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				34A954E6271B4F6A00B05242 /* AttachmentSharing.h in Headers */,
 				34A955B4271B53F600B05242 /* BlockListUIUtils.h in Headers */,
 				3402AA9E271D9E180084CBAE /* ContactsViewHelper.h in Headers */,
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */,
@@ -10734,7 +10730,7 @@
 				3402AA34271D9DCD0084CBAE /* AttachmentItemCollection.swift in Sources */,
 				3402A9EC271D98440084CBAE /* AttachmentMultisend.swift in Sources */,
 				3402AA3D271D9DCD0084CBAE /* AttachmentPrepViewController.swift in Sources */,
-				34A954E7271B4F6A00B05242 /* AttachmentSharing.m in Sources */,
+				762EBBD02A2FB759002FD28F /* AttachmentSharing.swift in Sources */,
 				3402AA42271D9DCD0084CBAE /* AttachmentTextToolbar.swift in Sources */,
 				3402AA55271D9DCD0084CBAE /* AttachmentTextView.swift in Sources */,
 				7609818C2936EF22008F8300 /* AudioPlayer.swift in Sources */,
