@@ -725,8 +725,8 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
     }
 
     // MARK: Emoji Sheet
-    public func showEmojiSheet(completion: @escaping (String) -> Void) {
-        let picker = EmojiPickerSheet { [weak self] emoji in
+    public func showEmojiSheet(message: TSMessage, completion: @escaping (String) -> Void) {
+        let picker = EmojiPickerSheet(message: message) { [weak self] emoji in
             guard let self = self else { return }
 
             guard let emojiString = emoji?.rawValue else {

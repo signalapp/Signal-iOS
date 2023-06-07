@@ -128,7 +128,7 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
 
         reactionPicker.playDismissalAnimation(duration: 0.2) { }
 
-        self.delegate?.contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(self) { emojiString in
+        self.delegate?.contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(for: message, accessory: self) { emojiString in
             let isRemoving = emojiString == self.itemViewModel?.reactionState?.localUserEmoji
             self.didSelectReactionHandler?(message, emojiString, isRemoving)
             self.delegate?.contextMenuTargetedPreviewAccessoryRequestsDismissal(self, completion: { })

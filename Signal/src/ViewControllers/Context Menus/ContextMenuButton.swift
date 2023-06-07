@@ -283,7 +283,11 @@ extension ContextMenuButton: ContextMenuTargetedPreviewAccessoryInteractionDeleg
         dismissContextMenu(animated: true, completion: completion)
     }
 
-    func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(_ accessory: ContextMenuTargetedPreviewAccessory, completion: @escaping (String) -> Void) {
+    func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(
+        for message: TSMessage,
+        accessory: ContextMenuTargetedPreviewAccessory,
+        completion: @escaping (String) -> Void
+    ) {
         owsFailDebug("Emoji picker not supported from ContextMenuButton")
     }
 }

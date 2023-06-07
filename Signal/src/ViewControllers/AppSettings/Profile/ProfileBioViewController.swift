@@ -319,7 +319,7 @@ class ProfileBioViewController: OWSTableViewController2 {
     private var anyReactionPicker: EmojiPickerSheet?
 
     private func showAnyEmojiPicker() {
-        let picker = EmojiPickerSheet(allowReactionConfiguration: false) { [weak self] emoji in
+        let picker = EmojiPickerSheet(message: nil, allowReactionConfiguration: false) { [weak self] emoji in
             guard let emoji = emoji else {
                 return
             }

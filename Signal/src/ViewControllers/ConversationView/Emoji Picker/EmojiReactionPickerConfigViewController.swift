@@ -74,7 +74,7 @@ extension EmojiReactionPickerConfigViewController: MessageReactionPickerDelegate
             return
         }
 
-        let picker = EmojiPickerSheet(allowReactionConfiguration: false) { [weak self] emoji in
+        let picker = EmojiPickerSheet(message: nil, allowReactionConfiguration: false) { [weak self] emoji in
             guard let self = self else { return }
 
             guard let emojiString = emoji?.rawValue else {

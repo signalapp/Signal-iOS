@@ -108,7 +108,9 @@ extension StoryReplySheet {
     func didSelectAnyEmoji() {
         dismissReactionPicker()
 
-        let sheet = EmojiPickerSheet { [weak self] selectedEmoji in
+        // nil is intentional, the message is for showing other reactions already
+        // on the message, which we don't wanna do for stories.
+        let sheet = EmojiPickerSheet(message: nil) { [weak self] selectedEmoji in
             guard let selectedEmoji = selectedEmoji else { return }
             self?.tryToSendReaction(selectedEmoji.rawValue)
         }

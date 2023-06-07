@@ -255,10 +255,11 @@ extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTarg
     }
 
     func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(
-        _ accessory: ContextMenuTargetedPreviewAccessory,
+        for message: TSMessage,
+        accessory: ContextMenuTargetedPreviewAccessory,
         completion: @escaping (String) -> Void
     ) {
-        contextMenuController?.showEmojiSheet(completion: { emojiString in
+        contextMenuController?.showEmojiSheet(message: message, completion: { emojiString in
             self.contextMenuController?.dismissEmojiSheet(animated: true, completion: {
                 completion(emojiString)
             })

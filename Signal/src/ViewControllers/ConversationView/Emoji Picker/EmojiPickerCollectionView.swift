@@ -7,9 +7,15 @@ import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 
+enum EmojiPickerSection {
+    case messageEmoji
+    case recentEmoji
+    case emojiCategory(categoryIndex: Int)
+}
+
 protocol EmojiPickerCollectionViewDelegate: AnyObject {
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: EmojiWithSkinTones)
-    func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didScrollToSection section: Int)
+    func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didScrollToSection section: EmojiPickerSection)
     func emojiPickerWillBeginDragging(_ emojiPicker: EmojiPickerCollectionView)
 
 }
@@ -21,6 +27,10 @@ class EmojiPickerCollectionView: UICollectionView {
     private static let recentEmojiKey = "recentEmoji"
 
     weak var pickerDelegate: EmojiPickerCollectionViewDelegate?
+
+    // The emoji already applied to the message
+    private let messageEmoji: [EmojiWithSkinTones]
+    var hasMessageEmoji: Bool { !messageEmoji.isEmpty }
 
     private let recentEmoji: [EmojiWithSkinTones]
     var hasRecentEmoji: Bool { !recentEmoji.isEmpty }
@@ -54,13 +64,23 @@ class EmojiPickerCollectionView: UICollectionView {
 
     lazy var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissSkinTonePicker))
 
-    init() {
+    init(message: TSMessage?) {
         layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(square: EmojiPickerCollectionView.emojiWidth)
         layout.minimumInteritemSpacing = EmojiPickerCollectionView.minimumSpacing
         layout.sectionInset = UIEdgeInsets(top: 0, leading: EmojiPickerCollectionView.margins, bottom: 0, trailing: EmojiPickerCollectionView.margins)
 
-        (recentEmoji, allSendableEmojiByCategory) = SDSDatabaseStorage.shared.read { transaction in
+        (messageEmoji, recentEmoji, allSendableEmojiByCategory) = SDSDatabaseStorage.shared.read { transaction in
+            let messageEmoji: [EmojiWithSkinTones]
+            if let message {
+                let reactions = ReactionFinder(uniqueMessageId: message.uniqueId).allReactions(transaction: transaction.unwrapGrdbRead)
+                messageEmoji = reactions.compactMap {
+                    return EmojiWithSkinTones(rawValue: $0.emoji)
+                }
+            } else {
+                messageEmoji = []
+            }
+
             let rawRecentEmoji = EmojiPickerCollectionView.keyValueStore.getObject(
                 forKey: EmojiPickerCollectionView.recentEmojiKey,
                 transaction: transaction
@@ -85,7 +105,7 @@ class EmojiPickerCollectionView: UICollectionView {
             let allSendableEmojiByCategory = Emoji.allSendableEmojiByCategoryWithPreferredSkinTones(
                 transaction: transaction
             )
-            return (recentEmoji, allSendableEmojiByCategory)
+            return (messageEmoji, recentEmoji, allSendableEmojiByCategory)
         }
 
         super.init(frame: .zero, collectionViewLayout: layout)
@@ -128,22 +148,84 @@ class EmojiPickerCollectionView: UICollectionView {
 
     // At max, we show 3 rows of recent emoji
     private var maxRecentEmoji: Int { numberOfColumns * 3 }
-    private var categoryIndexOffset: Int { hasRecentEmoji ? 1 : 0}
+
+    private func section(raw: Int) -> EmojiPickerSection {
+        switch (hasMessageEmoji, hasRecentEmoji) {
+        case (true, true):
+            // Message emoji, then recents, then categories.
+            switch raw {
+            case 0: return .messageEmoji
+            case 1: return .recentEmoji
+            default: return .emojiCategory(categoryIndex: raw - 2)
+            }
+        case (true, false):
+            // Message emoji and then categories
+            switch raw {
+            case 0: return .messageEmoji
+            default: return .emojiCategory(categoryIndex: raw - 1)
+            }
+        case (false, true):
+            // Recents and then categories
+            switch raw {
+            case 0: return .recentEmoji
+            default: return .emojiCategory(categoryIndex: raw - 1)
+            }
+        case (false, false):
+            return .emojiCategory(categoryIndex: raw)
+        }
+    }
+
+    private func rawSection(from section: EmojiPickerSection) -> Int {
+        switch (hasMessageEmoji, hasRecentEmoji) {
+        case (true, true):
+            // Message emoji, then recents, then categories.
+            switch section {
+            case .messageEmoji: return 0
+            case .recentEmoji: return 1
+            case .emojiCategory(let categoryIndex): return categoryIndex + 2
+            }
+        case (true, false):
+            // Message emoji and then categories
+            switch section {
+            case .messageEmoji: return 0
+            case .recentEmoji: return 0
+            case .emojiCategory(let categoryIndex): return categoryIndex + 1
+            }
+        case (false, true):
+            // Recents and then categories
+            switch section {
+            case .messageEmoji: return 0
+            case .recentEmoji: return 0
+            case .emojiCategory(let categoryIndex): return categoryIndex + 1
+            }
+        case (false, false):
+            switch section {
+            case .messageEmoji: return 0
+            case .recentEmoji: return 0
+            case .emojiCategory(let categoryIndex): return categoryIndex
+            }
+        }
+    }
 
     func emojiForSection(_ section: Int) -> [EmojiWithSkinTones] {
-        guard section > 0 || !hasRecentEmoji else { return Array(recentEmoji[0..<min(maxRecentEmoji, recentEmoji.count)]) }
+        switch self.section(raw: section) {
+        case .messageEmoji:
+            return messageEmoji
+        case .recentEmoji:
+            return Array(recentEmoji[0..<min(maxRecentEmoji, recentEmoji.count)])
+        case .emojiCategory(let categoryIndex):
+            guard let category = Emoji.Category.allCases[safe: categoryIndex] else {
+                owsFailDebug("Unexpectedly missing category for section \(section)")
+                return []
+            }
 
-        guard let category = Emoji.Category.allCases[safe: section - categoryIndexOffset] else {
-            owsFailDebug("Unexpectedly missing category for section \(section)")
-            return []
+            guard let categoryEmoji = allSendableEmojiByCategory[category] else {
+                owsFailDebug("Unexpectedly missing emoji for category \(category)")
+                return []
+            }
+
+            return categoryEmoji
         }
-
-        guard let categoryEmoji = allSendableEmojiByCategory[category] else {
-            owsFailDebug("Unexpectedly missing emoji for category \(category)")
-            return []
-        }
-
-        return categoryEmoji
     }
 
     func emojiForIndexPath(_ indexPath: IndexPath) -> EmojiWithSkinTones? {
@@ -151,17 +233,25 @@ class EmojiPickerCollectionView: UICollectionView {
     }
 
     func nameForSection(_ section: Int) -> String? {
-        guard section > 0 || !hasRecentEmoji else {
-            return OWSLocalizedString("EMOJI_CATEGORY_RECENTS_NAME",
-                                     comment: "The name for the emoji category 'Recents'")
-        }
+        switch self.section(raw: section) {
+        case .messageEmoji:
+            return OWSLocalizedString(
+                "EMOJI_CATEGORY_ON_MESSAGE_NAME",
+                comment: "The name for the emoji section for emojis already used on the message"
+            )
+        case .recentEmoji:
+            return OWSLocalizedString(
+                "EMOJI_CATEGORY_RECENTS_NAME",
+                comment: "The name for the emoji category 'Recents'"
+            )
+        case .emojiCategory(let categoryIndex):
+            guard let category = Emoji.Category.allCases[safe: categoryIndex] else {
+                owsFailDebug("Unexpectedly missing category for section \(section)")
+                return nil
+            }
 
-        guard let category = Emoji.Category.allCases[safe: section - categoryIndexOffset] else {
-            owsFailDebug("Unexpectedly missing category for section \(section)")
-            return nil
+            return category.localizedName
         }
-
-        return category.localizedName
     }
 
     func recordRecentEmoji(_ emoji: EmojiWithSkinTones, transaction: SDSAnyWriteTransaction) {
@@ -194,12 +284,12 @@ class EmojiPickerCollectionView: UICollectionView {
 
         let newLowestVisibleSection = indexPathsForVisibleItems.reduce(into: Set<Int>()) { $0.insert($1.section) }.min() ?? 0
 
-        guard scrollingToSection == nil || newLowestVisibleSection == scrollingToSection else { return }
+        guard scrollingToSection == nil || newLowestVisibleSection == self.rawSection(from: scrollingToSection!) else { return }
 
         scrollingToSection = nil
 
         if lowestVisibleSection != newLowestVisibleSection {
-            pickerDelegate?.emojiPicker(self, didScrollToSection: newLowestVisibleSection)
+            pickerDelegate?.emojiPicker(self, didScrollToSection: self.section(raw: newLowestVisibleSection))
             lowestVisibleSection = newLowestVisibleSection
         }
     }
@@ -270,11 +360,11 @@ class EmojiPickerCollectionView: UICollectionView {
         }
     }
 
-    var scrollingToSection: Int?
-    func scrollToSectionHeader(_ section: Int, animated: Bool) {
+    var scrollingToSection: EmojiPickerSection?
+    func scrollToSectionHeader(_ section: EmojiPickerSection, animated: Bool) {
         guard let attributes = layoutAttributesForSupplementaryElement(
             ofKind: UICollectionView.elementKindSectionHeader,
-            at: IndexPath(item: 0, section: section)
+            at: IndexPath(item: 0, section: self.rawSection(from: section))
         ) else { return }
         scrollingToSection = section
         setContentOffset(CGPoint(x: 0, y: (attributes.frame.minY - contentInset.top)), animated: animated)
@@ -355,7 +445,12 @@ extension EmojiPickerCollectionView: UICollectionViewDataSource {
     }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return isSearching ? 1 : Emoji.Category.allCases.count + categoryIndexOffset
+        guard !isSearching else { return 1 }
+        var numSections = 0
+        if hasMessageEmoji { numSections += 1 }
+        if hasRecentEmoji { numSections += 1 }
+        numSections += Emoji.Category.allCases.count
+        return numSections
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

@@ -54,6 +54,9 @@ open class InteractiveSheetViewController: OWSViewController {
 
     open var interactiveScrollViews: [UIScrollView] { [] }
 
+    open var dismissesWithHighVelocitySwipe: Bool { true }
+    open var shrinksWithHighVelocitySwipe: Bool { true }
+
     open var sheetBackgroundColor: UIColor { Theme.actionSheetBackgroundColor }
 
     public weak var externalBackdropView: UIView?
@@ -351,11 +354,16 @@ open class InteractiveSheetViewController: OWSViewController {
 
             if currentVelocity <= -Constants.maximizeVelocityThreshold {
                 completionState = .growing
-            } else if currentVelocity >= Constants.dismissVelocityThreshold {
+            } else if currentVelocity >= Constants.dismissVelocityThreshold && dismissesWithHighVelocitySwipe {
                 completionState = .dismissing
             } else if currentHeight >= minHeight {
-                if abs(currentVelocity) > Constants.baseVelocityThreshhold {
-                    completionState = currentVelocity > 0 ? .shrinking : .growing
+                if
+                    currentVelocity > Constants.baseVelocityThreshhold,
+                    shrinksWithHighVelocitySwipe
+                {
+                    completionState = .shrinking
+                } else if currentVelocity < -Constants.baseVelocityThreshhold {
+                    completionState = .growing
                 } else {
                     completionState =
                         currentHeight < (maxHeight + minHeight) / 2
