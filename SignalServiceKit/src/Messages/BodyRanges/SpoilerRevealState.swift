@@ -34,7 +34,7 @@ public struct InteractionSnapshotIdentifier: Equatable, Hashable {
 // MARK: -
 
 public protocol SpoilerRevealStateObserver: NSObjectProtocol {
-    func didUpdateRevealedSpoilers()
+    func didUpdateRevealedSpoilers(_ spoilerReveal: SpoilerRevealState)
 }
 
 @objc
@@ -57,7 +57,7 @@ public class SpoilerRevealState: NSObject {
         revealedIds.insert(id)
         revealedSpoilerIdsByMessage[interactionIdentifier] = revealedIds
         observers[interactionIdentifier]?.forEach {
-            $0.value?.didUpdateRevealedSpoilers()
+            $0.value?.didUpdateRevealedSpoilers(self)
         }
     }
 
@@ -88,36 +88,9 @@ public class SpoilerRevealState: NSObject {
         self.observers[interactionIdentifier] = observers
     }
 
-    public func copy() -> SpoilerRevealState {
-        let returnValue = SpoilerRevealState()
-        returnValue.revealedSpoilerIdsByMessage = revealedSpoilerIdsByMessage
-        return returnValue
-    }
+    public typealias Snapshot = [InteractionSnapshotIdentifier: Set<StyleIdType>]
 
-    public override func isEqual(_ object: Any?) -> Bool {
-        let lhs = self
-        guard let rhs = object as? SpoilerRevealState else {
-            return false
-        }
-        guard lhs.revealedSpoilerIdsByMessage == rhs.revealedSpoilerIdsByMessage else {
-            return false
-        }
-        guard lhs.observers.count == rhs.observers.count else {
-            return false
-        }
-        for key in lhs.observers.keys {
-            guard let lhsObs = lhs.observers[key], let rhsObs = rhs.observers[key] else {
-                return false
-            }
-            guard lhsObs.count == rhsObs.count else {
-                return false
-            }
-            for i in 0..<lhsObs.count {
-                guard lhsObs[i].value === rhsObs[i].value else {
-                    return false
-                }
-            }
-        }
-        return true
+    public func snapshot() -> Snapshot {
+        return revealedSpoilerIdsByMessage
     }
 }

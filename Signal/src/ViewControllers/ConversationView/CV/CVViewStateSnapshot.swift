@@ -11,7 +11,7 @@ import SignalUI
 struct CVViewStateSnapshot: Dependencies {
 
     let textExpansion: CVTextExpansion
-    let spoilerReveal: SpoilerRevealState
+    let spoilerReveal: SpoilerRevealState.Snapshot
     let messageSwipeActionState: CVMessageSwipeActionState
 
     // We can only measure (configure) with a given ConversationStyle.
@@ -48,7 +48,7 @@ struct CVViewStateSnapshot: Dependencies {
     ) -> CVViewStateSnapshot {
         CVViewStateSnapshot(
             textExpansion: viewState.textExpansion.copy(),
-            spoilerReveal: viewState.spoilerReveal.copy(),
+            spoilerReveal: viewState.spoilerReveal.snapshot(),
             messageSwipeActionState: viewState.messageSwipeActionState.copy(),
             coreState: viewState.asCoreState,
             typingIndicatorsSender: typingIndicatorsSender,
@@ -66,7 +66,7 @@ struct CVViewStateSnapshot: Dependencies {
     ) -> CVViewStateSnapshot {
         CVViewStateSnapshot(
             textExpansion: CVTextExpansion(),
-            spoilerReveal: spoilerReveal,
+            spoilerReveal: spoilerReveal.snapshot(),
             messageSwipeActionState: CVMessageSwipeActionState(),
             coreState: coreState,
             typingIndicatorsSender: nil,

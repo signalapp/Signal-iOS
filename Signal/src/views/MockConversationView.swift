@@ -378,6 +378,8 @@ extension MockConversationView: CVComponentDelegate {
 
     var wallpaperBlurProvider: WallpaperBlurProvider? { nil }
 
+    var spoilerReveal: SpoilerRevealState { return SpoilerRevealState() }
+
     // MARK: - Selection
 
     public var selectionState: CVSelectionState { CVSelectionState() }

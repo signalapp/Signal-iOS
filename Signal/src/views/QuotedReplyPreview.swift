@@ -55,7 +55,7 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate, SpoilerRevealSta
         NotificationCenter.default.addObserver(self, selector: #selector(contentSizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
     }
 
-    public func didUpdateRevealedSpoilers() {
+    public func didUpdateRevealedSpoilers(_ spoilerReveal: SpoilerRevealState) {
         updateContents()
     }
 

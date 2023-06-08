@@ -17,6 +17,8 @@ extension ConversationViewController: CVComponentDelegate {
 
     public var wallpaperBlurProvider: WallpaperBlurProvider? { backgroundContainer }
 
+    public var spoilerReveal: SpoilerRevealState { return self.viewState.spoilerReveal }
+
     public func enqueueReload() {
         self.loadCoordinator.enqueueReload()
     }

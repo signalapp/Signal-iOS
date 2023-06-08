@@ -213,9 +213,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let textExpansion = viewStateSnapshot.textExpansion
         let searchText = viewStateSnapshot.searchText
         let isTextExpanded = textExpansion.isTextExpanded(interactionId: interaction.uniqueId)
-        let revealedSpoilerIds = viewStateSnapshot.spoilerReveal.revealedSpoilerIds(
-            interactionIdentifier: .fromInteraction(interaction)
-        )
+        let revealedSpoilerIds = viewStateSnapshot.spoilerReveal[.fromInteraction(interaction)] ?? Set()
 
         let items: [CVTextLabel.Item]
         var shouldUseAttributedText = false

@@ -383,6 +383,10 @@ public class CVComponentState: Equatable, Dependencies {
         let interaction: TSInteraction
         let itemBuildingContext: CVItemBuildingContext
 
+        var revealedSpoilerIdsSnapshot: Set<StyleIdType> {
+            return itemBuildingContext.viewStateSnapshot.spoilerReveal[.fromInteraction(interaction)] ?? Set()
+        }
+
         var senderName: SenderName?
         var senderAvatar: SenderAvatar?
         var bodyText: BodyText?
@@ -731,7 +735,7 @@ fileprivate extension CVComponentState.Builder {
                 owsFailDebug("Invalid message.")
                 return build()
             }
-            return try populateAndBuild(message: message, spoilerReveal: self.spoilerReveal)
+            return try populateAndBuild(message: message, revealedSpoilerIdsSnapshot: revealedSpoilerIdsSnapshot)
         case .unknown:
             owsFailDebug("Unknown interaction type.")
             return build()
@@ -771,7 +775,7 @@ fileprivate extension CVComponentState.Builder {
 
     mutating func populateAndBuild(
         message: TSMessage,
-        spoilerReveal: SpoilerRevealState
+        revealedSpoilerIdsSnapshot: Set<StyleIdType>
     ) throws -> CVComponentState {
 
         if message.wasRemotelyDeleted {
@@ -794,7 +798,7 @@ fileprivate extension CVComponentState.Builder {
 
         // Check for quoted replies _before_ media album handling,
         // since that logic may exit early.
-        buildQuotedReply(message: message, spoilerReveal: spoilerReveal)
+        buildQuotedReply(message: message, revealedSpoilerIdsSnapshot: revealedSpoilerIdsSnapshot)
 
         try buildBodyText(message: message)
 
@@ -1017,7 +1021,7 @@ fileprivate extension CVComponentState.Builder {
     // TODO: Should we validate and throw errors?
     mutating func buildQuotedReply(
         message: TSMessage,
-        spoilerReveal: SpoilerRevealState
+        revealedSpoilerIdsSnapshot: Set<StyleIdType>
     ) {
         guard let quotedReplyModel = QuotedReplyModel(message: message, transaction: transaction) else {
             return
@@ -1029,7 +1033,7 @@ fileprivate extension CVComponentState.Builder {
                 text: quotedBody,
                 ranges: quotedReplyModel.bodyRanges,
                 interaction: message,
-                spoilerReveal: spoilerReveal,
+                revealedSpoilerIdsSnapshot: revealedSpoilerIdsSnapshot,
                 transaction: transaction
             )
         }
@@ -1037,7 +1041,6 @@ fileprivate extension CVComponentState.Builder {
             quotedReplyModel: quotedReplyModel,
             displayableQuotedText: displayableQuotedText,
             conversationStyle: conversationStyle,
-            spoilerReveal: spoilerReveal,
             isOutgoing: isOutgoing,
             transaction: transaction
         )
@@ -1273,16 +1276,14 @@ fileprivate extension CVComponentState {
         text: String,
         ranges: MessageBodyRanges?,
         interaction: TSInteraction,
-        spoilerReveal: SpoilerRevealState,
+        revealedSpoilerIdsSnapshot: Set<StyleIdType>,
         transaction: SDSAnyReadTransaction
     ) -> DisplayableText {
         return DisplayableText.displayableText(
             withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
             displayConfig: HydratedMessageBody.DisplayConfiguration(
                 mention: .quotedReply,
-                style: .quotedReply(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
-                    interactionIdentifier: .fromInteraction(interaction)
-                )),
+                style: .quotedReply(revealedSpoilerIds: revealedSpoilerIdsSnapshot),
                 searchRanges: nil
             ),
             transaction: transaction

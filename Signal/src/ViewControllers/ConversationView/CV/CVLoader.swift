@@ -326,8 +326,7 @@ public class CVLoader: NSObject {
             threadViewModel: threadViewModel,
             viewStateSnapshot: viewStateSnapshot,
             transaction: transaction,
-            avatarBuilder: avatarBuilder,
-            spoilerReveal: spoilerReveal
+            avatarBuilder: avatarBuilder
         )
         guard let itemModel = CVItemModelBuilder.buildStandaloneItem(interaction: interaction,
                                                                      thread: thread,
@@ -372,8 +371,7 @@ public class CVLoader: NSObject {
             threadViewModel: threadViewModel,
             viewStateSnapshot: viewStateSnapshot,
             transaction: transaction,
-            avatarBuilder: avatarBuilder,
-            spoilerReveal: spoilerReveal
+            avatarBuilder: avatarBuilder
         )
         do {
             return try CVComponentState.build(interaction: interaction,

@@ -113,6 +113,8 @@ public protocol CVComponentDelegate: AnyObject {
 
     var wallpaperBlurProvider: WallpaperBlurProvider? { get }
 
+    var spoilerReveal: SpoilerRevealState { get }
+
     // MARK: - Gift Badges
 
     /// Invoked just before a gift is wrapped.

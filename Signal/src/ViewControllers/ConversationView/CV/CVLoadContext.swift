@@ -58,7 +58,6 @@ protocol CVItemBuildingContext {
     var viewStateSnapshot: CVViewStateSnapshot { get }
     var transaction: SDSAnyReadTransaction { get }
     var avatarBuilder: CVAvatarBuilder { get }
-    var spoilerReveal: SpoilerRevealState { get }
 }
 
 // MARK: -
@@ -78,7 +77,6 @@ struct CVItemBuildingContextImpl: CVItemBuildingContext {
     let viewStateSnapshot: CVViewStateSnapshot
     let transaction: SDSAnyReadTransaction
     let avatarBuilder: CVAvatarBuilder
-    let spoilerReveal: SpoilerRevealState
 }
 
 // MARK: -
@@ -96,7 +94,6 @@ extension CVItemBuilding {
     var threadAssociatedData: ThreadAssociatedData { threadViewModel.associatedData }
     var viewStateSnapshot: CVViewStateSnapshot { itemBuildingContext.viewStateSnapshot }
     var conversationStyle: ConversationStyle { itemBuildingContext.conversationStyle }
-    var spoilerReveal: SpoilerRevealState { itemBuildingContext.spoilerReveal }
     var mediaCache: CVMediaCache { itemBuildingContext.mediaCache }
     var transaction: SDSAnyReadTransaction { itemBuildingContext.transaction }
     var avatarBuilder: CVAvatarBuilder { itemBuildingContext.avatarBuilder }
