@@ -1607,8 +1607,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return true
         }
 
-        if let subcomponentAndView = findComponentAndView(sender: sender,
-                                                          componentView: componentView) {
+        for subcomponentAndView in findComponentAndViews(sender: sender, componentView: componentView) {
             let subcomponent = subcomponentAndView.component
             let subcomponentView = subcomponentAndView.componentView
             Logger.verbose("key: \(subcomponentAndView.key)")
@@ -1675,16 +1674,18 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     // For a configured & active cell, this will return the list of
     // currently active subcomponents & their corresponding subcomponent
     // views. This can be used for gesture dispatch, etc.
-    private func findComponentAndView(sender: UIGestureRecognizer,
-                                      componentView: CVComponentViewMessage) -> CVComponentAndView? {
-        for subcomponentAndView in activeComponentAndViews(messageView: componentView) {
+    private func findComponentAndViews(
+        sender: UIGestureRecognizer,
+        componentView: CVComponentViewMessage
+    ) -> [CVComponentAndView] {
+        return activeComponentAndViews(messageView: componentView).compactMap { subcomponentAndView in
             let subcomponentView = subcomponentAndView.componentView
             let rootView = subcomponentView.rootView
             if rootView.containsGestureLocation(sender) {
                 return subcomponentAndView
             }
+            return nil
         }
-        return nil
     }
 
     // For a configured & active cell, this will return the list of
