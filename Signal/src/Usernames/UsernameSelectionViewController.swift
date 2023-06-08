@@ -192,6 +192,20 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         return wrapper
     }()
 
+    private lazy var usernameErrorTextView: UITextView = {
+        let textView = LinkingTextView()
+
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.textContainerInset = UIEdgeInsets(top: 12, leading: 16, bottom: 0, trailing: 16)
+        textView.textColor = .ows_accentRed
+
+        return textView
+    }()
+
+    private lazy var usernameErrorTextViewZeroHeightConstraint: NSLayoutConstraint = {
+        return usernameErrorTextView.heightAnchor.constraint(equalToConstant: 0)
+    }()
+
     private lazy var usernameFooterTextView: UITextView = {
         let textView = LinkingTextView()
 
@@ -226,6 +240,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         headerView.updateFontsForCurrentPreferredContentSize()
         usernameTextFieldWrapper.updateFontsForCurrentPreferredContentSize()
 
+        usernameErrorTextView.font = .dynamicTypeCaption1Clamped
         usernameFooterTextView.font = .dynamicTypeCaption1Clamped
     }
 
@@ -240,6 +255,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
 
         setupNavBar()
         setupViewConstraints()
+        setupErrorText()
 
         themeDidChange()
         contentSizeCategoryDidChange()
@@ -274,6 +290,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
 
         wrapperScrollView.addSubview(headerView)
         wrapperScrollView.addSubview(usernameTextFieldWrapper)
+        wrapperScrollView.addSubview(usernameErrorTextView)
         wrapperScrollView.addSubview(usernameFooterTextView)
 
         wrapperScrollView.autoPinTopToSuperviewMargin()
@@ -307,11 +324,18 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
 
         headerView.autoPinEdge(.bottom, to: .top, of: usernameTextFieldWrapper)
 
-        usernameTextFieldWrapper.autoPinEdge(.bottom, to: .top, of: usernameFooterTextView)
+        usernameTextFieldWrapper.autoPinEdge(.bottom, to: .top, of: usernameErrorTextView)
+
+        usernameErrorTextView.autoPinEdge(.bottom, to: .top, of: usernameFooterTextView)
 
         usernameFooterTextView.bottomAnchor.constraint(
             equalTo: contentLayoutGuide.bottomAnchor
         ).isActive = true
+    }
+
+    private func setupErrorText() {
+        usernameErrorTextView.layer.opacity = 0
+        usernameErrorTextViewZeroHeightConstraint.isActive = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -329,6 +353,7 @@ private extension UsernameSelectionViewController {
         updateNavigationItems()
         updateHeaderViewContent()
         updateUsernameTextFieldContent()
+        updateErrorTextViewContent()
         updateFooterTextViewContent()
     }
 
@@ -410,11 +435,9 @@ private extension UsernameSelectionViewController {
         }
     }
 
-    /// Update the contents of the footer text view for the current internal
+    /// Update the contents of the error text view for the current internal
     /// controller state.
-    private func updateFooterTextViewContent() {
-        var components = [Composable]()
-
+    private func updateErrorTextViewContent() {
         let errorText: String? = {
             switch currentUsernameState {
             case
@@ -452,12 +475,36 @@ private extension UsernameSelectionViewController {
             }
         }()
 
+        var animatedLayoutBlock: ((UITextView) -> Void)?
+
         if let errorText {
-            components.append(errorText.styled(with: .color(.ows_accentRed)))
-            components.append("\n\n")
+            usernameErrorTextView.text = errorText
+
+            if usernameErrorTextViewZeroHeightConstraint.isActive {
+                usernameErrorTextViewZeroHeightConstraint.isActive = false
+                animatedLayoutBlock = { $0.layer.opacity = 1 }
+            }
+        } else if !usernameErrorTextViewZeroHeightConstraint.isActive {
+            usernameErrorTextViewZeroHeightConstraint.isActive = true
+            animatedLayoutBlock = { $0.layer.opacity = 0 }
         }
 
-        components.append(NSAttributedString.make(
+        if let animatedLayoutBlock {
+            let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 1, springResponse: 0.3)
+
+            animator.addAnimations {
+                animatedLayoutBlock(self.usernameErrorTextView)
+                self.view.layoutIfNeeded()
+            }
+
+            animator.startAnimation()
+        }
+    }
+
+    /// Update the contents of the footer text view for the current internal
+    /// controller state.
+    private func updateFooterTextViewContent() {
+        let content = NSAttributedString.make(
             fromFormat: OWSLocalizedString(
                 "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT",
                 comment: "Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}."
@@ -468,14 +515,12 @@ private extension UsernameSelectionViewController {
                     attributes: [.link: Constants.learnMoreLink]
                 )
             ]
-        ))
+        ).styled(
+            with: .font(.dynamicTypeCaption1Clamped),
+            .color(Theme.secondaryTextAndIconColor)
+        )
 
-        usernameFooterTextView.attributedText = NSAttributedString
-            .composed(of: components)
-            .styled(
-                with: .font(.dynamicTypeCaption1Clamped),
-                .color(Theme.secondaryTextAndIconColor)
-            )
+        usernameFooterTextView.attributedText = content
     }
 }
 
