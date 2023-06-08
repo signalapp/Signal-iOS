@@ -986,55 +986,9 @@ class RecordingDurationView: PillView {
     }
 }
 
-@available(iOS, deprecated: 13.0, message: "Use `overrideUserInterfaceStyle` instead.")
-private protocol UserInterfaceStyleOverride {
-
-    var userInterfaceStyleOverride: UIUserInterfaceStyle { get set }
-
-    var effectiveUserInterfaceStyle: UIUserInterfaceStyle { get }
-
-}
-
-private extension UserInterfaceStyleOverride {
-
-    var effectiveUserInterfaceStyle: UIUserInterfaceStyle {
-        if userInterfaceStyleOverride != .unspecified {
-            return userInterfaceStyleOverride
-        }
-        if let uiView = self as? UIView {
-            return uiView.traitCollection.userInterfaceStyle
-        }
-        return .unspecified
-    }
-
-    static func blurEffectStyle(for userInterfaceStyle: UIUserInterfaceStyle) -> UIBlurEffect.Style {
-        switch userInterfaceStyle {
-        case .dark:
-            return .dark
-        case .light:
-            return .extraLight
-        default:
-            owsFailDebug("It is an error to pass UIUserInterfaceStyleUnspecified.")
-            return .regular
-        }
-    }
-
-    static func tintColor(for userInterfaceStyle: UIUserInterfaceStyle) -> UIColor {
-        switch userInterfaceStyle {
-        case .dark:
-            return Theme.darkThemePrimaryColor
-        case .light:
-            return .ows_gray60
-        default:
-            owsFailDebug("It is an error to pass UIUserInterfaceStyleUnspecified.")
-            return .ows_accentBlue
-        }
-    }
-}
-
 // MARK: - Buttons
 
-class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
+class MediaDoneButton: UIButton {
 
     var badgeNumber: Int = 0 {
         didSet {
@@ -1043,9 +997,9 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
         }
     }
 
-    var userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified {
+    override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
         didSet {
-            if oldValue != userInterfaceStyleOverride {
+            if oldValue != overrideUserInterfaceStyle {
                 updateStyle()
             }
         }
@@ -1076,17 +1030,10 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
     }()
     private let blurBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
     private let chevronImageView: UIImageView = {
-        let image: UIImage?
-        if #available(iOS 13, *) {
-            image = UIImage(systemName: "chevron.right")
-        } else {
-            image = UIImage(named: "chevron-right-20")
-        }
+        let image = UIImage(systemName: "chevron.right")
         let chevronImageView = UIImageView(image: image!.withRenderingMode(.alwaysTemplate).imageFlippedForRightToLeftLayoutDirection())
         chevronImageView.contentMode = .center
-        if #available(iOS 13, *) {
-            chevronImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: MediaDoneButton.font.pointSize)
-        }
+        chevronImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: MediaDoneButton.font.pointSize)
         return chevronImageView
     }()
     private var dimmerView: UIView?
@@ -1122,9 +1069,7 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
             textLabel.font = .dynamicTypeSubheadline.monospaced()
-            if #available(iOS 13, *) {
-                chevronImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: textLabel.font.pointSize)
-            }
+            chevronImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: textLabel.font.pointSize)
         }
         if traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle {
             updateStyle()
@@ -1150,11 +1095,21 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
     }
 
     private func updateStyle() {
-        let userInterfaceStyle = effectiveUserInterfaceStyle
-        // ".unspecified" is present during initialization on iOS 12.
-        guard userInterfaceStyle != .unspecified else { return }
-        blurBackgroundView.effect = UIBlurEffect(style: MediaDoneButton.blurEffectStyle(for: userInterfaceStyle))
-        chevronImageView.tintColor = MediaDoneButton.tintColor(for: userInterfaceStyle)
+        let blurStyle: UIBlurEffect.Style
+        let tintColor: UIColor
+        switch overrideUserInterfaceStyle {
+        case .dark:
+            blurStyle = .dark
+            tintColor = Theme.darkThemePrimaryColor
+        case .light:
+            blurStyle = .extraLight
+            tintColor = .ows_gray60
+        default:
+            blurStyle = .regular
+            tintColor = .ows_accentBlue
+        }
+        blurBackgroundView.effect = UIBlurEffect(style: blurStyle)
+        chevronImageView.tintColor = tintColor
     }
 }
 
@@ -1626,14 +1581,8 @@ class CameraBottomBar: UIView {
             setBackgroundImage(tintColorImage, for: .normal, barMetrics: .default)
             setDividerImage(tintColorImage, forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default)
 
-            let normalFont, selectedFont: UIFont
-            if #available(iOS 13, *) {
-                normalFont = UIFont.monospacedSystemFont(ofSize: 14, weight: .semibold)
-                selectedFont = UIFont.monospacedSystemFont(ofSize: 14, weight: .bold)
-            } else {
-                normalFont = UIFont.systemFont(ofSize: 14, weight: .semibold)
-                selectedFont = UIFont.systemFont(ofSize: 14, weight: .bold)
-            }
+            let normalFont = UIFont.monospacedSystemFont(ofSize: 14, weight: .semibold)
+            let selectedFont = UIFont.monospacedSystemFont(ofSize: 14, weight: .bold)
 
             setTitleTextAttributes([ .font: normalFont, .foregroundColor: UIColor(white: 1, alpha: 0.7) ], for: .normal)
             setTitleTextAttributes([ .font: selectedFont, .foregroundColor: UIColor.white ], for: .selected)

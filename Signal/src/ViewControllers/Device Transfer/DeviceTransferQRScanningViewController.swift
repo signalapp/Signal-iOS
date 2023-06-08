@@ -11,7 +11,7 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
     private let qrCodeScanViewController = QRCodeScanViewController(appearance: .unadorned)
 
     lazy var activityIndicator: UIActivityIndicatorView = {
-        let activityIndicator = UIActivityIndicatorView(style: .white)
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
         activityIndicator.color = Theme.primaryIconColor
         return activityIndicator
     }()

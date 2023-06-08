@@ -74,7 +74,7 @@ class StoryReplyInputToolbar: UIView {
             backgroundColor = .clear
 
             let blurEffect: UIBlurEffect
-            if #available(iOS 13, *), quotedReplyModel != nil {
+            if quotedReplyModel != nil {
                 blurEffect = UIBlurEffect(style: .systemThickMaterialDark)
             } else {
                 blurEffect = Theme.darkThemeBarBlurEffect

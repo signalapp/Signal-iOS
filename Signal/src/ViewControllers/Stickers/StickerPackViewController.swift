@@ -29,7 +29,6 @@ public class StickerPackViewController: OWSViewController {
         stickerCollectionView.show(dataSource: dataSource)
         dataSource.add(delegate: self)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: UIApplication.didChangeStatusBarFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
                                                name: StickerManager.stickersOrPacksDidChange,
@@ -45,23 +44,7 @@ public class StickerPackViewController: OWSViewController {
     public func present(from fromViewController: UIViewController, animated: Bool) {
         AssertIsOnMainThread()
 
-        if #available(iOS 13, *) {
-            // iOS 13 on the iOS 13 SDK handles the modal blur correctly.
-            fromViewController.presentFormSheet(self, animated: animated) {
-                // ensure any presented keyboard is dismissed, this seems to be
-                // an issue only when opening signal from a universal link in
-                // an external app
-                self.becomeFirstResponder()
-            }
-            return
-        }
-
-        // Pre-iOS 13, or without the iOS 13 SDK, we need to manually setup the
-        // form sheet in order to allow it to blur and show through the background.
-
-        modalPresentationStyle = .custom
-        transitioningDelegate = self
-        fromViewController.present(self, animated: animated) {
+        fromViewController.presentFormSheet(self, animated: animated) {
             // ensure any presented keyboard is dismissed, this seems to be
             // an issue only when opening signal from a universal link in
             // an external app
@@ -195,6 +178,11 @@ public class StickerPackViewController: OWSViewController {
         }
     }
 
+    override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        didChangeStatusBarFrame()
+    }
+
     private let dismissButton = UIButton()
     private let coverView = StickerReusableView()
     private let titleLabel = UILabel()
@@ -203,7 +191,7 @@ public class StickerPackViewController: OWSViewController {
     private let shareButton = UIButton()
     private var installButton: OWSFlatButton?
     private var uninstallButton: OWSFlatButton?
-    private var loadingIndicator = UIActivityIndicatorView(style: .whiteLarge)
+    private var loadingIndicator = UIActivityIndicatorView(style: .large)
     private var loadFailedLabel = UILabel()
     // We use this timer to ensure that we don't show the
     // loading indicator for N seconds, to prevent a "flash"

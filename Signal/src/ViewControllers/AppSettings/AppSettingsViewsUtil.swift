@@ -27,13 +27,7 @@ public class AppSettingsViewsUtil {
                 cell.contentView.addSubview(stackView)
                 stackView.autoPinEdgesToSuperviewEdges()
 
-                let activitySpinner: UIActivityIndicatorView
-                if #available(iOS 13, *) {
-                    activitySpinner = UIActivityIndicatorView(style: .medium)
-                } else {
-                    activitySpinner = UIActivityIndicatorView(style: .gray)
-                }
-
+                let activitySpinner = UIActivityIndicatorView(style: .medium)
                 activitySpinner.startAnimating()
 
                 stackView.addArrangedSubview(activitySpinner)

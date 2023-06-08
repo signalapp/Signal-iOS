@@ -179,9 +179,7 @@ public class AudioSession: NSObject {
                     .defaultToSpeaker
                 ]
             )
-            if #available(iOS 13, *) {
-                try avAudioSession.setAllowHapticsAndSystemSoundsDuringRecording(true)
-            }
+            try avAudioSession.setAllowHapticsAndSystemSoundsDuringRecording(true)
         } else if aggregateBehaviors.contains(.audioMessagePlayback) {
             if self.device.proximityState {
                 Logger.debug("proximityState: true")

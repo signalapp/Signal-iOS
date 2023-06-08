@@ -97,17 +97,12 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         // Use UINavigationBar so that close button X on the left has a standard position in all cases.
         let navigationBar = UINavigationBar()
         navigationBar.tintColor = Theme.darkThemeNavbarIconColor
-        if #available(iOS 13, *) {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithTransparentBackground()
-            navigationBar.standardAppearance = appearance
-            navigationBar.compactAppearance = appearance
-            navigationBar.scrollEdgeAppearance = appearance
-            navigationBar.overrideUserInterfaceStyle = .dark
-        } else {
-            navigationBar.barTintColor = .clear
-            navigationBar.isTranslucent = false
-        }
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        navigationBar.standardAppearance = appearance
+        navigationBar.compactAppearance = appearance
+        navigationBar.scrollEdgeAppearance = appearance
+        navigationBar.overrideUserInterfaceStyle = .dark
         view.addSubview(navigationBar)
         navigationBar.autoPinWidthToSuperview()
         navigationBarTopLayoutConstraint = navigationBar.autoPinEdge(toSuperviewEdge: .top)

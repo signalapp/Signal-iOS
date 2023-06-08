@@ -40,14 +40,7 @@ public class ConversationSearchController: NSObject {
         uiSearchController.delegate = self
         uiSearchController.searchResultsUpdater = self
 
-        if #available(iOS 13, *) {
-            uiSearchController.hidesNavigationBarDuringPresentation = true
-        } else {
-            // In iOS12, if the search controller is presented and hiding the nav bar, when you
-            // push another VC, that VC will *also* not show it's navigation bar, so we just
-            // don't toggle nav bar visibility on legacy platforms.
-            uiSearchController.hidesNavigationBarDuringPresentation = false
-        }
+        uiSearchController.hidesNavigationBarDuringPresentation = true
         uiSearchController.obscuresBackgroundDuringPresentation = false
 
         applyTheme()

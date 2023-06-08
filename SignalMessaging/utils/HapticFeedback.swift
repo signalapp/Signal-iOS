@@ -51,11 +51,7 @@ public class ImpactHapticFeedback {
         DispatchQueue.main.async {
             let generator = UIImpactFeedbackGenerator(style: style)
             generator.prepare()
-            if #available(iOS 13, *) {
-                generator.impactOccurred(intensity: intensity)
-            } else {
-                generator.impactOccurred()
-            }
+            generator.impactOccurred(intensity: intensity)
         }
     }
 }

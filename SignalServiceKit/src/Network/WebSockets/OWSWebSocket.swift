@@ -689,11 +689,6 @@ public class OWSWebSocket: NSObject {
             return .closed(reason: "!canAppUseSocketsToMakeRequests")
         }
 
-        // Starscream doesn't support the proxy
-        if SignalProxy.isEnabled, #unavailable(iOS 13) {
-            return .closed(reason: "signalProxyIsEnabled")
-        }
-
         if let currentWebSocket, currentWebSocket.hasPendingRequests {
             return .open(reason: "hasPendingRequests")
         }
@@ -748,7 +743,7 @@ public class OWSWebSocket: NSObject {
             }
 
             let desiredSocketStateNew = self.desiredSocketState
-            let desiredSocketStateOld = self.lastDesiredSocketState.swap(desiredSocketStateNew)
+            _ = self.lastDesiredSocketState.swap(desiredSocketStateNew)
 
             var shouldHaveBackgroundKeepAlive = false
             if desiredSocketStateNew.shouldSocketBeOpen {

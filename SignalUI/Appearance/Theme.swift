@@ -131,9 +131,6 @@ final public class Theme: NSObject {
     }
 
     private func isSystemDarkThemeEnabled() -> Bool {
-        guard #available(iOS 13, *) else {
-            return false
-        }
         return UITraitCollection.current.userInterfaceStyle == .dark
     }
 
@@ -205,9 +202,6 @@ final public class Theme: NSObject {
     }
 
     private var defaultMode: Mode {
-        guard #available(iOS 13, *) else {
-            return .light
-        }
         return .system
     }
 
@@ -317,9 +311,6 @@ final public class Theme: NSObject {
 
     @objc
     public class var launchScreenBackgroundColor: UIColor {
-        // We only adapt for dark theme on iOS 13+, because only iOS 13 supports
-        // handling dark / light appearance in the launch screen storyboard.
-        guard #available(iOS 13, *) else { return .ows_signalBlue }
         return isDarkThemeEnabled ? .ows_signalBlueDark : .ows_signalBlue
     }
 

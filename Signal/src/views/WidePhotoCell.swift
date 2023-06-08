@@ -38,11 +38,7 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
     private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        if #available(iOS 13, *) {
-            label.textColor = .secondaryLabel
-        } else {
-            label.textColor = .ows_gray45
-        }
+        label.textColor = .secondaryLabel
         return label
     }()
 
@@ -52,11 +48,7 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
         let view = WidePhotoCellSeparator()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.borderWidth = 1.0
-        if #available(iOS 13, *) {
-            view.layer.borderColor = UIColor.separator.cgColor
-        } else {
-            view.layer.borderColor = UIColor(rgbHex: 0x3c3c43).withAlphaComponent(0.3).cgColor
-        }
+        view.layer.borderColor = UIColor.separator.cgColor
         return view
     }()
 
@@ -82,7 +74,6 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
         return UIColor.ows_gray20
     }
 
-    @available(iOS 13.0, *)
     private var dynamicDesiredSelectionOutlineColor: UIColor {
         return UIColor { _ in
             Theme.isDarkThemeEnabled ? UIColor.ows_gray25 : UIColor.ows_gray20
@@ -90,12 +81,8 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
     }
 
     private lazy var selectionMaskColor: UIColor = {
-        if #available(iOS 13, *) {
-            return UIColor { _ in
-                Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
-            }
-        } else {
-            return .ows_gray15
+        return UIColor { _ in
+            Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
         }
     }()
 
@@ -111,15 +98,10 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
         contentView.addSubview(selectionButton)
         contentView.addSubview(separator)
 
-        if #available(iOS 13.0, *) {
-            selectionButton.outlineColor = dynamicDesiredSelectionOutlineColor
-            contentView.backgroundColor = UIColor(dynamicProvider: { _ in
-                Theme.isDarkThemeEnabled ? .ows_gray80 : .white
-            })
-        } else {
-            selectionButton.outlineColor = desiredSelectionOutlineColor
-            contentView.backgroundColor = .white
-        }
+        selectionButton.outlineColor = dynamicDesiredSelectionOutlineColor
+        contentView.backgroundColor = UIColor(dynamicProvider: { _ in
+            Theme.isDarkThemeEnabled ? .ows_gray80 : .white
+        })
 
         imageViewLeadingConstraintWithSelectionButton = imageView.leadingAnchor.constraint(equalTo: selectionButton.trailingAnchor, constant: 13)
         imageViewLeadingConstraintWithoutSelectionButton = imageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16)

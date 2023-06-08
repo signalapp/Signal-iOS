@@ -275,13 +275,15 @@ extension StoryGroupReplyViewController: InputAccessoryViewPlaceholderDelegate {
             return
         }
 
-        UIView.beginAnimations("keyboardStateChange", context: nil)
-        UIView.setAnimationBeginsFromCurrentState(true)
-        UIView.setAnimationCurve(animationCurve)
-        UIView.setAnimationDuration(animationDuration)
-        updateBottomBarPosition()
-        updateContentInsets(animated: true)
-        UIView.commitAnimations()
+        UIView.animate(
+            withDuration: animationDuration,
+            delay: 0,
+            options: animationCurve.asAnimationOptions,
+            animations: { [self] in
+                self.updateBottomBarPosition()
+                self.updateContentInsets(animated: true)
+            }
+        )
     }
 
     func updateBottomBarPosition() {

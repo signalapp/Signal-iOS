@@ -691,7 +691,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         }
     }
 
-    @available(iOS 13, *)
     private func webSocketState(forTask task: URLSessionTask) -> WebSocketTaskState? {
         lock.withLock {
             self.taskStateMap[task.taskIdentifier] as? WebSocketTaskState
@@ -935,7 +934,6 @@ extension OWSURLSession: URLSessionDownloadDelegate {
 
 extension OWSURLSession: URLSessionWebSocketDelegate {
 
-    @available(iOS 13, *)
     public func webSocketTask(requestUrl: URL, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (Error) -> Void) -> URLSessionWebSocketTask {
         // We can't pass a URLRequest here since it prevents the proxy from
         // operating correctly. See `SSKWebSocketNative.init(...)` for more details
@@ -945,12 +943,10 @@ extension OWSURLSession: URLSessionWebSocketDelegate {
         return task
     }
 
-    @available(iOS 13, *)
     public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol: String?) {
         webSocketState(forTask: webSocketTask)?.openBlock(didOpenWithProtocol)
     }
 
-    @available(iOS 13, *)
     public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         guard let webSocketState = removeCompletedTaskState(webSocketTask) as? WebSocketTaskState else { return }
         webSocketState.closeBlock(WebSocketError.closeError(statusCode: closeCode.rawValue, closeReason: reason))
@@ -1008,7 +1004,6 @@ private class UploadOrDataTaskState: TaskState {
 
 // MARK: - WebSocketTaskState
 
-@available(iOS 13, *)
 private class WebSocketTaskState: TaskState {
     typealias OpenBlock = (String?) -> Void
     typealias CloseBlock = (Error) -> Void
@@ -1177,12 +1172,10 @@ extension URLSessionDelegateBox: URLSessionDelegate, URLSessionTaskDelegate, URL
 }
 
 extension URLSessionDelegateBox: URLSessionWebSocketDelegate {
-    @available(iOS 13, *)
     public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol: String?) {
         weakDelegate?.urlSession(session, webSocketTask: webSocketTask, didOpenWithProtocol: didOpenWithProtocol)
     }
 
-    @available(iOS 13, *)
     public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         weakDelegate?.urlSession(session, webSocketTask: webSocketTask, didCloseWith: closeCode, reason: reason)
     }

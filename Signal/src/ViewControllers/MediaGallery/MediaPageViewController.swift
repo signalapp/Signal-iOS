@@ -102,10 +102,7 @@ class MediaPageViewController: UIPageViewController {
         }
 
         if useDarkContentStatusBar {
-            if #available(iOS 13, *) {
-                return .darkContent
-            }
-            return .default
+            return .darkContent
         }
         return .lightContent
     }
@@ -132,17 +129,12 @@ class MediaPageViewController: UIPageViewController {
         let navigationBar = UINavigationBar()
         navigationBar.delegate = self
         navigationBar.tintColor = Theme.darkThemePrimaryColor
-        if #available(iOS 13, *) {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithTransparentBackground()
-            navigationBar.standardAppearance = appearance
-            navigationBar.compactAppearance = appearance
-            navigationBar.scrollEdgeAppearance = appearance
-            navigationBar.overrideUserInterfaceStyle = .dark
-        } else {
-            navigationBar.barTintColor = .clear
-            navigationBar.isTranslucent = false
-        }
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        navigationBar.standardAppearance = appearance
+        navigationBar.compactAppearance = appearance
+        navigationBar.scrollEdgeAppearance = appearance
+        navigationBar.overrideUserInterfaceStyle = .dark
         navigationBar.setItems([ UINavigationItem(title: ""), navigationItem ], animated: false)
         topPanel.addSubview(navigationBar)
         navigationBar.autoPinEdge(toSuperviewSafeArea: .leading)
@@ -380,12 +372,7 @@ class MediaPageViewController: UIPageViewController {
         view.tintColor = Theme.darkThemePrimaryColor
         view.preservesSuperviewLayoutMargins = true
 
-        let blurEffect: UIBlurEffect
-        if #available(iOS 13, *) {
-            blurEffect = UIBlurEffect(style: .systemChromeMaterialDark)
-        } else {
-            blurEffect = UIBlurEffect(style: .dark)
-        }
+        let blurEffect = UIBlurEffect(style: .systemChromeMaterialDark)
         let blurBackgroundView = UIVisualEffectView(effect: blurEffect)
         view.addSubview(blurBackgroundView)
         blurBackgroundView.autoPinEdgesToSuperviewEdges()

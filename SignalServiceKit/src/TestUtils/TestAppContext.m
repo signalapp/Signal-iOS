@@ -151,10 +151,6 @@ NS_ASSUME_NONNULL_BEGIN
     return UIInterfaceOrientationPortrait;
 }
 
-- (void)setNetworkActivityIndicatorVisible:(BOOL)value
-{
-}
-
 #pragma mark -
 
 - (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block

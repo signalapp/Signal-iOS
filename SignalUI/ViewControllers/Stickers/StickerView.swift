@@ -98,7 +98,7 @@ public class StickerPlaceholderView: UIView {
         addSubview(placeholderView)
         placeholderView.autoPinEdgesToSuperviewMargins()
 
-        if #available(iOS 13, *) { placeholderView.layer.cornerCurve = .continuous }
+        placeholderView.layer.cornerCurve = .continuous
     }
 
     required init?(coder: NSCoder) {

@@ -149,24 +149,16 @@ public class WebSocketFactoryMock: NSObject, WebSocketFactory {
 @objc
 public class WebSocketFactoryNative: NSObject, WebSocketFactory {
     public var canBuildWebSocket: Bool {
-        if #available(iOS 13, *) {
-            return true
-        } else {
-            return false
-        }
+        return true
     }
 
     public func buildSocket(request: WebSocketRequest, callbackScheduler: Scheduler) -> SSKWebSocket? {
-        guard #available(iOS 13, *) else {
-            return nil
-        }
         return SSKWebSocketNative(request: request, signalService: signalService, callbackScheduler: callbackScheduler)
     }
 }
 
 // MARK: -
 
-@available(iOS 13, *)
 public class SSKWebSocketNative: SSKWebSocket {
 
     private static let idCounter = AtomicUInt()

@@ -796,12 +796,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     // MARK: - Loading spinner
 
     private func loadingSpinnerView() -> UIView {
-        let result: UIActivityIndicatorView
-        if #available(iOS 13, *) {
-            result = UIActivityIndicatorView(style: .medium)
-        } else {
-            result = UIActivityIndicatorView(style: .gray)
-        }
+        let result = UIActivityIndicatorView(style: .medium)
         result.startAnimating()
         return result
     }

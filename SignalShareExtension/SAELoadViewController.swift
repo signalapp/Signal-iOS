@@ -58,15 +58,9 @@ class SAELoadViewController: UIViewController {
     override func loadView() {
         super.loadView()
 
-        // You can't swipe to cancel on iOS 12-.
-        if #unavailable(iOS 13) {
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                                                    target: self,
-                                                                    action: #selector(cancelPressed))
-        }
         self.view.backgroundColor = Theme.backgroundColor
 
-        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+        let activityIndicator = UIActivityIndicatorView(style: .large)
         activityIndicator.color = Theme.primaryIconColor
         self.activityIndicator = activityIndicator
         self.view.addSubview(activityIndicator)

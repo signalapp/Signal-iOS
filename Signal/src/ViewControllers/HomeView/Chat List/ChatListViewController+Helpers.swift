@@ -155,6 +155,7 @@ extension ChatListViewController: UIViewControllerPreviewingDelegate {
             return nil
         }
 
+        // TODO: Use UIContextMenuInteraction instead.
         previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
         return createPreviewController(atIndexPath: indexPath)
     }

@@ -835,7 +835,7 @@ extension RecipientPickerViewController {
     private func loadingContactsTableItem() -> OWSTableItem {
         let cell = OWSTableItem.newCell()
 
-        let activityIndicatorView = UIActivityIndicatorView(style: .gray)
+        let activityIndicatorView = UIActivityIndicatorView(style: .medium)
         cell.contentView.addSubview(activityIndicatorView)
         activityIndicatorView.startAnimating()
         activityIndicatorView.autoCenterInSuperview()

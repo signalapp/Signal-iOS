@@ -278,10 +278,6 @@ extension TSThread {
     /// be called for messages we send automatically, like
     /// receipts.
     public func donateSendMessageIntent(for outgoingMessage: TSOutgoingMessage, transaction: SDSAnyReadTransaction) {
-        // We never need to do this pre-iOS 13, because sharing
-        // suggestions aren't support in previous iOS versions.
-        guard #available(iOS 13, *) else { return }
-
         // Never donate for story sends or replies, we don't want them as share suggestions
         guard
             !(outgoingMessage is OutgoingStoryMessage),
@@ -309,10 +305,6 @@ extension TSThread {
     }
 
     public func generateSendMessageIntent(context: IntentContext, transaction: SDSAnyReadTransaction) -> INSendMessageIntent? {
-        // We never need to do this pre-iOS 13, because sharing
-        // suggestions aren't support in previous iOS versions.
-        guard #available(iOS 13, *) else { return nil }
-
         guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
 
         guard let localAddress = tsAccountManager.localAddress else {
@@ -405,7 +397,6 @@ extension TSThread {
         return sendMessageIntent
     }
 
-    @available(iOS 13, *)
     public func generateIncomingCallIntent(callerAddress: SignalServiceAddress) -> INIntent? {
         databaseStorage.read { transaction in
             guard !self.isGroupThread else {

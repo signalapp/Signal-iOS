@@ -11,7 +11,6 @@ extension WebSocketFactory {
         request: WebSocketRequest,
         callbackScheduler: Scheduler
     ) -> WebSocketPromise? {
-        // TODO: This is optional to support iOS 12. It's non-optional on iOS 13+.
         guard let webSocket = buildSocket(request: request, callbackScheduler: callbackScheduler) else {
             return nil
         }

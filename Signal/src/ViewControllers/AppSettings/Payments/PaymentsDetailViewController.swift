@@ -447,9 +447,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         } else {
             amountLabel.text = " "
 
-            let activityIndicator = UIActivityIndicatorView(style: Theme.isDarkThemeEnabled
-                                                                ? .white
-                                                                : .gray)
+            let activityIndicator = UIActivityIndicatorView(style: .medium)
             amountWrapper.addSubview(activityIndicator)
             activityIndicator.autoCenterInSuperview()
             activityIndicator.startAnimating()

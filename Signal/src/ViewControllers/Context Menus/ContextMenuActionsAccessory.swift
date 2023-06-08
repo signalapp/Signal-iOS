@@ -229,11 +229,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             separatorView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             isHighlighted = false
 
-            if #available(iOS 13, *) {
-                visualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect, style: .label))
-            } else {
-                visualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect))
-            }
+            visualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect, style: .label))
             super.init(frame: .zero)
 
             addSubview(visualEffectView)
@@ -340,12 +336,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         self.forceDarkTheme = forceDarkTheme
 
         scrollView = UIScrollView(frame: CGRect.zero)
-        let effect: UIBlurEffect
-        if #available(iOS 13, *) {
-            effect = .init(style: .systemThinMaterial)
-        } else {
-            effect = .init(style: .extraLight)
-        }
+        let effect: UIBlurEffect = .init(style: .systemThinMaterial)
         backdropView = UIVisualEffectView(effect: effect)
         backdropView.backgroundColor = Theme.isDarkThemeEnabled || forceDarkTheme
             ? .ows_blackAlpha80

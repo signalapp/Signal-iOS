@@ -409,9 +409,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
         // Don't allow interactive dismissal.
-        if #available(iOS 13, *) {
-            isModalInPresentation = true
-        }
+        isModalInPresentation = true
     }
 
     var titleText: String {

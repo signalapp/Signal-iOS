@@ -151,10 +151,6 @@ extension ShareAppExtensionContext: AppContext {
 
     func open(_ url: URL, completion: ((Bool) -> Void)? = nil) { }
 
-    func setNetworkActivityIndicatorVisible(_ value: Bool) {
-        owsFailBeta("")
-    }
-
     func runNowOr(whenMainAppIsActive block: @escaping AppActiveBlock) {
         owsFailBeta("Cannot run main app active blocks in share extension.")
     }

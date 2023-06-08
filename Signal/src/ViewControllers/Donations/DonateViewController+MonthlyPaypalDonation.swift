@@ -34,16 +34,10 @@ extension DonateViewController {
             Logger.info("[Donations] Authorizing payment for new monthly subscription with PayPal")
 
             return firstly { () -> Promise<Paypal.MonthlyPaymentWebAuthApprovalParams> in
-                if #available(iOS 13, *) {
-                    return Paypal.presentExpectingApprovalParams(
-                        approvalUrl: authorizationParams.approvalUrl,
-                        withPresentationContext: self
-                    )
-                } else {
-                    return Paypal.presentExpectingApprovalParams(
-                        approvalUrl: authorizationParams.approvalUrl
-                    )
-                }
+                return Paypal.presentExpectingApprovalParams(
+                    approvalUrl: authorizationParams.approvalUrl,
+                    withPresentationContext: self
+                )
             }.map(on: DispatchQueue.sharedUserInitiated) { _ in
                 (subscriberId, authorizationParams.paymentMethodId)
             }

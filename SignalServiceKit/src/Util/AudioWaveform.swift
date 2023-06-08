@@ -238,7 +238,7 @@ public class AudioWaveform: NSObject {
             throw OWSAssertionError("can't write incomplete waveform to file \(filePath)")
         }
 
-        let archivedData = NSKeyedArchiver.archivedData(withRootObject: decibelSamples)
+        let archivedData = try NSKeyedArchiver.archivedData(withRootObject: decibelSamples, requiringSecureCoding: false)
         try archivedData.write(to: URL(fileURLWithPath: filePath), options: atomically ? .atomicWrite : .init())
     }
 

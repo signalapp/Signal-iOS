@@ -53,7 +53,7 @@ class CallControls: UIView {
         return button
     }()
 
-    private lazy var joinButtonActivityIndicator = UIActivityIndicatorView(style: .white)
+    private lazy var joinButtonActivityIndicator = UIActivityIndicatorView(style: .medium)
 
     private lazy var joinButton: UIButton = {
         let height: CGFloat = 56

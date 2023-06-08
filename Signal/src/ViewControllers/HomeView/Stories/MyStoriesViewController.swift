@@ -184,7 +184,6 @@ extension MyStoriesViewController: UITableViewDelegate {
         return .init(actions: [action])
     }
 
-    @available(iOS 13, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard let item = item(for: indexPath) else {
             return nil

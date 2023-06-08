@@ -665,7 +665,7 @@ public class SDSKeyValueStore: NSObject {
         switch transaction.writeTransaction {
         case .grdbWrite:
             if let value = value {
-                let encoded = NSKeyedArchiver.archivedData(withRootObject: value)
+                let encoded = try? NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: false)
                 writeData(encoded, forKey: key, transaction: transaction)
             } else {
                 writeData(nil, forKey: key, transaction: transaction)

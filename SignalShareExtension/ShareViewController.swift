@@ -437,8 +437,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private lazy var conversationPicker = SharingThreadPickerViewController(shareViewDelegate: self)
     private func buildAttachmentsAndPresentConversationPicker() {
         let selectedThread: TSThread?
-        if #available(iOS 13, *),
-           let intent = extensionContext?.intent as? INSendMessageIntent,
+        if let intent = extensionContext?.intent as? INSendMessageIntent,
            let threadUniqueId = intent.conversationIdentifier {
             selectedThread = databaseStorage.read { TSThread.anyFetch(uniqueId: threadUniqueId, transaction: $0) }
         } else {

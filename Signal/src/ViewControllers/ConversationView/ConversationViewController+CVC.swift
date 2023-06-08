@@ -119,7 +119,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         }
 
         let renderState = update.renderState
-        let isFirstLoad = renderState.isFirstLoad
 
         layout.update(conversationStyle: renderState.conversationStyle)
 

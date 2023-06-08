@@ -46,27 +46,14 @@ extension CreditOrDebitCardDonationViewController {
             }
         }
 
-        if #available(iOS 13, *) {
-            session.presentationContextProvider = self
-        }
+        session.presentationContextProvider = self
 
         owsAssert(
             session.start(),
             "[Donations] Failed to start 3DS authentication session. Was it set up correctly?"
         )
 
-        // It's important that we maintain a reference to this for two reasons:
-        //
-        // 1. We want to cancel it when the view deallocates.
-        // 2. iOS 12 requires us to keep a strong reference to the session. To quote [Apple][0]:
-        //    "if you have a deployment target of iOS 13 or later, the session keeps a strong
-        //    reference to itself until the authentication process completes to prevent the system
-        //    from deallocating the closure. For earlier iOS deployment targets, your app needs to
-        //    keep a strong reference to the session until authentication completes."
-        //
-        // That second reason will be irrelevant if we drop iOS 12.
-        //
-        // [0]: https://developer.apple.com/documentation/authenticationservices/authenticating_a_user_through_a_web_service
+        // Keep a reference so we can cancel it when this view deallocates.
         threeDSecureAuthenticationSession = session
 
         return promise

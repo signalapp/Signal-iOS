@@ -400,13 +400,7 @@ private class ChangePhoneNumberValueViews: NSObject {
         // autofill at the expense of a less appropriate keyboard, here's where it'd
         // be done. See Wisors comment here:
         // https://developer.apple.com/forums/thread/120703
-        if #available(iOS 14, *) {
-            field.keyboardType = .numberPad
-        } else if #available(iOS 13, *) {
-            field.keyboardType = .numberPad // .numbersAndPunctuation
-        } else {
-            field.keyboardType = .numberPad
-        }
+        field.keyboardType = .numberPad
 
         field.placeholder = OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_PLACEHOLDER",

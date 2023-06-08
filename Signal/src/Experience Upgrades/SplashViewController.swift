@@ -30,22 +30,11 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         super.viewDidLoad()
 
         // Don't allow interactive dismissal.
-        if #available(iOS 13, *) {
-            presentationController?.delegate = self
-            isModalInPresentation = !canDismissWithGesture
-        } else {
-            addDismissGesture()
-        }
+        presentationController?.delegate = self
+        isModalInPresentation = !canDismissWithGesture
     }
 
     // MARK: -
-
-    private func addDismissGesture() {
-        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleDismissGesture))
-        swipeGesture.direction = .down
-        view.addGestureRecognizer(swipeGesture)
-        view.isUserInteractionEnabled = true
-    }
 
     var isDismissWithoutCompleting = false
     public func dismissWithoutCompleting(animated flag: Bool, completion: (() -> Void)? = nil) {

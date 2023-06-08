@@ -408,7 +408,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         self.renderBackgroundBlur = renderBackgroundBlur
         self.previewRenderMode = previewRenderMode
         super.init()
-        if #available(iOS 13, *), configuration.forceDarkTheme { overrideUserInterfaceStyle = .dark }
+        if configuration.forceDarkTheme { overrideUserInterfaceStyle = .dark }
     }
 
     // MARK: UIViewController

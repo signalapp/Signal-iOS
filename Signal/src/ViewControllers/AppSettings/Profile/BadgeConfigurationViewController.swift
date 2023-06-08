@@ -98,11 +98,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
 
         if hasUnsavedChanges, showDismissalActivity {
             let indicatorStyle: UIActivityIndicatorView.Style
-            if #available(iOS 13, *) {
-                indicatorStyle = .medium
-            } else {
-                indicatorStyle = Theme.isDarkThemeEnabled ? .white : .gray
-            }
+            indicatorStyle = .medium
             let spinner = UIActivityIndicatorView(style: indicatorStyle)
             spinner.startAnimating()
             navigationItem.rightBarButtonItem = UIBarButtonItem(customView: spinner)

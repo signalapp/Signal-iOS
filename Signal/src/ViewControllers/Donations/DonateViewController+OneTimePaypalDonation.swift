@@ -31,16 +31,10 @@ extension DonateViewController {
             guard let self else { throw OWSAssertionError("[Donations] Missing self!") }
 
             Logger.info("[Donations] Presenting PayPal web UI for user approval of one-time donation")
-            if #available(iOS 13, *) {
-                return Paypal.presentExpectingApprovalParams(
-                    approvalUrl: approvalUrl,
-                    withPresentationContext: self
-                )
-            } else {
-                return Paypal.presentExpectingApprovalParams(
-                    approvalUrl: approvalUrl
-                )
-            }
+            return Paypal.presentExpectingApprovalParams(
+                approvalUrl: approvalUrl,
+                withPresentationContext: self
+            )
         }.then(on: DispatchQueue.main) { [weak self] approvalParams -> Promise<Void> in
             guard let self else { return .value(()) }
 

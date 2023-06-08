@@ -389,9 +389,7 @@ class CameraCaptureSession: NSObject {
 
     private class func availableVideoCaptureDevices(forPosition position: AVCaptureDevice.Position) -> [AVCaptureDevice.DeviceType: AVCaptureDevice] {
         var queryDeviceTypes: [AVCaptureDevice.DeviceType] = [ .builtInWideAngleCamera, .builtInTelephotoCamera, .builtInDualCamera ]
-        if #available(iOS 13, *) {
-            queryDeviceTypes.append(contentsOf: [ .builtInUltraWideCamera, .builtInDualWideCamera, .builtInTripleCamera ])
-        }
+        queryDeviceTypes.append(contentsOf: [ .builtInUltraWideCamera, .builtInDualWideCamera, .builtInTripleCamera ])
         let session = AVCaptureDevice.DiscoverySession(deviceTypes: queryDeviceTypes, mediaType: .video, position: position)
         let deviceMap = session.devices.reduce(into: [AVCaptureDevice.DeviceType: AVCaptureDevice]()) { deviceMap, device in
             deviceMap[device.deviceType] = device
@@ -415,14 +413,6 @@ class CameraCaptureSession: NSObject {
 
     private func cameraSwitchOverZoomFactors(forPosition position: AVCaptureDevice.Position) -> [CGFloat] {
         let deviceMap = position == .front ? availableFrontVideoCaptureDeviceMap : availableRearVideoCaptureDeviceMap
-
-        guard #available(iOS 13, *) else {
-            // No iOS 12 device can have triple camera system.
-            if deviceMap[.builtInDualCamera] != nil {
-                return UIDevice.current.isPlusSizePhone ? [ 2.5 ] : [ 2 ]
-            }
-            return []
-        }
 
         if let multiCameraDevice = deviceMap[.builtInTripleCamera] ?? deviceMap[.builtInDualWideCamera] ?? deviceMap[.builtInDualCamera] {
             return multiCameraDevice.virtualDeviceSwitchOverVideoZoomFactors.map { CGFloat(truncating: $0) }
@@ -451,7 +441,7 @@ class CameraCaptureSession: NSObject {
         var cameras: Set<CameraType> = []
 
         // AVCaptureDevice.DiscoverySession returns devices in an arbitrary order, explicit ordering is required
-        if #available(iOS 13, *), avTypes.contains(.builtInUltraWideCamera) {
+        if avTypes.contains(.builtInUltraWideCamera) {
             cameras.insert(.ultraWide)
         }
 
@@ -481,13 +471,11 @@ class CameraCaptureSession: NSObject {
             }
         }() else { return nil }
 
-        if #available(iOS 13, *) {
-            if let device = devices[.builtInTripleCamera] {
-                return device
-            }
-            if let device = devices[.builtInDualWideCamera] {
-                return device
-            }
+        if let device = devices[.builtInTripleCamera] {
+            return device
+        }
+        if let device = devices[.builtInDualWideCamera] {
+            return device
         }
         return devices[.builtInDualCamera] ?? devices[.builtInWideAngleCamera]
     }
@@ -563,7 +551,7 @@ class CameraCaptureSession: NSObject {
         let cameraZoomFactorMultiplier = cameraZoomFactorMultiplier(forPosition: position)
 
         var cameraMap: [CameraType: CGFloat] = [:]
-        if #available(iOS 13, *), avTypes.contains(.builtInUltraWideCamera) {
+        if avTypes.contains(.builtInUltraWideCamera) {
             owsAssertDebug(cameraZoomFactorMultiplier != 1, "cameraZoomFactorMultiplier could not be 1 because there's UW camera available.")
             cameraMap[.ultraWide] = cameraZoomFactorMultiplier
         }
@@ -1444,7 +1432,6 @@ private class PhotoCapture: NSObject {
         let photoSettings = AVCapturePhotoSettings()
         photoSettings.flashMode = flashMode
         photoSettings.isHighResolutionPhotoEnabled = true
-        photoSettings.isAutoStillImageStabilizationEnabled = avCaptureOutput.isStillImageStabilizationSupported
 
         let photoProcessor = PhotoProcessor(delegate: delegate, captureRect: captureRect) { [weak self] in
             self?.photoProcessors[photoSettings.uniqueID] = nil

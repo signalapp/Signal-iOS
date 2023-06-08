@@ -13,7 +13,7 @@ class GifPickerCell: UICollectionViewCell {
     private let imageView = YYAnimatedImageView()
     private let mp4View = LoopingVideoView()
     private let activityIndicator: UIActivityIndicatorView = {
-        let view = UIActivityIndicatorView(style: .gray)
+        let view = UIActivityIndicatorView(style: .medium)
         view.backgroundColor = UIColor.white.withAlphaComponent(0.3)
         view.autoSetDimension(.width, toSize: 30)
         view.autoSetDimension(.height, toSize: 30)

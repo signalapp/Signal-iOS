@@ -183,7 +183,7 @@ extension AppDelegate {
             appVersion: AppVersion.shared,
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
-            webSocketFactory: WebSocketFactoryHybrid(),
+            webSocketFactory: WebSocketFactoryNative(),
             callMessageHandler: AppEnvironment.sharedCallMessageHandler,
             notificationPresenter: AppEnvironment.sharedNotificationPresenter
         )
@@ -649,12 +649,7 @@ extension AppDelegate {
         )
 
         // Prevent dismissal.
-        if #available(iOS 13, *) {
-            recoveryViewController.isModalInPresentation = true
-        } else {
-            // This presents it fullscreen. Not ideal, but only affects old iOS versions, and prevents dismissal.
-            recoveryViewController.modalPresentationStyle = .fullScreen
-        }
+        recoveryViewController.isModalInPresentation = true
 
         // Show as a half-sheet on iOS 15+. On older versions, the sheet fills the screen, which is okay.
         if #available(iOS 15, *), let presentationController = recoveryViewController.presentationController as? UISheetPresentationController {

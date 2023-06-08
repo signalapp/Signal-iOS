@@ -280,7 +280,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
             guard !returnNilOnCacheMiss else {
                 return
             }
-            let databaseValue = self.readValue(for: cacheKey, transaction: transaction)
+            _ = self.readValue(for: cacheKey, transaction: transaction)
         }
         #endif
 

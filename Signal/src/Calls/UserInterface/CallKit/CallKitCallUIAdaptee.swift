@@ -484,7 +484,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {
         AssertIsOnMainThread()
 
-        if #available(iOS 13, *), let muteAction = action as? CXSetMutedCallAction {
+        if let muteAction = action as? CXSetMutedCallAction {
             guard callManager.callWithLocalId(muteAction.callUUID) != nil else {
                 // When a call is over, if it was muted, CallKit "helpfully" attempts to unmute the
                 // call with "CXSetMutedCallAction", presumably to help us clean up state.

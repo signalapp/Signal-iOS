@@ -17,10 +17,6 @@ public class Deprecated_OnboardingNavigationController: OWSNavigationController 
         }
     }
 
-    public required init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-    }
-
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         let superOrientations = super.supportedInterfaceOrientations
         let onboardingOrientations: UIInterfaceOrientationMask = UIDevice.current.isIPad ? .all : .portrait

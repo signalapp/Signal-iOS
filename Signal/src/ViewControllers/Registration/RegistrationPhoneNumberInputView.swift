@@ -131,13 +131,11 @@ class RegistrationPhoneNumberInputView: UIStackView {
 
         if #available(iOS 14, *) {
             result.keyboardType = .phonePad
-        } else if #available(iOS 13, *) {
+        } else {
             // There's [a bug][0] in iOS 13 where predictions aren't provided for `.numberPad`
             // keyboard types. We could change this to `.numbersAndPunctuation` if we wanted to
             // trade predictions for a less-appropriate keyboard.
             // [0]: https://developer.apple.com/forums/thread/120703
-            result.keyboardType = .numberPad
-        } else {
             result.keyboardType = .numberPad
         }
 

@@ -79,12 +79,10 @@ public class MediaGalleryAccessoriesHelper: NSObject {
         var handler: () -> Void
         var checked = false
 
-        @available(iOS 13, *)
         private var state: UIMenuElement.State {
             return checked ? .on : .off
         }
 
-        @available(iOS 13, *)
         var uiAction: UIAction {
             return UIAction(title: title, image: icon, state: state) { _ in handler() }
         }
@@ -253,9 +251,6 @@ public class MediaGalleryAccessoriesHelper: NSObject {
     }()
 
     private var modeMenuActions: [MenuAction] {
-        guard #available(iOS 13, *) else {
-            return []
-        }
         return [
             listMenuAction,
             gridMenuAction
@@ -269,11 +264,7 @@ public class MediaGalleryAccessoriesHelper: NSObject {
     func createButtonWithImageAndText(image: UIImage, text: String) -> UIButton {
         let button = UIButton(type: .custom)
         button.setTitle(text, for: .normal)
-        if #available(iOS 13, *) {
-            button.setTitleColor(.label, for: .normal)
-        } else {
-            button.setTitleColor(.ows_black, for: .normal)
-        }
+        button.setTitleColor(.label, for: .normal)
         button.setImage(image, for: .normal)
         button.imageView?.contentMode = .scaleAspectFit
         let languageDirection = UIApplication.shared.userInterfaceLayoutDirection
@@ -304,7 +295,6 @@ public class MediaGalleryAccessoriesHelper: NSObject {
         return button
     }
 
-    @available(iOS 13, *)
     private func createLegacyModeButton() -> UIBarButtonItem {
         let menuButton = createButtonWithImageAndText(image: UIImage(systemName: "chevron.down")!,
                                                       text: currentModeString)
@@ -313,7 +303,6 @@ public class MediaGalleryAccessoriesHelper: NSObject {
         return UIBarButtonItem(customView: menuButton)
     }
 
-    @available(iOS 13, *)
     private func createModeMenu() -> UIMenu {
         var options = UIMenu.Options()
         if #available(iOS 15, *) {
@@ -341,14 +330,11 @@ public class MediaGalleryAccessoriesHelper: NSObject {
         createModeButton()
     }()
 
-    private func createModeButton() -> UIBarButtonItem? {
+    private func createModeButton() -> UIBarButtonItem {
         if #available(iOS 14, *) {
             return createModernModeButton()
         }
-        if #available(iOS 13, *) {
-            return createLegacyModeButton()
-        }
-        return nil
+        return createLegacyModeButton()
     }
 
     @objc
@@ -462,9 +448,6 @@ public class MediaGalleryAccessoriesHelper: NSObject {
             guard allowed else {
                 return .hidden
             }
-            if #unavailable(iOS 13) {
-                return .hidden
-            }
             return .regular
         }()
     }
@@ -490,7 +473,7 @@ public class MediaGalleryAccessoriesHelper: NSObject {
         // ensure toolbar doesn't cover bottom row.
         if let scrollView = viewController.view as? UIScrollView {
             scrollView.contentInset.bottom += self.kFooterBarHeight
-            scrollView.scrollIndicatorInsets.bottom += self.kFooterBarHeight
+            scrollView.verticalScrollIndicatorInsets.bottom += self.kFooterBarHeight
         }
     }
 
@@ -512,7 +495,7 @@ public class MediaGalleryAccessoriesHelper: NSObject {
         // Undo "ensure toolbar doesn't cover bottom row.".
         if let scrollView = viewController.view as? UIScrollView {
             scrollView.contentInset.bottom -= self.kFooterBarHeight
-            scrollView.scrollIndicatorInsets.bottom -= self.kFooterBarHeight
+            scrollView.verticalScrollIndicatorInsets.bottom -= self.kFooterBarHeight
         }
     }
 

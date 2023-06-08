@@ -82,13 +82,7 @@ extension ConversationViewController {
                 navigationItem.rightBarButtonItems = []
                 return
             }
-            if #available(iOS 13, *) {
-                owsAssertDebug(navigationItem.searchController != nil)
-            } else {
-                navigationItem.rightBarButtonItems = []
-                navigationItem.leftBarButtonItem = nil
-                navigationItem.hidesBackButton = true
-            }
+            owsAssertDebug(navigationItem.searchController != nil)
             return
         case .selection:
             navigationItem.rightBarButtonItems = [ self.cancelSelectionBarButtonItem ]

@@ -47,14 +47,6 @@ public class ChatListViewController: OWSViewController {
         tableView.allowsSelectionDuringEditing = true
         tableView.allowsMultipleSelectionDuringEditing = true
 
-        // iOS 13 and later:
-        // Automatically handled by UITableViewDelegate callbacks
-        // -tableView:contextMenuConfigurationForRowAtIndexPath:point:
-        // -tableView:willPerformPreviewActionForMenuWithConfiguration:animator:
-        if #unavailable(iOS 13) {
-            registerForPreviewing(with: self, sourceView: tableView)
-        }
-
         addPullToRefreshIfNeeded()
 
         // Empty Inbox

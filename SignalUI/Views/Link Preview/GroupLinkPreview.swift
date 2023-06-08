@@ -123,9 +123,9 @@ public class LinkPreviewGroupLink: LinkPreviewState {
     public var activityIndicatorStyle: UIActivityIndicatorView.Style {
         switch linkType {
         case .incomingMessageGroupInviteLink:
-            return .gray
+            return .medium
         case .outgoingMessageGroupInviteLink:
-            return .white
+            return .medium
         default:
             return LinkPreviewView.defaultActivityIndicatorStyle
         }

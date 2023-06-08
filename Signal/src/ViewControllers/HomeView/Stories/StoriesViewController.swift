@@ -535,7 +535,6 @@ extension StoriesViewController: UITableViewDelegate {
         }
     }
 
-    @available(iOS 13, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard let model = model(for: indexPath) else {
             return nil

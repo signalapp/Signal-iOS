@@ -38,12 +38,7 @@ class MediaControlPanelView: UIView {
         layoutMargins.top = 0
 
         // Blur Background
-        let blurEffect: UIBlurEffect
-        if #available(iOS 13, *) {
-            blurEffect = UIBlurEffect(style: .systemChromeMaterialDark)
-        } else {
-            blurEffect = UIBlurEffect(style: .dark)
-        }
+        let blurEffect = UIBlurEffect(style: .systemChromeMaterialDark)
         let blurBackgroundView = UIVisualEffectView(effect: blurEffect)
         addSubview(blurBackgroundView)
         blurBackgroundView.autoPinEdgesToSuperviewEdges()

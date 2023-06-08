@@ -41,8 +41,8 @@ extension UIDevice: UpgradableDevice {
         //
         // 1. This list only contains devices with an explicit maximum version. As of this writing,
         //    the iPhone 14 has no maximum iOS version, so we omit it.
-        // 2. This was last updated when iOS 12 was Signal's minimum supported version. Therefore,
-        //    there's no point including devices like the iPhone 3GS, as they can't even run this
+        // 2. This was last updated when iOS 13 was Signal's minimum supported version. Therefore,
+        //    there's no point including devices like the iPhone 6, as they can't even run this
         //    code.
         //
         // If a device is missing from this list, we assume it can upgrade.
@@ -70,24 +70,6 @@ extension UIDevice: UpgradableDevice {
             // iPod Touch (gen 7)
             "iPod9,1":
             maxMajorVersion = 15
-        case
-            // iPhone 6 (plus)
-            "iPhone7,1",
-            "iPhone7,2",
-            // iPhone 5s
-            "iPhone6,1",
-            "iPhone6,2",
-            // iPad Mini 3
-            "iPad4,7",
-            "iPad4,8",
-            "iPad4,9",
-            // iPad Mini 2
-            "iPad4,4",
-            "iPad4,5",
-            "iPad4,6",
-            // iPod Touch (gen 6)
-            "iPod7,1":
-            maxMajorVersion = 12
         default:
             return true
         }

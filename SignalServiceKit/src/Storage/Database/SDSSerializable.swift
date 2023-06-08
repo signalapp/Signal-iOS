@@ -73,6 +73,6 @@ public extension SDSSerializer {
     }
 
     func requiredArchive(_ value: Any) -> Data {
-        return NSKeyedArchiver.archivedData(withRootObject: value)
+        return try! NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: false)
     }
 }

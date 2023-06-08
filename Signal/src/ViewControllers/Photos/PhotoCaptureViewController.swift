@@ -392,7 +392,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     private lazy var doneButton: MediaDoneButton = {
         let button = MediaDoneButton(type: .custom)
         button.badgeNumber = 0
-        button.userInterfaceStyleOverride = .dark
+        button.overrideUserInterfaceStyle = .dark
         return button
     }()
     private var shouldHideDoneButton: Bool {
@@ -883,14 +883,16 @@ extension PhotoCaptureViewController {
         if let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
            let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
            let animationCurve = UIView.AnimationCurve(rawValue: rawAnimationCurve) {
-            UIView.beginAnimations("sheetResize", context: nil)
-            UIView.setAnimationBeginsFromCurrentState(true)
-            UIView.setAnimationCurve(animationCurve)
-            UIView.setAnimationDuration(animationDuration)
-            layoutUpdateBlock()
-            view.setNeedsLayout()
-            view.layoutIfNeeded()
-            UIView.commitAnimations()
+            UIView.animate(
+                withDuration: animationDuration,
+                delay: 0,
+                options: animationCurve.asAnimationOptions,
+                animations: { [self] in
+                    layoutUpdateBlock()
+                    view.setNeedsLayout()
+                    view.layoutIfNeeded()
+                }
+            )
         } else {
             UIView.performWithoutAnimation {
                 layoutUpdateBlock()

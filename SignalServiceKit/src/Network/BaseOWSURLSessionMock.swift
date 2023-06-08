@@ -156,7 +156,6 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
         ))
     }
 
-    @available(iOS 13.0, *)
     public func webSocketTask(
         requestUrl: URL,
         didOpenBlock: @escaping (String?) -> Void,

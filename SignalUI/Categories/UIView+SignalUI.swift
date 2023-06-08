@@ -136,21 +136,6 @@ public extension UIView {
         override open class var layerClass: AnyClass {
             CATransformLayer.self
         }
-
-        #if TESTABLE_BUILD
-        @objc
-        public override var backgroundColor: UIColor? {
-            didSet {
-                // iOS 12 sometimes clears the backgroundColor for views in
-                // table view cells. This assert is only intended to catch
-                // bugs in our own code, so we can ignore older versions
-                // of iOS.
-                if #available(iOS 14, *) {
-                    owsFailDebug("This is a non-rendering view.")
-                }
-            }
-        }
-        #endif
     }
 
     func setShadow(radius: CGFloat = 2.0, opacity: Float = 0.66, offset: CGSize = .zero, color: UIColor = UIColor.black) {
@@ -625,13 +610,7 @@ public extension UIImageView {
 @objc
 public extension UISearchBar {
     var textField: UITextField? {
-        if #available(iOS 13, *) { return searchTextField }
-
-        guard let textField = self.value(forKey: "_searchField") as? UITextField else {
-            owsFailDebug("Couldn't find UITextField.")
-            return nil
-        }
-        return textField
+        return searchTextField
     }
 }
 
@@ -1120,5 +1099,30 @@ extension NSLayoutConstraint.Relation {
             owsFailDebug("Unknown case")
             return .equal
         }
+    }
+}
+
+extension UIView.AnimationCurve {
+
+    public var asAnimationOptions: UIView.AnimationOptions {
+        switch self {
+        case .easeInOut:
+            return .curveEaseInOut
+        case .easeIn:
+            return .curveEaseIn
+        case .easeOut:
+            return .curveEaseOut
+        case .linear:
+            return .curveLinear
+        @unknown default:
+            return .curveEaseInOut
+        }
+    }
+}
+
+extension Optional where Wrapped == UIView.AnimationCurve {
+
+    public var asAnimationOptions: UIView.AnimationOptions {
+        return (self ?? .easeInOut).asAnimationOptions
     }
 }

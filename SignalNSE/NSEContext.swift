@@ -99,8 +99,6 @@ class NSEContext: NSObject, AppContext {
     func openSystemSettings() {}
     func open(_ url: URL, completion: ((Bool) -> Void)? = nil) {}
 
-    func setNetworkActivityIndicatorVisible(_ value: Bool) {}
-
     func runNowOr(whenMainAppIsActive block: @escaping AppActiveBlock) {}
 
     var debugLogsDirPath: String {

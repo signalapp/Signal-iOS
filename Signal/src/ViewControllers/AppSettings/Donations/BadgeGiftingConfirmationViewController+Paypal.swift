@@ -77,14 +77,10 @@ extension BadgeGiftingConfirmationViewController {
     private func presentPaypal(with approvalUrl: URL) -> Promise<PreparedGiftPayment> {
         firstly(on: DispatchQueue.main) { () -> Promise<Paypal.OneTimePaymentWebAuthApprovalParams> in
             Logger.info("[Gifting] Presenting PayPal web UI for user approval of gift donation")
-            if #available(iOS 13, *) {
-                return Paypal.presentExpectingApprovalParams(
-                    approvalUrl: approvalUrl,
-                    withPresentationContext: self
-                )
-            } else {
-                return Paypal.presentExpectingApprovalParams(approvalUrl: approvalUrl)
-            }
+            return Paypal.presentExpectingApprovalParams(
+                approvalUrl: approvalUrl,
+                withPresentationContext: self
+            )
         }.map(on: DispatchQueue.sharedUserInitiated) { approvalParams -> PreparedGiftPayment in
             .forPaypal(approvalParams: approvalParams)
         }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Promise<PreparedGiftPayment> in

@@ -92,13 +92,7 @@ extension UsernameSelectionViewController {
             // MARK: Views
 
             private lazy var spinnerView: UIActivityIndicatorView = {
-                let spinner: UIActivityIndicatorView = {
-                    if #available(iOS 13, *) {
-                        return .init(style: .medium)
-                    } else {
-                        return .init(style: .white)
-                    }
-                }()
+                let spinner = UIActivityIndicatorView(style: .medium)
 
                 spinner.startAnimating()
 

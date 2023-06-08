@@ -117,8 +117,8 @@ public class MediaTextView: UITextView {
 
     public override var keyCommands: [UIKeyCommand]? {
         return [
-            UIKeyCommand(input: "\r", modifierFlags: .command, action: #selector(modifiedReturnPressed(sender:)), discoverabilityTitle: "Add Text"),
-            UIKeyCommand(input: "\r", modifierFlags: .alternate, action: #selector(modifiedReturnPressed(sender:)), discoverabilityTitle: "Add Text")
+            UIKeyCommand(action: #selector(modifiedReturnPressed(sender:)), input: "\r", modifierFlags: .command, discoverabilityTitle: "Add Text"),
+            UIKeyCommand(action: #selector(modifiedReturnPressed(sender:)), input: "\r", modifierFlags: .alternate, discoverabilityTitle: "Add Text")
         ]
     }
 

@@ -188,7 +188,7 @@ public class ApprovalFooterView: UIView {
         return textfieldStack
     }()
 
-    var proceedLoadingIndicator = UIActivityIndicatorView(style: .white)
+    var proceedLoadingIndicator = UIActivityIndicatorView(style: .medium)
     lazy var proceedButton: OWSButton = {
 		let button = OWSButton.sendButton(
 			imageName: self.approvalMode.proceedButtonImageName ?? "arrow-right-24"

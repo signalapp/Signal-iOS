@@ -253,11 +253,7 @@ extension CLVTableDataSource: UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
-        if #available(iOS 13, *) {
-            return false
-        } else {
-            return true
-        }
+        return false
     }
 
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -380,7 +376,6 @@ extension CLVTableDataSource: UITableViewDelegate {
         }
     }
 
-    @available(iOS 13.0, *)
     public func tableView(_ tableView: UITableView,
                           contextMenuConfigurationForRowAt indexPath: IndexPath,
                           point: CGPoint) -> UIContextMenuConfiguration? {
@@ -407,7 +402,6 @@ extension CLVTableDataSource: UITableViewDelegate {
                                           })
     }
 
-    @available(iOS 13.0, *)
     public func tableView(_ tableView: UITableView,
                           previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
         AssertIsOnMainThread()
@@ -458,7 +452,6 @@ extension CLVTableDataSource: UITableViewDelegate {
         return UITargetedPreview(view: cell, parameters: params, target: target)
     }
 
-    @available(iOS 13.0, *)
     public func tableView(_ tableView: UITableView,
                           willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration,
                           animator: UIContextMenuInteractionCommitAnimating) {

@@ -252,8 +252,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ]
 
         var interaction: INInteraction?
-        if #available(iOS 13, *),
-           previewType != .noNameNoPreview,
+        if previewType != .noNameNoPreview,
            let intent = thread.generateIncomingCallIntent(callerAddress: caller) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
@@ -377,8 +376,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             : .missedCallWithoutActions)
 
         var interaction: INInteraction?
-        if #available(iOS 13, *),
-           previewType != .noNameNoPreview,
+        if previewType != .noNameNoPreview,
            let intent = thread.generateIncomingCallIntent(callerAddress: caller) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming

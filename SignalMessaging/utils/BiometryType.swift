@@ -25,9 +25,6 @@ extension BiometryType {
     public static var biometryType: BiometryType {
         let context = localAuthenticationContext()
 
-        var authError: NSError?
-        let canEvaluatePolicy = context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &authError)
-
         switch context.biometryType {
         case .none:
             return .passcode

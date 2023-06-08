@@ -95,7 +95,7 @@ NSArray *AFQueryStringPairsFromKeyAndValue(NSString *key, id value)
 
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"description"
                                                                      ascending:YES
-                                                                      selector:@selector(compare:)];
+                                                                      selector:@selector((compare:))];
 
     if ([value isKindOfClass:[NSDictionary class]]) {
         NSDictionary *dictionary = value;

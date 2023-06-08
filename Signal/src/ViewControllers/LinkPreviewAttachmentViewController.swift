@@ -188,14 +188,11 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
             let animationCurve = UIView.AnimationCurve(rawValue: rawAnimationCurve)
         {
-            UIView.beginAnimations("sheetResize", context: nil)
-            UIView.setAnimationBeginsFromCurrentState(true)
-            UIView.setAnimationCurve(animationCurve)
-            UIView.setAnimationDuration(animationDuration)
-            layoutUpdateBlock()
-            view.setNeedsLayout()
-            view.layoutIfNeeded()
-            UIView.commitAnimations()
+            UIView.animate(withDuration: animationDuration, delay: 0, options: animationCurve.asAnimationOptions) { [self] in
+                layoutUpdateBlock()
+                view.setNeedsLayout()
+                view.layoutIfNeeded()
+            }
         } else {
             UIView.performWithoutAnimation {
                 layoutUpdateBlock()
@@ -287,7 +284,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             return stackView
         }()
 
-        private lazy var activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
+        private lazy var activityIndicatorView = UIActivityIndicatorView(style: .large)
         private lazy var loadingView: UIView = {
             let view = UIView()
             view.addSubview(activityIndicatorView)

@@ -555,7 +555,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
 extension ProfileSettingsViewController {
 
-    @available(iOS 13, *)
     override public var isModalInPresentation: Bool {
         get { hasUnsavedChanges }
         set { /* noop superclass requirement */ }

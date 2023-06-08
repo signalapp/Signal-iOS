@@ -211,8 +211,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         collectionView.delegate = self
 
-        updateContentInset()
-
         accessoriesHelper.add(toView: self.view)
 
         self.mediaTileViewLayout.invalidateLayout()
@@ -330,9 +328,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     private func showOrHideScrollFlag() {
-        if #unavailable(iOS 12) {
-            return
-        }
         if collectionView.isTracking || scrollingToTop {
             willDecelerate = false
             scrollFlagShouldBeVisible = true
@@ -364,9 +359,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     private func updateScrollFlag() {
-        if #unavailable(iOS 12) {
-            return
-        }
         guard mediaGallery.galleryDates.count > 0,
               let indexPath = reallyVisibleIndexPaths.min() else {
             scrollFlag.alpha = 0.0
@@ -403,9 +395,9 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                     result.bottom = 8.0
                 }
                 result.right = 0
-                if collectionView.scrollIndicatorInsets.bottom > 0 {
+                if collectionView.verticalScrollIndicatorInsets.bottom > 0 {
                     // Footer height takes precedence over adjustedContentInset, which is not terribly accurate.
-                    result.bottom = collectionView.scrollIndicatorInsets.bottom
+                    result.bottom = collectionView.verticalScrollIndicatorInsets.bottom
                 }
                 return result
             case .landscapeLeft:
@@ -417,9 +409,9 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                 // In landscape left the scroll indicator is shifted way in, but its adjusted
                 // content inset is 0.
                 result.right = collectionView.safeAreaInsets.right
-                if collectionView.scrollIndicatorInsets.bottom > 0 {
+                if collectionView.verticalScrollIndicatorInsets.bottom > 0 {
                     // Footer height takes precedence over adjustedContentInset, which is not terribly accurate.
-                    result.bottom = collectionView.scrollIndicatorInsets.bottom
+                    result.bottom = collectionView.verticalScrollIndicatorInsets.bottom
                 }
                 return result
             @unknown default:
@@ -756,13 +748,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         let layout = makeLayout(mode: mode)
 
         layout.sectionInsetReference = .fromSafeArea
-        if #available(iOS 12, *) {
-            // Modern design
-            layout.sectionHeadersPinToVisibleBounds = false
-        } else {
-            // Legacy design, which I can't test easily.
-            layout.sectionHeadersPinToVisibleBounds = true
-        }
+        // Modern design
+        layout.sectionHeadersPinToVisibleBounds = false
 
         return layout
     }
@@ -1272,14 +1259,6 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
 
     func mediaGalleryAccessoriesHelperToolbarHeightWillChange(to height: CGFloat) {
         toolbarHeight = height
-        updateContentInset()
-    }
-
-    private func updateContentInset() {
-        // It feels a bit weird to have content smashed all the way to the bottom edge of the screen.
-        // This is here for iOS 12. Newer versions of iOS always show a toolbar.
-        let minimumInset = 20.0
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: max(minimumInset, toolbarHeight), right: 0)
     }
 }
 

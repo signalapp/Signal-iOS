@@ -435,9 +435,6 @@ public class Location: NSObject {
             return nil
         }
         let addressLines = formattedAddress.components(separatedBy: .newlines)
-        guard #available(iOS 13, *) else {
-            return addressLines.joined(separator: ", ")
-        }
         return ListFormatter.localizedString(byJoining: addressLines)
     }
 

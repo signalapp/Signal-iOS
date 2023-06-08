@@ -157,7 +157,7 @@ class PhotoAlbumContents {
             options.version = .current
             options.deliveryMode = .highQualityFormat
 
-            _ = imageManager.requestImageData(for: asset, options: options) { imageData, dataUTI, _, _ in
+            _ = imageManager.requestImageDataAndOrientation(for: asset, options: options) { imageData, dataUTI, _, _ in
 
                 guard let imageData = imageData else {
                     future.reject(PhotoLibraryError.assertionError(description: "imageData was unexpectedly nil"))

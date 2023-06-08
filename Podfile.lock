@@ -183,7 +183,7 @@ CHECKOUT OPTIONS:
     :commit: dae1e36cb6aeb8fab2c35ce857bd45cd0ce07023
     :git: https://github.com/signalapp/MobileCoin-Swift.git
   SignalCoreKit:
-    :commit: c31350f2cab65be465b292752108fa876b81258f
+    :commit: d999504b617b3e633e7f20652ff508342fba7c19
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
@@ -216,7 +216,7 @@ SPEC CHECKSUMS:
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalCoreKit: 3191731b893914ad63ae156899405621adaf9dfa
+  SignalCoreKit: da9aed6ee558e66fe9380f6745880ae58e610912
   SignalRingRTC: c1a701c5b5ef7b2a3c35fe6a6a3ff262b215fa52
   SQLCipher: 57fa9f863fa4a3ed9dd3c90ace52315db8c0fdca
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
@@ -224,6 +224,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: a9b196db9e03e51caf46b4ca5b84b1f8b926aecb
+PODFILE CHECKSUM: bfc884b1522547f58b9048a9b72e63e6369a4ee9
 
 COCOAPODS: 1.11.3

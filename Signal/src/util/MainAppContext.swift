@@ -168,10 +168,6 @@ class MainAppContext: NSObject, AppContext {
         return UIApplication.shared.statusBarOrientation
     }
 
-    func setNetworkActivityIndicatorVisible(_ value: Bool) {
-        UIApplication.shared.isNetworkActivityIndicatorVisible = value
-    }
-
     var mainWindow: UIWindow?
 
     private var appActiveBlocks = [AppActiveBlock]()

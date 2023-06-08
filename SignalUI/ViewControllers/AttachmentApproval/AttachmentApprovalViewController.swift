@@ -135,9 +135,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.delegate = self
 
         // This fixes an issue with keyboard flashing white while being dismissed.
-        if #available(iOS 13, *) {
-            overrideUserInterfaceStyle = .dark
-        }
+        overrideUserInterfaceStyle = .dark
 
         observerToken = NotificationCenter.default.addObserver(forName: .OWSApplicationDidBecomeActive, object: nil, queue: .main) { [weak self] _ in
             guard let self = self else { return }
@@ -1014,12 +1012,14 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
             let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
             let animationCurve = UIView.AnimationCurve(rawValue: rawAnimationCurve)
         {
-            UIView.beginAnimations("AttachmentResize", context: nil)
-            UIView.setAnimationBeginsFromCurrentState(true)
-            UIView.setAnimationCurve(animationCurve)
-            UIView.setAnimationDuration(animationDuration)
-            currentPageViewController.keyboardHeight = keyboardHeight
-            UIView.commitAnimations()
+            UIView.animate(
+                withDuration: animationDuration,
+                delay: 0,
+                options: animationCurve.asAnimationOptions,
+                animations: {
+                    currentPageViewController.keyboardHeight = keyboardHeight
+                }
+            )
         } else {
             currentPageViewController.keyboardHeight = keyboardHeight
         }
@@ -1392,12 +1392,14 @@ extension AttachmentApprovalViewController: InputAccessoryViewPlaceholderDelegat
     func handleKeyboardStateChange(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
         guard animationDuration > 0 else { return updateBottomToolViewPosition() }
 
-        UIView.beginAnimations("keyboardStateChange", context: nil)
-        UIView.setAnimationBeginsFromCurrentState(true)
-        UIView.setAnimationCurve(animationCurve)
-        UIView.setAnimationDuration(animationDuration)
-        updateBottomToolViewPosition()
-        UIView.commitAnimations()
+        UIView.animate(
+            withDuration: animationDuration,
+            delay: 0,
+            options: animationCurve.asAnimationOptions,
+            animations: { [self] in
+                self.updateBottomToolViewPosition()
+            }
+        )
     }
 
     func updateBottomToolViewPosition() {

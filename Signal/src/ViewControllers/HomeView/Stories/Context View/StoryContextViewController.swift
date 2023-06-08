@@ -246,7 +246,7 @@ class StoryContextViewController: OWSViewController {
 
         applyConstraints()
 
-        let spinner = UIActivityIndicatorView(style: .white)
+        let spinner = UIActivityIndicatorView(style: .medium)
         view.addSubview(spinner)
         spinner.autoCenterInSuperview()
         spinner.startAnimating()

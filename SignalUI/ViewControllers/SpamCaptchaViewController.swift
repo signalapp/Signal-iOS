@@ -36,9 +36,7 @@ public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
         super.viewDidLoad()
         captchaView?.loadCaptcha()
 
-        if #available(iOS 13.0, *) {
-            isModalInPresentation = true
-        }
+        isModalInPresentation = true
         navigationItem.title = OWSLocalizedString("SPAM_CAPTCHA_VIEW_CONTROLLER", comment: "Title for the captcha view controller")
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .stop,

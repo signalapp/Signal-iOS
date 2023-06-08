@@ -760,18 +760,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
         case .none:
             break
         case .contentRelativeToViewport(let token, let isRelativeToTop):
-        if #available(iOS 13, *) {
             if !applyContentOffsetAdjustmentIfNecessary(scrollContinuityToken: token,
                                                         isRelativeToTop: isRelativeToTop) {
                 delegateScrollContinuityMode = .enabled(lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
             }
-        } else {
-            // On iOS 12, we can't safely invalidate the context before performBatchUpdates()
-            // begins, so we use a special .delegateScrollContinuity mode.
-            delegateScrollContinuityMode = .enabledIOS12(token: token,
-                                                         isRelativeToTop: isRelativeToTop,
-                                                         lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
-        }
         case .delegateScrollContinuity:
             delegateScrollContinuityMode = .enabled(lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
         }
@@ -876,12 +868,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         isPerformingBatchUpdates = false
         delegateScrollContinuityMode = .disabled
-
-        if #unavailable(iOS 13) {
-            // On iOS 12, we invalidate the layout immediately after performBatchUpdates()
-            // to ensure that targetContentOffset(forProposedContentOffset:) is applied in a timely way.
-            invalidateLayout()
-        }
     }
 
     public func willReloadData() {

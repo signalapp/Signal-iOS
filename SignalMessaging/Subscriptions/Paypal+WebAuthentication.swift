@@ -11,15 +11,12 @@ import Foundation
 /// PayPal donations are authorized by a user via PayPal's web interface,
 /// presented in an ``ASWebAuthenticationSession``.
 public extension Paypal {
-    /// On iOS 13+, we are required to hold a strong reference to any
+    /// We are required to hold a strong reference to any
     /// in-progress ``ASWebAuthenticationSession``s.
     private static let _runningAuthSession: AtomicOptional<ASWebAuthenticationSession> = AtomicOptional(nil)
 
     /// Creates and presents a new auth session. Only one auth session should
     /// be able to exist at once.
-    ///
-    /// On iOS 13+, a `presentationContext` is required.
-    @available(iOS 13, *)
     static func presentExpectingApprovalParams<ApprovalParams: FromApprovedPaypalWebAuthFinalUrlQueryItems>(
         approvalUrl: URL,
         withPresentationContext presentationContext: ASWebAuthenticationPresentationContextProviding
@@ -29,26 +26,6 @@ public extension Paypal {
         )
 
         session.presentationContextProvider = presentationContext
-        owsAssert(
-            session.start(),
-            "[Donations] Failed to start PayPal authentication session. Was it set up correctly?"
-        )
-
-        return promise
-    }
-
-    /// Creates and presents a new auth session. Only one auth session should
-    /// be able to exist at once.
-    ///
-    /// Only for use on iOS 12.
-    @available(iOS, introduced: 12, obsoleted: 13)
-    static func presentExpectingApprovalParams<ApprovalParams: FromApprovedPaypalWebAuthFinalUrlQueryItems>(
-        approvalUrl: URL
-    ) -> Promise<ApprovalParams> {
-        let (session, promise): (AuthSession<ApprovalParams>, Promise<ApprovalParams>) = makeNewAuthSession(
-            approvalUrl: approvalUrl
-        )
-
         owsAssert(
             session.start(),
             "[Donations] Failed to start PayPal authentication session. Was it set up correctly?"

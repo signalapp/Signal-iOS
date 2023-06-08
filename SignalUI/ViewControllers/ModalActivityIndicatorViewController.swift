@@ -144,7 +144,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
                                             : UIColor(white: 0, alpha: 0.25))
             self.view.isOpaque = false
 
-            let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+            let activityIndicator = UIActivityIndicatorView(style: .large)
             self.activityIndicator = activityIndicator
             self.view.addSubview(activityIndicator)
             activityIndicator.autoCenterInSuperview()

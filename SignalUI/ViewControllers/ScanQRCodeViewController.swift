@@ -759,11 +759,9 @@ private class QRCodeScanner {
         // Camera types in descending order of preference.
         var deviceTypes = [AVCaptureDevice.DeviceType]()
         deviceTypes.append(.builtInWideAngleCamera)
-        if #available(iOS 13, *) {
-            deviceTypes.append(.builtInUltraWideCamera)
-            deviceTypes.append(.builtInDualWideCamera)
-            deviceTypes.append(.builtInTripleCamera)
-        }
+        deviceTypes.append(.builtInUltraWideCamera)
+        deviceTypes.append(.builtInDualWideCamera)
+        deviceTypes.append(.builtInTripleCamera)
         deviceTypes.append(.builtInDualCamera)
         deviceTypes.append(.builtInTelephotoCamera)
 

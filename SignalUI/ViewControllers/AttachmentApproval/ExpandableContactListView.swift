@@ -9,10 +9,6 @@ class ExpandableContactListView: UIView {
 
     var contactNames: [String] = [] {
         didSet {
-            guard #available(iOS 13, *) else {
-                textLabel.text = contactNames.joined(separator: ", ")
-                return
-            }
             textLabel.text = ListFormatter().string(from: contactNames)
         }
     }

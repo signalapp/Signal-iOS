@@ -100,24 +100,6 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
     }
 
-    private var hasHiddenExtraSubivew = false
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-
-        // We don't want to hide anything on iOS 13, as the extra subview no longer exists
-        if #available(iOS 13, *) { hasHiddenExtraSubivew = true }
-
-        // HACK: UISplitViewController adds an extra subview behind the navigation
-        // bar area that extends across both views. As far as I can tell, it's not
-        // possible to adjust the color of this view. It gets reset constantly.
-        // Without this fix, the space between the primary and detail view has a
-        // hairline of the wrong color, most apparent in dark mode.
-        guard !hasHiddenExtraSubivew, let firstSubview = view.subviews.first,
-              !viewControllers.map({ $0.view }).contains(firstSubview) else { return }
-        hasHiddenExtraSubivew = true
-        firstSubview.isHidden = true
-    }
-
     func closeSelectedConversation(animated: Bool) {
         guard let selectedConversationViewController = selectedConversationViewController else { return }
 
@@ -142,7 +124,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // This results in conversations opening up in the wrong pane when you were in portrait and then
         // try and open the app in landscape. We work around this by dispatching to the next runloop
         // at which point things have stabilized.
-        if #available(iOS 13, *), UIApplication.shared.applicationState != .active, lastActiveInterfaceOrientation != CurrentAppContext().interfaceOrientation {
+        if UIApplication.shared.applicationState != .active, lastActiveInterfaceOrientation != CurrentAppContext().interfaceOrientation {
             if #available(iOS 14, *) { owsFailDebug("check if this still happens") }
             // Reset this to avoid getting stuck in a loop. We're becoming active.
             lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
@@ -275,54 +257,54 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
     let chatListKeyCommands = [
         UIKeyCommand(
+            action: #selector(showNewConversationView),
             input: "n",
             modifierFlags: .command,
-            action: #selector(showNewConversationView),
             discoverabilityTitle: OWSLocalizedString(
                 "KEY_COMMAND_NEW_MESSAGE",
                 comment: "A keyboard command to present the new message dialog."
             )
         ),
         UIKeyCommand(
+            action: #selector(showNewGroupView),
             input: "g",
             modifierFlags: .command,
-            action: #selector(showNewGroupView),
             discoverabilityTitle: OWSLocalizedString(
                 "KEY_COMMAND_NEW_GROUP",
                 comment: "A keyboard command to present the new group dialog."
             )
         ),
         UIKeyCommand(
+            action: #selector(showAppSettings),
             input: ",",
             modifierFlags: .command,
-            action: #selector(showAppSettings),
             discoverabilityTitle: OWSLocalizedString(
                 "KEY_COMMAND_SETTINGS",
                 comment: "A keyboard command to present the application settings dialog."
             )
         ),
         UIKeyCommand(
+            action: #selector(focusSearch),
             input: "f",
             modifierFlags: .command,
-            action: #selector(focusSearch),
             discoverabilityTitle: OWSLocalizedString(
                 "KEY_COMMAND_SEARCH",
                 comment: "A keyboard command to begin a search on the conversation list."
             )
         ),
         UIKeyCommand(
+            action: #selector(selectPreviousConversation),
             input: UIKeyCommand.inputUpArrow,
             modifierFlags: .alternate,
-            action: #selector(selectPreviousConversation),
             discoverabilityTitle: OWSLocalizedString(
                 "KEY_COMMAND_PREVIOUS_CONVERSATION",
                 comment: "A keyboard command to jump to the previous conversation in the list."
             )
         ),
         UIKeyCommand(
+            action: #selector(selectNextConversation),
             input: UIKeyCommand.inputDownArrow,
             modifierFlags: .alternate,
-            action: #selector(selectNextConversation),
             discoverabilityTitle: OWSLocalizedString(
                 "KEY_COMMAND_NEXT_CONVERSATION",
                 comment: "A keyboard command to jump to the next conversation in the list."
@@ -333,72 +315,72 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     var selectedConversationKeyCommands: [UIKeyCommand] {
         return [
             UIKeyCommand(
+                action: #selector(openConversationSettings),
                 input: "i",
                 modifierFlags: [.command, .shift],
-                action: #selector(openConversationSettings),
                 discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_CONVERSATION_INFO",
                     comment: "A keyboard command to open the current conversation's settings."
                 )
             ),
             UIKeyCommand(
+                action: #selector(openAllMedia),
                 input: "m",
                 modifierFlags: [.command, .shift],
-                action: #selector(openAllMedia),
                 discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_ALL_MEDIA",
                     comment: "A keyboard command to open the current conversation's all media view."
                 )
             ),
             UIKeyCommand(
+                action: #selector(openGifSearch),
                 input: "g",
                 modifierFlags: [.command, .shift],
-                action: #selector(openGifSearch),
                 discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_GIF_SEARCH",
                     comment: "A keyboard command to open the current conversations GIF picker."
                 )
             ),
             UIKeyCommand(
+                action: #selector(openAttachmentKeyboard),
                 input: "u",
                 modifierFlags: .command,
-                action: #selector(openAttachmentKeyboard),
                 discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_ATTACHMENTS",
                     comment: "A keyboard command to open the current conversation's attachment picker."
                 )
             ),
             UIKeyCommand(
+                action: #selector(openStickerKeyboard),
                 input: "s",
                 modifierFlags: [.command, .shift],
-                action: #selector(openStickerKeyboard),
                 discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_STICKERS",
                     comment: "A keyboard command to open the current conversation's sticker picker."
                 )
             ),
             UIKeyCommand(
+                action: #selector(archiveSelectedConversation),
                 input: "a",
                 modifierFlags: [.command, .shift],
-                action: #selector(archiveSelectedConversation),
                 discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_ARCHIVE",
                     comment: "A keyboard command to archive the current conversation."
                 )
             ),
             UIKeyCommand(
+                action: #selector(unarchiveSelectedConversation),
                 input: "u",
                 modifierFlags: [.command, .shift],
-                action: #selector(unarchiveSelectedConversation),
                 discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_UNARCHIVE",
                     comment: "A keyboard command to unarchive the current conversation."
                 )
             ),
             UIKeyCommand(
+                action: #selector(focusInputToolbar),
                 input: "t",
                 modifierFlags: [.command, .shift],
-                action: #selector(focusInputToolbar),
                 discoverabilityTitle: OWSLocalizedString(
                     "KEY_COMMAND_FOCUS_COMPOSER",
                     comment: "A keyboard command to focus the current conversation's input field."

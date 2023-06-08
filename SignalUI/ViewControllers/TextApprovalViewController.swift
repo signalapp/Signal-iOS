@@ -90,7 +90,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         footerView.delegate = self
 
         // Don't allow interactive dismissal.
-        if #available(iOS 13, *) { isModalInPresentation = true }
+        isModalInPresentation = true
     }
 
     private func updateSendButton() {
@@ -244,12 +244,14 @@ extension TextApprovalViewController: InputAccessoryViewPlaceholderDelegate {
     func handleKeyboardStateChange(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
         guard animationDuration > 0 else { return updateFooterViewPosition() }
 
-        UIView.beginAnimations("keyboardStateChange", context: nil)
-        UIView.setAnimationBeginsFromCurrentState(true)
-        UIView.setAnimationCurve(animationCurve)
-        UIView.setAnimationDuration(animationDuration)
-        updateFooterViewPosition()
-        UIView.commitAnimations()
+        UIView.animate(
+            withDuration: animationDuration,
+            delay: 0,
+            options: animationCurve.asAnimationOptions,
+            animations: { [self] in
+                updateFooterViewPosition()
+            }
+        )
     }
 
     func updateFooterViewPosition() {

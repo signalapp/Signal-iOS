@@ -60,7 +60,7 @@ class DebugContactsUtils: Dependencies {
 
         let maxBatchSize: UInt = 10
         let batchSize = min(maxBatchSize, count)
-        var remainder = count - batchSize
+        let remainder = count - batchSize
         createRandomContactsBatch(batchSize, contactHandler: contactHandler) {
             guard remainder > 0 else { return }
             DispatchQueue.main.async {

@@ -363,8 +363,7 @@ extension OWSHttpHeaders {
             // because the NSNumber method returns 0.0 on a parse failure. NSScanner lets us detect
             // a parse failure.
             let scanner = Scanner(string: value)
-            var delay: TimeInterval = 0
-            guard scanner.scanDouble(&delay),
+            guard let delay = scanner.scanDouble(),
                   scanner.isAtEnd else {
                       // Only return the delay if we've made it to the end.
                       // Helps to prevent things like: 8/11/1994 being interpreted as delay: 8.

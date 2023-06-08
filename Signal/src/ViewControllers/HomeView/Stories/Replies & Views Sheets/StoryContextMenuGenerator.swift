@@ -89,7 +89,6 @@ class StoryContextMenuGenerator: Dependencies {
         ].compactMap({ $0?.asSignalContextMenuAction() })
     }
 
-    @available(iOS 13, *)
     public func nativeContextMenuActions(
         for model: StoryViewModel,
         sourceView: @escaping () -> UIView?
@@ -106,7 +105,6 @@ class StoryContextMenuGenerator: Dependencies {
         }
     }
 
-    @available(iOS 13, *)
     public func nativeContextMenuActions(
         for message: StoryMessage,
         in thread: TSThread?,
@@ -836,7 +834,6 @@ private struct GenericContextAction {
         )
     }
 
-    @available(iOS 13, *)
     func asNativeContextMenuAction() -> UIAction {
         let attributes: UIMenuElement.Attributes
         switch style {

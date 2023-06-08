@@ -21,7 +21,7 @@
         // dismiss.
         if (@available(iOS 14, *)) {
             // do nothing
-        } else if (@available(iOS 13, *)) {
+        } else {
             SEL originalSelector = NSSelectorFromString(@"editCancel:");
             SEL swizzledSelector = @selector(ows_editCancel:);
 

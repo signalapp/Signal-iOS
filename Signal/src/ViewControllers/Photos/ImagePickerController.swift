@@ -44,7 +44,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     private lazy var doneButton: MediaDoneButton = {
         let button = MediaDoneButton()
-        button.userInterfaceStyleOverride = .light
+        button.overrideUserInterfaceStyle = .light
         button.addTarget(self, action: #selector(didTapDoneButton), for: .touchUpInside)
         return button
     }()
@@ -611,11 +611,7 @@ private class TitleView: UIView {
         label.font = titleLabelFont()
 
         iconView.tintColor = tintColor
-        if #available(iOS 13, *) {
-            iconView.image = UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(font: label.font))
-        } else {
-            iconView.image = UIImage(named: "media-composer-navbar-chevron")
-        }
+        iconView.image = UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(font: label.font))
 
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
     }
@@ -635,9 +631,7 @@ private class TitleView: UIView {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
             label.font = titleLabelFont()
-            if #available(iOS 13, *) {
-                iconView.image = UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(font: label.font))
-            }
+            iconView.image = UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(font: label.font))
         }
     }
 

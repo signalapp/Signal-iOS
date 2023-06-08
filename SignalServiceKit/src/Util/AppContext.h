@@ -109,9 +109,6 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 - (void)openSystemSettings;
 - (void)openURL:(NSURL *)url completion:(void (^__nullable)(BOOL success))completion;
 
-// Should be a NOOP if isMainApp is NO.
-- (void)setNetworkActivityIndicatorVisible:(BOOL)value;
-
 - (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block;
 
 @property (atomic, readonly) NSDate *appLaunchTime;

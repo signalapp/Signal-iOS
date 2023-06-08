@@ -220,20 +220,7 @@ public class ReturnToCallViewController: UIViewController {
             size: Self.pipSize
         ).pinnedToVerticalEdge(of: pipBoundingRect)
 
-        let animationOptions: UIView.AnimationOptions
-        switch animationCurve ?? .easeInOut {
-        case .easeInOut:
-            animationOptions = .curveEaseInOut
-        case .easeIn:
-            animationOptions = .curveEaseIn
-        case .easeOut:
-            animationOptions = .curveEaseOut
-        case .linear:
-            animationOptions = .curveLinear
-        @unknown default:
-            animationOptions = .curveEaseInOut
-        }
-        UIView.animate(withDuration: animationDuration ?? 0.25, delay: 0, options: animationOptions) {
+        UIView.animate(withDuration: animationDuration ?? 0.25, delay: 0, options: animationCurve.asAnimationOptions) {
             self.updateLocalVideoFrame()
             window.frame = newFrame
         }

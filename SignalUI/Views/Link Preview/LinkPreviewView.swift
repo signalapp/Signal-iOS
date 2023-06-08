@@ -227,9 +227,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
     }
 
     static var defaultActivityIndicatorStyle: UIActivityIndicatorView.Style {
-        Theme.isDarkThemeEnabled
-            ? .white
-            : .gray
+        .medium
     }
 
     // MARK: Events

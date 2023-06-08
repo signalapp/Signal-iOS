@@ -19,9 +19,7 @@ class ThemeSettingsTableViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let themeSection = OWSTableSection()
-        if #available(iOS 13, *) {
-            themeSection.add(appearanceItem(.system))
-        }
+        themeSection.add(appearanceItem(.system))
         themeSection.add(appearanceItem(.light))
         themeSection.add(appearanceItem(.dark))
 

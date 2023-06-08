@@ -194,7 +194,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
         let intersectionHeight = keyboardFrameInTableView.intersection(tableViewSafeArea).height
 
         tableView.contentInset.bottom = intersectionHeight
-        tableView.scrollIndicatorInsets.bottom = intersectionHeight
+        tableView.verticalScrollIndicatorInsets.bottom = intersectionHeight
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -213,11 +213,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
             }
 
             let indicatorStyle: UIActivityIndicatorView.Style
-            if #available(iOS 13, *) {
-                indicatorStyle = .medium
-            } else {
-                indicatorStyle = Theme.isDarkThemeEnabled ? .white : .gray
-            }
+            indicatorStyle = .medium
             let spinner = UIActivityIndicatorView(style: indicatorStyle)
             spinner.startAnimating()
 
@@ -286,9 +282,7 @@ extension ContactSupportViewController: TextViewWithPlaceholderDelegate {
         updateRightBarButton()
 
         // Disable interactive presentation if the user has entered text
-        if #available(iOS 13, *) {
-            isModalInPresentation = !textView.text.isEmptyOrNil
-        }
+        isModalInPresentation = !textView.text.isEmptyOrNil
 
         // Kick the tableview so it recalculates sizes
         UIView.performWithoutAnimation {

@@ -88,9 +88,7 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
             supportedSection.add(OWSTableItem(customCellBlock: {
                 let cell = OWSTableItem.newCell()
 
-                let activityIndicator = UIActivityIndicatorView(style: Theme.isDarkThemeEnabled
-                                                                    ? .white
-                                                                    : .gray)
+                let activityIndicator = UIActivityIndicatorView(style: .medium)
                 activityIndicator.startAnimating()
 
                 cell.contentView.addSubview(activityIndicator)

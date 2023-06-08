@@ -271,7 +271,7 @@ private class RecentPhotoCell: UICollectionViewCell {
     private var contentTypeBadgeView: UIImageView?
     private var durationLabel: UILabel?
     private var durationLabelBackground: UIView?
-    let loadingIndicator = UIActivityIndicatorView(style: .whiteLarge)
+    let loadingIndicator = UIActivityIndicatorView(style: .large)
 
     var item: PhotoGridItem?
 

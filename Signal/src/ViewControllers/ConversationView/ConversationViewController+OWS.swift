@@ -279,13 +279,11 @@ extension ConversationViewController: GroupViewHelperDelegate {
 extension ConversationViewController {
     func uiModeDidChange(oldValue: ConversationUIMode) {
         if oldValue == .search {
-            if #available(iOS 13.0, *) {
-                navigationItem.searchController = nil
-                // HACK: For some reason at this point the OWSNavbar retains the extra space it
-                // used to house the search bar. This only seems to occur when dismissing
-                // the search UI when scrolled to the very top of the conversation.
-                navigationController?.navigationBar.sizeToFit()
-            }
+            navigationItem.searchController = nil
+            // HACK: For some reason at this point the OWSNavbar retains the extra space it
+            // used to house the search bar. This only seems to occur when dismissing
+            // the search UI when scrolled to the very top of the conversation.
+            navigationController?.navigationBar.sizeToFit()
         }
 
         switch uiMode {
@@ -294,13 +292,7 @@ extension ConversationViewController {
                 navigationItem.titleView = headerView
             }
         case .search:
-            if #available(iOS 13.0, *) {
-                navigationItem.searchController = searchController.uiSearchController
-            } else {
-                // Note: setting a searchBar as the titleView causes UIKit to render the navBar
-                // *slightly* taller (44pt -> 56pt)
-                navigationItem.titleView = searchController.uiSearchController.searchBar
-            }
+            navigationItem.searchController = searchController.uiSearchController
         case .selection:
             navigationItem.titleView = nil
         }

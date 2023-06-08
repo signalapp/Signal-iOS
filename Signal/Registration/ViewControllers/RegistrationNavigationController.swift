@@ -8,36 +8,16 @@ import SignalUI
 
 public class RegistrationNavigationController: OWSNavigationController {
 
-    private var coordinator: RegistrationCoordinator!
+    private let coordinator: RegistrationCoordinator
 
     public static func withCoordinator(_ coordinator: RegistrationCoordinator) -> RegistrationNavigationController {
         let vc = RegistrationNavigationController(coordinator: coordinator)
-        vc.coordinator = coordinator
         return vc
     }
 
     private init(coordinator: RegistrationCoordinator) {
         self.coordinator = coordinator
         super.init()
-    }
-
-    // On iOS 12, init(navigationBarClass:toolbarClass:) calls
-    // init(nibName:bundle:). In the latest iOS SDK, these are both marked as
-    // designated initializers, so that shouldn't be allowed. In Objective-C,
-    // this resolves to the superclass implementation and behaves properly, but
-    // in Swift, it results in a crash. A no-op implementation avoids the crash
-    // and results in the same behavior as in Objective-C.
-    //
-    // Subclass are required to implement this initializer if they implement
-    // any other initializer. However, the initializer should *always* be an
-    // empty shim that calls `super`. The compiler will force you to initialize
-    // all ivars before calling `super` -- don’t do that. Instead, make ivars
-    // `var` or optional so they don’t need to be modified in this initializer.
-    required init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        if #available(iOS 13, *) {
-            owsFailDebug("This initializer should never be explicitly executed.")
-        }
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
 
     public override func viewDidLoad() {

@@ -338,7 +338,7 @@ extension SignalApp {
         alert.addAction(.init(title: OWSLocalizedString("DATABASE_INTEGRITY_CHECK_ACTION_RUN",
                                                        comment: "Button to run the database integrity check"),
                               style: .default) { _ in
-            let progressView = UIActivityIndicatorView(style: .whiteLarge)
+            let progressView = UIActivityIndicatorView(style: .large)
             progressView.color = .gray
             parentVC.view.addSubview(progressView)
             progressView.autoCenterInSuperview()
