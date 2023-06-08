@@ -25,7 +25,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private var thread: TSThread? { renderItem?.itemModel.thread }
 
     private(set) var message: TSMessage
-    private let spoilerReveal: SpoilerRevealState
+    public let spoilerReveal: SpoilerRevealState
     private var wasDeleted: Bool = false
     private var isIncoming: Bool { message as? TSIncomingMessage != nil }
     private var expires: Bool { message.expiresInSeconds > 0 }

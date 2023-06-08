@@ -23,7 +23,6 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let quotedReplyModel: QuotedReplyModel
         let displayableQuotedText: DisplayableText?
         let conversationStyle: ConversationStyle
-        let spoilerReveal: SpoilerRevealState
         let isOutgoing: Bool
         let isForPreview: Bool
         let quotedAuthorName: String
@@ -36,7 +35,14 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
     }
 
-    private var state: State?
+    private var stopObservingSpoilerReveal: (() -> Void)?
+
+    private var state: State? {
+        didSet {
+            stopObservingSpoilerReveal?()
+            self.stopObservingSpoilerReveal = nil
+        }
+    }
 
     private weak var delegate: QuotedMessageViewDelegate?
 
@@ -63,7 +69,6 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         quotedReplyModel: QuotedReplyModel,
         displayableQuotedText: DisplayableText?,
         conversationStyle: ConversationStyle,
-        spoilerReveal: SpoilerRevealState,
         isOutgoing: Bool,
         transaction: SDSAnyReadTransaction
     ) -> State {
@@ -74,7 +79,6 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         return State(quotedReplyModel: quotedReplyModel,
                      displayableQuotedText: displayableQuotedText,
                      conversationStyle: conversationStyle,
-                     spoilerReveal: spoilerReveal,
                      isOutgoing: isOutgoing,
                      isForPreview: false,
                      quotedAuthorName: quotedAuthorName)
@@ -83,7 +87,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     static func stateForPreview(
         quotedReplyModel: QuotedReplyModel,
         conversationStyle: ConversationStyle,
-        spoilerReveal: SpoilerRevealState,
+        revealedSpoilerIdsSnapshot: Set<StyleIdType>,
         transaction: SDSAnyReadTransaction
     ) -> State {
 
@@ -97,12 +101,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 withMessageBody: messageBody,
                 displayConfig: HydratedMessageBody.DisplayConfiguration(
                     mention: .quotedReply,
-                    style: .quotedReply(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
-                        interactionIdentifier: InteractionSnapshotIdentifier(
-                            timestamp: quotedReplyModel.timestamp,
-                            authorUuid: quotedReplyModel.authorAddress.uuidString
-                        )
-                    )),
+                    style: .quotedReply(revealedSpoilerIds: revealedSpoilerIdsSnapshot),
                     searchRanges: nil
                 ),
                 transaction: transaction
@@ -112,7 +111,6 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         return State(quotedReplyModel: quotedReplyModel,
                      displayableQuotedText: displayableQuotedText,
                      conversationStyle: conversationStyle,
-                     spoilerReveal: spoilerReveal,
                      isOutgoing: true,
                      isForPreview: true,
                      quotedAuthorName: quotedAuthorName)
@@ -124,15 +122,11 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     // * Measure this view _without_ creating its views.
     private struct Configurator {
         let state: State
+        let revealedSpoilerIds: Set<StyleIdType>
 
         var quotedReplyModel: QuotedReplyModel { state.quotedReplyModel }
         var displayableQuotedText: DisplayableText? { state.displayableQuotedText }
         var conversationStyle: ConversationStyle { state.conversationStyle }
-        var revealedSpoilerIds: Set<StyleIdType> {
-            return state.spoilerReveal.revealedSpoilerIds(
-                interactionIdentifier: state.quotedInteractionIdentifier
-            )
-        }
         var isOutgoing: Bool { state.isOutgoing }
         var isIncoming: Bool { !isOutgoing }
         var isForPreview: Bool { state.isForPreview }
@@ -455,20 +449,31 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         return bubbleView
     }
 
-    public func configureForRendering(state: State,
-                                      delegate: QuotedMessageViewDelegate?,
-                                      componentDelegate: CVComponentDelegate,
-                                      sharpCorners: OWSDirectionalRectCorner,
-                                      cellMeasurement: CVCellMeasurement) {
+    public func configureForRendering(
+        state: State,
+        delegate: QuotedMessageViewDelegate?,
+        componentDelegate: CVComponentDelegate,
+        sharpCorners: OWSDirectionalRectCorner,
+        cellMeasurement: CVCellMeasurement
+    ) {
         self.state = state
         self.delegate = delegate
 
-        state.spoilerReveal.observeChanges(
-            for: state.quotedInteractionIdentifier,
+        let spoilerReveal = componentDelegate.spoilerReveal
+        let quotedInteractionIdentifier = state.quotedInteractionIdentifier
+        spoilerReveal.observeChanges(
+            for: quotedInteractionIdentifier,
             observer: self
         )
+        self.stopObservingSpoilerReveal = { [weak self, weak spoilerReveal] in
+            guard let self, let spoilerReveal else { return }
+            spoilerReveal.removeObserver(for: quotedInteractionIdentifier, observer: self)
+        }
 
-        let configurator = Configurator(state: state)
+        let configurator = Configurator(
+            state: state,
+            revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(interactionIdentifier: quotedInteractionIdentifier)
+        )
         let conversationStyle = configurator.conversationStyle
         let quotedReplyModel = configurator.quotedReplyModel
 
@@ -732,7 +737,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                maxWidth: CGFloat,
                                measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
 
-        let configurator = Configurator(state: state)
+        let configurator = Configurator(
+            state: state,
+            revealedSpoilerIds: Set() /* spoilers don't change measured size, ok to ignore them */
+        )
 
         let outerStackConfig = configurator.outerStackConfig
         let hStackConfig = configurator.hStackConfig
@@ -883,13 +891,6 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     public override func reset() {
         super.reset()
 
-        if let state {
-            state.spoilerReveal.removeObserver(
-                for: state.quotedInteractionIdentifier,
-                observer: self
-            )
-        }
-
         self.state = nil
         self.delegate = nil
 
@@ -916,11 +917,14 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 }
 
 extension QuotedMessageView: SpoilerRevealStateObserver {
-    public func didUpdateRevealedSpoilers() {
+    public func didUpdateRevealedSpoilers(_ spoilerReveal: SpoilerRevealState) {
         guard let state else {
             return
         }
-        let configurator = Configurator(state: state)
+        let configurator = Configurator(
+            state: state,
+            revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(interactionIdentifier: state.quotedInteractionIdentifier)
+        )
         let quotedTextLabelConfig = configurator.quotedTextLabelConfig
         // Note: measurement doesn't change when spoiler state changes.
         quotedTextLabelConfig.applyForRendering(label: quotedTextLabel)

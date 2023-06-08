@@ -147,7 +147,7 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
         return false
     }
 
-    func didUpdateRevealedSpoilers() {
+    func didUpdateRevealedSpoilers(_ spoilerReveal: SpoilerRevealState) {
         captionTextView.didUpdateRevealedSpoilers()
     }
 
