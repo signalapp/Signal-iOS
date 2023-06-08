@@ -70,15 +70,13 @@ class EmojiPickerCollectionView: UICollectionView {
         layout.minimumInteritemSpacing = EmojiPickerCollectionView.minimumSpacing
         layout.sectionInset = UIEdgeInsets(top: 0, leading: EmojiPickerCollectionView.margins, bottom: 0, trailing: EmojiPickerCollectionView.margins)
 
-        (messageEmoji, recentEmoji, allSendableEmojiByCategory) = SDSDatabaseStorage.shared.read { transaction in
-            let messageEmoji: [EmojiWithSkinTones]
+        let messageReacts: [OWSReaction]
+        (messageReacts, recentEmoji, allSendableEmojiByCategory) = SDSDatabaseStorage.shared.read { transaction in
+            let messageReacts: [OWSReaction]
             if let message {
-                let reactions = ReactionFinder(uniqueMessageId: message.uniqueId).allReactions(transaction: transaction.unwrapGrdbRead)
-                messageEmoji = reactions.compactMap {
-                    return EmojiWithSkinTones(rawValue: $0.emoji)
-                }
+                messageReacts = ReactionFinder(uniqueMessageId: message.uniqueId).allReactions(transaction: transaction.unwrapGrdbRead)
             } else {
-                messageEmoji = []
+                messageReacts = []
             }
 
             let rawRecentEmoji = EmojiPickerCollectionView.keyValueStore.getObject(
@@ -105,8 +103,23 @@ class EmojiPickerCollectionView: UICollectionView {
             let allSendableEmojiByCategory = Emoji.allSendableEmojiByCategoryWithPreferredSkinTones(
                 transaction: transaction
             )
-            return (messageEmoji, recentEmoji, allSendableEmojiByCategory)
+
+            return (messageReacts, recentEmoji, allSendableEmojiByCategory)
         }
+        // Remove duplicates while preserving order.
+        var messageEmojiSet = Set<EmojiWithSkinTones>()
+        var dedupedEmoji = [EmojiWithSkinTones]()
+        for react in messageReacts {
+            guard let emoji = EmojiWithSkinTones(rawValue: react.emoji) else {
+                continue
+            }
+            guard !messageEmojiSet.contains(emoji.normalized) else {
+                continue
+            }
+            messageEmojiSet.insert(emoji.normalized)
+            dedupedEmoji.append(emoji)
+        }
+        self.messageEmoji = dedupedEmoji
 
         super.init(frame: .zero, collectionViewLayout: layout)
 
