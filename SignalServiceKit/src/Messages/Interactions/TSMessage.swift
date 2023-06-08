@@ -162,18 +162,12 @@ public extension TSMessage {
         transaction: SDSAnyWriteTransaction,
         block: ((EditRecord, TSMessage?) throws -> Void)
     ) throws {
-        switch editState {
-        case .latestRevision:
-            let editHistory = try EditMessageFinder.findEditHistory(
-                for: self,
-                transaction: transaction
-            )
-
-            for edit in editHistory {
-                try block(edit.0, edit.1)
-            }
-        case .none, .pastRevision:
-            break
+        let editsToProcess = try EditMessageFinder.findEditDeleteRecords(
+            for: self,
+            transaction: transaction
+        )
+        for edit in editsToProcess {
+            try block(edit.0, edit.1)
         }
     }
 

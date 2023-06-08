@@ -123,4 +123,41 @@ public class EditMessageFinder {
             return (record, message)
         }
     }
+
+    /// This method is similar to findEditHistory, but will find records and interactions where the
+    /// passed in message is _either_ the latest edit, or a past revision.  This is useful when
+    /// deleting a messaeg, since the record needs to be removed regardles of the type of edit
+    public class func findEditDeleteRecords(
+        for message: TSMessage,
+        transaction: SDSAnyReadTransaction
+    ) throws -> [(EditRecord, TSMessage?)] {
+
+        let recordSQL = """
+            SELECT * FROM \(EditRecord.databaseTableName)
+            WHERE latestRevisionId = ?
+            OR pastRevisionId = ?
+            ORDER BY pastRevisionId DESC
+        """
+
+        let arguments: StatementArguments = [message.grdbId, message.grdbId]
+
+        let records = try EditRecord.fetchAll(
+            transaction.unwrapGrdbRead.database,
+            sql: recordSQL,
+            arguments: arguments
+        )
+
+        return try records.map { record -> (EditRecord, TSMessage?) in
+            let interaction = try InteractionFinder.fetch(
+                rowId: record.pastRevisionId,
+                transaction: transaction
+            )
+            guard let message = interaction as? TSMessage else {
+                owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
+                return (record, nil)
+            }
+            return (record, message)
+        }
+    }
+
 }
