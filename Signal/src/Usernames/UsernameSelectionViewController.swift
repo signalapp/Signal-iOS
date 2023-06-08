@@ -170,8 +170,14 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         )
     }()
 
+    private lazy var wrapperScrollView = UIScrollView()
+
     private lazy var headerView: HeaderView = {
-        .init(withIconSize: Constants.headerViewIconSize)
+        let view = HeaderView(withIconSize: Constants.headerViewIconSize)
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+
+        return view
     }()
 
     /// Manages editing of the nickname and presents additional visual state
@@ -179,6 +185,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     private lazy var usernameTextFieldWrapper: UsernameTextFieldWrapper = {
         let wrapper = UsernameTextFieldWrapper(username: existingUsername)
 
+        wrapper.translatesAutoresizingMaskIntoConstraints = false
         wrapper.textField.delegate = self
         wrapper.textField.addTarget(self, action: #selector(usernameTextFieldContentsDidChange), for: .editingChanged)
 
@@ -188,14 +195,13 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     private lazy var usernameFooterTextView: UITextView = {
         let textView = LinkingTextView()
 
+        textView.translatesAutoresizingMaskIntoConstraints = false
         textView.textContainerInset = UIEdgeInsets(top: 12, leading: 16, bottom: 24, trailing: 16)
         textView.textColor = Theme.secondaryTextAndIconColor
         textView.delegate = self
 
         return textView
     }()
-
-    private lazy var bottomSpacerView = UIView()
 
     // MARK: View lifecycle
 
@@ -233,7 +239,11 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         super.viewDidLoad()
 
         setupNavBar()
-        setupViews()
+        setupViewConstraints()
+
+        themeDidChange()
+        contentSizeCategoryDidChange()
+        updateContent()
 
         NotificationCenter.default.addObserver(
             self,
@@ -259,39 +269,54 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         navigationItem.rightBarButtonItem = doneBarButtonItem
     }
 
-    private func setupViews() {
-        view.addSubview(headerView)
-        view.addSubview(usernameTextFieldWrapper)
-        view.addSubview(usernameFooterTextView)
-        view.addSubview(bottomSpacerView)
+    private func setupViewConstraints() {
+        view.addSubview(wrapperScrollView)
 
-        headerView.autoPinTopToSuperviewMargin()
-        headerView.autoPinLeadingToSuperviewMargin()
-        headerView.autoPinTrailingToSuperviewMargin()
+        wrapperScrollView.addSubview(headerView)
+        wrapperScrollView.addSubview(usernameTextFieldWrapper)
+        wrapperScrollView.addSubview(usernameFooterTextView)
+
+        wrapperScrollView.autoPinTopToSuperviewMargin()
+        wrapperScrollView.autoPinLeadingToSuperviewMargin()
+        wrapperScrollView.autoPinTrailingToSuperviewMargin()
+        wrapperScrollView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
+
+        let contentLayoutGuide = wrapperScrollView.contentLayoutGuide
+
+        contentLayoutGuide.widthAnchor.constraint(
+            equalTo: wrapperScrollView.widthAnchor
+        ).isActive = true
+
+        func constrainHorizontal(_ view: UIView) {
+            view.leadingAnchor.constraint(
+                equalTo: contentLayoutGuide.leadingAnchor
+            ).isActive = true
+
+            view.trailingAnchor.constraint(
+                equalTo: contentLayoutGuide.trailingAnchor
+            ).isActive = true
+        }
+
+        constrainHorizontal(headerView)
+        constrainHorizontal(usernameTextFieldWrapper)
+        constrainHorizontal(usernameFooterTextView)
+
+        headerView.topAnchor.constraint(
+            equalTo: contentLayoutGuide.topAnchor
+        ).isActive = true
 
         headerView.autoPinEdge(.bottom, to: .top, of: usernameTextFieldWrapper)
 
-        usernameTextFieldWrapper.autoPinLeadingToSuperviewMargin()
-        usernameTextFieldWrapper.autoPinTrailingToSuperviewMargin()
-
         usernameTextFieldWrapper.autoPinEdge(.bottom, to: .top, of: usernameFooterTextView)
 
-        usernameFooterTextView.autoPinLeadingToSuperviewMargin()
-        usernameFooterTextView.autoPinTrailingToSuperviewMargin()
-
-        usernameFooterTextView.autoPinEdge(.bottom, to: .top, of: bottomSpacerView)
-
-        bottomSpacerView.autoPinLeadingToSuperviewMargin()
-        bottomSpacerView.autoPinTrailingToSuperviewMargin()
-        bottomSpacerView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
-
-        themeDidChange()
-        contentSizeCategoryDidChange()
-
-        updateContent()
+        usernameFooterTextView.bottomAnchor.constraint(
+            equalTo: contentLayoutGuide.bottomAnchor
+        ).isActive = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
         usernameTextFieldWrapper.textField.becomeFirstResponder()
     }
 }
