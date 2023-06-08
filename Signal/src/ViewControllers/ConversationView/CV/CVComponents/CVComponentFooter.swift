@@ -321,7 +321,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         return CVLabelConfig(text: text,
                              font: UIFont.dynamicTypeSubheadlineClamped.semibold(),
                              textColor: conversationStyle.bubbleReadMoreTextColor(message: message),
-                             textAlignment: UIView.textAlignmentUnnatural())
+                             textAlignment: .trailing)
     }
 
     private let tapForMoreHeightFactor: CGFloat = 1.25
@@ -461,7 +461,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         }
 
         override required init() {
-            timestampLabel.textAlignment = UIView.textAlignmentUnnatural()
+            timestampLabel.textAlignment = .trailing
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
