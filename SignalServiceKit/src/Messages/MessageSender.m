@@ -530,37 +530,6 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
                             failure:failure];
 }
 
-- (AnyPromise *)unlockPreKeyUpdateFailuresPromise
-{
-    OWSAssertDebug(!NSThread.isMainThread);
-
-    if (![TSPreKeyManager isAppLockedDueToPreKeyUpdateFailures]) {
-        return [AnyPromise promiseWithValue:@(1)];
-    }
-
-    OWSLogInfo(@"Trying to unlock prekey update.");
-
-    return AnyPromise.withFutureOn(
-        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(AnyFuture *future) {
-            OWSProdError([OWSAnalyticsEvents messageSendErrorFailedDueToPrekeyUpdateFailures]);
-
-            // Retry prekey update every time user tries to send a message while app
-            // is disabled due to prekey update failures.
-            //
-            // Only try to update the signed prekey; updating it is sufficient to
-            // re-enable message sending.
-            [TSPreKeyManager
-                rotateSignedPreKeysWithSuccess:^{
-                    OWSLogInfo(@"New prekeys registered with server.");
-                    [future resolveWithValue:@(1)];
-                }
-                failure:^(NSError *error) {
-                    OWSLogWarn(@"Failed to update prekeys with the server: %@", error);
-                    [future rejectWithError:error];
-                }];
-        });
-}
-
 - (AnyPromise *)sendPromiseForServiceIds:(NSArray<ServiceIdObjC *> *)serviceIds
                                  message:(TSOutgoingMessage *)message
                                   thread:(TSThread *)thread
@@ -759,19 +728,16 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
     NSMutableArray<NSError *> *sendErrors = [NSMutableArray array];
     NSMutableDictionary<ServiceIdObjC *, NSError *> *sendErrorPerRecipient = [NSMutableDictionary dictionary];
 
-    [self unlockPreKeyUpdateFailuresPromise]
-        .thenInBackground(^(id value) {
-            return [self sendPromiseForServiceIds:recipientServiceIds
-                                          message:message
-                                           thread:thread
-                               senderCertificates:senderCertificates
-                                   sendErrorBlock:^(ServiceIdObjC *serviceId, NSError *error) {
-                                       @synchronized(sendErrors) {
-                                           [sendErrors addObject:error];
-                                           sendErrorPerRecipient[serviceId] = error;
-                                       }
-                                   }];
-        })
+    [self sendPromiseForServiceIds:recipientServiceIds
+                           message:message
+                            thread:thread
+                senderCertificates:senderCertificates
+                    sendErrorBlock:^(ServiceIdObjC *serviceId, NSError *error) {
+                        @synchronized(sendErrors) {
+                            [sendErrors addObject:error];
+                            sendErrorPerRecipient[serviceId] = error;
+                        }
+                    }]
         .doneInBackground(^(id value) { successHandler(); })
         .catchInBackground(^(id failure) {
             // Ignore the failure value; consult sendErrors and sendErrorPerRecipientCopy.

@@ -600,7 +600,21 @@ extension MessageSender {
     }
 
     private static func prepareSend(of message: TSOutgoingMessage) -> Promise<MessageSendInfo> {
-        firstly(on: DispatchQueue.global()) { () -> Promise<SenderCertificates> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
+            guard TSPreKeyManager.isAppLockedDueToPreKeyUpdateFailures() else {
+                // The signed pre-key is valid, so don't rotate it.
+                return .value(())
+            }
+            Logger.info("Rotating signed pre-key before sending message.")
+            // Retry prekey update every time user tries to send a message while app is
+            // disabled due to prekey update failures.
+            //
+            // Only try to update the signed prekey; updating it is sufficient to
+            // re-enable message sending.
+            let (promise, future) = Promise<Void>.pending()
+            TSPreKeyManager.rotateSignedPreKeys(success: future.resolve, failure: future.reject(_:))
+            return promise
+        }.then(on: DispatchQueue.global()) { () -> Promise<SenderCertificates> in
             let (promise, future) = Promise<SenderCertificates>.pending()
             self.udManager.ensureSenderCertificates(
                 certificateExpirationPolicy: .permissive,
