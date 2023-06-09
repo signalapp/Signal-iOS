@@ -290,22 +290,13 @@ NS_ASSUME_NONNULL_BEGIN
             // b) It's safe to discard suspicious "sent updates."
             continue;
         }
-        TSThread *thread = [message threadWithTransaction:transaction];
-        if (!thread.isGroupThread) {
-            continue;
-        }
-        if (![((TSGroupThread *)thread).groupModel.groupId isEqual:groupId]) {
-            continue;
-        }
-
-        if (!message.isFromLinkedDevice) {
-            OWSFailDebug(@"Ignoring 'recipient update' for message which was sent locally.");
+        if (![message.uniqueThreadId isEqualToString:groupThread.uniqueId]) {
             continue;
         }
 
         OWSLogInfo(@"Processing 'recipient update' transcript in thread: %@, timestamp: %llu, nonUdRecipientIds: %d, "
                    @"udRecipientIds: %d.",
-            thread.uniqueId,
+            groupThread.uniqueId,
             timestamp,
             (int)transcript.nonUdRecipients.count,
             (int)transcript.udRecipients.count);
