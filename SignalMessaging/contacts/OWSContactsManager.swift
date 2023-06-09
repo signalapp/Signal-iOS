@@ -1162,16 +1162,8 @@ extension OWSContactsManager {
         displayNamesRefinery(for: addresses, transaction: transaction).values.map { $0! }
     }
 
-    func phoneNumbers(for addresses: [SignalServiceAddress],
-                      transaction: SDSAnyReadTransaction) -> [String?] {
-        return Refinery<SignalServiceAddress, String>(addresses).refine {
-            return $0.map { $0.phoneNumber?.filterStringForDisplay() }
-        }.refine { (addresses: AnySequence<SignalServiceAddress>) -> [String?] in
-            let accounts = fetchSignalAccounts(for: addresses, transaction: transaction)
-            return accounts.map { maybeAccount in
-                return maybeAccount?.recipientPhoneNumber?.filterStringForDisplay()
-            }
-        }.values
+    func phoneNumbers(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String?] {
+        return addresses.map { E164($0.phoneNumber)?.stringValue }
     }
 
     func fetchSignalAccounts(for addresses: AnySequence<SignalServiceAddress>,

@@ -142,17 +142,12 @@ class OWSContactsManagerTest: SignalBaseTest {
 
     func testGetPhoneNumbersFromProfiles() {
         let aliceServiceId = ServiceId(UUID())
-        let aliceAddress = SignalServiceAddress(aliceServiceId)
-        let aliceAccount = makeAccount(address: aliceAddress, phoneNumber: "+17035559901")
+        let aliceAddress = SignalServiceAddress(uuid: aliceServiceId.uuidValue, phoneNumber: "+17035559901")
 
         let bobServiceId = ServiceId(UUID())
-        let bobAddress = SignalServiceAddress(bobServiceId)
-        let bobAccount = makeAccount(address: bobAddress, phoneNumber: "+17035559902")
+        let bobAddress = SignalServiceAddress(uuid: bobServiceId.uuidValue, phoneNumber: "+17035559902")
 
         let bogusAddress = SignalServiceAddress(uuid: UUID())
-
-        createRecipients([aliceServiceId, bobServiceId])
-        createAccounts([aliceAccount, bobAccount])
 
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
@@ -160,7 +155,7 @@ class OWSContactsManagerTest: SignalBaseTest {
                 for: [aliceAddress, bogusAddress, bobAddress],
                 transaction: transaction
             )
-            let expected = [aliceAccount.recipientPhoneNumber, nil, bobAccount.recipientPhoneNumber]
+            let expected = [aliceAddress.phoneNumber, nil, bobAddress.phoneNumber]
             XCTAssertEqual(actual, expected)
         }
     }
