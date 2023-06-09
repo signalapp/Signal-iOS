@@ -405,20 +405,18 @@ public class EarlyMessageManager: NSObject {
             case .messageReadOnLinkedDevice(let timestamp):
                 Logger.info("Applying early read receipt from linked device for message \(identifier)")
 
-                OWSReceiptManager.shared.markAsReadOnLinkedDevice(
+                OWSReceiptManager.shared.markMessageAsReadOnLinkedDevice(
                     message,
-                    thread: message.thread(transaction: transaction),
                     readTimestamp: timestamp,
-                    transaction: transaction
+                    tx: transaction
                 )
             case .messageViewedOnLinkedDevice(let timestamp):
                 Logger.info("Applying early viewed receipt from linked device for message \(identifier)")
 
-                OWSReceiptManager.shared.markAsViewed(
-                    onLinkedDevice: message,
-                    thread: message.thread(transaction: transaction),
+                OWSReceiptManager.shared.markMessageAsViewedOnLinkedDevice(
+                    message,
                     viewedTimestamp: timestamp,
-                    transaction: transaction
+                    tx: transaction
                 )
             }
         }

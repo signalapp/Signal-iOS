@@ -53,13 +53,6 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-#pragma mark - Linked Device Read Receipts
-
-- (void)markAsViewedOnLinkedDevice:(TSMessage *)message
-                            thread:(TSThread *)thread
-                   viewedTimestamp:(uint64_t)viewedTimestamp
-                       transaction:(SDSAnyWriteTransaction *)transaction;
-
 #pragma mark - Locally Read
 
 // This method can be called from any thread.

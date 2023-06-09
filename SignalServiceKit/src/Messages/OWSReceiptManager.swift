@@ -339,7 +339,7 @@ public extension OWSReceiptManager {
             messageTimestamp: \.timestamp,
             tx: tx,
             markMessage: {
-                markAsReadOnLinkedDevice($0, thread: $0.thread(transaction: tx), readTimestamp: readTimestamp, transaction: tx)
+                markMessageAsReadOnLinkedDevice($0, readTimestamp: readTimestamp, tx: tx)
             },
             markStoryMessage: {
                 $0.markAsRead(at: readTimestamp, circumstance: .onLinkedDevice, transaction: tx)
@@ -358,7 +358,7 @@ public extension OWSReceiptManager {
             messageTimestamp: \.timestamp,
             tx: tx,
             markMessage: {
-                markAsViewed(onLinkedDevice: $0, thread: $0.thread(transaction: tx), viewedTimestamp: viewedTimestamp, transaction: tx)
+                markMessageAsViewedOnLinkedDevice($0, viewedTimestamp: viewedTimestamp, tx: tx)
             },
             markStoryMessage: {
                 $0.markAsViewed(at: viewedTimestamp, circumstance: .onLinkedDevice, transaction: tx)
@@ -498,54 +498,85 @@ public extension OWSReceiptManager {
         return readUniqueIds
     }
 
-    func markAsReadOnLinkedDevice(
+    func markMessageAsReadOnLinkedDevice(
         _ message: TSMessage,
-        thread: TSThread,
         readTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) {
-        if let incomingMessage = message as? TSIncomingMessage {
-            let circumstance: OWSReceiptCircumstance
-            if thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
-                circumstance = .onLinkedDeviceWhilePendingMessageRequest
-            } else {
-                circumstance = .onLinkedDevice
-            }
+        switch message {
+        case let incomingMessage as TSIncomingMessage:
+            let thread = message.thread(transaction: tx)
+            let circumstance = linkedDeviceReceiptCircumstance(for: thread, tx: tx)
 
-            // Always re-mark the message as read to ensure any earlier read
-            // time is applied to disappearing messages. Also mark any unread
-            // messages appearing earlier in the thread as read as well.
-            //
-            // Do not automatically clear notifications, as we will do so
-            // manually below.
-
+            // Always re-mark the message as read to ensure any earlier read time is
+            // applied to disappearing messages.
             incomingMessage.markAsRead(
                 atTimestamp: readTimestamp,
                 thread: thread,
                 circumstance: circumstance,
+                // Do not automatically clear notifications; we will do so below.
                 shouldClearNotifications: false,
-                transaction: transaction
+                transaction: tx
             )
 
+            // Also mark any unread messages appearing earlier in the thread as read.
             let markedAsReadIds = self.markAsRead(
                 beforeSortId: incomingMessage.sortId,
                 thread: thread,
                 readTimestamp: readTimestamp,
                 circumstance: circumstance,
+                // Do not automatically clear notifications; we will do so below.
                 shouldClearNotifications: false,
-                transaction: transaction
+                transaction: tx
             )
 
-            // Manually clear notifications for all the now-marked-read messages
-            // in one batch.
+            // Clear notifications for all the now-marked-read messages in one batch.
             notificationPresenter?.cancelNotifications(messageIds: [incomingMessage.uniqueId] + markedAsReadIds)
-        } else if let outgoingMessage = message as? TSOutgoingMessage {
+        case let outgoingMessage as TSOutgoingMessage:
             // Outgoing messages are always "read", but if we get a receipt
             // from our linked device about one that indicates that any reactions
             // we received on this message should also be marked read.
-            outgoingMessage.markUnreadReactionsAsRead(transaction: transaction)
-        } else {
+            outgoingMessage.markUnreadReactionsAsRead(transaction: tx)
+        default:
             owsFailDebug("Message was neither incoming nor outgoing!")
+        }
+    }
+
+    func markMessageAsViewedOnLinkedDevice(_ message: TSMessage, viewedTimestamp: UInt64, tx: SDSAnyWriteTransaction) {
+        if message.giftBadge != nil {
+            message.anyUpdateMessage(transaction: tx) { obj in
+                switch obj {
+                case let incomingMessage as TSIncomingMessage:
+                    incomingMessage.giftBadge?.redemptionState = .redeemed
+                case let outgoingMessage as TSOutgoingMessage:
+                    outgoingMessage.giftBadge?.redemptionState = .opened
+                default:
+                    owsFailDebug("Unexpected giftBadge message")
+                }
+            }
+            return
+        }
+
+        switch message {
+        case let incomingMessage as TSIncomingMessage:
+            let thread = message.thread(transaction: tx)
+            let circumstance = linkedDeviceReceiptCircumstance(for: thread, tx: tx)
+            incomingMessage.markAsViewed(
+                atTimestamp: viewedTimestamp,
+                thread: thread,
+                circumstance: circumstance,
+                transaction: tx
+            )
+        default:
+            break
+        }
+    }
+
+    private func linkedDeviceReceiptCircumstance(for thread: TSThread, tx: SDSAnyReadTransaction) -> OWSReceiptCircumstance {
+        if thread.hasPendingMessageRequest(transaction: tx.unwrapGrdbRead) {
+            return .onLinkedDeviceWhilePendingMessageRequest
+        } else {
+            return .onLinkedDevice
         }
     }
 

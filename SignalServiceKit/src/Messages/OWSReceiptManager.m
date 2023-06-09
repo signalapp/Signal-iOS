@@ -238,45 +238,6 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
 }
 
-#pragma mark - Linked Device Read Receipts
-
-- (void)markAsViewedOnLinkedDevice:(TSMessage *)message
-                            thread:(TSThread *)thread
-                   viewedTimestamp:(uint64_t)viewedTimestamp
-                       transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(message);
-    OWSAssertDebug(thread);
-    OWSAssertDebug(transaction);
-
-    if (message.giftBadge != nil) {
-        [message anyUpdateMessageWithTransaction:transaction
-                                           block:^(TSMessage *_Nonnull obj) {
-                                               if ([obj isKindOfClass:[TSIncomingMessage class]]) {
-                                                   obj.giftBadge.redemptionState = OWSGiftBadgeRedemptionStateRedeemed;
-                                               } else if ([obj isKindOfClass:[TSOutgoingMessage class]]) {
-                                                   obj.giftBadge.redemptionState = OWSGiftBadgeRedemptionStateOpened;
-                                               } else {
-                                                   OWSFailDebug(@"Unexpected giftBadge message");
-                                               }
-                                           }];
-        return;
-    }
-
-    if ([message isKindOfClass:[TSIncomingMessage class]]) {
-        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-        BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
-        OWSReceiptCircumstance circumstance = hasPendingMessageRequest
-            ? OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest
-            : OWSReceiptCircumstanceOnLinkedDevice;
-
-        [incomingMessage markAsViewedAtTimestamp:viewedTimestamp
-                                          thread:thread
-                                    circumstance:circumstance
-                                     transaction:transaction];
-    }
-}
-
 #pragma mark - Settings
 
 - (void)prepareCachedValues
