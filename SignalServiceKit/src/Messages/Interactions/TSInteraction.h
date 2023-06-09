@@ -92,8 +92,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 #pragma mark Utility Method
 
-- (NSComparisonResult)compareForSorting:(TSInteraction *)other;
-
 // "Dynamic" interactions are not messages or static events (like
 // info messages, error messages, etc.).  They are interactions
 // created, updated and deleted by the views.

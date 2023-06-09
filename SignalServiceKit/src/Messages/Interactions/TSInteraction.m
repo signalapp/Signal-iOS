@@ -230,22 +230,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return [NSDate ows_dateWithMillisecondsSince1970:self.timestamp];
 }
 
-- (NSComparisonResult)compareForSorting:(TSInteraction *)other
-{
-    OWSAssertDebug(other);
-
-    uint64_t sortId1 = self.sortId;
-    uint64_t sortId2 = other.sortId;
-
-    if (sortId1 > sortId2) {
-        return NSOrderedDescending;
-    } else if (sortId1 < sortId2) {
-        return NSOrderedAscending;
-    } else {
-        return NSOrderedSame;
-    }
-}
-
 - (OWSInteractionType)interactionType
 {
     OWSFailDebug(@"unknown interaction type.");
