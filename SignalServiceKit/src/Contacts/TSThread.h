@@ -111,10 +111,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 /**
  * Get all messages in the thread we weren't able to decrypt
  */
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-- (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key;
-#pragma clang diagnostic pop
+- (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
+                                                                                     tx:(SDSAnyReadTransaction *)tx;
 
 - (BOOL)hasSafetyNumbers;
 

@@ -279,7 +279,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 #pragma mark - Interactions
 
 /**
- * Iterate over this thread's interactions
+ * Iterate over this thread's interactions.
  */
 - (void)enumerateRecentInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
                                         usingBlock:(void (^)(TSInteraction *interaction))block
@@ -296,41 +296,30 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     }
 }
 
-/**
- * Enumerates all the threads interactions. Note this will explode if you try to create a transaction in the block.
- * If you need a transaction, use the sister method: `enumerateInteractionsWithTransaction:usingBlock`
- */
-- (void)enumerateRecentInteractionsUsingBlock:(void (^)(TSInteraction *interaction))block
-{
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self enumerateRecentInteractionsWithTransaction:transaction
-                                              usingBlock:^(TSInteraction *interaction) {
-                                                  block(interaction);
-                                              }];
-    }];
-}
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
+                                                                                     tx:(SDSAnyReadTransaction *)tx
 {
     NSMutableArray *errorMessages = [NSMutableArray new];
-    [self enumerateRecentInteractionsUsingBlock:^(TSInteraction *interaction) {
-        if ([interaction isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
-            TSInvalidIdentityKeyReceivingErrorMessage *error = (TSInvalidIdentityKeyReceivingErrorMessage *)interaction;
-            @try {
-                if ([[error throws_newIdentityKey] isEqualToData:key]) {
-                    [errorMessages addObject:(TSInvalidIdentityKeyReceivingErrorMessage *)interaction];
-                }
-            } @catch (NSException *exception) {
-                OWSFailDebug(@"exception: %@", exception);
-            }
-        }
-    }];
+    [self enumerateRecentInteractionsWithTransaction:tx
+                                          usingBlock:^(TSInteraction *interaction) {
+                                              if ([interaction isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage
+                                                                                 class]]) {
+                                                  TSInvalidIdentityKeyReceivingErrorMessage *error
+                                                      = (TSInvalidIdentityKeyReceivingErrorMessage *)interaction;
+                                                  @try {
+                                                      if ([[error throws_newIdentityKey] isEqualToData:key]) {
+                                                          [errorMessages
+                                                              addObject:(TSInvalidIdentityKeyReceivingErrorMessage *)
+                                                                            interaction];
+                                                      }
+                                                  } @catch (NSException *exception) {
+                                                      OWSFailDebug(@"exception: %@", exception);
+                                                  }
+                                              }
+                                          }];
 
-    return [errorMessages copy];
+    return errorMessages;
 }
-#pragma clang diagnostic pop
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
 {

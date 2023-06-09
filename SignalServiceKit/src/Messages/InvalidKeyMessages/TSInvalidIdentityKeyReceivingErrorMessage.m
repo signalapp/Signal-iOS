@@ -199,11 +199,16 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [[OWSIdentityManager shared] saveRemoteIdentity:newKey address:self.envelope.sourceAddress];
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *tx) {
+        [self.identityManager saveRemoteIdentity:newKey address:self.envelope.sourceAddress transaction:tx];
+    });
+
+    __block NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *_Nullable messagesToDecrypt;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *tx) {
+        messagesToDecrypt = [[self threadWithTransaction:tx] receivedMessagesForInvalidKey:newKey tx:tx];
+    }];
 
     // Decrypt this and any old messages for the newly accepted key
-    NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *_Nullable messagesToDecrypt =
-        [self.threadWithSneakyTransaction receivedMessagesForInvalidKey:newKey];
     [self decryptWithMessagesToDecrypt:messagesToDecrypt];
 }
 
