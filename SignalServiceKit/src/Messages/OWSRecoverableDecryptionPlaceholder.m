@@ -102,12 +102,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidInsertWithTransaction:transaction];
-    [self.messageDecrypter scheduleCleanupIfNecessaryFor:self transaction:transaction];
-}
-
 #pragma mark - <OWSReadTracking>
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp

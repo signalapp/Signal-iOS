@@ -56,12 +56,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
             guard let self = self else { return }
-            guard CurrentAppContext().isMainApp, !CurrentAppContext().isRunningTests else { return }
-            DispatchQueue.sharedUtility.async {
-                self.databaseStorage.read { readTx in
-                    self.schedulePlaceholderCleanup(transaction: readTx)
-                }
-            }
+            guard CurrentAppContext().isMainApp else { return }
+            self.cleanUpExpiredPlaceholders()
         }
     }
 
@@ -357,10 +353,15 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                         with: transaction)
                 case .resendable:
                     // If resendable, insert a placeholder
-                    errorMessage = OWSRecoverableDecryptionPlaceholder(
+                    let recoverableErrorMessage = OWSRecoverableDecryptionPlaceholder(
                         failedEnvelope: envelope,
                         untrustedGroupId: untrustedGroupId,
-                        transaction: transaction)
+                        transaction: transaction
+                    )
+                    if let recoverableErrorMessage {
+                        schedulePlaceholderCleanupIfNecessary(for: recoverableErrorMessage)
+                    }
+                    errorMessage = recoverableErrorMessage
                 case .implicit:
                     errorMessage = nil
                 default:
@@ -732,7 +733,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         )
     }
 
-    func handleUnidentifiedSenderDecryptionError(
+    private func handleUnidentifiedSenderDecryptionError(
         _ error: Error,
         envelope: SSKProtoEnvelope,
         sentTo identity: OWSIdentity,
@@ -759,74 +760,52 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
-    @objc
-    func scheduleCleanupIfNecessary(for placeholder: OWSRecoverableDecryptionPlaceholder, transaction readTx: SDSAnyReadTransaction) {
-        // Only bother scheduling if the timer isn't scheduled soon enough
-        // If a timer is scheduled to fire within 5s of the expiration date, consider that good enough
-        let flexibleExpirationDate = placeholder.expirationDate.addingTimeInterval(5)
-        let fireDate = placeholderCleanupTimer?.fireDate ?? .distantFuture
-
-        if flexibleExpirationDate.isBefore(fireDate) {
-            schedulePlaceholderCleanup(transaction: readTx)
-        }
-    }
-
-    @objc
-    func schedulePlaceholderCleanup(transaction readTx: SDSAnyReadTransaction) {
-        guard let oldestPlaceholder = GRDBInteractionFinder.oldestPlaceholderInteraction(transaction: readTx.unwrapGrdbRead) else { return }
-
-        // To debounce, we consider anything expiring within five seconds of a scheduled timer not worth the reschedule
-        let fireDate = placeholderCleanupTimer?.fireDate ?? .distantFuture
-        let flexibleExpirationDate = oldestPlaceholder.expirationDate.addingTimeInterval(5)
-        guard flexibleExpirationDate.isBefore(fireDate) else { return }
-
+    private func schedulePlaceholderCleanupIfNecessary(for placeholder: OWSRecoverableDecryptionPlaceholder) {
         DispatchQueue.main.async {
-            let currentFireDate = self.placeholderCleanupTimer?.fireDate ?? .distantFuture
-            let placeholderExpiration = oldestPlaceholder.expirationDate
-            let newScheduledDate = min(currentFireDate, placeholderExpiration)
-
-            if newScheduledDate.isBeforeNow {
-                Logger.info("Oldest placeholder expirationDate: \(oldestPlaceholder.expirationDate). Will perform cleanup...")
-                self.placeholderCleanupTimer = nil
-                self.cleanupExpiredPlaceholders()
-            } else if currentFireDate.timeIntervalSince(newScheduledDate) > 5 {
-                Logger.info("Oldest placeholder expirationDate: \(oldestPlaceholder.expirationDate). Scheduling timer...")
-
-                self.placeholderCleanupTimer = Timer.scheduledTimer(
-                    withTimeInterval: oldestPlaceholder.expirationDate.timeIntervalSinceNow,
-                    repeats: false,
-                    block: { [weak self] _ in
-                        self?.cleanupExpiredPlaceholders()
-                    })
-            }
+            self.schedulePlaceholderCleanup(noLaterThan: placeholder.expirationDate)
         }
     }
 
-    func cleanupExpiredPlaceholders() {
-        databaseStorage.asyncWrite(block: { writeTx in
-            Logger.info("Performing placeholder cleanup")
-            GRDBInteractionFinder.enumeratePlaceholders(transaction: writeTx.unwrapGrdbWrite) { placeholder, _ in
-                if placeholder.expirationDate.isBeforeNow {
-                    Logger.info("replacing placeholder \(placeholder.timestamp) with error message")
+    private func schedulePlaceholderCleanup(noLaterThan expirationDate: Date) {
+        let fireDate = placeholderCleanupTimer?.fireDate ?? .distantFuture
+        // Only change the fireDate if it's changed "enough", where we consider
+        // about 5 seconds of leeway sufficient.
+        let latestAcceptableFireDate = expirationDate.addingTimeInterval(5)
 
-                    let thread = placeholder.thread(transaction: writeTx)
-                    let errorMessage = TSErrorMessage.failedDecryption(
-                        forSender: placeholder.sender,
-                        thread: thread,
-                        timestamp: NSDate.ows_millisecondTimeStamp(),
-                        transaction: writeTx)
+        if latestAcceptableFireDate.isBefore(fireDate) {
+            placeholderCleanupTimer = Timer.scheduledTimer(
+                withTimeInterval: expirationDate.timeIntervalSinceNow,
+                repeats: false,
+                block: { [weak self] _ in self?.cleanUpExpiredPlaceholders() }
+            )
+        }
+    }
 
-                    placeholder.anyRemove(transaction: writeTx)
-                    errorMessage.anyInsert(transaction: writeTx)
-
-                    self.notificationsManager?.notifyUser(forErrorMessage: errorMessage,
-                                                          thread: thread,
-                                                          transaction: writeTx)
+    func cleanUpExpiredPlaceholders() {
+        databaseStorage.asyncWrite { tx in
+            Logger.info("Cleaning up placeholders")
+            var nextExpirationDate: Date?
+            GRDBInteractionFinder.enumeratePlaceholders(transaction: tx.unwrapGrdbWrite) { placeholder in
+                guard placeholder.expirationDate.isBeforeNow else {
+                    nextExpirationDate = [nextExpirationDate, placeholder.expirationDate].compacted().min()
+                    return
                 }
+                Logger.info("Cleaning up placeholder \(placeholder.timestamp)")
+                placeholder.anyRemove(transaction: tx)
+                let thread = placeholder.thread(transaction: tx)
+                let errorMessage = TSErrorMessage.failedDecryption(
+                    forSender: placeholder.sender,
+                    thread: thread,
+                    timestamp: NSDate.ows_millisecondTimeStamp(),
+                    transaction: tx
+                )
+                errorMessage.anyInsert(transaction: tx)
+                self.notificationsManager?.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)
             }
-        }, completionQueue: .sharedUtility) {
-            self.databaseStorage.read { readTx in
-                self.schedulePlaceholderCleanup(transaction: readTx)
+            if let nextExpirationDate {
+                DispatchQueue.main.async {
+                    self.schedulePlaceholderCleanup(noLaterThan: nextExpirationDate)
+                }
             }
         }
     }

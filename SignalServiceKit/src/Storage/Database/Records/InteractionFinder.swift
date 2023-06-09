@@ -1025,41 +1025,17 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    static func oldestPlaceholderInteraction(transaction: GRDBReadTransaction) -> OWSRecoverableDecryptionPlaceholder? {
+    static func enumeratePlaceholders(transaction: GRDBReadTransaction, block: (OWSRecoverableDecryptionPlaceholder) -> Void) {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)
-            ORDER BY \(interactionColumn: .id) ASC
-            LIMIT 1
-        """
-        let result = TSInteraction.grdbFetchOne(sql: sql, transaction: transaction)
-        if let result = result as? OWSRecoverableDecryptionPlaceholder {
-            return result
-        } else if let result = result {
-            owsFailDebug("Unexpected type: \(type(of: result))")
-            return nil
-        } else {
-            return nil
-        }
-    }
-
-    static func enumeratePlaceholders(transaction: GRDBReadTransaction, block: (OWSRecoverableDecryptionPlaceholder, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)
-            ORDER BY \(interactionColumn: .id) ASC
         """
         do {
             let cursor = TSInteraction.grdbFetchCursor(sql: sql, transaction: transaction)
             while let result = try cursor.next() {
                 if let placeholder = result as? OWSRecoverableDecryptionPlaceholder {
-                    var stop: ObjCBool = false
-                    block(placeholder, &stop)
-                    if stop.boolValue {
-                        return
-                    }
+                    block(placeholder)
                 } else {
                     owsFailDebug("Unexpected type: \(type(of: result))")
                 }

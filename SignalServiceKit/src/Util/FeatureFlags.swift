@@ -382,12 +382,14 @@ public class DebugFlags: BaseFlags {
                                                                       details: LocalizationNotNeeded("Shows placeholder interactions in the conversation list."))
 
     @objc
-    public static let fastPlaceholderExpiration = TestableFlag(false,
-                                                               title: LocalizationNotNeeded("Sender Key: Early placeholder expiration"),
-                                                               details: LocalizationNotNeeded("Shortens the valid window for message resend+recovery."),
-                                                               toggleHandler: { _ in
-        databaseStorage.read { messageDecrypter.schedulePlaceholderCleanup(transaction: $0)}
-    })
+    public static let fastPlaceholderExpiration = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Sender Key: Early placeholder expiration"),
+        details: LocalizationNotNeeded("Shortens the valid window for message resend+recovery."),
+        toggleHandler: { _ in
+            messageDecrypter.cleanUpExpiredPlaceholders()
+        }
+    )
 
     @objc
     public static let deviceTransferPreserveOldDevice = false
