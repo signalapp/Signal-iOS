@@ -173,10 +173,10 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
 
                 self.databaseStorage.asyncWrite { transaction in
                     ReactionManager.localUserReacted(
-                        to: message,
+                        to: message.uniqueId,
                         emoji: reaction,
                         isRemoving: isRemoving,
-                        transaction: transaction
+                        tx: transaction
                     )
                 }
             }

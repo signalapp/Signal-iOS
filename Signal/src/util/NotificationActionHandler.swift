@@ -240,11 +240,11 @@ public class NotificationActionHandler: Dependencies {
             return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.databaseStorage.write { transaction in
                     ReactionManager.localUserReacted(
-                        to: incomingMessage,
+                        to: incomingMessage.uniqueId,
                         emoji: "👍",
                         isRemoving: false,
                         isHighPriority: true,
-                        transaction: transaction
+                        tx: transaction
                     )
                 }
             }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in

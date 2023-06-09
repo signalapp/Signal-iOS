@@ -28,15 +28,15 @@ public class ReactionManager: NSObject {
 
     @discardableResult
     public class func localUserReacted(
-        to message: TSMessage,
+        to messageUniqueId: String,
         emoji: String,
         isRemoving: Bool,
         isHighPriority: Bool = false,
-        transaction: SDSAnyWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) -> Promise<Void> {
         let outgoingMessage: TSOutgoingMessage
         do {
-            outgoingMessage = try _localUserReacted(to: message, emoji: emoji, isRemoving: isRemoving, transaction: transaction)
+            outgoingMessage = try _localUserReacted(to: messageUniqueId, emoji: emoji, isRemoving: isRemoving, tx: tx)
         } catch {
             owsFailDebug("Error: \(error)")
             return Promise(error: error)
@@ -47,70 +47,64 @@ public class ReactionManager: NSObject {
             .promise,
             message: messagePreparer,
             isHighPriority: isHighPriority,
-            transaction: transaction
+            transaction: tx
         )
     }
 
     // This helper method DRYs up the logic shared by the above methods.
-    private class func _localUserReacted(to message: TSMessage,
-                                         emoji: String,
-                                         isRemoving: Bool,
-                                         transaction: SDSAnyWriteTransaction) throws -> OWSOutgoingReactionMessage {
+    private class func _localUserReacted(
+        to messageUniqueId: String,
+        emoji: String,
+        isRemoving: Bool,
+        tx: SDSAnyWriteTransaction
+    ) throws -> OWSOutgoingReactionMessage {
         assert(emoji.isSingleEmoji)
 
-        let thread = message.thread(transaction: transaction)
+        guard let message = TSMessage.anyFetchMessage(uniqueId: messageUniqueId, transaction: tx) else {
+            throw OWSAssertionError("Can't find message for reaction.")
+        }
+
+        let thread = message.thread(transaction: tx)
         guard thread.canSendReactionToThread else {
-            throw OWSAssertionError("Cannot send to thread.")
+            throw OWSAssertionError("Can't send reaction to thread.")
         }
 
-        if DebugFlags.internalLogging {
-            Logger.info("Sending reaction: \(emoji) isRemoving: \(isRemoving), message.timestamp: \(message.timestamp)")
-        } else {
-            Logger.info("Sending reaction, isRemoving: \(isRemoving)")
-        }
+        Logger.info("Sending reaction, isRemoving: \(isRemoving)")
 
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = tsAccountManager.localIdentifiers(transaction: tx)?.aciAddress else {
             throw OWSAssertionError("missing local address")
         }
 
-        // Though we generally don't parse the expiration timer from
-        // reaction messages, older desktop instances will read it
-        // from the "unsupported" message resulting in the timer
-        // clearing. So we populate it to ensure that does not happen.
-        let expiresInSeconds: UInt32
-        if let configuration = OWSDisappearingMessagesConfiguration.anyFetch(
-            uniqueId: message.uniqueThreadId,
-            transaction: transaction
-        ), configuration.isEnabled {
-            expiresInSeconds = configuration.durationSeconds
-        } else {
-            expiresInSeconds = 0
-        }
+        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
 
         let outgoingMessage = OWSOutgoingReactionMessage(
-            thread: message.thread(transaction: transaction),
+            thread: thread,
             message: message,
             emoji: emoji,
             isRemoving: isRemoving,
-            expiresInSeconds: expiresInSeconds,
-            transaction: transaction
+            // Though we generally don't parse the expiration timer from reaction
+            // messages, older desktop instances will read it from the "unsupported"
+            // message resulting in the timer clearing. So we populate it to ensure
+            // that does not happen.
+            expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read),
+            transaction: tx
         )
 
-        outgoingMessage.previousReaction = message.reaction(for: localAddress, transaction: transaction)
+        outgoingMessage.previousReaction = message.reaction(for: localAddress, transaction: tx)
 
         if isRemoving {
-            message.removeReaction(for: localAddress, transaction: transaction)
+            message.removeReaction(for: localAddress, transaction: tx)
         } else {
             outgoingMessage.createdReaction = message.recordReaction(
                 for: localAddress,
                 emoji: emoji,
                 sentAtTimestamp: outgoingMessage.timestamp,
                 receivedAtTimestamp: outgoingMessage.timestamp,
-                transaction: transaction
+                transaction: tx
             )
 
             // Always immediately mark outgoing reactions as read.
-            outgoingMessage.createdReaction?.markAsRead(transaction: transaction)
+            outgoingMessage.createdReaction?.markAsRead(transaction: tx)
         }
 
         return outgoingMessage
