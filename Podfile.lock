@@ -14,7 +14,7 @@ PODS:
     - SignalCoreKit
   - GRDB.swift/SQLCipher (5.26.0):
     - SQLCipher (>= 3.4.0)
-  - LibMobileCoin/CoreHTTP (4.0.0-pre3):
+  - LibMobileCoin/CoreHTTP (5.0.0):
     - SwiftProtobuf (~> 1.5)
   - libPhoneNumber-iOS (0.9.15)
   - LibSignalClient (0.25.0):
@@ -35,8 +35,8 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - MobileCoin/CoreHTTP (4.0.0):
-    - LibMobileCoin/CoreHTTP (~> 4.0.0-pre3)
+  - MobileCoin/CoreHTTP (5.0.0):
+    - LibMobileCoin/CoreHTTP (~> 5.0.0)
     - Logging (~> 1.4)
   - MobileCoinMinimal (1.2.0-pre2):
     - CocoaLumberjack
@@ -80,14 +80,14 @@ DEPENDENCIES:
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)
   - Curve25519Kit/Tests (from `https://github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)
   - GRDB.swift/SQLCipher
-  - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts.git`, commit `586a60aa38eb7667ddb74b666c6bb6f7107288fc`)
+  - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts`, commit `5cd4f39a24d06708d1c19aced8384740689d7f61`)
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - LibSignalClient (from `https://github.com/signalapp/libsignal-client.git`, tag `v0.25.0`)
   - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`, tag `v0.25.0`)
   - libwebp
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`, tag `v4.0.0`)
+  - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v5.0.0`)
   - MobileCoinMinimal (from `https://github.com/signalapp/MobileCoin-Swift.git`, branch `charlesmchen/mobileCoinMinimal`)
   - MobileCoinMinimal/Tests (from `https://github.com/signalapp/MobileCoin-Swift.git`, branch `charlesmchen/mobileCoinMinimal`)
   - PureLayout
@@ -124,8 +124,8 @@ EXTERNAL SOURCES:
     :branch: feature/SignalClient-adoption
     :git: https://github.com/signalapp/Curve25519Kit
   LibMobileCoin:
-    :commit: 586a60aa38eb7667ddb74b666c6bb6f7107288fc
-    :git: https://github.com/signalapp/libmobilecoin-ios-artifacts.git
+    :commit: 5cd4f39a24d06708d1c19aced8384740689d7f61
+    :git: https://github.com/signalapp/libmobilecoin-ios-artifacts
   libPhoneNumber-iOS:
     :branch: signal-master
     :git: https://github.com/signalapp/libPhoneNumber-iOS
@@ -136,8 +136,8 @@ EXTERNAL SOURCES:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
   MobileCoin:
-    :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
-    :tag: v4.0.0
+    :git: https://github.com/mobilecoinofficial/MobileCoin-Swift
+    :tag: v5.0.0
   MobileCoinMinimal:
     :branch: charlesmchen/mobileCoinMinimal
     :git: https://github.com/signalapp/MobileCoin-Swift.git
@@ -165,8 +165,8 @@ CHECKOUT OPTIONS:
     :commit: 0af175812b5335dd32879a3556524c569dea95c9
     :git: https://github.com/signalapp/Curve25519Kit
   LibMobileCoin:
-    :commit: 586a60aa38eb7667ddb74b666c6bb6f7107288fc
-    :git: https://github.com/signalapp/libmobilecoin-ios-artifacts.git
+    :commit: 5cd4f39a24d06708d1c19aced8384740689d7f61
+    :git: https://github.com/signalapp/libmobilecoin-ios-artifacts
   libPhoneNumber-iOS:
     :commit: 8b6f552682be0e66cf25cd0f0db5e1732a1e9f15
     :git: https://github.com/signalapp/libPhoneNumber-iOS
@@ -177,8 +177,8 @@ CHECKOUT OPTIONS:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
   MobileCoin:
-    :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
-    :tag: v4.0.0
+    :git: https://github.com/mobilecoinofficial/MobileCoin-Swift
+    :tag: v5.0.0
   MobileCoinMinimal:
     :commit: dae1e36cb6aeb8fab2c35ce857bd45cd0ce07023
     :git: https://github.com/signalapp/MobileCoin-Swift.git
@@ -204,14 +204,14 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   Curve25519Kit: 003b546a89ceb374a64c7771b40f8362d63b91bd
   GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
-  LibMobileCoin: af8d6580227c14b787370209f5ed4c4a4fc90b9f
+  LibMobileCoin: b1a473933091536cb87fc92a7ca35c63855451f3
   libPhoneNumber-iOS: 2d26d0a38933eee2702962a4dbdec2fc20e5ef9f
   LibSignalClient: aeadb45cd3af767b38a682aa5ea266cb2ef93582
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: 016449b5d8be0c3dcbcfa0a9988469999cd04c5d
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  MobileCoin: eef7c6962bce0d82270171ee9aeac9da7b91b5d4
+  MobileCoin: ebf8372645558eb8fdb865b2888f63ad8ee9d81c
   MobileCoinMinimal: 627ed590d8a0d5d57c39ec25727bde3d976d2f7a
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
@@ -224,6 +224,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: bfc884b1522547f58b9048a9b72e63e6369a4ee9
+PODFILE CHECKSUM: 8066e138aec4a1c5d1e6de5776092a34adaf2686
 
 COCOAPODS: 1.11.3
