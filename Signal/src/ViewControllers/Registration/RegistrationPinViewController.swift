@@ -891,9 +891,9 @@ extension RegistrationPinViewController: UITextFieldDelegate {
         let result: Bool
         switch pinCharacterSet {
         case .digitsOnly:
-            ViewControllerUtils.ows2FAPINTextField(
+            TextFieldFormatting.ows2FAPINTextField(
                 textField,
-                shouldChangeCharactersIn: range,
+                changeCharactersIn: range,
                 replacementString: replacementString
             )
             result = false

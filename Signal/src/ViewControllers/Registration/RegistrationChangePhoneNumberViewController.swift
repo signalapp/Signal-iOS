@@ -410,7 +410,7 @@ private class ChangePhoneNumberValueViews: NSObject {
 
     private func applyPhoneNumberFormatting() {
         AssertIsOnMainThread()
-        ViewControllerUtils.reformatPhoneNumber(phoneNumberTextField, callingCode: callingCode)
+        TextFieldFormatting.reformatPhoneNumberTextField(phoneNumberTextField, callingCode: callingCode)
     }
 
     var sectionHeaderTitle: String {
@@ -486,7 +486,7 @@ extension ChangePhoneNumberValueViews: UITextFieldDelegate {
 
             // If ViewControllerUtils applied the edit on our behalf, inform UIKit
             // so the edit isn't applied twice.
-            let result = ViewControllerUtils.phoneNumber(
+            let result = TextFieldFormatting.phoneNumberTextField(
                 textField,
                 shouldChangeCharactersIn: range,
                 replacementString: string,

@@ -469,7 +469,7 @@ extension Deprecated_ChangePhoneNumber2FAViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let hasPendingChanges: Bool
         if pinType == .numeric {
-            ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)
+            TextFieldFormatting.ows2FAPINTextField(textField, changeCharactersIn: range, replacementString: string)
             hasPendingChanges = false
         } else {
             hasPendingChanges = true

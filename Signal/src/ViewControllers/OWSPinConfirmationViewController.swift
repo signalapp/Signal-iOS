@@ -343,7 +343,7 @@ extension PinConfirmationViewController: UITextFieldDelegate {
         if currentPinType == .alphanumeric {
             hasPendingChanges = true
         } else {
-            ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)
+            TextFieldFormatting.ows2FAPINTextField(textField, changeCharactersIn: range, replacementString: string)
             hasPendingChanges = false
         }
 

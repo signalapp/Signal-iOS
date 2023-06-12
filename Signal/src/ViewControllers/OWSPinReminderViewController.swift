@@ -400,7 +400,7 @@ extension PinReminderViewController: UITextFieldDelegate {
         if currentPinType == .alphanumeric {
             hasPendingChanges = true
         } else {
-            ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)
+            TextFieldFormatting.ows2FAPINTextField(textField, changeCharactersIn: range, replacementString: string)
             hasPendingChanges = false
 
             // Every time the text changes, try and verify the pin

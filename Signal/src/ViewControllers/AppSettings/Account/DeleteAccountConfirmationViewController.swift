@@ -156,7 +156,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
         phoneNumberTextField.textColor = Theme.primaryTextColor
         phoneNumberTextField.font = OWSTableItem.accessoryLabelFont
-        phoneNumberTextField.placeholder = ViewControllerUtils.examplePhoneNumber(
+        phoneNumberTextField.placeholder = TextFieldFormatting.examplePhoneNumber(
             forCountryCode: countryCode,
             callingCode: callingCode,
             includeExampleLabel: false
@@ -424,7 +424,7 @@ extension DeleteAccountConfirmationViewController: UITextFieldDelegate {
     }
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        ViewControllerUtils.phoneNumber(textField, changeCharactersIn: range, replacementString: string, callingCode: callingCode)
+        TextFieldFormatting.phoneNumberTextField(textField, changeCharactersIn: range, replacementString: string, callingCode: callingCode)
         return false
     }
 }

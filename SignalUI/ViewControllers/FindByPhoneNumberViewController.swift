@@ -284,13 +284,13 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
         self.callingCode = callingCode
         let labelFormat = CurrentAppContext().isRTL ? "(%2$@) %1$@" : "%1$@ (%2$@)"
         countryCodeLabel.text = String(format: labelFormat, callingCode, countryCode.localizedUppercase)
-        exampleLabel.text = ViewControllerUtils.examplePhoneNumber(forCountryCode: countryCode, callingCode: callingCode, includeExampleLabel: true)
+        exampleLabel.text = TextFieldFormatting.examplePhoneNumber(forCountryCode: countryCode, callingCode: callingCode, includeExampleLabel: true)
     }
 }
 
 extension FindByPhoneNumberViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        ViewControllerUtils.phoneNumber(textField, changeCharactersIn: range, replacementString: string, callingCode: callingCode)
+        TextFieldFormatting.phoneNumberTextField(textField, changeCharactersIn: range, replacementString: string, callingCode: callingCode)
         updateButtonState()
         return false
     }

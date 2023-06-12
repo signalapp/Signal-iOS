@@ -502,7 +502,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
 
     private func applyPhoneNumberFormatting() {
         AssertIsOnMainThread()
-        ViewControllerUtils.reformatPhoneNumber(phoneNumberTextField, callingCode: callingCode)
+        TextFieldFormatting.reformatPhoneNumberTextField(phoneNumberTextField, callingCode: callingCode)
     }
 
      // MARK: - Events
@@ -663,11 +663,12 @@ extension Deprecated_RegistrationPhoneNumberViewController: UITextFieldDelegate 
 
         // If ViewControllerUtils applied the edit on our behalf, inform UIKit
         // so the edit isn't applied twice.
-        return ViewControllerUtils.phoneNumber(
+        return TextFieldFormatting.phoneNumberTextField(
             textField,
             shouldChangeCharactersIn: range,
             replacementString: string,
-            callingCode: callingCode)
+            callingCode: callingCode
+        )
     }
 
     @objc

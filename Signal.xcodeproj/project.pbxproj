@@ -59,7 +59,6 @@
 		3402AA03271D9DB50084CBAE /* ConversationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95506271B510400B05242 /* ConversationStyle.swift */; };
 		3402AA30271D9DCD0084CBAE /* ContactFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558A271B510500B05242 /* ContactFieldView.swift */; };
 		3402AA31271D9DCD0084CBAE /* TextApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557F271B510500B05242 /* TextApprovalViewController.swift */; };
-		3402AA32271D9DCD0084CBAE /* ViewControllerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95576271B510500B05242 /* ViewControllerUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AA33271D9DCD0084CBAE /* ConversationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557B271B510500B05242 /* ConversationPicker.swift */; };
 		3402AA34271D9DCD0084CBAE /* AttachmentItemCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95598271B510500B05242 /* AttachmentItemCollection.swift */; };
 		3402AA35271D9DCD0084CBAE /* ActionSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95569271B510500B05242 /* ActionSheetController.swift */; };
@@ -80,7 +79,6 @@
 		3402AA4D271D9DCD0084CBAE /* StickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9556F271B510500B05242 /* StickerView.swift */; };
 		3402AA4E271D9DCD0084CBAE /* ApprovalFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558E271B510500B05242 /* ApprovalFooterView.swift */; };
 		3402AA4F271D9DCD0084CBAE /* SpamCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557E271B510500B05242 /* SpamCaptchaViewController.swift */; };
-		3402AA52271D9DCD0084CBAE /* ViewControllerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95586271B510500B05242 /* ViewControllerUtils.m */; };
 		3402AA54271D9DCD0084CBAE /* LinearHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9556E271B510500B05242 /* LinearHorizontalLayout.swift */; };
 		3402AA55271D9DCD0084CBAE /* AttachmentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95597271B510500B05242 /* AttachmentTextView.swift */; };
 		3402AA56271D9DCD0084CBAE /* FindByPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557D271B510500B05242 /* FindByPhoneNumberViewController.swift */; };
@@ -920,6 +918,7 @@
 		7649813F2A2306DA00EC1287 /* SMEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7649813E2A2306DA00EC1287 /* SMEnvironment.swift */; };
 		764981432A230F2C00EC1287 /* MockSMEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764981422A230F2C00EC1287 /* MockSMEnvironment.swift */; };
 		764981452A23194F00EC1287 /* CVItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764981442A23194F00EC1287 /* CVItemViewModel.swift */; };
+		764FE0412A2EF3A7004D2804 /* TextFieldFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */; };
 		764FE03F2A2EC2E2004D2804 /* UIViewController+Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FE03E2A2EC2E2004D2804 /* UIViewController+Permissions.swift */; };
 		764FE0432A2F049C004D2804 /* OWSSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FE0422A2F049C004D2804 /* OWSSearchBar.swift */; };
 		764FE0452A2F0C0F004D2804 /* QuotedReplyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FE0442A2F0C0F004D2804 /* QuotedReplyModel.swift */; };
@@ -2825,7 +2824,6 @@
 		34A95571271B510500B05242 /* StickerPackDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPackDataSource.swift; sourceTree = "<group>"; };
 		34A95572271B510500B05242 /* StickerHorizontalListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerHorizontalListView.swift; sourceTree = "<group>"; };
 		34A95573271B510500B05242 /* StickerKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerKeyboard.swift; sourceTree = "<group>"; };
-		34A95576271B510500B05242 /* ViewControllerUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerUtils.h; sourceTree = "<group>"; };
 		34A95578271B510500B05242 /* MediaMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaMessageView.swift; sourceTree = "<group>"; };
 		34A9557B271B510500B05242 /* ConversationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPicker.swift; sourceTree = "<group>"; };
 		34A9557C271B510500B05242 /* ConversationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationItem.swift; sourceTree = "<group>"; };
@@ -2833,7 +2831,6 @@
 		34A9557E271B510500B05242 /* SpamCaptchaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamCaptchaViewController.swift; sourceTree = "<group>"; };
 		34A9557F271B510500B05242 /* TextApprovalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextApprovalViewController.swift; sourceTree = "<group>"; };
 		34A95582271B510500B05242 /* OWSNavigationControllerBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSNavigationControllerBase.h; sourceTree = "<group>"; };
-		34A95586271B510500B05242 /* ViewControllerUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerUtils.m; sourceTree = "<group>"; };
 		34A9558A271B510500B05242 /* ContactFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFieldView.swift; sourceTree = "<group>"; };
 		34A9558B271B510500B05242 /* OWSTableViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewController2.swift; sourceTree = "<group>"; };
 		34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactShareNameViewController.swift; sourceTree = "<group>"; };
@@ -3391,6 +3388,7 @@
 		7649813E2A2306DA00EC1287 /* SMEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMEnvironment.swift; sourceTree = "<group>"; };
 		764981422A230F2C00EC1287 /* MockSMEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSMEnvironment.swift; sourceTree = "<group>"; };
 		764981442A23194F00EC1287 /* CVItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVItemViewModel.swift; sourceTree = "<group>"; };
+		764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldFormatting.swift; sourceTree = "<group>"; };
 		764FE03E2A2EC2E2004D2804 /* UIViewController+Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Permissions.swift"; sourceTree = "<group>"; };
 		764FE0422A2F049C004D2804 /* OWSSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSearchBar.swift; sourceTree = "<group>"; };
 		764FE0442A2F0C0F004D2804 /* QuotedReplyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyModel.swift; sourceTree = "<group>"; };
@@ -5825,9 +5823,8 @@
 				34A95595271B510500B05242 /* SheetViewController.swift */,
 				34A9557E271B510500B05242 /* SpamCaptchaViewController.swift */,
 				34A9557F271B510500B05242 /* TextApprovalViewController.swift */,
+				764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */,
 				764FE03E2A2EC2E2004D2804 /* UIViewController+Permissions.swift */,
-				34A95576271B510500B05242 /* ViewControllerUtils.h */,
-				34A95586271B510500B05242 /* ViewControllerUtils.m */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -9493,7 +9490,6 @@
 				34A954BA271A471300B05242 /* SignalUI.h in Headers */,
 				3402A9E9271D97090084CBAE /* UIView+SignalUI.h in Headers */,
 				34A954FD271B4FB000B05242 /* UIViewController+OWS.h in Headers */,
-				3402AA32271D9DCD0084CBAE /* ViewControllerUtils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10897,6 +10893,7 @@
 				3402AA80271D9E180084CBAE /* TappableView.swift in Sources */,
 				3402AA31271D9DCD0084CBAE /* TextApprovalViewController.swift in Sources */,
 				88B6D673280770C4005D86EC /* TextAttachmentView.swift in Sources */,
+				764FE0412A2EF3A7004D2804 /* TextFieldFormatting.swift in Sources */,
 				3402AAB0271D9E180084CBAE /* TextFieldWithPlaceholder.swift in Sources */,
 				3402AA8E271D9E180084CBAE /* TextViewWithPlaceholder.swift in Sources */,
 				34A954DC271B4F3E00B05242 /* Theme+Icons.swift in Sources */,
@@ -10927,7 +10924,6 @@
 				34A954E8271B4F6A00B05242 /* VideoPlayer.swift in Sources */,
 				3402AAB4271D9E180084CBAE /* VideoPlayerView.swift in Sources */,
 				76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */,
-				3402AA52271D9DCD0084CBAE /* ViewControllerUtils.m in Sources */,
 				3402AA9F271D9E180084CBAE /* ViewOnceTooltip.swift in Sources */,
 				3402AA6B271D9DFC0084CBAE /* Wallpaper+Constants.swift in Sources */,
 				3402AA6A271D9DFC0084CBAE /* Wallpaper.swift in Sources */,
