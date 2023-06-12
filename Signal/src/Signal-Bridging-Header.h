@@ -7,5 +7,4 @@
 #import "AppDelegate.h"
 #import "OWSOrphanDataCleaner.h"
 #import "OWSQuotedMessageView.h"
-#import "RemoteVideoView.h"
 #import "WindowManagerFix.h"

@@ -520,7 +520,6 @@
 		45069FCE29D64CB300D0DD14 /* SelectionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FCD29D64CB300D0DD14 /* SelectionButton.swift */; };
 		450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
 		450C801220AD1D5B00F3A091 /* UIDevice+FeatureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */; };
-		450D19131F85236600970622 /* RemoteVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450D19121F85236600970622 /* RemoteVideoView.m */; };
 		451166C01FD86B98000739BA /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451166BF1FD86B98000739BA /* AccountManager.swift */; };
 		45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */; };
 		451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8C1F9521F800FA666C /* Searcher.swift */; };
@@ -934,6 +933,7 @@
 		7666D54628331E4800A3BDB9 /* ImageEditorViewController+Blur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */; };
 		7666D54828331E6900A3BDB9 /* ImageEditorViewController+Text.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */; };
 		766BCA7D29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766BCA7C29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift */; };
+		766CE0D62A323DFE00AD609D /* RemoteVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766CE0D52A323DFE00AD609D /* RemoteVideoView.swift */; };
 		76725D2D29143CEC000E8AE1 /* ConversationInputToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */; };
 		7677E40729F7472800AC6A75 /* ShareAppExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E40629F7472800AC6A75 /* ShareAppExtensionContext.swift */; };
 		7677E40D29F75C4200AC6A75 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7677E40C29F75C4200AC6A75 /* Theme.swift */; };
@@ -2963,8 +2963,6 @@
 		45069FC929D4FFBB00D0DD14 /* MediaTileDateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTileDateFormatter.swift; sourceTree = "<group>"; };
 		45069FCB29D4FFD200D0DD14 /* MediaTileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTileCell.swift; sourceTree = "<group>"; };
 		45069FCD29D64CB300D0DD14 /* SelectionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionButton.swift; sourceTree = "<group>"; };
-		450D19111F85236600970622 /* RemoteVideoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteVideoView.h; sourceTree = "<group>"; };
-		450D19121F85236600970622 /* RemoteVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RemoteVideoView.m; sourceTree = "<group>"; };
 		451166BF1FD86B98000739BA /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
 		45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadReplyInfo.swift; sourceTree = "<group>"; };
 		451764291DE939FD00EDB8B9 /* ContactCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
@@ -3406,6 +3404,7 @@
 		7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Blur.swift"; sourceTree = "<group>"; };
 		7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Text.swift"; sourceTree = "<group>"; };
 		766BCA7C29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTLEnabledCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
+		766CE0D52A323DFE00AD609D /* RemoteVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteVideoView.swift; sourceTree = "<group>"; };
 		76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInputToolbar.swift; sourceTree = "<group>"; };
 		7677E40629F7472800AC6A75 /* ShareAppExtensionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareAppExtensionContext.swift; sourceTree = "<group>"; };
 		7677E40C29F75C4200AC6A75 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -7420,8 +7419,7 @@
 				1700E33E28B856FB0073D949 /* IncomingCallControls.swift */,
 				88238EA124E9DDB700F28079 /* LocalVideoView.swift */,
 				88D23D1823CEC0C700B0E74B /* NonCallKitCallUIAdaptee.swift */,
-				450D19111F85236600970622 /* RemoteVideoView.h */,
-				450D19121F85236600970622 /* RemoteVideoView.m */,
+				766CE0D52A323DFE00AD609D /* RemoteVideoView.swift */,
 			);
 			path = UserInterface;
 			sourceTree = "<group>";
@@ -11605,7 +11603,7 @@
 				F9E3006C299D76C3000323F8 /* RegistrationVerificationViewController.swift in Sources */,
 				F95D71A3299305C400ED3102 /* RegistrationViewUtil.swift in Sources */,
 				D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */,
-				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
+				766CE0D62A323DFE00AD609D /* RemoteVideoView.swift in Sources */,
 				348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */,
 				F952C0A629C8DA5E00D93766 /* RequestAccountDataReportViewController.swift in Sources */,
 				342FFE7E271EF5B2000AC89F /* ReturnToCallViewController.swift in Sources */,

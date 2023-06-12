@@ -5,6 +5,7 @@
 
 import SignalRingRTC
 import SignalServiceKit
+import WebRTC
 
 class GroupCallRemoteVideoManager: Dependencies {
     private var currentGroupCall: GroupCall? {

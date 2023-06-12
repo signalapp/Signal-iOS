@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import AVFoundation
 import SignalMessaging
 import SignalServiceKit
 import SignalRingRTC
+import WebRTC
 
 public enum CallState: String {
     case idle

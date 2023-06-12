@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AVFoundation
 import SignalServiceKit
 import SignalMessaging
 import SignalUI
