@@ -179,9 +179,9 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
 
         switch targetedPreview.alignment {
         case .left:
-            alignments.append((CurrentAppContext().isRTL ? .trailing : .leading, .interior))
+            alignments.append((.leading, .interior))
         case .right:
-            alignments.append((CurrentAppContext().isRTL ? .leading : .trailing, .interior))
+            alignments.append((.trailing, .interior))
         case .center:
             break
         }
@@ -248,10 +248,6 @@ extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTarg
 
     func contextMenuControllerRequestsDismissal(_ contextMenuController: ContextMenuController) {
         dismissMenu(animated: true, completion: { })
-    }
-
-    func contextMenuControllerAccessoryFrameOffset(_ contextMenuController: ContextMenuController) -> CGPoint? {
-        nil
     }
 
     func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(
@@ -342,7 +338,7 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
         let horizontalEdgeAlignment: ContextMenuTargetedPreviewAccessory.AccessoryAlignment.Edge = isIncomingMessage ? (isRTL ? .trailing : .leading) : (isRTL ? .leading : .trailing)
         let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.bottom, .exterior), (horizontalEdgeAlignment, .interior)], alignmentOffset: CGPoint(x: 0, y: 12))
         let accessory = ContextMenuActionsAccessory(menu: menu, accessoryAlignment: alignment)
-        let landscapeAlignmentOffset = isMessageType ? CGPoint(x: isIncomingMessage ? (isRTL ? -12 : 12) : (isRTL ? 12 : -12), y: 0) : alignment.alignmentOffset
+        let landscapeAlignmentOffset = isMessageType ? CGPoint(x: 12, y: 0) : alignment.alignmentOffset
         let horizontalLandscapeEdgeAlignment: ContextMenuTargetedPreviewAccessory.AccessoryAlignment.Edge = isIncomingMessage ? (isRTL ? .leading : .trailing) : (isRTL ? .trailing : .leading)
         accessory.landscapeAccessoryAlignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [isMessageType ? (.top, .interior) : (.bottom, .exterior), (horizontalLandscapeEdgeAlignment, .exterior)], alignmentOffset: landscapeAlignmentOffset)
         accessory.delegate = self

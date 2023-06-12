@@ -78,9 +78,20 @@ public class ContextMenuTargetedPreviewAccessory {
             case exterior
         }
 
-        /// Accessory frame edge alignment relative to preview frame.
-        /// Processed in-order
+        /// Accessory frame edge alignment relative to preview frame. Processed
+        /// in-order.
         let alignments: [(Edge, Origin)]
+
+        /// An offset for the accessory frame relative to the preview frame.
+        /// Positive values result in an adjustment away from the center of the
+        /// preview frame, and negative values in an adjustment towards the
+        /// center of the preview frame.
+        ///
+        /// - Note
+        /// This offset must not offset the accessory more than halfway across
+        /// the preview view, either vertically or horizontally, from any of the
+        /// edges in ``alignments``. Rather than offsetting that far, we should
+        /// be aligning to the opposite edge.
         let alignmentOffset: CGPoint
     }
 
@@ -142,14 +153,6 @@ public class ContextMenuTargetedPreview {
         case left
         case center
         case right
-
-        public static var leading: Alignment {
-            CurrentAppContext().isRTL ? .right : .left
-        }
-
-        public static var trailing: Alignment {
-            CurrentAppContext().isRTL ? .left : .right
-        }
     }
 
     public let view: UIView
@@ -165,8 +168,14 @@ public class ContextMenuTargetedPreview {
     public let previewView: UIView
     public let previewViewSourceFrame: CGRect
     public var auxiliarySnapshot: UIView?
+
+    /// The horizontal edge to which accessory views should be aligned.
+    /// - Note
+    /// RTL-aware previews should set this as appropriate for the current RTL
+    /// state.
     public let alignment: Alignment
     public var alignmentOffset: CGPoint?
+
     public let accessoryViews: [ContextMenuTargetedPreviewAccessory]
 
     /// Default targeted preview initializer

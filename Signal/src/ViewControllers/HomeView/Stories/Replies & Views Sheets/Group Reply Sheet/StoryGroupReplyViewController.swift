@@ -432,10 +432,10 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
 
         let targetedPreview = ContextMenuTargetedPreview(
             view: cell,
-            alignment: .leading,
+            alignment: CurrentAppContext().isRTL ? .right : .left,
             accessoryViews: nil
         )
-        targetedPreview?.alignmentOffset = CGPoint(x: 52, y: 12)
+        targetedPreview?.alignmentOffset = CGPoint(x: -52, y: 12)
 
         return targetedPreview
     }

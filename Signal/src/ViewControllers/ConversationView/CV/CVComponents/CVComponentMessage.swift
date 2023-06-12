@@ -2223,7 +2223,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             avatarView.frame = componentView.avatarView.bounds
             let isRTL = CurrentAppContext().isRTL
             let horizontalEdgeAlignment: ContextMenuTargetedPreviewAccessory.AccessoryAlignment.Edge = isRTL ? .trailing : .leading
-            let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(horizontalEdgeAlignment, .exterior), (.bottom, .interior)], alignmentOffset: CGPoint(x: (isRTL ? 8 : -8), y: 0))
+            let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(horizontalEdgeAlignment, .exterior), (.bottom, .interior)], alignmentOffset: CGPoint(x: 8, y: 0))
             let avatarViewAccessory = ContextMenuTargetedPreviewAccessory(accessoryView: avatarView, accessoryAlignment: alignment)
             avatarViewAccessory.animateAccessoryPresentationAlongsidePreview = true
             return [avatarViewAccessory]
