@@ -95,34 +95,34 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         let paymentModel = paymentItem.paymentModel
 
-        section.add(OWSTableItem.actionItem(name: "paymentType",
-                                            accessoryText: paymentModel.paymentType.formatted,
-                                            accessibilityIdentifier: "paymentType",
-                                            actionBlock: nil))
-        section.add(OWSTableItem.actionItem(name: "paymentState",
-                                            accessoryText: paymentModel.paymentState.formatted,
-                                            accessibilityIdentifier: "paymentState",
-                                            actionBlock: nil))
-        section.add(OWSTableItem.actionItem(name: "paymentFailure",
-                                            accessoryText: paymentModel.paymentFailure.formatted,
-                                            accessibilityIdentifier: "paymentFailure",
-                                            actionBlock: nil))
+        section.add(OWSTableItem.item(name: "paymentType",
+                                      accessoryText: paymentModel.paymentType.formatted,
+                                      accessibilityIdentifier: "paymentType",
+                                      actionBlock: nil))
+        section.add(OWSTableItem.item(name: "paymentState",
+                                      accessoryText: paymentModel.paymentState.formatted,
+                                      accessibilityIdentifier: "paymentState",
+                                      actionBlock: nil))
+        section.add(OWSTableItem.item(name: "paymentFailure",
+                                      accessoryText: paymentModel.paymentFailure.formatted,
+                                      accessibilityIdentifier: "paymentFailure",
+                                      actionBlock: nil))
 
         if let paymentAmount = paymentModel.paymentAmount {
-            section.add(OWSTableItem.actionItem(name: "paymentAmount",
-                                                accessoryText: paymentAmount.formatted,
-                                                accessibilityIdentifier: "paymentAmount",
-                                                actionBlock: nil))
+            section.add(OWSTableItem.item(name: "paymentAmount",
+                                          accessoryText: paymentAmount.formatted,
+                                          accessibilityIdentifier: "paymentAmount",
+                                          actionBlock: nil))
         }
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .medium
 
-        section.add(OWSTableItem.actionItem(name: "createdDate",
-                                            accessoryText: dateFormatter.string(from: paymentModel.createdDate),
-                                            accessibilityIdentifier: "createdDate",
-                                            actionBlock: nil))
+        section.add(OWSTableItem.item(name: "createdDate",
+                                      accessoryText: dateFormatter.string(from: paymentModel.createdDate),
+                                      accessibilityIdentifier: "createdDate",
+                                      actionBlock: nil))
 
         guard let mobileCoin = paymentModel.mobileCoin else {
             return section
@@ -169,24 +169,24 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         }
 
         if let ledgerBlockDate = mobileCoin.ledgerBlockDate {
-            section.add(OWSTableItem.actionItem(name: "ledgerBlockDate",
-                                                accessoryText: dateFormatter.string(from: ledgerBlockDate),
-                                                accessibilityIdentifier: "ledgerBlockDate",
-                                                actionBlock: nil))
+            section.add(OWSTableItem.item(name: "ledgerBlockDate",
+                                          accessoryText: dateFormatter.string(from: ledgerBlockDate),
+                                          accessibilityIdentifier: "ledgerBlockDate",
+                                          actionBlock: nil))
         }
 
         if mobileCoin.ledgerBlockIndex > 0 {
-            section.add(OWSTableItem.actionItem(name: "ledgerBlockIndex",
-                                                accessoryText: "\(mobileCoin.ledgerBlockIndex)",
-                                                accessibilityIdentifier: "ledgerBlockIndex",
-                                                actionBlock: nil))
+            section.add(OWSTableItem.item(name: "ledgerBlockIndex",
+                                          accessoryText: "\(mobileCoin.ledgerBlockIndex)",
+                                          accessibilityIdentifier: "ledgerBlockIndex",
+                                          actionBlock: nil))
         }
 
         if let feeAmount = mobileCoin.feeAmount {
-            section.add(OWSTableItem.actionItem(name: "feeAmount",
-                                                accessoryText: feeAmount.formatted,
-                                                accessibilityIdentifier: "feeAmount",
-                                                actionBlock: nil))
+            section.add(OWSTableItem.item(name: "feeAmount",
+                                          accessoryText: feeAmount.formatted,
+                                          accessibilityIdentifier: "feeAmount",
+                                          actionBlock: nil))
         }
 
         return section

@@ -89,20 +89,20 @@ public class GroupLinkViewController: OWSTableViewController2 {
         if groupModelV2.isGroupInviteLinkEnabled {
             let section = OWSTableSection()
             section.separatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
-            section.add(OWSTableItem.actionItem(icon: .messageActionShare24,
-                                                name: OWSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
-                                                                        comment: "Label for the 'share link' button in the 'group link' view."),
-                                                accessibilityIdentifier: "group_link_view_share_link",
-                                                actionBlock: { [weak self] in
-                                                    self?.shareLinkPressed()
-                                                }))
-            section.add(OWSTableItem.actionItem(icon: .retry24,
-                                                name: OWSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
-                                                                        comment: "Label for the 'reset link' button in the 'group link' view."),
-                                                accessibilityIdentifier: "group_link_view_reset_link",
-                                                actionBlock: { [weak self] in
-                                                    self?.resetLinkPressed()
-                                                }))
+            section.add(OWSTableItem.item(icon: .messageActionShare24,
+                                          name: OWSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
+                                                                   comment: "Label for the 'share link' button in the 'group link' view."),
+                                          accessibilityIdentifier: "group_link_view_share_link",
+                                          actionBlock: { [weak self] in
+                self?.shareLinkPressed()
+            }))
+            section.add(OWSTableItem.item(icon: .retry24,
+                                          name: OWSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
+                                                                   comment: "Label for the 'reset link' button in the 'group link' view."),
+                                          accessibilityIdentifier: "group_link_view_reset_link",
+                                          actionBlock: { [weak self] in
+                self?.resetLinkPressed()
+            }))
             contents.add(section)
         }
 

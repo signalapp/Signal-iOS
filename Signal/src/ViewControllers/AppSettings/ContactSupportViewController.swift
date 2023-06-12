@@ -323,7 +323,7 @@ extension ContactSupportViewController {
                 // Filter selection
                 OWSTableItem(customCellBlock: { [weak self] in
                     guard let self = self else { return UITableViewCell() }
-                    return OWSTableItem.buildIconNameCell(
+                    return OWSTableItem.buildCell(
                         itemName: OWSLocalizedString(
                             "CONTACT_SUPPORT_FILTER_PROMPT",
                             comment: "Prompt telling the user to select a filter for their support request."

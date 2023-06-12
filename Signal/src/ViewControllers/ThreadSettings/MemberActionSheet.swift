@@ -96,7 +96,7 @@ class MemberActionSheet: OWSTableSheetViewController {
 
         // If blocked, only show unblock as an option
         guard !threadViewModel.isBlocked else {
-            section.add(.actionItem(
+            section.add(.item(
                 icon: .settingsBlock,
                 name: OWSLocalizedString(
                     "BLOCK_LIST_UNBLOCK_BUTTON",
@@ -110,7 +110,7 @@ class MemberActionSheet: OWSTableSheetViewController {
             return
         }
 
-        section.add(.actionItem(
+        section.add(.item(
             icon: .settingsBlock,
             name: OWSLocalizedString(
                 "BLOCK_LIST_BLOCK_BUTTON",
@@ -131,7 +131,7 @@ class MemberActionSheet: OWSTableSheetViewController {
 
         if let groupViewHelper = self.groupViewHelper, groupViewHelper.isFullOrInvitedMember(address) {
             if groupViewHelper.canRemoveFromGroup(address: address) {
-                section.add(.actionItem(
+                section.add(.item(
                     icon: .settingsViewRemoveFromGroup,
                     name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
@@ -147,7 +147,7 @@ class MemberActionSheet: OWSTableSheetViewController {
                 ))
             }
             if groupViewHelper.memberActionSheetCanMakeGroupAdmin(address: address) {
-                section.add(.actionItem(
+                section.add(.item(
                     icon: .settingsViewMakeGroupAdmin,
                     name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON",
@@ -163,7 +163,7 @@ class MemberActionSheet: OWSTableSheetViewController {
                 ))
             }
             if groupViewHelper.memberActionSheetCanRevokeGroupAdmin(address: address) {
-                section.add(.actionItem(
+                section.add(.item(
                     icon: .settingsViewRevokeGroupAdmin,
                     name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON",
@@ -180,7 +180,7 @@ class MemberActionSheet: OWSTableSheetViewController {
             }
         }
 
-        section.add(.actionItem(
+        section.add(.item(
             icon: .settingsAddToGroup,
             name: OWSLocalizedString(
                 "ADD_TO_GROUP",
@@ -199,7 +199,7 @@ class MemberActionSheet: OWSTableSheetViewController {
             contactsManager.isSystemContact(address: address, transaction: transaction)
         }
         if isSystemContact {
-            section.add(.actionItem(
+            section.add(.item(
                 icon: .settingsUserInContacts,
                 name: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
@@ -211,7 +211,7 @@ class MemberActionSheet: OWSTableSheetViewController {
                 }
             ))
         } else {
-            section.add(.actionItem(
+            section.add(.item(
                 icon: .settingsAddToContacts,
                 name: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
@@ -224,7 +224,7 @@ class MemberActionSheet: OWSTableSheetViewController {
             ))
         }
 
-        section.add(.actionItem(
+        section.add(.item(
             icon: .settingsViewSafetyNumber,
             name: OWSLocalizedString(
                 "VERIFY_PRIVACY",

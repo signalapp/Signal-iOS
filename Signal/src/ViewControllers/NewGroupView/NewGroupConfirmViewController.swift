@@ -143,7 +143,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         disappearingMessagesSection.add(.init(
             customCellBlock: { [weak self] in
                 guard let self = self else { return UITableViewCell() }
-                let cell = OWSTableItem.buildIconNameCell(
+                let cell = OWSTableItem.buildCell(
                     icon: self.disappearingMessagesConfiguration.isEnabled
                         ? .settingsTimer
                         : .settingsTimerDisabled,

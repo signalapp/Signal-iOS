@@ -72,7 +72,7 @@ class DonationReceiptsViewController: OWSTableViewController2 {
 
                     let accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "donation_receipt.\(donationReceipt.uniqueId)")
 
-                    return OWSTableItem.buildImageNameCell(
+                    return OWSTableItem.buildImageCell(
                         image: profileBadgeImage,
                         itemName: formattedDate,
                         subtitle: donationReceipt.localizedName,

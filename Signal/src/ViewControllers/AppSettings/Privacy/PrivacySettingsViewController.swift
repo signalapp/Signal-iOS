@@ -105,7 +105,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         disappearingMessagesSection.add(.init(
             customCellBlock: { [weak self] in
                 guard let self = self else { return UITableViewCell() }
-                let cell = OWSTableItem.buildIconNameCell(
+                let cell = OWSTableItem.buildCell(
                     itemName: OWSLocalizedString(
                         "SETTINGS_DISAPPEARING_MESSAGES",
                         comment: "Label for the 'disappearing messages' privacy settings."

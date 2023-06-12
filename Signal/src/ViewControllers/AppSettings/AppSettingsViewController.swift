@@ -151,7 +151,7 @@ class AppSettingsViewController: OWSTableViewController2 {
             } else {
                 accessoryView = nil
             }
-            return OWSTableItem.buildCellWithAccessoryLabel(
+            return OWSTableItem.buildCell(
                 icon: .settingsDonate,
                 itemName: OWSLocalizedString("SETTINGS_DONATE", comment: "Title for the 'donate to signal' link in settings."),
                 accessoryType: .disclosureIndicator,

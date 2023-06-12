@@ -64,7 +64,7 @@ final class HelpViewController: OWSTableViewController2 {
             selector: #selector(didToggleEnableLogSwitch)
         ))
         if Preferences.isLoggingEnabled {
-            loggingSection.add(.actionItem(
+            loggingSection.add(.item(
                 name: OWSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: ""),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "submit_debug_log"),
                 actionBlock: {

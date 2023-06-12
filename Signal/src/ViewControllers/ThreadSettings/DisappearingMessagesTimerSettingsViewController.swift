@@ -123,7 +123,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
         }
 
         let section = OWSTableSection()
-        section.add(.actionItem(
+        section.add(.item(
             icon: configuration.isEnabled ? .empty : .accessoryCheckmark,
             name: CommonStrings.switchOff,
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "timer_off"),
@@ -136,7 +136,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
         ))
 
         for duration in disappearingMessagesDurations {
-            section.add(.actionItem(
+            section.add(.item(
                 icon: (configuration.isEnabled && duration == configuration.durationSeconds) ? .accessoryCheckmark : .empty,
                 name: DateUtil.formatDuration(seconds: duration, useShortFormat: false),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "timer_\(duration)"),

@@ -259,7 +259,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             )
         }()
 
-        return OWSTableItem.buildCellWithAccessoryLabel(
+        return OWSTableItem.buildCell(
             icon: .settingsMention,
             itemName: usernameTitle,
             subtitle: usernameSubtitle,

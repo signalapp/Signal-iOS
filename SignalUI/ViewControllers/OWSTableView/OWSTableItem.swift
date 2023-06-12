@@ -69,7 +69,7 @@ public class OWSTableItem {
     ) {
         self.init(title: nil, actionBlock: actionBlock)
         self.customCellBlock = {
-            OWSTableItem.buildCellWithAccessoryLabel(
+            OWSTableItem.buildCell(
                 itemName: text,
                 textColor: nil,
                 accessoryText: accessoryText,
@@ -120,9 +120,10 @@ public class OWSTableItem {
     ) -> OWSTableItem {
         let item = OWSTableItem(title: nil, actionBlock: actionBlock)
         item.customCellBlock = {
-            OWSTableItem.buildCellWithAccessoryLabel(
+            OWSTableItem.buildCell(
                 itemName: text,
                 textColor: textColor,
+                accessoryType: .disclosureIndicator,
                 accessibilityIdentifier: accessibilityIdentifier
             )
         }
@@ -137,8 +138,9 @@ public class OWSTableItem {
     ) -> OWSTableItem {
         let item = OWSTableItem(title: nil, actionBlock: actionBlock)
         item.customCellBlock = {
-            OWSTableItem.buildCellWithAccessoryLabel(
+            OWSTableItem.buildCell(
                 itemName: text,
+                accessoryType: .disclosureIndicator,
                 accessoryImage: accessoryImage,
                 accessibilityIdentifier: accessibilityIdentifier
             )
@@ -161,7 +163,7 @@ public class OWSTableItem {
             actionBlock(viewController)
         }
         item.customCellBlock = {
-            OWSTableItem.buildCellWithAccessoryLabel(
+            OWSTableItem.buildCell(
                 itemName: text,
                 accessoryType: .disclosureIndicator,
                 accessibilityIdentifier: accessibilityIdentifier
@@ -201,9 +203,10 @@ public class OWSTableItem {
     ) -> OWSTableItem {
         let item = OWSTableItem()
         item.customCellBlock = {
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+            let cell = OWSTableItem.buildCell(
                 itemName: text,
-                accessoryText: accessoryText
+                accessoryText: accessoryText,
+                accessoryType: .disclosureIndicator
             )
             cell.isUserInteractionEnabled = false
             return cell
@@ -242,8 +245,9 @@ public class OWSTableItem {
     ) -> OWSTableItem {
         let item = OWSTableItem()
         item.customCellBlock = { [weak target] in
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+            let cell = OWSTableItem.buildCell(
                 itemName: text,
+                accessoryType: .disclosureIndicator,
                 accessibilityIdentifier: accessibilityIdentifier
             )
             cell.selectionStyle = .none
@@ -338,17 +342,21 @@ public extension OWSTableItem {
         return cell
     }
 
-    static func imageView(forIcon icon: ThemeIcon,
-                          tintColor: UIColor? = nil,
-                          iconSize: CGFloat = iconSize) -> UIImageView {
+    static func imageView(
+        forIcon icon: ThemeIcon,
+        tintColor: UIColor? = nil,
+        iconSize: CGFloat = iconSize
+    ) -> UIImageView {
         let iconImage = Theme.iconImage(icon)
         let iconView = imageView(forImage: iconImage)
         iconView.tintColor = tintColor ?? Theme.primaryIconColor
         return iconView
     }
 
-    private static func imageView(forImage: UIImage,
-                                  iconSize: CGFloat = iconSize) -> UIImageView {
+    private static func imageView(
+        forImage: UIImage,
+        iconSize: CGFloat = iconSize
+    ) -> UIImageView {
         let result = UIImageView(image: forImage)
         result.contentMode = .scaleAspectFit
         result.layer.minificationFilter = .trilinear
@@ -357,169 +365,143 @@ public extension OWSTableItem {
         return result
     }
 
-    static func buildCell(name: String,
-                          icon: ThemeIcon,
-                          accessibilityIdentifier: String? = nil) -> UITableViewCell {
+    static func buildCell(
+        name: String,
+        icon: ThemeIcon,
+        accessibilityIdentifier: String? = nil
+    ) -> UITableViewCell {
         let iconView = imageView(forIcon: icon)
         let cell = buildCell(name: name, iconView: iconView)
         cell.accessibilityIdentifier = accessibilityIdentifier
         return cell
     }
 
-    static func buildDisclosureCell(name: String,
-                                    icon: ThemeIcon,
-                                    accessibilityIdentifier: String) -> UITableViewCell {
+    static func buildDisclosureCell(
+        name: String,
+        icon: ThemeIcon,
+        accessibilityIdentifier: String
+    ) -> UITableViewCell {
         let cell = buildCell(name: name, icon: icon)
         cell.accessoryType = .disclosureIndicator
         cell.accessibilityIdentifier = accessibilityIdentifier
         return cell
     }
 
-    static func buildLabelCell(name: String,
-                               icon: ThemeIcon,
-                               accessibilityIdentifier: String) -> UITableViewCell {
+    static func buildLabelCell(
+        name: String,
+        icon: ThemeIcon,
+        accessibilityIdentifier: String
+    ) -> UITableViewCell {
         let cell = buildCell(name: name, icon: icon)
         cell.accessoryType = .none
         cell.accessibilityIdentifier = accessibilityIdentifier
         return cell
     }
 
-    static func disclosureItem(icon: ThemeIcon,
-                               name: String,
-                               maxNameLines: Int? = nil,
-                               accessoryText: String? = nil,
-                               accessibilityIdentifier: String,
-                               actionBlock: (() -> Void)?) -> OWSTableItem {
-        item(icon: icon,
-             name: name,
-             maxNameLines: maxNameLines,
-             accessoryText: accessoryText,
-             accessoryType: .disclosureIndicator,
-             accessibilityIdentifier: accessibilityIdentifier,
-             actionBlock: actionBlock)
-    }
-
-    static func actionItem(icon: ThemeIcon? = nil,
-                           tintColor: UIColor? = nil,
-                           name: String,
-                           textColor: UIColor? = nil,
-                           accessoryText: String? = nil,
-                           accessoryImage: UIImage? = nil,
-                           accessoryImageTint: AccessoryImageTint = .tinted,
-                           accessibilityIdentifier: String,
-                           actionBlock: (() -> Void)?) -> OWSTableItem {
-        item(icon: icon,
-             tintColor: tintColor,
-             name: name,
-             textColor: textColor,
-             accessoryText: accessoryText,
-             accessoryImage: accessoryImage,
-             accessoryImageTint: accessoryImageTint,
-             accessibilityIdentifier: accessibilityIdentifier,
-             actionBlock: actionBlock)
-    }
-
-    static func item(icon: ThemeIcon? = nil,
-                     tintColor: UIColor? = nil,
-                     name: String,
-                     subtitle: String? = nil,
-                     maxNameLines: Int? = nil,
-                     textColor: UIColor? = nil,
-                     accessoryText: String? = nil,
-                     accessoryType: UITableViewCell.AccessoryType = .none,
-                     accessoryImage: UIImage? = nil,
-                     accessoryImageTint: AccessoryImageTint = .tinted,
-                     accessoryView: UIView? = nil,
-                     accessibilityIdentifier: String,
-                     actionBlock: (() -> Void)? = nil) -> OWSTableItem {
-
-        OWSTableItem(customCellBlock: {
-            OWSTableItem.buildCellWithAccessoryLabel(
+    static func disclosureItem(
+        icon: ThemeIcon,
+        name: String,
+        maxNameLines: Int? = nil,
+        accessoryText: String? = nil,
+        accessibilityIdentifier: String,
+        actionBlock: (() -> Void)?
+    ) -> OWSTableItem {
+        return item(
             icon: icon,
-            tintColor: tintColor,
-            itemName: name,
-            subtitle: subtitle,
-            maxItemNameLines: maxNameLines,
-            textColor: textColor,
+            name: name,
+            maxNameLines: maxNameLines,
             accessoryText: accessoryText,
-            accessoryType: accessoryType,
-            accessoryImage: accessoryImage,
-            accessoryImageTint: accessoryImageTint,
-            accessoryView: accessoryView,
-            accessibilityIdentifier: accessibilityIdentifier
-            )
-        },
-                     actionBlock: actionBlock)
+            accessoryType: .disclosureIndicator,
+            accessibilityIdentifier: accessibilityIdentifier,
+            actionBlock: actionBlock
+        )
     }
 
-    static func buildCellWithAccessoryLabel(icon: ThemeIcon? = nil,
-                                            tintColor: UIColor? = nil,
-                                            itemName: String,
-                                            subtitle: String? = nil,
-                                            maxItemNameLines: Int? = nil,
-                                            textColor: UIColor? = nil,
-                                            accessoryText: String? = nil,
-                                            accessoryType: UITableViewCell.AccessoryType = .disclosureIndicator,
-                                            accessoryImage: UIImage? = nil,
-                                            accessoryImageTint: AccessoryImageTint = .tinted,
-                                            accessoryView: UIView? = nil,
-                                            accessibilityIdentifier: String? = nil) -> UITableViewCell {
-        buildIconNameCell(icon: icon,
-                          tintColor: tintColor,
-                          itemName: itemName,
-                          subtitle: subtitle,
-                          maxItemNameLines: maxItemNameLines,
-                          textColor: textColor,
-                          accessoryText: accessoryText,
-                          accessoryType: accessoryType,
-                          accessoryImage: accessoryImage,
-                          accessoryImageTint: accessoryImageTint,
-                          accessoryView: accessoryView,
-                          accessibilityIdentifier: accessibilityIdentifier)
+    static func item(
+        icon: ThemeIcon? = nil,
+        tintColor: UIColor? = nil,
+        name: String,
+        subtitle: String? = nil,
+        maxNameLines: Int? = nil,
+        textColor: UIColor? = nil,
+        accessoryText: String? = nil,
+        accessoryType: UITableViewCell.AccessoryType = .none,
+        accessoryImage: UIImage? = nil,
+        accessoryImageTint: AccessoryImageTint = .tinted,
+        accessoryView: UIView? = nil,
+        accessibilityIdentifier: String,
+        actionBlock: (() -> Void)? = nil
+    ) -> OWSTableItem {
+        return OWSTableItem(
+            customCellBlock: {
+                OWSTableItem.buildCell(
+                    icon: icon,
+                    tintColor: tintColor,
+                    itemName: name,
+                    subtitle: subtitle,
+                    maxItemNameLines: maxNameLines,
+                    textColor: textColor,
+                    accessoryText: accessoryText,
+                    accessoryType: accessoryType,
+                    accessoryImage: accessoryImage,
+                    accessoryImageTint: accessoryImageTint,
+                    accessoryView: accessoryView,
+                    accessibilityIdentifier: accessibilityIdentifier
+                )
+            },
+            actionBlock: actionBlock
+        )
     }
 
-    static func buildIconNameCell(icon: ThemeIcon? = nil,
-                                  tintColor: UIColor? = nil,
-                                  itemName: String,
-                                  subtitle: String? = nil,
-                                  maxItemNameLines: Int? = nil,
-                                  textColor: UIColor? = nil,
-                                  accessoryText: String? = nil,
-                                  accessoryTextColor: UIColor? = nil,
-                                  accessoryType: UITableViewCell.AccessoryType = .none,
-                                  accessoryImage: UIImage? = nil,
-                                  accessoryImageTint: AccessoryImageTint = .tinted,
-                                  accessoryView: UIView? = nil,
-                                  customColor: UIColor? = nil,
-                                  accessibilityIdentifier: String? = nil) -> UITableViewCell {
+    static func buildCell(
+        icon: ThemeIcon? = nil,
+        tintColor: UIColor? = nil,
+        itemName: String,
+        subtitle: String? = nil,
+        maxItemNameLines: Int? = nil,
+        textColor: UIColor? = nil,
+        accessoryText: String? = nil,
+        accessoryTextColor: UIColor? = nil,
+        accessoryType: UITableViewCell.AccessoryType = .none,
+        accessoryImage: UIImage? = nil,
+        accessoryImageTint: AccessoryImageTint = .tinted,
+        accessoryView: UIView? = nil,
+        customColor: UIColor? = nil,
+        accessibilityIdentifier: String? = nil
+    ) -> UITableViewCell {
         var imageView: UIImageView?
         if let icon = icon {
             let iconView = self.imageView(forIcon: icon, tintColor: customColor ?? tintColor, iconSize: iconSize)
             iconView.setCompressionResistanceHorizontalHigh()
             imageView = iconView
         }
-        return buildImageViewNameCell(imageView: imageView,
-                                      itemName: itemName,
-                                      subtitle: subtitle,
-                                      maxItemNameLines: maxItemNameLines,
-                                      textColor: textColor,
-                                      accessoryText: accessoryText,
-                                      accessoryTextColor: accessoryTextColor,
-                                      accessoryType: accessoryType,
-                                      accessoryImage: accessoryImage,
-                                      accessoryImageTint: accessoryImageTint,
-                                      accessoryView: accessoryView,
-                                      customColor: customColor,
-                                      accessibilityIdentifier: accessibilityIdentifier)
+
+        return buildImageViewCell(
+            imageView: imageView,
+            itemName: itemName,
+            subtitle: subtitle,
+            maxItemNameLines: maxItemNameLines,
+            textColor: textColor,
+            accessoryText: accessoryText,
+            accessoryTextColor: accessoryTextColor,
+            accessoryType: accessoryType,
+            accessoryImage: accessoryImage,
+            accessoryImageTint: accessoryImageTint,
+            accessoryView: accessoryView,
+            customColor: customColor,
+            accessibilityIdentifier: accessibilityIdentifier
+        )
     }
 
-    static func buildImageNameCell(image: UIImage? = nil,
-                                   itemName: String,
-                                   subtitle: String? = nil,
-                                   accessoryText: String? = nil,
-                                   accessoryTextColor: UIColor? = nil,
-                                   accessoryType: UITableViewCell.AccessoryType = .none,
-                                   accessibilityIdentifier: String? = nil) -> UITableViewCell {
+    static func buildImageCell(
+        image: UIImage? = nil,
+        itemName: String,
+        subtitle: String? = nil,
+        accessoryText: String? = nil,
+        accessoryTextColor: UIColor? = nil,
+        accessoryType: UITableViewCell.AccessoryType = .none,
+        accessibilityIdentifier: String? = nil
+    ) -> UITableViewCell {
         var imageView: UIImageView?
         if let image = image {
             let imgView = self.imageView(forImage: image)
@@ -527,29 +509,33 @@ public extension OWSTableItem {
             imageView = imgView
         }
 
-        return buildImageViewNameCell(imageView: imageView,
-                                      itemName: itemName,
-                                      subtitle: subtitle,
-                                      accessoryText: accessoryText,
-                                      accessoryTextColor: accessoryTextColor,
-                                      accessoryType: accessoryType,
-                                      accessibilityIdentifier: accessibilityIdentifier)
+        return buildImageViewCell(
+            imageView: imageView,
+            itemName: itemName,
+            subtitle: subtitle,
+            accessoryText: accessoryText,
+            accessoryTextColor: accessoryTextColor,
+            accessoryType: accessoryType,
+            accessibilityIdentifier: accessibilityIdentifier
+        )
     }
 
-    private static func buildImageViewNameCell(imageView: UIImageView? = nil,
-                                               tintColor: UIColor? = nil,
-                                               itemName: String,
-                                               subtitle: String? = nil,
-                                               maxItemNameLines: Int? = nil,
-                                               textColor: UIColor? = nil,
-                                               accessoryText: String? = nil,
-                                               accessoryTextColor: UIColor? = nil,
-                                               accessoryType: UITableViewCell.AccessoryType = .none,
-                                               accessoryImage: UIImage? = nil,
-                                               accessoryImageTint: AccessoryImageTint = .tinted,
-                                               accessoryView: UIView? = nil,
-                                               customColor: UIColor? = nil,
-                                               accessibilityIdentifier: String? = nil) -> UITableViewCell {
+    private static func buildImageViewCell(
+        imageView: UIImageView? = nil,
+        tintColor: UIColor? = nil,
+        itemName: String,
+        subtitle: String? = nil,
+        maxItemNameLines: Int? = nil,
+        textColor: UIColor? = nil,
+        accessoryText: String? = nil,
+        accessoryTextColor: UIColor? = nil,
+        accessoryType: UITableViewCell.AccessoryType = .none,
+        accessoryImage: UIImage? = nil,
+        accessoryImageTint: AccessoryImageTint = .tinted,
+        accessoryView: UIView? = nil,
+        customColor: UIColor? = nil,
+        accessibilityIdentifier: String? = nil
+    ) -> UITableViewCell {
 
         // We can't use the built-in UITableViewCell with CellStyle.value1,
         // because if the content of the primary label and the accessory label
@@ -672,33 +658,42 @@ public extension OWSTableItem {
 
         return cell
     }
-
-    static func buildIconInCircleView(icon: ThemeIcon,
-                                      innerIconSize: CGFloat) -> UIView {
-        return buildIconInCircleView(icon: icon,
-                                     iconSize: nil,
-                                     innerIconSize: innerIconSize,
-                                     iconTintColor: nil)
-    }
-
-    static func buildIconInCircleView(icon: ThemeIcon,
-                                      innerIconSize: CGFloat,
-                                      iconTintColor: UIColor) -> UIView {
-        return buildIconInCircleView(icon: icon,
-                                     iconSize: nil,
-                                     innerIconSize: innerIconSize,
-                                     iconTintColor: iconTintColor)
-    }
 }
 
 // MARK: -
 
 public extension OWSTableItem {
+    static func buildIconInCircleView(
+        icon: ThemeIcon,
+        innerIconSize: CGFloat
+    ) -> UIView {
+        return buildIconInCircleView(
+            icon: icon,
+            iconSize: nil,
+            innerIconSize: innerIconSize,
+            iconTintColor: nil
+        )
+    }
 
-    static func buildIconInCircleView(icon: ThemeIcon,
-                                      iconSize iconSizeParam: UInt? = nil,
-                                      innerIconSize innerIconSizeParam: CGFloat? = nil,
-                                      iconTintColor: UIColor? = nil) -> UIView {
+    static func buildIconInCircleView(
+        icon: ThemeIcon,
+        innerIconSize: CGFloat,
+        iconTintColor: UIColor
+    ) -> UIView {
+        return buildIconInCircleView(
+            icon: icon,
+            iconSize: nil,
+            innerIconSize: innerIconSize,
+            iconTintColor: iconTintColor
+        )
+    }
+
+    static func buildIconInCircleView(
+        icon: ThemeIcon,
+        iconSize iconSizeParam: UInt? = nil,
+        innerIconSize innerIconSizeParam: CGFloat? = nil,
+        iconTintColor: UIColor? = nil
+    ) -> UIView {
         let iconSize = CGFloat(iconSizeParam ?? AvatarBuilder.standardAvatarSizePoints)
         let innerIconSize: CGFloat
         if let innerIconSizeParam = innerIconSizeParam {
@@ -720,16 +715,21 @@ public extension OWSTableItem {
 
     // Factory method for rows that display a labeled value.
     // The value can be copied to the pasteboard by tapping.
-    static func copyableItem(label: String,
-                             value displayValue: String?,
-                             pasteboardValue: String? = nil,
-                             accessibilityIdentifier: String? = nil) -> OWSTableItem {
+    static func copyableItem(
+        label: String,
+        value displayValue: String?,
+        pasteboardValue: String? = nil,
+        accessibilityIdentifier: String? = nil
+    ) -> OWSTableItem {
         // If there is a custom pasteboardValue, honor it.
         // Otherwise just default to using the displayValue.
         let pasteboardValue = pasteboardValue ?? displayValue
         let accessibilityIdentifier = accessibilityIdentifier ?? label
-        let displayValue = displayValue ?? OWSLocalizedString("MISSING_VALUE",
-                                                             comment: "Generic indicator that no value is available for display")
+        let displayValue = displayValue ?? OWSLocalizedString(
+            "MISSING_VALUE",
+            comment: "Generic indicator that no value is available for display"
+        )
+
         return .item(
             name: label,
             accessoryText: displayValue,
@@ -743,10 +743,13 @@ public extension OWSTableItem {
                     owsFailDebug("could not identify frontmostViewController")
                     return
                 }
-                let toast = OWSLocalizedString("COPIED_TO_CLIPBOARD",
-                                              comment: "Indicator that a value has been copied to the clipboard.")
-                fromVC.presentToast(text: toast)
 
+                let toast = OWSLocalizedString(
+                    "COPIED_TO_CLIPBOARD",
+                    comment: "Indicator that a value has been copied to the clipboard."
+                )
+
+                fromVC.presentToast(text: toast)
             }
         )
     }

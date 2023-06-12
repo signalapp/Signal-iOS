@@ -149,10 +149,9 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
                 let warningLabelText = state.invalidNumberError?.warningLabelText(e164: e164)
             {
                 section.add(.init(customCellBlock: {
-                    let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                    let cell = OWSTableItem.buildCell(
                         itemName: warningLabelText,
-                        textColor: .ows_accentRed,
-                        accessoryType: .none
+                        textColor: .ows_accentRed
                     )
                     cell.isUserInteractionEnabled = false
                     return cell

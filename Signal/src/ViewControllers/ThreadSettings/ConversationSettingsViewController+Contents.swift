@@ -262,10 +262,13 @@ extension ConversationSettingsViewController {
                 return OWSTableItem.newCell()
             }
 
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+            let cell = OWSTableItem.buildCell(
                 icon: .color24,
-                itemName: OWSLocalizedString("SETTINGS_ITEM_COLOR_AND_WALLPAPER",
-                                            comment: "Label for settings view that allows user to change the chat color and wallpaper."),
+                itemName: OWSLocalizedString(
+                    "SETTINGS_ITEM_COLOR_AND_WALLPAPER",
+                    comment: "Label for settings view that allows user to change the chat color and wallpaper."
+                ),
+                accessoryType: .disclosureIndicator,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "color_and_wallpaper")
             )
             return cell
@@ -282,12 +285,13 @@ extension ConversationSettingsViewController {
                 return OWSTableItem.newCell()
             }
 
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+            let cell = OWSTableItem.buildCell(
                 icon: .settingsMessageSound,
                 itemName: OWSLocalizedString(
                     "SOUND_AND_NOTIFICATION_SETTINGS",
                     comment: "table cell label in conversation settings"
                 ),
+                accessoryType: .disclosureIndicator,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sound_and_notifications")
             )
             return cell
@@ -306,7 +310,7 @@ extension ConversationSettingsViewController {
         section.add(.init(
             customCellBlock: { [weak self] in
                 guard let self = self else { return UITableViewCell() }
-                let cell = OWSTableItem.buildIconNameCell(
+                let cell = OWSTableItem.buildCell(
                     icon: disappearingMessagesConfiguration.isEnabled
                         ? .settingsTimer
                         : .settingsTimerDisabled,
@@ -354,7 +358,7 @@ extension ConversationSettingsViewController {
                     return OWSTableItem.newCell()
                 }
 
-                return OWSTableItem.buildIconNameCell(icon: .settingsLeaveGroup,
+                return OWSTableItem.buildCell(icon: .settingsLeaveGroup,
                                                       itemName: OWSLocalizedString("LEAVE_GROUP_ACTION",
                                                                                   comment: "table cell label in conversation settings"),
                                                       customColor: UIColor.ows_accentRed,
@@ -389,7 +393,7 @@ extension ConversationSettingsViewController {
                                             comment: "Label for 'block user' action in conversation settings view."))
                 customColor = UIColor.ows_accentRed
             }
-            let cell = OWSTableItem.buildIconNameCell(icon: .settingsBlock,
+            let cell = OWSTableItem.buildCell(icon: .settingsBlock,
                                                       itemName: cellTitle,
                                                       customColor: customColor,
                                                       accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "block"))
@@ -415,7 +419,7 @@ extension ConversationSettingsViewController {
                 return OWSTableItem.newCell()
             }
 
-            return OWSTableItem.buildIconNameCell(icon: .settingsAdvanced,
+            return OWSTableItem.buildCell(icon: .settingsAdvanced,
                                                   itemName: "Internal",
                                                   accessoryType: .disclosureIndicator,
                                                   accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "internal"))

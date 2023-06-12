@@ -112,17 +112,21 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             })
 
             if nil != thread {
-                chatColorSection.add(.actionItem(
-                    name: OWSLocalizedString("WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR",
-                                            comment: "Reset conversation chat color action in wallpaper settings view."),
+                chatColorSection.add(.item(
+                    name: OWSLocalizedString(
+                        "WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR",
+                        comment: "Reset conversation chat color action in wallpaper settings view."
+                    ),
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_chat_color")
                 ) { [weak self] in
                     self?.didPressResetConversationChatColor()
                 })
             } else {
-                chatColorSection.add(.actionItem(
-                    name: OWSLocalizedString("WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS",
-                                            comment: "Reset global chat colors action in wallpaper settings view."),
+                chatColorSection.add(.item(
+                    name: OWSLocalizedString(
+                        "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS",
+                        comment: "Reset global chat colors action in wallpaper settings view."
+                    ),
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_chat_colors")
                 ) { [weak self] in
                     self?.didPressResetGlobalChatColors()
@@ -160,17 +164,21 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         ))
 
         if nil != thread {
-            wallpaperSection.add(.actionItem(
-                name: OWSLocalizedString("WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER",
-                                        comment: "Reset conversation wallpaper action in wallpaper settings view."),
+            wallpaperSection.add(.item(
+                name: OWSLocalizedString(
+                    "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER",
+                    comment: "Reset conversation wallpaper action in wallpaper settings view."
+                ),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_wallpaper")
             ) { [weak self] in
                 self?.didPressResetConversationWallpaper()
             })
         } else {
-            wallpaperSection.add(.actionItem(
-                name: OWSLocalizedString("WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER",
-                                        comment: "Reset wallpapers action in wallpaper settings view."),
+            wallpaperSection.add(.item(
+                name: OWSLocalizedString(
+                    "WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER",
+                    comment: "Reset wallpapers action in wallpaper settings view."
+                ),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_wallpapers")
             ) { [weak self] in
                 self?.didPressResetGlobalWallpapers()

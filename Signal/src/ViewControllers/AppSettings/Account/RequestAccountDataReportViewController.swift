@@ -133,7 +133,7 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
         return OWSTableSection(items: [
             .init(
                 customCellBlock: {
-                    return OWSTableItem.buildImageNameCell(
+                    return OWSTableItem.buildImageCell(
                         itemName: OWSLocalizedString(
                             "ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE",
                             comment: "Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode."
@@ -151,7 +151,7 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             ),
             .init(
                 customCellBlock: {
-                    return OWSTableItem.buildImageNameCell(
+                    return OWSTableItem.buildImageCell(
                         itemName: OWSLocalizedString(
                             "ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE",
                             comment: "Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode."

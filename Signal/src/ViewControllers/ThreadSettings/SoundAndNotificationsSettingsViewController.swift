@@ -35,11 +35,14 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
             }
 
             let sound = Sounds.notificationSoundForThread(self.threadViewModel.threadRecord)
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+            let cell = OWSTableItem.buildCell(
                 icon: .settingsMessageSound,
-                itemName: OWSLocalizedString("SETTINGS_ITEM_NOTIFICATION_SOUND",
-                                            comment: "Label for settings view that allows user to change the notification sound."),
-                accessoryText: sound.displayName
+                itemName: OWSLocalizedString(
+                    "SETTINGS_ITEM_NOTIFICATION_SOUND",
+                    comment: "Label for settings view that allows user to change the notification sound."
+                ),
+                accessoryText: sound.displayName,
+                accessoryType: .disclosureIndicator
             )
             cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "notifications")
             return cell
@@ -92,11 +95,14 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
                 )
             }
 
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+            let cell = OWSTableItem.buildCell(
                 icon: .settingsMuted,
-                itemName: OWSLocalizedString("CONVERSATION_SETTINGS_MUTE_LABEL",
-                                            comment: "label for 'mute thread' cell in conversation settings"),
-                accessoryText: muteStatus
+                itemName: OWSLocalizedString(
+                    "CONVERSATION_SETTINGS_MUTE_LABEL",
+                    comment: "label for 'mute thread' cell in conversation settings"
+                ),
+                accessoryText: muteStatus,
+                accessoryType: .disclosureIndicator
             )
 
             cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "mute")
@@ -117,11 +123,14 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
                     return OWSTableItem.newCell()
                 }
 
-                let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                let cell = OWSTableItem.buildCell(
                     icon: .settingsMention,
-                    itemName: OWSLocalizedString("CONVERSATION_SETTINGS_MENTIONS_LABEL",
-                                                comment: "label for 'mentions' cell in conversation settings"),
-                    accessoryText: self.nameForMentionMode(self.threadViewModel.threadRecord.mentionNotificationMode)
+                    itemName: OWSLocalizedString(
+                        "CONVERSATION_SETTINGS_MENTIONS_LABEL",
+                        comment: "label for 'mentions' cell in conversation settings"
+                    ),
+                    accessoryText: self.nameForMentionMode(self.threadViewModel.threadRecord.mentionNotificationMode),
+                    accessoryType: .disclosureIndicator
                 )
 
                 cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "mentions")
