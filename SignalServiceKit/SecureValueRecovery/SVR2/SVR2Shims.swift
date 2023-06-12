@@ -20,8 +20,8 @@ internal protocol SVR2ClientWrapper {
 
     func hashPin(
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
-        utf8Pin: Data,
-        utf8Username: Data
+        utf8NormalizedPin: Data,
+        username: String
     ) throws -> SVR2PinHash
 }
 
@@ -69,10 +69,10 @@ internal class SVR2ClientWrapperImpl: SVR2ClientWrapper {
 
     func hashPin(
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
-        utf8Pin: Data,
-        utf8Username: Data
+        utf8NormalizedPin: Data,
+        username: String
     ) throws -> SVR2PinHash {
-        let pinHash = try connection.client.hashPin(utf8Pin, forUser: utf8Username)
+        let pinHash = try LibSignalClient.PinHash.init(normalizedPin: utf8NormalizedPin, username: username, mrenclave: connection.mrEnclave.dataValue)
         return SVR2PinHashImpl(pinHash)
     }
 
@@ -86,8 +86,8 @@ internal class MockSVR2ClientWrapper: SVR2ClientWrapper {
 
     class MockSVR2PinHash: SVR2PinHash {
 
-        init(utf8Pin: Data) {
-            self.accessKey = utf8Pin
+        init(utf8NormalizedPin: Data) {
+            self.accessKey = utf8NormalizedPin
         }
 
         var accessKey: Data
@@ -105,16 +105,16 @@ internal class MockSVR2ClientWrapper: SVR2ClientWrapper {
         }
     }
 
-    public var didHashPin: ((_ utf8Pin: Data, _ utf8Username: Data) throws -> MockSVR2PinHash) = { utf8Pin, _ in
-        return MockSVR2PinHash(utf8Pin: utf8Pin)
+    public var didHashPin: ((_ utf8NormalizedPin: Data, _ username: String) throws -> MockSVR2PinHash) = { utf8NormalizedPin, _ in
+        return MockSVR2PinHash(utf8NormalizedPin: utf8NormalizedPin)
     }
 
     func hashPin(
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
-        utf8Pin: Data,
-        utf8Username: Data
+        utf8NormalizedPin: Data,
+        username: String
     ) throws -> SVR2PinHash {
-        return try didHashPin(utf8Pin, utf8Username)
+        return try didHashPin(utf8NormalizedPin, username)
     }
 
 }

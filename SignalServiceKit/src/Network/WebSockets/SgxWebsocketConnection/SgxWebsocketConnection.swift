@@ -24,6 +24,8 @@ public class SgxWebsocketConnection<Configurator: SgxWebsocketConfigurator> {
     // Never add an initializer to this class; instances should be impossible.
     fileprivate init() {}
 
+    public var mrEnclave: MrEnclave { fatalError("Concrete subclass must implement") }
+
     public var client: Configurator.Client { fatalError("Concrete subclass must implement") }
 
     public var auth: RemoteAttestation.Auth { fatalError("Concrete subclass must implement") }
@@ -128,6 +130,8 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         return webSocketPromise
     }
 
+    public override var mrEnclave: MrEnclave { return configurator.mrenclave }
+
     public override var client: Configurator.Client { return _client }
 
     public override var auth: RemoteAttestation.Auth { return _auth }
@@ -179,6 +183,10 @@ public class MockSgxWebsocketConnection<Configurator: SgxWebsocketConfigurator>:
     internal override init() {
         super.init()
     }
+
+    public var mockEnclave: MrEnclave!
+
+    public override var mrEnclave: MrEnclave { return mockEnclave }
 
     public var mockClient: Configurator.Client!
 

@@ -43,7 +43,7 @@ internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
         attestationMessage: Data,
         currentDate: Date
     ) throws -> Svr2Client {
-        return try Svr2Client.create(
+        return try Svr2Client.init(
             mrenclave: mrenclave.dataValue,
             attestationMessage: attestationMessage,
             currentDate: currentDate

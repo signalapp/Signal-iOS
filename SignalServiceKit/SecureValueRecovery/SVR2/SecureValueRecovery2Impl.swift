@@ -1336,15 +1336,14 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             wrapper: SVR2ClientWrapper
         ) throws -> SVR2PinHash {
             guard
-                let utf8Pin = SVRUtil.normalizePin(pin).data(using: .utf8),
-                let utf8Username = connection.auth.username.data(using: .utf8)
+                let utf8NormalizedPin = SVRUtil.normalizePin(pin).data(using: .utf8)
             else {
                 throw SVR.SVRError.assertion
             }
             return try wrapper.hashPin(
                 connection: connection,
-                utf8Pin: utf8Pin,
-                utf8Username: utf8Username
+                utf8NormalizedPin: utf8NormalizedPin,
+                username: connection.auth.username
             )
         }
     }

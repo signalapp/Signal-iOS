@@ -58,8 +58,8 @@ public final class SVRUtil: NSObject {
 
         // From method documentation:
         // Note: This should be used with SVR1 only. For SVR1, the salt should be the backup id.
-        // For SVR2 clients, use ``Svr2Client/hashPin(_:forUser:)`` which handles salt selection internally.
-        let pinHash = try LibSignalClient.PinHash(pin: pinData, salt: backupId)
+        // For SVR2 clients, use ``PinHash/init(pin:username:mrenclave:)`` which handles salt construction.
+        let pinHash = try LibSignalClient.PinHash(normalizedPin: pinData, salt: backupId)
 
         return (encryptionKey: Data(pinHash.encryptionKey), accessKey: Data(pinHash.accessKey))
     }
