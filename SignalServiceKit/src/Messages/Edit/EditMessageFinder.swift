@@ -10,8 +10,8 @@ public class EditMessageFinder {
     public static func editTarget(
         timestamp: UInt64,
         author: SignalServiceAddress,
-        tx: DBReadTransaction
-    ) -> TSInteraction? {
+        transaction: SDSAnyReadTransaction
+    ) -> TSMessage? {
 
         let arguments: StatementArguments
         let authorClause: String
@@ -34,13 +34,18 @@ public class EditMessageFinder {
             LIMIT 1
         """
 
-        let val = TSInteraction.grdbFetchOne(
+        let interaction = TSInteraction.grdbFetchOne(
             sql: sql,
             arguments: arguments,
-            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
+            transaction: transaction.unwrapGrdbRead
         )
 
-        return val
+        guard let message = interaction as? TSMessage else {
+            Logger.warn("Unexpected message type found for edit")
+            return nil
+        }
+
+        return message
     }
 
     public class func findMessage(

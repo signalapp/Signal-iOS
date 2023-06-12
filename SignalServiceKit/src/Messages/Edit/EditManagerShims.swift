@@ -23,12 +23,6 @@ extension EditManager {
 
 public protocol _EditManager_DataStore {
 
-    func findTargetMessage(
-        timestamp: UInt64,
-        author: SignalServiceAddress,
-        tx: DBReadTransaction
-    ) -> TSInteraction?
-
     func createOutgoingMessage(
         with builder: TSOutgoingMessageBuilder,
         tx: DBReadTransaction
@@ -77,18 +71,6 @@ public protocol _EditManager_DataStore {
 }
 
 internal class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
-
-    func findTargetMessage(
-        timestamp: UInt64,
-        author: SignalServiceAddress,
-        tx: DBReadTransaction
-    ) -> TSInteraction? {
-        return EditMessageFinder.editTarget(
-            timestamp: timestamp,
-            author: author,
-            tx: tx
-        )
-    }
 
     func createOutgoingMessage(
         with builder: TSOutgoingMessageBuilder,

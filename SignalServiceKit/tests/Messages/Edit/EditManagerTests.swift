@@ -39,9 +39,8 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
+                targetMessage: targetMessage,
                 serverTimestamp: 1,
-                targetTimestamp: 0,
-                author: author,
                 tx: tx
             )
 
@@ -80,9 +79,8 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
+                targetMessage: targetMessage,
                 serverTimestamp: 1,
-                targetTimestamp: 0,
-                author: author,
                 tx: tx
             )
             XCTAssertNil(result)
@@ -109,33 +107,8 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
+                targetMessage: targetMessage,
                 serverTimestamp: 1,
-                targetTimestamp: 0,
-                author: author,
-                tx: tx
-            )
-            XCTAssertNil(result)
-        }
-    }
-
-    func testMissingTargetMessage() {
-        let editMessage = createEditDataMessage { _ in }
-        let dataStoreMock = EditManagerDataStoreMock(targetMessage: nil)
-        let editManager = EditManager(context:
-            .init(
-                dataStore: dataStoreMock,
-                groupsShim: GroupsMock(),
-                linkPreviewShim: LinkPreviewMock()
-            )
-        )
-
-        db.write { tx in
-            let result = editManager.processIncomingEditMessage(
-                editMessage,
-                thread: thread,
-                serverTimestamp: 1,
-                targetTimestamp: 0,
-                author: author,
                 tx: tx
             )
             XCTAssertNil(result)
@@ -163,9 +136,8 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
+                targetMessage: targetMessage,
                 serverTimestamp: expiredTS,
-                targetTimestamp: 0,
-                author: author,
                 tx: tx
             )
             XCTAssertNil(result)
@@ -193,9 +165,8 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
+                targetMessage: targetMessage,
                 serverTimestamp: bigInt + 1,
-                targetTimestamp: bigInt,
-                author: author,
                 tx: tx
             )
             XCTAssertNil(result)
@@ -309,14 +280,6 @@ class EditManagerTests: SSKBaseTestSwift {
 
         init(targetMessage: TSMessage?) {
             self.targetMessage = targetMessage
-        }
-
-        func findTargetMessage(
-            timestamp: UInt64,
-            author: SignalServiceAddress,
-            tx: DBReadTransaction
-        ) -> TSInteraction? {
-            return targetMessage
         }
 
         func getMediaAttachments(

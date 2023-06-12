@@ -42,22 +42,13 @@ public class EditManager {
     public func processIncomingEditMessage(
         _ newDataMessage: SSKProtoDataMessage,
         thread: TSThread,
+        targetMessage: TSMessage?,
         serverTimestamp: UInt64,
-        targetTimestamp: UInt64,
-        author: SignalServiceAddress,
         tx: DBWriteTransaction
     ) -> TSMessage? {
 
-        // Find the target message to edit.
-        // This will implicily validate that the sender of the
-        // edited message is the author of the original message.
-        guard let targetMessage = context.dataStore.findTargetMessage(
-            timestamp: targetTimestamp,
-            author: author,
-            tx: tx
-        ) as? MessageCopyable else {
-            // TODO[EditMessage]: if orig message doesn't exist, put in
-            // early receipt cache
+        guard let targetMessage = targetMessage as? MessageCopyable else {
+            // Unsupported type
             Logger.warn("Edit cannot find the target message")
             return nil
         }
@@ -152,8 +143,6 @@ public class EditManager {
 
             // If the editMessage quote field is present, preserve the exisiting
             // quote. If the field is nil, remove any quote on the current message.
-            // TODO: [Edit] Wrap editMessage proto in an object that can clarify
-            // things like quote logic (change quote to a preserveQuote boolean)
             let preserveExistingQuote = (editMessage.quote != nil)
             if
                 targetMessage.message.quotedMessage != nil,
@@ -248,8 +237,6 @@ public class EditManager {
             Logger.warn("View once edits not supported")
             return false
         }
-
-        // TODO[Edit Message]: skip expired messages
 
         let currentAttachments = context.dataStore.getMediaAttachments(
             message: targetMessage,

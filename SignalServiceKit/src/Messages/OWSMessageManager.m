@@ -193,11 +193,28 @@ NS_ASSUME_NONNULL_BEGIN
             //
             // See: OWSMessageManager.preprocessEnvelope(envelope:plaintext:transaction:)
             break;
-        case OWSMessageManagerMessageTypeEditMessage:
-            [self handleIncomingEnvelope:request.envelope
-                         withEditMessage:contentProto.editMessage
-                         wasReceivedByUD:request.wasReceivedByUD
-                             transaction:transaction];
+        case OWSMessageManagerMessageTypeEditMessage: {
+            OWSEditProcessingResult result = [self handleIncomingEnvelope:request.envelope
+                                                          withEditMessage:contentProto.editMessage
+                                                          wasReceivedByUD:request.wasReceivedByUD
+                                                              transaction:transaction];
+
+            switch (result) {
+                case OWSEditProcessingResultSuccess:
+                case OWSEditProcessingResultInvalidEdit:
+                    break;
+                case OWSEditProcessingResultEditedMessageMissing: {
+                    [self.earlyMessageManager recordEarlyEnvelope:request.envelope
+                                                    plainTextData:request.plaintextData
+                                                  wasReceivedByUD:request.wasReceivedByUD
+                                          serverDeliveryTimestamp:request.serverDeliveryTimestamp
+                                       associatedMessageTimestamp:contentProto.editMessage.targetSentTimestamp
+                                          associatedMessageAuthor:request.envelope.sourceServiceIdObjC
+                                                      transaction:transaction];
+                }
+            }
+            break;
+        }
         case OWSMessageManagerMessageTypeUnknown:
             OWSLogWarn(@"Ignoring envelope. Content with no known payload");
             break;
@@ -974,7 +991,24 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
         } else if (syncMessage.sent.editMessage) {
-            [self handleIncomingEnvelope:envelope syncMessage:syncMessage transaction:transaction];
+            OWSEditProcessingResult result = [self handleIncomingEnvelope:envelope
+                                                          editSyncMessage:syncMessage
+                                                              transaction:transaction];
+
+            switch (result) {
+                case OWSEditProcessingResultSuccess:
+                case OWSEditProcessingResultInvalidEdit:
+                    break;
+                case OWSEditProcessingResultEditedMessageMissing: {
+                    [self.earlyMessageManager recordEarlyEnvelope:envelope
+                                                    plainTextData:plaintextData
+                                                  wasReceivedByUD:wasReceivedByUD
+                                          serverDeliveryTimestamp:serverDeliveryTimestamp
+                                       associatedMessageTimestamp:syncMessage.sent.editMessage.targetSentTimestamp
+                                          associatedMessageAuthor:envelope.sourceServiceIdObjC
+                                                      transaction:transaction];
+                }
+            }
         }
     } else if (syncMessage.request) {
         [self handleIncomingSyncRequest:syncMessage.request transaction:transaction];
