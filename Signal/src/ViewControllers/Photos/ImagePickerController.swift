@@ -78,16 +78,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         library.add(delegate: self)
 
-        guard let collectionView = collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
         collectionView.allowsMultipleSelection = true
         collectionView.backgroundColor = Theme.darkThemeBackgroundColor
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
 
+        navigationItem.titleView = titleView
+
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancel))
-        cancelButton.tintColor = .ows_gray05
+        cancelButton.tintColor = Theme.darkThemePrimaryColor
         navigationItem.leftBarButtonItem = cancelButton
 
         view.addSubview(doneButton)
@@ -214,12 +212,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     private var hasEverAppeared: Bool = false
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        if let navigationBar = navigationController?.navigationBar {
-            // Add as a subview to the navigation bar so it appears on any pushed folder views
-            navigationBar.addSubview(titleView)
-            titleView.autoCenterInSuperview()
-        }
 
         // Determine the size of the thumbnails to request
         let scale = UIScreen.main.scale
@@ -387,8 +379,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     private var isShowingCollectionPickerController: Bool = false
 
-    private lazy var collectionPickerController: PhotoAlbumPickerViewController = {
-        PhotoAlbumPickerViewController(library: library, collectionDelegate: self)
+    private lazy var collectionPickerController: UINavigationController = {
+        let viewController = PhotoAlbumPickerViewController(library: library, collectionDelegate: self)
+        let navigationController = UINavigationController(rootViewController: viewController)
+        navigationController.isNavigationBarHidden = true
+        return navigationController
     }()
 
     private func showCollectionPicker() {
@@ -419,25 +414,16 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         assert(isShowingCollectionPickerController)
         isShowingCollectionPickerController = false
 
-        guard navigationController?.topViewController == self else {
+        UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) { [self] in
+            collectionPickerController.view.frame = collectionPickerController.view.frame.offsetBy(
+                dx: 0,
+                dy: collectionPickerController.view.height
+            )
+            titleView.rotateIcon(.down)
+        }.done { [self] _ in
+            collectionPickerController.popToRootViewController(animated: false)
             collectionPickerController.view.removeFromSuperview()
             collectionPickerController.removeFromParent()
-            UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
-                self.titleView.rotateIcon(.down)
-            }
-            navigationController?.popToRootViewController(animated: true)
-            return
-        }
-
-        UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
-            self.collectionPickerController.view.frame = self.collectionPickerController.view.frame.offsetBy(
-                dx: 0,
-                dy: self.collectionPickerController.view.height
-            )
-            self.titleView.rotateIcon(.down)
-        }.done { _ in
-            self.collectionPickerController.view.removeFromSuperview()
-            self.collectionPickerController.removeFromParent()
         }
     }
 
@@ -563,20 +549,6 @@ extension ImagePickerGridController: UIGestureRecognizerDelegate {
     }
 }
 
-extension ImagePickerGridController: UINavigationControllerDelegate {
-    func navigationController(
-        _ navigationController: UINavigationController,
-        animationControllerFor operation: UINavigationController.Operation,
-        from fromVC: UIViewController,
-        to toVC: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
-        // If collectionPickerController is a descendent, that means the user is browsing folders.
-        // If it isn't, that means hideCollectionPicker has been called and we want to drop the view down.
-        guard !collectionPickerController.view.isDescendant(of: view) else { return nil }
-        return AnimationController()
-    }
-}
-
 private protocol TitleViewDelegate: AnyObject {
     func titleViewWasTapped(_ titleView: TitleView)
 }
@@ -677,28 +649,6 @@ extension ImagePickerGridController: TitleViewDelegate {
             hideCollectionPicker()
         } else {
             showCollectionPicker()
-        }
-    }
-}
-
-private class AnimationController: NSObject, UIViewControllerAnimatedTransitioning {
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        0.25
-    }
-
-    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let fromView = transitionContext.view(forKey: .from),
-              let toView = transitionContext.view(forKey: .to) else {
-            owsFailDebug("Missing view controllers.")
-            return transitionContext.completeTransition(false)
-        }
-
-        transitionContext.containerView.insertSubview(toView, at: 0)
-
-        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: .curveEaseInOut) {
-            fromView.frame = fromView.frame.offsetBy(dx: 0, dy: fromView.height)
-        } completion: { _ in
-            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
     }
 }

@@ -36,20 +36,20 @@ class PhotoAlbumPickerViewController: OWSTableViewController, OWSNavigationChild
         updateContents()
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if let selectedIndexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: selectedIndexPath, animated: false)
+        }
+    }
+
     override func applyTheme() {
         // don't call super -- we want to set our own theme
         view.backgroundColor = Theme.darkThemeBackgroundColor
         tableView.backgroundColor = Theme.darkThemeBackgroundColor
         tableView.separatorColor = .clear
+
     }
-
-    override var prefersStatusBarHidden: Bool {
-        !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !CurrentAppContext().hasActiveCall
-    }
-
-    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
-
-    var preferredNavigationBarStyle: OWSNavigationBarStyle { .alwaysDark }
 
     // MARK: -
 
