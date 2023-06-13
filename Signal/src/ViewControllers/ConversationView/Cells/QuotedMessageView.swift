@@ -16,7 +16,6 @@ public protocol QuotedMessageViewDelegate: AnyObject {
 
 // MARK: -
 
-// TODO: Remove OWSQuotedMessageView.
 public class QuotedMessageView: ManualStackViewWithLayer {
 
     public struct State: Equatable {

@@ -50,6 +50,10 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         maskLayer.disableAnimationsWithDelegate()
     }
 
+    required init(name: String) {
+        fatalError("init(name:) has not been implemented")
+    }
+
     private func addDefaultLayoutBlock() {
         addLayoutBlock { view in
             guard let view = view as? CVColorOrGradientView else { return }
@@ -81,18 +85,11 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         updateAppearance()
     }
 
-    @objc
-    public static func build(conversationStyle: ConversationStyle,
-                             referenceView: UIView) -> CVColorOrGradientView {
+    public static func build(conversationStyle: ConversationStyle, referenceView: UIView) -> CVColorOrGradientView {
         let view = CVColorOrGradientView()
         view.configure(value: conversationStyle.bubbleChatColorOutgoing,
                        referenceView: referenceView)
         return view
-    }
-
-    @available(swift, obsoleted: 1.0)
-    required init(name: String) {
-        owsFail("Do not use this initializer.")
     }
 
     public func updateAppearance() {
@@ -299,7 +296,6 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
 // MARK: -
 
-@objc
 extension CVColorOrGradientView: OWSBubbleViewHost {
     public var maskPath: UIBezierPath {
         guard let bubbleConfig = self.bubbleConfig else {
