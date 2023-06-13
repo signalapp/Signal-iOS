@@ -255,6 +255,11 @@ public final class MediaGalleryManager: NSObject {
 
 // MARK: - MediaGalleryFinder (GRDB only)
 
+public enum AllMediaFileType: Int, CaseIterable {
+    case media = 0
+    case audio = 1
+}
+
 public struct MediaGalleryFinder {
 
     public let thread: TSThread
@@ -263,7 +268,23 @@ public struct MediaGalleryFinder {
         case gifs
         case videos
         case photos
+        case graphicMedia
+
+        case voiceMessages
+        case audioFiles
+        case undownloadedAudio
+        case audio
+
+        public static func defaultMediaType(for fileType: AllMediaFileType) -> MediaType {
+            switch fileType {
+            case .media:
+                return .graphicMedia
+            case .audio:
+                return .audio
+            }
+        }
     }
+
     /// If non-nil, media will be restricted to this type. Otherwise there is no filtering.
     public var allowedMediaType: MediaType?
 
@@ -320,6 +341,15 @@ extension MediaGalleryFinder {
              offset: Int? = nil,
              allowedMediaType: MediaGalleryFinder.MediaType?) {
 
+            let contentTypeClause: String
+            switch allowedMediaType {
+            case .gifs, .photos, .videos, .graphicMedia:
+                contentTypeClause = "AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE"
+            case .voiceMessages, .audio, .undownloadedAudio, .audioFiles:
+                contentTypeClause = "AND (\(attachmentColumn: .contentType) like 'audio/%')"
+            case .none:
+                contentTypeClause = ""
+            }
             let whereCondition: String = dateInterval.map {
                 let startMillis = $0.start.ows_millisecondsSince1970
                 // Both DateInterval and SQL BETWEEN are closed ranges, but rounding to millisecond precision loses range
@@ -328,8 +358,6 @@ extension MediaGalleryFinder {
                 let endMillis = $0.end.ows_millisecondsSince1970 - 1
                 var clauses = ["AND \(interactionColumn: .receivedAtTimestamp) BETWEEN \(startMillis) AND \(endMillis)"]
                 switch allowedMediaType {
-                case .none:
-                    break
                 case .gifs:
                     // Note that this isn't quite the same as -[TSAttachmentStream
                     // hasAnimatedImageContent], which is used to label thumbnails as "GIF", because
@@ -342,6 +370,15 @@ extension MediaGalleryFinder {
                     clauses.append("AND (" + VideoAttachmentDetection.shared.attachmentIsNonGIFImageSQL + ") ")
                 case .videos:
                     clauses.append("AND (" + VideoAttachmentDetection.shared.attachmentIsNonLoopingVideoSQL + ") ")
+                case .graphicMedia:
+                    break
+                case .audio:
+                    break
+                case .undownloadedAudio, .audioFiles, .voiceMessages:
+                    break  // TODO(george): Filter content even more. Audio files are all downloaded audio except voice messages. Voice messages have attachmentType of .voicemessage. I have a truly marvelous demonstration of undownloaded audio which this margin is too narrow to contain.
+                case .none:
+                    // All media types.
+                    break
                 }
                 return clauses.joined(separator: " ")
             } ?? ""
@@ -355,7 +392,7 @@ extension MediaGalleryFinder {
                 FROM "media_gallery_items"
                 INNER JOIN \(AttachmentRecord.databaseTableName)
                     ON media_gallery_items.attachmentId = \(attachmentColumnFullyQualified: .id)
-                    AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
+                    \(contentTypeClause)
                 INNER JOIN \(InteractionRecord.databaseTableName)
                     ON media_gallery_items.albumMessageId = \(interactionColumnFullyQualified: .id)
                     AND \(interactionColumn: .isViewOnceMessage) = FALSE
@@ -565,7 +602,9 @@ extension MediaGalleryFinder {
             return nil
         }
 
-        let queryParts = QueryParts(in: interval, excluding: deletedAttachmentIds, allowedMediaType: nil)
+        let queryParts = QueryParts(in: interval,
+                                    excluding: deletedAttachmentIds,
+                                    allowedMediaType: nil)
         let sql = """
             SELECT
                 media_gallery_items.rowid

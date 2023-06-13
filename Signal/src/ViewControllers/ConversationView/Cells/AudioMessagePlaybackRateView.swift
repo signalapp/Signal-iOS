@@ -208,7 +208,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
     public func handleTap(
         sender: UITapGestureRecognizer,
         itemModel: CVItemModel,
-        componentDelegate: CVComponentDelegate?
+        audioMessageViewDelegate: AudioMessageViewDelegate?
     ) -> Bool {
         guard
             let attachmentId = audioAttachment.attachmentStream?.uniqueId,
@@ -230,7 +230,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
         self.cvAudioPlayer.setPlaybackRate(newPlaybackRate.rawValue, forThreadUniqueId: threadUniqueId)
 
         // Hold off updates until we animate the change.
-        let animationCompletion = componentDelegate?.beginCellAnimation(
+        let animationCompletion = audioMessageViewDelegate?.beginCellAnimation(
             maximumDuration: Constants.maxAnimationDuration
         )
 
@@ -258,13 +258,13 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
             animationCompletion?()
         }
 
-        reloadGroup.notify(queue: .main) { [weak componentDelegate] in
+        reloadGroup.notify(queue: .main) { [weak audioMessageViewDelegate] in
             // Once the animation _and_ the db update complete, issue a reload.
             // This reloads _everything_, which is way overkill, but there's no easy way
             // to reload only ThreadAssociatedData without a heavy refactor.
             // This only happens on direct user input, anyway, so its probably not a
             // big deal since it therefore only happens on human timescales.
-            componentDelegate?.enqueueReloadWithoutCaches()
+            audioMessageViewDelegate?.enqueueReloadWithoutCaches()
         }
 
         return true
@@ -324,13 +324,21 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
 
     // MARK: - Colors
 
-    private lazy var _backgroundColor = isIncoming
-        ? (Theme.isDarkThemeEnabled ? UIColor.ows_white : .ows_black).withAlphaComponent(0.08)
-        : UIColor.ows_whiteAlpha20
+    open func makeBackgroundColor() -> UIColor {
+        isIncoming
+            ? (Theme.isDarkThemeEnabled ? UIColor.ows_white : .ows_black).withAlphaComponent(0.08)
+            : UIColor.ows_whiteAlpha20
+    }
 
-    private lazy var textColor: UIColor = isIncoming
+    private lazy var _backgroundColor = { makeBackgroundColor() }()
+
+    open func makeTextColor() -> UIColor {
+        return isIncoming
         ? (Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray60)
         : .ows_white
+    }
+
+    private lazy var textColor: UIColor = { makeTextColor() }()
 
     // MARK: - Configs
 

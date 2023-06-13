@@ -29,7 +29,7 @@ class PhotoPickerAssetItem: PhotoGridItem {
     let asset: PHAsset
     let photoCollectionContents: PhotoAlbumContents
     let photoMediaSize: PhotoMediaSize
-    var photoMetadata: PhotoMetadata? { nil }
+    var mediaMetadata: MediaMetadata? { nil }
 
     init(asset: PHAsset, photoCollectionContents: PhotoAlbumContents, photoMediaSize: PhotoMediaSize) {
         self.asset = asset

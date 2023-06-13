@@ -474,7 +474,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         cell.loadingColor = UIColor(white: 0.2, alpha: 1)
         let assetItem = photoAlbumContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
-        cell.configureWithItem(assetItem)
+        cell.configure(item: .graphic(assetItem), spoilerReveal: SpoilerRevealState())
         return cell
     }
 
@@ -504,7 +504,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                 continue
             }
 
-            guard let assetItem = photoGridViewCell.item as? PhotoPickerAssetItem else {
+            guard case let .graphic(photoItem) = photoGridViewCell.item,
+                  let assetItem = photoItem as? PhotoPickerAssetItem else {
                 owsFailDebug("unexpected photoGridViewCell.item: \(String(describing: photoGridViewCell.item))")
                 continue
             }

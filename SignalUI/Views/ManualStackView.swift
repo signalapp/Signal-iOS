@@ -76,6 +76,11 @@ open class ManualStackView: ManualLayoutView {
         let subview: UIView
         let frame: CGRect
 
+        init(subview: UIView, frame: CGRect) {
+            self.subview = subview
+            self.frame = frame
+        }
+
         func apply() {
             if subview.frame != frame {
                 ManualLayoutView.setSubviewFrame(subview: subview, frame: frame)
@@ -774,6 +779,10 @@ public struct ManualStackMeasurement: Equatable {
 
     fileprivate let subviewInfos: [ManualStackSubviewInfo]
 
+    init(measuredSize: CGSize, subviewInfos: [ManualStackSubviewInfo]) {
+        self.measuredSize =  measuredSize
+        self.subviewInfos = subviewInfos
+    }
     fileprivate var subviewMeasuredSizes: [CGSize] {
         subviewInfos.map { $0.measuredSize }
     }

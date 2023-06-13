@@ -251,7 +251,8 @@ class MediaGallery: Dependencies {
     typealias MediaType = MediaGalleryFinder.MediaType
 
     // Used for filtering.
-    private(set) var allowedMediaType: MediaType?
+    private(set) var allowedMediaType: MediaType
+    private let fileType: AllMediaFileType
 
     private var deletedAttachmentIds: Set<String> = Set() {
         didSet {
@@ -272,10 +273,12 @@ class MediaGallery: Dependencies {
         Logger.debug("")
     }
 
-    init(thread: TSThread, spoilerReveal: SpoilerRevealState) {
-        let finder = MediaGalleryFinder(thread: thread, allowedMediaType: nil)
+    init(thread: TSThread, fileType: AllMediaFileType, spoilerReveal: SpoilerRevealState) {
+        allowedMediaType = MediaType.defaultMediaType(for: fileType)
+        let finder = MediaGalleryFinder(thread: thread, allowedMediaType: allowedMediaType)
         self.mediaGalleryFinder = finder
         self.spoilerReveal = spoilerReveal
+        self.fileType = fileType
         self.sections = MediaGallerySections(loader: Loader(mediaGallery: self, finder: finder))
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(Self.newAttachmentsAvailable(_:)),
@@ -713,6 +716,10 @@ class MediaGallery: Dependencies {
         _delegates = _delegates.filter({ $0.value != nil}) + [Weak(value: delegate)]
     }
 
+    internal func removeAllDelegates() {
+        _delegates = []
+    }
+
     internal func delete(items: [MediaGalleryItem],
                          atIndexPaths givenIndexPaths: [MediaGalleryIndexPath]? = nil,
                          initiatedBy: AnyObject) {
@@ -804,7 +811,7 @@ class MediaGallery: Dependencies {
     ///   - allowedMediaType: If `nil`, do not filter results. Otherwise, show only media of this type.
     ///   - loadUntil: Load sections from the latest until this date, inclusive.
     ///   - batchSize: Number of items to load at once.
-    func setAllowedMediaType(_ allowedMediaType: MediaType?, loadUntil: GalleryDate, batchSize: Int, firstVisibleIndexPath: MediaGalleryIndexPath?) -> MediaGalleryIndexPath? {
+    func setAllowedMediaType(_ allowedMediaType: MediaType, loadUntil: GalleryDate, batchSize: Int, firstVisibleIndexPath: MediaGalleryIndexPath?) -> MediaGalleryIndexPath? {
         self.allowedMediaType = allowedMediaType
         return mutate { sections in
             mediaGalleryFinder = MediaGalleryFinder(thread: mediaGalleryFinder.thread,

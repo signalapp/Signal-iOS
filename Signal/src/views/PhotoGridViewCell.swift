@@ -46,7 +46,70 @@ public enum PhotoGridItemType {
     }
 }
 
-public struct PhotoMetadata {
+public enum AllMediaItem {
+    case graphic(any PhotoGridItem)
+    case audio(AudioItem)
+
+    var attachmentStream: TSAttachmentStream? {
+        switch self {
+        case .graphic(let photoItem):
+            return (photoItem as? GalleryGridCellItem)?.galleryItem.attachmentStream
+        case .audio(let audioItem):
+            return audioItem.attachmentStream
+        }
+    }
+}
+
+extension AllMediaItem: Equatable {
+    public static func == (lhs: AllMediaItem, rhs: AllMediaItem) -> Bool {
+        switch (lhs, rhs) {
+        case let (.graphic(lvalue), .graphic(rvalue)):
+            return lvalue === rvalue
+        case let (.audio(lvalue), .audio(rvalue)):
+            return lvalue.attachmentStream == rvalue.attachmentStream
+        case (.graphic, _), (.audio, _):
+            return false
+        }
+    }
+}
+public struct AudioItem {
+    var message: TSMessage
+    var interaction: TSInteraction
+    var thread: TSThread
+    var attachmentStream: TSAttachmentStream
+    var mediaCache: CVMediaCache
+    var metadata: MediaMetadata
+
+    var size: UInt {
+        UInt(attachmentStream.byteCount)
+    }
+    var date: Date {
+        attachmentStream.creationTimestamp
+    }
+    var duration: TimeInterval {
+        attachmentStream.audioDurationSeconds()
+    }
+
+    enum AttachmentType {
+        case file
+        case voiceMessage
+    }
+    var attachmentType: AttachmentType {
+        let isVoiceMessage = attachmentStream.isVoiceMessageIncludingLegacyMessages
+        return isVoiceMessage ? .voiceMessage : .file
+    }
+
+    var localizedString: String {
+        switch attachmentType {
+        case .file:
+            return "Audio file"  // ATTACHMENT_TYPE_AUDIO
+        case .voiceMessage:
+            return "Voice message"  // ATTACHMENT_TYPE_VOICE_MESSAGE
+        }
+    }
+}
+
+public struct MediaMetadata {
     var sender: String
     var abbreviatedSender: String
     var filename: String?
@@ -58,7 +121,7 @@ public protocol PhotoGridItem: AnyObject {
     var type: PhotoGridItemType { get }
     var isFavorite: Bool { get }
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage?
-    var photoMetadata: PhotoMetadata? { get }
+    var mediaMetadata: MediaMetadata? { get }
 }
 
 public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
@@ -77,7 +140,7 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
     private let highlightedMaskView: UIView
     private let selectedMaskView: UIView
 
-    private(set) var item: PhotoGridItem?
+    var item: AllMediaItem?
 
     private static let selectedBadgeImage = UIImage(named: "media-composer-checkmark")
     public var loadingColor = Theme.washColor
@@ -227,7 +290,7 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
     private func updateVideoDurationWhenPromiseFulfilled(_ promisedDuration: Promise<TimeInterval>) {
         let originalItem = item
         promisedDuration.observe { [weak self] result in
-            guard let self, self.item === originalItem, case .success(let duration) = result else {
+            guard let self, self.item == originalItem, case .success(let duration) = result else {
                 return
             }
             self.setCaption(OWSFormat.localizedDurationString(from: duration))
@@ -293,7 +356,7 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
         if let item {
             self.accessibilityLabel = [
                 item.type.localizedString,
-                MediaTileDateFormatter.formattedDateString(for: item.photoMetadata?.creationDate)
+                MediaTileDateFormatter.formattedDateString(for: item.mediaMetadata?.creationDate)
             ]
                 .compactMap { $0 }
                 .joined(separator: ", ")
@@ -309,18 +372,43 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
         setUpAccessibility(item: nil)
     }
 
-    public func configureWithItem(_ item: PhotoGridItem) {
-        self.item = item
+    public func configure(item: AllMediaItem, spoilerReveal: SpoilerRevealState) {
+        switch item {
+        case .graphic(let photoGridItem):
+            self.item = item
+            reallyConfigure(photoGridItem)
+        default:
+            owsFailDebug("Unexpected item type \(item)")
+        }
+    }
 
+    private var photoGridItem: PhotoGridItem? {
+        switch item {
+        case .graphic(let result):
+            return result
+        case .none:
+            return nil
+        default:
+            return nil
+        }
+    }
+
+    private func reallyConfigure(_ item: PhotoGridItem) {
         // PHCachingImageManager returns multiple progressively better
         // thumbnails in the async block. We want to avoid calling
         // `configure(item:)` multiple times because the high-quality image eventually applied
         // last time it was called will be momentarily replaced by a progression of lower
         // quality images.
         image = item.asyncThumbnail { [weak self] image in
-            guard let self = self else { return }
+            guard let self else { return }
 
-            guard let currentItem = self.item, currentItem === item else { return }
+            guard let currentItem = self.photoGridItem else {
+                return
+            }
+
+            guard currentItem === item else {
+                return
+            }
 
             if image == nil {
                 Logger.debug("image == nil")

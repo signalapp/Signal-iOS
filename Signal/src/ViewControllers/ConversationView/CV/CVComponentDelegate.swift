@@ -11,11 +11,16 @@ public enum CVAttachmentTapAction: Int {
     case `default`
 }
 
-public protocol CVComponentDelegate: AnyObject {
+public protocol AudioMessageViewDelegate: AnyObject {
+    func enqueueReloadWithoutCaches()
+
+    typealias EndCellAnimation = () -> Void
+    func beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation
+}
+
+public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     func enqueueReload()
-
-    func enqueueReloadWithoutCaches()
 
     // MARK: - Body Text Items
 
@@ -104,9 +109,6 @@ public protocol CVComponentDelegate: AnyObject {
     func didTapShowEditHistory(_ itemViewModel: CVItemViewModelImpl)
 
     func prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl)
-
-    typealias EndCellAnimation = () -> Void
-    func beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation
 
     var view: UIView! { get }
 

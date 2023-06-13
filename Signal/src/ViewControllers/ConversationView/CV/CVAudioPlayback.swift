@@ -27,10 +27,7 @@ protocol CVAudioPlayerListener {
 //     * The cell is scrolled offscreen and unloaded.
 //     * etc.
 // * Ensure thread safety.
-//
-// It's lifetime matches CVC.
 public class CVAudioPlayer: NSObject {
-
     // The currently playing audio, if any.
     private var _audioPlayback: CVAudioPlayback?
     private var audioPlayback: CVAudioPlayback? {
@@ -74,6 +71,10 @@ public class CVAudioPlayer: NSObject {
     // but we keep this in-memory cache around for autoplay purposes.
     public typealias ThreadId = String
     private var playbackRateCache = LRUCache<ThreadId, Float>(maxSize: 512)
+
+    // If nil, autoplay is enabled. Otherwise, this closure returns whether to play the next audio attachement. It's
+    // called when the current attachment finishes playing.
+    var shouldAutoplayNextAudioAttachment: (() -> Bool)?
 
     public func audioPlaybackState(forAttachmentId attachmentId: String) -> AudioPlaybackState {
         AssertIsOnMainThread()
@@ -165,8 +166,13 @@ public class CVAudioPlayer: NSObject {
         soundComplete = completion
     }
 
-    public func autoplayNextAudioAttachment(_ audioAttachment: AudioAttachment?) {
+    public func autoplayNextAudioAttachmentIfNeeded(_ audioAttachment: AudioAttachment?) {
         AssertIsOnMainThread()
+
+        guard shouldAutoplayNextAudioAttachment?() ?? true else {
+            playStandardSound(.endLastTrack)
+            return
+        }
 
         guard let audioAttachment = audioAttachment, let attachmentStream = audioAttachment.attachmentStream else {
             if audioPlayback?.attachmentId == autoplayAttachmentId {

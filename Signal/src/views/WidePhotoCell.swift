@@ -6,20 +6,9 @@
 import SignalMessaging
 import SignalUI
 
-class WidePhotoCellSeparator: UIView { }
-
 /// This is the collection view cell for "list mode" in All Media.
-class WidePhotoCell: UICollectionViewCell, MediaTileCell {
+class WidePhotoCell: MediaTileListModeCell {
     static let reuseIdentifier = "WidePhotoCell"
-    var item: PhotoGridItem?
-
-    // This determines whether corners are rounded.
-    private var isFirstInGroup: Bool = false
-    private var isLastInGroup: Bool = false
-
-    // We have to mess with constraints when toggling selection mode.
-    private var imageViewLeadingConstraintWithSelectionButton: NSLayoutConstraint!
-    private var imageViewLeadingConstraintWithoutSelectionButton: NSLayoutConstraint!
 
     private let imageView: UIImageView = {
         let imageView = UIImageView()
@@ -42,25 +31,6 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
         return label
     }()
 
-    /// Since UICollectionView doesn't support separators, we have to do it ourselves. Show the
-    /// separator at the bottom of each item except when last in a section.
-    private let separator: WidePhotoCellSeparator = {
-        let view = WidePhotoCellSeparator()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.layer.borderWidth = 1.0
-        view.layer.borderColor = UIColor.separator.cgColor
-        return view
-    }()
-
-    private let selectionButton: SelectionButton = {
-        SelectionButton()
-    }()
-
-    private let selectedMaskView = UIView()
-
-    // TODO(george): This will change when dynamic text support is added.
-    static let desiredHeight = 64.0
-
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -70,49 +40,14 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private var desiredSelectionOutlineColor: UIColor {
-        return UIColor.ows_gray20
-    }
-
-    private var dynamicDesiredSelectionOutlineColor: UIColor {
-        return UIColor { _ in
-            Theme.isDarkThemeEnabled ? UIColor.ows_gray25 : UIColor.ows_gray20
-        }
-    }
-
-    private lazy var selectionMaskColor: UIColor = {
-        return UIColor { _ in
-            Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
-        }
-    }()
-
     private func setupViews() {
-        selectedMaskView.alpha = 0.3
-        selectedMaskView.backgroundColor = selectionMaskColor
-        selectedMaskView.isHidden = true
+        willSetupViews()
 
-        contentView.addSubview(selectedMaskView)
         contentView.addSubview(imageView)
         contentView.addSubview(filenameSenderView)
         contentView.addSubview(subtitleLabel)
-        contentView.addSubview(selectionButton)
-        contentView.addSubview(separator)
-
-        selectionButton.outlineColor = dynamicDesiredSelectionOutlineColor
-        contentView.backgroundColor = UIColor(dynamicProvider: { _ in
-            Theme.isDarkThemeEnabled ? .ows_gray80 : .white
-        })
-
-        imageViewLeadingConstraintWithSelectionButton = imageView.leadingAnchor.constraint(equalTo: selectionButton.trailingAnchor, constant: 13)
-        imageViewLeadingConstraintWithoutSelectionButton = imageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16)
 
         NSLayoutConstraint.activate([
-            selectionButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            selectionButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            selectionButton.widthAnchor.constraint(equalToConstant: 24),
-            selectionButton.heightAnchor.constraint(equalToConstant: 24),
-
-            imageViewLeadingConstraintWithoutSelectionButton,
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             imageView.widthAnchor.constraint(equalToConstant: 48),
@@ -127,38 +62,20 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
             subtitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             subtitleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -13),
 
-            separator.topAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -1),
-            separator.heightAnchor.constraint(equalToConstant: 0.33),
-            separator.leadingAnchor.constraint(equalTo: filenameSenderView.leadingAnchor),
-            separator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+            separator.leadingAnchor.constraint(equalTo: filenameSenderView.leadingAnchor)
         ])
-        selectedMaskView.autoPinEdgesToSuperviewEdges()
+
+        let constraintWithSelectionButton = imageView.leadingAnchor.constraint(equalTo: selectionButton.trailingAnchor, constant: 13)
+        let constraintWithoutSelectionButton = imageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16)
+
+        super.setupViews(constraintWithSelectionButton: constraintWithSelectionButton,
+                         constraintWithoutSelectionButton: constraintWithoutSelectionButton)
     }
 
     override public func prepareForReuse() {
         super.prepareForReuse()
 
         imageView.image = nil
-        selectedMaskView.isHidden = true
-        selectionButton.reset()
-    }
-
-    func indexPathDidChange(_ indexPath: IndexPath, itemCount: Int) {
-        isFirstInGroup = (indexPath.item == 0)
-        isLastInGroup = (indexPath.item + 1 == itemCount)
-
-        let topCorners = isFirstInGroup ? [CACornerMask.layerMinXMinYCorner, CACornerMask.layerMaxXMinYCorner] : []
-        let bottomCorners = isLastInGroup ? [CACornerMask.layerMinXMaxYCorner, CACornerMask.layerMaxXMaxYCorner] : []
-        let corners = topCorners + bottomCorners
-
-        let radius = CGFloat(10.0)
-        contentView.layer.maskedCorners = CACornerMask(corners)
-        contentView.layer.cornerRadius = radius
-
-        selectedMaskView.layer.maskedCorners = CACornerMask(corners)
-        selectedMaskView.layer.cornerRadius = radius
-
-        separator.isHidden = isLastInGroup
     }
 
     private func setUpAccessibility(item: PhotoGridItem?) {
@@ -167,7 +84,7 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
         if let item {
             self.accessibilityLabel = [
                 item.type.localizedString,
-                MediaTileDateFormatter.formattedDateString(for: item.photoMetadata?.creationDate)
+                MediaTileDateFormatter.formattedDateString(for: item.mediaMetadata?.creationDate)
             ]
                 .compactMap { $0 }
                 .joined(separator: ", ")
@@ -176,14 +93,33 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
         }
     }
 
-    public func makePlaceholder() {
+    override public func makePlaceholder() {
         imageView.image = nil
         setUpAccessibility(item: nil)
     }
 
-    public func configureWithItem(_ item: PhotoGridItem) {
-        self.item = item
+    override public func configure(item allMediaItem: AllMediaItem, spoilerReveal: SpoilerRevealState) {
+        switch allMediaItem {
+        case .graphic(let photoGridItem):
+            super.configure(item: .graphic(photoGridItem), spoilerReveal: spoilerReveal)
+            reallyConfigure(photoGridItem)
+        default:
+            owsFail("Unexpected item type \(allMediaItem)")
+        }
+    }
 
+    private var photoGridItem: PhotoGridItem? {
+        switch item {
+        case .graphic(let result):
+            return result
+        case .none:
+            return nil
+        default:
+            return nil
+        }
+    }
+
+    private func reallyConfigure(_ item: PhotoGridItem) {
         // PHCachingImageManager returns multiple progressively better
         // thumbnails in the async block. We want to avoid calling
         // `configure(item:)` multiple times because the high-quality image eventually applied
@@ -192,7 +128,7 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
         imageView.image = item.asyncThumbnail { [weak self] image in
             guard let self else { return }
 
-            guard let currentItem = self.item else {
+            guard let currentItem = self.photoGridItem else {
                 return
             }
 
@@ -206,7 +142,7 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
             self.imageView.image = image
         }
 
-        if let metadata = item.photoMetadata {
+        if let metadata = item.mediaMetadata {
             filenameSenderView.filename = metadata.filename
             if filenameSenderView.filename == nil {
                 filenameSenderView.senderName = metadata.sender
@@ -227,8 +163,8 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
         setUpAccessibility(item: item)
     }
 
-    func mediaPresentationContext(collectionView: UICollectionView,
-                                  in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+    override func mediaPresentationContext(collectionView: UICollectionView,
+                                           in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
         guard let mediaSuperview = imageView.superview else {
             owsFailDebug("mediaSuperview was unexpectedly nil")
             return nil
@@ -243,58 +179,9 @@ class WidePhotoCell: UICollectionViewCell, MediaTileCell {
             clippingAreaInsets: clippingAreaInsets
         )
     }
-
-    private var _allowsMultipleSelection = false
-    var allowsMultipleSelection: Bool { _allowsMultipleSelection }
-
-    func setAllowsMultipleSelection(_ allowed: Bool, animated: Bool) {
-        _allowsMultipleSelection = allowed
-        updateSelectionState(animated: animated)
-    }
-
-    override public var isSelected: Bool {
-        didSet {
-            updateSelectionState(animated: false)
-        }
-    }
-
-    private func updateSelectionState(animated: Bool) {
-        selectedMaskView.isHidden = !isSelected
-        selectionButton.isSelected = isSelected
-        if !_allowsMultipleSelection {
-            selectionButton.allowsMultipleSelection = false
-        }
-        if animated {
-            UIView.animate(withDuration: 0.15) {
-                self.updateLayoutForSelectionStateChange()
-            } completion: { _ in
-                self.didUpdateLayoutForSelectionStateChange()
-            }
-        } else {
-            updateLayoutForSelectionStateChange()
-            didUpdateLayoutForSelectionStateChange()
-        }
-    }
-
-    private func updateLayoutForSelectionStateChange() {
-        if _allowsMultipleSelection {
-            NSLayoutConstraint.deactivate([self.imageViewLeadingConstraintWithoutSelectionButton])
-            NSLayoutConstraint.activate([self.imageViewLeadingConstraintWithSelectionButton])
-        } else {
-            NSLayoutConstraint.deactivate([self.imageViewLeadingConstraintWithSelectionButton])
-            NSLayoutConstraint.activate([self.imageViewLeadingConstraintWithoutSelectionButton])
-        }
-        self.layoutIfNeeded()
-    }
-
-    private func didUpdateLayoutForSelectionStateChange() {
-        if _allowsMultipleSelection {
-            self.selectionButton.allowsMultipleSelection = true
-        }
-    }
 }
 
-extension PhotoMetadata {
+extension MediaMetadata {
     var formattedSize: String {
         let byteCount = Int64(byteSize)
         let formatter = ByteCountFormatter()

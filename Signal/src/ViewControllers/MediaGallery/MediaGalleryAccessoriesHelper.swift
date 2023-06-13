@@ -6,6 +6,19 @@
 import SignalServiceKit
 import SignalUI
 
+fileprivate extension AllMediaFileType {
+    var titleString: String {
+        switch self {
+        case .media:
+            return OWSLocalizedString("ALL_MEDIA_FILE_TYPE_MEDIA",
+                                      comment: "Media (i.e., graphical) file type in All Meda file type picker.")
+        case .audio:
+            return OWSLocalizedString("ALL_MEDIA_FILE_TYPE_AUDIO",
+                                      comment: "Audio file type in All Meda file type picker.")
+        }
+    }
+}
+
 protocol MediaGalleryPrimaryViewController: UIViewController {
     var mediaGalleryFilterMenuActions: [MediaGalleryAccessoriesHelper.MenuAction] { get }
     var isFiltering: Bool { get }
@@ -16,15 +29,20 @@ protocol MediaGalleryPrimaryViewController: UIViewController {
     func didEndSelectMode()
     func deleteSelectedItems()
     func shareSelectedItems(_ sender: Any)
-    func enterListMode()
-    func enterGridMode()
     func mediaGalleryAccessoriesHelperToolbarHeightWillChange(to height: CGFloat)
+
+    @available(iOS 13, *)
+    var fileType: AllMediaFileType { get }
+
+    @available(iOS 13, *)
+    func set(fileType: AllMediaFileType, grid: Bool)
 }
 
 public class MediaGalleryAccessoriesHelper: NSObject {
     private var footerBarBottomConstraint: NSLayoutConstraint!
     let kFooterBarHeight: CGFloat = 40
     weak var viewController: MediaGalleryPrimaryViewController?
+
     private enum Mode {
         case list
         case grid
@@ -45,18 +63,76 @@ public class MediaGalleryAccessoriesHelper: NSObject {
         }
     }
 
-    private var mode: Mode = .grid {
-        didSet {
-            if oldValue == mode {
+    private var savedModes = [AllMediaFileType: Mode]()
+    private var _mode = Mode.grid
+    private var mode: Mode {
+        get {
+            _mode
+        }
+        set {
+            if newValue == _mode {
                 return
             }
-            modeButton = createModeButton()
-            reloadFooter()
+            _mode = newValue
+            updateModeButton()
+            guard let viewController else {
+                return
+            }
+            guard #available(iOS 13, *) else {
+                return
+            }
+            switch mode {
+            case .list:
+                viewController.set(fileType: viewController.fileType, grid: false)
+            case .grid:
+                viewController.set(fileType: viewController.fileType, grid: true)
+            }
+        }
+    }
+
+    private func updateModeButton() {
+        modeButton = createModeButton()
+        reloadFooter()
+    }
+
+    private let headerView: UISegmentedControl? = {
+        if #available(iOS 13, *) {
+            let items = [
+                AllMediaFileType.media,
+                AllMediaFileType.audio
+            ].map { $0.titleString }
+            let segmentedControl = UISegmentedControl(items: items)
+            segmentedControl.selectedSegmentTintColor = .init(dynamicProvider: { _ in
+                Theme.isDarkThemeEnabled ? UIColor.init(rgbHex: 0x636366) : .white
+            })
+            segmentedControl.backgroundColor = .clear
+            segmentedControl.selectedSegmentIndex = 0
+            return segmentedControl
+        }
+        return nil
+    }()
+
+    override init() {
+        super.init()
+
+        if #available(iOS 13, *) {
+            if let view = headerView {
+                view.addTarget(self,
+                               action: #selector(segmentedControlValueChanged(_:)),
+                               for: .valueChanged)
+            }
         }
     }
 
     func add(toView view: UIView) {
         view.addSubview(footerBar)
+        if let viewController, let headerView {
+            headerView.sizeToFit()
+            var frame = headerView.frame
+            frame.size.width += CGFloat(AllMediaFileType.allCases.count) * 20.0
+            headerView.frame = frame
+            viewController.navigationItem.titleView = headerView
+        }
         footerBar.autoPinWidthToSuperview()
         footerBar.autoSetDimension(.height, toSize: kFooterBarHeight)
         footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -kFooterBarHeight)
@@ -122,13 +198,13 @@ public class MediaGalleryAccessoriesHelper: NSObject {
         }
         if isInBatchSelectMode {
             viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didCancelSelect),
-                                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "cancel_select_button"))
+                                                                               accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "cancel_select_button"))
         } else {
             viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(title: OWSLocalizedString("BUTTON_SELECT", comment: "Button text to enable batch selection mode"),
-                                                                     style: .plain,
-                                                                     target: self,
-                                                                     action: #selector(didTapSelect),
-                                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "select_button"))
+                                                                               style: .plain,
+                                                                               target: self,
+                                                                               action: #selector(didTapSelect),
+                                                                               accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "select_button"))
         }
     }
 
@@ -236,7 +312,6 @@ public class MediaGalleryAccessoriesHelper: NSObject {
             icon: UIImage(named: "all-media-list"),
             handler: { [weak self] in
                 self?.mode = .list
-                self?.viewController?.enterListMode()
             })
     }()
 
@@ -246,7 +321,6 @@ public class MediaGalleryAccessoriesHelper: NSObject {
             icon: UIImage(named: "all-media-grid"),
             handler: { [weak self] in
                 self?.mode = .grid
-                self?.viewController?.enterGridMode()
             })
     }()
 
@@ -387,6 +461,24 @@ public class MediaGalleryAccessoriesHelper: NSObject {
 
     }
 
+    private var gridViewAllowed: Bool {
+        guard #available(iOS 13, *) else {
+            return AllMediaFileType.defaultValue.supportsGridView
+        }
+        return fileType.supportsGridView
+    }
+
+    private var currentFileTypeSupportsFiltering: Bool {
+        switch AllMediaFileType(rawValue: headerView?.selectedSegmentIndex ?? 0) {
+        case .audio:
+            return false
+        case .media:
+            return true
+        case .none:
+            return false
+        }
+    }
+
     private func reloadFooter() {
         switch footerBarState {
         case .hidden:
@@ -399,9 +491,9 @@ public class MediaGalleryAccessoriesHelper: NSObject {
             ]
             footerBar.setItems(footerItems, animated: false)
         case .regular:
-            if let modeButton {
+            if let modeButton, gridViewAllowed {
                 let footerItems = [
-                    filterButton,
+                    currentFileTypeSupportsFiltering ? filterButton : UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil),
                     UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
                     modeButton,
                     UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
@@ -410,7 +502,7 @@ public class MediaGalleryAccessoriesHelper: NSObject {
                 footerBar.setItems(footerItems, animated: false)
             } else {
                 let footerItems = [
-                    filterButton,
+                    currentFileTypeSupportsFiltering ? filterButton : UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil),
                     UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
                     deleteButton
                 ]
@@ -418,7 +510,7 @@ public class MediaGalleryAccessoriesHelper: NSObject {
             }
         case .filtering:
             let footerItems = [
-                selectedFilterButton,
+                currentFileTypeSupportsFiltering ? selectedFilterButton : UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil),
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
                 deleteButton
             ]
@@ -554,5 +646,44 @@ public class MediaGalleryAccessoriesHelper: NSObject {
             return
         }
         viewController.shareSelectedItems(sender)
+    }
+
+    private var fileType: AllMediaFileType {
+        guard let control = headerView else {
+            return .media
+        }
+        return AllMediaFileType(rawValue: control.selectedSegmentIndex) ?? .media
+    }
+
+    @objc
+    @available(iOS 13, *)
+    func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+        if let fileType = AllMediaFileType(rawValue: sender.selectedSegmentIndex) {
+            if let previousFileType = viewController?.fileType {
+                savedModes[previousFileType] = mode
+            }
+            if fileType.supportsGridView {
+                // Return to the previous mode
+                _mode = savedModes[fileType, default: .grid]
+            } else if mode == .grid {
+                // This file type requires a switch to list mode
+                _mode = .list
+            }
+            updateModeButton()
+            viewController?.set(fileType: fileType, grid: mode == .grid)
+        }
+    }
+}
+
+extension AllMediaFileType {
+    static var defaultValue = AllMediaFileType.media
+
+    var supportsGridView: Bool {
+        switch self {
+        case .media:
+            return true
+        case .audio:
+            return false
+        }
     }
 }

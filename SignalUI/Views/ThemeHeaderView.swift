@@ -26,7 +26,7 @@ public class ThemeHeaderView: UIView {
         }
     }
 
-    init() {
+    init(inset: CGFloat) {
         label = UILabel()
         label.font = Self.labelFont
 
@@ -36,8 +36,8 @@ public class ThemeHeaderView: UIView {
 
         self.addSubview(label)
 
-        label.autoPinEdge(toSuperviewMargin: .trailing)
-        label.autoPinEdge(toSuperviewMargin: .leading)
+        label.autoPinEdge(toSuperviewMargin: .trailing, withInset: inset)
+        label.autoPinEdge(toSuperviewMargin: .leading, withInset: inset)
         label.autoVCenterInSuperview()
     }
 
@@ -66,10 +66,13 @@ public class ThemeHeaderView: UIView {
 
 public class ThemeCollectionViewSectionHeader: UICollectionReusableView {
     public class var reuseIdentifier: String { return "ThemeCollectionViewSectionHeader" }
+    fileprivate var inset: CGFloat { 16.0 }
 
-    fileprivate lazy var headerView = buildHeaderView()
+    fileprivate lazy var headerView = {
+        buildHeaderView(inset: inset)
+    }()
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
         preservesSuperviewLayoutMargins = true
@@ -90,7 +93,7 @@ public class ThemeCollectionViewSectionHeader: UICollectionReusableView {
         headerView.configure(title: title)
     }
 
-    fileprivate func buildHeaderView() -> ThemeHeaderView {
-        return ThemeHeaderView()
+    fileprivate func buildHeaderView(inset: CGFloat) -> ThemeHeaderView {
+        return ThemeHeaderView(inset: inset)
     }
 }

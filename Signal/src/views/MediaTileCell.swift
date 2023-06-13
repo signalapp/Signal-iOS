@@ -4,11 +4,12 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 protocol MediaTileCell: AnyObject {
     func makePlaceholder()
-    func configureWithItem(_ item: PhotoGridItem)
-    var item: PhotoGridItem? { get }
+    func configure(item: AllMediaItem, spoilerReveal: SpoilerRevealState)
+    var item: AllMediaItem? { get set }
     var allowsMultipleSelection: Bool { get }
     func setAllowsMultipleSelection(_ allowed: Bool, animated: Bool)
     func mediaPresentationContext(

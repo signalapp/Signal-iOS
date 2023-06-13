@@ -339,6 +339,12 @@ public class AtomicArray<T> {
         append(value)
     }
 
+    public func pushHead(_ value: T) {
+        lock.perform {
+            self.values.insert(value, at: 0)
+        }
+    }
+
     public var count: Int {
         lock.perform { values.count }
     }

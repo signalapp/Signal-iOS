@@ -165,6 +165,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 
 - (NSTimeInterval)audioDurationSeconds;
 - (nullable AudioWaveform *)audioWaveform;
+- (nullable AudioWaveform *)highPriorityAudioWaveform;
 
 #pragma mark - Thumbnails
 

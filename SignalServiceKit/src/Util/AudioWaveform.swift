@@ -29,7 +29,7 @@ public class AudioWaveformManager: NSObject {
     private override init() {}
 
     @objc
-    public static func audioWaveform(forAttachment attachment: TSAttachmentStream) -> AudioWaveform? {
+    public static func audioWaveform(forAttachment attachment: TSAttachmentStream, highPriority: Bool) -> AudioWaveform? {
         unfairLock.withLock {
             let attachmentId = attachment.uniqueId
 
@@ -56,7 +56,8 @@ public class AudioWaveformManager: NSObject {
             guard let value = buildAudioWaveForm(
                 forAudioPath: originalFilePath,
                 waveformPath: audioWaveformPath,
-                identifier: attachmentId
+                identifier: attachmentId,
+                highPriority: highPriority
             ) else {
                 return nil
             }
@@ -73,7 +74,8 @@ public class AudioWaveformManager: NSObject {
             guard let value = buildAudioWaveForm(
                     forAudioPath: audioPath,
                     waveformPath: waveformPath,
-                    identifier: UUID().uuidString
+                    identifier: UUID().uuidString,
+                    highPriority: false
             ) else {
                 return nil
             }
@@ -82,8 +84,12 @@ public class AudioWaveformManager: NSObject {
     }
 
     // This method should only be called with unfairLock acquired.
-    private static func buildAudioWaveForm(forAudioPath audioPath: String, waveformPath: String, identifier: String) -> AudioWaveform? {
-
+    private static func buildAudioWaveForm(
+        forAudioPath audioPath: String,
+        waveformPath: String,
+        identifier: String,
+        highPriority: Bool
+    ) -> AudioWaveform? {
         if FileManager.default.fileExists(atPath: waveformPath) {
             // We have a cached waveform on disk, read it into memory.
             do {
@@ -157,7 +163,7 @@ public class AudioWaveformManager: NSObject {
         observerMap[identifier] = observer
         waveform.addSamplingObserver(observer)
 
-        waveform.beginSampling(for: asset)
+        waveform.beginSampling(for: asset, highPriority: highPriority)
 
         return waveform
     }
@@ -306,17 +312,51 @@ public class AudioWaveform: NSObject {
     fileprivate static let maximumDuration: TimeInterval = 15 * kMinuteInterval
 
     private weak var sampleOperation: Operation?
+    private static var operationDequeue = AtomicArray<AudioWaveformSamplingOperation>()
 
-    fileprivate func beginSampling(for asset: AVAsset) {
+    fileprivate func beginSampling(for asset: AVAsset, highPriority: Bool) {
         owsAssertDebug(sampleOperation == nil)
 
-        let operation = AudioWaveformSamplingOperation(asset: asset) { [weak self] samples in
+        let innerOperation = AudioWaveformSamplingOperation(asset: asset) { [weak self] samples in
             guard let self = self else { return }
             self.decibelSamples = samples
             self.notifyObserversOfSamplingCompletion()
         }
-        AudioWaveformSamplingOperation.operationQueue.addOperation(operation)
-        sampleOperation = operation
+
+        class WrapperOperation: Operation {
+            static let operationQueue: OperationQueue = {
+                let operationQueue = OperationQueue()
+                operationQueue.name = "AudioWaveformSamplingWrapper"
+                operationQueue.maxConcurrentOperationCount = 1
+                operationQueue.qualityOfService = .utility
+                return operationQueue
+            }()
+
+            private let closure: () -> Void
+            init(_ closure: @escaping () -> Void) {
+                self.closure = closure
+            }
+            override func main() {
+                closure()
+            }
+        }
+        let outerOperation = WrapperOperation {
+            guard let operation = Self.operationDequeue.popHead() else {
+                return
+            }
+            guard !operation.isCancelled else {
+                return
+            }
+            AudioWaveformSamplingOperation.operationQueue.addOperation(operation)
+            operation.waitUntilFinished()
+        }
+        if highPriority {
+            Self.operationDequeue.pushHead(innerOperation)
+        } else {
+            Self.operationDequeue.pushTail(innerOperation)
+        }
+        WrapperOperation.operationQueue.addOperation(outerOperation)
+        sampleOperation = innerOperation
     }
 
     private func downsample(samples: [Float], toSampleCount sampleCount: Int) -> [Float] {

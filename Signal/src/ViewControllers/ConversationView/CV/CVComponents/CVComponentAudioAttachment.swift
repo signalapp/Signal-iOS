@@ -64,13 +64,14 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         }
 
         owsAssertDebug(attachment.isAudio)
-        // TODO: We might want to convert AudioMessageView into a form that can be reused.
-        let audioMessageView = AudioMessageView(
-            threadUniqueId: itemModel.thread.uniqueId,
-            audioAttachment: audioAttachment,
-            audioPlaybackRate: itemModel.itemViewState.audioPlaybackRate,
+        let presentation = AudioMessagePresenter(
             isIncoming: isIncoming,
-            componentDelegate: componentDelegate,
+            audioAttachment: audioAttachment,
+            threadUniqueId: itemModel.thread.uniqueId,
+            playbackRate: AudioPlaybackRate(rawValue: itemModel.itemViewState.audioPlaybackRate))
+        let audioMessageView = AudioMessageView(
+            presentation: presentation,
+            audioMessageViewDelegate: componentDelegate,
             mediaCache: mediaCache
         )
         if let incomingMessage = interaction as? TSIncomingMessage {
@@ -115,13 +116,17 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             measurementBuilder.setSize(key: Self.measurementKey_footerSize, size: footerSize)
         }
 
+        let presentation = AudioMessagePresenter(
+            isIncoming: false,
+            audioAttachment: audioAttachment,
+            threadUniqueId: itemModel.thread.uniqueId,
+            playbackRate: AudioPlaybackRate(rawValue: itemModel.itemViewState.audioPlaybackRate))
         let audioSize = AudioMessageView.measure(
             maxWidth: maxWidth,
-            audioAttachment: audioAttachment,
-            isIncoming: isIncoming,
+            sender: "",
             conversationStyle: conversationStyle,
-            measurementBuilder: measurementBuilder
-        ).ceil
+            measurementBuilder: measurementBuilder,
+            presentation: presentation).ceil
         let audioInfo = audioSize.asManualSubviewInfo
         let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
                                                        measurementBuilder: measurementBuilder,
@@ -290,7 +295,7 @@ extension CVComponentAudioAttachment: CVAudioPlayerListener {
 
     func audioPlayerDidFinish(attachmentId: String) {
         guard attachmentId == audioAttachment.attachment.uniqueId else { return }
-        cvAudioPlayer.autoplayNextAudioAttachment(nextAudioAttachment)
+        cvAudioPlayer.autoplayNextAudioAttachmentIfNeeded(nextAudioAttachment)
     }
 
     func audioPlayerDidMarkViewed(attachmentId: String) {}

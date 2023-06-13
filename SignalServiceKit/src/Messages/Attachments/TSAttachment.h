@@ -136,7 +136,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 @property (nonatomic, readonly) BOOL isWebpImage;
 @property (nonatomic, readonly) BOOL isVideo;
 @property (nonatomic, readonly) BOOL isAudio;
+// This is meant for new-style messages only.
 @property (nonatomic, readonly) BOOL isVoiceMessage;
+// This will tell you if old-style messages are voice messages.
+@property (nonatomic, readonly) BOOL isVoiceMessageIncludingLegacyMessages;
 @property (nonatomic, readonly) BOOL isBorderless;
 @property (nonatomic, readonly) BOOL isLoopingVideo;
 @property (nonatomic, readonly) BOOL isVisualMedia;

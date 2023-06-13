@@ -31,12 +31,12 @@ class WideMediaTileViewLayout: UICollectionViewFlowLayout, ScrollPositionPreserv
 
     private var sectionSpacing: CGFloat = 20.0
 
-    init(sectionSpacing: CGFloat) {
+    init(sectionSpacing: CGFloat, interItemSpacing: CGFloat) {
         self.sectionSpacing = sectionSpacing
         super.init()
         self.scrollDirection = .vertical
-        minimumLineSpacing = 0.0
-        minimumInteritemSpacing = 0.0
+        minimumLineSpacing = interItemSpacing
+        minimumInteritemSpacing = interItemSpacing
     }
 
     required init?(coder: NSCoder) {

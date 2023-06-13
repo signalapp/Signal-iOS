@@ -813,7 +813,12 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (nullable AudioWaveform *)audioWaveform
 {
-    return [AudioWaveformManager audioWaveformForAttachment:self];
+    return [AudioWaveformManager audioWaveformForAttachment:self highPriority:NO];
+}
+
+- (nullable AudioWaveform *)highPriorityAudioWaveform
+{
+    return [AudioWaveformManager audioWaveformForAttachment:self highPriority:YES];
 }
 
 #pragma mark - Thumbnails

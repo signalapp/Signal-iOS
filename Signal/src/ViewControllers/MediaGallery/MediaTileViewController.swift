@@ -60,7 +60,7 @@ extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
             accessoriesHelper.updateFooterBarState()
         } else if numberOfSectionsBefore > 0 && numberOfSectionsAfter == 0 {
             // Remove "load newer" section from the end.
-            collectionView?.deleteSections(IndexSet(integer: 1))
+            collectionView?.deleteSections(IndexSet(integer: 2))
             accessoriesHelper.updateFooterBarState()
         }
     }
@@ -75,12 +75,60 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     private let spoilerReveal: SpoilerRevealState
 
     private lazy var mediaGallery: MediaGallery = {
-        let mediaGallery = MediaGallery(thread: thread, spoilerReveal: spoilerReveal)
+        let mediaGallery = MediaGallery(thread: thread, fileType: fileType, spoilerReveal: spoilerReveal)
         mediaGallery.addDelegate(self)
         return mediaGallery
     }()
     fileprivate var mediaTileViewLayout: Layout
     private var allCells = WeakArray<UICollectionViewCell>()
+
+    var fileType: AllMediaFileType = AllMediaFileType.defaultValue
+
+    func set(fileType: AllMediaFileType, grid: Bool) {
+        UIView.performWithoutAnimation {
+            let fileTypeChanged = self.fileType != fileType
+            if fileTypeChanged {
+                mediaGallery.removeAllDelegates()
+                mediaGallery = MediaGallery(thread: thread, fileType: fileType, spoilerReveal: spoilerReveal)
+                mediaGallery.addDelegate(self)
+                self.fileType = fileType
+            }
+            let desiredMode: Mode = grid ? .grid : .list
+            let modeChanged = self.mode != desiredMode
+            var indexPath: IndexPath?
+            if modeChanged || fileTypeChanged {
+                self.mode = desiredMode
+                indexPath = oldestVisibleIndexPath
+                rebuildLayout()
+            }
+            if fileTypeChanged {
+                collectionView.reloadData()
+                _ = mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize)
+                if !mediaGallery.galleryDates.isEmpty {
+                    eagerlyLoadMoreIfPossible()
+                }
+                collectionView.reloadData()
+                if mediaGallery.galleryDates.count > 0 {
+                    let lastSectionItemCount = mediaGallery.numberOfItemsInSection(mediaGallery.galleryDates.count - 1)
+                    indexPath = IndexPath(item: lastSectionItemCount - 1,
+                                          section: mediaGallery.galleryDates.count)
+                } else {
+                    indexPath = nil
+                }
+            }
+
+            collectionView.layoutIfNeeded()
+            if let indexPath {
+                if fileTypeChanged {
+                    self.collectionView.scrollToItem(at: indexPath,
+                                                     at: .bottom,
+                                                     animated: false)
+                } else {
+                    collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
+                }
+            }
+        }
+    }
 
     /// This is used to avoid running two animations concurrently. It doesn't look good on iOS 16 (and probably all other versions).
     private var activeAnimationCount = 0
@@ -88,28 +136,21 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         case list
         case grid
 
-        var reuseIdentifier: String {
-            switch self {
-            case .list:
-                return WidePhotoCell.reuseIdentifier
-            case .grid:
-                return PhotoGridViewCell.reuseIdentifier
+        func reuseIdentifier(fileType: AllMediaFileType) -> String {
+            switch fileType {
+            case .media:
+                switch self {
+                case .list:
+                    return WidePhotoCell.reuseIdentifier
+                case .grid:
+                    return PhotoGridViewCell.reuseIdentifier
+                }
+            case .audio:
+                return AudioCell.reuseIdentifier
             }
         }
     }
-    private var mode = Mode.grid {
-        didSet {
-            if oldValue == mode {
-                return
-            }
-            let indexPath = oldestVisibleIndexPath
-            rebuildLayout()
-            if let indexPath {
-                collectionView.layoutIfNeeded()
-                collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
-            }
-        }
-    }
+    private var mode = Mode.grid
     private var toolbarHeight = CGFloat(0)
 
     public init(
@@ -120,7 +161,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         self.thread = thread
         self.accessoriesHelper = accessoriesHelper
         self.spoilerReveal = spoilerReveal
-        let layout: Layout = Self.buildLayout(mode: mode)
+        let layout: Layout = Self.buildLayout(mode: mode, fileType: fileType)
         self.mediaTileViewLayout = layout
 
         super.init(collectionViewLayout: layout)
@@ -191,7 +232,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     // MARK: View Lifecycle Overrides
 
     override public func loadView() {
-        collectionView = MediaTileCollectionView(frame: .zero, collectionViewLayout: mediaTileViewLayout)
+        collectionView = MediaTileCollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
     }
 
     override public func viewDidLoad() {
@@ -206,6 +247,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
         collectionView.register(WidePhotoCell.self, forCellWithReuseIdentifier: WidePhotoCell.reuseIdentifier)
+        collectionView.register(AudioCell.self, forCellWithReuseIdentifier: AudioCell.reuseIdentifier)
         collectionView.register(ThemeCollectionViewSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ThemeCollectionViewSectionHeader.reuseIdentifier)
         collectionView.register(MediaGalleryStaticHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier)
 
@@ -236,12 +278,28 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             }
             eagerlyLoadMoreIfPossible()
         }
-
+        let cvAudioPlayer = AppEnvironment.shared.cvAudioPlayerRef
+        cvAudioPlayer.shouldAutoplayNextAudioAttachment = { [weak self] in
+            if self?.view.window == nil {
+                return true
+            }
+            if self?.presentedViewController != nil {
+                return true
+            }
+            if self?.navigationController?.topViewController != self?.parent {
+                return true
+            }
+            return false
+        }
         let lastSectionItemCount = mediaGallery.numberOfItemsInSection(mediaGallery.galleryDates.count - 1)
         self.collectionView.scrollToItem(at: IndexPath(item: lastSectionItemCount - 1,
                                                        section: mediaGallery.galleryDates.count),
                                          at: .bottom,
                                          animated: false)
+    }
+
+    override public func viewDidDisappear(_ animated: Bool) {
+        cvAudioPlayer.shouldAutoplayNextAudioAttachment = nil
     }
 
     override public func viewWillTransition(to size: CGSize,
@@ -270,16 +328,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     // MARK: - List View / Grid View
 
-    func enterListMode() {
-        mode = .list
-    }
-
-    func enterGridMode() {
-        mode = .grid
-    }
-
     private func rebuildLayout() {
-        mediaTileViewLayout = Self.buildLayout(mode: mode)
+        mediaTileViewLayout = Self.buildLayout(mode: mode, fileType: fileType)
         collectionView.setCollectionViewLayout(mediaTileViewLayout, animated: false)
         collectionView.reloadData()
     }
@@ -534,7 +584,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return
         }
 
-        guard let galleryItem = (gridCell.item as? GalleryGridCellItem)?.galleryItem else {
+        guard let attachmentStream = gridCell.item?.attachmentStream else {
             owsFailDebug("galleryItem was unexpectedly nil")
             return
         }
@@ -545,7 +595,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             collectionView.deselectItem(at: indexPath, animated: true)
 
             let pageVC = MediaPageViewController(
-                initialMediaAttachment: galleryItem.attachmentStream,
+                initialMediaAttachment: attachmentStream,
                 mediaGallery: mediaGallery,
                 spoilerReveal: spoilerReveal
             )
@@ -607,7 +657,15 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                 owsFailDebug("unable to build section header for kLoadOlderSectionIdx")
                 return defaultView
             }
-            let title = OWSLocalizedString("GALLERY_TILES_EMPTY_GALLERY", comment: "Label indicating media gallery is empty")
+            let title: String
+            switch fileType {
+            case .media:
+                title = OWSLocalizedString("GALLERY_TILES_EMPTY_GALLERY",
+                                           comment: "Label indicating media gallery is empty")
+            case .audio:
+                title = OWSLocalizedString("GALLERY_TILES_EMPTY_GALLERY_AUDIO",
+                                           comment: "Label indicating media gallery with audio filter is empty")
+            }
             sectionHeader.configure(title: title)
             return sectionHeader
         }
@@ -653,7 +711,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     override public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         Logger.debug("indexPath: \(indexPath)")
 
-        guard let cell = self.collectionView?.dequeueReusableCell(withReuseIdentifier: mode.reuseIdentifier, for: indexPath) as? Cell else {
+        guard let cell = self.collectionView?.dequeueReusableCell(withReuseIdentifier: mode.reuseIdentifier(fileType: fileType), for: indexPath) as? Cell else {
             owsFailDebug("unexpected cell for indexPath: \(indexPath)")
             return UICollectionViewCell()
         }
@@ -686,14 +744,30 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                 break
             }
 
-            let gridCellItem = GalleryGridCellItem(galleryItem: galleryItem)
             VideoDurationHelper.shared.with(context: videoDurationContext) {
-                cell.configureWithItem(gridCellItem)
+                cell.configure(item: allMediaItem(galleryItem: galleryItem), spoilerReveal: spoilerReveal)
             }
         }
         return cell
     }
 
+    private let mediaCache = CVMediaCache()
+
+    private func allMediaItem(galleryItem: MediaGalleryItem) -> AllMediaItem {
+        switch fileType {
+        case .media:
+            let gridCellItem = GalleryGridCellItem(galleryItem: galleryItem)
+            return .graphic(gridCellItem)
+        case .audio:
+            return .audio(
+                AudioItem(message: galleryItem.message,
+                          interaction: galleryItem.message,
+                          thread: thread,
+                          attachmentStream: galleryItem.attachmentStream,
+                          mediaCache: mediaCache,
+                          metadata: galleryItem.mediaMetadata!))
+        }
+    }
     private lazy var videoDurationContext = { VideoDurationHelper.Context() }()
 
     override public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -735,17 +809,22 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     // MARK: UICollectionViewDelegateFlowLayout
 
-    private class func makeLayout(mode: Mode) -> Layout {
+    private class func makeLayout(mode: Mode, fileType: AllMediaFileType) -> Layout {
         switch mode {
         case .list:
-            return WideMediaTileViewLayout(sectionSpacing: 20.0)
+            switch fileType {
+            case .media:
+                return WideMediaTileViewLayout(sectionSpacing: 20.0, interItemSpacing: 0.0)
+            case .audio:
+                return WideMediaTileViewLayout(sectionSpacing: 20.0, interItemSpacing: 12.0)
+            }
         case .grid:
             return SquareMediaTileViewLayout()
         }
     }
 
-    private class func buildLayout(mode: Mode) -> Layout {
-        let layout = makeLayout(mode: mode)
+    private class func buildLayout(mode: Mode, fileType: AllMediaFileType) -> Layout {
+        let layout = makeLayout(mode: mode, fileType: fileType)
 
         layout.sectionInsetReference = .fromSafeArea
         // Modern design
@@ -791,9 +870,18 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     private func updateWideLayout() {
         let hInset = 20.0
+        let desiredHeight = {
+            switch fileType {
+            case .media:
+                return WidePhotoCell.desiredHeight
+            case .audio:
+                return AudioCell.desiredHeight
+            }
+        }()
+
         let newItemSize = CGSize(
             width: floor(view.safeAreaLayoutGuide.layoutFrame.size.width) - hInset * 2,
-            height: WidePhotoCell.desiredHeight)
+            height: desiredHeight)
         if newItemSize != mediaTileViewLayout.itemSize || hInset != mediaTileViewLayout.sectionInset.left {
             mediaTileViewLayout.itemSize = newItemSize
             // Inset any remaining space around the outside edges to ensure all inter-item spacing is exactly equal, otherwise
@@ -823,6 +911,24 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return mediaGallery.hasFetchedMostRecent ? CGSize.zero : kStaticHeaderSize
         default:
             return kMonthHeaderSize
+        }
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        switch mode {
+        case .grid:
+            return mediaTileViewLayout.itemSize
+        case .list:
+            switch fileType {
+            case .media:
+                return mediaTileViewLayout.itemSize
+            case .audio:
+                if let galleryItem = galleryItem(at: indexPath, loadAsync: true) {
+                    return AudioCell.sizeForItem(allMediaItem(galleryItem: galleryItem),
+                                                 defaultSize: mediaTileViewLayout.itemSize)
+                }
+                return mediaTileViewLayout.itemSize
+            }
         }
     }
 
@@ -1103,31 +1209,30 @@ class GalleryGridCellItem: PhotoGridItem {
         owsAssert(galleryItem.isVideo)
         return VideoDurationHelper.shared.promisedDuration(attachment: galleryItem.attachmentStream)
     }
+    var mediaMetadata: MediaMetadata? {
+        return galleryItem.mediaMetadata
+    }
+}
 
-    lazy var photoMetadata: PhotoMetadata? = {
-        guard let sender = galleryItem.sender else {
-            owsFailDebug("Missing sender!")
-            return nil
-        }
-
-        let filename = galleryItem.attachmentStream.originalFilePath.map {
+extension MediaGalleryItem {
+    var mediaMetadata: MediaMetadata? {
+        let filename = attachmentStream.originalFilePath.map {
             ($0 as NSString).lastPathComponent as String
         }
-
-        return PhotoMetadata(
-            sender: sender.name,
-            abbreviatedSender: sender.abbreviatedName,
+        return MediaMetadata(
+            sender: sender?.name ?? "",
+            abbreviatedSender: sender?.abbreviatedName ?? "",
             filename: filename,
-            byteSize: Int(galleryItem.attachmentStream.byteCount),
-            creationDate: galleryItem.attachmentStream.creationTimestamp)
-    }()
+            byteSize: Int(attachmentStream.byteCount),
+            creationDate: attachmentStream.creationTimestamp)
+    }
 }
 
 extension MediaTileViewController: MediaGalleryPrimaryViewController {
     typealias MenuAction = MediaGalleryAccessoriesHelper.MenuAction
 
     var isFiltering: Bool {
-        return mediaGallery.allowedMediaType != nil
+        return mediaGallery.allowedMediaType != MediaGalleryFinder.MediaType.defaultMediaType(for: fileType)
     }
 
     var isEmpty: Bool {
@@ -1181,7 +1286,7 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
             date = nil
         }
         let indexPathToScrollTo = mediaGallery.setAllowedMediaType(
-            nil,
+            MediaGalleryFinder.MediaType.defaultMediaType(for: fileType),
             loadUntil: date ?? GalleryDate(date: .distantFuture),
             batchSize: kLoadBatchSize,
             firstVisibleIndexPath: oldestVisibleIndexPath.map { mediaGalleryIndexPath($0) })
@@ -1262,4 +1367,5 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
     }
 }
 
-class MediaTileCollectionView: UICollectionView { }
+class MediaTileCollectionView: UICollectionView {
+}

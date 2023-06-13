@@ -318,6 +318,11 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     return @"TSAttachements";
 }
 
+- (BOOL)isVoiceMessageIncludingLegacyMessages
+{
+    return self.isVoiceMessage || !self.sourceFilename || self.sourceFilename.length == 0;
+}
+
 - (NSString *)description {
     NSString *attachmentString;
 
@@ -341,7 +346,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     } else if ([MIMETypeUtil isAudio:self.contentType]) {
         // a missing filename is the legacy way to determine if an audio attachment is
         // a voice note vs. other arbitrary audio attachments.
-        if (self.isVoiceMessage || !self.sourceFilename || self.sourceFilename.length == 0) {
+        if (self.isVoiceMessageIncludingLegacyMessages) {
             attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
                 @"Short text label for a voice message attachment, used for thread preview and on the lock screen");
         } else {
