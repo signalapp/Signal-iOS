@@ -4,6 +4,7 @@
 //
 
 import Lottie
+import SignalServiceKit
 import SignalUI
 
 // A view for presenting attachment upload/download/failure/pending state.

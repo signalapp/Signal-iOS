@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalCoreKit
+import SignalServiceKit
 
 public struct ChatColor: Equatable, Codable {
     public let id: String

@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
-import SignalMessaging
 import PureLayout
+import SignalMessaging
+import SignalUI
 
 // All Observer methods will be invoked from the main thread.
 protocol SAEFailedViewDelegate: AnyObject {

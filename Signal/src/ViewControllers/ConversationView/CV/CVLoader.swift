@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalCoreKit
+import SignalServiceKit
 import SignalUI
 
 // This entity performs a single load.

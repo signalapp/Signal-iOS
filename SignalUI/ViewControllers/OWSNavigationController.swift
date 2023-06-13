@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
+import SignalServiceKit
 
 /// Any view controller which wants to be able cancel back button
 /// presses and back gestures should implement this protocol.

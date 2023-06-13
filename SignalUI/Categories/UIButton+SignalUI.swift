@@ -3,9 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
-import CoreFoundation
+import SignalCoreKit
 
 public extension UIButton {
     /// Add spacing between a button's image and its title.

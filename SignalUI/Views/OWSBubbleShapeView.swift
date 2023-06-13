@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
+import SignalCoreKit
 
 public struct OWSDirectionalRectCorner: OptionSet {
     public let rawValue: Int8

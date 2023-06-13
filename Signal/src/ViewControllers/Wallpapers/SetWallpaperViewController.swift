@@ -4,6 +4,7 @@
 //
 
 import CoreServices
+import SignalServiceKit
 import SignalUI
 
 class SetWallpaperViewController: OWSTableViewController2 {

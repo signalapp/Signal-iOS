@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 // This class offers a convenient way to build table views
 // when performance is not critical, e.g. when the table

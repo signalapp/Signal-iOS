@@ -4,7 +4,7 @@
 //
 
 import AVFoundation
-import UIKit
+import SignalServiceKit
 
 protocol VideoPlaybackState {
     var isPlaying: Bool { get }

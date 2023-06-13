@@ -4,6 +4,7 @@
 //
 
 import Lottie
+import SignalCoreKit
 import SignalUI
 
 class AnimatedProgressView: UIView {

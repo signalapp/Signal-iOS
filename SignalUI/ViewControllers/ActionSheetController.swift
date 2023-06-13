@@ -4,8 +4,8 @@
 //
 
 import BonMot
-import UIKit
 import SafariServices
+import SignalServiceKit
 
 open class ActionSheetController: OWSViewController {
     private enum Message {

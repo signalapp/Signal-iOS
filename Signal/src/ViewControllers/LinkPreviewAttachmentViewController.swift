@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import SignalUI
-import UIKit
 
 protocol LinkPreviewAttachmentViewControllerDelegate: AnyObject {
     func linkPreviewAttachmentViewController(_ viewController: LinkPreviewAttachmentViewController,

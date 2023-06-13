@@ -4,6 +4,7 @@
 //
 
 import SafariServices
+import SignalCoreKit
 import SignalUI
 
 protocol Deprecated_RegistrationPinAttemptsExhaustedViewDelegate: AnyObject {

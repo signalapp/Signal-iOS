@@ -4,6 +4,7 @@
 //
 
 import MultipeerConnectivity
+import SignalServiceKit
 import SignalUI
 
 class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {

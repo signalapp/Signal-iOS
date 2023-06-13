@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalCoreKit
 import Vision
-import UIKit
 
 // MARK: - Blur Tool
 

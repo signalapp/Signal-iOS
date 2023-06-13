@@ -4,6 +4,7 @@
 //
 
 import Lottie
+import SignalServiceKit
 import SignalUI
 
 // TODO: Convert to manual layout.

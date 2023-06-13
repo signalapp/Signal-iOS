@@ -4,7 +4,7 @@
 //
 
 import SafariServices
-import UIKit
+import SignalServiceKit
 
 public class LinkingTextView: UITextView {
 

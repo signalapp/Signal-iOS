@@ -4,6 +4,7 @@
 //
 
 import ContactsUI
+import SignalServiceKit
 import SignalUI
 
 protocol NameCollisionResolutionDelegate: AnyObject {

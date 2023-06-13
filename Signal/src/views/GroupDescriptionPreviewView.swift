@@ -4,6 +4,7 @@
 //
 
 import BonMot
+import SignalServiceKit
 import SignalUI
 
 class GroupDescriptionPreviewView: ManualLayoutView {

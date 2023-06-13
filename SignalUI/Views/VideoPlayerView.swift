@@ -4,7 +4,7 @@
 //
 
 import AVFoundation
-import UIKit
+import SignalServiceKit
 
 public protocol VideoPlayerViewDelegate: AnyObject {
     func videoPlayerViewStatusDidChange(_ view: VideoPlayerView)

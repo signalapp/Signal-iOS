@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 // An immutable snapshot of the core styling
 // state used by CVC for a given load/render cycle.

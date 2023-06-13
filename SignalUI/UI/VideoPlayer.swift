@@ -4,7 +4,7 @@
 //
 
 import AVFoundation
-import Foundation
+import SignalServiceKit
 
 public protocol VideoPlayerDelegate: AnyObject {
     func videoPlayerDidPlayToCompletion(_ videoPlayer: VideoPlayer)

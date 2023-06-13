@@ -4,7 +4,7 @@
 //
 
 import AVFoundation
-import UIKit
+import SignalServiceKit
 
 private enum VideoEditorError: Error {
     case cancelled
