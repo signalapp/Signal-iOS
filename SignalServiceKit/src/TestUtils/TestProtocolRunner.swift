@@ -86,6 +86,7 @@ public struct TestProtocolRunner {
                                     identityStore: recipientClient.identityKeyStore,
                                     preKeyStore: recipientClient.preKeyStore,
                                     signedPreKeyStore: recipientClient.signedPreKeyStore,
+                                    kyberPreKeyStore: recipientClient.kyberPreKeyStore,
                                     context: transaction)
 
         // Finally, Bob sends a message back to acknowledge the pre-key.
@@ -144,6 +145,7 @@ public protocol TestSignalClient {
     var sessionStore: SessionStore { get }
     var preKeyStore: PreKeyStore { get }
     var signedPreKeyStore: SignedPreKeyStore { get }
+    var kyberPreKeyStore: KyberPreKeyStore { get }
     var identityKeyStore: IdentityKeyStore { get }
 }
 
@@ -177,6 +179,7 @@ public struct FakeSignalClient: TestSignalClient {
     public var preKeyStore: PreKeyStore { return protocolStore }
     public var signedPreKeyStore: SignedPreKeyStore { return protocolStore }
     public var identityKeyStore: IdentityKeyStore { return protocolStore }
+    public var kyberPreKeyStore: KyberPreKeyStore { return protocolStore }
 
     public let e164Identifier: SignalE164Identifier?
     public let uuid: UUID
@@ -243,6 +246,10 @@ public struct LocalSignalClient: TestSignalClient {
 
     public var signedPreKeyStore: SignedPreKeyStore {
         return SSKEnvironment.shared.signalProtocolStore(for: identity).signedPreKeyStore
+    }
+
+    public var kyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
+        return SSKEnvironment.shared.signalProtocolStore(for: identity).kyberPreKeyStore
     }
 
     public var identityKeyStore: IdentityKeyStore {

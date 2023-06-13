@@ -1237,6 +1237,7 @@
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
 		C182BEF629ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */; };
+		C198FDD62A37C905000BCAC9 /* SSKKyberPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */; };
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
 		C1DB22C329C9F95500757380 /* EditManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DB22C229C9F95500757380 /* EditManager.swift */; };
 		C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */; };
@@ -3783,6 +3784,7 @@
 		C179B01D29ED94FA00275AD1 /* EditRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecord.swift; sourceTree = "<group>"; };
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
+		C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStore.swift; sourceTree = "<group>"; };
 		C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerShims.swift; sourceTree = "<group>"; };
 		C1DB22C229C9F95500757380 /* EditManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManager.swift; sourceTree = "<group>"; };
 		C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationViewController.swift; sourceTree = "<group>"; };
@@ -9010,6 +9012,7 @@
 				F9C5CA59289453B100548EEE /* SenderKeyStore.swift */,
 				F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */,
 				F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */,
+				C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */,
 				F9C5CA5A289453B100548EEE /* SSKPreKeyStore.h */,
 				F9C5CA76289453B100548EEE /* SSKPreKeyStore.m */,
 				F9C5CA75289453B100548EEE /* SSKPreKeyStore.swift */,
@@ -12291,6 +12294,7 @@
 				50E642C929E4E9CD00566D5D /* SSKEnvironment.swift in Sources */,
 				D9668B2F291AF63500665298 /* SSKJobQueues.swift in Sources */,
 				F9C5CD54289453B300548EEE /* SSKKeychainStorage.swift in Sources */,
+				C198FDD62A37C905000BCAC9 /* SSKKyberPreKeyStore.swift in Sources */,
 				F9C5CE19289453B400548EEE /* SSKPreferences.swift in Sources */,
 				F9C5CD53289453B300548EEE /* SSKPreKeyStore.m in Sources */,
 				F9C5CD52289453B300548EEE /* SSKPreKeyStore.swift in Sources */,

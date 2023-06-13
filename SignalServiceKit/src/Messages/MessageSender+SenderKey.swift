@@ -707,6 +707,7 @@ extension MessageSender {
             sessionStore: Self.signalProtocolStore(for: .aci).sessionStore,
             preKeyStore: Self.signalProtocolStore(for: .aci).preKeyStore,
             signedPreKeyStore: Self.signalProtocolStore(for: .aci).signedPreKeyStore,
+            kyberPreKeyStore: Self.signalProtocolStore(for: .aci).kyberPreKeyStore,
             identityStore: Self.identityManager.store(for: .aci, transaction: writeTx),
             senderKeyStore: Self.senderKeyStore)
 

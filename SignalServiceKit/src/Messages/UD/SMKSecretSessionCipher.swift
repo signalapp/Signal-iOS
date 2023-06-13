@@ -88,6 +88,7 @@ public class SMKSecretSessionCipher: NSObject {
     private let currentSessionStore: SessionStore
     private let currentPreKeyStore: PreKeyStore
     private let currentSignedPreKeyStore: SignedPreKeyStore
+    private let currentKyberPreKeyStore: KyberPreKeyStore
     private let currentIdentityStore: IdentityKeyStore
     private let currentSenderKeyStore: LibSignalClient.SenderKeyStore
 
@@ -95,12 +96,14 @@ public class SMKSecretSessionCipher: NSObject {
     public init(sessionStore: SessionStore,
                 preKeyStore: PreKeyStore,
                 signedPreKeyStore: SignedPreKeyStore,
+                kyberPreKeyStore: KyberPreKeyStore,
                 identityStore: IdentityKeyStore,
                 senderKeyStore: LibSignalClient.SenderKeyStore) throws {
 
         self.currentSessionStore = sessionStore
         self.currentPreKeyStore = preKeyStore
         self.currentSignedPreKeyStore = signedPreKeyStore
+        self.currentKyberPreKeyStore = kyberPreKeyStore
         self.currentIdentityStore = identityStore
         self.currentSenderKeyStore = senderKeyStore
     }
@@ -275,6 +278,7 @@ public class SMKSecretSessionCipher: NSObject {
                 identityStore: currentIdentityStore,
                 preKeyStore: currentPreKeyStore,
                 signedPreKeyStore: currentSignedPreKeyStore,
+                kyberPreKeyStore: currentKyberPreKeyStore,
                 context: context)
         case .senderKey:
             plaintextData = try groupDecrypt(

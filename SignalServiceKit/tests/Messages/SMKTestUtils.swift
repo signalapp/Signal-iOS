@@ -34,6 +34,7 @@ class MockClient {
     let sessionStore: InMemorySignalProtocolStore
     let preKeyStore: InMemorySignalProtocolStore
     let signedPreKeyStore: InMemorySignalProtocolStore
+    let kyberPreKeyStore: InMemorySignalProtocolStore
     let identityStore: InMemorySignalProtocolStore
     let senderKeyStore: InMemorySignalProtocolStore
 
@@ -50,6 +51,7 @@ class MockClient {
         sessionStore = protocolStore
         preKeyStore = protocolStore
         signedPreKeyStore = protocolStore
+        kyberPreKeyStore = protocolStore
         identityStore = protocolStore
         senderKeyStore = protocolStore
     }
@@ -58,6 +60,7 @@ class MockClient {
         return try SMKSecretSessionCipher(sessionStore: sessionStore,
                                           preKeyStore: preKeyStore,
                                           signedPreKeyStore: signedPreKeyStore,
+                                          kyberPreKeyStore: kyberPreKeyStore,
                                           identityStore: identityStore,
                                           senderKeyStore: senderKeyStore)
     }

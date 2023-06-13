@@ -557,6 +557,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     identityStore: identityManager.store(for: localIdentity, transaction: transaction),
                     preKeyStore: signalProtocolStore.preKeyStore,
                     signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
+                    kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
                     context: transaction
                 )
             case .senderKey:
@@ -660,6 +661,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             sessionStore: signalProtocolStore.sessionStore,
             preKeyStore: signalProtocolStore.preKeyStore,
             signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
+            kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
             identityStore: identityManager.store(for: localIdentity, transaction: transaction),
             senderKeyStore: Self.senderKeyStore
         )

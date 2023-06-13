@@ -1390,6 +1390,7 @@ private extension MessageSender {
                 sessionStore: signalProtocolStore.sessionStore,
                 preKeyStore: signalProtocolStore.preKeyStore,
                 signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
+                kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
                 identityStore: identityManager.store(for: .aci, transaction: transaction),
                 senderKeyStore: Self.senderKeyStore
             )
