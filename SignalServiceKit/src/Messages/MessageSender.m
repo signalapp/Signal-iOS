@@ -847,43 +847,6 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
         });
 }
 
-- (nullable TSThread *)threadForMessageWithSneakyTransaction:(TSMessage *)message
-{
-    OWSAssertDebug(!NSThread.isMainThread);
-
-    // Try to avoid opening a write transaction.
-    __block TSThread *_Nullable thread = nil;
-    [self.databaseStorage
-        readWithBlock:^(SDSAnyReadTransaction *transaction) { thread = [message threadWithTransaction:transaction]; }];
-    if (thread != nil) {
-        return thread;
-    }
-
-    DatabaseStorageWrite(self.databaseStorage,
-        ^(SDSAnyWriteTransaction *transaction) { thread = [self threadForMessage:message transaction:transaction]; });
-    return thread;
-}
-
-- (nullable TSThread *)threadForMessage:(TSMessage *)message transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(!NSThread.isMainThread);
-
-    TSThread *_Nullable thread = [message threadWithTransaction:transaction];
-    //    OWSAssertDebug(thread != nil);
-
-    // For some legacy sync messages, thread may be nil.
-    // In this case, we should try to use the "local" thread.
-    if (thread == nil && message.isSyncMessage) {
-        thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
-        if (thread == nil) {
-            OWSFailDebug(@"Could not restore thread for sync message.");
-        } else {
-            OWSLogInfo(@"Thread restored for sync message.");
-        }
-    }
-    return thread;
-}
-
 - (void)sendMessageToRecipient:(OWSMessageSend *)messageSend
 {
     // [sendMessageToRecipient:] prepares a per-recipient
@@ -1034,7 +997,9 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
 
     dispatch_block_t success = ^{
         // This should not be nil, even for legacy queued messages.
-        TSThread *_Nullable thread = [self threadForMessageWithSneakyTransaction:message];
+        __block TSThread *thread;
+        [self.databaseStorage
+            readWithBlock:^(SDSAnyReadTransaction *tx) { thread = [message threadWithTransaction:tx]; }];
         OWSAssertDebug(thread != nil);
 
         TSContactThread *_Nullable contactThread;
