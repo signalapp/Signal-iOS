@@ -358,19 +358,9 @@ extension TSOutgoingMessage {
 // MARK: - Transcripts
 
 public extension TSOutgoingMessage {
-    @objc
-    @available(swift, obsoleted: 1.0)
-    func sendSyncTranscript() -> AnyPromise {
-        AnyPromise(sendSyncTranscript())
-    }
-
     func sendSyncTranscript() -> Promise<Void> {
-        guard shouldSyncTranscript() else {
-            return Promise(error: OWSAssertionError("Unexpectedly attempted to send sync transcript for message"))
-        }
-
-        return databaseStorage.write(.promise) { transaction in
-            guard let localThread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+        return databaseStorage.write(.promise) { tx in
+            guard let localThread = TSAccountManager.getOrCreateLocalThread(transaction: tx) else {
                 throw OWSAssertionError("Missing local thread")
             }
 
@@ -378,26 +368,20 @@ public extension TSOutgoingMessage {
                 throw OWSAssertionError("Missing local uuid")
             }
 
-            guard let transcript = self.buildTranscriptSyncMessage(
-                localThread: localThread,
-                transaction: transaction
-            ) else {
+            guard let transcript = self.buildTranscriptSyncMessage(localThread: localThread, transaction: tx) else {
                 throw OWSAssertionError("Failed to build transcript")
             }
 
-            guard let plaintext = transcript.buildPlainTextData(localThread, transaction: transaction) else {
-                throw OWSAssertionError("Missing proto")
+            guard let serializedMessage = self.messageSender.buildAndRecordMessage(transcript, in: localThread, tx: tx) else {
+                throw OWSAssertionError("Couldn't serialize message.")
             }
-
-            let messageSendLog = SSKEnvironment.shared.messageSendLogRef
-            let payloadId = messageSendLog.recordPayload(plaintext, for: transcript, tx: transaction)
 
             return OWSMessageSend(
                 message: transcript,
-                plaintextContent: plaintext,
-                plaintextPayloadId: payloadId.map { NSNumber(value: $0) },
+                plaintextContent: serializedMessage.plaintextData,
+                plaintextPayloadId: serializedMessage.payloadId,
                 thread: localThread,
-                serviceId: ServiceIdObjC(ServiceId(localUuid)),
+                serviceId: ServiceId(localUuid),
                 udSendingAccess: nil,
                 localAddress: Self.tsAccountManager.localAddress!,
                 sendErrorBlock: nil

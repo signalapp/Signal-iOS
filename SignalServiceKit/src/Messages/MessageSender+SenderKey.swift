@@ -186,35 +186,9 @@ extension MessageSender {
         }
     }
 
-    @objc
-    @available(swift, obsoleted: 1.0)
     func senderKeyMessageSendPromise(
         message: TSOutgoingMessage,
-        plaintextContent: Data?,
-        payloadId: NSNumber?,
-        thread: TSThread,
-        status: SenderKeyStatus,
-        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess],
-        senderCertificates: SenderCertificates,
-        sendErrorBlock: @escaping (ServiceIdObjC, NSError) -> Void
-    ) -> AnyPromise {
-
-        AnyPromise(
-            senderKeyMessageSendPromise(
-                message: message,
-                plaintextContent: plaintextContent,
-                payloadId: payloadId?.int64Value,
-                thread: thread,
-                status: status,
-                udAccessMap: udAccessMap,
-                senderCertificates: senderCertificates,
-                sendErrorBlock: sendErrorBlock)
-        )
-    }
-
-    func senderKeyMessageSendPromise(
-        message: TSOutgoingMessage,
-        plaintextContent: Data?,
+        plaintextContent: Data,
         payloadId: Int64?,
         thread: TSThread,
         status: SenderKeyStatus,
@@ -393,7 +367,7 @@ extension MessageSender {
                 throw OWSAssertionError("Couldn't build SKDM")
             }
 
-            return recipientsNeedingSKDM.map { serviceId in
+            return recipientsNeedingSKDM.compactMap { (serviceId) -> OWSMessageSend? in
                 if let groupThread = thread as? TSGroupThread {
                     Logger.info("Sending SKDM to \(serviceId) for group thread \(groupThread.groupId)")
                 } else {
@@ -411,25 +385,21 @@ extension MessageSender {
                 )
                 skdmMessage.configureAsSentOnBehalfOf(originalMessage, in: thread)
 
-                let plaintext = skdmMessage.buildPlainTextData(contactThread, transaction: writeTx)
-                let payloadId: Int64?
-
-                if let plaintext = plaintext {
-                    let messageSendLog = SSKEnvironment.shared.messageSendLogRef
-                    payloadId = messageSendLog.recordPayload(plaintext, for: skdmMessage, tx: writeTx)
-                } else {
-                    payloadId = nil
+                guard let serializedMessage = self.buildAndRecordMessage(skdmMessage, in: contactThread, tx: writeTx) else {
+                    sendErrorBlock(serviceId, SenderKeyError.recipientSKDMFailed(OWSAssertionError("Couldn't build message.")))
+                    return nil
                 }
 
                 return OWSMessageSend(
                     message: skdmMessage,
-                    plaintextContent: plaintext,
-                    plaintextPayloadId: payloadId.map { NSNumber(value: $0) },
+                    plaintextContent: serializedMessage.plaintextData,
+                    plaintextPayloadId: serializedMessage.payloadId,
                     thread: contactThread,
-                    serviceId: serviceId,
+                    serviceId: serviceId.wrappedValue,
                     udSendingAccess: udAccessMap[serviceId],
                     localAddress: localAddress,
-                    sendErrorBlock: nil)
+                    sendErrorBlock: nil
+                )
             }
         }.then(on: senderKeyQueue) { skdmSends in
             // First, we double check we have sessions for these message sends
@@ -522,16 +492,12 @@ extension MessageSender {
     // in the promise. The server reported those addresses as unregistered.
     fileprivate func sendSenderKeyRequest(
         message: TSOutgoingMessage,
-        plaintext: Data?,
+        plaintext: Data,
         thread: TSThread,
         serviceIds: [ServiceIdObjC],
         udAccessMap: [ServiceIdObjC: OWSUDSendingAccess],
         senderCertificate: SenderCertificate
     ) -> Promise<SenderKeySendResult> {
-        guard let plaintext = plaintext else {
-            return .init(error: OWSAssertionError("Nil content"))
-        }
-
         return self.databaseStorage.write(.promise) { writeTx -> ([Recipient], Data) in
             let recipients = serviceIds.map { Recipient(serviceId: $0.wrappedValue, transaction: writeTx) }
             let ciphertext = try self.senderKeyMessageBody(

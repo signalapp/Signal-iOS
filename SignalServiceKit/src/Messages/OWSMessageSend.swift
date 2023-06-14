@@ -33,12 +33,12 @@ public class OWSMessageSend: NSObject, UDSendingParamsProvider {
     public let message: TSOutgoingMessage
 
     @objc
-    public var plaintextContent: Data?
+    public let plaintextContent: Data
 
     @objc(plaintextPayloadId)
     @available(swift, obsoleted: 1.0)
     public var plaintextPayloadIdObjc: NSNumber? { plaintextPayloadId.map { NSNumber(value: $0) } }
-    public var plaintextPayloadId: Int64?
+    public let plaintextPayloadId: Int64?
 
     @objc
     public let thread: TSThread
@@ -51,7 +51,7 @@ public class OWSMessageSend: NSObject, UDSendingParamsProvider {
 
     private static let kMaxRetriesPerRecipient: Int = 3
 
-    private var _remainingAttempts = AtomicValue<Int>(OWSMessageSend.kMaxRetriesPerRecipient)
+    private let _remainingAttempts = AtomicValue<Int>(OWSMessageSend.kMaxRetriesPerRecipient)
     @objc
     public var remainingAttempts: Int {
         get { return _remainingAttempts.get() }
@@ -77,21 +77,22 @@ public class OWSMessageSend: NSObject, UDSendingParamsProvider {
     @objc
     public let failure: (Error) -> Void
 
-    @objc
-    public init(message: TSOutgoingMessage,
-                plaintextContent: Data?,
-                plaintextPayloadId: NSNumber?,
-                thread: TSThread,
-                serviceId: ServiceIdObjC,
-                udSendingAccess: OWSUDSendingAccess?,
-                localAddress: SignalServiceAddress,
-                sendErrorBlock: ((Error) -> Void)?) {
+    public init(
+        message: TSOutgoingMessage,
+        plaintextContent: Data,
+        plaintextPayloadId: Int64?,
+        thread: TSThread,
+        serviceId: ServiceId,
+        udSendingAccess: OWSUDSendingAccess?,
+        localAddress: SignalServiceAddress,
+        sendErrorBlock: ((Error) -> Void)?
+    ) {
         self.message = message
         self.plaintextContent = plaintextContent
-        self.plaintextPayloadId = plaintextPayloadId?.int64Value
+        self.plaintextPayloadId = plaintextPayloadId
         self.thread = thread
-        self.serviceId = serviceId
-        self.address = SignalServiceAddress(serviceId.wrappedValue)
+        self.serviceId = ServiceIdObjC(serviceId)
+        self.address = SignalServiceAddress(serviceId)
         self.localAddress = localAddress
         self.isLocalAddress = address.isLocalAddress
 

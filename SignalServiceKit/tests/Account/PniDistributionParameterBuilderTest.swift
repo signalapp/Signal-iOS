@@ -213,7 +213,7 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
     var deviceMessageMocks: [DeviceMessageMock] = []
 
     func buildDeviceMessage(
-        forMessagePlaintextContent messagePlaintextContent: Data?,
+        forMessagePlaintextContent messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
         recipientId: String,
         serviceId: ServiceId,

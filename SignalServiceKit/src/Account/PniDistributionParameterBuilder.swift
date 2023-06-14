@@ -311,7 +311,7 @@ extension PniDistributionParameterBuilderImpl {
 
 protocol _PniDistributionParameterBuilder_MessageSender_Shim {
     func buildDeviceMessage(
-        forMessagePlaintextContent messagePlaintextContent: Data?,
+        forMessagePlaintextContent messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
         recipientId: String,
         serviceId: ServiceId,
@@ -332,7 +332,7 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
     }
 
     func buildDeviceMessage(
-        forMessagePlaintextContent messagePlaintextContent: Data?,
+        forMessagePlaintextContent messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
         recipientId: String,
         serviceId: ServiceId,

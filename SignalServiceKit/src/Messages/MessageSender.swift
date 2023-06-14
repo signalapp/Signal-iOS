@@ -6,16 +6,6 @@
 import Foundation
 import LibSignalClient
 
-@objc
-public extension MessageSender {
-
-    class func ensureSessionsforMessageSendsObjc(_ messageSends: [OWSMessageSend],
-                                                 ignoreErrors: Bool) -> AnyPromise {
-        AnyPromise(ensureSessions(forMessageSends: messageSends,
-                                  ignoreErrors: ignoreErrors))
-    }
-}
-
 // MARK: - Message "isXYZ" properties
 
 private extension TSOutgoingMessage {
@@ -842,12 +832,327 @@ public extension TSMessage {
 // MARK: -
 
 extension MessageSender {
+    @objc
+    @available(swift, obsoleted: 1.0)
+    func sendMessageToServiceObjC(_ message: TSOutgoingMessage) -> AnyPromise {
+        return AnyPromise(sendMessageToService(message))
+    }
+
+    func sendMessageToService(_ message: TSOutgoingMessage) -> Promise<Void> {
+        if DebugFlags.messageSendsFail.get() {
+            return Promise(error: OWSUnretryableMessageSenderError())
+        }
+        return Self.prepareSend(of: message).then(on: DispatchQueue.global()) { sendInfo in
+            return self.sendMessageToService(message, sendInfo: sendInfo)
+        }.recover(on: DispatchQueue.global()) { (error) -> Promise<Void> in
+            guard message.wasSentToAnyRecipient else {
+                throw error
+            }
+            return self.handleMessageSentLocally(message).recover(on: SyncScheduler()) { (syncError) -> Promise<Void> in
+                // Always ignore the sync error...
+                return .value(())
+            }.then(on: SyncScheduler()) { () -> Promise<Void> in
+                // ...so that we can throw the original error for the caller. (Note that we
+                // throw this error even if the sync message is sent successfully.)
+                throw error
+            }
+        }.then(on: DispatchQueue.global()) {
+            return self.handleMessageSentLocally(message)
+        }
+    }
+
+    private func sendMessageToService(_ message: TSOutgoingMessage, sendInfo: MessageSendInfo) -> Promise<Void> {
+        let thread = sendInfo.thread
+        let recipientServiceIds = sendInfo.serviceIds.map { $0.wrappedValue }
+        let senderCertificates = sendInfo.senderCertificates
+
+        let canSendToThread: Bool = {
+            if message is OWSOutgoingReactionMessage {
+                return thread.canSendReactionToThread
+            }
+            let isChatMessage = (
+                message.hasRenderableContent()
+                || message is OWSOutgoingGroupCallMessage
+                || message is OWSOutgoingCallMessage
+            )
+            return isChatMessage ? thread.canSendChatMessagesToThread() : thread.canSendNonChatMessagesToThread
+        }()
+        guard canSendToThread else {
+            if message.shouldBeSaved {
+                return Promise(error: OWSAssertionError("Sending to thread blocked."))
+            }
+            // Pretend to succeed for non-visible messages like read receipts, etc.
+            return .value(())
+        }
+
+        if let contactThread = thread as? TSContactThread {
+            // In the "self-send" aka "Note to Self" special case, we only need to send
+            // certain kinds of messages. (In particular, regular data messages are
+            // sent via their implicit sync message only.)
+            if contactThread.contactAddress.isLocalAddress, !message.canSendToLocalAddress {
+                owsAssertDebug(recipientServiceIds.count == 1)
+                Logger.info("Dropping \(type(of: message)) sent to local address (it should be sent by sync message)")
+                // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
+                return .value(())
+            }
+        }
+
+        if recipientServiceIds.isEmpty {
+            // All recipients are already sent or can be skipped. NOTE: We might still
+            // need to send a sync transcript.
+            return .value(())
+        }
+
+        let allErrors = AtomicArray<(serviceId: ServiceId, error: Error)>(lock: AtomicLock())
+
+        return sendMessage(
+            message,
+            in: thread,
+            to: recipientServiceIds,
+            senderCertificates: senderCertificates,
+            sendErrorBlock: { serviceId, error in
+                allErrors.append((serviceId, error))
+            }
+        ).recover(on: DispatchQueue.global()) { (_) -> Promise<Void> in
+            // We ignore the error for the Promise & consult `allErrors` instead.
+            return try self.handleSendFailure(message: message, thread: thread, perRecipientErrors: allErrors.get())
+        }
+    }
+
+    private func sendMessage(
+        _ message: TSOutgoingMessage,
+        in thread: TSThread,
+        to serviceIds: [ServiceId],
+        senderCertificates: SenderCertificates,
+        sendErrorBlock: @escaping (ServiceId, Error) -> Void
+    ) -> Promise<Void> {
+        // 1. Build the plaintext message content.
+        let serializedMessage = databaseStorage.write { tx in buildAndRecordMessage(message, in: thread, tx: tx) }
+        guard let serializedMessage else {
+            return Promise(error: OWSAssertionError("Couldn't build message."))
+        }
+
+        // 2. Gather "ud sending access".
+        var sendingAccessMap = [ServiceIdObjC: OWSUDSendingAccess]()
+        for serviceId in serviceIds {
+            if tsAccountManager.localUuid == serviceId.uuidValue {
+                continue
+            }
+            sendingAccessMap[ServiceIdObjC(serviceId)] = (
+                message.isStorySend
+                ? udManager.storySendingAccess(for: ServiceIdObjC(serviceId), senderCertificates: senderCertificates)
+                : udManager.udSendingAccess(for: ServiceIdObjC(serviceId), requireSyncAccess: true, senderCertificates: senderCertificates)
+            )
+        }
+
+        // 3. If we have any participants that support sender key, build a promise
+        // for their send.
+        let senderKeyStatus = senderKeyStatus(
+            for: thread,
+            intendedRecipients: serviceIds.map { ServiceIdObjC($0) },
+            udAccessMap: sendingAccessMap
+        )
+
+        var senderKeyMessagePromise: Promise<Void>?
+        var senderKeyServiceIds: [ServiceId] = senderKeyStatus.allSenderKeyParticipants.map { $0.wrappedValue }
+        var fanoutServiceIds: [ServiceId] = senderKeyStatus.fanoutParticipants.map { $0.wrappedValue }
+        if thread.usesSenderKey, senderKeyServiceIds.count >= 2, message.canSendWithSenderKey {
+            senderKeyMessagePromise = senderKeyMessageSendPromise(
+                message: message,
+                plaintextContent: serializedMessage.plaintextData,
+                payloadId: serializedMessage.payloadId,
+                thread: thread,
+                status: senderKeyStatus,
+                udAccessMap: sendingAccessMap,
+                senderCertificates: senderCertificates,
+                sendErrorBlock: { serviceId, error in sendErrorBlock(serviceId.wrappedValue, error) }
+            )
+        } else {
+            senderKeyServiceIds = []
+            fanoutServiceIds = serviceIds
+            if !message.canSendWithSenderKey {
+                Logger.info("Last sender key send attempt failed for message \(message.timestamp). Fanning out")
+            }
+        }
+        owsAssertDebug(fanoutServiceIds.count + senderKeyServiceIds.count == serviceIds.count)
+
+        // 4. Build a "OWSMessageSend" for each non-senderKey recipient.
+        let messageSends = fanoutServiceIds.map { serviceId in
+            OWSMessageSend(
+                message: message,
+                plaintextContent: serializedMessage.plaintextData,
+                plaintextPayloadId: serializedMessage.payloadId,
+                thread: thread,
+                serviceId: serviceId,
+                udSendingAccess: sendingAccessMap[ServiceIdObjC(serviceId)],
+                localAddress: tsAccountManager.localAddress!,
+                sendErrorBlock: { error in sendErrorBlock(serviceId, error) }
+            )
+        }
+
+        // 5. Before kicking off the per-recipient message sends, try to ensure
+        // sessions for all recipient devices in parallel.
+        let ensureSessionsPromise = Self.ensureSessions(forMessageSends: messageSends, ignoreErrors: true)
+        return ensureSessionsPromise.then(on: DispatchQueue.global()) { () -> Promise<Void> in
+            // 6. Perform the per-recipient message sends.
+            var sendPromises: [Promise<Void>] = messageSends.map { messageSend in
+                self.sendMessage(toRecipient: messageSend)
+                return messageSend.promise
+            }
+
+            // 7. Add the sender-key promise
+            if let senderKeyMessagePromise {
+                sendPromises.append(senderKeyMessagePromise)
+            }
+
+            // We use resolved, not fulfilled, because we don't want the completion
+            // promise to execute until _all_ send promises have either succeeded or
+            // failed. Fulfilled executes as soon as any of its input promises fail.
+            return Promise.when(resolved: sendPromises).map(on: SyncScheduler()) { results in
+                for result in results {
+                    try result.get()
+                }
+            }
+        }
+    }
+
+    private func handleSendFailure(
+        message: TSOutgoingMessage,
+        thread: TSThread,
+        perRecipientErrors allErrors: [(serviceId: ServiceId, error: Error)]
+    ) throws -> Promise<Void> {
+        // Some errors should be ignored when sending messages to non 1:1 threads.
+        // See discussion on NSError (MessageSender) category.
+        let shouldIgnoreError = { (error: Error) -> Bool in
+            return !(thread is TSContactThread) && error.shouldBeIgnoredForNonContactThreads
+        }
+
+        // Record the individual error for each "failed" recipient.
+        self.databaseStorage.write { tx in
+            for (serviceId, error) in Dictionary(allErrors, uniquingKeysWith: { _, new in new }) {
+                if shouldIgnoreError(error) {
+                    continue
+                }
+                message.update(withFailedRecipient: SignalServiceAddress(serviceId), error: error, transaction: tx)
+            }
+        }
+
+        let filteredErrors = allErrors.lazy.map { $0.error }.filter { !shouldIgnoreError($0) }
+
+        // Some errors should never be retried, in order to avoid hitting rate
+        // limits, for example.  Unfortunately, since group send retry is
+        // all-or-nothing, we need to fail immediately even if some of the other
+        // recipients had retryable errors.
+        if let fatalError = filteredErrors.first(where: { $0.isFatalError }) {
+            throw fatalError
+        }
+
+        // If any of the send errors are retryable, we want to retry. Therefore,
+        // prefer to propagate a retryable error.
+        if let retryableError = filteredErrors.first(where: { $0.isRetryable }) {
+            throw retryableError
+        }
+
+        // Otherwise, if we have any error at all, propagate it.
+        if let anyError = filteredErrors.first {
+            throw anyError
+        }
+
+        // If we only received errors that we should ignore, consider this send a
+        // success, unless the message could not be sent to any recipient.
+        if message.sentRecipientsCount() == 0 {
+            throw MessageSenderErrorNoValidRecipients()
+        }
+        return .value(())
+    }
+
+    private func handleMessageSentLocally(_ message: TSOutgoingMessage) -> Promise<Void> {
+        if message.shouldBeSaved {
+            databaseStorage.write { tx in
+                let latestInteraction = TSInteraction.anyFetch(uniqueId: message.uniqueId, transaction: tx)
+                guard let latestMessage = latestInteraction as? TSOutgoingMessage else {
+                    Logger.warn("Could not update expiration for deleted message.")
+                    return
+                }
+                ViewOnceMessages.completeIfNecessary(message: latestMessage, transaction: tx)
+            }
+        }
+        return sendSyncTranscriptIfNeeded(for: message).done(on: SyncScheduler()) {
+            // Don't mark self-sent messages as read (or sent) until the sync
+            // transcript is sent.
+            //
+            // NOTE: This only applies to the 'note to self' conversation.
+            if message.isSyncMessage {
+                return
+            }
+            let thread = self.databaseStorage.read { tx in message.thread(transaction: tx) }
+            guard let contactThread = thread as? TSContactThread, contactThread.contactAddress.isLocalAddress else {
+                return
+            }
+            owsAssertDebug(message.recipientAddresses().count == 1)
+            self.databaseStorage.write { tx in
+                for sendingAddress in message.sendingRecipientAddresses() {
+                    message.update(
+                        withReadRecipient: sendingAddress,
+                        recipientDeviceId: self.tsAccountManager.storedDeviceId,
+                        readTimestamp: message.timestamp,
+                        transaction: tx
+                    )
+                    if message.isVoiceMessage || message.isViewOnceMessage {
+                        message.update(
+                            withViewedRecipient: sendingAddress,
+                            recipientDeviceId: self.tsAccountManager.storedDeviceId,
+                            viewedTimestamp: message.timestamp,
+                            transaction: tx
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private func sendSyncTranscriptIfNeeded(for message: TSOutgoingMessage) -> Promise<Void> {
+        guard message.shouldSyncTranscript() else {
+            return .value(())
+        }
+        return message.sendSyncTranscript().done(on: DispatchQueue.global()) {
+            Logger.info("Successfully sent sync transcript.")
+            self.databaseStorage.write { tx in
+                message.update(withHasSyncedTranscript: true, transaction: tx)
+            }
+        }.catch(on: DispatchQueue.global()) { error in
+            Logger.info("Failed to send sync transcript: \(error) (isRetryable: \(error.isRetryable))")
+        }
+    }
+}
+
+// MARK: -
+
+extension MessageSender {
 
     private static let completionQueue: DispatchQueue = {
         return DispatchQueue(label: "org.signal.message-sender.completion",
                              qos: .utility,
                              autoreleaseFrequency: .workItem)
     }()
+
+    struct SerializedMessage {
+        let plaintextData: Data
+        let payloadId: Int64?
+    }
+
+    func buildAndRecordMessage(
+        _ message: TSOutgoingMessage,
+        in thread: TSThread,
+        tx: SDSAnyWriteTransaction
+    ) -> SerializedMessage? {
+        guard let plaintextData = message.buildPlainTextData(thread, transaction: tx) else {
+            return nil
+        }
+        let messageSendLog = SSKEnvironment.shared.messageSendLogRef
+        let payloadId = messageSendLog.recordPayload(plaintextData, for: message, tx: tx)
+        return SerializedMessage(plaintextData: plaintextData, payloadId: payloadId)
+    }
 
     @objc
     func buildDeviceMessages(messageSend: OWSMessageSend) throws -> [DeviceMessage] {
@@ -887,7 +1192,7 @@ extension MessageSender {
     /// A `nil` return value indicates that the given message could not be built
     /// due to an invalid device ID.
     func buildDeviceMessage(
-        messagePlaintextContent: Data?,
+        messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
         recipientId: AccountId,
         serviceId: ServiceId,
@@ -899,10 +1204,6 @@ extension MessageSender {
         udSendingParamsProvider: UDSendingParamsProvider?
     ) throws -> DeviceMessage? {
         AssertNotOnMainThread()
-
-        guard let messagePlaintextContent else {
-            throw InvalidMessageError()
-        }
 
         do {
             try ensureRecipientHasSession(
