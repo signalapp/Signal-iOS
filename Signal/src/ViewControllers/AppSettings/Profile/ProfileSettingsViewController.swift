@@ -116,18 +116,40 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         ))
 
         if FeatureFlags.usernames, let localAci {
-            mainSection.add(.init(
-                customCellBlock: { [weak self] in
-                    guard let self else { return UITableViewCell() }
+            let usernameTableItem: OWSTableItem
 
-                    return self.buildUsernameCell()
-                },
-                actionBlock: { [weak self] in
-                    guard let self else { return }
+            if let username {
+                // No action block required, as the cell will handle taps itself
+                // by presenting a context menu.
 
-                    self.handleUsernameCellTapped(localAci: localAci)
-                }
-            ))
+                usernameTableItem = OWSTableItem(
+                    customCellBlock: { [weak self] in
+                        guard let self else { return UITableViewCell() }
+
+                        let cell = self.buildUsernameContextMenuCell(
+                            username: username,
+                            localAci: localAci
+                        )
+
+                        return cell
+                    }
+                )
+            } else {
+                usernameTableItem = OWSTableItem(
+                    customCellBlock: { [weak self] in
+                        guard let self else { return UITableViewCell() }
+
+                        return self.buildUsernamePlaceholderCell()
+                    },
+                    actionBlock: { [weak self] in
+                        guard let self else { return }
+
+                        self.presentUsernameSelection(localAci: localAci)
+                    }
+                )
+            }
+
+            mainSection.add(usernameTableItem)
         }
 
         mainSection.add(.disclosureItem(
@@ -188,180 +210,142 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Username
 
-    private func buildUsernameCell() -> UITableViewCell {
-        let (
-            usernameTitle,
-            usernameSubtitle,
-            usernameShareView
-        ): (String, String?, UIView?) = {
-            guard let username else {
-                return (
-                    OWSLocalizedString(
-                        "PROFILE_SETTINGS_USERNAME_PLACEHOLDER",
-                        comment: "A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username."
-                    ),
-                    nil,
-                    nil
-                )
-            }
-
-            let usernameLink = Usernames.UsernameLink(username: username)
-
-            // Wraps a right-aligned share button.
-            let shareView: UIView = {
-                let leadingPaddingView: UIView = .init()
-
-                let shareButton: UIButton = {
-                    let button = CircleButton { [weak self] in
-                        guard let self else { return }
-
-                        let shareMyUsernameSheet = ShareMyUsernameSheetViewController(
-                            username: username,
-                            usernameLink: usernameLink
-                        )
-                        self.present(shareMyUsernameSheet, animated: true)
-                    }
-
-                    button.setImage(Theme.iconImage(.settingsShareUsername), for: .normal)
-                    button.dimsWhenHighlighted = true
-                    button.imageEdgeInsets = .init(margin: 4)
-                    button.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray10
-                    button.autoSetDimension(.width, toSize: 32)
-
-                    return button
-                }()
-
-                let shareViewStack: OWSStackView = {
-                    let stack = OWSStackView(
-                        name: "Share my username stack",
-                        arrangedSubviews: [
-                            leadingPaddingView,
-                            shareButton
-                        ]
-                    )
-
-                    stack.axis = .horizontal
-                    stack.alignment = .center
-                    stack.distribution = .fill
-                    stack.isLayoutMarginsRelativeArrangement = true
-                    stack.layoutMargins.trailing = 4
-
-                    return stack
-                }()
-
-                return shareViewStack
-            }()
-
-            return (
-                username,
-                usernameLink.asAestheticUrlString,
-                shareView
-            )
-        }()
-
+    private func buildUsernamePlaceholderCell() -> UITableViewCell {
         return OWSTableItem.buildCell(
             icon: .settingsMention,
-            itemName: usernameTitle,
-            subtitle: usernameSubtitle,
-            accessoryType: .disclosureIndicator,
-            accessoryView: usernameShareView,
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "username")
+            itemName: OWSLocalizedString(
+                "PROFILE_SETTINGS_USERNAME_PLACEHOLDER",
+                comment: "A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username."
+            ),
+            accessoryType: .disclosureIndicator
         )
     }
 
-    private func handleUsernameCellTapped(localAci: ServiceId) {
-        func presentUsernameSelection(from self: ProfileSettingsViewController) {
-            let usernameSelectionCoordinator = UsernameSelectionCoordinator(
-                localAci: localAci,
-                currentUsername: self.username,
-                usernameSelectionDelegate: self,
-                context: .init(
-                    usernameEducationManager: self.context.usernameEducationManager,
-                    networkManager: self.networkManager,
-                    databaseStorage: self.databaseStorage,
-                    usernameLookupManager: self.context.usernameLookupManager,
-                    schedulers: self.context.schedulers,
-                    storageServiceManager: self.storageServiceManager
+    private func buildUsernameContextMenuCell(
+        username: String,
+        localAci: ServiceId
+    ) -> UITableViewCell {
+       let editUsernameAction = ContextMenuAction(
+            title: OWSLocalizedString(
+                "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION",
+                comment: "Title for a menu action allowing users to edit their existing username."
+            ),
+            image: Theme.iconImage(.settingsAbout),
+            handler: { [weak self] _ in
+                guard let self else { return }
+
+                self.presentUsernameSelection(localAci: localAci)
+            }
+        )
+
+        let deleteUsernameAction = ContextMenuAction(
+            title: CommonStrings.deleteButton,
+            image: Theme.iconImage(.trash24),
+            attributes: .destructive,
+            handler: { [weak self] _ in
+                guard let self else { return }
+
+                self.offerToDeleteUsername(localAci: localAci)
+            }
+        )
+
+        let contextMenuButton = ContextMenuButton(
+            contextMenu: ContextMenu([
+                editUsernameAction,
+                deleteUsernameAction
+            ]),
+            preferredContextMenuPosition: ContextMenuButton.ContextMenuPosition(
+                verticalPinnedEdge: .bottom,
+                horizontalPinnedEdge: CurrentAppContext().isRTL ? .right : .left,
+                alignmentOffset: CGPoint(
+                    x: Self.cellHInnerMargin,
+                    y: Self.cellVInnerMargin
                 )
             )
+        )
 
-            usernameSelectionCoordinator.present(fromViewController: self)
+        contextMenuButton.showsContextMenuAsPrimaryAction = true
+
+        let contextMenuPresentingCell = ContextMenuPresentingTableViewCell(
+            contextMenuButton: contextMenuButton
+        )
+
+        return OWSTableItem.buildCell(
+            baseCell: contextMenuPresentingCell,
+            contentWrapperView: contextMenuButton,
+            icon: .settingsMention,
+            itemName: username,
+            accessoryType: .disclosureIndicator
+        )
+    }
+
+    private func presentUsernameSelection(localAci: ServiceId) {
+        let usernameSelectionCoordinator = UsernameSelectionCoordinator(
+            localAci: localAci,
+            currentUsername: username,
+            usernameSelectionDelegate: self,
+            context: .init(
+                usernameEducationManager: context.usernameEducationManager,
+                networkManager: networkManager,
+                databaseStorage: databaseStorage,
+                usernameLookupManager: context.usernameLookupManager,
+                schedulers: context.schedulers,
+                storageServiceManager: storageServiceManager
+            )
+        )
+
+        usernameSelectionCoordinator.present(fromViewController: self)
+    }
+
+    private func offerToDeleteUsername(localAci: ServiceId) {
+        OWSActionSheets.showConfirmationAlert(
+            message: OWSLocalizedString(
+                "USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE",
+                comment: "A message asking the user if they are sure they want to remove their username."
+            ),
+            proceedTitle: OWSLocalizedString(
+                "USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE",
+                comment: "The title of an action sheet button that will delete a user's username."
+            ),
+            proceedStyle: .destructive
+        ) { [weak self] _ in
+            guard let self else { return }
+
+            self.deleteUsernameBehindModalActivityIndicator(localAci: localAci)
         }
+    }
 
-        func deleteUsernameBehindModalActivityIndicator(from self: ProfileSettingsViewController) {
-            ModalActivityIndicatorViewController.present(
-                fromViewController: self,
-                canCancel: false
-            ) { modal in
-                firstly {
-                    Usernames
-                        .API(
-                            networkManager: self.networkManager,
-                            schedulers: self.context.schedulers
-                        )
-                        .attemptToDeleteCurrentUsername()
-                }.done(on: DispatchQueue.main) { [weak self] in
-                    defer { modal.dismiss() }
+    private func deleteUsernameBehindModalActivityIndicator(localAci: ServiceId) {
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false
+        ) { modal in
+            firstly {
+                Usernames.API(
+                    networkManager: self.networkManager,
+                    schedulers: self.context.schedulers
+                ).attemptToDeleteCurrentUsername()
+            }.done(on: DispatchQueue.main) { [weak self] in
+                defer { modal.dismiss() }
 
-                    guard let self else { return }
+                guard let self else { return }
 
-                    self.databaseStorage.write { transaction in
-                        self.context.usernameLookupManager.saveUsername(
-                            nil,
-                            forAci: localAci,
-                            transaction: transaction.asV2Write
-                        )
-                    }
+                self.databaseStorage.write { transaction in
+                    self.context.usernameLookupManager.saveUsername(
+                        nil,
+                        forAci: localAci,
+                        transaction: transaction.asV2Write
+                    )
+                }
 
-                    self.usernameDidChange(to: nil)
-                }.catch(on: DispatchQueue.main) { error in
-                    modal.dismiss {
-                        OWSActionSheets.showErrorAlert(
-                            message: CommonStrings.somethingWentWrongTryAgainLaterError
-                        )
-                    }
+                self.usernameDidChange(to: nil)
+            }.catch(on: DispatchQueue.main) { error in
+                modal.dismiss {
+                    OWSActionSheets.showErrorAlert(
+                        message: CommonStrings.somethingWentWrongTryAgainLaterError
+                    )
                 }
             }
-        }
-
-        if username != nil {
-            let selectUsernameActionSheet = ActionSheetController()
-
-            selectUsernameActionSheet.addAction(.init(
-                title: CommonStrings.editButton,
-                accessibilityIdentifier: "UsernameActionSheet.edit",
-                style: .default,
-                handler: { [weak self] _ in
-                    guard let self else { return }
-                    presentUsernameSelection(from: self)
-                }
-            ))
-
-            selectUsernameActionSheet.addAction(.init(
-                title: CommonStrings.deleteButton,
-                accessibilityIdentifier: "UsernameActionSheet.delete",
-                style: .destructive,
-                handler: { [weak self] _ in
-                    OWSActionSheets.showConfirmationAlert(
-                        message: OWSLocalizedString(
-                            "USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE",
-                            comment: "A message asking the user if they are sure they want to remove their username."
-                        ),
-                        proceedTitle: OWSLocalizedString(
-                            "USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE",
-                            comment: "The title of an action sheet button that will delete a user's username."
-                        ),
-                        proceedStyle: .destructive
-                    ) { _ in
-                        guard let self else { return }
-                        deleteUsernameBehindModalActivityIndicator(from: self)
-                    }
-                }
-            ))
-
-            presentActionSheet(selectUsernameActionSheet)
-        } else {
-            presentUsernameSelection(from: self)
         }
     }
 

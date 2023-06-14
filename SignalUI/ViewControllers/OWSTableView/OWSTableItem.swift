@@ -264,7 +264,7 @@ public class OWSTableItem {
         return item
     }
 
-    // MARK: -
+    // MARK: - Table View Cells
 
     public class func newCell() -> UITableViewCell {
         let cell = UITableViewCell()
@@ -454,6 +454,8 @@ public extension OWSTableItem {
     }
 
     static func buildCell(
+        baseCell: UITableViewCell? = nil,
+        contentWrapperView: UIView? = nil,
         icon: ThemeIcon? = nil,
         tintColor: UIColor? = nil,
         itemName: String,
@@ -477,6 +479,8 @@ public extension OWSTableItem {
         }
 
         return buildImageViewCell(
+            baseCell: baseCell,
+            contentWrapperView: contentWrapperView,
             imageView: imageView,
             itemName: itemName,
             subtitle: subtitle,
@@ -521,6 +525,8 @@ public extension OWSTableItem {
     }
 
     private static func buildImageViewCell(
+        baseCell: UITableViewCell? = nil,
+        contentWrapperView: UIView? = nil,
         imageView: UIImageView? = nil,
         tintColor: UIColor? = nil,
         itemName: String,
@@ -536,12 +542,15 @@ public extension OWSTableItem {
         customColor: UIColor? = nil,
         accessibilityIdentifier: String? = nil
     ) -> UITableViewCell {
+        let cell: UITableViewCell = {
+            guard let baseCell else {
+                return OWSTableItem.newCell()
+            }
 
-        // We can't use the built-in UITableViewCell with CellStyle.value1,
-        // because if the content of the primary label and the accessory label
-        // overflow the cell layout, their contents will overlap.  We want
-        // the labels to truncate in that scenario.
-        let cell = OWSTableItem.newCell()
+            configureCell(baseCell)
+            return baseCell
+        }()
+
         cell.preservesSuperviewLayoutMargins = true
         cell.contentView.preservesSuperviewLayoutMargins = true
 
@@ -628,11 +637,21 @@ public extension OWSTableItem {
         contentRow.axis = .horizontal
         contentRow.alignment = .center
         contentRow.spacing = self.iconSpacing
-        cell.contentView.addSubview(contentRow)
 
         contentRow.setContentHuggingHigh()
-        contentRow.autoPinEdgesToSuperviewMargins()
         contentRow.autoSetDimension(.height, toSize: iconSize, relation: .greaterThanOrEqual)
+
+        if let contentWrapperView {
+            cell.contentView.addSubview(contentWrapperView)
+            contentWrapperView.addSubview(contentRow)
+
+            contentWrapperView.autoPinEdgesToSuperviewMargins()
+            contentRow.autoPinEdgesToSuperviewEdges()
+        } else {
+            cell.contentView.addSubview(contentRow)
+
+            contentRow.autoPinEdgesToSuperviewMargins()
+        }
 
         cell.accessibilityIdentifier = accessibilityIdentifier
 

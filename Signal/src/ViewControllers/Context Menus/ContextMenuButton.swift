@@ -11,18 +11,14 @@ import SignalServiceKit
 /// When we drop iOS 13, we can remove this class and replace all usages with a vanilla UIButton.
 /// As such, its exposed API should remain identical to what UIButton exposes in iOS 14.
 public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
+    override public var intrinsicContentSize: CGSize { .zero }
+
     public var contextMenu: ContextMenu? {
         didSet { updateHandlers() }
     }
 
-    /// An offset for the presented context menu from the corner of the button
-    /// to which the menu is aligned.
-    /// - SeeAlso
-    /// ``ContextMenuTargetedPreviewAccessory.AccessoryAlignment.alignmentOffset``
-    /// - Note
-    /// The corner to which the menu is aligned is determined automatically
-    /// based on the position of the button in the window.
-    public var menuAlignmentOffset: CGPoint
+    /// The preferred position of the context menu, when presented.
+    public let preferredContextMenuPosition: ContextMenuPosition?
 
     /// When defined as `true` the context menu will present immediately on touch down.
     /// Otherwise, the context menu is presented after a long press. If you are trying to handle
@@ -37,10 +33,10 @@ public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
 
     public init(
         contextMenu: ContextMenu? = nil,
-        menuAlignmentOffset: CGPoint = CGPoint(x: 8, y: 16)
+        preferredContextMenuPosition: ContextMenuPosition? = nil
     ) {
         self.contextMenu = contextMenu
-        self.menuAlignmentOffset = menuAlignmentOffset
+        self.preferredContextMenuPosition = preferredContextMenuPosition
 
         super.init(frame: .zero)
     }
@@ -125,15 +121,24 @@ public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
         }
     }
 
-    private lazy var longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressRecognized(_:)))
+    // MARK: - Taps and gestures
+
+    private lazy var longPressGestureRecognizer: UILongPressGestureRecognizer = {
+        let gestureRecognizer = UILongPressGestureRecognizer(
+            target: self,
+            action: #selector(longPressRecognized(_:))
+        )
+        gestureRecognizer.minimumPressDuration = showsContextMenuAsPrimaryAction ? 0 : 0.5
+        return gestureRecognizer
+    }()
+
     private func updateHandlers() {
         if contextMenu == nil {
             removeGestureRecognizer(longPressGestureRecognizer)
-        } else {
-            addGestureRecognizer(longPressGestureRecognizer)
+            return
         }
 
-        longPressGestureRecognizer.minimumPressDuration = showsContextMenuAsPrimaryAction ? 0 : 0.5
+        addGestureRecognizer(longPressGestureRecognizer)
     }
 
     @objc
@@ -153,14 +158,16 @@ public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
         }
     }
 
+    // MARK: - 
+
     /// A representation of the context menu's relative presentation origin
     /// relative to the button's frame in the window.
-    private struct ContextMenuPosition {
-        enum VerticalEdge {
+    public struct ContextMenuPosition {
+        public enum VerticalEdge {
             case top
             case bottom
 
-            var accessoryAlignment: ContextMenuTargetedPreviewAccessory.AccessoryAlignment.Edge {
+            fileprivate var accessoryAlignment: ContextMenuTargetedPreviewAccessory.AccessoryAlignment.Edge {
                 switch self {
                 case .top: return .top
                 case .bottom: return .bottom
@@ -168,7 +175,7 @@ public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
             }
         }
 
-        enum HorizontalEdge {
+        public enum HorizontalEdge {
             case left
             case right
 
@@ -187,11 +194,25 @@ public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
             }
         }
 
-        let verticalPinnedEdge: VerticalEdge
-        let horizontalPinnedEdge: HorizontalEdge
-        let alignmentOffset: CGPoint
+        public let verticalPinnedEdge: VerticalEdge
+        public let horizontalPinnedEdge: HorizontalEdge
+        public let alignmentOffset: CGPoint
 
-        init(
+        /// Construct a context menu position with origin at the given edges,
+        /// adjusted by the given offset.
+        /// - SeeAlso
+        /// ``ContextMenuTargetedPreviewAccessory.AccessoryAlignment.alignmentOffset``
+        public init(
+            verticalPinnedEdge: VerticalEdge,
+            horizontalPinnedEdge: HorizontalEdge,
+            alignmentOffset: CGPoint
+        ) {
+            self.verticalPinnedEdge = verticalPinnedEdge
+            self.horizontalPinnedEdge = horizontalPinnedEdge
+            self.alignmentOffset = alignmentOffset
+        }
+
+        fileprivate init(
             rect: CGRect,
             locationInRect: CGRect,
             alignmentOffset: CGPoint
@@ -202,17 +223,23 @@ public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
             let verticalPinnedEdge: VerticalEdge = isCloserToTheBottom ? .top : .bottom
             let horizontalPinnedEdge: HorizontalEdge = isCloserToTheRight ? .right : .left
 
-            self.verticalPinnedEdge = verticalPinnedEdge
-            self.horizontalPinnedEdge = horizontalPinnedEdge
-            self.alignmentOffset = alignmentOffset
+            self.init(
+                verticalPinnedEdge: verticalPinnedEdge,
+                horizontalPinnedEdge: horizontalPinnedEdge,
+                alignmentOffset: alignmentOffset
+            )
         }
     }
 
     private func menuPosition(window: UIWindow) -> ContextMenuPosition {
+        if let preferredContextMenuPosition {
+            return preferredContextMenuPosition
+        }
+
         return ContextMenuPosition(
             rect: window.bounds,
             locationInRect: window.convert(frame, from: superview),
-            alignmentOffset: menuAlignmentOffset
+            alignmentOffset: CGPoint(x: 8, y: 16)
         )
     }
 
