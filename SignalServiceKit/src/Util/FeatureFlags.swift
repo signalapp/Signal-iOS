@@ -116,10 +116,6 @@ public class FeatureFlags: BaseFlags {
             logFlag("FeatureFlag", key, value)
         }
     }
-
-    /// If true, we will use values from RemoteConfigManager to determine whether
-    /// to use SVR2 or KBS. If false, we ignore all remote flags and talk exclusively to KBS.
-    public static let svr2: Bool = build.includes(.internal)
 }
 
 // MARK: -

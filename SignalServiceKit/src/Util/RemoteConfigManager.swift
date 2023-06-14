@@ -236,9 +236,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     public var svrConfiguration: SVRConfiguration {
-        guard FeatureFlags.svr2 else {
-            return .kbsOnly
-        }
         if isEnabled(.exclusiveSVR2) {
             return .svr2Only
         }

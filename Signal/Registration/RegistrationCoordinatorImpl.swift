@@ -1374,10 +1374,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func loadSVRAuthCredentialCandidates(_ tx: DBReadTransaction) {
         let svr2AuthCredentialCandidates: [SVR2AuthCredential] = deps.svrAuthCredentialStore.getAuthCredentials(tx)
-        if
-            svr2AuthCredentialCandidates.isEmpty.negated,
-            FeatureFlags.svr2
-        {
+        if svr2AuthCredentialCandidates.isEmpty.negated {
             inMemoryState.svr2AuthCredentialCandidates = svr2AuthCredentialCandidates
         }
         let kbsAuthCredentialCandidates: [KBSAuthCredential] = deps.svrAuthCredentialStore.getAuthCredentials(tx)
@@ -2033,7 +2030,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .none, .v1:
                 let jointCredential: PersistedState.SessionState.ReglockState.SVRAuthCredential
                 let kbsAuthCredential = reglockFailure.kbsAuthCredential
-                let svr2AuthCredential = FeatureFlags.svr2 ? reglockFailure.svr2AuthCredential : nil
+                let svr2AuthCredential = reglockFailure.svr2AuthCredential
                 if let kbsAuthCredential, let svr2AuthCredential {
                     jointCredential = .init(kbs: kbsAuthCredential, svr2: svr2AuthCredential)
                 } else if let kbsAuthCredential {

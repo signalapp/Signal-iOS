@@ -110,10 +110,6 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
             }
         }
 
-        guard FeatureFlags.svr2 else {
-            return kbsOnlyIfPossible()
-        }
-
         switch remoteSVRConfig {
         case .none:
             // No config; we are probably in registration.
@@ -178,9 +174,6 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
 
         guard let remoteSVRConfig else {
             owsFailBeta("Should only be writing after setting remote config")
-            guard FeatureFlags.svr2 else {
-                return kbsOnlyIfPossible()
-            }
             return mirroringIfPossible()
         }
         switch remoteSVRConfig {
@@ -201,7 +194,7 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
             // Both of these no-op if not registered,
             // so its pretty safe to call without a remote config.
             shouldWarmKBS = true
-            shouldWarmSVR2 = FeatureFlags.svr2
+            shouldWarmSVR2 = true
         case .kbsOnly:
             shouldWarmKBS = true
         case .svr2Only:

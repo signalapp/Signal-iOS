@@ -281,7 +281,7 @@ public class _RegistrationCoordinator_RemoteConfigMock: _RegistrationCoordinator
     public init() {}
 
     public func refreshRemoteConfig(account: AuthedAccount) -> Promise<RemoteConfig.SVRConfiguration> {
-        return .value(FeatureFlags.svr2 ? .mirroring : .kbsOnly)
+        return .value(.mirroring)
     }
 }
 

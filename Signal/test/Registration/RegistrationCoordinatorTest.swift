@@ -870,9 +870,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
             self.setAllProfileInfo()
 
             // Put some auth credentials in storage.
-            // We should prefer svr2 credentials if available.
-            let shouldPreferSVR2 = FeatureFlags.svr2
-
             let svr2CredentialCandidates: [SVR2AuthCredential] = [
                 Stubs.svr2AuthCredential,
                 SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "aaaa", password: "abc")),
@@ -894,61 +891,34 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // Give it a phone number, which should cause it to check the auth credentials.
             // Match the main auth credential.
-            if shouldPreferSVR2 {
-                let expectedSVR2CheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
-                    e164: Stubs.e164,
-                    credentials: svr2CredentialCandidates
-                )
-                mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
-                    urlSuffix: expectedSVR2CheckRequest.url!.absoluteString,
-                    statusCode: 200,
-                    bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                        "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .match,
-                        "aaaa:abc": .notMatch,
-                        "zzzz:xyz": .invalid,
-                        "0000:123": .unknown
-                    ])
-                ))
-            } else {
-                let expectedKBSCheckRequest = RegistrationRequestFactory.kbsAuthCredentialCheckRequest(
-                    e164: Stubs.e164,
-                    credentials: kbsCredentialCandidates
-                )
-                mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
-                    urlSuffix: expectedKBSCheckRequest.url!.absoluteString,
-                    statusCode: 200,
-                    bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
-                        "\(Stubs.kbsAuthCredential.credential.username):\(Stubs.kbsAuthCredential.credential.password)": .match,
-                        "aaaa:abc": .notMatch,
-                        "zzzz:xyz": .invalid,
-                        "0000:123": .unknown
-                    ])
-                ))
-            }
+            let expectedSVR2CheckRequest = RegistrationRequestFactory.svr2AuthCredentialCheckRequest(
+                e164: Stubs.e164,
+                credentials: svr2CredentialCandidates
+            )
+            mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
+                urlSuffix: expectedSVR2CheckRequest.url!.absoluteString,
+                statusCode: 200,
+                bodyJson: RegistrationServiceResponses.KBSAuthCheckResponse(matches: [
+                    "\(Stubs.svr2AuthCredential.credential.username):\(Stubs.svr2AuthCredential.credential.password)": .match,
+                    "aaaa:abc": .notMatch,
+                    "zzzz:xyz": .invalid,
+                    "0000:123": .unknown
+                ])
+            ))
 
             let nextStep = coordinator.submitE164(Stubs.e164).value
 
             // At this point, we should be asking for PIN entry so we can use the credential
             // to recover the SVR master key.
             XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForSVRAuthCredentialPath(mode: self.mode)))
-            // We should have wipted the invalid and unknown credentials.
-            if shouldPreferSVR2 {
-                let remainingCredentials = svrAuthCredentialStore.svr2Dict
-                XCTAssertNotNil(remainingCredentials[Stubs.svr2AuthCredential.credential.username])
-                XCTAssertNotNil(remainingCredentials["aaaa"])
-                XCTAssertNil(remainingCredentials["zzzz"])
-                XCTAssertNil(remainingCredentials["0000"])
-                // KBS should be untouched.
-                XCTAssertNotNil(svrAuthCredentialStore.dict[Stubs.kbsAuthCredential.credential.username])
-            } else {
-                let remainingCredentials = svrAuthCredentialStore.dict
-                XCTAssertNotNil(remainingCredentials[Stubs.kbsAuthCredential.credential.username])
-                XCTAssertNotNil(remainingCredentials["aaaa"])
-                XCTAssertNil(remainingCredentials["zzzz"])
-                XCTAssertNil(remainingCredentials["0000"])
-                // SVR2 should be untouched.
-                XCTAssertNotNil(svrAuthCredentialStore.svr2Dict[Stubs.svr2AuthCredential.credential.username])
-            }
+            // We should have wiped the invalid and unknown credentials.
+            let remainingCredentials = svrAuthCredentialStore.svr2Dict
+            XCTAssertNotNil(remainingCredentials[Stubs.svr2AuthCredential.credential.username])
+            XCTAssertNotNil(remainingCredentials["aaaa"])
+            XCTAssertNil(remainingCredentials["zzzz"])
+            XCTAssertNil(remainingCredentials["0000"])
+            // KBS should be untouched.
+            XCTAssertNotNil(svrAuthCredentialStore.dict[Stubs.kbsAuthCredential.credential.username])
 
             scheduler.stop()
             scheduler.adjustTime(to: 0)
@@ -961,11 +931,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             svr.restoreKeysMock = { pin, authMethod in
                 XCTAssertEqual(self.scheduler.currentTime, 0)
                 XCTAssertEqual(pin, Stubs.pinCode)
-                if shouldPreferSVR2 {
-                    XCTAssertEqual(authMethod, .svrAuth(.svr2Only(Stubs.svr2AuthCredential), backup: nil))
-                } else {
-                    XCTAssertEqual(authMethod, .svrAuth(.kbsOnly(Stubs.kbsAuthCredential), backup: nil))
-                }
+                XCTAssertEqual(authMethod, .svrAuth(.svr2Only(Stubs.svr2AuthCredential), backup: nil))
                 self.svr.hasMasterKey = true
                 return self.scheduler.guarantee(resolvingWith: .success, atTime: 1)
             }
@@ -1034,17 +1000,10 @@ public class RegistrationCoordinatorTest: XCTestCase {
             svr.generateAndBackupKeysMock = { (pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) in
                 XCTAssertEqual(self.scheduler.currentTime, 3)
                 XCTAssertEqual(pin, Stubs.pinCode)
-                if shouldPreferSVR2 {
-                    XCTAssertEqual(authMethod, .svrAuth(
-                        .svr2Only(Stubs.svr2AuthCredential),
-                        backup: .chatServerAuth(expectedAuthedAccount())
-                    ))
-                } else {
-                    XCTAssertEqual(authMethod, .svrAuth(
-                        .kbsOnly(Stubs.kbsAuthCredential),
-                        backup: .chatServerAuth(expectedAuthedAccount())
-                    ))
-                }
+                XCTAssertEqual(authMethod, .svrAuth(
+                    .svr2Only(Stubs.svr2AuthCredential),
+                    backup: .chatServerAuth(expectedAuthedAccount())
+                ))
                 XCTAssertFalse(rotateMasterKey)
                 return self.scheduler.promise(resolvingWith: (), atTime: 4)
             }
