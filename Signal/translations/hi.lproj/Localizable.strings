@@ -5222,7 +5222,7 @@
 "REGISTER_CONTACTS_WELCOME" = "स्वागत है!";
 
 /* Body of action sheet shown when rate-limited during registration. */
-"REGISTER_RATE_LIMITING_ALERT" = "आपने बहुत बार कोशिश की है। दोबारा प्रयास करने से पहले कृपया कुछ मिनट इंतज़ार करें। (%@)";
+"REGISTER_RATE_LIMITING_ALERT" = "आपने बहुत बार कोशिश की है। दोबारा प्रयास करने से पहले कृपया कुछ मिनट इंतज़ार करें।";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "आपने बहुत बार कोशिश कर ली। कृपया थोङी देर रुक कर कोशिश करें।";
