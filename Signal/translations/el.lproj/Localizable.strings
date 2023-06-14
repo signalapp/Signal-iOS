@@ -641,7 +641,7 @@
 "BUTTON_SUBMIT" = "Αποστολή";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Αναίρεση σίγασης";
+"BUTTON_UNMUTE" = "Μη σίγαση";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Εμφάνιση";
@@ -2156,7 +2156,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Αντικείμενα";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Αυτό το μήνυμα";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Πρόσφατα";
@@ -3407,19 +3407,19 @@
 "LEAVE_GROUP_FAILED" = "Σφάλμα κατά την αποχώρηση από την ομάδα.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "Οι ομάδες παλαιού τύπου είναι ομάδες που δεν υποστηρίζουν ορισμένες λειτουργίες, όπως ονομαστικές αναφορές και διαχειριστές. Οι περισσότερες ομάδες αναβαθμίστηκαν είτε αυτόματα είτε από τους διαχειριστές σε νέες ομάδες. Λόγω μεγάλης περιόδου αδράνειας, δεν είναι δυνατή η αναβάθμιση αυτής της ομάδας.\n\nΓια να συνεχίσεις τη συνομιλία, πρέπει να δημιουργήσεις νέα ομάδα.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Ομάδες παλαιού τύπου";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Αυτή η ομάδα είναι παλαιού τύπου και δεν υποστηρίζεται πλέον. Για να συνεχίσεις τη συνομιλία, δημιούργησε μια νέα ομάδα. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Οι ομάδες νέου τύπου έχουν δυνατότητες όπως οι @αναφορές και οι διαχειριστές ομάδας, και θα αποκτήσουν παραπάνω δυνατότητες στο μέλλον.\n\nΌλο το ιστορικό της συζήτησης και τα πολυμέσα διατηρήθηκαν ως είχαν πριν από την αναβάθμιση.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Τι είναι οι Ομάδες νέου τύπου;";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Αυτός ο κωδικός QR δεν είναι έγκυρος. Βεβαιώσου ότι σκανάρεις τον κωδικό QR που εμφανίζεται στη συσκευή που θέλεις να συνδέσεις.";

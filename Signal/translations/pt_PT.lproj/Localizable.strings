@@ -2156,7 +2156,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Objetos";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Esta mensagem";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Recentes";
@@ -3407,19 +3407,19 @@
 "LEAVE_GROUP_FAILED" = "Ocorreu um erro enquanto abandonava o grupo.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "Os \"grupos legados\" são grupos que não suportam funcionalidades como @menções e admins. A maior parte dos grupos legados receberam upgrade automaticamente ou manualmente para \"novos grupos.\" Devido a um longo período de inatividade, este grupo já não pode receber upgrade.\n\nPara continuar este chat, tem de criar um novo grupo.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Grupo legado";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Isto é um grupo legado e já não é suportado. Para continuar esta conversa, crie um novo grupo. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Os 'Novos grupos' têm recursos como @menções e administradores de grupos e oferecerão futuramente suporte para mais recursos.\n\nTodo o histórico de mensagens e multimédia foi mantido para antes do upgrade.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "O que são os 'Novos grupos'?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "O código QR é inválido, verifique que está a ler o código QR apresentado no dispositivo que deseja associar.";

@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• Создайте цепную реакцию, быстро выбрав один из эмодзи, уже добавленных в сообщение. Или подберите что-то новенькое и уникальное, если не хотите выглядеть так, словно реагируете слишком остро.
+• Папки теперь видны в селекторе фото, поэтому вы можете выбрать вложение из фотоальбома, а не видеть лишь амальгаму фото.
+• Мы улучшили индикатор прогресса, управление видео, иконки и другие элементы в средстве просмотра медиафайлов. Благодаря работе и серьёзному отношению Signal стал немного лучше — при каждом нажатии кнопки "play".

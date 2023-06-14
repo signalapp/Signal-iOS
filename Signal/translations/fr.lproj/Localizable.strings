@@ -2156,7 +2156,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Objets";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Ce message";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Récents";
@@ -3407,19 +3407,19 @@
 "LEAVE_GROUP_FAILED" = "Une erreur s’est produite en quittant le groupe.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "« Les groupes hérités » ne sont gérés par aucun administrateur et ne vous permettent pas de mentionner un membre. La plupart des groupes hérités ont été convertis automatiquement ou manuellement en « nouveaux groupes ». En raison d’une longue période d’inactivité, ce groupe ne peut plus être converti.\n\nPour poursuivre cette conversation, vous devez créer un nouveau groupe.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Groupes hérités";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Ce groupe est un groupe hérité qui n’est plus pris en charge. Pour poursuivre cette conversation, veuillez créer un nouveau groupe. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Les Nouveaux groupes offrent des fonctions telles que les @mentions et les administrateurs de groupes et en offriront d’autres dans le futur.\n\nTout l’historique des messages et tous les médias d’avant la conversion ont été conservés.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Que sont les Nouveaux groupes ?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Ce code QR n’est pas valide. Veuillez vous assurer de lire le code QR affiché sur l’appareil que vous souhaitez relier.";

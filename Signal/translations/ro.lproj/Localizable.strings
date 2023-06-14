@@ -641,7 +641,7 @@
 "BUTTON_SUBMIT" = "Trimite";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Activare notificări";
+"BUTTON_UNMUTE" = "Activare sunet";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Vizualizare";
@@ -2156,7 +2156,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Obiecte";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Acest mesaj";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Recente";
@@ -3407,19 +3407,19 @@
 "LEAVE_GROUP_FAILED" = "A apărut o eroare la părăsirea grupului.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "„Grupurile vechi” sunt grupuri care nu acceptă funcții precum @mențiuni și administratori. Majoritatea Grupurilor Vechi au fost actualizate fie automat, fie manual la „Grupuri Noi”. Din cauza unei perioade lungi de inactivitate, acest grup nu mai poate fi actualizat.\n\nPentru a continua acest chat, trebuie să creezi un grup nou.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Grupuri Vechi";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Acesta este un Grup Vechi și nu mai este acceptat. Pentru a continua această conversație, creează un grup nou. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Noile grupuri au funcții precum @mențiuni și administratori de grup și vor suporta mai multe funcții în viitor.\n\nTot istoricul mesajelor și conținutul media a fost păstrat înainte de actualizare.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Ce sunt Noile Grupuri?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Acest cod QR nu este valid. Te rugăm să te asiguri că scanezi codul QR afișat pe dispozitivul pe care vrei să-l conectezi.";

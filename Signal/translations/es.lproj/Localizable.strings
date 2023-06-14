@@ -380,7 +380,7 @@
 "ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "Permitir acceso";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "Posición";
+"ATTACHMENT_KEYBOARD_LOCATION" = "Ubicación";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal necesita acceso para mostrar tus fotos y vídeos.";
@@ -2156,7 +2156,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Objetos";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Este mensaje";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Más usados";
@@ -3407,19 +3407,19 @@
 "LEAVE_GROUP_FAILED" = "Se ha producido un fallo al abandonar el grupo.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "Los \"grupos antiguos\" son grupos que no admiten funciones como las @menciones y los admins. La mayoría de los grupos antiguos se convirtieron de forma automática o manual en \"nuevos grupos\". Debido a un largo periodo de inactividad, este grupo ya no se puede actualizar.\n\nPara continuar este chat, debes crear un grupo nuevo.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Grupos antiguos";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Este es un grupo antiguo y ya no es compatible. Para continuar esta conversación, crea un grupo nuevo. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Funciones de los nuevos grupos incluyen @menciones, admins y más en el futuro.\n\nLos mensajes y adjuntos se han conservado tras la actualización.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "¿Qué son los nuevos grupos?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Este código QR no es válido. Asegúrate de estar escaneando el código QR de Signal Desktop en el dispositivo que quieres enlazar.";

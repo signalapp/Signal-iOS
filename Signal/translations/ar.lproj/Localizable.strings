@@ -389,7 +389,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "بمُجرد التقاطك صورا، سيصبح بإمكانك إرسال الأخيرة من هنا.";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "دفع مال";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "عمليات الدفع";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "مُرفق";
@@ -2156,7 +2156,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "الأشياء";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "هذه الرسالة";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "مؤخراً";
@@ -3407,19 +3407,19 @@
 "LEAVE_GROUP_FAILED" = "حدث خطأ أثناء مُغادرة المجموعة.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"المجموعات من الطراز القديم\" هي مجموعات لا تدعم ميزات مثل @mentions والمُشرفين. تم تحديث مُعظم المجموعات من الطراز القديم سواءً تلقائيًا أو يدويًا لـ \"مجموعات جديدة\". نظرًا لفترة طويلة من عدم النشاط، لم يعُد من المُمكن ترقية هذه المجموعة.\n\nلمتابعة هذه المحادثة، عليك إنشاء مجموعة جديدة.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "مجموعة من الطراز القديم";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "هذه مجموعة من الطراز القديم، ولم تعد مُدعّمة. لمتابعة هذه المحادثة، أنشأ مجموعة جديدة. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "تحوي المجموعات الجديدة على ميزات مثل تضمين الاسم @ والمشرفين، أيضاً ستدعم المزيد من الميزات مستقبلاً.\n\nتم الاحتفاظ بكافة سجلات الرسائل والوسائط من قبل الترقية.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "ما هي المجموعات الجديدة؟";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "رمز الاستجابة السريعة هذا غير صالح. فضلاً تأكد من أنك تقوم بمسح رمز الاستجابة السريعة المعروض على الجهاز الذي تريد ربطه.";

@@ -371,7 +371,7 @@
 "ATTACHMENT_KEYBOARD_CONTACT" = "ผู้ติดต่อ";
 
 /* A button to select a file from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_FILE" = "แฟ้ม";
+"ATTACHMENT_KEYBOARD_FILE" = "ไฟล์";
 
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
@@ -380,7 +380,7 @@
 "ATTACHMENT_KEYBOARD_GIVE_PHOTOS_ACCESS" = "ให้สิทธิ์การเข้าถึง";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "ที่ตั้ง";
+"ATTACHMENT_KEYBOARD_LOCATION" = "ตำแหน่ง";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal ต้องได้รับสิทธิ์การเข้าถึงเพื่อแสดงรูปและวิดีโอของคุณ";
@@ -389,7 +389,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "เมื่อคุณถ่ายรูปเสร็จ คุณสามารถส่งรูปที่เพิ่งถ่ายได้ที่นี่";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "การจ่ายเงิน";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "การชำระเงิน";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "แฟ้มแนบ";
@@ -2156,7 +2156,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "วัตถุ";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "ข้อความนี้";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "ล่าสุด";
@@ -3407,19 +3407,19 @@
 "LEAVE_GROUP_FAILED" = "เกิดความผิดพลาดขณะออกจากกลุ่ม";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"กลุ่มแบบเก่า\" เป็นกลุ่มที่ไม่รองรับฟีเจอร์บางรายการ เช่น @การกล่าวถึง และผู้ดูแล โดยมากแล้ว กลุ่มแบบเก่ามักจะได้รับการอัปเกรดเป็น \"กลุ่มแบบใหม่\" ไม่ว่าจะโดยอัตโนมัติหรือด้วยการดำเนินการเอง เนื่องจากกลุ่มนี้ไม่มีการใช้งานมาเป็นเวลานาน จึงไม่สามารถอัปเกรดได้อีกต่อไป\n\nหากต้องการใช้งานแชทนี้ต่อ คุณต้องสร้างกลุ่มใหม่";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "กลุ่มแบบเก่า";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "นี่เป็นกลุ่มแบบเก่า ซึ่งระบบไม่รองรับอีกต่อไป หากต้องการสนทนาต่อ กรุณาสร้างกลุ่มใหม่ %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "กลุ่มแบบใหม่มีความสามารถเช่นการ @กล่าวถึง และระบบผู้ดูแลกลุ่ม และจะมีความสามารถเพิ่มเติมในอนาคต\n\nประวัติการส่งข้อความและสื่อทั้งหมดได้ถูกบันทึกไว้ก่อนการอัปเกรด";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "อะไรคือกลุ่มแบบใหม่?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "รหัส QR นี้ใช้ไม่ได้ กรุณาตรวจสอบให้แน่ใจว่าคุณได้สแกนรหัส QR ที่แสดงบนอุปกรณ์ที่คุณต้องการเชื่อมโยง";

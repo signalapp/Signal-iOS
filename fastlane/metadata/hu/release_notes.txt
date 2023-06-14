@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• Láncreakciót hozhatsz létre az üzenethez már hozzáadott hangulatjelek gyors kiválasztásával. Vagy választhatsz valami újat és egyedit, ha nem szeretnéd, hogy úgy tűnjön, túlreagálod az üzenetet.
+• A mappák mostantól láthatók a fotóválasztóban, így a fotóalbumok megjelenítése helyett a fotóalbumból választhatsz mellékletet.
+• Javítottuk a folyamatjelző sávot, a videovezérlőket, az ikonokat és a médianézegető egyéb elemeit. A kemény munka egy kicsit jobbá tette a Signalt. Megtapasztalhatod, ha megnyomod a lejátszást.

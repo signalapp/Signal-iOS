@@ -389,7 +389,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Zodra je foto's hebt genomen, kun je van hieruit je recente foto's verzenden.";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Overschrijving";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "Betaling";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Bijlage";
@@ -641,7 +641,7 @@
 "BUTTON_SUBMIT" = "Indienen";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Niet langer dempen";
+"BUTTON_UNMUTE" = "Dempen opheffen";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Weergeven";
@@ -2156,7 +2156,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Objecten";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Dit bericht";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Recentelijk gebruikt";
@@ -3407,19 +3407,19 @@
 "LEAVE_GROUP_FAILED" = "Het verlaten van de groep is mislukt omdat er iets is misgegaan.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "'Verouderde groepen' zijn groepen die functies zoals @vermeldingen en beheerders niet ondersteunen. De meeste verouderde groepen zijn automatisch of handmatig geüpgraded naar 'Nieuwe groepen'. Vanwege een lange periode van inactiviteit kan deze groep niet meer worden geüpgraded.\n\nOm door te gaan met deze chat, moet je een nieuwe groep maken.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Verouderde groepen";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Dit is een verouderde groep en deze wordt niet langer ondersteund. Maak een nieuwe groep aan om dit gesprek voort te zetten. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Nieuwe-stijl groepen hebben functionaliteiten waaronder @vermeldingen en groepsbeheer en in de toekomst zullen er meer functionaliteiten aan worden toegevoegd.\n\nAlle gespreksgeschiedenis en media van voor het omzetten zijn behouden gebleven.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Wat zijn ‘nieuwe-stijl’ groepen?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Deze QR-code is ongeldig. Zorg dat je de QR-code scant die wordt weergeven op het apparaat dat je wilt koppelen.";

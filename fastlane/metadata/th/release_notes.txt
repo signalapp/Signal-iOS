@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• ร่วมเทคะแนนให้ "เสียงข้างมาก!" สามารถแสดงความรู้สึกกับข้อความได้เร็วทันใจยิ่งกว่าเดิม เพียงกดเลือกอีโมจิตัวเดียวกับที่เพื่อนๆ ในกลุ่มใช้ แต่สำหรับคนที่ไม่ชอบเหมือนใคร จะเลือกใช้อีโมจิใหม่ๆ หรือแบบที่แปลกแหวกแนวแค่ไหนก็ได้เหมือนกัน
+• เลือกไฟล์แนบจากในอัลบั้มรูปได้ทันที เพราะนับจากนี้ คุณจะเห็นโฟลเดอร์ต่างๆ เป็นหนึ่งในตัวเลือกในขั้นตอนการแนบไฟล์ภาพ
+• เราปรับปรุงประสิทธิภาพและรูปโฉมของตัวรับชมสื่อ ไม่ว่าจะเป็นแผงควบคุมวิดีโอ แถบแสดงเวลา สารพันไอคอน รวมถึงรูปแบบการใช้งานด้านอื่นๆ Signal ทุ่มเททำงานหนักเพื่อให้คุณเบาใจทุกครั้งที่กดปุ่ม "เพลย์"

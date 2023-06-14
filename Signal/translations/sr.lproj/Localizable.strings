@@ -371,7 +371,7 @@
 "ATTACHMENT_KEYBOARD_CONTACT" = "Контакт";
 
 /* A button to select a file from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_FILE" = "Fajl";
+"ATTACHMENT_KEYBOARD_FILE" = "Фајл";
 
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
@@ -389,7 +389,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Одавде ћете моћи слати фотографије које сте недавно фотографисали.";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Уплата";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "Плаћање";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Прилог";
@@ -608,7 +608,7 @@
 "BUTTON_EDIT" = "Уреди";
 
 /* Label for the 'mute' button. */
-"BUTTON_MUTE" = "Искључи обавештења";
+"BUTTON_MUTE" = "Искључи обавеш.";
 
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Даље";
@@ -641,7 +641,7 @@
 "BUTTON_SUBMIT" = "Пошаљи";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Укључи обавештења";
+"BUTTON_UNMUTE" = "Укључи обавеш.";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Приказ";
@@ -2156,7 +2156,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Ствари";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Ова порука";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Недавно";
@@ -3407,19 +3407,19 @@
 "LEAVE_GROUP_FAILED" = "Дошло је до грешке при напуштању групе.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "„Застареле групе“ су групе које не подржавају функције као што су @помињања и администратори. Већина застарелих група је аутоматски или ручно надограђена на „нове групе“. Због дужег периода неактивности, ова група се више не може надоградити.\n\nДа бисте наставили са овим ћаскањем, морате да направите нову групу.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Застареле групе";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Ово је застарела група која више није подржана. Да бисте наставили са овим ћаскањем, направите нову групу. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Нове групе имају функције попут @помињања и администратора групе и подржаваће више функција у будућности.\n\nЦелокупна историја порука и медијски садржаји од пре надоградње су сачувани.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Шта су нове групе?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Овај QR кôд није исправан. Проверите да ли скенирате QR код приказан на уређају који желите да повежете.";

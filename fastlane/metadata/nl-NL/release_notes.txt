@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• Kies snel een emoji uit de emoji's die al aan het bericht zijn toegevoegd. Of kies een andere als je liever uniek wilt zijn.
+• Mappen zijn nu zichtbaar in de fotokiezer, dus je kunt snel een bijlage kiezen vanuit een specifiek fotoalbum in plaats van te scrollen door een wirwar aan foto's.
+• We hebben de voortgangsbalk, videobediening, pictogrammen en andere elementen in de mediaviewer verbeterd. Zo wordt het afspelen van video's nog makkelijker.

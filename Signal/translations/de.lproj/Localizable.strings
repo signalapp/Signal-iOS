@@ -641,7 +641,7 @@
 "BUTTON_SUBMIT" = "Übermitteln";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Stummschaltung aufheben";
+"BUTTON_UNMUTE" = "Nicht stumm";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Anzeigen";
@@ -2156,7 +2156,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Objekte";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Diese Nachricht";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Letzte Anrufe";
@@ -3407,19 +3407,19 @@
 "LEAVE_GROUP_FAILED" = "Beim Verlassen der Gruppe ist ein Fehler aufgetreten.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "„Gruppen alten Typs“ sind Gruppen, die Funktionen wie @Erwähnungen und Admins nicht unterstützen. Die meisten Gruppen alten Typs wurden entweder automatisch oder manuell zu „Neuen Gruppen“ aktualisiert. Aufgrund einer längeren Inaktivität kann diese Gruppe kein Upgrade mehr erhalten.\n\nUm diesen Chat fortzuführen, musst du eine neue Gruppe erstellen.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Gruppe alten Typs";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Dies ist eine Gruppe alten Typs und wird nicht mehr unterstützt. Erstelle bitte eine neue Gruppe, um diese Unterhaltung fortzuführen. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Gruppen neuen Typs besitzen Funktionen wie @Erwähnungen und Gruppen-Admins und werden zukünftig weitere Funktionen unterstützen.\n\nDer vor der Aktualisierung bestehende Nachrichtenverlauf und die Medieninhalte wurden erhalten.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Was sind Gruppen neuen Typs?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Dieser QR-Code ist ungültig. Achte darauf, dass du den QR-Code einscannst, der auf dem zu koppelnden Gerät angezeigt wird.";

@@ -2156,7 +2156,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "물체";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "이 메시지";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "최근";
@@ -3407,19 +3407,19 @@
 "LEAVE_GROUP_FAILED" = "그룹 나가기 도중 오류가 발생했습니다.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "'레거시 그룹'은 @멘션, 관리자와 같은 기능을 지원하지 않는 그룹입니다. 대부분 레거시 그룹은 자동 또는 수동으로 '새 그룹'으로 업그레이드 되었습니다. 이 그룹은 장기간 비활성 상태였으므로 더 이상 업그레이드할 수 없습니다.\n\n이 대화를 계속하려면 새 그룹을 만들어야 합니다.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "레거시 그룹";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "이 그룹은 레거시 그룹이며, 더 이상 지원되지 않습니다. 이 대화를 계속하려면 새로운 그룹을 만드세요. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "새 그룹에는 @멘션 및 그룹 관리자와 같은 기능이 있으며 향후 더 많은 기능을 지원할 예정입니다.\n\n모든 업그레이드 전의 메시지 기록과 미디어를 보관했습니다.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "새 그룹이 무엇인가요?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "QR 코드가 올바르지 않습니다. 스캔하고자 하는 기기에 있는 QR 코드를 읽었는지 다시 한 번 확인하세요.";

@@ -641,7 +641,7 @@
 "BUTTON_SUBMIT" = "Wyślij";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Cofnij wyciszenie";
+"BUTTON_UNMUTE" = "Cofnij wycisz.";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Zobacz";
@@ -2156,7 +2156,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Obiekty";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Ta wiadomość";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Ostatnie";
@@ -3407,19 +3407,19 @@
 "LEAVE_GROUP_FAILED" = "W czasie opuszczania grupy wystąpił błąd.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "„Stare grupy” nie obsługują takich funkcji jak @wzmianki i administratorzy. Większość starych grup została zaktualizowana automatycznie lub ręcznie do „Nowych grup”. W związku z długą nieaktywnością ta grupa nie może już zostać zaktualizowana.\n\nAby wznowić czat, musisz utworzyć nową grupę.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Stare grupy";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "To jest grupa starego typu, która nie jest już wspierana. Aby kontynuować tę konwersację, stwórz nową grupę. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Nowe grupy posiadają takie funkcje jak @wzmianki i administratorzy, a w przyszłości będą obsługiwać więcej funkcji.\n\nCała historia wiadomości i multimedia zostały zachowane po aktualizacji.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Czym są Nowe grupy?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Ten kod QR jest nieprawidłowy. Upewnij się, że skanujesz kod QR wyświetlany na urządzeniu, które chcesz połączyć.";

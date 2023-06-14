@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• Creează o reacție în lanț selectând rapid din emoji-urile care deja au fost adăugate la un mesaj. Sau alege ceva nou și unic dacă nu vrei să pară că exagerezi.
+• Dosarele sunt acum vizibile în selectorul de fotografii, așadar poți alege un atașament dintr-un album foto în loc să vezi doar un amalgam de fotografii.
+• Am îmbunătățit bara de progres, comenzile video, pictogramele și alte elemente din playerul video. Signal este acum un pic mai bun când apeși redare.
