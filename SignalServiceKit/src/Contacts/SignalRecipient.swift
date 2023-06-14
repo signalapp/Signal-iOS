@@ -89,6 +89,30 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         )
     }
 
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let otherRecipient = object as? SignalRecipient else {
+            return false
+        }
+        guard id == otherRecipient.id else { return false }
+        guard uniqueId == otherRecipient.uniqueId else { return false }
+        guard serviceIdString == otherRecipient.serviceIdString else { return false }
+        guard phoneNumber == otherRecipient.phoneNumber else { return false }
+        guard deviceIds == otherRecipient.deviceIds else { return false }
+        guard unregisteredAtTimestamp == otherRecipient.unregisteredAtTimestamp else { return false }
+        return true
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(id)
+        hasher.combine(uniqueId)
+        hasher.combine(serviceIdString)
+        hasher.combine(phoneNumber)
+        hasher.combine(deviceIds)
+        hasher.combine(unregisteredAtTimestamp)
+        return hasher.finalize()
+    }
+
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
         case recordType
