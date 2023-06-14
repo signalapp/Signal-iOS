@@ -386,8 +386,6 @@ public extension TSOutgoingMessage {
                 localAddress: Self.tsAccountManager.localAddress!,
                 sendErrorBlock: nil
             )
-        }.then { messageSend in
-            return MessageSender.ensureSessions(forMessageSends: [messageSend], ignoreErrors: true).map { messageSend }
         }.then { messageSend -> Promise<Void> in
             Self.messageSender.sendMessage(toRecipient: messageSend)
             return messageSend.promise

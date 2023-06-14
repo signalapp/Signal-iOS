@@ -21,127 +21,6 @@ private extension TSOutgoingMessage {
 // MARK: -
 
 extension MessageSender {
-    class func ensureSessions(
-        forMessageSends messageSends: [OWSMessageSend],
-        ignoreErrors: Bool
-    ) -> Promise<Void> {
-        let promise = firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            var promises = [Promise<Void>]()
-            for messageSend in messageSends {
-                promises += self.ensureSessions(forMessageSend: messageSend, ignoreErrors: ignoreErrors)
-            }
-            if !promises.isEmpty {
-                Logger.info("Prekey fetches: \(promises.count)")
-            }
-            return Promise.when(fulfilled: promises)
-        }
-        if !ignoreErrors {
-            promise.catch(on: DispatchQueue.global()) { _ in
-                owsFailDebug("The promises should never fail.")
-            }
-        }
-        return promise
-    }
-
-    private class func ensureSessions(
-        forMessageSend messageSend: OWSMessageSend,
-        ignoreErrors: Bool
-    ) -> [Promise<Void>] {
-        let (recipientId, deviceIdsWithoutSessions): (AccountId?, [UInt32]) = databaseStorage.read { transaction in
-            let recipient = SignalRecipient.fetchRecipient(
-                for: messageSend.address,
-                onlyIfRegistered: false,
-                tx: transaction
-            )
-
-            // If there is no existing recipient for this address, try and send to the
-            // primary device so we can see if they are registered.
-            guard let recipient else {
-                return (nil, [OWSDevice.primaryDeviceId])
-            }
-
-            var deviceIds = recipient.deviceIds
-
-            // Filter out the current device; we never need a session for it.
-            if messageSend.isLocalAddress {
-                let localDeviceId = tsAccountManager.storedDeviceId(transaction: transaction)
-                deviceIds = deviceIds.filter { $0 != localDeviceId }
-            }
-
-            let sessionStore = signalProtocolStore(for: .aci).sessionStore
-            return (recipient.accountId, deviceIds.filter { deviceId in
-                !sessionStore.containsActiveSession(
-                    forAccountId: recipient.accountId,
-                    deviceId: Int32(deviceId),
-                    transaction: transaction
-                )
-            })
-        }
-
-        guard !deviceIdsWithoutSessions.isEmpty else { return [] }
-
-        var promises = [Promise<Void>]()
-        for deviceId in deviceIdsWithoutSessions {
-            Logger.verbose("Fetching prekey for: \(messageSend.serviceId), \(deviceId)")
-
-            let promise: Promise<Void> = firstly(on: DispatchQueue.global()) { () -> Promise<SignalServiceKit.PreKeyBundle> in
-                let isOnlineMessage = messageSend.message.isOnline
-                let isTransientSenderKeyDistributionMessage = messageSend.message.isTransientSKDM
-                let isStoryMessage = messageSend.message.isStorySend
-
-                return self.makePrekeyRequest(
-                    recipientId: recipientId,
-                    serviceId: messageSend.serviceId.wrappedValue,
-                    deviceId: deviceId,
-                    isOnlineMessage: isOnlineMessage,
-                    isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
-                    isStoryMessage: isStoryMessage,
-                    udSendingParamsProvider: messageSend
-                )
-            }.done(on: DispatchQueue.global()) { (preKeyBundle: SignalServiceKit.PreKeyBundle) -> Void in
-                try self.databaseStorage.write { transaction in
-                    // Since we successfully fetched the prekey bundle, we know this device is
-                    // registered and can mark it as such to acquire a stable recipientId.
-                    let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-                    let recipient = recipientFetcher.fetchOrCreate(
-                        serviceId: messageSend.serviceId.wrappedValue,
-                        tx: transaction.asV2Write
-                    )
-                    recipient.markAsRegisteredAndSave(deviceId: deviceId, tx: transaction)
-
-                    try self.createSession(
-                        for: preKeyBundle,
-                        recipientId: recipient.accountId,
-                        serviceId: messageSend.serviceId.wrappedValue,
-                        deviceId: deviceId,
-                        transaction: transaction
-                    )
-                }
-            }.recover(on: DispatchQueue.global()) { (error: Error) in
-                switch error {
-                case MessageSenderError.missingDevice:
-                    self.databaseStorage.write { transaction in
-                        MessageSender.updateDevices(
-                            serviceId: messageSend.serviceId.wrappedValue,
-                            devicesToAdd: [],
-                            devicesToRemove: [deviceId],
-                            transaction: transaction
-                        )
-                    }
-                default:
-                    break
-                }
-                if ignoreErrors {
-                    Logger.warn("Ignoring error: \(error)")
-                } else {
-                    throw error
-                }
-            }
-            promises.append(promise)
-        }
-        return promises
-    }
-
     public func pendingSendsPromise() -> Promise<Void> {
         // This promise blocks on all operations already in the queue,
         // but will not block on new operations added after this promise
@@ -990,28 +869,23 @@ extension MessageSender {
             )
         }
 
-        // 5. Before kicking off the per-recipient message sends, try to ensure
-        // sessions for all recipient devices in parallel.
-        let ensureSessionsPromise = Self.ensureSessions(forMessageSends: messageSends, ignoreErrors: true)
-        return ensureSessionsPromise.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-            // 6. Perform the per-recipient message sends.
-            var sendPromises: [Promise<Void>] = messageSends.map { messageSend in
-                self.sendMessage(toRecipient: messageSend)
-                return messageSend.promise
-            }
+        // 5. Perform the per-recipient message sends.
+        var sendPromises: [Promise<Void>] = messageSends.map { messageSend in
+            self.sendMessage(toRecipient: messageSend)
+            return messageSend.promise
+        }
 
-            // 7. Add the sender-key promise
-            if let senderKeyMessagePromise {
-                sendPromises.append(senderKeyMessagePromise)
-            }
+        // 6. Also wait for the sender key promise.
+        if let senderKeyMessagePromise {
+            sendPromises.append(senderKeyMessagePromise)
+        }
 
-            // We use resolved, not fulfilled, because we don't want the completion
-            // promise to execute until _all_ send promises have either succeeded or
-            // failed. Fulfilled executes as soon as any of its input promises fail.
-            return Promise.when(resolved: sendPromises).map(on: SyncScheduler()) { results in
-                for result in results {
-                    try result.get()
-                }
+        // We use resolved, not fulfilled, because we don't want the completion
+        // promise to execute until _all_ send promises have either succeeded or
+        // failed. Fulfilled executes as soon as any of its input promises fail.
+        return Promise.when(resolved: sendPromises).map(on: SyncScheduler()) { results in
+            for result in results {
+                try result.get()
             }
         }
     }
@@ -1156,14 +1030,18 @@ extension MessageSender {
 
     @objc
     func buildDeviceMessages(messageSend: OWSMessageSend) throws -> [DeviceMessage] {
-        let recipient = databaseStorage.read { tx in
-            SignalRecipient.fetchRecipient(for: messageSend.address, onlyIfRegistered: false, tx: tx)
-        }
-        guard let recipient else {
-            throw InvalidMessageError()
+        let registeredRecipient = databaseStorage.read { tx in
+            SignalRecipient.fetchRecipient(for: messageSend.address, onlyIfRegistered: true, tx: tx)
         }
 
-        var recipientDeviceIds = recipient.deviceIds
+        // If we think the recipient isn't registered, don't build any device
+        // messages. Instead, send an empty message to the server to learn if the
+        // account has any devices.
+        guard let registeredRecipient else {
+            return []
+        }
+
+        var recipientDeviceIds = registeredRecipient.deviceIds
 
         if messageSend.isLocalAddress {
             let localDeviceId = tsAccountManager.storedDeviceId
@@ -1174,7 +1052,7 @@ extension MessageSender {
             try buildDeviceMessage(
                 messagePlaintextContent: messageSend.plaintextContent,
                 messageEncryptionStyle: messageSend.message.encryptionStyle,
-                recipientId: recipient.accountId,
+                recipientId: registeredRecipient.accountId,
                 serviceId: messageSend.serviceId.wrappedValue,
                 deviceId: deviceId,
                 isOnlineMessage: messageSend.message.isOnline,

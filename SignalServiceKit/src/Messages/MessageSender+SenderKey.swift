@@ -401,44 +401,37 @@ extension MessageSender {
                     sendErrorBlock: nil
                 )
             }
-        }.then(on: senderKeyQueue) { skdmSends in
-            // First, we double check we have sessions for these message sends
-            // Then, we send the message. If it's successful, great! If not, we invoke the sendErrorBlock
-            // to *also* fail the original message send.
-            firstly { () -> Promise<Void> in
-                MessageSender.ensureSessions(forMessageSends: skdmSends, ignoreErrors: true)
-            }.then(on: self.senderKeyQueue) { _ -> Guarantee<[Result<OWSMessageSend, Error>]> in
-                // For each SKDM request we kick off a sendMessage promise.
-                // - If it succeeds, great! Propagate along the successful OWSMessageSend
-                // - Otherwise, invoke the sendErrorBlock and rethrow so it gets packaged into the Guarantee
-                // We use when(resolved:) because we want the promise to wait for
-                // all sub-promises to finish, even if some failed.
-                Guarantee.when(resolved: skdmSends.map { messageSend in
-                    return firstly { () -> AnyPromise in
-                        self.sendMessage(toRecipient: messageSend)
-                        return messageSend.asAnyPromise
-                    }.map(on: self.senderKeyQueue) { _ -> OWSMessageSend in
-                        messageSend
-                    }.recover(on: self.senderKeyQueue) { error -> Promise<OWSMessageSend> in
-                        if error is MessageSenderNoSuchSignalRecipientError {
-                            self.databaseStorage.write { transaction in
-                                self.markAsUnregistered(
-                                    serviceId: messageSend.serviceId.wrappedValue,
-                                    message: originalMessage,
-                                    thread: thread,
-                                    transaction: transaction
-                                )
-                            }
+        }.then(on: senderKeyQueue) { (skdmSends) -> Guarantee<[Result<OWSMessageSend, Error>]> in
+            // For each SKDM request we kick off a sendMessage promise.
+            // - If it succeeds, great! Propagate along the successful OWSMessageSend.
+            // - Otherwise, invoke the sendErrorBlock and rethrow so it gets packaged into the Guarantee.
+            // We use when(resolved:) because we want the promise to wait for
+            // all sub-promises to finish, even if some failed.
+            Guarantee.when(resolved: skdmSends.map { messageSend in
+                return firstly { () -> Promise<Void> in
+                    self.sendMessage(toRecipient: messageSend)
+                    return messageSend.promise
+                }.map(on: self.senderKeyQueue) { () -> OWSMessageSend in
+                    messageSend
+                }.recover(on: self.senderKeyQueue) { error -> Promise<OWSMessageSend> in
+                    if error is MessageSenderNoSuchSignalRecipientError {
+                        self.databaseStorage.write { transaction in
+                            self.markAsUnregistered(
+                                serviceId: messageSend.serviceId.wrappedValue,
+                                message: originalMessage,
+                                thread: thread,
+                                transaction: transaction
+                            )
                         }
-
-                        // Note that we still rethrow. It's just easier to access the address
-                        // while we still have the messageSend in scope.
-                        let wrappedError = SenderKeyError.recipientSKDMFailed(error)
-                        sendErrorBlock(messageSend.serviceId, wrappedError)
-                        throw wrappedError
                     }
-                })
-            }
+
+                    // Note that we still rethrow. It's just easier to access the address
+                    // while we still have the messageSend in scope.
+                    let wrappedError = SenderKeyError.recipientSKDMFailed(error)
+                    sendErrorBlock(messageSend.serviceId, wrappedError)
+                    throw wrappedError
+                }
+            })
         }.map(on: self.senderKeyQueue) { resultArray -> [ServiceIdObjC] in
             // This is a hot path, so we do a bit of a dance here to prepare all of the successful send
             // info before opening the write transaction. We need the recipient address and the SKDM

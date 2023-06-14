@@ -67,11 +67,6 @@ public class OWSMessageSend: NSObject, UDSendingParamsProvider {
     public let promise: Promise<Void>
 
     @objc
-    public var asAnyPromise: AnyPromise {
-        return AnyPromise(promise)
-    }
-
-    @objc
     public let success: () -> Void
 
     @objc
