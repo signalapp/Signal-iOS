@@ -693,4 +693,12 @@ final class SignalRecipient2Test: XCTestCase {
             XCTAssertEqual(signalRecipients[1].unregisteredAtTimestamp, 1683679214631)
         }
     }
+
+    func testEqualityAndHashing() {
+        let someRecipient = SignalRecipient(serviceId: ServiceId(UUID()), phoneNumber: nil, deviceIds: [1, 2])
+        let copiedRecipient = someRecipient.copy() as! SignalRecipient
+        XCTAssertEqual(copiedRecipient, someRecipient)
+        XCTAssertEqual(copiedRecipient.hashValue, someRecipient.hashValue)
+        XCTAssertEqual(Set([someRecipient, copiedRecipient]).count, 1)
+    }
 }
