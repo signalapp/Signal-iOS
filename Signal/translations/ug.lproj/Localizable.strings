@@ -151,6 +151,12 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "ئۇچۇر ئىلتىماسى ھەققىدە";
 
+/* Audio file type in All Meda file type picker. */
+"ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
+
+/* Media (i.e., graphical) file type in All Meda file type picker. */
+"ALL_MEDIA_FILE_TYPE_MEDIA" = "Media";
+
 /* Menu option to limit All Media view to displaying only GIFs */
 "ALL_MEDIA_FILTER_GIFS" = "GIF";
 
@@ -368,7 +374,7 @@
 "ATTACHMENT_KEYBOARD_CAMERA" = "كامېرا";
 
 /* A button to select a contact from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_CONTACT" = "ئالاقەداش";
+"ATTACHMENT_KEYBOARD_CONTACT" = "ئالاقىداش";
 
 /* A button to select a file from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_FILE" = "ھۆججەت";
@@ -2156,7 +2162,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "نەرسە";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "بۇ ئۇچۇر";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "يېقىنقى";
@@ -2373,6 +2379,9 @@
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "بۇ پاراڭدا ھېچقانداق مېدىيا يوق.";
+
+/* Label indicating media gallery with audio filter is empty */
+"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "You don‘t have any audio in this chat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "يېڭى ۋاسىتە يۈكلەۋاتىدۇ…";
@@ -3407,19 +3416,19 @@
 "LEAVE_GROUP_FAILED" = "گۇرۇپپىدىن ئايرىلىۋاتقاندا بىر خاتالىق كۆرۈلدى.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "«كونا گۇرۇپپا» @تىلغا ئېلىش ۋە باشقۇرغۇچى قاتارلىق ئىقتىدارلارنى قوللىمايدىغان گۇرۇپپىلارنى كۆرسىتىدۇ. كۆپىنچە كونا گۇرۇپپىلار ئاپتوماتىك ياكى قولدا «يېڭى گۇرۇپپا» غا يېڭىلىنىدۇ. بۇ گۇرۇپپىدا ئۇزاق ۋاقىت مەشغۇلات بولمىغاچقا، ئۇنى ئەمدى يېڭىلىغىلى بولمايدۇ.\n\nبۇ پاراڭنى داۋاملاشتۇرۇش ئۈچۈن يېڭى گۇرۇپپا قۇرۇشىڭىز كېرەك.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "كونا گۇرۇپپا";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "بۇ كونا گۇرۇپپا بولۇپ، ئەمدى ئۇنى قوللىمايدۇ. بۇ سۆھبەتنى داۋاملاشتۇرۇش ئۈچۈن يېڭى بىر گۇرۇپپا قۇرۇڭ. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "يېڭى گۇرۇپپىلارنىڭ @ئەتىكەتلەش ۋە گۇرۇپپا باشقۇرغۇچىلىرىغا ئوخشاش ئىقتىدارلىرى بار، كەلگۈسىدە تېخىمۇ كۆپ ئىقتىدارلارنى قوللايدۇ.\n\nبارلىق ئۇچۇر تارىخى ۋە ۋاسىتىلەر يېڭىلاشتىن بۇرۇن ساقلىنىپ قالىدۇ.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "«يېڭى گۇرۇپپىلار» دېگەن نېمە؟";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "بۇ QR كودى ئىناۋەتلىك ئەمەس. باغلىماقچى بولغان ئۈسكۈنىدە كۆرسىتىلگەن QR كودىنى سايىلىگەنلىكىڭىزنى جەزملەشتۈرۈڭ.";
@@ -5028,6 +5037,9 @@
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "ئىسمىڭىز";
+
+/* Title for a menu action allowing users to edit their existing username. */
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Edit Username";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "ئىشلەتكۈچى ئىسمى";

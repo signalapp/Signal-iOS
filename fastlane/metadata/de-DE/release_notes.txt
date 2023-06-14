@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• Löse eine Kettenreaktion aus, indem du schnell aus den Emojis auswählst, die einer Nachricht bereits hinzugefügt wurden. Oder entscheide dich für etwas Neues und Einzigartiges, wenn du nicht so rüberkommen möchtest, als würdest du überreagieren.
+• Ordner werden jetzt in der Fotoauswahl angezeigt. So kannst du einen Anhang aus einem Fotoalbum wählen, anstatt nur eine Fotozusammenstellung zu sehen.
+• Wir haben Verbesserungen am Statusbalken, der Videosteuerung, den Symbolen und an anderen Elementen des Mediaplayers vorgenommen. Pausenlose Arbeit hat Signal ein wenig verbessert, wenn du ab sofort „Play“ und „Pause“ drückst.

@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• किसी संदेश में पहले से जोड़े गए इमोजी से जल्दी से चुनकर एक चेन रिएक्शन बनाएं। या यदि आप ऐसा नहीं दिखाना चाहते हैं कि आप ओवररिएक्ट कर रहे हैं, तो कुछ नया और यूनिक चुनें।
+• फोल्डर अब फोटो सिलेक्टर में दिखाई देते हैं, इसलिए आप केवल फोटो अमेल्गम देखने के बजाय फोटो एल्बम से अटैचमेंट चुन सकते हैं।
+• हमने मीडिया व्यूअर में प्रगति बार, वीडियो कंट्रोल्स, आइकन और अन्य तत्वों में सुधार किया है। अब Signal इस्तेमाल करते वक्त आप पाएंगे कि चीजें पहले से बेहतर हुई हैं।

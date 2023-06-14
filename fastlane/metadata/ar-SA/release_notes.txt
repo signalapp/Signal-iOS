@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• أنشئ سِلسلة ردود أفعال عبر الاختيار بسرعة من بين الوجوه المعبرة التي تمت إضافتها لرسالة من قبل. أو اختر شيئا جديدًا وفريدًا إذا كنت لا تريد أن تبدو كأنك تبالغ في رد فعلك.
+• أصبحت المُجلدات مرئية الآن في مُحدد الصور، لذا يمكنك اختيار مرفق من ألبوم صور بدلاً من رؤية مزيج من الصور فقط.
+• لقد قمنا بتحسين شريط التقدّم وعناصر التحكّم في الفيديو والأيقونات وعناصر أخرى في عارض الوسائط. جعلنا Signal أفضل بقليل عندما تضغط على زر التشغيل.

@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• Nå kan du trykke på en av emojiene de andre har reagert med, for å lage en kjedereaksjon. Du kan også velge en helt annen emoji (hvis du er redd for å overreagere).
+• Album og mapper er nå synlige i bildevelgeren, slik at du kan plukke ut bilder fra albumene dine i stedet for et sammensurium av løse bilder.
+• Vi har gjort forbedringer på fremdriftslinjen, videoknappene, ikonene og andre deler av medievisningen. Dermed går ingenting til spille når du trykker på «Spill av».

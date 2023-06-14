@@ -151,6 +151,12 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Om beskedanmodninger";
 
+/* Audio file type in All Meda file type picker. */
+"ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
+
+/* Media (i.e., graphical) file type in All Meda file type picker. */
+"ALL_MEDIA_FILE_TYPE_MEDIA" = "Media";
+
 /* Menu option to limit All Media view to displaying only GIFs */
 "ALL_MEDIA_FILTER_GIFS" = "GIF'er";
 
@@ -641,7 +647,7 @@
 "BUTTON_SUBMIT" = "Send";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Slå notifikationer til";
+"BUTTON_UNMUTE" = "Aktivér";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Vis";
@@ -2156,7 +2162,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Objekter";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Denne besked";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Nylige";
@@ -2373,6 +2379,9 @@
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Du har ingen mediefiler i denne chat.";
+
+/* Label indicating media gallery with audio filter is empty */
+"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "You don‘t have any audio in this chat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Indlæser nyere mediefiler…";
@@ -3407,19 +3416,19 @@
 "LEAVE_GROUP_FAILED" = "En fejl opstod, kunne ikke forlade gruppen";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Forældede grupper\" er grupper, der ikke understøtter funktioner som @omtaler og administratorer. De fleste forældede grupper blev opgraderet enten automatisk eller manuelt til \"Nye grupper\". På grund af en lang periode med inaktivitet, kan denne gruppe ikke længere opgraderes.\n\nFor at fortsætte denne chat, skal du oprette en ny gruppe.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Forældede grupper";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Dette er en forældet gruppe, som ikke længere understøttes. For at fortsætte denne samtale, skal du oprette en ny gruppe. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Nye grupper har funktioner som @omtaler og gruppeadministratorer og vil understøtte flere funktioner i fremtiden\n\nAl beskedhistorik og alle mediefiler fra før opgraderingen er gemt.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Hvad er Nye grupper?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Denne QR-kode er ikke gyldig. Sørg for, at du scanner QR-koden, der vises på den enhed du vil forbinde";
@@ -5028,6 +5037,9 @@
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Navn";
+
+/* Title for a menu action allowing users to edit their existing username. */
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Edit Username";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Brugernavn";

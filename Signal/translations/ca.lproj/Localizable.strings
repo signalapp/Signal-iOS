@@ -151,6 +151,12 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Quant a les sol·licituds de missatges";
 
+/* Audio file type in All Meda file type picker. */
+"ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
+
+/* Media (i.e., graphical) file type in All Meda file type picker. */
+"ALL_MEDIA_FILE_TYPE_MEDIA" = "Media";
+
 /* Menu option to limit All Media view to displaying only GIFs */
 "ALL_MEDIA_FILTER_GIFS" = "GIFs";
 
@@ -608,7 +614,7 @@
 "BUTTON_EDIT" = "Edita";
 
 /* Label for the 'mute' button. */
-"BUTTON_MUTE" = "Silenciats";
+"BUTTON_MUTE" = "Silenciar";
 
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Següent";
@@ -641,7 +647,7 @@
 "BUTTON_SUBMIT" = "Tramet";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "No silenciats";
+"BUTTON_UNMUTE" = "No silenciar";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Mostra";
@@ -2156,7 +2162,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Objectes";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Aquest missatge";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
@@ -2373,6 +2379,9 @@
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "No tens arxius multimèdia en aquest xat.";
+
+/* Label indicating media gallery with audio filter is empty */
+"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "You don‘t have any audio in this chat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Carregant arxius recents…";
@@ -3407,19 +3416,19 @@
 "LEAVE_GROUP_FAILED" = "Hi ha hagut un error en abandonar el grup.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "Els \"grups antics\" són grups que no admeten funcions com les @mencions o els admins. La majoria dels grups antics es van actualitzar automàticament o manualment a \"grups nous\". A causa d'un llarg període d'inactivitat, aquest grup ja no es pot actualitzar.\n\nPer continuar aquest xat, has de crear un grup nou.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Grups antics";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Aquest és un grup antic i ja no és compatible. Per continuar aquesta conversa, has de crear un grup nou. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Els grups nous tenen funcions com ara @mencions i administradors de grups, i admetran més funcions en el futur.\n\nS'han conservat tot l'historial de missatges i el contingut anteriors a l'actualització.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Què són els grups nous?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Aquest codi QR no és vàlid. Si us plau, assegureu-vos que escanegeu el codi QR que es mostra al dispositiu que voleu enllaçar.";
@@ -5028,6 +5037,9 @@
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Nom";
+
+/* Title for a menu action allowing users to edit their existing username. */
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Edit Username";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nom d'usuari";

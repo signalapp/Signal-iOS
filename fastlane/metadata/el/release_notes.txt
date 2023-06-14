@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• Επίλεξε γρήγορα κάποιο από τα emoji που έχουν ήδη προστεθεί στο μήνυμα και προκάλεσε αλυσιδωτή αντίδραση. Ή διάλεξε ένα νέο και μοναδικό, αν δεν θέλεις η αντίδρασή σου να φαίνεται υπερβολική.
+• Τώρα μπορείς να βρεις τους φακέλους στο εργαλείο επιλογής φωτογραφίας, για να διαλέγεις επισύναψη από τη συλλογή αντί να βλέπεις ένα συνονθύλευμα φωτογραφιών.
+• Βελτιώσαμε τη γραμμή προόδου, τις ρυθμίσεις ελέγχου βίντεο, τα εικονίδια και άλλα στοιχεία στο εργαλείο προβολής μέσων. Η σκληρή δουλειά εδώ στο Signal ανταποδίδει καρπούς όταν πατάς το κουμπί αναπαραγωγής.

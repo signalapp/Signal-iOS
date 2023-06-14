@@ -151,6 +151,12 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Về Yêu cầu Nhắn tin";
 
+/* Audio file type in All Meda file type picker. */
+"ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
+
+/* Media (i.e., graphical) file type in All Meda file type picker. */
+"ALL_MEDIA_FILE_TYPE_MEDIA" = "Media";
+
 /* Menu option to limit All Media view to displaying only GIFs */
 "ALL_MEDIA_FILTER_GIFS" = "Ảnh GIF";
 
@@ -371,7 +377,7 @@
 "ATTACHMENT_KEYBOARD_CONTACT" = "Liên hệ";
 
 /* A button to select a file from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_FILE" = "Tệp";
+"ATTACHMENT_KEYBOARD_FILE" = "Tập tin";
 
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "Ảnh GIF";
@@ -608,7 +614,7 @@
 "BUTTON_EDIT" = "Sửa";
 
 /* Label for the 'mute' button. */
-"BUTTON_MUTE" = "Tắt tiếng";
+"BUTTON_MUTE" = "Tắt thông báo";
 
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Tiếp";
@@ -641,7 +647,7 @@
 "BUTTON_SUBMIT" = "Gửi";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Bỏ tắt tiếng";
+"BUTTON_UNMUTE" = "Bật thông báo";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Xem";
@@ -2156,7 +2162,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Đồ vật";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Tin nhắn này";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Gần đây";
@@ -2373,6 +2379,9 @@
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Bạn không có tập đa phương tiện nào trong cuộc trò chuyện này.";
+
+/* Label indicating media gallery with audio filter is empty */
+"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "You don‘t have any audio in this chat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Đang tải Tập tin đa phương tiện Mới…";
@@ -3407,19 +3416,19 @@
 "LEAVE_GROUP_FAILED" = "Đã xảy ra lỗi khi bạn rời nhóm.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Nhóm Cũ\" là các nhóm không hỗ trợ các tính năng như @nhắc tên và quản trị viên. Phần lớn Nhóm Cũ được nâng cấp tự động hoặc thủ công lên \"Nhóm Mới\". Do đã không hoạt động trong một khoảng thời gian dài, nhóm này không thể được nâng cấp nữa.\n\nĐể tiếp tục cuộc trò chuyện này, bạn phải tạo một nhóm mới.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Nhóm Cũ";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Đây là Nhóm Cũ, và đã không còn được hỗ trợ. Để tiếp tục cuộc hội thoại này, hãy tạo một nhóm mới. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Nhóm Mới có các tính năng như @nhắc và admin nhóm, và sẽ hỗ trợ nhiều tính năng trong tương lai.\n\nTất cả lịch sử tin nhắn và đa phương tiện đã được giữ lại trước khi nâng cấp.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Nhóm Mới là gì?";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Mã QR này không hợp lệ. Hãy đảm bảo bạn đang quét đúng mã QR trên thiết bị bạn đang muốn liên kết.";
@@ -5028,6 +5037,9 @@
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Tên";
+
+/* Title for a menu action allowing users to edit their existing username. */
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Edit Username";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Tên người dùng";

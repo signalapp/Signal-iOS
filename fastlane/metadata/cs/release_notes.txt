@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• Vytvořte řetězovou reakci rychlým výběrem z emoji, které již byly ve zprávy použity. Nebo si vyberte něco nového a jedinečného, pokud nechcete vypadat, že reagujete přehnaně.
+• Ve výběru fotografií se teď zobrazují složky, takže můžete vybrat přílohu z fotoalba, aniž byste se museli probírat neroztříděnými fotografiemi.
+• Vylepšili jsme ukazatel průběhu, ovládací prvky videa, ikony a další prvky v přehrávači médií. Díky tomu je teď Signal zase o trochu lepší, když kliknete na „přehrát“.

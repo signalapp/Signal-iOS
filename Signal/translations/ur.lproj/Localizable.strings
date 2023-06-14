@@ -151,6 +151,12 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "پیغام کی درخواستوں کے بارے میں";
 
+/* Audio file type in All Meda file type picker. */
+"ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
+
+/* Media (i.e., graphical) file type in All Meda file type picker. */
+"ALL_MEDIA_FILE_TYPE_MEDIA" = "Media";
+
 /* Menu option to limit All Media view to displaying only GIFs */
 "ALL_MEDIA_FILTER_GIFS" = "GIFs";
 
@@ -389,7 +395,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "ایک مرتبہ آپ نے جو تصاویر لیں، ان کو یہاں اپنے حالیہ میں بھیجنے کے قابل ہونگے۔";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "ادائیگی";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "پیمنٹ";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "منسلک مواد";
@@ -2156,7 +2162,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "چیزیں";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "یہ پیغام";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "حالیہ";
@@ -2373,6 +2379,9 @@
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "اس چیٹ میں آپ کے پاس کوئی میڈیا موجود نہیں ہے۔";
+
+/* Label indicating media gallery with audio filter is empty */
+"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "You don‘t have any audio in this chat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "نیا میڈیا لوڈ ہو رہا ہے۔۔۔";
@@ -3407,19 +3416,19 @@
 "LEAVE_GROUP_FAILED" = "گروپ چھوڑتے وقت ایک خرابی پیش آگئی۔";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"لیگیسی گروپس\" وہ گروپس ہیں جو @mentions اور ایڈمنز جیسے فیچرز کو سپورٹ نہیں کرتے۔ زیادہ تر لیگیسی گروپس کو یا تو خود کار طور پر یا دستی طور پر \"نئے گروپس\" میں اپ گریڈ کیا گیا تھا۔ اس گروپ کو طویل عرصے کی غیر فعالیت کی وجہ سے، مزید اپ گریڈ نہیں کیا جا سکتا۔\n\nاس چیٹ کو جاری رکھنے کے لیے، آپ پر لازم ہے کہ ایک نیا گروپ تخلیق کریں۔";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "لیگیسی گروپس";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "یہ ایک لیگیسی گروپ ہے، اور یہ مزید سپورٹ کردہ نہیں ہے۔ اس گفتگو کو جاری رکھنے کے لیے، ایک نیا گروپ تخلیق کریں۔ %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "نئے گروپس میں @ ذکر اور گروپ منتظمین کی طرح کی خصوصیات ہیں ، اور آئندہ وہ مزید خصوصیات کی حمایت کریں گی۔\n\nاپ ڈیٹ کرنے سے پہلے میسج کی تمام ہسٹری اور میڈیا کو محفوظ کر لیا گیا ہے۔";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "نئے گروپس کیا ہیں؟";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "یہ QR کوڈ درست نہیں ہے۔براہ کرم آپ جس لنک کو ڈیوائس پر ڈسپلیڈ کرنا چاہتے ہیں اور یقینی بنائیں کہ آپ QR کوڈ سکین کر رہے ہیں۔";
@@ -5028,6 +5037,9 @@
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "نام";
+
+/* Title for a menu action allowing users to edit their existing username. */
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Edit Username";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "صارف کا نام";

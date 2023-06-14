@@ -151,6 +151,12 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "મેસેજ વિનંતીઓ વિશે";
 
+/* Audio file type in All Meda file type picker. */
+"ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
+
+/* Media (i.e., graphical) file type in All Meda file type picker. */
+"ALL_MEDIA_FILE_TYPE_MEDIA" = "Media";
+
 /* Menu option to limit All Media view to displaying only GIFs */
 "ALL_MEDIA_FILTER_GIFS" = "GIFs";
 
@@ -2156,7 +2162,7 @@
 "EMOJI_CATEGORY_OBJECTS_NAME" = "વસ્તુઓ";
 
 /* The name for the emoji section for emojis already used on the message */
-"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "This message";
+"EMOJI_CATEGORY_ON_MESSAGE_NAME" = "આ મેસેજ";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "તાજેતરનું";
@@ -2373,6 +2379,9 @@
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "તમારી પાસે આ ચેટમાં કોઈ મીડિયા નથી.";
+
+/* Label indicating media gallery with audio filter is empty */
+"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "You don‘t have any audio in this chat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "નવી મીડિયા લોડ કરી રહ્યું છે…";
@@ -3407,19 +3416,19 @@
 "LEAVE_GROUP_FAILED" = "ગ્રુપ છોડતી વખતે ભૂલ આવી.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"Legacy Groups\" are groups that do not support features like @mentions and admins. Most Legacy Groups were upgraded either automatically or manually to \"New Groups.\" Due to a long period of inactivity, this group can no longer be upgraded.\n\nTo continue this chat, you must create a new group.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"લેગસી ગ્રૂપ\" એવા ગ્રૂપ છે જે @ઉલ્લેખ એડમિન જેવા ફીચરને સપોર્ટ કરતાં નથી. મોટા ભાગના લેગસી ગ્રૂપને આપમેળે અથવા મેન્યુઅલ રીતે \"નવા ગ્રૂપ\"માં અપગ્રેડ કરવામાં આવ્યા હતા. લાંબાગાળાની નિષ્ક્રિયતાને લીધે, આ ગ્રૂપને હવે અપગ્રેડ કરી શકાતું નથી.\n\nઆ ચેટ ચાલુ રાખવા માટે, તમારે એક નવું ગ્રૂપ બનાવવું આવશ્યક છે.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Legacy Groups";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "લેગસી ગ્રૂપ";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "This is a Legacy Group, and is no longer supported. To continue this conversation, create a new group. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "આ એક લેગસી ગ્રૂપ છે અને હવે સપોર્ટ થતું નથી. આ વાતચીત ચાલુ રાખવા માટે, એક નવું ગ્રૂપ બનાવો. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "New Groups have features like @mentions and group admins, and will support more features in the future.\n\nAll message history and media has been kept from before the upgrade.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "નવા ગ્રુપમાં @ઉલ્લેખો અને ગ્રુપ એડમિન્સ જેવા ફીચર છે, અને તે ભવિષ્યમાં વધુ ફીચરને ટેકો આપશે.\n\nઅપગ્રેડ પહેલાના તમામ મેસેજ હિસ્ટ્રી અને મીડિયા રાખવામાં આવ્યા છે.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "What are New Groups?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "નવા ગ્રુપ શું છે??";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "આ QR કોડ માન્ય નથી. કૃપા કરીને ખાતરી કરો કે તમે QR કોડને સ્કેન કરી રહ્યાં છો કે જે ડિવાઇસને તમે લિંક કરવા માંગો છો તેના પર પ્રદર્શિત થાય છે.";
@@ -5028,6 +5037,9 @@
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "નામ";
+
+/* Title for a menu action allowing users to edit their existing username. */
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Edit Username";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "વપરાશકર્તા નામ";

@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• אפשר לבחור במהירות תגובת אימוג׳י מתוך אלה שכבר נוספו להודעה. או לבחור משהו חדש וייחודי אם לא בא לך לחזור על עצמך.
+• התיקיות גלויות עכשיו בבורר התמונות, ככה שאפשר לבחור קובץ מצורף מתוך תמונה או אלבום במקום לראות ערבוביה של תמונות לא קשורות.
+• שיפרנו את סרגל ההתקדמות, לחצני בקרת הוידאו, הסמלים, ואלמנטים אחרים בנגן המדיה. אנחנו עובדים קשה כדי לאפשר לך ליהנות קצת יותר.

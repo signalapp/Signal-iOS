@@ -1,3 +1,3 @@
-• Create a chain reaction by quickly selecting from the emojis that have already been added to a message. Or choose something new and unique if you don't want to look like you're overreacting.
-• Folders are now visible in the photo selector, so you can pick an attachment from a photo album instead of only seeing a photo amalgam.
-• We improved the progress bar, video controls, icons, and other elements in the media viewer. All work and no play have made Signal a little bit better whenever you push play.
+• Kini Anda dapat dengan cepat memilih sebuah tanggapan emoji yang telah ditambahkan ke pesan.
+• Folder dan album kini dapat terlihat di pemilih foto.
+• Kami telah menyempurnakan bilah progres, kontrol video, dan ikon di penampil media.
