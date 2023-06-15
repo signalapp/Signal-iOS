@@ -20,7 +20,7 @@ public protocol TextApprovalViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-public class TextApprovalViewController: OWSViewController, MentionTextViewDelegate {
+public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDelegate {
 
     public weak var delegate: TextApprovalViewControllerDelegate?
 
@@ -29,7 +29,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
     private let initialMessageBody: MessageBody
     private let linkPreviewFetcher: LinkPreviewFetcher
 
-    private let textView = MentionTextView()
+    private let textView = BodyRangesTextView()
     private let footerView = ApprovalFooterView()
     private var bottomConstraint: NSLayoutConstraint?
 
@@ -178,27 +178,27 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         updateLinkPreviewText()
     }
 
-    public func textViewDidBeginTypingMention(_ textView: MentionTextView) {}
+    public func textViewDidBeginTypingMention(_ textView: BodyRangesTextView) {}
 
-    public func textViewDidEndTypingMention(_ textView: MentionTextView) {}
+    public func textViewDidEndTypingMention(_ textView: BodyRangesTextView) {}
 
-    public func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
+    public func textViewMentionPickerParentView(_ textView: BodyRangesTextView) -> UIView? {
         return nil
     }
 
-    public func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
+    public func textViewMentionPickerReferenceView(_ textView: BodyRangesTextView) -> UIView? {
         return nil
     }
 
-    public func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
+    public func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView) -> [SignalServiceAddress] {
         return []
     }
 
-    public func textViewMentionDisplayConfiguration(_ textView: MentionTextView) -> MentionDisplayConfiguration {
+    public func textViewMentionDisplayConfiguration(_ textView: BodyRangesTextView) -> MentionDisplayConfiguration {
         return .composing
     }
 
-    public func mentionPickerStyle(_ textView: MentionTextView) -> MentionPickerStyle {
+    public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
         return .default
     }
 }

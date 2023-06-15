@@ -22,7 +22,7 @@ protocol ConversationTextViewToolbarDelegate: AnyObject {
 
 // MARK: -
 
-class ConversationInputTextView: MentionTextView {
+class ConversationInputTextView: BodyRangesTextView {
 
     private lazy var placeholderView = UILabel()
     private var placeholderConstraints: [NSLayoutConstraint]?

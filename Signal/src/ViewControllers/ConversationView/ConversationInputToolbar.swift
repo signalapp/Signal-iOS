@@ -73,7 +73,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         quotedReply: QuotedReplyModel?,
         inputToolbarDelegate: ConversationInputToolbarDelegate,
         inputTextViewDelegate: ConversationInputTextViewDelegate,
-        mentionDelegate: MentionTextViewDelegate
+        mentionDelegate: BodyRangesTextViewDelegate
     ) {
         self.conversationStyle = conversationStyle
         self.spoilerReveal = spoilerReveal
@@ -301,7 +301,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         _ messageDraft: MessageBody?,
         quotedReply: QuotedReplyModel?,
         inputTextViewDelegate: ConversationInputTextViewDelegate,
-        mentionDelegate: MentionTextViewDelegate
+        mentionDelegate: BodyRangesTextViewDelegate
     ) {
         // The input toolbar should *always* be laid out left-to-right, even when using
         // a right-to-left language. The convention for messaging apps is for the send

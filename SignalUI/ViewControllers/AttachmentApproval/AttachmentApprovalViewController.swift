@@ -1250,29 +1250,29 @@ extension AttachmentApprovalViewController {
     }
 }
 
-extension AttachmentApprovalViewController: MentionTextViewDelegate {
+extension AttachmentApprovalViewController: BodyRangesTextViewDelegate {
 
-    public func textViewDidBeginTypingMention(_ textView: MentionTextView) { }
+    public func textViewDidBeginTypingMention(_ textView: BodyRangesTextView) { }
 
-    public func textViewDidEndTypingMention(_ textView: MentionTextView) { }
+    public func textViewDidEndTypingMention(_ textView: BodyRangesTextView) { }
 
-    public func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
+    public func textViewMentionPickerParentView(_ textView: BodyRangesTextView) -> UIView? {
         return view
     }
 
-    public func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
+    public func textViewMentionPickerReferenceView(_ textView: BodyRangesTextView) -> UIView? {
         return bottomToolView.attachmentTextToolbar
     }
 
-    public func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
+    public func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView) -> [SignalServiceAddress] {
         return approvalDataSource?.attachmentApprovalMentionableAddresses ?? []
     }
 
-    public func textViewMentionDisplayConfiguration(_ textView: MentionTextView) -> MentionDisplayConfiguration {
+    public func textViewMentionDisplayConfiguration(_ textView: BodyRangesTextView) -> MentionDisplayConfiguration {
         return .composingAttachment
     }
 
-    public func mentionPickerStyle(_ textView: MentionTextView) -> MentionPickerStyle {
+    public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
         return .composingAttachment
     }
 }

@@ -140,7 +140,7 @@
 		3402AAA3271D9E180084CBAE /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95526271B510400B05242 /* DirectionalPanGestureRecognizer.swift */; };
 		3402AAA6271D9E180084CBAE /* MentionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9552C271B510400B05242 /* MentionPicker.swift */; };
 		3402AAA7271D9E180084CBAE /* AvatarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95545271B510400B05242 /* AvatarImageView.swift */; };
-		3402AAA8271D9E180084CBAE /* MentionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9552D271B510400B05242 /* MentionTextView.swift */; };
+		3402AAA8271D9E180084CBAE /* BodyRangesTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9552D271B510400B05242 /* BodyRangesTextView.swift */; };
 		3402AAA9271D9E180084CBAE /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95546271B510400B05242 /* GradientView.swift */; };
 		3402AAAA271D9E180084CBAE /* InputAccessoryViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9554F271B510400B05242 /* InputAccessoryViewPlaceholder.swift */; };
 		3402AAAB271D9E180084CBAE /* OWSActionSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9553D271B510400B05242 /* OWSActionSheets.swift */; };
@@ -2785,7 +2785,7 @@
 		34A95528271B510400B05242 /* TextFieldWithPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldWithPlaceholder.swift; sourceTree = "<group>"; };
 		34A95529271B510400B05242 /* LinkingTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkingTextView.swift; sourceTree = "<group>"; };
 		34A9552C271B510400B05242 /* MentionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPicker.swift; sourceTree = "<group>"; };
-		34A9552D271B510400B05242 /* MentionTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionTextView.swift; sourceTree = "<group>"; };
+		34A9552D271B510400B05242 /* BodyRangesTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyRangesTextView.swift; sourceTree = "<group>"; };
 		34A9552F271B510400B05242 /* LoopingVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopingVideoView.swift; sourceTree = "<group>"; };
 		34A95530271B510400B05242 /* OWSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSButton.swift; sourceTree = "<group>"; };
 		34A95531271B510400B05242 /* ResizingScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizingScrollView.swift; sourceTree = "<group>"; };
@@ -5660,10 +5660,10 @@
 		34A95508271B510400B05242 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				34A9552A271B510400B05242 /* BodyRanges */,
 				34A95521271B510400B05242 /* ConversationView */,
 				34A95551271B510400B05242 /* ImageEditor */,
 				34A95514271B510400B05242 /* Link Preview */,
-				34A9552A271B510400B05242 /* Mentions */,
 				34A9554A271B510400B05242 /* Tooltips */,
 				34A9551A271B510400B05242 /* VideoEditor */,
 				34A95545271B510400B05242 /* AvatarImageView.swift */,
@@ -5754,16 +5754,16 @@
 			path = ConversationView;
 			sourceTree = "<group>";
 		};
-		34A9552A271B510400B05242 /* Mentions */ = {
+		34A9552A271B510400B05242 /* BodyRanges */ = {
 			isa = PBXGroup;
 			children = (
+				34A9552D271B510400B05242 /* BodyRangesTextView.swift */,
 				66FC637D29E0B00F00F00DAC /* MentionDisplayConfigurations.swift */,
 				34A9552C271B510400B05242 /* MentionPicker.swift */,
-				34A9552D271B510400B05242 /* MentionTextView.swift */,
 				66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */,
 				66FC637F29E0B9DA00F00DAC /* SpoilerDisplayConfigurations.swift */,
 			);
-			path = Mentions;
+			path = BodyRanges;
 			sourceTree = "<group>";
 		};
 		34A9554A271B510400B05242 /* Tooltips */ = {
@@ -10754,6 +10754,7 @@
 				88B98700288088B800F8C74D /* BaseMemberViewController.swift in Sources */,
 				760981882936DE90008F8300 /* BezierPathView.swift in Sources */,
 				762EBBD22A2FE370002FD28F /* BlockListUIUtils.swift in Sources */,
+				3402AAA8271D9E180084CBAE /* BodyRangesTextView.swift in Sources */,
 				83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */,
 				34A954DE271B4F3E00B05242 /* ChatColors.swift in Sources */,
 				D925F5512983399D00158EE4 /* CircleButton.swift in Sources */,
@@ -10839,7 +10840,6 @@
 				766035A9286CE4CB00F6B71C /* MediaTopBar.swift in Sources */,
 				66FC637E29E0B00F00F00DAC /* MentionDisplayConfigurations.swift in Sources */,
 				3402AAA6271D9E180084CBAE /* MentionPicker.swift in Sources */,
-				3402AAA8271D9E180084CBAE /* MentionTextView.swift in Sources */,
 				3465F4D727287677001663AF /* MobileCoinAPI+Configuration.swift in Sources */,
 				3465F4D927287677001663AF /* MobileCoinAPI.swift in Sources */,
 				34BB78B7272C51B600DA0D04 /* MobileCoinHelperSDK.swift in Sources */,

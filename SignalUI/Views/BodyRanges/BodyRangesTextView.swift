@@ -5,21 +5,21 @@
 
 import SignalMessaging
 
-public protocol MentionTextViewDelegate: UITextViewDelegate {
-    func textViewDidBeginTypingMention(_ textView: MentionTextView)
-    func textViewDidEndTypingMention(_ textView: MentionTextView)
+public protocol BodyRangesTextViewDelegate: UITextViewDelegate {
+    func textViewDidBeginTypingMention(_ textView: BodyRangesTextView)
+    func textViewDidEndTypingMention(_ textView: BodyRangesTextView)
 
-    func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView?
-    func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView?
-    func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress]
+    func textViewMentionPickerParentView(_ textView: BodyRangesTextView) -> UIView?
+    func textViewMentionPickerReferenceView(_ textView: BodyRangesTextView) -> UIView?
+    func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView) -> [SignalServiceAddress]
 
-    func textViewMentionDisplayConfiguration(_ textView: MentionTextView) -> MentionDisplayConfiguration
-    func mentionPickerStyle(_ textView: MentionTextView) -> MentionPickerStyle
+    func textViewMentionDisplayConfiguration(_ textView: BodyRangesTextView) -> MentionDisplayConfiguration
+    func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle
 }
 
-open class MentionTextView: OWSTextView {
+open class BodyRangesTextView: OWSTextView {
 
-    public weak var mentionDelegate: MentionTextViewDelegate? {
+    public weak var mentionDelegate: BodyRangesTextViewDelegate? {
         didSet { updateMentionState() }
     }
 
@@ -477,6 +477,222 @@ open class MentionTextView: OWSTextView {
         state = .notTypingMention
     }
 
+    // MARK: - Text Formatting
+
+    // MARK: Menu items
+
+    private let cutUIMenuAction = #selector(cut)
+    private let copyUIMenuAction = #selector(copy)
+    private let pasteUIMenuAction = #selector(UIResponderStandardEditActions.paste(_:))
+
+    private let uiMenuPromptReplaceAction = Selector(("_promptForReplace:"))
+    private let uiMenuReplaceAction = Selector(("replace:"))
+    private let customUIMenuPromptReplaceAction = #selector(customUIMenuPromptReplace)
+    @objc
+    func customUIMenuPromptReplace(_ sender: Any?) { super.perform(uiMenuPromptReplaceAction, with: sender) }
+
+    private let uiMenuLookUpAction = Selector(("_define:"))
+    private let customUIMenuLookUpAction = #selector(customUIMenuLookUp)
+    @objc
+    func customUIMenuLookUp(_ sender: Any?) { super.perform(uiMenuLookUpAction, with: sender) }
+
+    private let uiMenuShareAction = Selector(("_share:"))
+    private let customUIMenuShareAction = #selector(customUIMenuShare)
+    @objc
+    func customUIMenuShare(_ sender: Any?) { super.perform(uiMenuShareAction, with: sender) }
+
+    open override func buildMenu(with builder: UIMenuBuilder) {
+        guard FeatureFlags.textFormattingSend else {
+            super.buildMenu(with: builder)
+            return
+        }
+        if builder.menu(for: .lookup) != nil, selectedRange.length > 0 {
+            // The lookup action is special; for whatever reason it doesn't go
+            // through `canPerformAction` at all, so we have to disable it here
+            // or it will appear before our custom format options.
+            builder.remove(menu: .lookup)
+        }
+        super.buildMenu(with: builder)
+    }
+
+    open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        // We only mess with actions when there's a selection.
+        guard FeatureFlags.textFormattingSend, selectedRange.length > 0 else {
+            return super.canPerformAction(action, withSender: sender)
+        }
+        // Let our custom style actions through.
+        if action == #selector(didSelectTextFormattingSubmenu) {
+            return selectedRange.length > 0
+        }
+        if MessageBodyRanges.SingleStyle.allCases.lazy
+            .map({ (style: MessageBodyRanges.SingleStyle) -> Selector in
+                return self.uiMenuItemSelector(for: style)
+            })
+            .contains(action) {
+            return isShowingFormatMenu
+        }
+
+        switch action {
+        // Cut, copy, paste are let through as they are first in the list.
+        case cutUIMenuAction, copyUIMenuAction, pasteUIMenuAction:
+            guard !isShowingFormatMenu else {
+                return false
+            }
+            return super.canPerformAction(action, withSender: sender)
+
+        // We want these actions to appear, but _after_ format. To do that, we disable
+        // the system's action and use custom ones of our own that forward to the same selector.
+        case customUIMenuPromptReplaceAction:
+            return super.canPerformAction(uiMenuPromptReplaceAction, withSender: sender)
+        case customUIMenuLookUpAction:
+            return super.canPerformAction(uiMenuLookUpAction, withSender: sender)
+        case customUIMenuShareAction:
+            return super.canPerformAction(uiMenuShareAction, withSender: sender)
+
+        // The second stage of replace (picking the thing to replace with) is allowed.
+        case uiMenuReplaceAction:
+            return super.canPerformAction(action, withSender: sender)
+
+        // All other actions are disallowed.
+        default:
+            return false
+        }
+    }
+
+    // When the user selects text, we show a "format" option in the menu. Tapping
+    // that sets this to true, reloading the menu with styles (bold, italic, etc) and
+    // omitting all other options.
+    // We have to be careful to set this to false again once the menu is dismissed by
+    // any means, so that when it shows again we see cut/copy/paste and "format" again.
+    // There is no one callback for this dismissal, so we have to set it to false all over:
+    // resign first responder, selection changed, text changed, style option tapped, etc.
+    private var isShowingFormatMenu = false {
+        didSet {
+            guard FeatureFlags.textFormattingSend else {
+                return
+            }
+            if oldValue, !isShowingFormatMenu, UIMenuController.shared.isMenuVisible {
+                UIMenuController.shared.hideMenu(from: self)
+            }
+        }
+    }
+
+    open override func resignFirstResponder() -> Bool {
+        isShowingFormatMenu = false
+        return super.resignFirstResponder()
+    }
+
+    fileprivate func updateUIMenuState() {
+        guard FeatureFlags.textFormattingSend else {
+            return
+        }
+        if selectedRange.length > 0 {
+            if isShowingFormatMenu {
+                let orderedStyles: [MessageBodyRanges.SingleStyle] = [
+                    .bold, .italic, .monospace, .strikethrough, .spoiler
+                ]
+                UIMenuController.shared.menuItems = orderedStyles.map { style in
+                    return UIMenuItem(title: style.displayText, action: self.uiMenuItemSelector(for: style))
+                }
+            } else {
+                UIMenuController.shared.menuItems = [
+                    // to get format to show up before system menu items, put our format
+                    // first and then our own replacements for the system ones after.
+                    UIMenuItem(
+                        title: OWSLocalizedString(
+                            "TEXT_MENU_FORMAT",
+                            comment: "Option in selected text edit menu to view text formatting options"
+                        ),
+                        action: #selector(didSelectTextFormattingSubmenu)
+                    ),
+                    UIMenuItem(
+                        title: OWSLocalizedString(
+                            "TEXT_MENU_REPLACE",
+                            comment: "Option in selected text edit menu to replace text with suggestions"
+                        ),
+                        action: #selector(customUIMenuPromptReplace)
+                    ),
+                    UIMenuItem(
+                        title: OWSLocalizedString(
+                            "TEXT_MENU_LOOK_UP",
+                            comment: "Option in selected text edit menu to look up word definitions"
+                        ),
+                        action: #selector(customUIMenuLookUp)
+                    ),
+                    UIMenuItem(
+                        title: OWSLocalizedString(
+                            "TEXT_MENU_SHARE",
+                            comment: "Option in selected text edit menu to share selected text"
+                        ),
+                        action: #selector(customUIMenuShare)
+                    )
+                ]
+            }
+        } else {
+            UIMenuController.shared.menuItems = nil
+        }
+        UIMenuController.shared.update()
+    }
+
+    @objc
+    private func didSelectTextFormattingSubmenu(_ sender: UIMenu) {
+        guard FeatureFlags.textFormattingSend else {
+            return
+        }
+        isShowingFormatMenu = true
+        updateUIMenuState()
+        // No way to set a sub-menu in iOS 13. Have to wait for it to dismiss
+        // and then show it again in the next runloop.
+        DispatchQueue.main.async { [self] in
+            guard let selectedTextRange, isShowingFormatMenu else {
+                return
+            }
+            let selectionRects = selectionRects(for: selectedTextRange)
+            var completeRect = CGRect.null
+            for rect in selectionRects {
+                if completeRect.isNull {
+                    completeRect = rect.rect
+                } else {
+                    completeRect = rect.rect.union(completeRect)
+                }
+            }
+            UIMenuController.shared.showMenu(from: self, rect: completeRect)
+        }
+    }
+
+    private func uiMenuItemSelector(for style: MessageBodyRanges.SingleStyle) -> Selector {
+        switch style {
+        case .bold: return #selector(didSelectBold)
+        case .italic: return #selector(didSelectItalic)
+        case .spoiler: return #selector(didSelectSpoiler)
+        case .strikethrough: return #selector(didSelectStrikethrough)
+        case .monospace: return #selector(didSelectMonospace)
+        }
+    }
+
+    @objc
+    func didSelectBold() { didSelectStyle(.bold) }
+    @objc
+    func didSelectItalic() { didSelectStyle(.italic) }
+    @objc
+    func didSelectSpoiler() { didSelectStyle(.spoiler) }
+    @objc
+    func didSelectStrikethrough() { didSelectStyle(.strikethrough) }
+    @objc
+    func didSelectMonospace() { didSelectStyle(.monospace) }
+
+    private func didSelectStyle(_ style: MessageBodyRanges.SingleStyle) {
+        guard FeatureFlags.textFormattingSend else {
+            return
+        }
+        Logger.info("Applying style: \(style)")
+        isShowingFormatMenu = false
+        guard selectedRange.length > 0 else {
+            return
+        }
+        // TODO[TextFormattingSend]
+    }
+
     // MARK: - Text Container Insets
 
     open var defaultTextContainerInset: UIEdgeInsets {
@@ -509,7 +725,7 @@ open class MentionTextView: OWSTextView {
 
 // MARK: - Picker Keyboard Interaction
 
-extension MentionTextView {
+extension BodyRangesTextView {
     open override var keyCommands: [UIKeyCommand]? {
         guard pickerView != nil else { return nil }
 
@@ -548,7 +764,7 @@ extension MentionTextView {
 
 // MARK: - Cut/Copy/Paste
 
-extension MentionTextView {
+extension BodyRangesTextView {
     open override func cut(_ sender: Any?) {
         copy(sender)
         replaceCharacters(in: selectedRange, with: "")
@@ -607,7 +823,7 @@ extension MentionTextView {
 
 // MARK: - UITextViewDelegate
 
-extension MentionTextView: UITextViewDelegate {
+extension BodyRangesTextView: UITextViewDelegate {
     open func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         guard shouldUpdateMentionText(in: range, changedText: text) else { return false }
         return mentionDelegate?.textView?(textView, shouldChangeTextIn: range, replacementText: text) ?? true
@@ -616,9 +832,12 @@ extension MentionTextView: UITextViewDelegate {
     open func textViewDidChangeSelection(_ textView: UITextView) {
         mentionDelegate?.textViewDidChangeSelection?(textView)
         updateMentionState()
+        isShowingFormatMenu = false
+        updateUIMenuState()
     }
 
     open func textViewDidChange(_ textView: UITextView) {
+        isShowingFormatMenu = false
         mentionDelegate?.textViewDidChange?(textView)
         if textStorage.length == 0 { updateMentionState() }
     }
@@ -628,6 +847,7 @@ extension MentionTextView: UITextViewDelegate {
     }
 
     open func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
+        isShowingFormatMenu = false
         return mentionDelegate?.textViewShouldEndEditing?(textView) ?? true
     }
 
@@ -645,5 +865,38 @@ extension MentionTextView: UITextViewDelegate {
 
     open func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         return mentionDelegate?.textView?(textView, shouldInteractWith: textAttachment, in: characterRange, interaction: interaction) ?? true
+    }
+}
+
+extension MessageBodyRanges.SingleStyle {
+
+    var displayText: String {
+        switch self {
+        case .bold:
+            return OWSLocalizedString(
+                "TEXT_MENU_BOLD",
+                comment: "Option in selected text edit menu to make text bold"
+            )
+        case .italic:
+            return OWSLocalizedString(
+                "TEXT_MENU_ITALIC",
+                comment: "Option in selected text edit menu to make text italic"
+            )
+        case .spoiler:
+            return OWSLocalizedString(
+                "TEXT_MENU_SPOILER",
+                comment: "Option in selected text edit menu to make text spoiler"
+            )
+        case .strikethrough:
+            return OWSLocalizedString(
+                "TEXT_MENU_STRIKETHROUGH",
+                comment: "Option in selected text edit menu to make text strikethrough"
+            )
+        case .monospace:
+            return OWSLocalizedString(
+                "TEXT_MENU_MONOSPACE",
+                comment: "Option in selected text edit menu to make text monospace"
+            )
+        }
     }
 }

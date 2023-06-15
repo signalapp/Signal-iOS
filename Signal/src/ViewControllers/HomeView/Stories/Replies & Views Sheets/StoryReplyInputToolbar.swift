@@ -149,7 +149,7 @@ class StoryReplyInputToolbar: UIView {
         return button
     }()
 
-    private lazy var textView: MentionTextView = {
+    private lazy var textView: BodyRangesTextView = {
         let textView = buildTextView()
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
         textView.mentionDelegate = self
@@ -214,8 +214,8 @@ class StoryReplyInputToolbar: UIView {
         return textContainer
     }()
 
-    private func buildTextView() -> MentionTextView {
-        let textView = MentionTextView()
+    private func buildTextView() -> BodyRangesTextView {
+        let textView = BodyRangesTextView()
 
         textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
         textView.backgroundColor = .clear
@@ -339,29 +339,29 @@ class StoryReplyInputToolbar: UIView {
     }
 }
 
-extension StoryReplyInputToolbar: MentionTextViewDelegate {
+extension StoryReplyInputToolbar: BodyRangesTextViewDelegate {
 
-    func textViewDidBeginTypingMention(_ textView: MentionTextView) {}
+    func textViewDidBeginTypingMention(_ textView: BodyRangesTextView) {}
 
-    func textViewDidEndTypingMention(_ textView: MentionTextView) {}
+    func textViewDidEndTypingMention(_ textView: BodyRangesTextView) {}
 
-    func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
+    func textViewMentionPickerParentView(_ textView: BodyRangesTextView) -> UIView? {
         delegate?.storyReplyInputToolbarMentionPickerParentView(self)
     }
 
-    func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
+    func textViewMentionPickerReferenceView(_ textView: BodyRangesTextView) -> UIView? {
         delegate?.storyReplyInputToolbarMentionPickerReferenceView(self)
     }
 
-    func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
+    func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView) -> [SignalServiceAddress] {
         delegate?.storyReplyInputToolbarMentionPickerPossibleAddresses(self) ?? []
     }
 
-    public func textViewMentionDisplayConfiguration(_ textView: MentionTextView) -> MentionDisplayConfiguration {
+    public func textViewMentionDisplayConfiguration(_ textView: BodyRangesTextView) -> MentionDisplayConfiguration {
         return .groupReply
     }
 
-    public func mentionPickerStyle(_ textView: MentionTextView) -> MentionPickerStyle {
+    public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
         return .groupReply
     }
 

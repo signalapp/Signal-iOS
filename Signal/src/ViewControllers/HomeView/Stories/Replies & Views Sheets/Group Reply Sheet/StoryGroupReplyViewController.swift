@@ -403,7 +403,7 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
                     image: Theme.iconImage(.messageActionCopy, isDarkThemeEnabled: true),
                     handler: { _ in
                         guard let displayableText = item.displayableText else { return }
-                        MentionTextView.copyAttributedStringToPasteboard(displayableText.fullAttributedText)
+                        BodyRangesTextView.copyAttributedStringToPasteboard(displayableText.fullAttributedText)
                     }))
             }
 

@@ -173,7 +173,7 @@ extension CVItemViewModelImpl {
         guard let displayableBodyText = self.displayableBodyText else {
             return
         }
-        MentionTextView.copyAttributedStringToPasteboard(displayableBodyText.fullAttributedText)
+        BodyRangesTextView.copyAttributedStringToPasteboard(displayableBodyText.fullAttributedText)
     }
 
     var canShareMedia: Bool {

@@ -116,6 +116,8 @@ public class FeatureFlags: BaseFlags {
             logFlag("FeatureFlag", key, value)
         }
     }
+
+    public static let textFormattingSend = build.includes(.dev)
 }
 
 // MARK: -

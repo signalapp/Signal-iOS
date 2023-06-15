@@ -26,7 +26,7 @@ class AttachmentTextToolbar: UIView {
     weak var delegate: AttachmentTextToolbarDelegate?
 
     // Forward mention-related calls directly to the view controller.
-    weak var mentionTextViewDelegate: MentionTextViewDelegate?
+    weak var mentionTextViewDelegate: BodyRangesTextViewDelegate?
 
     private var isViewOnceEnabled: Bool = false
     func setIsViewOnce(enabled: Bool, animated: Bool) {
@@ -207,7 +207,7 @@ class AttachmentTextToolbar: UIView {
 
     // MARK: - Subviews
 
-    lazy private(set) var textView: MentionTextView = {
+    lazy private(set) var textView: BodyRangesTextView = {
         let textView = buildTextView()
         textView.returnKeyType = .done
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
@@ -297,7 +297,7 @@ class AttachmentTextToolbar: UIView {
         return wrapperView
     }()
 
-    private func buildTextView() -> MentionTextView {
+    private func buildTextView() -> BodyRangesTextView {
         let textView = AttachmentTextView()
         textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
         textView.backgroundColor = .clear
@@ -325,33 +325,33 @@ extension AttachmentTextToolbar {
     }
 }
 
-extension AttachmentTextToolbar: MentionTextViewDelegate {
+extension AttachmentTextToolbar: BodyRangesTextViewDelegate {
 
-    func textViewDidBeginTypingMention(_ textView: MentionTextView) {
+    func textViewDidBeginTypingMention(_ textView: BodyRangesTextView) {
         mentionTextViewDelegate?.textViewDidBeginTypingMention(textView)
     }
 
-    func textViewDidEndTypingMention(_ textView: MentionTextView) {
+    func textViewDidEndTypingMention(_ textView: BodyRangesTextView) {
         mentionTextViewDelegate?.textViewDidEndTypingMention(textView)
     }
 
-    func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
+    func textViewMentionPickerParentView(_ textView: BodyRangesTextView) -> UIView? {
         return mentionTextViewDelegate?.textViewMentionPickerParentView(textView)
     }
 
-    func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
+    func textViewMentionPickerReferenceView(_ textView: BodyRangesTextView) -> UIView? {
         return mentionTextViewDelegate?.textViewMentionPickerReferenceView(textView)
     }
 
-    func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
+    func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView) -> [SignalServiceAddress] {
         return mentionTextViewDelegate?.textViewMentionPickerPossibleAddresses(textView) ?? []
     }
 
-    public func textViewMentionDisplayConfiguration(_ textView: MentionTextView) -> MentionDisplayConfiguration {
+    public func textViewMentionDisplayConfiguration(_ textView: BodyRangesTextView) -> MentionDisplayConfiguration {
         return .composingAttachment
     }
 
-    public func mentionPickerStyle(_ textView: MentionTextView) -> MentionPickerStyle {
+    public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
         return .composingAttachment
     }
 }

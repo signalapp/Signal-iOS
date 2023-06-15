@@ -6,7 +6,7 @@
 import Foundation
 import UIKit
 
-class AttachmentTextView: MentionTextView {
+class AttachmentTextView: BodyRangesTextView {
 
     private var textIsChanging = false
 
