@@ -23,10 +23,6 @@ extension ConversationViewController {
                                                name: .identityStateDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didChangePreferredContentSize),
-                                               name: UIContentSizeCategory.didChangeNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationWillEnterForeground),
                                                name: .OWSApplicationWillEnterForeground,
                                                object: nil)
@@ -117,30 +113,6 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         updateBarButtonItems()
-    }
-
-    /**
-     Called whenever the user manually changes the dynamic type options inside Settings.
-     
-     @param notification NSNotification with the dynamic type change information.
-     */
-    @objc
-    private func didChangePreferredContentSize(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        Logger.info("didChangePreferredContentSize")
-
-        resetForSizeOrOrientationChange()
-
-        guard hasViewWillAppearEverBegun else {
-            return
-        }
-        guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
-            return
-        }
-
-        inputToolbar.updateFontSizes()
     }
 
     @objc

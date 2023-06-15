@@ -502,6 +502,24 @@ public final class ConversationViewController: OWSViewController {
         return super.shouldAutorotate
     }
 
+    public override func contentSizeCategoryDidChange() {
+        super.contentSizeCategoryDidChange()
+
+        Logger.info("didChangePreferredContentSize")
+
+        resetForSizeOrOrientationChange()
+
+        guard hasViewWillAppearEverBegun else {
+            return
+        }
+        guard let inputToolbar = inputToolbar else {
+            owsFailDebug("Missing inputToolbar.")
+            return
+        }
+
+        inputToolbar.updateFontSizes()
+    }
+
     public override func themeDidChange() {
         super.themeDidChange()
 

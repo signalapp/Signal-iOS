@@ -53,13 +53,6 @@ open class OWSTableViewController: OWSViewController {
         configureTableViewLayoutMargins()
         applyContents()
         applyTheme()
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(contentSizeCategoryDidChange),
-            name: UIContentSizeCategory.didChangeNotification,
-            object: nil
-        )
     }
 
     open override func viewWillAppear(_ animated: Bool) {
@@ -68,14 +61,25 @@ open class OWSTableViewController: OWSViewController {
         tableView.tableFooterView = UIView(frame: .zero)
     }
 
-    @objc
-    private func contentSizeCategoryDidChange(_ notification: Notification) {
-        AssertIsOnMainThread()
+    /// Reloads table contents when content size category changes.
+    ///
+    /// Does not reload header/footer views. Subclasses that use header/footer
+    /// views that need to update in response to content size category changes
+    /// should override this method to do so manually.
+    public override func contentSizeCategoryDidChange() {
+        super.contentSizeCategoryDidChange()
+
+        // Reload when content size might need to change.
         applyContents()
     }
 
     // MARK: Appearance
 
+    /// Applies theme and reloads table contents.
+    ///
+    /// Does not reload header/footer views. Subclasses that use header/footer
+    /// views that need to update in response to theme changes should override
+    /// this method to do so manually.
     public override func themeDidChange() {
         super.themeDidChange()
 

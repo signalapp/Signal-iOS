@@ -63,10 +63,6 @@ extension ChatListViewController {
                                                name: BlockingManager.blockListDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(uiContentSizeCategoryDidChange),
-                                               name: UIContentSizeCategory.didChangeNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
                                                selector: #selector(clearSearch),
                                                name: ChatListViewController.clearSearch,
                                                object: nil)
@@ -223,14 +219,6 @@ extension ChatListViewController {
         AssertIsOnMainThread()
 
         // This is wasteful but this event is very rare.
-        reloadTableDataAndResetCellContentCache()
-    }
-
-    @objc
-    private func uiContentSizeCategoryDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        // This is expensive but this event is very rare.
         reloadTableDataAndResetCellContentCache()
     }
 

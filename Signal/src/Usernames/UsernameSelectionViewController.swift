@@ -235,8 +235,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         usernameFooterTextView.textColor = Theme.primaryTextColor
     }
 
-    @objc
-    private func contentSizeCategoryDidChange() {
+    override func contentSizeCategoryDidChange() {
         headerView.updateFontsForCurrentPreferredContentSize()
         usernameTextFieldWrapper.updateFontsForCurrentPreferredContentSize()
 
@@ -260,13 +259,6 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         themeDidChange()
         contentSizeCategoryDidChange()
         updateContent()
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(contentSizeCategoryDidChange),
-            name: UIContentSizeCategory.didChangeNotification,
-            object: nil
-        )
     }
 
     private func setupNavBar() {

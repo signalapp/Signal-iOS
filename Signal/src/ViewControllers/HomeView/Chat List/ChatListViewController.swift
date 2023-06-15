@@ -226,7 +226,14 @@ public class ChatListViewController: OWSViewController {
         }
     }
 
-    // MARK: Theme
+    // MARK: Theme, content size, and layout changes
+
+    public override func contentSizeCategoryDidChange() {
+        super.contentSizeCategoryDidChange()
+
+        // This is expensive but this event is very rare.
+        reloadTableDataAndResetCellContentCache()
+    }
 
     public override func themeDidChange() {
         super.themeDidChange()

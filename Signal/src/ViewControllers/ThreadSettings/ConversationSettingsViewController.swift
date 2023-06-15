@@ -101,10 +101,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                                                name: BlockingManager.blockListDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(contentSizeCategoryDidChange(notification:)),
-                                               name: UIContentSizeCategory.didChangeNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
                                                selector: #selector(attachmentsAddedOrRemoved(notification:)),
                                                name: MediaGalleryManager.newAttachmentsAvailableNotification,
                                                object: nil)
@@ -178,11 +174,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         updateNavigationBar()
     }
 
-    override func themeDidChange() {
-        super.themeDidChange()
-        updateTableContents()
-    }
-
     private var shouldShowEditButton: Bool {
         if isGroupThread {
             return true
@@ -251,6 +242,22 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         coordinator.animate { _ in } completion: { _ in
             self.updateTableContents()
         }
+    }
+
+    /// The base implementation of this reloads the table contents, which does
+    /// not update header/footer views. Since we need those to be updated, we
+    /// instead recreate the table contents wholesale.
+    override func themeDidChange() {
+        super.themeDidChange()
+        updateTableContents()
+    }
+
+    /// The base implementation of this reloads the table contents, which does
+    /// not update header/footer views. Since we need those to be updated, we
+    /// instead recreate the table contents wholesale.
+    override func contentSizeCategoryDidChange() {
+        super.contentSizeCategoryDidChange()
+        updateTableContents()
     }
 
     // MARK: -
@@ -996,11 +1003,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             updateRecentAttachments()
             updateTableContents()
         }
-    }
-
-    @objc
-    private func contentSizeCategoryDidChange(notification: Notification) {
-        updateTableContents()
     }
 
     // MARK: - BadgeCollectionDataSource

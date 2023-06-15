@@ -132,14 +132,13 @@ open class OWSTableViewController2: OWSViewController {
 
         applyContents()
         applyTheme()
-
-        // Reload when dynamic type settings change.
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(contentSizeCategoryDidChange),
-                                               name: UIContentSizeCategory.didChangeNotification,
-                                               object: nil)
     }
 
+    /// Applies theme and reloads table contents.
+    ///
+    /// Does not reload header/footer views. Subclasses that use header/footer
+    /// views that need to update in response to theme changes should override
+    /// this method to do so manually.
     open override func themeDidChange() {
         super.themeDidChange()
 
@@ -228,10 +227,15 @@ open class OWSTableViewController2: OWSViewController {
         }
     }
 
-    @objc
-    private func contentSizeCategoryDidChange(_ notification: Notification) {
-        Logger.debug("")
+    /// Reloads table contents when content size category changes.
+    ///
+    /// Does not reload header/footer views. Subclasses that use header/footer
+    /// views that need to update in response to content size category changes
+    /// should override this method to do so manually.
+    open override func contentSizeCategoryDidChange() {
+        super.contentSizeCategoryDidChange()
 
+        // Reload when content size might need to change.
         applyContents()
     }
 

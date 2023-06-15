@@ -95,8 +95,6 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
         initializeBarButtons()
         reloadContacts()
         updateSearchResults(searchText: "")
-
-        NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: UIContentSizeCategory.didChangeNotification, object: nil)
     }
 
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -107,8 +105,7 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
         tableView.separatorColor = Theme.cellSeparatorColor
     }
 
-    @objc
-    private func didChangePreferredContentSize() {
+    public override func contentSizeCategoryDidChange() {
         self.tableView.reloadData()
     }
 
