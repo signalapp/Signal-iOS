@@ -211,7 +211,6 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
 
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.textContainerInset = UIEdgeInsets(top: 12, leading: 16, bottom: 24, trailing: 16)
-        textView.textColor = Theme.secondaryTextAndIconColor
         textView.delegate = self
 
         return textView
@@ -232,7 +231,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         headerView.setColorsForCurrentTheme()
         usernameTextFieldWrapper.setColorsForCurrentTheme()
 
-        usernameFooterTextView.textColor = Theme.primaryTextColor
+        usernameFooterTextView.textColor = Theme.secondaryTextAndIconColor
     }
 
     override func contentSizeCategoryDidChange() {

@@ -233,13 +233,13 @@ public extension UIView {
     }
 
     @discardableResult
-    func autoPinHeight(toHeightOf otherView: UIView) -> NSLayoutConstraint {
-        return autoMatch(.height, to: .height, of: otherView)
+    func autoPinHeight(toHeightOf otherView: UIView, offset: CGFloat = 0, relation: NSLayoutConstraint.Relation = .equal) -> NSLayoutConstraint {
+        return autoMatch(.height, to: .height, of: otherView, withOffset: offset, relation: relation)
     }
 
     @discardableResult
-    func autoPinWidth(toWidthOf otherView: UIView) -> NSLayoutConstraint {
-        return autoMatch(.width, to: .width, of: otherView)
+    func autoPinWidth(toWidthOf otherView: UIView, offset: CGFloat = 0, relation: NSLayoutConstraint.Relation = .equal) -> NSLayoutConstraint {
+        return autoMatch(.width, to: .width, of: otherView, withOffset: offset, relation: relation)
     }
 
     @discardableResult

@@ -1345,7 +1345,9 @@
 		D9CAF7502A0ACFF20049193A /* PniDistributionParameterBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */; };
 		D9CAF7532A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */; };
 		D9CD40622A155C4800545803 /* TSInfoMessage+UpdateMessagesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CD40612A155C4800545803 /* TSInfoMessage+UpdateMessagesTest.swift */; };
+		D9DCFDA52A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA42A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift */; };
 		D9DCFDA92A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA82A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift */; };
+		D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */; };
 		D9E335A42993269100825677 /* MockDBV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAE2982F4C4002E0CFE /* MockDBV2.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
 		D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */; };
@@ -3898,7 +3900,9 @@
 		D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniDistributionParameterBuilder.swift; sourceTree = "<group>"; };
 		D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniDistributionParameterBuilderTest.swift; sourceTree = "<group>"; };
 		D9CD40612A155C4800545803 /* TSInfoMessage+UpdateMessagesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+UpdateMessagesTest.swift"; sourceTree = "<group>"; };
+		D9DCFDA42A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeViewController.swift; sourceTree = "<group>"; };
 		D9DCFDA82A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuPresentingTableViewCell.swift; sourceTree = "<group>"; };
+		D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHeaderButton.swift; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
 		D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+ColumnName.swift"; sourceTree = "<group>"; };
 		D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Remove.swift"; sourceTree = "<group>"; };
@@ -6906,6 +6910,7 @@
 				88A4CC11246CE2F50082211F /* QRCodeView.swift */,
 				88863A55280CD04A00977F69 /* ReactionFlybyAnimation.swift */,
 				45069FCD29D64CB300D0DD14 /* SelectionButton.swift */,
+				D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */,
 				88A4CC0F246CE2760082211F /* TransferProgressView.swift */,
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
 				88928A7626419D6B009C9B30 /* VoiceMessageDraftView.swift */,
@@ -7824,6 +7829,7 @@
 				D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */,
 				C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */,
 				D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */,
+				D9DCFDA42A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift */,
 				D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */,
 				D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */,
 				D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */,
@@ -11638,6 +11644,7 @@
 				34EEECF225E846ED00574F0D /* SendPaymentMemoViewController.swift in Sources */,
 				3497972125DAA86100E99FA4 /* SendPaymentViewController.swift in Sources */,
 				8876CE4A26A914B8002217ED /* SentMediaQualitySettingsViewController.swift in Sources */,
+				D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */,
 				886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */,
 				F915A77029CB6D4C00EB6F68 /* ShareActivityUtil.swift in Sources */,
 				D99840CE2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift in Sources */,
@@ -11697,6 +11704,7 @@
 				5033D47029DCACEF007FEADA /* UrlOpener.swift in Sources */,
 				C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */,
 				D9A3E22D2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift in Sources */,
+				D9DCFDA52A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift in Sources */,
 				D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */,
 				D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */,
 				D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */,

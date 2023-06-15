@@ -359,43 +359,19 @@ struct ConversationHeaderBuilder: Dependencies {
 
     private var maxIconButtonWidth: CGFloat = 0
     mutating func buildIconButton(icon: ThemeIcon, text: String, isEnabled: Bool = true, action: @escaping () -> Void) -> UIView {
-        let button = OWSButton { [weak delegate] in
+        let button = SettingsHeaderButton(
+            text: text,
+            icon: icon,
+            backgroundColor: delegate.tableViewController.cellBackgroundColor,
+            isEnabled: isEnabled
+        ) { [weak delegate] in
             delegate?.tappedButton()
             action()
         }
-        button.dimsWhenHighlighted = true
-        button.isEnabled = isEnabled
-        button.layer.cornerRadius = 10
-        button.clipsToBounds = true
-        button.setBackgroundImage(UIImage(color: delegate.tableViewController.cellBackgroundColor), for: .normal)
-        button.accessibilityLabel = text
 
-        let imageView = UIImageView()
-        imageView.setTemplateImageName(Theme.iconName(icon), tintColor: Theme.primaryTextColor)
-        imageView.autoSetDimension(.height, toSize: 24)
-        imageView.contentMode = .scaleAspectFit
-
-        button.addSubview(imageView)
-        imageView.autoPinWidthToSuperview()
-        imageView.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
-
-        let label = UILabel()
-        label.font = .dynamicTypeCaption2Clamped
-        label.textColor = Theme.primaryTextColor
-        label.textAlignment = .center
-        label.text = text
-        label.sizeToFit()
-        label.setCompressionResistanceHorizontalHigh()
-
-        let buttonMinimumWidth = label.width + 24
-        if maxIconButtonWidth < buttonMinimumWidth {
-            maxIconButtonWidth = buttonMinimumWidth
+        if maxIconButtonWidth < button.minimumWidth {
+            maxIconButtonWidth = button.minimumWidth
         }
-
-        button.addSubview(label)
-        label.autoPinWidthToSuperview(withMargin: 12)
-        label.autoPinEdge(toSuperviewEdge: .bottom, withInset: 6)
-        label.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: 2)
 
         return button
     }

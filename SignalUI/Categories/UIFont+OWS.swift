@@ -125,6 +125,12 @@ public extension UIFont {
         return UIFont(descriptor: fontDescriptor, size: 0)
     }
 
+    func bold() -> UIFont {
+        let fontTraits = [UIFontDescriptor.TraitKey.weight: UIFont.Weight.bold]
+        let fontDescriptor = fontDescriptor.addingAttributes([.traits: fontTraits])
+        return UIFont(descriptor: fontDescriptor, size: 0)
+    }
+
     func monospaced() -> UIFont {
         return .monospacedDigitFont(ofSize: pointSize)
     }

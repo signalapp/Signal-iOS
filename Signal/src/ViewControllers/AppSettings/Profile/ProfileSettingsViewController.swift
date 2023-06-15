@@ -238,6 +238,19 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             }
         )
 
+        let viewQRCodeAction = ContextMenuAction(
+            title: OWSLocalizedString(
+                "PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION",
+                comment: "Title for a menu action allowing users to view their username link QR code."
+            ),
+            image: Theme.iconImage(.audioCall),
+            handler: { [weak self] _ in
+                guard let self else { return }
+
+                self.presentUsernameLinkQRCode(username: username)
+            }
+        )
+
         let deleteUsernameAction = ContextMenuAction(
             title: CommonStrings.deleteButton,
             image: Theme.iconImage(.trash24),
@@ -252,6 +265,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let contextMenuButton = ContextMenuButton(
             contextMenu: ContextMenu([
                 editUsernameAction,
+                viewQRCodeAction,
                 deleteUsernameAction
             ]),
             preferredContextMenuPosition: ContextMenuButton.ContextMenuPosition(
@@ -295,6 +309,17 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         )
 
         usernameSelectionCoordinator.present(fromViewController: self)
+    }
+
+    private func presentUsernameLinkQRCode(username: String) {
+        let usernameLinkQRCodeViewController = UsernameLinkQRCodeViewController(
+            usernameLink: Usernames.UsernameLink(username: username)
+        )
+
+        presentFormSheet(
+            OWSNavigationController(rootViewController: usernameLinkQRCodeViewController),
+            animated: true
+        )
     }
 
     private func offerToDeleteUsername(localAci: ServiceId) {

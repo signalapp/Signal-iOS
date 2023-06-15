@@ -426,40 +426,18 @@ class AvatarSettingsViewController: OWSTableViewController2 {
 
     private var maxIconButtonWidth: CGFloat = 0
     private func buildHeaderButton(icon: ThemeIcon, text: String, isEnabled: Bool = true, action: @escaping () -> Void) -> UIView {
-        let button = OWSButton(block: action)
-        button.dimsWhenHighlighted = true
-        button.isEnabled = isEnabled
-        button.layer.cornerRadius = 10
-        button.clipsToBounds = true
-        button.setBackgroundImage(UIImage(color: Self.cellBackgroundColor(isUsingPresentedStyle: true)), for: .normal)
-        button.accessibilityLabel = text
 
-        let imageView = UIImageView()
-        imageView.setTemplateImageName(Theme.iconName(icon), tintColor: Theme.primaryTextColor)
-        imageView.autoSetDimension(.height, toSize: 24)
-        imageView.contentMode = .scaleAspectFit
+        let button = SettingsHeaderButton(
+            text: text,
+            icon: icon,
+            backgroundColor: Self.cellBackgroundColor(isUsingPresentedStyle: true),
+            isEnabled: isEnabled,
+            block: action
+        )
 
-        button.addSubview(imageView)
-        imageView.autoPinWidthToSuperview()
-        imageView.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
-
-        let label = UILabel()
-        label.font = .dynamicTypeCaption2Clamped
-        label.textColor = Theme.primaryTextColor
-        label.textAlignment = .center
-        label.text = text
-        label.sizeToFit()
-        label.setCompressionResistanceHorizontalHigh()
-
-        let buttonMinimumWidth = label.width + 24
-        if maxIconButtonWidth < buttonMinimumWidth {
-            maxIconButtonWidth = buttonMinimumWidth
+        if maxIconButtonWidth < button.minimumWidth {
+            maxIconButtonWidth = button.minimumWidth
         }
-
-        button.addSubview(label)
-        label.autoPinWidthToSuperview(withMargin: 12)
-        label.autoPinEdge(toSuperviewEdge: .bottom, withInset: 6)
-        label.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: 2)
 
         return button
     }
