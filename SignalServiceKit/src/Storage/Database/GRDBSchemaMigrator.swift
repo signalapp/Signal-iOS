@@ -282,6 +282,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_indexPrivateStoryThreadNames
         case dataMigration_scheduleStorageServiceUpdateForSystemContacts
         case dataMigration_removeLinkedDeviceSystemContacts
+        case dataMigration_reindexSignalAccounts
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -2700,6 +2701,40 @@ public class GRDBSchemaMigrator: NSObject {
                 SDSKeyValueStore(collection: collection).removeAll(transaction: transaction.asAnyWrite)
             }
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.dataMigration_reindexSignalAccounts) { transaction in
+            // Clear the FTS Index for SignalAccounts
+            let indexDeletionSql = """
+                DELETE FROM \(GRDBFullTextSearchFinder.contentTableName)
+                WHERE \(GRDBFullTextSearchFinder.collectionColumn) = ?
+            """
+            try transaction.database.execute(
+                sql: indexDeletionSql,
+                arguments: [SignalAccount.collection()]
+            )
+
+            // Rebuild the FTS Index for SignalAccounts
+            let collection = SignalAccount.collection()
+            SignalAccount.anyEnumerate(transaction: transaction.asAnyWrite) { account, _ in
+                let uniqueId = account.uniqueId
+                let ftsIndexableContent = AnySearchIndexer.indexContent(object: account, transaction: transaction.asAnyRead) ?? ""
+                do {
+                    let indexInsertionSql = """
+                    INSERT INTO indexable_text
+                    (collection, uniqueId, ftsIndexableContent)
+                    VALUES
+                    (?, ?, ?)
+                    """
+                    try transaction.database.execute(
+                        sql: indexInsertionSql,
+                        arguments: [collection, uniqueId, ftsIndexableContent]
+                    )
+                } catch {
+                    owsFail("Error: \(error)")
+                }
+            }
             return .success(())
         }
 
