@@ -9,6 +9,8 @@ import XCTest
 final class MessageBodyTests: XCTestCase {
 
     typealias Style = MessageBodyRanges.Style
+    typealias SingleStyle = MessageBodyRanges.SingleStyle
+    typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
 
     // MARK: - Hydration
 
@@ -223,23 +225,20 @@ final class MessageBodyTests: XCTestCase {
                 mentionAttributes: [],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 8, length: 4),
-                            style: .bold
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 8, length: 4))
                         ),
                         range: NSRange(location: 8, length: 4)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 14, length: 6),
-                            style: .italic
+                        .fromCollapsedStyle(
+                            .init(.italic, mergedRange: NSRange(location: 14, length: 6))
                         ),
                         range: NSRange(location: 14, length: 6)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 26, length: 4),
-                            style: .monospace
+                        .fromCollapsedStyle(
+                            .init(.monospace, mergedRange: NSRange(location: 26, length: 4))
                         ),
                         range: NSRange(location: 26, length: 4)
                     )
@@ -277,23 +276,20 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 8, length: 4),
-                            style: .bold
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 8, length: 4))
                         ),
                         range: NSRange(location: 8, length: 4)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 14, length: 6),
-                            style: .italic
+                        .fromCollapsedStyle(
+                            .init(.italic, mergedRange: NSRange(location: 14, length: 6))
                         ),
                         range: NSRange(location: 14, length: 6)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 26, length: 4),
-                            style: .monospace
+                        .fromCollapsedStyle(
+                            .init(.monospace, mergedRange: NSRange(location: 26, length: 4))
                         ),
                         range: NSRange(location: 26, length: 4)
                     )
@@ -331,23 +327,20 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 11, length: 4),
-                            style: .bold
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 11, length: 4))
                         ),
                         range: NSRange(location: 15, length: 4)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 17, length: 6),
-                            style: .italic
+                        .fromCollapsedStyle(
+                            .init(.italic, mergedRange: NSRange(location: 17, length: 6))
                         ),
                         range: NSRange(location: 21, length: 6)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 29, length: 4),
-                            style: .monospace
+                        .fromCollapsedStyle(
+                            .init(.monospace, mergedRange: NSRange(location: 29, length: 4))
                         ),
                         range: NSRange(location: 33, length: 4)
                     )
@@ -383,9 +376,8 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 0, length: 16),
-                            style: .italic
+                        .fromCollapsedStyle(
+                            .init(.italic, mergedRange: NSRange(location: 0, length: 16))
                         ),
                         range: NSRange(location: 0, length: 20)
                     )
@@ -461,51 +453,57 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 0, length: 3),
-                            style: .bold
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 51))
                         ),
                         range: NSRange(location: 0, length: 10)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 3, length: 3),
-                            style: .bold.union(.italic)
+                        .fromCollapsedStyle(
+                            .init([
+                                .bold: NSRange(location: 0, length: 51),
+                                .italic: NSRange(location: 3, length: 3)
+                            ])
                         ),
                         range: NSRange(location: 10, length: 14)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 6, length: 2),
-                            style: .bold
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 51))
                         ),
                         range: NSRange(location: 24, length: 2)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 8, length: 16),
-                            style: .bold.union(.monospace)
+                        .fromCollapsedStyle(
+                            .init([
+                                .bold: NSRange(location: 0, length: 51),
+                                .monospace: NSRange(location: 8, length: 19)
+                            ])
                         ),
                         range: NSRange(location: 26, length: 13)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 24, length: 3),
-                            style: .bold.union(.monospace).union(.spoiler)
+                        .fromCollapsedStyle(
+                            .init([
+                                .bold: NSRange(location: 0, length: 51),
+                                .monospace: NSRange(location: 8, length: 19),
+                                .spoiler: NSRange(location: 24, length: 7)
+                            ])
                         ),
                         range: NSRange(location: 39, length: 3)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 27, length: 4),
-                            style: .bold.union(.spoiler)
+                        .fromCollapsedStyle(
+                            .init([
+                                .bold: NSRange(location: 0, length: 51),
+                                .spoiler: NSRange(location: 24, length: 7)
+                            ])
                         ),
                         range: NSRange(location: 42, length: 16)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 31, length: 20),
-                            style: .bold
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 51))
                         ),
                         range: NSRange(location: 58, length: 20)
                     )
@@ -569,51 +567,57 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 0, length: 3),
-                            style: .bold
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 51))
                         ),
                         range: NSRange(location: 0, length: 10)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 3, length: 3),
-                            style: .bold.union(.italic)
+                        .fromCollapsedStyle(
+                            .init([
+                                .bold: NSRange(location: 0, length: 51),
+                                .italic: NSRange(location: 3, length: 3)
+                            ])
                         ),
                         range: NSRange(location: 10, length: 3)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 6, length: 2),
-                            style: .bold
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 51))
                         ),
                         range: NSRange(location: 13, length: 2)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 8, length: 16),
-                            style: .bold.union(.monospace)
+                        .fromCollapsedStyle(
+                            .init([
+                                .bold: NSRange(location: 0, length: 51),
+                                .monospace: NSRange(location: 8, length: 19)
+                            ])
                         ),
                         range: NSRange(location: 15, length: 16)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 24, length: 3),
-                            style: .bold.union(.monospace).union(.spoiler)
+                        .fromCollapsedStyle(
+                            .init([
+                                .bold: NSRange(location: 0, length: 51),
+                                .monospace: NSRange(location: 8, length: 19),
+                                .spoiler: NSRange(location: 24, length: 7)
+                            ])
                         ),
                         range: NSRange(location: 31, length: 3)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 27, length: 4),
-                            style: .bold.union(.spoiler)
+                        .fromCollapsedStyle(
+                            .init([
+                                .bold: NSRange(location: 0, length: 51),
+                                .spoiler: NSRange(location: 24, length: 7)
+                            ])
                         ),
                         range: NSRange(location: 34, length: 16)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 31, length: 20),
-                            style: .bold
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 51))
                         ),
                         range: NSRange(location: 50, length: 20)
                     )
@@ -689,9 +693,8 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 5, length: 3),
-                            style: .italic
+                        .fromCollapsedStyle(
+                            .init(.italic, mergedRange: NSRange(location: 5, length: 3))
                         ),
                         range: NSRange(location: 5, length: 3)
                     )
@@ -726,9 +729,8 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 5, length: 3),
-                            style: .italic
+                        .fromCollapsedStyle(
+                            .init(.italic, mergedRange: NSRange(location: 5, length: 3))
                         ),
                         range: NSRange(location: 8, length: 3)
                     )
@@ -765,9 +767,8 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 0, length: 13),
-                            style: .italic
+                        .fromCollapsedStyle(
+                            .init(.italic, mergedRange: NSRange(location: 0, length: 13))
                         ),
                         range: NSRange(location: 0, length: 16)
                     )
@@ -802,9 +803,8 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 0, length: 13),
-                            style: .italic
+                        .fromCollapsedStyle(
+                            .init(.italic, mergedRange: NSRange(location: 0, length: 13))
                         ),
                         range: NSRange(location: 0, length: 16)
                     )
@@ -841,9 +841,8 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 5, length: 10),
-                            style: .italic
+                        .fromCollapsedStyle(
+                            .init(.italic, mergedRange: NSRange(location: 5, length: 10))
                         ),
                         range: NSRange(location: 5, length: 11)
                     )
@@ -877,9 +876,8 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 0, length: 9),
-                            style: .italic
+                        .fromCollapsedStyle(
+                            .init(.italic, mergedRange: NSRange(location: 0, length: 9))
                         ),
                         range: NSRange(location: 0, length: 10)
                     )
@@ -929,23 +927,23 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 0, length: 4),
-                            style: .bold
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 10))
                         ),
                         range: NSRange(location: 0, length: 6)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 4, length: 6),
-                            style: .bold.union(.italic)
+                        .fromCollapsedStyle(
+                            .init([
+                                .bold: NSRange(location: 0, length: 10),
+                                .italic: NSRange(location: 4, length: 6)
+                            ])
                         ),
                         range: NSRange(location: 6, length: 6)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 11, length: 5),
-                            style: .monospace
+                        .fromCollapsedStyle(
+                            .init(.monospace, mergedRange: NSRange(location: 11, length: 5))
                         ),
                         range: NSRange(location: 13, length: 8)
                     )
@@ -1015,37 +1013,42 @@ final class MessageBodyTests: XCTestCase {
                 ],
                 styleAttributes: [
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 0, length: 4),
-                            style: .bold
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 4 + firstEmojiLength + 5))
                         ),
                         range: NSRange(location: 0, length: 6)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: 4, length: firstEmojiLength),
-                            style: .bold.union(.italic)
+                        .fromCollapsedStyle(
+                            .init([
+                                .bold: NSRange(location: 0, length: 4 + firstEmojiLength + 5),
+                                .italic: NSRange(location: firstEmojiLocation, length: firstEmojiLength + 5 + secondEmojiLength)
+                            ])
                         ),
                         range: NSRange(location: firstEmojiLocationHydrated, length: firstEmojiLength)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: middleWordLocation, length: 5),
-                            style: .bold.union(.italic).union(.monospace)
+                        .fromCollapsedStyle(
+                            .init([
+                                .bold: NSRange(location: 0, length: 4 + firstEmojiLength + 5),
+                                .italic: NSRange(location: firstEmojiLocation, length: firstEmojiLength + 5 + secondEmojiLength),
+                                .monospace: NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 4)
+                            ])
                         ),
                         range: NSRange(location: middleWordLocationHydrated, length: 5)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: secondEmojiLocation, length: secondEmojiLength),
-                            style: .italic.union(.monospace)
+                        .fromCollapsedStyle(
+                            .init([
+                                .italic: NSRange(location: firstEmojiLocation, length: firstEmojiLength + 5 + secondEmojiLength),
+                                .monospace: NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 4)
+                            ])
                         ),
                         range: NSRange(location: secondEmojiLocationHydrated, length: secondEmojiLength)
                     ),
                     .init(
-                        .fromOriginalRange(
-                            NSRange(location: secondMentionLocation, length: 4),
-                            style: .monospace
+                        .fromCollapsedStyle(
+                            .init(.monospace, mergedRange: NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 4))
                         ),
                         range: NSRange(location: secondMentionLocationHydrated, length: 6)
                     )

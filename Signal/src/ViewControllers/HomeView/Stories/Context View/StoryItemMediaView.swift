@@ -472,12 +472,12 @@ class StoryItemMediaView: UIView {
                 guard let text = attachment.caption?.nilIfEmpty else {
                     return nil
                 }
-                body = StyleOnlyMessageBody(text: text, styles: captionStyles)
+                body = StyleOnlyMessageBody(text: text, collapsedStyles: captionStyles)
             case let .pointer(attachment, captionStyles):
                 guard let text = attachment.caption?.nilIfEmpty else {
                     return nil
                 }
-                body = StyleOnlyMessageBody(text: text, styles: captionStyles)
+                body = StyleOnlyMessageBody(text: text, collapsedStyles: captionStyles)
             case .text:
                 return nil
             }
@@ -878,8 +878,8 @@ class StoryItem: NSObject {
     let message: StoryMessage
     let numberOfReplies: UInt64
     enum Attachment: Equatable {
-        case pointer(TSAttachmentPointer, captionStyles: [NSRangedValue<MessageBodyRanges.Style>])
-        case stream(TSAttachmentStream, captionStyles: [NSRangedValue<MessageBodyRanges.Style>])
+        case pointer(TSAttachmentPointer, captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>])
+        case stream(TSAttachmentStream, captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>])
         case text(TextAttachment)
     }
     var attachment: Attachment

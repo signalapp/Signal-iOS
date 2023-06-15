@@ -827,6 +827,8 @@
 		667E90D028E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */; };
 		667EDE6428F8D6B7001FB487 /* YYAnimatedImage+Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */; };
 		667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */; };
+		668444802A3289C700DBED7C /* MessageBodyStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6684447F2A3289C700DBED7C /* MessageBodyStyle.swift */; };
+		668444822A3292AB00DBED7C /* MessageBodyStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668444812A3292AB00DBED7C /* MessageBodyStyleTests.swift */; };
 		66883A3A29D7630A00E898CF /* MessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66883A3829D7630300E898CF /* MessageBodyTests.swift */; };
 		6688E602298232A4004467C8 /* PaymentActionSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6688E601298232A4004467C8 /* PaymentActionSheets.swift */; };
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
@@ -3297,6 +3299,8 @@
 		667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyStorySettingsLearnMoreSheetViewController.swift; sourceTree = "<group>"; };
 		667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YYAnimatedImage+Duration.swift"; sourceTree = "<group>"; };
 		667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryBadgeCountManager.swift; sourceTree = "<group>"; };
+		6684447F2A3289C700DBED7C /* MessageBodyStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyStyle.swift; sourceTree = "<group>"; };
+		668444812A3292AB00DBED7C /* MessageBodyStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyStyleTests.swift; sourceTree = "<group>"; };
 		66883A3829D7630300E898CF /* MessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyTests.swift; sourceTree = "<group>"; };
 		6688E601298232A4004467C8 /* PaymentActionSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentActionSheets.swift; sourceTree = "<group>"; };
 		668AB0CB28AD610600B31984 /* StoryUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryUtil.swift; sourceTree = "<group>"; };
@@ -6776,6 +6780,7 @@
 				66FC637529DF7FCC00F00DAC /* MentionHydrator.swift */,
 				F9C5C8D4289453B100548EEE /* MessageBody.swift */,
 				66FC636E29DF797700F00DAC /* MessageBodyRanges.swift */,
+				6684447F2A3289C700DBED7C /* MessageBodyStyle.swift */,
 				66FC638529E4B9AF00F00DAC /* RecoveredHydratedMessageBody.swift */,
 				665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */,
 				66FC637729DF8BEF00F00DAC /* StyleAttribute.swift */,
@@ -6789,6 +6794,7 @@
 			isa = PBXGroup;
 			children = (
 				66FC637029DF79F400F00DAC /* MessageBodyRangesTests.swift */,
+				668444812A3292AB00DBED7C /* MessageBodyStyleTests.swift */,
 				66883A3829D7630300E898CF /* MessageBodyTests.swift */,
 				6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */,
 				6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */,
@@ -11993,6 +11999,7 @@
 				66FC637629DF7FCC00F00DAC /* MentionHydrator.swift in Sources */,
 				F9C5CBC9289453B300548EEE /* MessageBody.swift in Sources */,
 				66FC636F29DF797700F00DAC /* MessageBodyRanges.swift in Sources */,
+				668444802A3289C700DBED7C /* MessageBodyStyle.swift in Sources */,
 				F9C5CDA4289453B400548EEE /* MessageContentJobFinder.swift in Sources */,
 				F9C5CC6D289453B300548EEE /* MessageFetcherJob.swift in Sources */,
 				F9C5CC4E289453B300548EEE /* MessagePipelineSupervisor.swift in Sources */,
@@ -12530,6 +12537,7 @@
 				F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */,
 				F9426269289B1B5500460798 /* MathOWSTests.swift in Sources */,
 				66FC637229DF7A1500F00DAC /* MessageBodyRangesTests.swift in Sources */,
+				668444822A3292AB00DBED7C /* MessageBodyStyleTests.swift in Sources */,
 				66883A3A29D7630A00E898CF /* MessageBodyTests.swift in Sources */,
 				F9426292289B1B5600460798 /* MessageDecryptionTest.swift in Sources */,
 				F9426297289B1B5600460798 /* MessagePipelineSupervisorTest.swift in Sources */,

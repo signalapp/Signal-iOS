@@ -188,7 +188,11 @@ public class RecoveredHydratedMessageBody {
             text: string.string,
             ranges: MessageBodyRanges(
                 mentions: mentions,
-                styles: styleAttributes.map { .init($0.value.style, range: $0.range) }
+                styles: styleAttributes.flatMap { styleAttribute in
+                    return styleAttribute.value.style.contents.map {
+                        return NSRangedValue($0, range: styleAttribute.range)
+                    }
+                }
             )
         )
     }

@@ -5,8 +5,6 @@
 
 import Foundation
 
-public typealias StyleIdType = Int
-
 // Note that this struct gets put into NSAttributedString,
 // so we want it to mostly contain simple types and not
 // hold references to other objects, as a string holding
@@ -34,6 +32,8 @@ public struct StyleDisplayConfiguration: Equatable {
 
 internal struct StyleAttribute: Equatable, Hashable {
     typealias Style = MessageBodyRanges.Style
+    typealias SingleStyle = MessageBodyRanges.SingleStyle
+    typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
 
     /// Externally: identifies a single style range, even if the actual attribute has been
     /// split when applied, as happens when a parallel attribute is applied to the middle
@@ -41,7 +41,7 @@ internal struct StyleAttribute: Equatable, Hashable {
     ///
     /// Really this is just the original full range of the style, hashed. But that detail is
     /// irrelevant to everthing outside of this class.
-    internal let id: StyleIdType
+    internal let ids: [SingleStyle: StyleIdType]
     internal let style: Style
 
     private static let key = NSAttributedString.Key("OWSStyle")
@@ -56,15 +56,12 @@ internal struct StyleAttribute: Equatable, Hashable {
         return (attribute, attrs[Self.displayConfigKey] as? StyleDisplayConfiguration)
     }
 
-    internal static func fromOriginalRange(_ range: NSRange, style: Style) -> Self {
-        var hasher = Hasher()
-        hasher.combine(range)
-        let id = hasher.finalize()
-        return .init(id: id, style: style)
+    internal static func fromCollapsedStyle(_ style: CollapsedStyle) -> Self {
+        return .init(ids: style.originals.mapValues(\.id), style: style.style)
     }
 
-    private init(id: StyleIdType, style: Style) {
-        self.id = id
+    private init(ids: [SingleStyle: StyleIdType], style: Style) {
+        self.ids = ids
         self.style = style
     }
 
@@ -95,8 +92,8 @@ internal struct StyleAttribute: Equatable, Hashable {
         }
 
         var isSpoilerRevealed = false
-        if style.contains(.spoiler) {
-            isSpoilerRevealed = config.revealAllIds || config.revealedIds.contains(self.id)
+        if style.contains(.spoiler), let spoilerId = self.ids[.spoiler] {
+            isSpoilerRevealed = config.revealAllIds || config.revealedIds.contains(spoilerId)
             if !isSpoilerRevealed {
                 attributes[.foregroundColor] = UIColor.clear
                 attributes[.backgroundColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)

@@ -28,6 +28,7 @@ extension NSRangedValue: Codable where T: Codable {}
 public class HydratedMessageBody: Equatable, Hashable {
 
     public typealias Style = MessageBodyRanges.Style
+    public typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
 
     private let hydratedText: String
     private let unhydratedMentions: [NSRangedValue<MentionAttribute>]
@@ -92,7 +93,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             strippedPrefixLength = 0
         }
         var mentionsInOriginal: [NSRangedValue<UUID>]
-        var stylesInOriginal: [NSRangedValue<Style>]
+        var stylesInOriginal: [NSRangedValue<CollapsedStyle>]
         if strippedPrefixLength != 0 {
             mentionsInOriginal = messageBody.ranges.orderedMentions.map { mention in
                 return .init(
@@ -103,7 +104,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                     )
                 )
             }
-            stylesInOriginal = messageBody.ranges.styles.map { style in
+            stylesInOriginal = messageBody.ranges.collapsedStyles.map { style in
                 return .init(
                     style.value,
                     range: NSRange(
@@ -114,7 +115,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             }
         } else {
             mentionsInOriginal = messageBody.ranges.orderedMentions
-            stylesInOriginal = messageBody.ranges.styles
+            stylesInOriginal = messageBody.ranges.collapsedStyles
         }
 
         let finalText = NSMutableString(string: filteredText)
@@ -127,7 +128,7 @@ public class HydratedMessageBody: Equatable, Hashable {
         struct ProcessingStyle {
             let originalRange: NSRange
             let newRange: NSRange
-            let style: Style
+            let style: CollapsedStyle
         }
         var styleAtCurrentIndex: ProcessingStyle?
 
@@ -140,10 +141,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                 currentIndex >= style.originalRange.upperBound
             {
                 finalStyleAttributes.append(.init(
-                    StyleAttribute.fromOriginalRange(
-                        style.originalRange,
-                        style: style.style
-                    ),
+                    StyleAttribute.fromCollapsedStyle(style.style),
                     range: style.newRange
                 ))
                 styleAtCurrentIndex = nil
@@ -220,10 +218,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                     // it should now end at the end of the replacement text.
                     let finalLength = (newMentionRange.location + finalMentionLength) - style.newRange.location
                     finalStyleAttributes.append(.init(
-                        StyleAttribute.fromOriginalRange(
-                            style.originalRange,
-                            style: style.style
-                        ),
+                        StyleAttribute.fromCollapsedStyle(style.style),
                         range: NSRange(
                             location: style.newRange.location,
                             length: finalLength
@@ -255,10 +250,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                 length: finalText.length - style.newRange.location
             )
             finalStyleAttributes.append(.init(
-                StyleAttribute.fromOriginalRange(
-                    style.originalRange,
-                    style: style.style
-                ),
+                StyleAttribute.fromCollapsedStyle(style.style),
                 range: finalRange
             ))
         }
@@ -406,9 +398,9 @@ public class HydratedMessageBody: Equatable, Hashable {
     // MARK: - Style-only (for stories)
 
     public func asStyleOnlyBody() -> StyleOnlyMessageBody {
-        return StyleOnlyMessageBody(text: self.hydratedText, styles: self.styleAttributes.map {
-            return .init($0.value.style, range: $0.range)
-        })
+        // Concept of "forwarding" is mentions only and therefore irrelevant;
+        // we are really only mapping the styles here.
+        return StyleOnlyMessageBody(messageBody: self.asMessageBodyForForwarding())
     }
 
     // MARK: - Forwarding
@@ -422,8 +414,10 @@ public class HydratedMessageBody: Equatable, Hashable {
             text: hydratedText,
             ranges: MessageBodyRanges(
                 mentions: unhydratedMentionsDict,
-                styles: styleAttributes.map {
-                    return .init($0.value.style, range: $0.range)
+                styles: styleAttributes.flatMap { styleAttribute in
+                    return styleAttribute.value.style.contents.map {
+                        return NSRangedValue($0, range: styleAttribute.range)
+                    }
                 }
             )
         )
@@ -511,10 +505,11 @@ public class HydratedMessageBody: Equatable, Hashable {
         styleAttributes.forEach {
             if
                 $0.value.style.contains(.spoiler),
-                revealedSpoilerIds.contains($0.value.id).negated
+                let spoilerId = $0.value.ids[.spoiler],
+                revealedSpoilerIds.contains(spoilerId).negated
             {
                 setRange(
-                    value: TappableItem.UnrevealedSpoiler(range: $0.range, id: $0.value.id),
+                    value: TappableItem.UnrevealedSpoiler(range: $0.range, id: spoilerId),
                     key: unrevealedSpoilerKey,
                     range: $0.range
                 )

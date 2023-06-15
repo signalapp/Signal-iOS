@@ -23,7 +23,7 @@ extension StoryMessage {
             // to turn a MessageBody into something we can display.
             return MessageBody(
                 text: caption,
-                ranges: MessageBodyRanges(mentions: [:], styles: file.captionStyles)
+                ranges: MessageBodyRanges(mentions: [:], orderedMentions: [], collapsedStyles: file.captionStyles)
             )
         case .text(let attachment):
             switch attachment.textContent {

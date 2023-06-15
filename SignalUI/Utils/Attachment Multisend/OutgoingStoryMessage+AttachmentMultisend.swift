@@ -42,7 +42,7 @@ extension OutgoingStoryMessage {
                         message = try OutgoingStoryMessage.createUnsentMessage(
                             attachment: .file(StoryMessageFileAttachment(
                                 attachmentId: attachmentStream.uniqueId,
-                                captionStyles: captionBody?.styles ?? []
+                                captionStyles: captionBody?.collapsedStyles ?? []
                             )),
                             thread: destination.thread,
                             transaction: transaction

@@ -9,43 +9,48 @@ import Foundation
 @objcMembers
 public class StyleOnlyMessageBody: NSObject, Codable {
     public typealias Style = MessageBodyRanges.Style
+    public typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
 
     public let text: String
-    public let styles: [NSRangedValue<Style>]
+    public let collapsedStyles: [NSRangedValue<CollapsedStyle>]
 
     public var isEmpty: Bool {
         return text.isEmpty
     }
 
     public var hasStyles: Bool {
-        return styles.isEmpty.negated
+        return collapsedStyles.isEmpty.negated
     }
 
     public convenience init(messageBody: MessageBody) {
-        self.init(text: messageBody.text, styles: messageBody.ranges.styles)
+        self.init(text: messageBody.text, collapsedStyles: messageBody.ranges.collapsedStyles)
     }
 
     public convenience init(text: String, protos: [SSKProtoBodyRange]) {
         let bodyRanges = MessageBodyRanges(protos: protos)
         // Drop any mentions; don't even hydrate them.
-        self.init(text: text, styles: bodyRanges.styles)
+        self.init(text: text, collapsedStyles: bodyRanges.collapsedStyles)
     }
 
     public convenience init(plaintext: String) {
-        self.init(text: plaintext, styles: [])
+        self.init(text: plaintext, collapsedStyles: [])
     }
 
     public static var empty: StyleOnlyMessageBody { return StyleOnlyMessageBody(plaintext: "") }
 
-    public init(text: String, styles: [NSRangedValue<Style>]) {
+    public init(text: String, collapsedStyles: [NSRangedValue<CollapsedStyle>]) {
         self.text = text
-        self.styles = styles
+        self.collapsedStyles = collapsedStyles
     }
 
     public func asMessageBody() -> MessageBody {
         return MessageBody(
             text: text,
-            ranges: MessageBodyRanges(mentions: [:], styles: styles)
+            ranges: MessageBodyRanges(
+                mentions: [:],
+                orderedMentions: [],
+                collapsedStyles: collapsedStyles
+            )
         )
     }
 
@@ -54,8 +59,8 @@ public class StyleOnlyMessageBody: NSObject, Codable {
         return HydratedMessageBody(
             hydratedText: text,
             mentionAttributes: [],
-            styleAttributes: styles.map {
-                return .init(.fromOriginalRange($0.range, style: $0.value), range: $0.range)
+            styleAttributes: collapsedStyles.map {
+                return .init(.fromCollapsedStyle($0.value), range: $0.range)
             }
         )
     }
@@ -69,8 +74,8 @@ public class StyleOnlyMessageBody: NSObject, Codable {
         return HydratedMessageBody.applyAttributes(
             on: string,
             mentionAttributes: [],
-            styleAttributes: self.styles.map {
-                return .init(.fromOriginalRange($0.range, style: $0.value), range: $0.range)
+            styleAttributes: self.collapsedStyles.map {
+                return .init(.fromCollapsedStyle($0.value), range: $0.range)
             },
             config: HydratedMessageBody.DisplayConfiguration(
                 // Mentions are impossible on this class, so this is just a stub.
@@ -88,7 +93,11 @@ public class StyleOnlyMessageBody: NSObject, Codable {
 
     public func toProtoBodyRanges() -> [SSKProtoBodyRange] {
         // No need to validate length; all instances of this class are validated.
-        return MessageBodyRanges(mentions: [:], styles: styles).toProtoBodyRanges()
+        return MessageBodyRanges(
+            mentions: [:],
+            orderedMentions: [],
+            collapsedStyles: collapsedStyles
+        ).toProtoBodyRanges()
     }
 
     public func stripAndDropFirst(_ count: Int) -> StyleOnlyMessageBody {
@@ -109,7 +118,7 @@ public class StyleOnlyMessageBody: NSObject, Codable {
         guard finalSubrange.location != NSNotFound, finalSubrange.length > 0 else {
             return .empty
         }
-        let finalStyles: [NSRangedValue<Style>] = styles.compactMap { style in
+        let finalStyles: [NSRangedValue<CollapsedStyle>] = collapsedStyles.compactMap { style in
             guard
                 let intersection = style.range.intersection(finalSubrange),
                 intersection.location != NSNotFound,
@@ -125,7 +134,7 @@ public class StyleOnlyMessageBody: NSObject, Codable {
                 )
             )
         }
-        return .init(text: finalText, styles: finalStyles)
+        return .init(text: finalText, collapsedStyles: finalStyles)
     }
 
     public override func isEqual(_ object: Any?) -> Bool {
@@ -135,14 +144,42 @@ public class StyleOnlyMessageBody: NSObject, Codable {
         guard text == rhs.text else {
             return false
         }
-        guard styles.count == rhs.styles.count else {
+        guard collapsedStyles.count == rhs.collapsedStyles.count else {
             return false
         }
-        for i in 0..<styles.count {
-            guard styles[i] == rhs.styles[i] else {
+        for i in 0..<collapsedStyles.count {
+            guard collapsedStyles[i] == rhs.collapsedStyles[i] else {
                 return false
             }
         }
         return true
+    }
+
+    // MARK: - Codable
+
+    public enum CodingKeys: String, CodingKey {
+        case text
+        case collapsedStyles = "styles"
+    }
+
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.text = try container.decode(String.self, forKey: .text)
+
+        // Backwards compability; this used to contain NSRangedValue<Style>,
+        // but now contains NSRangedValue<CollapsedStyle>
+        if let rawStyles = try? container.decodeIfPresent([NSRangedValue<Style>].self, forKey: .collapsedStyles) {
+            // Re-process the styles in order to collapse them.
+            let singleStyles = rawStyles.flatMap { style in
+                return style.value.contents.map {
+                    return NSRangedValue($0, range: style.range)
+                }
+            }
+            let messageBodyRanges = MessageBodyRanges(mentions: [:], styles: singleStyles)
+            self.collapsedStyles = messageBodyRanges.collapsedStyles
+        } else {
+            self.collapsedStyles = try container.decode([NSRangedValue<CollapsedStyle>].self, forKey: .collapsedStyles)
+        }
     }
 }

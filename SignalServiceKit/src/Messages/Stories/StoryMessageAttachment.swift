@@ -7,7 +7,7 @@ import Foundation
 
 public struct StoryMessageFileAttachment: Codable {
     public let attachmentId: String
-    public let captionStyles: [NSRangedValue<MessageBodyRanges.Style>]
+    public let captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>]
 
     public init(
         attachmentId: String,
@@ -15,16 +15,42 @@ public struct StoryMessageFileAttachment: Codable {
     ) {
         let bodyRanges = MessageBodyRanges(protos: storyBodyRangeProtos)
         // Drop mentions, don't even hydrate them.
-        self.init(attachmentId: attachmentId, captionStyles: bodyRanges.styles)
+        self.init(attachmentId: attachmentId, captionStyles: bodyRanges.collapsedStyles)
     }
 
-    public init(attachmentId: String, captionStyles: [NSRangedValue<MessageBodyRanges.Style>]) {
+    public init(attachmentId: String, captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>]) {
         self.attachmentId = attachmentId
         self.captionStyles = captionStyles
     }
 
     public func captionProtoBodyRanges() -> [SSKProtoBodyRange] {
-        return MessageBodyRanges(mentions: [:], styles: captionStyles).toProtoBodyRanges()
+        return MessageBodyRanges(mentions: [:], orderedMentions: [], collapsedStyles: captionStyles).toProtoBodyRanges()
+    }
+
+    public enum CodingKeys: String, CodingKey {
+        case attachmentId
+        case captionStyles
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.attachmentId = try container.decode(String.self, forKey: .attachmentId)
+
+        // Backwards compability; this used to contain NSRangedValue<Style>,
+        // but now contains NSRangedValue<CollapsedStyle>
+        if let rawStyles = try? container.decodeIfPresent([NSRangedValue<MessageBodyRanges.Style>].self, forKey: .captionStyles) {
+            // Re-process the styles in order to collapse them.
+            let singleStyles = rawStyles.flatMap { style in
+                return style.value.contents.map {
+                    return NSRangedValue($0, range: style.range)
+                }
+            }
+            let messageBodyRanges = MessageBodyRanges(mentions: [:], styles: singleStyles)
+            self.captionStyles = messageBodyRanges.collapsedStyles
+        } else {
+            self.captionStyles = try container.decode([NSRangedValue<MessageBodyRanges.CollapsedStyle>].self, forKey: .captionStyles)
+        }
     }
 }
 

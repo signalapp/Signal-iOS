@@ -895,7 +895,12 @@ public class FullTextSearcher: NSObject {
                 if let messageBody = message.conversationListSearchResultsBody(transaction) {
                     mergedMessageBody = messageBody.mergeIntoFirstMatchOfStyledSubstring(matchStyleApplied.string, styles: styles)
                 } else {
-                    mergedMessageBody = MessageBody(text: matchStyleApplied.string, ranges: .init(mentions: [:], styles: styles))
+                    let singleStyles = styles.flatMap { style in
+                        return style.value.contents.map {
+                            return NSRangedValue($0, range: style.range)
+                        }
+                    }
+                    mergedMessageBody = MessageBody(text: matchStyleApplied.string, ranges: .init(mentions: [:], styles: singleStyles))
                 }
                 return mergedMessageBody
                     .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read))
