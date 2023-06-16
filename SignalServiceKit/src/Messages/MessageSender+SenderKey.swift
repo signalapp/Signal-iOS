@@ -409,8 +409,7 @@ extension MessageSender {
             // all sub-promises to finish, even if some failed.
             Guarantee.when(resolved: skdmSends.map { messageSend in
                 return firstly { () -> Promise<Void> in
-                    self.sendMessage(toRecipient: messageSend)
-                    return messageSend.promise
+                    self.performMessageSendAttempt(messageSend)
                 }.map(on: self.senderKeyQueue) { () -> OWSMessageSend in
                     messageSend
                 }.recover(on: self.senderKeyQueue) { error -> Promise<OWSMessageSend> in

@@ -106,9 +106,6 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 
 + (NSOperationQueuePriority)queuePriorityForMessage:(TSOutgoingMessage *)message;
 
-// TODO: Make this private.
-- (void)sendMessageToRecipient:(OWSMessageSend *)messageSend;
-
 @end
 
 #pragma mark -

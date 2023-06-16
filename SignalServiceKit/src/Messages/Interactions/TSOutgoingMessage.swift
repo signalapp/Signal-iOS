@@ -387,8 +387,7 @@ public extension TSOutgoingMessage {
                 sendErrorBlock: nil
             )
         }.then { messageSend -> Promise<Void> in
-            Self.messageSender.sendMessage(toRecipient: messageSend)
-            return messageSend.promise
+            Self.messageSender.performMessageSendAttempt(messageSend)
         }
     }
 }

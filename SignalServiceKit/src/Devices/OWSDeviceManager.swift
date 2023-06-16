@@ -130,11 +130,4 @@ class OWSDeviceManagerObjcBridge: NSObject {
             transaction: transaction.asV2Write
         )
     }
-
-    @objc
-    static func mayHaveLinkedDevices(transaction: SDSAnyReadTransaction) -> Bool {
-        DependenciesBridge.shared.deviceManager.mayHaveLinkedDevices(
-            transaction: transaction.asV2Read
-        )
-    }
 }
