@@ -710,8 +710,7 @@ extension MessageSender {
         _ message: TSOutgoingMessage,
         senderCertificates: SenderCertificates
     ) throws -> Promise<Void> {
-        let thread = databaseStorage.read { tx in TSThread.anyFetch(uniqueId: message.uniqueThreadId, transaction: tx) }
-        guard let thread else {
+        guard let thread = self.databaseStorage.read(block: { tx in message.thread(tx: tx) }) else {
             throw MessageSenderError.threadMissing
         }
         return try Self.prepareRecipients(of: message, thread: thread).then(on: DispatchQueue.global()) { serviceIds in
@@ -936,7 +935,7 @@ extension MessageSender {
             if message.isSyncMessage {
                 return
             }
-            let thread = self.databaseStorage.read { tx in message.thread(transaction: tx) }
+            let thread = self.databaseStorage.read { tx in message.thread(tx: tx) }
             guard let contactThread = thread as? TSContactThread, contactThread.contactAddress.isLocalAddress else {
                 return
             }

@@ -204,7 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *_Nullable messagesToDecrypt;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *tx) {
-        messagesToDecrypt = [[self threadWithTransaction:tx] receivedMessagesForInvalidKey:newKey tx:tx];
+        messagesToDecrypt = [[self threadWithTx:tx] receivedMessagesForInvalidKey:newKey tx:tx];
     }];
 
     // Decrypt this and any old messages for the newly accepted key

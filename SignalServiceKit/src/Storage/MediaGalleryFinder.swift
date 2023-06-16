@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 public struct RowIdAndDate: Codable, FetchableRecord {
     public var rowid: Int64
@@ -56,8 +57,10 @@ public final class MediaGalleryManager: NSObject {
         _ = try insertGalleryRecordPrivate(attachmentStream: attachmentStream, transaction: transaction)
     }
 
-    private class func insertGalleryRecordPrivate(attachmentStream: TSAttachmentStream,
-                                                  transaction: GRDBWriteTransaction) throws -> MediaGalleryRecord? {
+    private class func insertGalleryRecordPrivate(
+        attachmentStream: TSAttachmentStream,
+        transaction: GRDBWriteTransaction
+    ) throws -> MediaGalleryRecord? {
         guard let attachmentRowId = attachmentStream.grdbId else {
             throw OWSAssertionError("attachmentRowId was unexpectedly nil")
         }
@@ -73,13 +76,16 @@ public final class MediaGalleryManager: NSObject {
         }
 
         guard let messageRowId = message.grdbId else {
-            owsFailDebug("message was unexpectedly nil")
+            owsFailDebug("message rowId was unexpectedly nil")
             return nil
         }
 
-        let thread = message.thread(transaction: transaction.asAnyRead)
+        guard let thread = message.thread(tx: transaction.asAnyRead) else {
+            owsFailDebug("thread was unexpectedly nil")
+            return nil
+        }
         guard let threadId = thread.grdbId else {
-            owsFailDebug("threadId was unexpectedly nil")
+            owsFailDebug("thread rowId was unexpectedly nil")
             return nil
         }
 

@@ -86,9 +86,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 @property (nonatomic, readonly) OWSInteractionType interactionType;
 
-@property (nonatomic, readonly, nullable) TSThread *threadWithSneakyTransaction;
-
-- (TSThread *)threadWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(thread(transaction:));
+- (nullable TSThread *)threadWithTx:(SDSAnyReadTransaction *)tx NS_SWIFT_NAME(thread(tx:));
 
 #pragma mark Utility Method
 

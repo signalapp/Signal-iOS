@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 @objc
 public protocol DatabaseChangeDelegate: AnyObject {
@@ -306,7 +307,7 @@ extension DatabaseChangeObserver: TransactionObserver {
         pendingChanges.append(tableName: TSInteraction.table.tableName)
 
         if !pendingChanges.threadUniqueIds.contains(interaction.uniqueThreadId) {
-            let interactionThread: TSThread? = interaction.thread(transaction: transaction.asAnyRead)
+            let interactionThread: TSThread? = interaction.thread(tx: transaction.asAnyRead)
             if let thread = interactionThread {
                 didTouch(thread: thread, transaction: transaction)
             } else {

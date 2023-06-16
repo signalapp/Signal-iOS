@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
         [SSKProtoSyncMessageMessageRequestResponse builder];
     messageRequestResponseBuilder.type = self.protoResponseType;
 
-    TSThread *_Nullable thread = [self threadWithTransaction:transaction];
+    TSThread *_Nullable thread = [self threadWithTx:transaction];
     if (!thread) {
         OWSFailDebug(@"Missing thread for message request response");
         return nil;

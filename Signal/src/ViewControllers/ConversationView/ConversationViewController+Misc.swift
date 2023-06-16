@@ -50,59 +50,6 @@ public extension ConversationViewController {
                                                          completion: completion)
     }
 
-    // MARK: -
-
-    func resendFailedOutgoingMessage(_ message: TSOutgoingMessage) {
-        // If the message was remotely deleted, resend a *delete* message
-        // rather than the message itself.
-        let messageToSend = (message.wasRemotelyDeleted
-                             ? databaseStorage.read { TSOutgoingDeleteMessage(thread: thread, message: message, transaction: $0) }
-                             : message)
-
-        let recipientsWithChangedSafetyNumber = message.failedRecipientAddresses(errorCode: UntrustedIdentityError.errorCode)
-        if !recipientsWithChangedSafetyNumber.isEmpty {
-            // Show special safety number change dialog
-            let sheet = SafetyNumberConfirmationSheet(addressesToConfirm: recipientsWithChangedSafetyNumber,
-                                                      confirmationText: MessageStrings.sendButton) { didConfirm in
-                if didConfirm {
-                    Self.databaseStorage.asyncWrite { transaction in
-                        Self.sskJobQueues.messageSenderJobQueue.add(
-                            message: messageToSend.asPreparer,
-                            transaction: transaction
-                        )
-                    }
-                }
-            }
-            self.present(sheet, animated: true, completion: nil)
-            return
-        }
-
-        let actionSheet = ActionSheetController(title: nil,
-                                                message: message.mostRecentFailureText)
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.deleteForMeButton,
-                                                style: .destructive) { _ in
-            Self.databaseStorage.write { transaction in
-                message.anyRemove(transaction: transaction)
-            }
-        })
-
-        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("SEND_AGAIN_BUTTON", comment: ""),
-                                                accessibilityIdentifier: "send_again",
-                                                style: .default) { _ in
-            Self.databaseStorage.asyncWrite { transaction in
-                Self.sskJobQueues.messageSenderJobQueue.add(
-                    message: messageToSend.asPreparer,
-                    transaction: transaction
-                )
-            }
-        })
-
-        dismissKeyBoard()
-        self.presentActionSheet(actionSheet)
-    }
-
     // MARK: - Verification
 
     // Returns a random sub-collection of the group members who are "no longer verified".

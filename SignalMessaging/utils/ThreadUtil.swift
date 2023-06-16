@@ -77,9 +77,7 @@ public final class ThreadUtil: Dependencies {
             transaction: transaction
         )
         if message.hasRenderableContent() {
-            message
-                .thread(transaction: transaction)
-                .donateSendMessageIntent(for: message, transaction: transaction)
+            message.thread(tx: transaction)?.donateSendMessageIntent(for: message, transaction: transaction)
         }
         return promise
     }

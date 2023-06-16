@@ -650,7 +650,12 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {
         AssertIsOnMainThread()
 
-        resendFailedOutgoingMessage(message)
+        let promptBuilder = ResendMessagePromptBuilder(
+            databaseStorage: databaseStorage,
+            messageSenderJobQueue: sskJobQueues.messageSenderJobQueue
+        )
+        dismissKeyBoard()
+        self.present(promptBuilder.build(for: message), animated: true)
     }
 
     public func didTapGroupMigrationLearnMore() {

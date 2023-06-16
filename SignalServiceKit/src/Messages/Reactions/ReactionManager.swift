@@ -64,8 +64,7 @@ public class ReactionManager: NSObject {
             throw OWSAssertionError("Can't find message for reaction.")
         }
 
-        let thread = message.thread(transaction: tx)
-        guard thread.canSendReactionToThread else {
+        guard let thread = message.thread(tx: tx), thread.canSendReactionToThread else {
             throw OWSAssertionError("Can't send reaction to thread.")
         }
 

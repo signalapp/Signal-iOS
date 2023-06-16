@@ -140,84 +140,21 @@ extension StoryGroupReplyViewController: UITableViewDelegate {
 
         guard case .failed = item.recipientStatus else { return }
 
-        do {
-            try askToResendMessage(for: item)
-        } catch {
-            owsFailDebug("Failed to resend story reply \(error)")
-        }
+        askToResendMessage(for: item)
     }
 
-    private func askToResendMessage(for item: StoryGroupReplyViewItem) throws {
-        let (failedMessage, messageToSend) = try databaseStorage.read { transaction -> (TSOutgoingMessage, TSOutgoingMessage) in
-            guard let message = TSOutgoingMessage.anyFetchOutgoingMessage(
-                uniqueId: item.interactionUniqueId,
-                transaction: transaction
-            ) else {
-                throw OWSAssertionError("Missing original message")
-            }
-
-            // If the message was remotely deleted, resend a *delete* message rather than the message itself.
-            if message.wasRemotelyDeleted {
-                guard let thread = thread else {
-                    throw OWSAssertionError("Missing thread")
-                }
-
-                return (message, TSOutgoingDeleteMessage(thread: thread, message: message, transaction: transaction))
-            } else {
-                return (message, message)
-            }
+    private func askToResendMessage(for item: StoryGroupReplyViewItem) {
+        let message = databaseStorage.read { tx in
+            TSOutgoingMessage.anyFetchOutgoingMessage(uniqueId: item.interactionUniqueId, transaction: tx)
         }
-
-        guard !askToConfirmSafetyNumberChangesIfNecessary(for: failedMessage, messageToSend: messageToSend) else { return }
-
-        let actionSheet = ActionSheetController(
-            message: failedMessage.mostRecentFailureText
+        guard let message else {
+            return
+        }
+        let promptBuilder = ResendMessagePromptBuilder(
+            databaseStorage: databaseStorage,
+            messageSenderJobQueue: sskJobQueues.messageSenderJobQueue
         )
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-
-        actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.deleteForMeButton,
-            style: .destructive
-        ) { _ in
-            Self.databaseStorage.write { transaction in
-                failedMessage.anyRemove(transaction: transaction)
-            }
-        })
-
-        actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString("SEND_AGAIN_BUTTON", comment: ""),
-            style: .default
-        ) { _ in
-            Self.databaseStorage.write { transaction in
-                Self.sskJobQueues.messageSenderJobQueue.add(
-                    message: messageToSend.asPreparer,
-                    transaction: transaction
-                )
-            }
-        })
-
-        self.presentActionSheet(actionSheet)
-    }
-
-    private func askToConfirmSafetyNumberChangesIfNecessary(for failedMessage: TSOutgoingMessage, messageToSend: TSOutgoingMessage) -> Bool {
-        let recipientsWithChangedSafetyNumber = failedMessage.failedRecipientAddresses(errorCode: UntrustedIdentityError.errorCode)
-        guard !recipientsWithChangedSafetyNumber.isEmpty else { return false }
-
-        let sheet = SafetyNumberConfirmationSheet(
-            addressesToConfirm: recipientsWithChangedSafetyNumber,
-            confirmationText: MessageStrings.sendButton
-        ) { confirmedSafetyNumberChange in
-            guard confirmedSafetyNumberChange else { return }
-            Self.databaseStorage.write { transaction in
-                Self.sskJobQueues.messageSenderJobQueue.add(
-                    message: messageToSend.asPreparer,
-                    transaction: transaction
-                )
-            }
-        }
-        self.present(sheet, animated: true, completion: nil)
-
-        return true
+        self.present(promptBuilder.build(for: message), animated: true)
     }
 }
 

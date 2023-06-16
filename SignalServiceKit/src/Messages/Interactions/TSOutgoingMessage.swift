@@ -314,7 +314,7 @@ extension TSOutgoingMessage {
     /// OWSOutgoingMessageResendResponse
     @objc
     func envelopeGroupIdWithTransaction(_ transaction: SDSAnyReadTransaction) -> Data? {
-        (thread(transaction: transaction) as? TSGroupThread)?.groupId
+        (thread(tx: transaction) as? TSGroupThread)?.groupId
     }
 
     /// Indicates whether or not this message's proto should be saved into the MessageSendLog

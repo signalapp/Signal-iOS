@@ -348,7 +348,11 @@ public class CVLoader: NSObject {
     ) -> CVComponentState? {
         AssertIsOnMainThread()
 
-        let thread = interaction.thread(transaction: transaction)
+        guard let thread = interaction.thread(tx: transaction) else {
+            owsFailDebug("Missing thread for interaction.")
+            return nil
+        }
+
         let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
         let mockViewWidth: CGFloat = 800
         let conversationStyle = ConversationStyle(type: .`default`,

@@ -792,7 +792,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 }
                 Logger.info("Cleaning up placeholder \(placeholder.timestamp)")
                 placeholder.anyRemove(transaction: tx)
-                let thread = placeholder.thread(transaction: tx)
+                guard let thread = placeholder.thread(tx: tx) else {
+                    return
+                }
                 let errorMessage = TSErrorMessage.failedDecryption(
                     forSender: placeholder.sender,
                     thread: thread,

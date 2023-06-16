@@ -1374,8 +1374,13 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 {
     OWSAssertDebug(self.shouldSyncTranscript);
 
+    TSThread *messageThread = [self threadWithTx:transaction];
+    if (messageThread == nil) {
+        return nil;
+    }
+
     return [[OWSOutgoingSentMessageTranscript alloc] initWithLocalThread:localThread
-                                                           messageThread:[self threadWithTransaction:transaction]
+                                                           messageThread:messageThread
                                                          outgoingMessage:self
                                                        isRecipientUpdate:self.hasSyncedTranscript
                                                              transaction:transaction];

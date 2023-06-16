@@ -327,11 +327,15 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didSucceed() {
-        databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
+        databaseStorage.write { tx in
+            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: tx)
             if self.jobRecord.removeMessageAfterSending {
-                self.message.anyRemove(transaction: transaction)
-                self.message.removeTemporaryAttachments(with: transaction)
+                // We only need to delete messages that were saved to the database.
+                if let messageUniqueId = self.jobRecord.messageId {
+                    TSInteraction.anyFetch(uniqueId: messageUniqueId, transaction: tx)?.anyRemove(transaction: tx)
+                }
+                // But we might have saved attachments for `invisibleMessage`s.
+                self.message.removeTemporaryAttachments(with: tx)
             }
         }
         future?.resolve()
@@ -351,15 +355,16 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didFail(error: Error) {
-        databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperation(self,
-                                                            didFailWithError: error,
-                                                            transaction: transaction)
+        databaseStorage.write { tx in
+            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: tx)
 
-            self.message.update(sendingError: error, transaction: transaction)
+            self.message.update(sendingError: error, transaction: tx)
 
             if self.jobRecord.removeMessageAfterSending {
-                self.message.anyRemove(transaction: transaction)
+                // We only need to delete messages that were saved to the database.
+                if let messageUniqueId = self.jobRecord.messageId {
+                    TSInteraction.anyFetch(uniqueId: messageUniqueId, transaction: tx)?.anyRemove(transaction: tx)
+                }
             }
         }
         future?.reject(error)

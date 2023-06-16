@@ -21,7 +21,9 @@ public extension TSMessage {
             title: CommonStrings.deleteForMeButton,
             style: .destructive
         ) { _ in
-            Self.databaseStorage.asyncWrite { self.anyRemove(transaction: $0) }
+            Self.databaseStorage.asyncWrite { tx in
+                TSMessage.anyFetchMessage(uniqueId: self.uniqueId, transaction: tx)?.anyRemove(transaction: tx)
+            }
         }
         actionSheetController.addAction(deleteForMeAction)
 
@@ -36,19 +38,26 @@ public extension TSMessage {
                 self?.showDeleteForEveryoneConfirmationIfNecessary {
                     guard let self = self else { return }
 
-                    self.databaseStorage.write { transaction in
-                        let deleteMessage = TSOutgoingDeleteMessage(
-                            thread: outgoingMessage.thread(transaction: transaction),
-                            message: outgoingMessage,
-                            transaction: transaction
+                    self.databaseStorage.write { tx in
+                        let latestMessage = TSOutgoingMessage.anyFetchOutgoingMessage(
+                            uniqueId: outgoingMessage.uniqueId,
+                            transaction: tx
                         )
-
+                        guard let latestMessage, let latestThread = latestMessage.thread(tx: tx) else {
+                            // We can't reach this point in the UI if a message doesn't have a thread.
+                            return owsFailDebug("Trying to delete a message without a thread.")
+                        }
+                        let deleteMessage = TSOutgoingDeleteMessage(
+                            thread: latestThread,
+                            message: latestMessage,
+                            transaction: tx
+                        )
                         // Reset the sending states, so we can render the sending state of the deleted message.
                         // TSOutgoingDeleteMessage will automatically pass through it's send state to the message
                         // record that it is deleting.
-                        outgoingMessage.updateWith(recipientAddressStates: deleteMessage.recipientAddressStates, transaction: transaction)
-                        outgoingMessage.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
-                        Self.sskJobQueues.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
+                        latestMessage.updateWith(recipientAddressStates: deleteMessage.recipientAddressStates, transaction: tx)
+                        latestMessage.updateWithRemotelyDeletedAndRemoveRenderableContent(with: tx)
+                        Self.sskJobQueues.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: tx)
                     }
                 }
             }

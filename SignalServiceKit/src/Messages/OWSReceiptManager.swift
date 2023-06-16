@@ -505,7 +505,9 @@ public extension OWSReceiptManager {
     ) {
         switch message {
         case let incomingMessage as TSIncomingMessage:
-            let thread = message.thread(transaction: tx)
+            guard let thread = message.thread(tx: tx) else {
+                break
+            }
             let circumstance = linkedDeviceReceiptCircumstance(for: thread, tx: tx)
 
             // Always re-mark the message as read to ensure any earlier read time is
@@ -559,7 +561,9 @@ public extension OWSReceiptManager {
 
         switch message {
         case let incomingMessage as TSIncomingMessage:
-            let thread = message.thread(transaction: tx)
+            guard let thread = message.thread(tx: tx) else {
+                break
+            }
             let circumstance = linkedDeviceReceiptCircumstance(for: thread, tx: tx)
             incomingMessage.markAsViewed(
                 atTimestamp: viewedTimestamp,

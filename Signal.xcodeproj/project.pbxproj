@@ -739,6 +739,7 @@
 		50A1CE382A00894C00730C40 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A1CE372A00894C00730C40 /* DebugLogger.swift */; };
 		50A1CE3A2A00931900730C40 /* DebugLogger+MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */; };
 		50AA3EC329F1C4B900EC50A3 /* RecipientFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */; };
+		50BD86AF2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */; };
 		50CB431C298860C700841A34 /* SystemContactsDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CB431B298860C700841A34 /* SystemContactsDataProvider.swift */; };
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
 		50D5E2412980AD6F00899660 /* LinkValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2402980AD6F00899660 /* LinkValidator.swift */; };
@@ -3213,6 +3214,7 @@
 		50A1CE372A00894C00730C40 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
 		50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebugLogger+MainApp.swift"; sourceTree = "<group>"; };
 		50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientFetcher.swift; sourceTree = "<group>"; };
+		50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResendMessagePromptBuilder.swift; sourceTree = "<group>"; };
 		50CB431B298860C700841A34 /* SystemContactsDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemContactsDataProvider.swift; sourceTree = "<group>"; };
 		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
 		50D5E2402980AD6F00899660 /* LinkValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkValidator.swift; sourceTree = "<group>"; };
@@ -6181,6 +6183,7 @@
 				34B3F8331E8DF1700035BE1A /* ViewControllers */,
 				76EB052B18170B33006006FC /* Views */,
 				342FFE67271EF4FF000AC89F /* ConversationSearch.swift */,
+				50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */,
 				F915A76F29CB6D4C00EB6F68 /* ShareActivityUtil.swift */,
 				76616C9C2A266A05005F7001 /* WindowManager.swift */,
 				76616C9E2A2678C4005F7001 /* WindowManagerFix.h */,
@@ -11641,6 +11644,7 @@
 				766CE0D62A323DFE00AD609D /* RemoteVideoView.swift in Sources */,
 				348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */,
 				F952C0A629C8DA5E00D93766 /* RequestAccountDataReportViewController.swift in Sources */,
+				50BD86AF2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift in Sources */,
 				342FFE7E271EF5B2000AC89F /* ReturnToCallViewController.swift in Sources */,
 				348EE28F25B897BF00814FC2 /* ReusableMediaView.swift in Sources */,
 				66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */,

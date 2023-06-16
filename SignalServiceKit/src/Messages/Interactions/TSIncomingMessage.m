@@ -195,7 +195,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     // We want to do this without triggering sending read receipts, so we pretend it was
     // read on a linked device.
     [self markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
-                          thread:[self threadWithTransaction:transaction]
+                          thread:[self threadWithTx:transaction]
                     circumstance:OWSReceiptCircumstanceOnLinkedDevice
         shouldClearNotifications:YES
                      transaction:transaction];

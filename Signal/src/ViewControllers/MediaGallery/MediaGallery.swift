@@ -736,28 +736,30 @@ class MediaGallery: Dependencies {
 
         deletedAttachmentIds.formUnion(items.lazy.map { $0.attachmentStream.uniqueId })
 
-        self.databaseStorage.asyncWrite { transaction in
+        self.databaseStorage.asyncWrite { tx in
             do {
                 for item in items {
                     let message = item.message
                     let attachment = item.attachmentStream
-                    message.removeAttachment(attachment, transaction: transaction)
+                    message.removeAttachment(attachment, transaction: tx)
                     // We always have to check the database in case we do more than one deletion (at a time or in a
                     // row) without reloading existing media items and their associated message models.
-                    var shouldDeleteMessage = message.attachmentIds.isEmpty
-                    if !shouldDeleteMessage {
-                        let upToDateAttachmentCount = try self.mediaGalleryFinder.countAllAttachments(
-                            of: message,
-                            transaction: transaction.unwrapGrdbRead)
-                        if upToDateAttachmentCount == 0 {
-                            // Refresh attachment list on the model, so deletion doesn't try to remove them again.
-                            message.anyReload(transaction: transaction)
-                            shouldDeleteMessage = true
+                    let shouldDeleteMessage: Bool = try {
+                        if message.attachmentIds.isEmpty {
+                            return true
                         }
-                    }
+                        let upToDateCount = try self.mediaGalleryFinder.countAllAttachments(of: message, transaction: tx.unwrapGrdbRead)
+                        if upToDateCount == 0 {
+                            return true
+                        }
+                        return false
+                    }()
                     if shouldDeleteMessage {
-                        Logger.debug("removing message after removing last media attachment")
-                        message.anyRemove(transaction: transaction)
+                        // Refresh attachment list on the model, so deletion doesn't try to remove
+                        // them again. Also, this ensures we've fetched the latest message details
+                        // within this transaction.
+                        message.anyReload(transaction: tx)
+                        message.anyRemove(transaction: tx)
                     }
                 }
             } catch {

@@ -449,7 +449,10 @@ public class OWSAttachmentDownloads: NSObject {
             return false
         }
 
-        let thread = message.thread(transaction: tx)
+        // If there's not a thread, err on the safe side and don't download it.
+        guard let thread = message.thread(tx: tx) else {
+            return true
+        }
 
         // If the message that created this attachment was the first message in the
         // thread, the thread may not yet be marked visible. In that case, just

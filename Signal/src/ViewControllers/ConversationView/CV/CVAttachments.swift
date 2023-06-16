@@ -87,17 +87,24 @@ extension AudioAttachment: Dependencies {
     public func markOwningMessageAsViewed() -> Bool {
         AssertIsOnMainThread()
         guard let incomingMessage = owningMessage as? TSIncomingMessage, !incomingMessage.wasViewed else { return false }
-        databaseStorage.asyncWrite { transaction in
-            let thread = incomingMessage.thread(transaction: transaction)
-            let circumstance: OWSReceiptCircumstance =
-                thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbWrite)
+        databaseStorage.asyncWrite { tx in
+            let uniqueId = incomingMessage.uniqueId
+            guard
+                let latestMessage = TSIncomingMessage.anyFetchIncomingMessage(uniqueId: uniqueId, transaction: tx),
+                let latestThread = latestMessage.thread(tx: tx)
+            else {
+                return
+            }
+            let circumstance: OWSReceiptCircumstance = (
+                latestThread.hasPendingMessageRequest(transaction: tx.unwrapGrdbWrite)
                 ? .onThisDeviceWhilePendingMessageRequest
                 : .onThisDevice
-            incomingMessage.markAsViewed(
+            )
+            latestMessage.markAsViewed(
                 atTimestamp: Date.ows_millisecondTimestamp(),
-                thread: thread,
+                thread: latestThread,
                 circumstance: circumstance,
-                transaction: transaction
+                transaction: tx
             )
         }
         return true

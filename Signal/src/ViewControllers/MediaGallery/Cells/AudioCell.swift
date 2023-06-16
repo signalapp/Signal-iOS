@@ -31,15 +31,7 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
         }
         self.audioAttachment = attachment
 
-        guard let thread = TSThread.anyFetch(
-            uniqueId: audioItem.interaction.uniqueThreadId,
-            transaction: transaction
-        ) else {
-            owsFailDebug("Missing thread.")
-            return nil
-        }
-        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread,
-                                                                       transaction: transaction)
+        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: audioItem.thread, transaction: transaction)
         // Make an itemModel which is needed to play the audio file.
         // This is only used to save the playback rate, which is kind of nuts.
         let threadViewModel = ThreadViewModel(thread: audioItem.thread,
@@ -76,7 +68,7 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
         let presentation = AudioAllMediaPresenter(
             sender: audioItem.metadata.abbreviatedSender,
             audioAttachment: attachment,
-            threadUniqueId: audioItem.message.thread(transaction: transaction).uniqueId,
+            threadUniqueId: audioItem.thread.uniqueId,
             playbackRate: AudioPlaybackRate(rawValue: itemModel.itemViewState.audioPlaybackRate),
             isIncoming: audioItem.interaction is TSIncomingMessage)
         let view = AudioMessageView(
