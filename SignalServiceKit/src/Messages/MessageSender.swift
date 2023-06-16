@@ -458,69 +458,35 @@ extension MessageSender {
         }
     }
 
-    private static func prepareRecipients(of message: TSOutgoingMessage, thread: TSThread) throws -> Promise<[ServiceId]> {
-        guard let localAddress = tsAccountManager.localAddress else {
-            throw OWSAssertionError("Missing localAddress.")
-        }
-
-        // Figure out which addresses we expect to receive the message.
-        let proposedRecipients: [SignalServiceAddress]
-        if message.isSyncMessage {
-            // Sync messages are just sent to the local user.
-            proposedRecipients = [localAddress]
-        } else {
-            proposedRecipients = try self.unsentRecipients(of: message, thread: thread)
-        }
-
-        return firstly(on: DispatchQueue.global()) { () -> Promise<[ServiceId]> in
-            // We might need to use CDS to fill in missing UUIDs and/or identify
-            // which recipients are unregistered.
-            return fetchServiceIds(for: proposedRecipients)
-
-        }.map(on: DispatchQueue.global()) { (registeredRecipients: [ServiceId]) in
-            var filteredRecipients = registeredRecipients
-
-            // For group story replies, we must check if the recipients are stories capable
-            if message.isGroupStoryReply {
-                let userProfiles = databaseStorage.read {
-                    Self.profileManager.getUserProfiles(
-                        forAddresses: registeredRecipients.map { SignalServiceAddress($0) },
-                        transaction: $0
-                    )
-                }
-                filteredRecipients = filteredRecipients.filter {
-                    userProfiles[SignalServiceAddress($0)]?.isStoriesCapable == true
-                }
-            }
-
-            // Mark skipped recipients as such. We may skip because:
-            //
-            // * A recipient is no longer in the group.
-            // * A recipient is blocked.
-            // * A recipient is unregistered.
-            // * A recipient does not have the required capability.
-            let skippedRecipients = Set(message.sendingRecipientAddresses())
-                .subtracting(filteredRecipients.lazy.map { SignalServiceAddress($0) })
-            if !skippedRecipients.isEmpty {
-                self.databaseStorage.write { transaction in
-                    for address in skippedRecipients {
-                        // Mark this recipient as "skipped".
-                        message.update(withSkippedRecipient: address, transaction: transaction)
-                    }
-                }
-            }
-
-            return filteredRecipients
+    // Mark skipped recipients as such. We may skip because:
+    //
+    // * A recipient is no longer in the group.
+    // * A recipient is blocked.
+    // * A recipient is unregistered.
+    // * A recipient does not have the required capability.
+    private static func markSkippedRecipients(
+        of message: TSOutgoingMessage,
+        sendingRecipients: [ServiceId],
+        tx: SDSAnyWriteTransaction
+    ) {
+        let skippedRecipients = Set(message.sendingRecipientAddresses())
+            .subtracting(sendingRecipients.lazy.map { SignalServiceAddress($0) })
+        for address in skippedRecipients {
+            // Mark this recipient as "skipped".
+            message.update(withSkippedRecipient: address, transaction: tx)
         }
     }
 
-    private static func unsentRecipients(of message: TSOutgoingMessage, thread: TSThread) throws -> [SignalServiceAddress] {
+    private static func unsentRecipients(
+        of message: TSOutgoingMessage,
+        in thread: TSThread,
+        tx: SDSAnyReadTransaction
+    ) throws -> [SignalServiceAddress] {
         guard let localAddress = tsAccountManager.localAddress else {
             throw OWSAssertionError("Missing localAddress.")
         }
-        guard !message.isSyncMessage else {
-            // Sync messages should not reach this code path.
-            throw OWSAssertionError("Unexpected sync message.")
+        if message.isSyncMessage {
+            return [localAddress]
         }
 
         if let groupThread = thread as? TSGroupThread {
@@ -555,7 +521,7 @@ extension MessageSender {
             currentValidRecipients.remove(localAddress)
             recipientAddresses.formIntersection(currentValidRecipients)
 
-            let blockedAddresses = databaseStorage.read { blockingManager.blockedAddresses(transaction: $0) }
+            let blockedAddresses = blockingManager.blockedAddresses(transaction: tx)
             recipientAddresses.subtract(blockedAddresses)
 
             if recipientAddresses.contains(localAddress) {
@@ -568,8 +534,7 @@ extension MessageSender {
             // should prevent this from occurring, but in some edge cases
             // you might, for example, have a pending outgoing message when
             // you block them.
-            let isBlocked = databaseStorage.read { blockingManager.isAddressBlocked(contactAddress, transaction: $0) }
-            if isBlocked {
+            if blockingManager.isAddressBlocked(contactAddress, transaction: tx) {
                 Logger.info("Skipping 1:1 send to blocked contact: \(contactAddress).")
                 throw MessageSenderError.blockedContactRecipient
             } else {
@@ -590,11 +555,11 @@ extension MessageSender {
             var recipientAddresses = Set(message.sendingRecipientAddresses())
 
             // Only send to members in the latest known thread recipients list.
-            let currentValidThreadRecipients = thread.recipientAddressesWithSneakyTransaction
+            let currentValidThreadRecipients = thread.recipientAddresses(with: tx)
 
             recipientAddresses.formIntersection(currentValidThreadRecipients)
 
-            let blockedAddresses = databaseStorage.read { blockingManager.blockedAddresses(transaction: $0) }
+            let blockedAddresses = blockingManager.blockedAddresses(transaction: tx)
             recipientAddresses.subtract(blockedAddresses)
 
             if recipientAddresses.contains(localAddress) {
@@ -605,39 +570,28 @@ extension MessageSender {
         }
     }
 
-    private static func fetchServiceIds(for addresses: [SignalServiceAddress]) -> Promise<[ServiceId]> {
+    private static func partitionAddresses(_ addresses: [SignalServiceAddress]) -> ([ServiceId], [E164]) {
         var serviceIds = [ServiceId]()
-        var phoneNumbersToFetch = [E164]()
+        var phoneNumbers = [E164]()
 
         for address in addresses {
             if let serviceId = address.serviceId {
                 serviceIds.append(serviceId)
             } else if let phoneNumber = address.e164 {
-                phoneNumbersToFetch.append(phoneNumber)
+                phoneNumbers.append(phoneNumber)
             } else {
                 owsFailDebug("Recipient has neither ServiceId nor E164.")
             }
         }
 
-        // Check if all recipients are already valid.
-        if phoneNumbersToFetch.isEmpty {
-            return .value(serviceIds)
-        }
+        return (serviceIds, phoneNumbers)
+    }
 
-        // If not, look up ServiceIds for the phone numbers that don't have them.
-        return firstly { () -> Promise<Set<SignalRecipient>> in
-            contactDiscoveryManager.lookUp(
-                phoneNumbers: Set(phoneNumbersToFetch.lazy.map { $0.stringValue }),
-                mode: .outgoingMessage
-            )
-        }.map(on: DispatchQueue.sharedUtility) { (signalRecipients: Set<SignalRecipient>) -> [ServiceId] in
-            for signalRecipient in signalRecipients {
-                owsAssertDebug(signalRecipient.address.phoneNumber != nil)
-                owsAssertDebug(signalRecipient.address.uuid != nil)
-            }
-            serviceIds.append(contentsOf: signalRecipients.lazy.compactMap { $0.serviceId })
-            return serviceIds
-        }
+    private static func lookUpPhoneNumbers(_ phoneNumbers: [E164]) -> Promise<Void> {
+        contactDiscoveryManager.lookUp(
+            phoneNumbers: Set(phoneNumbers.lazy.map { $0.stringValue }),
+            mode: .outgoingMessage
+        ).asVoid(on: SyncScheduler())
     }
 }
 
@@ -688,7 +642,7 @@ extension MessageSender {
             eventId: "sendMessageNetwork-\(message.timestamp)"
         )
         return Self.prepareToSendMessages().then(on: DispatchQueue.global()) { senderCertificates in
-            return try self.sendMessageToService(message, senderCertificates: senderCertificates)
+            return try self.sendMessageToService(message, canLookUpPhoneNumbers: true, senderCertificates: senderCertificates)
         }.recover(on: DispatchQueue.global()) { (error) -> Promise<Void> in
             guard message.wasSentToAnyRecipient else {
                 throw error
@@ -706,90 +660,133 @@ extension MessageSender {
         }
     }
 
+    private enum SendMessageNextAction {
+        /// Look up missing phone numbers & then try sending again.
+        case lookUpPhoneNumbersAndTryAgain([E164])
+
+        /// Perform the `sendMessageToService` step.
+        case sendMessage(serializedMessage: SerializedMessage, serviceIds: [ServiceId], thread: TSThread)
+    }
+
     private func sendMessageToService(
         _ message: TSOutgoingMessage,
+        canLookUpPhoneNumbers: Bool,
         senderCertificates: SenderCertificates
     ) throws -> Promise<Void> {
-        guard let thread = self.databaseStorage.read(block: { tx in message.thread(tx: tx) }) else {
-            throw MessageSenderError.threadMissing
+        let nextAction: SendMessageNextAction? = try databaseStorage.write { tx in
+            guard let thread = message.thread(tx: tx) else {
+                throw MessageSenderError.threadMissing
+            }
+
+            let serviceIds: [ServiceId]
+            do {
+                let proposedAddresses = try Self.unsentRecipients(of: message, in: thread, tx: tx)
+                let (proposedServiceIds, phoneNumbersToFetch) = Self.partitionAddresses(proposedAddresses)
+
+                // If we haven't yet tried to look up phone numbers, send an asynchronous
+                // request to look up phone numbers, and then try to go through this logic
+                // *again* in a new transaction. Things may change for that subsequent
+                // attempt, and if there's still missing phone numbers at that point, we'll
+                // skip them for this message.
+                if canLookUpPhoneNumbers, !phoneNumbersToFetch.isEmpty {
+                    return .lookUpPhoneNumbersAndTryAgain(phoneNumbersToFetch)
+                }
+
+                var filteredServiceIds = proposedServiceIds
+
+                // For group story replies, we must check if the recipients are stories capable.
+                if message.isGroupStoryReply {
+                    let userProfiles = Self.profileManager.getUserProfiles(
+                        forAddresses: filteredServiceIds.map { SignalServiceAddress($0) },
+                        transaction: tx
+                    )
+                    filteredServiceIds = filteredServiceIds.filter {
+                        userProfiles[SignalServiceAddress($0)]?.isStoriesCapable == true
+                    }
+                }
+
+                serviceIds = filteredServiceIds
+            }
+
+            Self.markSkippedRecipients(of: message, sendingRecipients: serviceIds, tx: tx)
+
+            let canSendToThread: Bool = {
+                if message is OWSOutgoingReactionMessage {
+                    return thread.canSendReactionToThread
+                }
+                let isChatMessage = (
+                    message.hasRenderableContent()
+                    || message is OWSOutgoingGroupCallMessage
+                    || message is OWSOutgoingCallMessage
+                )
+                return isChatMessage ? thread.canSendChatMessagesToThread() : thread.canSendNonChatMessagesToThread
+            }()
+            guard canSendToThread else {
+                if message.shouldBeSaved {
+                    throw OWSAssertionError("Sending to thread blocked.")
+                }
+                // Pretend to succeed for non-visible messages like read receipts, etc.
+                return nil
+            }
+
+            if let contactThread = thread as? TSContactThread {
+                // In the "self-send" aka "Note to Self" special case, we only need to send
+                // certain kinds of messages. (In particular, regular data messages are
+                // sent via their implicit sync message only.)
+                if contactThread.contactAddress.isLocalAddress, !message.canSendToLocalAddress {
+                    owsAssertDebug(serviceIds.count == 1)
+                    Logger.info("Dropping \(type(of: message)) sent to local address (it should be sent by sync message)")
+                    // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
+                    return nil
+                }
+            }
+
+            if serviceIds.isEmpty {
+                // All recipients are already sent or can be skipped. NOTE: We might still
+                // need to send a sync transcript.
+                return nil
+            }
+
+            guard let serializedMessage = buildAndRecordMessage(message, in: thread, tx: tx) else {
+                throw OWSAssertionError("Couldn't build message.")
+            }
+
+            return .sendMessage(serializedMessage: serializedMessage, serviceIds: serviceIds, thread: thread)
         }
-        return try Self.prepareRecipients(of: message, thread: thread).then(on: DispatchQueue.global()) { serviceIds in
-            return self.sendMessage(message, in: thread, to: serviceIds, senderCertificates: senderCertificates)
+
+        switch nextAction {
+        case .none:
+            return .value(())
+        case .lookUpPhoneNumbersAndTryAgain(let phoneNumbers):
+            return Self.lookUpPhoneNumbers(phoneNumbers).then(on: DispatchQueue.global()) {
+                return try self.sendMessageToService(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
+            }
+        case .sendMessage(let serializedMessage, let serviceIds, let thread):
+            let allErrors = AtomicArray<(serviceId: ServiceId, error: Error)>(lock: AtomicLock())
+            return sendMessage(
+                message,
+                serializedMessage: serializedMessage,
+                in: thread,
+                to: serviceIds,
+                senderCertificates: senderCertificates,
+                sendErrorBlock: { serviceId, error in
+                    allErrors.append((serviceId, error))
+                }
+            ).recover(on: DispatchQueue.global()) { (_) -> Promise<Void> in
+                // We ignore the error for the Promise & consult `allErrors` instead.
+                return try self.handleSendFailure(message: message, thread: thread, perRecipientErrors: allErrors.get())
+            }
         }
     }
 
     private func sendMessage(
         _ message: TSOutgoingMessage,
-        in thread: TSThread,
-        to recipientServiceIds: [ServiceId],
-        senderCertificates: SenderCertificates
-    ) -> Promise<Void> {
-        let canSendToThread: Bool = {
-            if message is OWSOutgoingReactionMessage {
-                return thread.canSendReactionToThread
-            }
-            let isChatMessage = (
-                message.hasRenderableContent()
-                || message is OWSOutgoingGroupCallMessage
-                || message is OWSOutgoingCallMessage
-            )
-            return isChatMessage ? thread.canSendChatMessagesToThread() : thread.canSendNonChatMessagesToThread
-        }()
-        guard canSendToThread else {
-            if message.shouldBeSaved {
-                return Promise(error: OWSAssertionError("Sending to thread blocked."))
-            }
-            // Pretend to succeed for non-visible messages like read receipts, etc.
-            return .value(())
-        }
-
-        if let contactThread = thread as? TSContactThread {
-            // In the "self-send" aka "Note to Self" special case, we only need to send
-            // certain kinds of messages. (In particular, regular data messages are
-            // sent via their implicit sync message only.)
-            if contactThread.contactAddress.isLocalAddress, !message.canSendToLocalAddress {
-                owsAssertDebug(recipientServiceIds.count == 1)
-                Logger.info("Dropping \(type(of: message)) sent to local address (it should be sent by sync message)")
-                // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
-                return .value(())
-            }
-        }
-
-        if recipientServiceIds.isEmpty {
-            // All recipients are already sent or can be skipped. NOTE: We might still
-            // need to send a sync transcript.
-            return .value(())
-        }
-
-        let allErrors = AtomicArray<(serviceId: ServiceId, error: Error)>(lock: AtomicLock())
-
-        return sendMessage(
-            message,
-            in: thread,
-            to: recipientServiceIds,
-            senderCertificates: senderCertificates,
-            sendErrorBlock: { serviceId, error in
-                allErrors.append((serviceId, error))
-            }
-        ).recover(on: DispatchQueue.global()) { (_) -> Promise<Void> in
-            // We ignore the error for the Promise & consult `allErrors` instead.
-            return try self.handleSendFailure(message: message, thread: thread, perRecipientErrors: allErrors.get())
-        }
-    }
-
-    private func sendMessage(
-        _ message: TSOutgoingMessage,
+        serializedMessage: SerializedMessage,
         in thread: TSThread,
         to serviceIds: [ServiceId],
         senderCertificates: SenderCertificates,
         sendErrorBlock: @escaping (ServiceId, Error) -> Void
     ) -> Promise<Void> {
-        // 1. Build the plaintext message content.
-        let serializedMessage = databaseStorage.write { tx in buildAndRecordMessage(message, in: thread, tx: tx) }
-        guard let serializedMessage else {
-            return Promise(error: OWSAssertionError("Couldn't build message."))
-        }
-
         // 2. Gather "ud sending access".
         var sendingAccessMap = [ServiceIdObjC: OWSUDSendingAccess]()
         for serviceId in serviceIds {
