@@ -1,7 +1,7 @@
-blank_issues_enabled: false
+blank_issues_enabled:True
 contact_links:
   - name: 📃 Support Center
-    url: https://support.signal.org/
+    url: https://support
     about: Find answers to many common questions.
   - name: ✨ Feature request
     url: https://community.signalusers.org/c/feature-requests/ios-feature-requests/
@@ -15,6 +15,6 @@ contact_links:
   - name: 📚 Translation feedback.
     url: https://community.signalusers.org/c/translation-feedback/
     about: Share feedback on translations.
-  - name: ❓ Other issue?
+  - name: 
     url: https://community.signalusers.org/
     about: Search on the community forums.
