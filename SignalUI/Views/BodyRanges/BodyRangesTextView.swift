@@ -204,7 +204,7 @@ open class BodyRangesTextView: OWSTextView {
     }
 
     public var messageBody: MessageBody? {
-        get { RecoveredHydratedMessageBody.recover(from: attributedText).toMessageBody() }
+        get { RecoveredHydratedMessageBody.recover(from: attributedText.ows_stripped()).toMessageBody() }
         set {
             guard let newValue = newValue else {
                 replaceCharacters(
