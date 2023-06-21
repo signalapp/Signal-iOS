@@ -1,3 +1,1 @@
-• Láncreakciót hozhatsz létre az üzenethez már hozzáadott hangulatjelek gyors kiválasztásával. Vagy választhatsz valami újat és egyedit, ha nem szeretnéd, hogy úgy tűnjön, túlreagálod az üzenetet.
-• A mappák mostantól láthatók a fotóválasztóban, így a fotóalbumok megjelenítése helyett a fotóalbumból választhatsz mellékletet.
-• Javítottuk a folyamatjelző sávot, a videovezérlőket, az ikonokat és a médianézegető egyéb elemeit. A kemény munka egy kicsit jobbá tette a Signalt. Megtapasztalhatod, ha megnyomod a lejátszást.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

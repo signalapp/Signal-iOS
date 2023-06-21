@@ -1,3 +1,1 @@
-• Bày tỏ cảm xúc nhanh chóng bằng cách chọn một emoji đã được thêm vào tin nhắn. Hoặc chọn một emoji mới và độc đáo nếu bạn không muốn tỏ ra mình đang phản ứng thái quá.
-• Thư mục và album giờ được hiển thị ở bảng chọn ảnh.
-• Chúng tôi đã cải thiện thanh tiến trình, kiểm soát video, và các biểu tượng trong trình xem tệp đa phương tiện. Đội ngũ đã làm việc chăm chỉ để Signal hoàn thiện thêm một chút mỗi khi bạn nhấn nút phát các tập tin.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

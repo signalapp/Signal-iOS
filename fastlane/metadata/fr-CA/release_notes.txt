@@ -1,3 +1,1 @@
-• Sélectionnez rapidement un émoji déjà ajouté à un message pour exprimer votre réaction. Ou sélectionnez-en un autre pour vous démarquer !
-• Les dossiers et albums sont désormais visibles dans le sélecteur de photo.
-• Nous avons amélioré la barre de progression, les commandes vidéo et les icônes dans la visionneuse de contenus. Il ne vous reste plus qu’à appuyer sur Play et en profiter !
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

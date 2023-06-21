@@ -1,3 +1,1 @@
-• Da ora puoi reagire ai messaggi più rapidamente con emoji già usate da altre persone. Oppure vai contro corrente e reagisci con l'emoji di un simpatico alieno sorridente :)
-• Da ora puoi vedere le cartelle e gli album quando selezioni le foto da allegare.
-• Abbiamo migliorato la barra di avanzamento, i controlli per i video e le icone nell'interfaccia per i contenuti multimediali. Da ora vedere video e foto sarà ancora più piacevole su Signal.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

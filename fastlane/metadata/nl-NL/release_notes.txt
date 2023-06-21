@@ -1,3 +1,1 @@
-• Kies snel een emoji uit de emoji's die al aan het bericht zijn toegevoegd. Of kies een andere als je liever uniek wilt zijn.
-• Mappen zijn nu zichtbaar in de fotokiezer, dus je kunt snel een bijlage kiezen vanuit een specifiek fotoalbum in plaats van te scrollen door een wirwar aan foto's.
-• We hebben de voortgangsbalk, videobediening, pictogrammen en andere elementen in de mediaviewer verbeterd. Zo wordt het afspelen van video's nog makkelijker.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

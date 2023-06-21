@@ -1,3 +1,1 @@
-• Szybko wybierz reakcję emoji, która została już dodana do wiadomości, i twórz… reakcje łańcuchowe! Albo wybierz własną, unikatową odpowiedź, jeśli nie chcesz iść za tłumem.
-• Foldery są teraz widoczne w wyborze zdjęć, więc możesz wybierać załączniki z całego albumu lub folderu.
-• Poprawiliśmy pasek postępu, sterowanie filmami, ikony i inne elementy w przeglądarce mediów. Odtwarzanie klipów w Signalu to teraz czysta przyjemność.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

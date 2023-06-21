@@ -1,3 +1,1 @@
-• أنشئ سِلسلة ردود أفعال عبر الاختيار بسرعة من بين الوجوه المعبرة التي تمت إضافتها لرسالة من قبل. أو اختر شيئا جديدًا وفريدًا إذا كنت لا تريد أن تبدو كأنك تبالغ في رد فعلك.
-• أصبحت المُجلدات مرئية الآن في مُحدد الصور، لذا يمكنك اختيار مرفق من ألبوم صور بدلاً من رؤية مزيج من الصور فقط.
-• لقد قمنا بتحسين شريط التقدّم وعناصر التحكّم في الفيديو والأيقونات وعناصر أخرى في عارض الوسائط. جعلنا Signal أفضل بقليل عندما تضغط على زر التشغيل.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

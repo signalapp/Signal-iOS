@@ -1,3 +1,1 @@
-• Реакції тепер частіше ставатимуть ланцюговими, адже ви можете швидко вибрати емодзі, яким хтось уже відреагував на повідомлення. Або ж ідіть власним шляхом і виберіть свою, унікальну реакцію.
-• Тепер у виборі фотографій відображатимуться папки, щоби вам було зручно додавати файл із потрібного альбому.
-• Ми поліпшили індикатор прогресу, елементи керування відео й інші частини в засобі перегляду медіафайлів.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

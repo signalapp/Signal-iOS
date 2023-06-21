@@ -1,3 +1,1 @@
-• Cipta tindak balas berantai dengan memilih dengan cepat daripada emoji yang telah ditambahkan pada mesej. Atau pilih sesuatu yang baharu dan unik jika anda tidak mahu kelihatan seperti anda bereaksi berlebihan.
-• Folder kini boleh dilihat dalam pemilih foto, jadi anda boleh memilih lampiran daripada album foto dan bukannya hanya melihat amalgam foto.
-• Kami menambah baik bar kemajuan, kawalan video dan ikon dalam pemapar media. Sentiasa bekerja dan tidak bermain telah menjadikan Signal lebih baik apabila anda menggunakannya.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

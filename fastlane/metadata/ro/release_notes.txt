@@ -1,3 +1,1 @@
-• Creează o reacție în lanț selectând rapid din emoji-urile care deja au fost adăugate la un mesaj. Sau alege ceva nou și unic dacă nu vrei să pară că exagerezi.
-• Dosarele sunt acum vizibile în selectorul de fotografii, așadar poți alege un atașament dintr-un album foto în loc să vezi doar un amalgam de fotografii.
-• Am îmbunătățit bara de progres, comenzile video, pictogramele și alte elemente din playerul video. Signal este acum un pic mai bun când apeși redare.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

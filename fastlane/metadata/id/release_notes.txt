@@ -1,3 +1,1 @@
-• Kini Anda dapat dengan cepat memilih sebuah tanggapan emoji yang telah ditambahkan ke pesan.
-• Folder dan album kini dapat terlihat di pemilih foto.
-• Kami telah menyempurnakan bilah progres, kontrol video, dan ikon di penampil media.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

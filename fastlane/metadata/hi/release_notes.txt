@@ -1,3 +1,1 @@
-• किसी संदेश में पहले से जोड़े गए इमोजी से जल्दी से चुनकर एक चेन रिएक्शन बनाएं। या यदि आप ऐसा नहीं दिखाना चाहते हैं कि आप ओवररिएक्ट कर रहे हैं, तो कुछ नया और यूनिक चुनें।
-• फोल्डर अब फोटो सिलेक्टर में दिखाई देते हैं, इसलिए आप केवल फोटो अमेल्गम देखने के बजाय फोटो एल्बम से अटैचमेंट चुन सकते हैं।
-• हमने मीडिया व्यूअर में प्रगति बार, वीडियो कंट्रोल्स, आइकन और अन्य तत्वों में सुधार किया है। अब Signal इस्तेमाल करते वक्त आप पाएंगे कि चीजें पहले से बेहतर हुई हैं।
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

@@ -1,3 +1,1 @@
-• Välj snabbt en emoji-reaktion som redan har lagts till i ett meddelande.
-• Mappar och album är nu synliga i fotoväljaren.
-• Vi har förbättrat förloppsraden, videokontroller och ikoner i medievisaren.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

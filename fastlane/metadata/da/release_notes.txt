@@ -1,3 +1,1 @@
-• Skab en kædereaktion ved hurtigt at vælge mellem de emojis, der allerede er blevet føjet til en besked. Eller vælg noget nyt og unikt, hvis du ikke vil se ud, som om du overreagerer.
-• Mapper er nu synlige i billedvælgeren, så du kan vælge en vedhæftet fil fra et billedalbum, i stedet for kun at se en samling af billeder.
-• Vi har forbedret statuslinjen, videostyring, ikoner og andre elementer i medieviseren. Konstant arbejde har gjort Signal en lille smule bedre, hver gang du trykker på afspil.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

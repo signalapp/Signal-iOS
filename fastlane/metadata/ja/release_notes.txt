@@ -1,3 +1,1 @@
-• メッセージに他の人がつけている絵文字と同じものを選んで手早くリアクションできます。同じ絵文字をつけたくないときは、他の絵文字であなたにぴったりのものを選択してください。
-• フォルダーとアルバムが写真セレクターに表示されるようになりました。
-• メディアビューアのプログレスバー、ビデオ操作、アイコン、その他の要素を改善しました。がんばったので「再生」を押すたびにSignalが少し良くなったことがわかると思います。
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

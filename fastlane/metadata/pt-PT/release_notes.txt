@@ -1,3 +1,1 @@
-• Crie uma reação em cadeia selecionando rapidamente a partir de emojis que já foram adicionados a uma mensagem. Ou escolha algo novo e único se não quiser parecer que está a exagerar.
-• As pastas agora estão visíveis no seletor de fotos, por isso pode escolher um anexo de um álbum de fotos em vez de apenas ver uma amálgama delas.
-• Melhorámos a barra de progresso, os controlos de vídeo, ícones e outros elementos no visualizador de ficheiros. All work and no play tornaram o Signal um bocadinho melhor sempre que carregas no play.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

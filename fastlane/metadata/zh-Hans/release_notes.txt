@@ -1,3 +1,1 @@
-• 在聊天中，当有人发送表情符号进行回应后，你可以快捷选择已发送的表情符号进行回应。
-• 文件夹和相册现在可以在照片选择器中显示了。
-• 我们改进了媒体查看器中的进度条、视频控件和图标。
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

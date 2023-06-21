@@ -1,3 +1,1 @@
-• Löse eine Kettenreaktion aus, indem du schnell aus den Emojis auswählst, die einer Nachricht bereits hinzugefügt wurden. Oder entscheide dich für etwas Neues und Einzigartiges, wenn du nicht so rüberkommen möchtest, als würdest du überreagieren.
-• Ordner werden jetzt in der Fotoauswahl angezeigt. So kannst du einen Anhang aus einem Fotoalbum wählen, anstatt nur eine Fotozusammenstellung zu sehen.
-• Wir haben Verbesserungen am Statusbalken, der Videosteuerung, den Symbolen und an anderen Elementen des Mediaplayers vorgenommen. Pausenlose Arbeit hat Signal ein wenig verbessert, wenn du ab sofort „Play“ und „Pause“ drückst.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

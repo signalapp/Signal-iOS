@@ -1,3 +1,1 @@
-• Brže reagirajte na poruku odabirom jednog od emotikona koji su već dodani poruci. Ili pak odaberite nešto novo i prigodno.
-• Od sada se u alatu za odabir fotografija prikazuju mape i albumi.
-• Poboljšali smo traku napretka, video kontrole i ikone u pregledniku medija.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

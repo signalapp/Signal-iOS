@@ -1,3 +1,1 @@
-• Reagoi nopeasti valitsemalla emoji, joka on jo lisätty viestiin. Voit myös halutessasi valita jonkun uuden yksilöllisen emojin.
-• Kansiot ja albumit näkyvät nyt kuvavalitsimessa.
-• Paransimme edistymispalkkia, videoiden hallintaa, kuvakkeita ja muita elementtejä mediasisältöjen katseluohjelmassa.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

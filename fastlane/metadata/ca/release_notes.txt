@@ -1,3 +1,1 @@
-• Selecciona ràpidament una reacció d'emoji entre els emojis que ja s'han afegit a un missatge. O tria alguna cosa nova i única si no vols que sembli que reacciones de manera exagerada.
-• Ara les carpetes són visibles al selector de fotos, de manera que pots seleccionar un fitxer adjunt d'un àlbum de fotos en lloc d'haver de buscar-lo d'entre una amalgama de fotos.
-• Hem millorat la barra de progrés, els controls de vídeo, les icones i altres elements del visualitzador d'arxius multimèdia. Tota aquesta feina ha aconseguit fer que Signal sigui una mica millor sempre que premis reproduir.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

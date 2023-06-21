@@ -1,3 +1,1 @@
-• Crie uma reação em cadeia selecionando rapidamente emojis que já foram adicionados a uma mensagem. Ou escolha algo novo e único se não quiser parecer que está exagerando.
-• As pastas agora ficam visíveis no seletor de fotos, e você pode escolher um anexo de álbum de fotos em vez de acessar uma mistura de fotos.
-• Melhoramos a barra de progresso, controles de vídeo, ícones e outros elementos no visualizador de mídia. Agora, sua experiência é melhor quando você aperta play.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

@@ -1,3 +1,1 @@
-• 快速選擇一個剛添加到訊息中的表情符號心情回應，來製造連鎖反應。或者如果你不想重覆同類回應，你可選擇其他獨特的新東西。
-• 現在可以在相片選擇器中看到文件夾和相簿。
-• 我們改進了多媒體檢視器中的進度列、影片控制項、圖示和其他元素。無論是用於工作或娛樂都會令 Signal 有所改善。
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

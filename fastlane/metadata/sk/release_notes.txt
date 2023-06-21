@@ -1,3 +1,1 @@
-• Zvoľte si rýchlo reakciu z emotikonov, ktoré už boli pridané do správy. Alebo použite niečo nové a jedinečné, ak nechcete pokračovať v reťazovej reakcii.
-• Priečinky a albumy sú teraz viditeľné vo výbere fotografií.
-• Vylepšili sme indikátor priebehu, ovládanie videa, ikony a ďalšie prvky v prehliadači médií. Vďaka našej vytrvalej práci je teraz Signal o niečo lepší, kedykoľvek stlačíte prehrávanie.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

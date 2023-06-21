@@ -1,3 +1,1 @@
-• Nå kan du trykke på en av emojiene de andre har reagert med, for å lage en kjedereaksjon. Du kan også velge en helt annen emoji (hvis du er redd for å overreagere).
-• Album og mapper er nå synlige i bildevelgeren, slik at du kan plukke ut bilder fra albumene dine i stedet for et sammensurium av løse bilder.
-• Vi har gjort forbedringer på fremdriftslinjen, videoknappene, ikonene og andre deler av medievisningen. Dermed går ingenting til spille når du trykker på «Spill av».
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?

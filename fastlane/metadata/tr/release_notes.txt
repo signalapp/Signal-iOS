@@ -1,3 +1,1 @@
-• Mesaja zaten eklenmiş olan emojileri hızlıca seçerek zincirleme bir tepki göster. Veya aşırı tepki veriyormuş gibi görünmek istemiyorsan, yeni ve benzersiz bir şeyler seç.
-• Klasörler ve albümler artık fotoğraf seçicide görülebilir.
-• Medya görüntüleyicideki ilerleme çubuğunu, video kontrollerini ve simgeleri iyileştirdik. Oynat düğmesine her bastığında çok çalışmak ve hiç oyun oynamamak Signal'i biraz daha iyi hâle getirdi.
+• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?
