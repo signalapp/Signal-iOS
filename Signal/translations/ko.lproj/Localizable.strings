@@ -152,10 +152,10 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "메시지 요청 정보";
 
 /* Audio file type in All Meda file type picker. */
-"ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
+"ALL_MEDIA_FILE_TYPE_AUDIO" = "음성";
 
 /* Media (i.e., graphical) file type in All Meda file type picker. */
-"ALL_MEDIA_FILE_TYPE_MEDIA" = "Media";
+"ALL_MEDIA_FILE_TYPE_MEDIA" = "미디어";
 
 /* Menu option to limit All Media view to displaying only GIFs */
 "ALL_MEDIA_FILTER_GIFS" = "GIF";
@@ -2381,7 +2381,7 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "이 대화에는 미디어가 없습니다.";
 
 /* Label indicating media gallery with audio filter is empty */
-"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "You don‘t have any audio in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "이 대화에 오디오가 없습니다.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "새로운 미디어 불러오는 중…";
@@ -5039,10 +5039,13 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "이름";
 
 /* Title for a menu action allowing users to edit their existing username. */
-"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Edit Username";
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "사용자 이름 편집";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "사용자 이름";
+
+/* Title for a menu action allowing users to view their username link QR code. */
+"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "View QR Code";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "성이 너무 깁니다.";
@@ -7066,6 +7069,33 @@
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "이모티콘을 바꾸려면 탭하세요.";
 
+/* Option in selected text edit menu to make text bold */
+"TEXT_MENU_BOLD" = "Bold";
+
+/* Option in selected text edit menu to view text formatting options */
+"TEXT_MENU_FORMAT" = "Format";
+
+/* Option in selected text edit menu to make text italic */
+"TEXT_MENU_ITALIC" = "Italic";
+
+/* Option in selected text edit menu to look up word definitions */
+"TEXT_MENU_LOOK_UP" = "Look Up";
+
+/* Option in selected text edit menu to make text monospace */
+"TEXT_MENU_MONOSPACE" = "Monospace";
+
+/* Option in selected text edit menu to replace text with suggestions */
+"TEXT_MENU_REPLACE" = "Replace";
+
+/* Option in selected text edit menu to share selected text */
+"TEXT_MENU_SHARE" = "Share";
+
+/* Option in selected text edit menu to make text spoiler */
+"TEXT_MENU_SPOILER" = "Spoiler";
+
+/* Option in selected text edit menu to make text strikethrough */
+"TEXT_MENU_STRIKETHROUGH" = "Strikethrough";
+
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "이 메세지는 삭제되었습니다.";
 
@@ -7245,6 +7275,21 @@
 
 /* Description of username link */
 "USERNAME_LINK_DESCRIPTION" = "각 사용자 이름에는 친구와 공유하여 대화를 시작할 수 있는 고유 링크가 있습니다.";
+
+/* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
+"USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "color";
+
+/* Text for a label explaining what the username link and QR code give others access to. */
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Only share your QR code and link with people you trust. When shared others will be able to see your username and start a chat with you.";
+
+/* Title for a button that allows users to reset their username link and QR code. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Reset";
+
+/* Title for a button to share your username link QR code. Lowercase styling is intentional. */
+"USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "share";
+
+/* A title for a view that allows you to view and interact with a QR code for your username link. */
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Code";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "사용자 이름 검색 중 오류가 발생했습니다. 나중에 다시 시도하세요.";
