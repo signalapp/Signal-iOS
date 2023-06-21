@@ -45,7 +45,11 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
     // MARK: Picker
 
-    public var pickedRecipients: [PickedRecipient] = []
+    public var pickedRecipients: [PickedRecipient] = [] {
+        didSet {
+            updateTableContents()
+        }
+    }
 
     // MARK: UIViewController
 
