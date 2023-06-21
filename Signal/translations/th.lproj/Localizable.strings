@@ -152,10 +152,10 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "เกี่ยวกับคำขอส่งข้อความ";
 
 /* Audio file type in All Meda file type picker. */
-"ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
+"ALL_MEDIA_FILE_TYPE_AUDIO" = "เสียง";
 
 /* Media (i.e., graphical) file type in All Meda file type picker. */
-"ALL_MEDIA_FILE_TYPE_MEDIA" = "Media";
+"ALL_MEDIA_FILE_TYPE_MEDIA" = "สื่อ";
 
 /* Menu option to limit All Media view to displaying only GIFs */
 "ALL_MEDIA_FILTER_GIFS" = "GIF";
@@ -2381,7 +2381,7 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "คุณไม่มีไฟล์สื่อในแชทนี้";
 
 /* Label indicating media gallery with audio filter is empty */
-"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "You don‘t have any audio in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "คุณไม่มีไฟล์เสียงในแชทนี้";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "กำลังโหลดสื่อที่ใหม่กว่า…";
@@ -5039,7 +5039,7 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "ชื่อ";
 
 /* Title for a menu action allowing users to edit their existing username. */
-"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Edit Username";
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "แก้ไขชื่อผู้ใช้";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "ชื่อผู้ใช้";

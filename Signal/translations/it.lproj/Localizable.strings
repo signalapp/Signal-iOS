@@ -2381,7 +2381,7 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "Non hai alcun contenuto multimediale in questa chat.";
 
 /* Label indicating media gallery with audio filter is empty */
-"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "You don‘t have any audio in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "Non sono presenti audio vocali in questa chat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Caricamento media più recenti…";
@@ -5039,7 +5039,7 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Nome";
 
 /* Title for a menu action allowing users to edit their existing username. */
-"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Edit Username";
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Modifica nome utente";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nome utente";

@@ -152,10 +152,10 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "关于消息请求";
 
 /* Audio file type in All Meda file type picker. */
-"ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
+"ALL_MEDIA_FILE_TYPE_AUDIO" = "音频";
 
 /* Media (i.e., graphical) file type in All Meda file type picker. */
-"ALL_MEDIA_FILE_TYPE_MEDIA" = "Media";
+"ALL_MEDIA_FILE_TYPE_MEDIA" = "媒体";
 
 /* Menu option to limit All Media view to displaying only GIFs */
 "ALL_MEDIA_FILTER_GIFS" = "GIF";
@@ -2381,7 +2381,7 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "此聊天中没有任何媒体。";
 
 /* Label indicating media gallery with audio filter is empty */
-"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "You don‘t have any audio in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "此聊天中没有任何语音。";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "正在加载新媒体……";
@@ -5039,7 +5039,7 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "名字";
 
 /* Title for a menu action allowing users to edit their existing username. */
-"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Edit Username";
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "编辑用户名";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "用户名";
