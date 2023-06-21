@@ -86,20 +86,10 @@ public extension ConversationViewController {
             return
         }
 
-        let didShowSNAlert = self.showSafetyNumberConfirmationIfNecessary(confirmationText: CallStrings.confirmAndCallButtonTitle,
-                                                                          completion: { [weak self] didConfirmIdentity in
-                                                                            if didConfirmIdentity {
-                                                                                self?.startIndividualCall(withVideo: withVideo)
-                                                                            }
-                                                                          })
-        if didShowSNAlert {
-            return
-        }
-
         // We initiated a call, so if there was a pending message request we should accept it.
         ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
-
         callService.initiateCall(thread: contactThread, isVideo: withVideo)
+
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
 
