@@ -336,7 +336,7 @@ private class QuotedMessageSnippetView: UIView {
         innerBubbleView.addSubview(chatColorView)
         chatColorView.autoPinEdgesToSuperviewEdges()
         let tintView = UIView()
-        tintView.backgroundColor = conversationStyle.isDarkThemeEnabled ? .ows_whiteAlpha40 : .ows_whiteAlpha60
+        tintView.backgroundColor = conversationStyle.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
         innerBubbleView.addSubview(tintView)
         tintView.autoPinEdgesToSuperviewEdges()
 
