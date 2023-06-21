@@ -113,7 +113,6 @@ public struct TSGroupModelBuilder: Dependencies {
 
         try checkUsers()
 
-        let allUsers = groupMembership.allMembersOfAnyKind
         let groupsVersion = self.groupsVersion ?? .V2
 
         let newGroupSeed = self.newGroupSeed ?? NewGroupSeed()
