@@ -151,7 +151,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         }
     }
     private var mode = Mode.grid
-    private var toolbarHeight = CGFloat(0)
 
     public init(
         thread: TSThread,
@@ -253,7 +252,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         collectionView.delegate = self
 
-        accessoriesHelper.add(toView: self.view)
+        accessoriesHelper.installViews()
 
         self.mediaTileViewLayout.invalidateLayout()
 
@@ -1231,6 +1230,8 @@ extension MediaGalleryItem {
 extension MediaTileViewController: MediaGalleryPrimaryViewController {
     typealias MenuAction = MediaGalleryAccessoriesHelper.MenuAction
 
+    var scrollView: UIScrollView { return collectionView }
+
     var isFiltering: Bool {
         return mediaGallery.allowedMediaType != MediaGalleryFinder.MediaType.defaultMediaType(for: fileType)
     }
@@ -1360,10 +1361,6 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
         }
 
         AttachmentSharing.showShareUI(for: items, sender: sender)
-    }
-
-    func mediaGalleryAccessoriesHelperToolbarHeightWillChange(to height: CGFloat) {
-        toolbarHeight = height
     }
 }
 
