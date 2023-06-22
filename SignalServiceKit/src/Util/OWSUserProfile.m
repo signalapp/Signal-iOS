@@ -127,8 +127,8 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 @property (atomic) BOOL isPniCapable;
 
 @property (atomic, readonly) NSUInteger userProfileSchemaVersion;
-@property (atomic, nullable, readonly) NSString *recipientPhoneNumber;
-@property (atomic, nullable, readonly) NSString *recipientUUID;
+@property (atomic, nullable) NSString *recipientPhoneNumber;
+@property (atomic, nullable) NSString *recipientUUID;
 
 @end
 
@@ -908,15 +908,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 // This should only be used in verbose, developer-only logs.
 - (NSString *)debugDescription
 {
-    return [NSString stringWithFormat:@"%@ %p %@ %lu %@ %@ %@ %@",
-                     self.logTag,
-                     self,
-                     self.address,
-                     (unsigned long)self.profileKey.keyData.length,
-                     self.givenName,
-                     self.familyName,
-                     self.avatarUrlPath,
-                     self.avatarFileName];
+    return [NSString stringWithFormat:@"%@ %p %@ %@", self.logTag, self, self.recipientUUID, self.recipientPhoneNumber];
 }
 
 - (nullable NSString *)unfilteredProfileName
@@ -1080,40 +1072,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     [super anyDidRemoveWithTransaction:transaction];
 
     [self.modelReadCaches.userProfileReadCache didRemoveUserProfile:self transaction:transaction];
-}
-
-+ (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address
-                                 authedAccount:(AuthedAccount *)authedAccount
-                                   transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if ([self isLocalProfileAddress:address] || [authedAccount isAddressForLocalUser:address]) {
-        return;
-    }
-    if (address.uuid == nil || address.phoneNumber == nil) {
-        OWSFailDebug(@"Address missing UUID or phone number.");
-        return;
-    }
-
-    OWSUserProfile *_Nullable userProfileForUuid = [self.userProfileFinder userProfileForUUID:address.uuid
-                                                                                  transaction:transaction];
-    OWSUserProfile *_Nullable userProfileForPhoneNumber =
-        [self.userProfileFinder userProfileForPhoneNumber:address.phoneNumber transaction:transaction];
-
-    // AnyUserProfileFinder prefers UUID profiles, so we try to fill in
-    // missing profile keys on UUID profiles from phone number profiles.
-    if (userProfileForUuid != nil && userProfileForUuid.profileKey == nil
-        && userProfileForPhoneNumber.profileKey != nil) {
-        OWSLogInfo(@"Merging user profiles for: %@, %@.", address.uuid, address.phoneNumber);
-
-        [userProfileForUuid updateWithProfileKey:userProfileForPhoneNumber.profileKey
-                               userProfileWriter:UserProfileWriter_LocalUser
-                                   authedAccount:authedAccount
-                                     transaction:transaction
-                                      completion:^{
-                                          [self.profileManager fetchProfileForAddress:address
-                                                                        authedAccount:authedAccount];
-                                      }];
-    }
 }
 
 - (OWSUserProfile *)shallowCopy

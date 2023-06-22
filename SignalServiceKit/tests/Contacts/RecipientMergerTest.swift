@@ -57,8 +57,6 @@ private class MockRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
 
     func didUpdatePhoneNumber(oldServiceIdString: String?, oldPhoneNumber: String?, newServiceIdString: String?, newPhoneNumber: E164?, transaction: DBWriteTransaction) {}
 
-    func mergeUserProfilesIfNecessary(serviceId: ServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {}
-
     func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool { false }
 }
 

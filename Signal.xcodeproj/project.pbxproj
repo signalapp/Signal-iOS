@@ -698,6 +698,7 @@
 		5033D47029DCACEF007FEADA /* UrlOpener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46F29DCACEF007FEADA /* UrlOpener.swift */; };
 		5033D47329DCB3FF007FEADA /* UrlOpenerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D47229DCB3FF007FEADA /* UrlOpenerTest.swift */; };
 		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
+		5037F1942A43A6A300C372AD /* UserProfileMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5037F1932A43A6A300C372AD /* UserProfileMerger.swift */; };
 		503AECC529B2A4D300642F66 /* VoiceMessageInProgressDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503AECC429B2A4D300642F66 /* VoiceMessageInProgressDraft.swift */; };
 		503AECC629B2AD6700642F66 /* VoiceMessageInterruptedDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A1271B510500B05242 /* VoiceMessageInterruptedDraft.swift */; };
 		503AECC829B2AEFA00642F66 /* VoiceMessageSendableDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503AECC729B2AEFA00642F66 /* VoiceMessageSendableDraft.swift */; };
@@ -729,6 +730,8 @@
 		506A924F28FA232100A2EFC2 /* ContactDiscoveryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */; };
 		506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */; };
 		506A9252290326A600A2EFC2 /* TextHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */; };
+		506ABE6B2A43AECA008844D1 /* UserProfileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506ABE6A2A43AECA008844D1 /* UserProfileStore.swift */; };
+		506ABE6E2A43B2FE008844D1 /* UserProfileMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506ABE6C2A43B2C0008844D1 /* UserProfileMergerTest.swift */; };
 		5075004628B09CE6001922C9 /* ContactDiscoveryE164CollectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryE164CollectionTest.swift */; };
 		5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */; };
 		507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507CD5E429660D5100E47DAC /* ServiceId.swift */; };
@@ -3172,6 +3175,7 @@
 		503614D1282C5728008128B4 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fi; path = translations/fi.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D2282C572F008128B4 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = id; path = translations/id.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D6282C7B76008128B4 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_CN; path = translations/zh_CN.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		5037F1932A43A6A300C372AD /* UserProfileMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileMerger.swift; sourceTree = "<group>"; };
 		503AECB829A6E6C900642F66 /* yue */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = yue; path = translations/yue.lproj/Localizable.strings; sourceTree = "<group>"; };
 		503AECB929A6E6D500642F66 /* yue */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = yue; path = translations/yue.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		503AECBA29A6E6DC00642F66 /* yue */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = yue; path = translations/yue.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
@@ -3205,6 +3209,8 @@
 		506695EE29C533A400B6D8D0 /* GroupMemberUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMemberUpdater.swift; sourceTree = "<group>"; };
 		506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManager.swift; sourceTree = "<group>"; };
 		506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerContainerViewController.swift; sourceTree = "<group>"; };
+		506ABE6A2A43AECA008844D1 /* UserProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileStore.swift; sourceTree = "<group>"; };
+		506ABE6C2A43B2C0008844D1 /* UserProfileMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileMergerTest.swift; sourceTree = "<group>"; };
 		5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMemberUpdaterTest.swift; sourceTree = "<group>"; };
 		507CD5E429660D5100E47DAC /* ServiceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceId.swift; sourceTree = "<group>"; };
 		507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSKeyedUnarchiver+SSK.swift"; sourceTree = "<group>"; };
@@ -8177,6 +8183,7 @@
 				F972180128DCFDF100113D9F /* TSContactThreadTest.swift */,
 				F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */,
 				F9426214289B1B5500460798 /* TSThreadTest.m */,
+				506ABE6C2A43B2C0008844D1 /* UserProfileMergerTest.swift */,
 				F9426219289B1B5500460798 /* UUIDBackfillTaskTest.swift */,
 			);
 			name = Contacts;
@@ -8861,6 +8868,8 @@
 				F9C5C9F9289453B100548EEE /* TSThread+SDS.swift */,
 				F9C5C9D2289453B100548EEE /* TSThread.h */,
 				F9C5C9F8289453B100548EEE /* TSThread.m */,
+				5037F1932A43A6A300C372AD /* UserProfileMerger.swift */,
+				506ABE6A2A43AECA008844D1 /* UserProfileStore.swift */,
 			);
 			name = Contacts;
 			path = src/Contacts;
@@ -12501,6 +12510,8 @@
 				C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */,
 				C13A484729B650BC00BA9005 /* UsernameValidationObserver.swift in Sources */,
 				F9C5CE26289453B400548EEE /* UserProfileFinder.swift in Sources */,
+				5037F1942A43A6A300C372AD /* UserProfileMerger.swift in Sources */,
+				506ABE6B2A43AECA008844D1 /* UserProfileStore.swift in Sources */,
 				F9C5CCBD289453B300548EEE /* UUIDBackfillTask.swift in Sources */,
 				504F397C29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift in Sources */,
 				F9C5CE3B289453B400548EEE /* VersionedProfiles.swift in Sources */,
@@ -12661,6 +12672,7 @@
 				F945FE502984822D00C835C7 /* UserDefaults.swift in Sources */,
 				D9A3E22B2A0D633500E2A8B5 /* UsernameLookupRecordTest.swift in Sources */,
 				D9A3E2322A0DBDFC00E2A8B5 /* Usernames+UsernameLinkTests.swift in Sources */,
+				506ABE6E2A43B2FE008844D1 /* UserProfileMergerTest.swift in Sources */,
 				F9426284289B1B5600460798 /* UUIDBackfillTaskTest.swift in Sources */,
 				D9B95A9D29E894A600D7CB95 /* ValidatableModel.swift in Sources */,
 				F942626A289B1B5500460798 /* ViewOnceMessagesTest.swift in Sources */,

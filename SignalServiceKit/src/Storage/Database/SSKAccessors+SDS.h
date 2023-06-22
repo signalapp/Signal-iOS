@@ -167,8 +167,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSUserProfile (SDS)
 
-@property (atomic, nullable, readonly) NSString *recipientPhoneNumber;
-@property (atomic, nullable, readonly) NSString *recipientUUID;
+@property (atomic, nullable) NSString *recipientPhoneNumber;
+@property (atomic, nullable) NSString *recipientUUID;
 @property (atomic, nullable, readonly) NSString *profileName;
 
 @end

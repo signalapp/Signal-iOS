@@ -28,6 +28,12 @@ public extension AnyUserProfileFinder {
         return profile
     }
 
+    func fetchUserProfiles(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> [OWSUserProfile] {
+        let userProfiles = grdbAdapter.fetchUserProfiles(for: serviceId, tx: tx.unwrapGrdbRead)
+        userProfiles.forEach { $0.loadBadgeContent(with: tx) }
+        return userProfiles
+    }
+
     @objc(userProfileForPhoneNumber:transaction:)
     func userProfileForPhoneNumber(_ phoneNumber: String, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
         let profile: OWSUserProfile?
@@ -37,6 +43,12 @@ public extension AnyUserProfileFinder {
         }
         profile?.loadBadgeContent(with: transaction)
         return profile
+    }
+
+    func fetchUserProfiles(for phoneNumber: String, tx: SDSAnyReadTransaction) -> [OWSUserProfile] {
+        let userProfiles = grdbAdapter.fetchUserProfiles(for: phoneNumber, tx: tx.unwrapGrdbRead)
+        userProfiles.forEach { $0.loadBadgeContent(with: tx) }
+        return userProfiles
     }
 
     @objc
@@ -86,11 +98,27 @@ class GRDBUserProfileFinder: NSObject {
         return userProfilesForUUIDs([uuid], transaction: transaction)[0]
     }
 
+    fileprivate func fetchUserProfiles(for serviceId: ServiceId, tx: GRDBReadTransaction) -> [OWSUserProfile] {
+        return userProfilesWhere(
+            column: "\(userProfileColumn: .recipientUUID)",
+            anyValueIn: [serviceId.uuidValue.uuidString],
+            transaction: tx
+        )
+    }
+
     fileprivate func userProfileForPhoneNumber(_ phoneNumber: String?, transaction: GRDBReadTransaction) -> OWSUserProfile? {
         return userProfilesForPhoneNumbers([phoneNumber], transaction: transaction)[0]
     }
 
-    private func userProfilesWhere(column: String, anyValueIn values: [String], transaction: GRDBReadTransaction) -> [OWSUserProfile?] {
+    fileprivate func fetchUserProfiles(for phoneNumber: String, tx: GRDBReadTransaction) -> [OWSUserProfile] {
+        return userProfilesWhere(
+            column: "\(userProfileColumn: .recipientPhoneNumber)",
+            anyValueIn: [phoneNumber],
+            transaction: tx
+        )
+    }
+
+    private func userProfilesWhere(column: String, anyValueIn values: [String], transaction: GRDBReadTransaction) -> [OWSUserProfile] {
         let qms = Array(repeating: "?", count: values.count).joined(separator: ", ")
         let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(column) in (\(qms))"
         do {

@@ -143,10 +143,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 
 + (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
-+ (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address
-                                 authedAccount:(AuthedAccount *)authedAccount
-                                   transaction:(SDSAnyWriteTransaction *)transaction;
-
 - (OWSUserProfile *)shallowCopy;
 
 @end

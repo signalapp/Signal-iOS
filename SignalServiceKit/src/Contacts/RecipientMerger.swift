@@ -45,6 +45,11 @@ public protocol RecipientMerger {
 }
 
 protocol RecipientMergeObserver {
+    /// We are about to learn a new association between identifiers.
+    ///
+    /// This is called for the identifiers that will no longer be linked.
+    func willBreakAssociation(serviceId: ServiceId, phoneNumber: E164, transaction: DBWriteTransaction)
+
     /// We just learned a new association between identifiers.
     ///
     /// If you provide only a single identifier to a merge, then it's not
@@ -72,7 +77,6 @@ protocol RecipientMergerTemporaryShims {
         newPhoneNumber: E164?,
         transaction: DBWriteTransaction
     )
-    func mergeUserProfilesIfNecessary(serviceId: ServiceId, phoneNumber: E164, transaction: DBWriteTransaction)
     func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool
 }
 
@@ -109,12 +113,15 @@ class RecipientMergerImpl: RecipientMerger {
         interactionStore: InteractionStore,
         signalServiceAddressCache: SignalServiceAddressCache,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
-        threadStore: ThreadStore
+        threadStore: ThreadStore,
+        userProfileStore: UserProfileStore
     ) -> [RecipientMergeObserver] {
         [
             signalServiceAddressCache,
             SignalAccountMergeObserver(),
-            // The group member MergeObserver depends on `SignalServiceAddressCache`, so ensure that one's listed first.
+            UserProfileMerger(userProfileStore: userProfileStore),
+            // The group member MergeObserver depends on `SignalServiceAddressCache`,
+            // so ensure that one's listed first.
             GroupMemberMergeObserverImpl(
                 threadStore: threadStore,
                 groupMemberUpdater: groupMemberUpdater,
@@ -231,12 +238,26 @@ class RecipientMergerImpl: RecipientMerger {
 
         let oldPhoneNumber = serviceIdRecipient?.phoneNumber
 
-        let mergedRecipient: SignalRecipient
+        let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: transaction)
 
+        // If PN_1 is associated with ACI_A when this method starts, and if we're
+        // trying to associate PN_1 with ACI_B, then we should ensure everything
+        // that currently references PN_1 is updated to reference ACI_A. At this
+        // point in time, everything we've saved locally with PN_1 is associated
+        // with the ACI_A account, so we should mark it as such in the database.
+        // After this point, everything new will be associated with ACI_B.
+        if let phoneNumberRecipient, let oldServiceId = phoneNumberRecipient.serviceId {
+            for observer in observers {
+                observer.willBreakAssociation(serviceId: oldServiceId, phoneNumber: phoneNumber, transaction: transaction)
+            }
+        }
+
+        let mergedRecipient: SignalRecipient
         switch _mergeHighTrust(
             serviceId: serviceId,
             phoneNumber: phoneNumber,
             serviceIdRecipient: serviceIdRecipient,
+            phoneNumberRecipient: phoneNumberRecipient,
             transaction: transaction
         ) {
         case .some(let updatedRecipient):
@@ -268,10 +289,9 @@ class RecipientMergerImpl: RecipientMerger {
         serviceId: ServiceId,
         phoneNumber: E164,
         serviceIdRecipient: SignalRecipient?,
+        phoneNumberRecipient: SignalRecipient?,
         transaction: DBWriteTransaction
     ) -> SignalRecipient? {
-        let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: transaction)
-
         if let serviceIdRecipient {
             if let phoneNumberRecipient {
                 if phoneNumberRecipient.serviceIdString == nil && serviceIdRecipient.phoneNumber == nil {
@@ -429,12 +449,6 @@ class RecipientMergerImpl: RecipientMerger {
         // TODO: Should we clean up any state related to the discarded recipient?
         dataStore.removeRecipient(losingRecipient, transaction: transaction)
 
-        temporaryShims.mergeUserProfilesIfNecessary(
-            serviceId: serviceId,
-            phoneNumber: phoneNumber,
-            transaction: transaction
-        )
-
         return winningRecipient
     }
 }
@@ -442,6 +456,8 @@ class RecipientMergerImpl: RecipientMerger {
 // MARK: - SignalServiceAddressCache
 
 extension SignalServiceAddressCache: RecipientMergeObserver {
+    func willBreakAssociation(serviceId: ServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {}
+
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
         updateRecipient(mergedRecipient.signalRecipient)
 

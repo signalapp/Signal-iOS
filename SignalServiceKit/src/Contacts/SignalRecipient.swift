@@ -369,19 +369,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             transaction: transaction.unwrapGrdbWrite
         )
 
-        if let oldPhoneNumber {
-            // If we have an `oldPhoneNumber`, it means that value is now detached from
-            // everything. If there is any profile that refers exclusively to that
-            // phone number, we can delete it. (If there are profiles that refer to
-            // some other ACI, we should keep those since they're for accounts that are
-            // potentially still valid.)
-            let sql = """
-                DELETE FROM \(UserProfileRecord.databaseTableName)
-                WHERE \(userProfileColumn: .recipientPhoneNumber) = ? AND \(userProfileColumn: .recipientUUID) IS NULL
-            """
-            transaction.unwrapGrdbWrite.execute(sql: sql, arguments: [oldPhoneNumber])
-        }
-
         // TODO: we may need to do more here, this is just bear bones to make sure we
         // don't hold onto stale data with the old mapping.
 
@@ -574,9 +561,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
                 DBTableMapping(databaseTableName: "\(InteractionRecord.databaseTableName)",
                                uuidColumn: "\(interactionColumn: .authorUUID)",
                                phoneNumberColumn: "\(interactionColumn: .authorPhoneNumber)"),
-                DBTableMapping(databaseTableName: "\(UserProfileRecord.databaseTableName)",
-                               uuidColumn: "\(userProfileColumn: .recipientUUID)",
-                               phoneNumberColumn: "\(userProfileColumn: .recipientPhoneNumber)"),
                 DBTableMapping(databaseTableName: "pending_read_receipts",
                                uuidColumn: "authorUuid",
                                phoneNumberColumn: "authorPhoneNumber"),
@@ -633,14 +617,6 @@ class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
             oldPhoneNumber: oldPhoneNumber,
             newServiceIdString: newServiceIdString,
             newPhoneNumber: newPhoneNumber?.stringValue,
-            transaction: SDSDB.shimOnlyBridge(transaction)
-        )
-    }
-
-    func mergeUserProfilesIfNecessary(serviceId: ServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {
-        OWSUserProfile.mergeUserProfilesIfNecessary(
-            for: SignalServiceAddress(uuid: serviceId.uuidValue, phoneNumber: phoneNumber.stringValue),
-            authedAccount: .implicit(),
             transaction: SDSDB.shimOnlyBridge(transaction)
         )
     }

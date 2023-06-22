@@ -254,6 +254,7 @@ public class DependenciesBridge {
         )
 
         let recipientStore = RecipientDataStoreImpl()
+        let userProfileStore = UserProfileStoreImpl()
 
         self.recipientFetcher = RecipientFetcherImpl(recipientStore: recipientStore)
 
@@ -267,7 +268,8 @@ public class DependenciesBridge {
                 interactionStore: interactionStore,
                 signalServiceAddressCache: signalServiceAddressCache,
                 threadAssociatedDataStore: self.threadAssociatedDataStore,
-                threadStore: threadStore
+                threadStore: threadStore,
+                userProfileStore: userProfileStore
             ),
             recipientFetcher: self.recipientFetcher,
             dataStore: recipientStore,

@@ -134,12 +134,18 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let oldMessage = messageBuilder.build()
             oldMessage.anyInsert(transaction: transaction)
 
-            let oldProfile = OWSUserProfile.getOrBuild(
+            let oldPhoneNumberProfile = OWSUserProfile.getOrBuild(
                 for: oldAddress,
                 authedAccount: .implicit(),
                 transaction: transaction
             )
-            oldProfile.anyInsert(transaction: transaction)
+            oldPhoneNumberProfile.anyInsert(transaction: transaction)
+            let newPhoneNumberProfile = OWSUserProfile.getOrBuild(
+                for: SignalServiceAddress(phoneNumber: newPhoneNumber.stringValue),
+                authedAccount: .implicit(),
+                transaction: transaction
+            )
+            newPhoneNumberProfile.anyInsert(transaction: transaction)
 
             let oldAccount = SignalAccount(address: oldAddress)
             oldAccount.anyInsert(transaction: transaction)
@@ -181,9 +187,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertNotEqual(oldMessage.authorPhoneNumber, newMessage.authorPhoneNumber)
             XCTAssertEqual(newAddress, newMessage.authorAddress)
 
-            XCTAssertEqual(oldProfile.uniqueId, newProfile.uniqueId)
-            XCTAssertNotEqual(oldProfile.recipientPhoneNumber, newProfile.recipientPhoneNumber)
-            XCTAssertEqual(newAddress, newProfile.address)
+            XCTAssertEqual(newProfile.uniqueId, oldPhoneNumberProfile.uniqueId)
+            XCTAssertEqual(newProfile.recipientPhoneNumber, newPhoneNumber.stringValue)
+            XCTAssertEqual(newProfile.recipientUUID, aci.uuidValue.uuidString)
+            XCTAssertNil(OWSUserProfile.anyFetch(uniqueId: newPhoneNumberProfile.uniqueId, transaction: transaction))
 
             XCTAssertNil(newAccount)
         }
