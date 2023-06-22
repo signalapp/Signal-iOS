@@ -20,6 +20,7 @@ fileprivate extension AllMediaFileType {
 }
 
 protocol MediaGalleryPrimaryViewController: UIViewController {
+    var scrollView: UIScrollView { get }
     var mediaGalleryFilterMenuActions: [MediaGalleryAccessoriesHelper.MenuAction] { get }
     var isFiltering: Bool { get }
     var isEmpty: Bool { get }
@@ -29,18 +30,12 @@ protocol MediaGalleryPrimaryViewController: UIViewController {
     func didEndSelectMode()
     func deleteSelectedItems()
     func shareSelectedItems(_ sender: Any)
-    func mediaGalleryAccessoriesHelperToolbarHeightWillChange(to height: CGFloat)
-
-    @available(iOS 13, *)
     var fileType: AllMediaFileType { get }
-
-    @available(iOS 13, *)
     func set(fileType: AllMediaFileType, grid: Bool)
 }
 
 public class MediaGalleryAccessoriesHelper: NSObject {
-    private var footerBarBottomConstraint: NSLayoutConstraint!
-    let kFooterBarHeight: CGFloat = 40
+    private var footerBarBottomConstraint: NSLayoutConstraint?
     weak var viewController: MediaGalleryPrimaryViewController?
 
     private enum Mode {
@@ -124,9 +119,11 @@ public class MediaGalleryAccessoriesHelper: NSObject {
         }
     }
 
-    func add(toView view: UIView) {
-        view.addSubview(footerBar)
-        if let viewController, let headerView {
+    func installViews() {
+        guard let viewController else { return }
+
+        viewController.view.addSubview(footerBar)
+        if let headerView {
             headerView.sizeToFit()
             var frame = headerView.frame
             frame.size.width += CGFloat(AllMediaFileType.allCases.count) * 20.0
@@ -134,8 +131,6 @@ public class MediaGalleryAccessoriesHelper: NSObject {
             viewController.navigationItem.titleView = headerView
         }
         footerBar.autoPinWidthToSuperview()
-        footerBar.autoSetDimension(.height, toSize: kFooterBarHeight)
-        footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -kFooterBarHeight)
         updateDeleteButton()
         updateSelectButton()
     }
@@ -422,10 +417,7 @@ public class MediaGalleryAccessoriesHelper: NSObject {
 
     // MARK: - Footer
 
-    private lazy var footerBar: UIToolbar = {
-        let footerBar = UIToolbar()
-        return footerBar
-    }()
+    private lazy var footerBar = UIToolbar()
 
     enum FooterBarState {
         // No footer bar.
@@ -450,15 +442,14 @@ public class MediaGalleryAccessoriesHelper: NSObject {
             let wasHidden = footerBarState == .hidden
             let willBeHidden = newValue == .hidden
             if wasHidden && !willBeHidden {
-                showToolbar()
+                showToolbar(animated: footerBar.window != nil)
             } else if !wasHidden && willBeHidden {
-                hideToolbar()
+                hideToolbar(animated: footerBar.window != nil)
             }
         }
         didSet {
             reloadFooter()
         }
-
     }
 
     private var gridViewAllowed: Bool {
@@ -546,49 +537,55 @@ public class MediaGalleryAccessoriesHelper: NSObject {
 
     // MARK: - Toolbar
 
-    private func showToolbar() {
-        viewController?.mediaGalleryAccessoriesHelperToolbarHeightWillChange(to: footerBar.frame.height)
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
+    private func showToolbar(animated: Bool) {
+        guard animated else {
+            _showToolbar()
+            return
+        }
+        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
             self._showToolbar()
-        }, completion: nil)
+        }
     }
 
     private func _showToolbar() {
-        guard let viewController else {
-            return
-        }
-        NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
+        guard let viewController else { return }
 
-        self.footerBarBottomConstraint =  self.footerBar.autoPin(toBottomLayoutGuideOf: viewController, withInset: 0)
-
-        self.footerBar.superview?.layoutIfNeeded()
-        // ensure toolbar doesn't cover bottom row.
-        if let scrollView = viewController.view as? UIScrollView {
-            scrollView.contentInset.bottom += self.kFooterBarHeight
-            scrollView.verticalScrollIndicatorInsets.bottom += self.kFooterBarHeight
+        if let footerBarBottomConstraint {
+            NSLayoutConstraint.deactivate([footerBarBottomConstraint])
         }
+
+        footerBarBottomConstraint = footerBar.autoPin(toBottomLayoutGuideOf: viewController, withInset: 0)
+
+        viewController.view.layoutIfNeeded()
+
+        let bottomInset = viewController.view.bounds.maxY - footerBar.frame.minY
+        viewController.scrollView.contentInset.bottom = bottomInset
+        viewController.scrollView.verticalScrollIndicatorInsets.bottom = bottomInset
     }
 
-    private func hideToolbar() {
-        viewController?.mediaGalleryAccessoriesHelperToolbarHeightWillChange(to: 0.0)
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
+    private func hideToolbar(animated: Bool) {
+        guard animated else {
+            _hideToolbar()
+            return
+        }
+        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
             self._hideToolbar()
-        }, completion: nil)
+        }
     }
 
     private func _hideToolbar() {
-        guard let viewController else {
-            return
-        }
-        NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
-        self.footerBarBottomConstraint = self.footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -self.kFooterBarHeight)
-        self.footerBar.superview?.layoutIfNeeded()
+        guard let viewController else { return }
 
-        // Undo "ensure toolbar doesn't cover bottom row.".
-        if let scrollView = viewController.view as? UIScrollView {
-            scrollView.contentInset.bottom -= self.kFooterBarHeight
-            scrollView.verticalScrollIndicatorInsets.bottom -= self.kFooterBarHeight
+        if let footerBarBottomConstraint {
+            NSLayoutConstraint.deactivate([footerBarBottomConstraint])
         }
+
+        footerBarBottomConstraint = footerBar.autoPinEdge(.top, to: .bottom, of: viewController.view)
+
+        viewController.view.layoutIfNeeded()
+
+        viewController.scrollView.contentInset.bottom = 0
+        viewController.scrollView.verticalScrollIndicatorInsets.bottom = 0
     }
 
     // MARK: - Delete
