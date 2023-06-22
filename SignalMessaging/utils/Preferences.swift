@@ -161,7 +161,7 @@ public class Preferences: NSObject {
 
     @objc
     public static var isAudibleErrorLoggingEnabled: Bool {
-        UserDefaults.app().bool(forKey: UserDefaultsKeys.isAudibleErrorLoggingEnabled)
+        UserDefaults.app().bool(forKey: UserDefaultsKeys.isAudibleErrorLoggingEnabled) && FeatureFlags.choochoo
     }
 
     public static func setIsAudibleErrorLoggingEnabled(_ value: Bool) {

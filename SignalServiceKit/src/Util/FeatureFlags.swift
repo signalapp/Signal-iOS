@@ -56,6 +56,8 @@ extension StorageMode: CustomStringConvertible {
 @objc(SSKFeatureFlags)
 public class FeatureFlags: BaseFlags {
 
+    public static let choochoo = build.includes(.internal)
+
     @objc
     public static let phoneNumberSharing = build.includes(.internal)
 
