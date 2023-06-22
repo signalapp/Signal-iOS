@@ -6307,6 +6307,7 @@
 		4C4F360E2284516F00A8DF48 /* MediaGallery */ = {
 			isa = PBXGroup;
 			children = (
+				765E22D92A44AF33002CCA3B /* Cells */,
 				4CD675BF22E7BE47008010D2 /* Transitions */,
 				45D49114296F69AA00B92BB1 /* AllMediaViewController.swift */,
 				45C845AC291466C0005F6EA5 /* JournalingOrderedDictionary.swift */,
@@ -6818,6 +6819,17 @@
 			path = OWSTableView;
 			sourceTree = "<group>";
 		};
+		765E22D92A44AF33002CCA3B /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				45B3680A2A1D75DF0067D05A /* AudioAllMediaPresenter.swift */,
+				45D9784329F0B51F00BBB3C0 /* AudioCell.swift */,
+				45D9784129F0B50000BBB3C0 /* MediaTileListModeCell.swift */,
+				45906C6A29D238560025906D /* WidePhotoCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -6890,8 +6902,6 @@
 			isa = PBXGroup;
 			children = (
 				32E958A925C12B3800BF12AD /* AnimatedProgressView.swift */,
-				45B3680A2A1D75DF0067D05A /* AudioAllMediaPresenter.swift */,
-				45D9784329F0B51F00BBB3C0 /* AudioCell.swift */,
 				4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */,
 				14E4A33F278EE999008408FD /* BlurredToolbarContainer.swift */,
 				32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */,
@@ -6903,7 +6913,6 @@
 				45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */,
 				45069FCB29D4FFD200D0DD14 /* MediaTileCell.swift */,
 				45069FC929D4FFBB00D0DD14 /* MediaTileDateFormatter.swift */,
-				45D9784129F0B50000BBB3C0 /* MediaTileListModeCell.swift */,
 				8829883A25B9FD6700DEE1E3 /* MockConversationView.swift */,
 				3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */,
 				4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */,
@@ -6916,7 +6925,6 @@
 				88928A7626419D6B009C9B30 /* VoiceMessageDraftView.swift */,
 				88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */,
 				4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */,
-				45906C6A29D238560025906D /* WidePhotoCell.swift */,
 			);
 			name = Views;
 			path = views;
