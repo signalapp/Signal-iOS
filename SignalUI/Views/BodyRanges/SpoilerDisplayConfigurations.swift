@@ -84,11 +84,31 @@ extension StyleDisplayConfiguration {
         dark: Theme.darkThemePrimaryColor
     )
 
-    // TODO: this a placeholder for some callsites
-    public static func todo() -> Self {
+    public static var composing: Self {
         return StyleDisplayConfiguration(
             baseFont: .dynamicTypeBody,
-            textColor: .fixed(.black),
+            textColor: ConversationStyle.bubbleTextColorIncomingThemed,
+            revealedSpoilerBgColor: ThemedColor(light: .ows_gray20, dark: .ows_gray60),
+            revealAllIds: true,
+            revealedIds: Set()
+        )
+    }
+
+    public static var composingAttachment: Self {
+        return StyleDisplayConfiguration(
+            baseFont: .dynamicTypeBody,
+            textColor: .fixed(Theme.darkThemePrimaryColor),
+            revealedSpoilerBgColor: .fixed(.ows_gray75),
+            revealAllIds: true,
+            revealedIds: Set()
+        )
+    }
+
+    public static var composingGroupReply: Self {
+        return StyleDisplayConfiguration(
+            baseFont: .dynamicTypeBody,
+            textColor: .fixed(.ows_gray05),
+            revealedSpoilerBgColor: .fixed(.ows_gray60),
             revealAllIds: true,
             revealedIds: Set()
         )

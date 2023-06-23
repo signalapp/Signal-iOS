@@ -13,6 +13,7 @@ import Foundation
 public struct StyleDisplayConfiguration: Equatable {
     public let baseFont: UIFont
     public let textColor: ThemedColor
+    public let revealedSpoilerBgColor: ThemedColor?
 
     public let revealAllIds: Bool
     public let revealedIds: Set<StyleIdType>
@@ -20,11 +21,13 @@ public struct StyleDisplayConfiguration: Equatable {
     public init(
         baseFont: UIFont,
         textColor: ThemedColor,
+        revealedSpoilerBgColor: ThemedColor? = nil,
         revealAllIds: Bool,
         revealedIds: Set<StyleIdType>
     ) {
         self.baseFont = baseFont
         self.textColor = textColor
+        self.revealedSpoilerBgColor = revealedSpoilerBgColor
         self.revealAllIds = revealAllIds
         self.revealedIds = revealedIds
     }
@@ -97,6 +100,9 @@ internal struct StyleAttribute: Equatable, Hashable {
             if !isSpoilerRevealed {
                 attributes[.foregroundColor] = UIColor.clear
                 attributes[.backgroundColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+            } else if let revealedSpoilerBgColor = config.revealedSpoilerBgColor {
+                attributes[.foregroundColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+                attributes[.backgroundColor] = revealedSpoilerBgColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
             }
         }
         if !fontTraits.isEmpty {

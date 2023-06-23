@@ -32,7 +32,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         inputToolbar.acceptAutocorrectSuggestion()
 
-        guard let messageBody = inputToolbar.messageBody else {
+        guard let messageBody = inputToolbar.messageBodyForSending else {
             return
         }
 
@@ -243,7 +243,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         if !inputToolbar.isHidden {
             let thread = self.thread
-            let currentDraft = inputToolbar.messageBody
+            let currentDraft = inputToolbar.messageBodyForSending
             let quotedReply = inputToolbar.quotedReply
             Self.databaseStorage.asyncWrite { transaction in
                 // Reload a fresh instance of the thread model; our models are not
@@ -503,7 +503,7 @@ public extension ConversationViewController {
         }
 
         let modal = AttachmentApprovalViewController.wrappedInNavController(attachments: attachments,
-                                                                            initialMessageBody: inputToolbar.messageBody,
+                                                                            initialMessageBody: inputToolbar.messageBodyForSending,
                                                                             approvalDelegate: self,
                                                                             approvalDataSource: self)
         presentFullScreen(modal, animated: true)
@@ -621,7 +621,7 @@ fileprivate extension ConversationViewController {
 
 public extension ConversationViewController {
     func showGifPicker() {
-        let gifModal = GifPickerNavigationViewController(initialMessageBody: inputToolbar?.messageBody)
+        let gifModal = GifPickerNavigationViewController(initialMessageBody: inputToolbar?.messageBodyForSending)
         gifModal.approvalDelegate = self
         gifModal.approvalDataSource = self
         dismissKeyBoard()
@@ -863,7 +863,7 @@ extension ConversationViewController: SendMediaNavDelegate {
 extension ConversationViewController: SendMediaNavDataSource {
 
     func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody? {
-        inputToolbar?.messageBody
+        inputToolbar?.messageBodyForSending
     }
 
     var sendMediaNavTextInputContextIdentifier: String? { textInputContextIdentifier }
@@ -872,7 +872,11 @@ extension ConversationViewController: SendMediaNavDataSource {
         [ Self.contactsManager.displayNameWithSneakyTransaction(thread: thread) ]
     }
 
-    var sendMediaNavMentionableAddresses: [SignalServiceAddress] {
-        supportsMentions ? thread.recipientAddressesWithSneakyTransaction : []
+    func sendMediaNavMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
+        supportsMentions ? thread.recipientAddresses(with: SDSDB.shimOnlyBridge(tx)) : []
+    }
+
+    func sendMediaNavMentionCacheInvalidationKey() -> String {
+        return thread.uniqueId
     }
 }

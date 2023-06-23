@@ -95,7 +95,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
 
     private func updateSendButton() {
         guard
-            !textView.text.isEmpty,
+            !textView.isEmpty,
             let recipientsDescription = delegate?.textApprovalRecipientsDescription(self)
         else {
             footerView.isHidden = true
@@ -123,7 +123,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
     }()
 
     private func updateLinkPreviewText() {
-        linkPreviewFetcher.update(textView.text)
+        linkPreviewFetcher.update(textView.messageBodyForSending.text)
     }
 
     private func updateLinkPreviewView() {
@@ -159,7 +159,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         textView.backgroundColor = Theme.backgroundColor
         textView.textColor = Theme.primaryTextColor
         textView.font = UIFont.dynamicTypeBody
-        textView.messageBody = self.initialMessageBody
+        textView.setMessageBody(self.initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
         textView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         textView.textContainerInset = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)
     }
@@ -190,16 +190,23 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         return nil
     }
 
-    public func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView) -> [SignalServiceAddress] {
+    public func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [SignalServiceAddress] {
         return []
     }
 
-    public func textViewMentionDisplayConfiguration(_ textView: BodyRangesTextView) -> MentionDisplayConfiguration {
-        return .composing
+    public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
+        return .init(mention: .composing, style: .composing, searchRanges: nil)
     }
 
     public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
         return .default
+    }
+
+    // We want to invalidate the cache but reuse it within this same controller.
+    private let mentionCacheInvalidationKey = UUID().uuidString
+
+    public func textViewMentionCacheInvalidationKey(_ textView: BodyRangesTextView) -> String {
+        return mentionCacheInvalidationKey
     }
 }
 
@@ -208,7 +215,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
 extension TextApprovalViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
         let linkPreviewDraft = linkPreviewFetcher.linkPreviewDraftIfLoaded
-        delegate?.textApproval(self, didApproveMessage: self.textView.messageBody, linkPreviewDraft: linkPreviewDraft)
+        delegate?.textApproval(self, didApproveMessage: self.textView.messageBodyForSending, linkPreviewDraft: linkPreviewDraft)
     }
 
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {

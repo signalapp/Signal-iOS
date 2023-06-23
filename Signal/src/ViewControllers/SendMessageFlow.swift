@@ -292,7 +292,7 @@ extension SendMessageFlow {
             let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
             approvalViewController.approvalDelegate = self
             approvalViewController.approvalDataSource = self
-            approvalViewController.messageBody = messageBody
+            approvalViewController.setMessageBody(messageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
 
             pushViewController(approvalViewController, animated: true)
         default:
@@ -595,8 +595,12 @@ extension SendMessageFlow: AttachmentApprovalViewControllerDataSource {
         []
     }
 
-    var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
+    func attachmentApprovalMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
         mentionCandidates
+    }
+
+    func attachmentApprovalMentionCacheInvalidationKey() -> String {
+        return "\(mentionCandidates.hashValue)"
     }
 }
 

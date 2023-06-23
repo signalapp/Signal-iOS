@@ -108,7 +108,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
 
     func didSendMessage() {
         replyLoader?.reload()
-        inputToolbar.messageBody = nil
+        inputToolbar.setMessageBody(nil, txProvider: DependenciesBridge.shared.db.readTxProvider)
     }
 }
 

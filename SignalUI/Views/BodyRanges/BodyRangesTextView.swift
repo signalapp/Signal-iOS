@@ -11,9 +11,12 @@ public protocol BodyRangesTextViewDelegate: UITextViewDelegate {
 
     func textViewMentionPickerParentView(_ textView: BodyRangesTextView) -> UIView?
     func textViewMentionPickerReferenceView(_ textView: BodyRangesTextView) -> UIView?
-    func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView) -> [SignalServiceAddress]
+    // It doesn't matter what this key is; but when it changes cached mention names will be discarded.
+    // Typically, we want this to change in new thread contexts and such.
+    func textViewMentionCacheInvalidationKey(_ textView: BodyRangesTextView) -> String
+    func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [SignalServiceAddress]
 
-    func textViewMentionDisplayConfiguration(_ textView: BodyRangesTextView) -> MentionDisplayConfiguration
+    func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration
     func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle
 }
 
@@ -31,10 +34,25 @@ open class BodyRangesTextView: OWSTextView {
         }
     }
 
+    private let customLayoutManager: NSLayoutManager
+
     public required init() {
-        super.init(frame: .zero, textContainer: nil)
+        let editableBody = EditableMessageBodyTextStorage(db: DependenciesBridge.shared.db)
+        self.editableBody = editableBody
+        let container = NSTextContainer()
+        let layoutManager = NSLayoutManager()
+        self.customLayoutManager = layoutManager
+        layoutManager.textStorage = editableBody
+        layoutManager.addTextContainer(container)
+        container.replaceLayoutManager(layoutManager)
+        super.init(frame: .zero, textContainer: container)
         updateTextContainerInset()
         delegate = self
+        editableBody.editableBodyDelegate = self
+    }
+
+    public override var layoutManager: NSLayoutManager {
+        return customLayoutManager
     }
 
     deinit {
@@ -59,9 +77,6 @@ open class BodyRangesTextView: OWSTextView {
             ),
             withMentionAddress: address
         )
-
-        // Add a space after the typed mention
-        replaceCharacters(in: selectedRange, with: " ")
     }
 
     public func replaceCharacters(
@@ -79,121 +94,32 @@ open class BodyRangesTextView: OWSTextView {
             text: "@",
             ranges: MessageBodyRanges(mentions: [NSRange(location: 0, length: 1): mentionUuid], styles: [])
         )
-        let hydrated = Self.databaseStorage.read { tx in
-            return body.hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: tx.asV2Read))
-        }
-
-        let replacementString: NSAttributedString
-        if mentionDelegate.textViewMentionPickerPossibleAddresses(self).contains(mentionAddress) {
-            let mentionConfig =  mentionDelegate.textViewMentionDisplayConfiguration(self)
-            replacementString = hydrated.asAttributedStringForDisplay(
-                config: HydratedMessageBody.DisplayConfiguration(
-                    mention: mentionConfig,
-                    style: .todo(),
-                    searchRanges: nil
-                ),
-                baseAttributes: [
-                    .font: mentionConfig.font,
-                    .foregroundColor: mentionConfig.foregroundColor.forCurrentTheme
-                ],
-                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+        let (hydrated, possibleAddresses) = DependenciesBridge.shared.db.read { tx in
+            return (
+                body.hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: tx)),
+                mentionDelegate.textViewMentionPickerPossibleAddresses(self, tx: tx)
             )
+        }
+        let hydratedPlaintext = hydrated.asPlaintext()
+
+        if possibleAddresses.contains(mentionAddress) {
+            editableBody.beginEditing()
+            editableBody.replaceCharacters(in: range, withMentionUUID: mentionUuid, txProvider: DependenciesBridge.shared.db.readTxProvider)
+            editableBody.endEditing()
         } else {
             // If we shouldn't resolve the mention, insert the plaintext representation.
-            replacementString = NSAttributedString(string: hydrated.asPlaintext(), attributes: defaultAttributes)
-        }
-
-        replaceCharacters(in: range, with: replacementString)
-    }
-
-    public func replaceCharacters(in range: NSRange, with messageBody: MessageBody) {
-        guard let mentionDelegate = mentionDelegate else {
-            return owsFailDebug("Can't replace characters without delegate")
-        }
-
-        // This might perform a sneaky transaction, so needs to be outside the
-        // read block below.
-        var possibleMentionUUIDs = Set<UUID>()
-        mentionDelegate.textViewMentionPickerPossibleAddresses(self).forEach {
-            if let uuid = $0.uuid {
-                possibleMentionUUIDs.insert(uuid)
-            }
-        }
-        let mentionConfig = mentionDelegate.textViewMentionDisplayConfiguration(self)
-
-        let attributedBody = SDSDatabaseStorage.shared.read { transaction in
-            let contactHydrator = ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read)
-            return messageBody
-                .hydrating(mentionHydrator: { uuid in
-                    if possibleMentionUUIDs.contains(uuid) {
-                        return contactHydrator(uuid)
-                    } else {
-                        return .preserveMention
-                    }
-                })
-                .asAttributedStringForDisplay(
-                    config: HydratedMessageBody.DisplayConfiguration(
-                        mention: mentionConfig,
-                        style: .todo(),
-                        searchRanges: nil
-                    ),
-                    baseAttributes: [
-                        .font: mentionConfig.font,
-                        .foregroundColor: mentionConfig.foregroundColor.forCurrentTheme
-                    ],
-                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
-                )
-        }
-
-        replaceCharacters(in: range, with: attributedBody)
-    }
-
-    public func replaceCharacters(in range: NSRange, with string: String) {
-        replaceCharacters(in: range, with: NSAttributedString(string: string, attributes: defaultAttributes))
-    }
-
-    public func replaceCharacters(in range: NSRange, with attributedString: NSAttributedString) {
-        let previouslySelectedRange = selectedRange
-
-        textStorage.replaceCharacters(in: range, with: attributedString)
-
-        updateSelectedRangeAfterReplacement(
-            previouslySelectedRange: previouslySelectedRange,
-            replacedRange: range,
-            replacementLength: attributedString.length
-        )
-
-        textViewDidChange(self)
-    }
-
-    private func updateSelectedRangeAfterReplacement(previouslySelectedRange: NSRange, replacedRange: NSRange, replacementLength: Int) {
-        let replacedRangeEnd = replacedRange.location + replacedRange.length
-
-        let replacedRangeIntersectsSelectedRange = previouslySelectedRange.location <= replacedRange.location
-            && previouslySelectedRange.location < replacedRangeEnd
-
-        let replacedRangeIsEntirelyBeforeSelectedRange = replacedRangeEnd <= previouslySelectedRange.location
-
-        // If the replaced range intersected the selected range, move the cursor after the replacement text
-        if replacedRangeIntersectsSelectedRange {
-            selectedRange = NSRange(location: replacedRange.location + replacementLength, length: 0)
-
-        // If the replaced range was entirely before the selected range, shift the selected range to
-        // account for our newly inserted text.
-        } else if replacedRangeIsEntirelyBeforeSelectedRange {
-            selectedRange = NSRange(
-                location: previouslySelectedRange.location + (replacementLength - replacedRange.length),
-                length: previouslySelectedRange.length
-            )
+            editableBody.beginEditing()
+            editableBody.replaceCharacters(in: range, with: hydratedPlaintext, selectedRange: selectedRange)
+            editableBody.endEditing()
         }
     }
 
     public var currentlyTypingMentionText: String? {
         guard case .typingMention(let range) = state else { return nil }
-        guard textStorage.length >= range.location + range.length else { return nil }
+        guard (editableBody.hydratedPlaintext as NSString).length >= range.location + range.length else { return nil }
         guard range.length > 0 else { return "" }
 
-        return attributedText.attributedSubstring(from: range).string
+        return (editableBody.hydratedPlaintext as NSString).substring(with: range)
     }
 
     public var defaultAttributes: [NSAttributedString.Key: Any] {
@@ -203,22 +129,44 @@ open class BodyRangesTextView: OWSTextView {
         return defaultAttributes
     }
 
-    public var messageBody: MessageBody? {
-        get { RecoveredHydratedMessageBody.recover(from: attributedText.ows_stripped()).toMessageBody() }
-        set {
-            guard let newValue = newValue else {
-                replaceCharacters(
-                    in: textStorage.entireRange,
-                    with: ""
-                )
-                typingAttributes = defaultAttributes
-                return
-            }
-            replaceCharacters(
-                in: textStorage.entireRange,
-                with: newValue
-            )
+    public var isEmpty: Bool {
+        return editableBody.isEmpty
+    }
+
+    public var isWhitespaceOrEmpty: Bool {
+        return editableBody.hydratedPlaintext.filterForDisplay.isEmpty
+    }
+
+    @available(*, unavailable)
+    public override var text: String! {
+        get {
+            return textStorage.string
         }
+        set {
+            // Ignore setters; this is illegal
+        }
+    }
+
+    @available(*, unavailable)
+    public override var attributedText: NSAttributedString! {
+        get {
+            return textStorage.attributedString()
+        }
+        set {
+            // Ignore setters; this is illegal
+        }
+    }
+
+    private let editableBody: EditableMessageBodyTextStorage
+
+    public var messageBodyForSending: MessageBody {
+        return editableBody.messageBody.filterStringForDisplay()
+    }
+
+    open func setMessageBody(_ messageBody: MessageBody?, txProvider: EditableMessageBodyTextStorage.ReadTxProvider) {
+        editableBody.beginEditing()
+        editableBody.setMessageBody(messageBody, txProvider: txProvider)
+        editableBody.endEditing()
     }
 
     public func stopTypingMention() {
@@ -264,7 +212,9 @@ open class BodyRangesTextView: OWSTextView {
 
         pickerView?.removeFromSuperview()
 
-        let mentionableAddresses = mentionDelegate.textViewMentionPickerPossibleAddresses(self)
+        let mentionableAddresses = databaseStorage.read { tx in
+            return mentionDelegate.textViewMentionPickerPossibleAddresses(self, tx: tx.asV2Read)
+        }
 
         guard !mentionableAddresses.isEmpty else { return }
 
@@ -349,8 +299,7 @@ open class BodyRangesTextView: OWSTextView {
     }
 
     private func shouldUpdateMentionText(in range: NSRange, changedText text: String) -> Bool {
-        var deletedMentionRanges = Set<NSRange>()
-        let mentionRanges = RecoveredHydratedMessageBody.recover(from: textStorage).mentions().map(\.0)
+        let mentionRanges = editableBody.mentionRanges
 
         if range.length > 0 {
             // Locate any mentions in the edited range.
@@ -360,9 +309,6 @@ open class BodyRangesTextView: OWSTextView {
                 // we are looking for no need to look more.
                 if mentionRange.location > range.upperBound {
                     break
-                }
-                if let intersection = range.intersection(mentionRange), intersection.length > 0 {
-                    deletedMentionRanges.insert(mentionRange)
                 }
             }
         } else if
@@ -376,38 +322,6 @@ open class BodyRangesTextView: OWSTextView {
             typingAttributes = defaultAttributes
         }
 
-        if range.length == 0, range.location > 0, range.location < textStorage.length - 1 {
-            // If we're not at the start of the string, and we're not replacing
-            // any existing characters, check if we're typing in the middle of
-            // a mention. If so, we need to delete it.
-            if
-                let rightMention = mentionRanges.first(where: { mentionRange in
-                    return (range.intersection(mentionRange)?.length ?? 0) > 0
-                }) {
-                deletedMentionRanges.insert(rightMention)
-            }
-        }
-
-        for deletedMentionRange in deletedMentionRanges {
-
-            // Convert the mention to plain-text, in case we only deleted part of it
-            textStorage.setAttributes(defaultAttributes, range: deletedMentionRange)
-        }
-
-        // If the deleted range was the last character of a mention, we'll
-        // handle the delete internally. We remove the mention and replace it
-        // with an @ so the user can start typing a new mention to replace the
-        // deleted mention immediately.
-        if deletedMentionRanges.count == 1,
-            let deletedMentionRange = deletedMentionRanges.first,
-            range.length == 1,
-            text.isEmpty,
-            range.location == deletedMentionRange.location + deletedMentionRange.length - 1 {
-            replaceCharacters(in: deletedMentionRange, with: MentionAttribute.mentionPrefix)
-            selectedRange = NSRange(location: deletedMentionRange.location + MentionAttribute.mentionPrefix.count, length: 0)
-            return false
-        }
-
         return true
     }
 
@@ -416,7 +330,13 @@ open class BodyRangesTextView: OWSTextView {
         // We'll check again when the delegate is assigned.
         guard mentionDelegate != nil else { return }
 
-        guard selectedRange.length == 0, selectedRange.location > 0, textStorage.length > 0 else {
+        let bodyLength = (editableBody.hydratedPlaintext as NSString).length
+        guard
+            selectedRange.length == 0,
+            selectedRange.location > 0,
+            bodyLength > 0,
+            selectedRange.upperBound <= bodyLength
+        else {
             state = .notTypingMention
             return
         }
@@ -424,21 +344,17 @@ open class BodyRangesTextView: OWSTextView {
         var location = selectedRange.location
 
         while location > 0 {
-            let possibleAttributedPrefix = attributedText.attributedSubstring(
-                from: NSRange(location: location - MentionAttribute.mentionPrefix.count, length: MentionAttribute.mentionPrefix.count)
+            let possiblePrefix = editableBody.hydratedPlaintext.substring(
+                withRange: NSRange(location: location - MentionAttribute.mentionPrefix.count, length: MentionAttribute.mentionPrefix.count)
             )
 
-            let mentionRanges = RecoveredHydratedMessageBody.recover(
-                from: possibleAttributedPrefix
-            ).mentions().map(\.0)
+            let mentionRanges = editableBody.mentionRanges
 
             // If the previous character is part of a mention, we're not typing a mention
-            if mentionRanges.first(where: { $0.contains(0) }) != nil {
+            if mentionRanges.first(where: { $0.contains(location) }) != nil {
                 state = .notTypingMention
                 return
             }
-
-            let possiblePrefix = possibleAttributedPrefix.string
 
             // If we find whitespace before the selected range, we're not typing a mention.
             // Mention typing breaks on whitespace.
@@ -452,9 +368,9 @@ open class BodyRangesTextView: OWSTextView {
                 // If there's more text before the mention prefix, check if it's whitespace. Mentions
                 // only start at the beginning of the string OR after a whitespace character.
                 if location - MentionAttribute.mentionPrefix.count > 0 {
-                    let characterPrecedingPrefix = attributedText.attributedSubstring(
-                        from: NSRange(location: location - MentionAttribute.mentionPrefix.count - 1, length: MentionAttribute.mentionPrefix.count)
-                    ).string
+                    let characterPrecedingPrefix = editableBody.hydratedPlaintext.substring(
+                        withRange: NSRange(location: location - MentionAttribute.mentionPrefix.count - 1, length: MentionAttribute.mentionPrefix.count)
+                    )
 
                     // If it's not whitespace, keep looking back. Mention text can contain an "@" character,
                     // for example when trying to match a profile name that contains "@"
@@ -515,6 +431,10 @@ open class BodyRangesTextView: OWSTextView {
         super.buildMenu(with: builder)
     }
 
+    public func disallowsAnyPasteAction() -> Bool {
+        return isShowingFormatMenu
+    }
+
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         // We only mess with actions when there's a selection.
         guard FeatureFlags.textFormattingSend, selectedRange.length > 0 else {
@@ -530,6 +450,12 @@ open class BodyRangesTextView: OWSTextView {
             })
             .contains(action) {
             return isShowingFormatMenu
+        }
+        if action == #selector(didSelectClearStyles) {
+            guard isShowingFormatMenu, selectedRange.length > 0 else {
+                return false
+            }
+            return editableBody.hasFormatting(in: selectedRange)
         }
 
         switch action {
@@ -593,7 +519,13 @@ open class BodyRangesTextView: OWSTextView {
                 ]
                 UIMenuController.shared.menuItems = orderedStyles.map { style in
                     return UIMenuItem(title: style.displayText, action: self.uiMenuItemSelector(for: style))
-                }
+                } + [UIMenuItem(
+                    title: OWSLocalizedString(
+                        "TEXT_MENU_CLEAR_FORMATTING",
+                        comment: "Option in selected text edit menu to clear all text formatting in the selected text range"
+                    ),
+                    action: #selector(didSelectClearStyles)
+                )]
             } else {
                 UIMenuController.shared.menuItems = [
                     // to get format to show up before system menu items, put our format
@@ -690,7 +622,24 @@ open class BodyRangesTextView: OWSTextView {
         guard selectedRange.length > 0 else {
             return
         }
-        // TODO[TextFormattingSend]
+        editableBody.beginEditing()
+        editableBody.toggleStyle(style, in: selectedRange)
+        editableBody.endEditing()
+    }
+
+    @objc
+    private func didSelectClearStyles() {
+        guard FeatureFlags.textFormattingSend else {
+            return
+        }
+        Logger.info("Clearing styles")
+        isShowingFormatMenu = false
+        guard selectedRange.length > 0 else {
+            return
+        }
+        editableBody.beginEditing()
+        editableBody.clearFormatting(in: selectedRange)
+        editableBody.endEditing()
     }
 
     // MARK: - Text Container Insets
@@ -720,6 +669,47 @@ open class BodyRangesTextView: OWSTextView {
         newTextContainerInset.top += insetFontAdjustment * 0.5
         newTextContainerInset.bottom = newTextContainerInset.top - 1
         textContainerInset = newTextContainerInset
+    }
+}
+
+// MARK: - EditableMessageBodyDelegate
+
+extension BodyRangesTextView: EditableMessageBodyDelegate {
+
+    public func editableMessageBodyDidRequestNewSelectedRange(_ newSelectedRange: NSRange) {
+        self.selectedRange = newSelectedRange
+    }
+
+    public func editableMessageBodyHydrator(tx: DBReadTransaction) -> MentionHydrator {
+        var possibleMentionUUIDs = Set<UUID>()
+        mentionDelegate?.textViewMentionPickerPossibleAddresses(self, tx: tx).forEach {
+            if let uuid = $0.uuid {
+                possibleMentionUUIDs.insert(uuid)
+            }
+        }
+        let hydrator = ContactsMentionHydrator.mentionHydrator(transaction: tx)
+        return { uuid in
+            guard possibleMentionUUIDs.contains(uuid) else {
+                return .preserveMention
+            }
+            return hydrator(uuid)
+        }
+    }
+
+    public func editableMessageBodyDisplayConfig() -> HydratedMessageBody.DisplayConfiguration {
+        return mentionDelegate?.textViewDisplayConfiguration(self) ?? .init(mention: .composing, style: .composing, searchRanges: nil)
+    }
+
+    public func isEditableMessageBodyDarkThemeEnabled() -> Bool {
+        return Theme.isDarkThemeEnabled
+    }
+
+    public func editableMessageSelectedRange() -> NSRange {
+        return selectedRange
+    }
+
+    public func mentionCacheInvalidationKey() -> String {
+        return mentionDelegate?.textViewMentionCacheInvalidationKey(self) ?? UUID().uuidString
     }
 }
 
@@ -767,7 +757,9 @@ extension BodyRangesTextView {
 extension BodyRangesTextView {
     open override func cut(_ sender: Any?) {
         copy(sender)
-        replaceCharacters(in: selectedRange, with: "")
+        editableBody.beginEditing()
+        editableBody.replaceCharacters(in: selectedRange, with: "", selectedRange: selectedRange)
+        editableBody.endEditing()
     }
 
     public class func copyAttributedStringToPasteboard(_ attributedString: NSAttributedString) {
@@ -779,8 +771,7 @@ extension BodyRangesTextView {
             from: attributedString
         ).toMessageBody()
 
-        // TODO[TextFormatting]: apply text styles to copy pasted things?
-        if messageBody.hasMentions, let encodedMessageBody = try? NSKeyedArchiver.archivedData(withRootObject: messageBody, requiringSecureCoding: true) {
+        if messageBody.hasRanges, let encodedMessageBody = try? NSKeyedArchiver.archivedData(withRootObject: messageBody, requiringSecureCoding: true) {
             UIPasteboard.general.setItems([[Self.pasteboardType: encodedMessageBody]], options: [.localOnly: true])
         } else {
             UIPasteboard.general.setItems([], options: [:])
@@ -789,18 +780,29 @@ extension BodyRangesTextView {
         UIPasteboard.general.addItems([["public.utf8-plain-text": plaintextData]])
     }
 
-    public static var pasteboardType: String { SignalAttachment.mentionPasteboardType }
+    public static var pasteboardType: String { SignalAttachment.bodyRangesPasteboardType }
 
     open override func copy(_ sender: Any?) {
-        Self.copyAttributedStringToPasteboard(attributedText.attributedSubstring(from: selectedRange))
+        Self.copyAttributedStringToPasteboard(editableBody.attributedString.attributedSubstring(from: selectedRange))
     }
 
     open override func paste(_ sender: Any?) {
         if let encodedMessageBody = UIPasteboard.general.data(forPasteboardType: Self.pasteboardType),
-            let messageBody = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MessageBody.self, from: encodedMessageBody) {
-            replaceCharacters(in: selectedRange, with: messageBody)
+            var messageBody = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MessageBody.self, from: encodedMessageBody) {
+            editableBody.beginEditing()
+            DependenciesBridge.shared.db.read { tx in
+                if let possibleAddresses = mentionDelegate?.textViewMentionPickerPossibleAddresses(self, tx: tx) {
+                    messageBody = messageBody.forPasting(intoContextWithPossibleAddresses: possibleAddresses, transaction: tx)
+                }
+                editableBody.replaceCharacters(in: selectedRange, withPastedMessageBody: messageBody, txProvider: { $0(tx) })
+            }
+            editableBody.endEditing()
         } else if let string = UIPasteboard.general.strings?.first {
-            replaceCharacters(in: selectedRange, with: string)
+            editableBody.beginEditing()
+            editableBody.replaceCharacters(in: selectedRange, with: string, selectedRange: selectedRange)
+            editableBody.endEditing()
+            // Put the selection at the end of the new range.
+            self.selectedRange = NSRange(location: selectedRange.location + (string as NSString).length, length: 0)
         }
 
         if !textStorage.isEmpty {
@@ -818,6 +820,7 @@ extension BodyRangesTextView {
                 }
             }
         }
+        self.textViewDidChange(self)
     }
 }
 
@@ -839,7 +842,7 @@ extension BodyRangesTextView: UITextViewDelegate {
     open func textViewDidChange(_ textView: UITextView) {
         isShowingFormatMenu = false
         mentionDelegate?.textViewDidChange?(textView)
-        if textStorage.length == 0 { updateMentionState() }
+        if editableBody.hydratedPlaintext.isEmpty { updateMentionState() }
     }
 
     open func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {

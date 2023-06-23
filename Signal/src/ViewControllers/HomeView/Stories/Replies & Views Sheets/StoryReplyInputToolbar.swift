@@ -15,7 +15,8 @@ protocol StoryReplyInputToolbarDelegate: AnyObject {
     func storyReplyInputToolbarDidTapReact(_ storyReplyInputToolbar: StoryReplyInputToolbar)
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar)
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar)
-    func storyReplyInputToolbarMentionPickerPossibleAddresses(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> [SignalServiceAddress]
+    func storyReplyInputToolbarMentionPickerPossibleAddresses(_ storyReplyInputToolbar: StoryReplyInputToolbar, tx: DBReadTransaction) -> [SignalServiceAddress]
+    func storyReplyInputToolbarMentionCacheInvalidationKey() -> String
     func storyReplyInputToolbarMentionPickerReferenceView(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> UIView?
     func storyReplyInputToolbarMentionPickerParentView(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> UIView?
 }
@@ -27,12 +28,13 @@ class StoryReplyInputToolbar: UIView {
     weak var delegate: StoryReplyInputToolbarDelegate?
     let quotedReplyModel: QuotedReplyModel?
 
-    var messageBody: MessageBody? {
-        get { textView.messageBody }
-        set {
-            textView.messageBody = newValue
-            updateContent(animated: false)
-        }
+    var messageBodyForSending: MessageBody? {
+        textView.messageBodyForSending
+    }
+
+    func setMessageBody(_ messageBody: MessageBody?, txProvider: EditableMessageBodyTextStorage.ReadTxProvider) {
+        textView.setMessageBody(messageBody, txProvider: txProvider)
+        updateContent(animated: false)
     }
 
     override var bounds: CGRect {
@@ -169,10 +171,11 @@ class StoryReplyInputToolbar: UIView {
     private lazy var placeholderTextView: UITextView = {
         let placeholderTextView = buildTextView()
 
-        placeholderTextView.text = OWSLocalizedString(
+        let placeholderText = OWSLocalizedString(
             "STORY_REPLY_TEXT_FIELD_PLACEHOLDER",
             comment: "placeholder text for replying to a story"
         )
+        placeholderTextView.setMessageBody(.init(text: placeholderText, ranges: .empty), txProvider: databaseStorage.readTxProvider)
         placeholderTextView.isEditable = false
         placeholderTextView.textContainer.maximumNumberOfLines = 1
         placeholderTextView.textContainer.lineBreakMode = .byTruncatingTail
@@ -278,10 +281,10 @@ class StoryReplyInputToolbar: UIView {
 
         updateHeight(textView: textView)
 
-        let hasAnyText = !textView.text.isEmptyOrNil
+        let hasAnyText = !textView.isEmpty
         placeholderTextView.isHidden = hasAnyText
 
-        let hasNonWhitespaceText = !textView.text.ows_stripped().isEmpty
+        let hasNonWhitespaceText = !textView.isWhitespaceOrEmpty
         setSendButtonHidden(!hasNonWhitespaceText, animated: animated)
     }
 
@@ -353,12 +356,16 @@ extension StoryReplyInputToolbar: BodyRangesTextViewDelegate {
         delegate?.storyReplyInputToolbarMentionPickerReferenceView(self)
     }
 
-    func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView) -> [SignalServiceAddress] {
-        delegate?.storyReplyInputToolbarMentionPickerPossibleAddresses(self) ?? []
+    func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [SignalServiceAddress] {
+        delegate?.storyReplyInputToolbarMentionPickerPossibleAddresses(self, tx: tx) ?? []
     }
 
-    public func textViewMentionDisplayConfiguration(_ textView: BodyRangesTextView) -> MentionDisplayConfiguration {
-        return .groupReply
+    func textViewMentionCacheInvalidationKey(_ textView: BodyRangesTextView) -> String {
+        return delegate?.storyReplyInputToolbarMentionCacheInvalidationKey() ?? UUID().uuidString
+    }
+
+    public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
+        return .init(mention: .groupReply, style: .composingGroupReply, searchRanges: nil)
     }
 
     public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {

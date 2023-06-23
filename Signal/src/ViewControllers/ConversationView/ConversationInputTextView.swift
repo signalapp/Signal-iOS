@@ -30,8 +30,8 @@ class ConversationInputTextView: BodyRangesTextView {
     weak var inputTextViewDelegate: ConversationInputTextViewDelegate?
     weak var textViewToolbarDelegate: ConversationTextViewToolbarDelegate?
 
-    var trimmedText: String { text.ows_stripped() }
-    var untrimmedText: String { text }
+    var trimmedText: String { textStorage.string.ows_stripped() }
+    var untrimmedText: String { textStorage.string }
     private var textIsChanging = false
 
     required init() {
@@ -61,7 +61,7 @@ class ConversationInputTextView: BodyRangesTextView {
         textAlignment = .natural
         textContainer.lineFragmentPadding = 0
         contentInset = .zero
-        text = nil
+        setMessageBody(nil, txProvider: databaseStorage.readTxProvider)
 
         ensurePlaceholderConstraints()
         updatePlaceholderVisibility()
@@ -113,7 +113,7 @@ class ConversationInputTextView: BodyRangesTextView {
     }
 
     private func updatePlaceholderVisibility() {
-        placeholderView.isHidden = !text.isEmpty
+        placeholderView.isHidden = !textStorage.string.isEmpty
     }
 
     override var font: UIFont? {
@@ -128,11 +128,10 @@ class ConversationInputTextView: BodyRangesTextView {
         didSet { ensurePlaceholderConstraints() }
     }
 
-    override var text: String! {
-        didSet {
-            updatePlaceholderVisibility()
-            updateTextContainerInset()
-        }
+    override func setMessageBody(_ messageBody: MessageBody?, txProvider: ((DBReadTransaction) -> Void) -> Void) {
+        super.setMessageBody(messageBody, txProvider: txProvider)
+        updatePlaceholderVisibility()
+        updateTextContainerInset()
     }
 
     override func becomeFirstResponder() -> Bool {
@@ -149,7 +148,7 @@ class ConversationInputTextView: BodyRangesTextView {
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(paste(_:)) {
-            if pasteboardHasPossibleAttachment {
+            if pasteboardHasPossibleAttachment && !super.disallowsAnyPasteAction() {
                 return true
             }
         }

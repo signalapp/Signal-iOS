@@ -848,10 +848,10 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     // MARK: Message Body
 
-    var messageBody: MessageBody? { inputTextView.messageBody }
+    var messageBodyForSending: MessageBody? { inputTextView.messageBodyForSending }
 
     func setMessageBody(_ messageBody: MessageBody?, animated: Bool, doLayout: Bool = true) {
-        inputTextView.messageBody = messageBody
+        inputTextView.setMessageBody(messageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
 
         // It's important that we set the textViewHeight before
         // doing any animation in `ensureButtonVisibility(withAnimation:doLayout)`
@@ -1025,7 +1025,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private func updateInputLinkPreview() {
         AssertIsOnMainThread()
 
-        linkPreviewFetcher.update(messageBody?.text ?? "", enableIfEmpty: true)
+        linkPreviewFetcher.update(messageBodyForSending?.text ?? "", enableIfEmpty: true)
     }
 
     private func updateLinkPreviewView() {

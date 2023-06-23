@@ -33,7 +33,7 @@ extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
 
         let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
         let attachmentApproval = AttachmentApprovalViewController(options: [], attachmentApprovalItems: [attachmentApprovalItem])
-        attachmentApproval.messageBody = initialMessageBody
+        attachmentApproval.setMessageBody(initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
         attachmentApproval.approvalDelegate = self
         attachmentApproval.approvalDataSource = self
         pushViewController(attachmentApproval, animated: true) {
@@ -81,8 +81,12 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDat
         approvalDataSource?.attachmentApprovalRecipientNames ?? []
     }
 
-    public var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
-        return approvalDataSource?.attachmentApprovalMentionableAddresses ?? []
+    public func attachmentApprovalMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
+        return approvalDataSource?.attachmentApprovalMentionableAddresses(tx: tx) ?? []
+    }
+
+    public func attachmentApprovalMentionCacheInvalidationKey() -> String {
+        return approvalDataSource?.attachmentApprovalMentionCacheInvalidationKey() ?? UUID().uuidString
     }
 }
 

@@ -37,7 +37,9 @@ public protocol AttachmentApprovalViewControllerDataSource: AnyObject {
 
     var attachmentApprovalRecipientNames: [String] { get }
 
-    var attachmentApprovalMentionableAddresses: [SignalServiceAddress] { get }
+    func attachmentApprovalMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress]
+
+    func attachmentApprovalMentionCacheInvalidationKey() -> String
 }
 
 // MARK: -
@@ -149,15 +151,16 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
     }
 
-    public class func wrappedInNavController(attachments: [SignalAttachment],
-                                             initialMessageBody: MessageBody?,
-                                             approvalDelegate: AttachmentApprovalViewControllerDelegate,
-                                             approvalDataSource: AttachmentApprovalViewControllerDataSource)
-        -> OWSNavigationController {
+    public class func wrappedInNavController(
+        attachments: [SignalAttachment],
+        initialMessageBody: MessageBody?,
+        approvalDelegate: AttachmentApprovalViewControllerDelegate,
+        approvalDataSource: AttachmentApprovalViewControllerDataSource
+    ) -> OWSNavigationController {
 
         let attachmentApprovalItems = attachments.map { AttachmentApprovalItem(attachment: $0, canSave: false) }
         let vc = AttachmentApprovalViewController(options: [.hasCancel], attachmentApprovalItems: attachmentApprovalItems)
-        vc.messageBody = initialMessageBody
+        vc.setMessageBody(initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
         vc.approvalDelegate = approvalDelegate
         vc.approvalDataSource = approvalDataSource
         let navController = OWSNavigationController(rootViewController: vc)
@@ -393,13 +396,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         )
     }
 
-    public var messageBody: MessageBody? {
-        get {
-            return attachmentTextToolbar.messageBody
-        }
-        set {
-            attachmentTextToolbar.messageBody = newValue
-        }
+    public var messageBodyForSending: MessageBody? {
+        return attachmentTextToolbar.messageBodyForSending
+    }
+
+    public func setMessageBody(_ messageBody: MessageBody?, txProvider: EditableMessageBodyTextStorage.ReadTxProvider) {
+        attachmentTextToolbar.setMessageBody(messageBody, txProvider: txProvider)
     }
 
     // MARK: - Control Visibility
@@ -867,7 +869,7 @@ extension AttachmentApprovalViewController {
                             assert(attachments.count <= 1)
                         }
 
-                        self.approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageBody: self.attachmentTextToolbar.messageBody)
+                        self.approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageBody: self.attachmentTextToolbar.messageBodyForSending)
                     }
                 }.catch { error in
                     AssertIsOnMainThread()
@@ -943,7 +945,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
     }
 
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        approvalDelegate?.attachmentApproval(self, didChangeMessageBody: attachmentTextToolbar.messageBody)
+        approvalDelegate?.attachmentApproval(self, didChangeMessageBody: attachmentTextToolbar.messageBodyForSending)
     }
 
     func attachmentTextToolBarDidChangeHeight(_ attachmentTextToolbar: AttachmentTextToolbar) { }
@@ -1264,16 +1266,24 @@ extension AttachmentApprovalViewController: BodyRangesTextViewDelegate {
         return bottomToolView.attachmentTextToolbar
     }
 
-    public func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView) -> [SignalServiceAddress] {
-        return approvalDataSource?.attachmentApprovalMentionableAddresses ?? []
+    public func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [SignalServiceAddress] {
+        return approvalDataSource?.attachmentApprovalMentionableAddresses(tx: tx) ?? []
     }
 
-    public func textViewMentionDisplayConfiguration(_ textView: BodyRangesTextView) -> MentionDisplayConfiguration {
-        return .composingAttachment
+    public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
+        return .init(
+            mention: .composingAttachment,
+            style: .composingAttachment,
+            searchRanges: nil
+        )
     }
 
     public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
         return .composingAttachment
+    }
+
+    public func textViewMentionCacheInvalidationKey(_ textView: BodyRangesTextView) -> String {
+        return approvalDataSource?.attachmentApprovalMentionCacheInvalidationKey() ?? UUID().uuidString
     }
 }
 

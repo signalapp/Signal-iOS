@@ -82,17 +82,6 @@ extension MessageBodyRanges {
                 return self.contains(style: $0) ? $0 : nil
             }
         }
-
-        /// Note it is one to many; we collapse styles into this option set
-        /// in swift but in proto-land we fan out to one style per instance.
-        public func asProtoStyles() -> [SSKProtoBodyRangeStyle] {
-            return SingleStyle.allCases.compactMap {
-                guard self.contains(style: $0) else {
-                    return nil
-                }
-                return $0.asProtoStyle
-            }
-        }
     }
 
     /// Result of taking the styles as they appear in the original protos, and merging overlapping
@@ -199,6 +188,18 @@ extension MessageBodyRanges {
         mutating func remove(_ style: SingleStyle) {
             self.style.remove(style: style)
             originals[style] = nil
+        }
+
+        public static func flatten(_ collapsedStyles: [NSRangedValue<CollapsedStyle>]) -> [NSRangedValue<SingleStyle>] {
+            var coveredIds = Set<StyleIdType>()
+            return collapsedStyles.flatMap { collapsedStyle in
+                return collapsedStyle.value.originals.compactMap { original in
+                    guard !coveredIds.contains(original.value.id) else {
+                        return nil
+                    }
+                    return NSRangedValue(original.value.style, range: original.value.mergedRange)
+                }
+            }
         }
     }
 }

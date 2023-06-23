@@ -122,7 +122,7 @@ extension StoryReplySheet {
 
 extension StoryReplySheet {
     func storyReplyInputToolbarDidTapSend(_ storyReplyInputToolbar: StoryReplyInputToolbar) {
-        guard let messageBody = storyReplyInputToolbar.messageBody, !messageBody.text.isEmpty else {
+        guard let messageBody = storyReplyInputToolbar.messageBodyForSending, !messageBody.text.isEmpty else {
             return owsFailDebug("Unexpectedly missing message body")
         }
 
@@ -150,9 +150,13 @@ extension StoryReplySheet {
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar) {}
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar) {}
 
-    func storyReplyInputToolbarMentionPickerPossibleAddresses(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> [SignalServiceAddress] {
+    func storyReplyInputToolbarMentionPickerPossibleAddresses(_ storyReplyInputToolbar: StoryReplyInputToolbar, tx: DBReadTransaction) -> [SignalServiceAddress] {
         guard let thread = thread, thread.isGroupThread else { return [] }
-        return thread.recipientAddressesWithSneakyTransaction
+        return thread.recipientAddresses(with: SDSDB.shimOnlyBridge(tx))
+    }
+
+    func storyReplyInputToolbarMentionCacheInvalidationKey() -> String {
+        return thread?.uniqueId ?? UUID().uuidString
     }
 
     func storyReplyInputToolbarMentionPickerParentView(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> UIView? {

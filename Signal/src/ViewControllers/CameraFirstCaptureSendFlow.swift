@@ -126,8 +126,12 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDataSource {
         selectedConversations.map { $0.titleWithSneakyTransaction }
     }
 
-    var sendMediaNavMentionableAddresses: [SignalServiceAddress] {
-        mentionCandidates
+    func sendMediaNavMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
+        return mentionCandidates
+    }
+
+    func sendMediaNavMentionCacheInvalidationKey() -> String {
+        return "\(mentionCandidates.hashValue)"
     }
 }
 

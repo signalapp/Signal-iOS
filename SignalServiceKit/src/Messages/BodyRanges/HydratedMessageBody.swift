@@ -5,22 +5,6 @@
 
 import Foundation
 
-public struct NSRangedValue<T> {
-    public let range: NSRange
-    public let value: T
-
-    public init( _ value: T, range: NSRange) {
-        self.range = range
-        self.value = value
-    }
-}
-
-extension NSRangedValue: Equatable where T: Equatable {}
-
-extension NSRangedValue: Hashable where T: Hashable {}
-
-extension NSRangedValue: Codable where T: Codable {}
-
 /// The result of stripping, filtering, and hydrating mentions in a `MessageBody`.
 /// This object can be held durably in memory as a way to cache mention hydrations
 /// and other expensive string operations, and can subsequently be transformed
@@ -28,6 +12,7 @@ extension NSRangedValue: Codable where T: Codable {}
 public class HydratedMessageBody: Equatable, Hashable {
 
     public typealias Style = MessageBodyRanges.Style
+    public typealias SingleStyle = MessageBodyRanges.SingleStyle
     public typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
 
     private let hydratedText: String
@@ -78,47 +63,11 @@ public class HydratedMessageBody: Equatable, Hashable {
             return
         }
 
-        let originalText = messageBody.text as NSString
-        let filteredText = originalText.filterStringForDisplay() as NSString
+        var mentionsInOriginal = messageBody.ranges.orderedMentions
+        var stylesInOriginal = messageBody.ranges.collapsedStyles
 
-        // NOTE that we only handle leading characters getting stripped;
-        // if characters in the middle of the string get stripped that
-        // will mess up all the ranges. That is not now and never has been
-        // handled by the app.
-        let strippedPrefixLength: Int
-        if filteredText.length != originalText.length {
-            // We filtered things, we need to adjust ranges.
-            strippedPrefixLength = originalText.range(of: filteredText as String).location
-        } else {
-            strippedPrefixLength = 0
-        }
-        var mentionsInOriginal: [NSRangedValue<UUID>]
-        var stylesInOriginal: [NSRangedValue<CollapsedStyle>]
-        if strippedPrefixLength != 0 {
-            mentionsInOriginal = messageBody.ranges.orderedMentions.map { mention in
-                return .init(
-                    mention.value,
-                    range: NSRange(
-                        location: mention.range.location + strippedPrefixLength,
-                        length: mention.range.length
-                    )
-                )
-            }
-            stylesInOriginal = messageBody.ranges.collapsedStyles.map { style in
-                return .init(
-                    style.value,
-                    range: NSRange(
-                        location: style.range.location + strippedPrefixLength,
-                        length: style.range.length
-                    )
-                )
-            }
-        } else {
-            mentionsInOriginal = messageBody.ranges.orderedMentions
-            stylesInOriginal = messageBody.ranges.collapsedStyles
-        }
-
-        let finalText = NSMutableString(string: filteredText)
+        let finalText = NSMutableString(string: messageBody.text)
+        let startLength = finalText.length
         var unhydratedMentions = [NSRangedValue<MentionAttribute>]()
         var finalStyleAttributes = [NSRangedValue<StyleAttribute>]()
         var finalMentionAttributes = [NSRangedValue<MentionAttribute>]()
@@ -132,7 +81,6 @@ public class HydratedMessageBody: Equatable, Hashable {
         }
         var styleAtCurrentIndex: ProcessingStyle?
 
-        let startLength = (filteredText as NSString).length
         for currentIndex in 0..<startLength {
             // If we are past the end, apply the active style to the final result
             // and drop.
@@ -410,16 +358,57 @@ public class HydratedMessageBody: Equatable, Hashable {
         unhydratedMentions.forEach {
             unhydratedMentionsDict[$0.range] = $0.value.mentionUuid
         }
+
         return MessageBody(
             text: hydratedText,
             ranges: MessageBodyRanges(
                 mentions: unhydratedMentionsDict,
-                styles: styleAttributes.flatMap { styleAttribute in
-                    return styleAttribute.value.style.contents.map {
-                        return NSRangedValue($0, range: styleAttribute.range)
-                    }
-                }
+                styles: Self.flattenStylesPreservingSharedIds(styleAttributes)
             )
+        )
+    }
+
+    // MARK: - Editing
+
+    internal func asEditableMessageBody() -> EditableMessageBodyTextStorage.Body {
+        var mentions = [NSRange: UUID]()
+        self.mentionAttributes.forEach {
+            mentions[$0.range] = $0.value.mentionUuid
+        }
+        self.unhydratedMentions.forEach {
+            mentions[$0.range] = $0.value.mentionUuid
+        }
+        var flattenedStyles = [NSRangedValue<SingleStyle>]()
+        var runningStyles = [SingleStyle: (StyleIdType, NSRange)]()
+
+        styleAttributes.forEach { (styleAttribute: NSRangedValue<StyleAttribute>) in
+            SingleStyle.allCases.forEach { style in
+                guard styleAttribute.value.style.contains(style: style), let id = styleAttribute.value.ids[style] else {
+                    return
+                }
+                if let runningStyle: (StyleIdType, NSRange) = runningStyles[style] {
+                    // Append to the running style.
+                    if runningStyle.0 == id {
+                        runningStyles[style] = (id, runningStyle.1.union(styleAttribute.range))
+                    } else {
+                        flattenedStyles.append(.init(style, range: runningStyle.1))
+                        runningStyles[style] = (id, styleAttribute.range)
+                    }
+                } else {
+                    runningStyles[style] = (id, styleAttribute.range)
+                }
+            }
+        }
+        flattenedStyles.append(contentsOf: runningStyles
+            .map({ style, values in
+                return NSRangedValue<SingleStyle>(style, range: values.1)
+            })
+        )
+        flattenedStyles.sort(by: { $0.range.location < $1.range.location })
+        return .init(
+            hydratedText: hydratedText,
+            mentions: mentions,
+            flattenedStyles: flattenedStyles
         )
     }
 
@@ -547,6 +536,35 @@ public class HydratedMessageBody: Equatable, Hashable {
         }
 
         return items
+    }
+
+    // MARK: - Helpers
+
+    internal static func flattenStylesPreservingSharedIds(_ styleAttributes: [NSRangedValue<StyleAttribute>]) -> [NSRangedValue<SingleStyle>] {
+        var styleIdToIndex = [StyleIdType: Int]()
+        var styles = [NSRangedValue<MessageBodyRanges.SingleStyle>]()
+        for styleAttribute in styleAttributes {
+            for singleStyle in styleAttribute.value.style.contents {
+                let styleId = styleAttribute.value.ids[singleStyle]
+                if
+                    let styleId,
+                    let styleIndexToJoinInto = styleIdToIndex[styleId],
+                    let styleToJoinInto = styles[safe: styleIndexToJoinInto],
+                    styleToJoinInto.value == singleStyle,
+                    styleToJoinInto.range.upperBound == styleAttribute.range.location
+                {
+                    // Merge into an existing range with the same id.
+                    styles[styleIndexToJoinInto] = .init(singleStyle, range: styleToJoinInto.range.union(styleAttribute.range))
+                } else {
+                    if let styleId {
+                        styleIdToIndex[styleId] = styles.count
+                    }
+                    styles.append(.init(singleStyle, range: styleAttribute.range))
+                }
+
+            }
+        }
+        return styles
     }
 }
 

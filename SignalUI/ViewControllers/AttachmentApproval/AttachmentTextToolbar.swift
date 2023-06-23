@@ -39,19 +39,17 @@ class AttachmentTextToolbar: UIView {
         textView.isFirstResponder
     }
 
-    var messageBody: MessageBody? {
-        get {
-            // Ignore message text if "view-once" is enabled.
-            guard !isViewOnceEnabled else {
-                return nil
-            }
-            return textView.messageBody
+    var messageBodyForSending: MessageBody? {
+        // Ignore message text if "view-once" is enabled.
+        guard !isViewOnceEnabled else {
+            return nil
         }
+        return textView.messageBodyForSending
+    }
 
-        set {
-            textView.messageBody = newValue
-            updateAppearance(animated: false)
-        }
+    func setMessageBody(_ messageBody: MessageBody?, txProvider: EditableMessageBodyTextStorage.ReadTxProvider) {
+        textView.setMessageBody(messageBody, txProvider: txProvider)
+        updateAppearance(animated: false)
     }
 
     // MARK: - Initializers
@@ -153,7 +151,7 @@ class AttachmentTextToolbar: UIView {
     }
 
     private func updateAppearance(animated: Bool) {
-        let hasText = !textView.text.isEmptyOrNil
+        let hasText = !textView.isEmpty
         let isEditing = isEditingText
 
         addMessageButton.setIsHidden(hasText || isEditing || isViewOnceEnabled, animated: animated)
@@ -219,7 +217,7 @@ class AttachmentTextToolbar: UIView {
 
     private lazy var placeholderTextView: UITextView = {
         let placeholderTextView = buildTextView()
-        placeholderTextView.text = placeholderText
+        placeholderTextView.setMessageBody(.init(text: placeholderText, ranges: .empty), txProvider: databaseStorage.readTxProvider)
         placeholderTextView.isEditable = false
         placeholderTextView.isUserInteractionEnabled = false
         placeholderTextView.textContainer.maximumNumberOfLines = 1
@@ -297,7 +295,7 @@ class AttachmentTextToolbar: UIView {
         return wrapperView
     }()
 
-    private func buildTextView() -> BodyRangesTextView {
+    private func buildTextView() -> AttachmentTextView {
         let textView = AttachmentTextView()
         textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
         textView.backgroundColor = .clear
@@ -343,16 +341,20 @@ extension AttachmentTextToolbar: BodyRangesTextViewDelegate {
         return mentionTextViewDelegate?.textViewMentionPickerReferenceView(textView)
     }
 
-    func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView) -> [SignalServiceAddress] {
-        return mentionTextViewDelegate?.textViewMentionPickerPossibleAddresses(textView) ?? []
+    func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [SignalServiceAddress] {
+        return mentionTextViewDelegate?.textViewMentionPickerPossibleAddresses(textView, tx: tx) ?? []
     }
 
-    public func textViewMentionDisplayConfiguration(_ textView: BodyRangesTextView) -> MentionDisplayConfiguration {
-        return .composingAttachment
+    public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
+        return .init(mention: .composingAttachment, style: .composingAttachment, searchRanges: nil)
     }
 
     public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
         return .composingAttachment
+    }
+
+    public func textViewMentionCacheInvalidationKey(_ textView: BodyRangesTextView) -> String {
+        return mentionTextViewDelegate?.textViewMentionCacheInvalidationKey(textView) ?? UUID().uuidString
     }
 }
 

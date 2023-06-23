@@ -66,8 +66,12 @@ extension ConversationViewController: AttachmentApprovalViewControllerDataSource
         [ Self.contactsManager.displayNameWithSneakyTransaction(thread: thread) ]
     }
 
-    public var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
-        supportsMentions ? thread.recipientAddressesWithSneakyTransaction : []
+    public func attachmentApprovalMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
+        supportsMentions ? thread.recipientAddresses(with: SDSDB.shimOnlyBridge(tx)) : []
+    }
+
+    public func attachmentApprovalMentionCacheInvalidationKey() -> String {
+        return thread.uniqueId
     }
 }
 

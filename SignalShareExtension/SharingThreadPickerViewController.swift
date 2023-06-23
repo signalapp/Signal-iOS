@@ -719,7 +719,11 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDat
         selectedConversations.map { $0.titleWithSneakyTransaction }
     }
 
-    var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
+    func attachmentApprovalMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
         mentionCandidates
+    }
+
+    func attachmentApprovalMentionCacheInvalidationKey() -> String {
+        return "\(mentionCandidates.hashValue)"
     }
 }

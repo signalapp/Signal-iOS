@@ -261,7 +261,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         _ sortedStyles: inout [NSRangedValue<SingleStyle>],
         orderedMentions: [NSRangedValue<UUID>]
     ) {
-        var orderedMentions = orderedMentions
+        let orderedMentions = orderedMentions
         let enumeratedStyles = sortedStyles.enumerated()
         for mention in orderedMentions {
             guard mention.range.length > 0 else {
@@ -415,6 +415,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
 
         var mentionIndex = 0
         var styleIndex = 0
+        let flattenedStyles = CollapsedStyle.flatten(collapsedStyles)
 
         func appendMention(_ mention: NSRangedValue<UUID>) {
             guard let builder = self.protoBuilder(mention.range, maxBodyLength: maxBodyLength) else {
@@ -428,23 +429,21 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             }
         }
 
-        func appendStyle(_ style: NSRangedValue<CollapsedStyle>) {
-            for protoStyle in style.value.style.asProtoStyles() {
-                guard let builder = self.protoBuilder(style.range, maxBodyLength: maxBodyLength) else {
-                    continue
-                }
-                builder.setStyle(protoStyle)
-                do {
-                    try protos.append(builder.build())
-                } catch {
-                    owsFailDebug("Failed to build body range proto: \(error)")
-                }
+        func appendStyle(_ style: NSRangedValue<SingleStyle>) {
+            guard let builder = self.protoBuilder(style.range, maxBodyLength: maxBodyLength) else {
+                return
+            }
+            builder.setStyle(style.value.asProtoStyle)
+            do {
+                try protos.append(builder.build())
+            } catch {
+                owsFailDebug("Failed to build body range proto: \(error)")
             }
         }
 
-        while mentionIndex < orderedMentions.count || styleIndex < collapsedStyles.count {
+        while mentionIndex < orderedMentions.count || styleIndex < flattenedStyles.count {
             if mentionIndex >= orderedMentions.count {
-                appendStyle(collapsedStyles[styleIndex])
+                appendStyle(flattenedStyles[styleIndex])
                 styleIndex += 1
                 continue
             }
@@ -460,7 +459,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                 appendMention(orderedMentions[mentionIndex])
                 mentionIndex += 1
             } else {
-                appendStyle(collapsedStyles[styleIndex])
+                appendStyle(flattenedStyles[styleIndex])
                 styleIndex += 1
             }
         }

@@ -85,7 +85,9 @@ public class LongTextViewController: OWSViewController {
             mutableText = recoveredMessageBody.reapplyAttributes(
                 config: HydratedMessageBody.DisplayConfiguration(
                     mention: .longMessageView,
-                    style: .todo(),
+                    style: .longTextView(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
+                        interactionIdentifier: .fromInteraction(itemViewModel.interaction))
+                    ),
                     searchRanges: nil
                 ),
                 isDarkThemeEnabled: Theme.isDarkThemeEnabled

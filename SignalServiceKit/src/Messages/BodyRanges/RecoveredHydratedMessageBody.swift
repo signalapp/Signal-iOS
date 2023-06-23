@@ -175,10 +175,9 @@ public class RecoveredHydratedMessageBody {
         return mentionAttributes.map { ($0.range, $0.value.mentionUuid) }
     }
 
-    // TODO[TextFormatting]: Remove this; we should be explicitly
-    // holding onto a MessageBody, not recovering from
-    // an attributed string.
-    // Needed for now for editing.
+    // Ideally we should be explicitly holding onto a MessageBody, not recovering from
+    // an attributed string. Needed for now because message bubbles hold only the
+    // attributed string.
     public func toMessageBody() -> MessageBody {
         var mentions = [NSRange: UUID]()
         mentionAttributes.forEach {
@@ -188,11 +187,7 @@ public class RecoveredHydratedMessageBody {
             text: string.string,
             ranges: MessageBodyRanges(
                 mentions: mentions,
-                styles: styleAttributes.flatMap { styleAttribute in
-                    return styleAttribute.value.style.contents.map {
-                        return NSRangedValue($0, range: styleAttribute.range)
-                    }
-                }
+                styles: HydratedMessageBody.flattenStylesPreservingSharedIds(styleAttributes)
             )
         )
     }

@@ -12,13 +12,15 @@ import Foundation
 public class MessageBody: NSObject, NSCopying, NSSecureCoding {
 
     typealias Style = MessageBodyRanges.Style
+    typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
 
     public static var supportsSecureCoding = true
     public static let mentionPlaceholder = "\u{FFFC}" // Object Replacement Character
 
     public let text: String
     public let ranges: MessageBodyRanges
-    public var hasMentions: Bool { ranges.hasMentions }
+    public var hasRanges: Bool { ranges.hasRanges }
+    private var hasMentions: Bool { ranges.hasMentions }
 
     public init(text: String, ranges: MessageBodyRanges) {
         self.text = text
@@ -51,12 +53,72 @@ public class MessageBody: NSObject, NSCopying, NSSecureCoding {
 
     public func hydrating(
         mentionHydrator: MentionHydrator,
+        filterStringForDisplay: Bool = true,
         isRTL: Bool = CurrentAppContext().isRTL
     ) -> HydratedMessageBody {
+        let body = filterStringForDisplay ? self.filterStringForDisplay() : self
         return HydratedMessageBody(
-            messageBody: self,
+            messageBody: body,
             mentionHydrator: mentionHydrator,
             isRTL: isRTL
+        )
+    }
+
+    // Strip leading and trailing whitespace and other non-printed characters,
+    // preserving ranges.
+    public func filterStringForDisplay() -> MessageBody {
+        let originalText = text as NSString
+        let filteredText = originalText.filterStringForDisplay() as NSString
+
+        guard filteredText.length != originalText.length else {
+            // if we didn't strip anything, nothing needs to change.
+            return self
+        }
+        // We filtered things, we need to adjust ranges.
+
+        // NOTE that we only handle leading characters getting stripped;
+        // if characters in the middle of the string get stripped that
+        // will mess up all the ranges. That never has been handled by the app.
+
+        let strippedPrefixLength = originalText.range(of: filteredText as String).location
+        let filteredStringEntireRange = NSRange(location: 0, length: filteredText.length)
+
+        var adjustedMentions = [NSRange: UUID]()
+        let orderedAdjustedMentions: [NSRangedValue<UUID>] = ranges.orderedMentions.compactMap { mention in
+            guard
+                let newRange = NSRange(
+                    location: mention.range.location - strippedPrefixLength,
+                    length: mention.range.length
+                ).intersection(filteredStringEntireRange),
+                  newRange.length > 0
+            else {
+                return nil
+            }
+            adjustedMentions[newRange] = mention.value
+            return .init(mention.value, range: newRange)
+        }
+        let adjustedStyles: [NSRangedValue<CollapsedStyle>] = ranges.collapsedStyles.compactMap { style in
+            guard
+                let newRange = NSRange(
+                    location: style.range.location - strippedPrefixLength,
+                    length: style.range.length
+                ).intersection(filteredStringEntireRange),
+                newRange.length > 0
+            else {
+                return nil
+            }
+            return .init(
+                style.value,
+                range: newRange
+            )
+        }
+        return MessageBody(
+            text: filteredText as String,
+            ranges: MessageBodyRanges(
+                mentions: adjustedMentions,
+                orderedMentions: orderedAdjustedMentions,
+                collapsedStyles: adjustedStyles
+            )
         )
     }
 
@@ -102,6 +164,27 @@ extension MessageBody {
         )
 
         return hydrating(mentionHydrator: mentionHydrator, isRTL: isRTL)
+    }
+
+    /// When pasting a message body into a new context, we need to hydrate mentions
+    /// that don't belong in the new context (such that they are just plaintext of the contact name
+    /// as we know it), and maintain mentions that do apply.
+    ///
+    /// This context is not necessarily one single thread; we could be pasting into a composer
+    /// for sending to multiple threads. So the input array is _all_ valid addresses.
+    public func forPasting(
+        intoContextWithPossibleAddresses possibleAddresses: [SignalServiceAddress],
+        transaction: DBReadTransaction,
+        isRTL: Bool = CurrentAppContext().isRTL
+    ) -> MessageBody {
+        guard hasMentions else {
+            return self
+        }
+        let mentionHydrator = ContactsMentionHydrator.mentionHydrator(
+            excludedUuids: Set(possibleAddresses.compactMap(\.uuid)),
+            transaction: transaction
+        )
+        return hydrating(mentionHydrator: mentionHydrator, isRTL: isRTL).asMessageBodyForForwarding()
     }
 
     // MARK: Merging

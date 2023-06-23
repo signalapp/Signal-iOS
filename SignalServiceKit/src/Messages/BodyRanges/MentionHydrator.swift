@@ -33,7 +33,7 @@ public class ContactsMentionHydrator {
         }
     }
 
-    private static func hydrateMention(
+    public static func hydrateMention(
         with mentionUuid: UUID,
         transaction: DBReadTransaction
     ) -> (SignalServiceAddress, String) {

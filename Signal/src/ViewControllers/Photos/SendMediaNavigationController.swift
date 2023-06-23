@@ -28,7 +28,9 @@ protocol SendMediaNavDataSource: AnyObject {
 
     var sendMediaNavRecipientNames: [String] { get }
 
-    var sendMediaNavMentionableAddresses: [SignalServiceAddress] { get }
+    func sendMediaNavMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress]
+
+    func sendMediaNavMentionCacheInvalidationKey() -> String
 }
 
 class CameraFirstCaptureNavigationController: SendMediaNavigationController {
@@ -170,7 +172,8 @@ class SendMediaNavigationController: OWSNavigationController {
         let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
         approvalViewController.approvalDataSource = self
-        approvalViewController.messageBody = sendMediaNavDataSource.sendMediaNavInitialMessageBody(self)
+        let messageBody = sendMediaNavDataSource.sendMediaNavInitialMessageBody(self)
+        approvalViewController.setMessageBody(messageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
 
         if animated {
             fadeTo(viewControllers: viewControllers + [approvalViewController], duration: 0.3)
@@ -462,8 +465,12 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDataSou
         sendMediaNavDataSource?.sendMediaNavRecipientNames ?? []
     }
 
-    var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
-        sendMediaNavDataSource?.sendMediaNavMentionableAddresses ?? []
+    func attachmentApprovalMentionableAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
+        sendMediaNavDataSource?.sendMediaNavMentionableAddresses(tx: tx) ?? []
+    }
+
+    func attachmentApprovalMentionCacheInvalidationKey() -> String {
+        sendMediaNavDataSource?.sendMediaNavMentionCacheInvalidationKey() ?? UUID().uuidString
     }
 }
 

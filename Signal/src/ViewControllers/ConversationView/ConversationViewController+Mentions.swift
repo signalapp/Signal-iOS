@@ -21,12 +21,16 @@ extension ConversationViewController: BodyRangesTextViewDelegate {
         bottomBar
     }
 
-    public func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView) -> [SignalServiceAddress] {
-        supportsMentions ? thread.recipientAddressesWithSneakyTransaction : []
+    public func textViewMentionPickerPossibleAddresses(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [SignalServiceAddress] {
+        supportsMentions ? thread.recipientAddresses(with: SDSDB.shimOnlyBridge(tx)) : []
     }
 
-    public func textViewMentionDisplayConfiguration(_ textView: BodyRangesTextView) -> MentionDisplayConfiguration {
-        return .composing
+    public func textViewMentionCacheInvalidationKey(_ textView: BodyRangesTextView) -> String {
+        return thread.uniqueId
+    }
+
+    public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
+        return .init(mention: .composing, style: .composing, searchRanges: nil)
     }
 
     public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {

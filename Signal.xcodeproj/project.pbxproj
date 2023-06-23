@@ -884,6 +884,8 @@
 		66E3C8F62994634E00BB38ED /* RegistrationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */; };
 		66F0F1DD29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */; };
 		66F0F1DF29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F0F1DE29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift */; };
+		66F2CE1F2A3A37CB00519342 /* EditableMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F2CE1E2A3A37CB00519342 /* EditableMessageBody.swift */; };
+		66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F2CE202A3CBE4A00519342 /* NSRangedValue.swift */; };
 		66F44B4B2909EEDA004CF66C /* OWSViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F44B4A2909EEDA004CF66C /* OWSViewController.swift */; };
 		66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */; };
 		66FA2B1F28CBA4A5006845CD /* BiometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1E28CBA4A5006845CD /* BiometryType.swift */; };
@@ -3360,6 +3362,8 @@
 		66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinator.swift; sourceTree = "<group>"; };
 		66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorLoader.swift; sourceTree = "<group>"; };
 		66F0F1DE29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorDependencies.swift; sourceTree = "<group>"; };
+		66F2CE1E2A3A37CB00519342 /* EditableMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableMessageBody.swift; sourceTree = "<group>"; };
+		66F2CE202A3CBE4A00519342 /* NSRangedValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRangedValue.swift; sourceTree = "<group>"; };
 		66F44B4A2909EEDA004CF66C /* OWSViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSViewController.swift; sourceTree = "<group>"; };
 		66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsBiometryLockPromptViewController.swift; sourceTree = "<group>"; };
 		66FA2B1E28CBA4A5006845CD /* BiometryType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryType.swift; sourceTree = "<group>"; };
@@ -6779,12 +6783,14 @@
 		66FC636C29DF78FE00F00DAC /* BodyRanges */ = {
 			isa = PBXGroup;
 			children = (
+				66F2CE1E2A3A37CB00519342 /* EditableMessageBody.swift */,
 				66FC637B29DF8FF200F00DAC /* HydratedMessageBody.swift */,
 				66FC637929DF8C6D00F00DAC /* MentionAttribute.swift */,
 				66FC637529DF7FCC00F00DAC /* MentionHydrator.swift */,
 				F9C5C8D4289453B100548EEE /* MessageBody.swift */,
 				66FC636E29DF797700F00DAC /* MessageBodyRanges.swift */,
 				6684447F2A3289C700DBED7C /* MessageBodyStyle.swift */,
+				66F2CE202A3CBE4A00519342 /* NSRangedValue.swift */,
 				66FC638529E4B9AF00F00DAC /* RecoveredHydratedMessageBody.swift */,
 				665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */,
 				66FC637729DF8BEF00F00DAC /* StyleAttribute.swift */,
@@ -11904,6 +11910,7 @@
 				F9C5CC18289453B300548EEE /* DownloadStickerPackOperation.swift in Sources */,
 				5003BB43299F034D0037159B /* E164.swift in Sources */,
 				F9C5CC8A289453B300548EEE /* EarlyMessageManager.swift in Sources */,
+				66F2CE1F2A3A37CB00519342 /* EditableMessageBody.swift in Sources */,
 				C1DB22C329C9F95500757380 /* EditManager.swift in Sources */,
 				C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */,
 				C167387529E8397B0068EA92 /* EditMessageFinder.swift in Sources */,
@@ -12044,6 +12051,7 @@
 				F9C5CD3B289453B300548EEE /* NSData+keyVersionByte.m in Sources */,
 				507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */,
 				F9C5CE0B289453B400548EEE /* NSNotificationCenter+OWS.swift in Sources */,
+				66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */,
 				F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */,
 				F9C5CDF2289453B400548EEE /* NSString+SSK.m in Sources */,
 				F9C5CDD1289453B400548EEE /* NSTimer+OWS.m in Sources */,

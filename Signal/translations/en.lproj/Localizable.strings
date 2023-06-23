@@ -7072,6 +7072,9 @@
 /* Option in selected text edit menu to make text bold */
 "TEXT_MENU_BOLD" = "Bold";
 
+/* Option in selected text edit menu to clear all text formatting in the selected text range */
+"TEXT_MENU_CLEAR_FORMATTING" = "Clear Formatting";
+
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "Format";
 

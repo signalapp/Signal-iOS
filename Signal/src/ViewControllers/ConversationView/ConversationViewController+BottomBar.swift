@@ -163,7 +163,7 @@ public extension ConversationViewController {
         var voiceMemoDraft: VoiceMessageInterruptedDraft?
         if let oldInputToolbar = self.inputToolbar {
             // Maintain draft continuity.
-            messageDraft = oldInputToolbar.messageBody
+            messageDraft = oldInputToolbar.messageBodyForSending
             replyDraft = oldInputToolbar.draftReply
             voiceMemoDraft = oldInputToolbar.voiceMemoDraft
         } else {

@@ -552,7 +552,9 @@ public class SignalAttachment: NSObject {
         return UIPasteboard.general.numberOfItems > 0
     }
 
-    public static let mentionPasteboardType = "private.archived-mention-text"
+    // This can be more than just mentions (e.g. also text formatting styles)
+    // but the name remains as-is for backwards compatibility.
+    public static let bodyRangesPasteboardType = "private.archived-mention-text"
 
     public class func pasteboardHasText() -> Bool {
         if UIPasteboard.general.numberOfItems < 1 {
@@ -569,7 +571,7 @@ public class SignalAttachment: NSObject {
 
         // The mention text view has a special pasteboard type, if we see it
         // we know that the pasteboard contains text.
-        guard !pasteboardUTISet.contains(mentionPasteboardType) else {
+        guard !pasteboardUTISet.contains(bodyRangesPasteboardType) else {
             return true
         }
 
