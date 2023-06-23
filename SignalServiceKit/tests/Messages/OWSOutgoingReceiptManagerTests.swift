@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
-import Foundation
 import XCTest
+
+@testable import SignalServiceKit
 
 class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
 
@@ -26,8 +26,8 @@ class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
 
         // Test – Fetch the receipt set for a merged address
         let mergedAddress = SignalServiceAddress(uuid: uuidAddress.uuid!, phoneNumber: e164Address.phoneNumber!)
-        let mergedReceipt = databaseStorage.read { readTx in
-            outgoingReceiptManager.fetchReceiptSet(type: .delivery, address: mergedAddress, transaction: readTx)
+        let mergedReceipt = databaseStorage.write { tx in
+            outgoingReceiptManager.fetchAndMergeReceiptSet(type: .delivery, address: mergedAddress, transaction: tx)
         }
 
         // Verify – All timestamps exist in the merged receipt

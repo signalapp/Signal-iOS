@@ -334,9 +334,9 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
     NSString *label = [NSString stringWithFormat:@"Receipt Send: %@", NSStringForOWSReceiptType(receiptType)];
     PendingTask *pendingTask = [self.pendingTasks buildPendingTaskWithLabel:label];
 
-    MessageReceiptSet *persistedSet = [self fetchReceiptSetWithType:receiptType
-                                                            address:address
-                                                        transaction:transaction];
+    MessageReceiptSet *persistedSet = [self fetchAndMergeReceiptSetWithType:receiptType
+                                                                    address:address
+                                                                transaction:transaction];
     [persistedSet insertWithTimestamp:timestamp messageUniqueId:messageUniqueId];
     [self storeReceiptSet:persistedSet type:receiptType address:address transaction:transaction];
     [transaction addAsyncCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
@@ -349,9 +349,9 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
 {
     OWSAssertDebug(address.isValid);
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        MessageReceiptSet *persistedSet = [self fetchReceiptSetWithType:receiptType
-                                                                address:address
-                                                            transaction:transaction];
+        MessageReceiptSet *persistedSet = [self fetchAndMergeReceiptSetWithType:receiptType
+                                                                        address:address
+                                                                    transaction:transaction];
         [persistedSet subtract:dequeueSet];
         [self storeReceiptSet:persistedSet type:receiptType address:address transaction:transaction];
     });

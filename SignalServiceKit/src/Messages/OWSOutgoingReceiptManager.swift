@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 class MessageReceiptSet: NSObject, Codable {
@@ -39,75 +40,84 @@ class MessageReceiptSet: NSObject, Codable {
 
 extension OWSOutgoingReceiptManager {
     @objc
-    func fetchAllReceiptSets(type: OWSReceiptType, transaction: SDSAnyReadTransaction) -> [SignalServiceAddress: MessageReceiptSet] {
-        let allAddresses = Set(store(for: type)
-            .allKeys(transaction: transaction)
-            .compactMap { SignalServiceAddress(identifier: $0) })
-
-        let tuples = allAddresses.map { ($0, fetchReceiptSet(type: type, address: $0, transaction: transaction)) }
-        return Dictionary(uniqueKeysWithValues: tuples)
+    func fetchAllReceiptSets(type: OWSReceiptType, transaction tx: SDSAnyReadTransaction) -> [SignalServiceAddress: MessageReceiptSet] {
+        return Dictionary(
+            uniqueKeysWithValues: (
+                Set(store(for: type).allKeys(transaction: tx).compactMap { SignalServiceAddress(identifier: $0) })
+                    .map { ($0, fetchReceiptSet(type: type, preferredKey: $0.uuidString, secondaryKey: $0.phoneNumber, tx: tx).receiptSet) }
+            )
+        )
     }
 
     @objc
-    func fetchReceiptSet(type: OWSReceiptType, address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> MessageReceiptSet {
+    func fetchAndMergeReceiptSet(type: OWSReceiptType, address: SignalServiceAddress, transaction tx: SDSAnyWriteTransaction) -> MessageReceiptSet {
+        return fetchAndMerge(type: type, preferredKey: address.uuidString, secondaryKey: address.phoneNumber, tx: tx)
+    }
+
+    private func fetchReceiptSet(
+        type: OWSReceiptType,
+        preferredKey: String?,
+        secondaryKey: String?,
+        tx: SDSAnyReadTransaction
+    ) -> (receiptSet: MessageReceiptSet, hasSecondaryValue: Bool) {
         let store = store(for: type)
-        let builderSet = MessageReceiptSet()
-
-        let hasStoredUuidSet: Bool
-        let hasStoredPhoneNumberSet: Bool
-
-        if let uuidString = address.uuidString, store.hasValue(forKey: uuidString, transaction: transaction) {
-            if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: uuidString, transaction: transaction) {
-                builderSet.union(receiptSet)
-            } else if let numberSet = store.getObject(forKey: uuidString, transaction: transaction) as? Set<UInt64> {
-                builderSet.union(timestampSet: numberSet)
+        let result = MessageReceiptSet()
+        if let preferredKey, store.hasValue(forKey: preferredKey, transaction: tx) {
+            if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: preferredKey, transaction: tx) {
+                result.union(receiptSet)
+            } else if let numberSet = store.getObject(forKey: preferredKey, transaction: tx) as? Set<UInt64> {
+                result.union(timestampSet: numberSet)
             }
-            hasStoredUuidSet = true
-        } else {
-            hasStoredUuidSet = false
         }
-
-        if let phoneNumber = address.phoneNumber, store.hasValue(forKey: phoneNumber, transaction: transaction) {
-            if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: phoneNumber, transaction: transaction) {
-                builderSet.union(receiptSet)
-            } else if let numberSet = store.getObject(forKey: phoneNumber, transaction: transaction) as? Set<UInt64> {
-                builderSet.union(timestampSet: numberSet)
+        var hasSecondaryValue = false
+        if let secondaryKey, store.hasValue(forKey: secondaryKey, transaction: tx) {
+            if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: secondaryKey, transaction: tx) {
+                result.union(receiptSet)
+            } else if let numberSet = store.getObject(forKey: secondaryKey, transaction: tx) as? Set<UInt64> {
+                result.union(timestampSet: numberSet)
             }
-            hasStoredPhoneNumberSet = true
-        } else {
-            hasStoredPhoneNumberSet = false
+            hasSecondaryValue = true
         }
+        return (result, hasSecondaryValue)
+    }
 
-        // If we're in a write transaction and we have a phone number and uuid
-        // set that needed to be merged, remove the phone number set and store the merged set
-        // If it's not a write transaction, we can leave it unmerged and do it later.
-        if let writeTx = transaction as? SDSAnyWriteTransaction,
-           hasStoredUuidSet,
-           hasStoredPhoneNumberSet,
-           let phoneNumber = address.phoneNumber {
-            store.removeValue(forKey: phoneNumber, transaction: writeTx)
-            storeReceiptSet(builderSet, type: type, address: address, transaction: writeTx)
+    private func fetchAndMerge(
+        type: OWSReceiptType,
+        preferredKey: String?,
+        secondaryKey: String?,
+        tx: SDSAnyWriteTransaction
+    ) -> MessageReceiptSet {
+        let (result, hasSecondaryValue) = fetchReceiptSet(
+            type: type,
+            preferredKey: preferredKey,
+            secondaryKey: secondaryKey,
+            tx: tx
+        )
+        if let preferredKey, let secondaryKey, hasSecondaryValue {
+            store(for: type).removeValue(forKey: secondaryKey, transaction: tx)
+            _storeReceiptSet(result, type: type, key: preferredKey, tx: tx)
         }
-
-        return builderSet
+        return result
     }
 
     @objc
-    func storeReceiptSet(_ set: MessageReceiptSet, type: OWSReceiptType, address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
-        let store = store(for: type)
-        guard let identifier = address.uuidString ?? address.phoneNumber else {
-            owsFailDebug("Invalid address")
-            return
+    func storeReceiptSet(_ receiptSet: MessageReceiptSet, type: OWSReceiptType, address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+        guard let key = address.uuidString ?? address.phoneNumber else {
+            return owsFailDebug("Invalid address")
         }
+        _storeReceiptSet(receiptSet, type: type, key: key, tx: transaction)
+    }
 
-        if set.timestamps.count > 0 {
+    private func _storeReceiptSet(_ receiptSet: MessageReceiptSet, type: OWSReceiptType, key: String, tx: SDSAnyWriteTransaction) {
+        let store = store(for: type)
+        if receiptSet.timestamps.count > 0 {
             do {
-                try store.setCodable(set, key: identifier, transaction: transaction)
+                try store.setCodable(receiptSet, key: key, transaction: tx)
             } catch {
                 owsFailDebug("\(error)")
             }
         } else {
-            store.removeValue(forKey: identifier, transaction: transaction)
+            store.removeValue(forKey: key, transaction: tx)
         }
     }
 
