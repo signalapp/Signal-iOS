@@ -292,20 +292,6 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
     }
 }
 
-+ (NSOperationQueue *)globalSendingQueue
-{
-    static dispatch_once_t onceToken;
-    static NSOperationQueue *operationQueue;
-
-    dispatch_once(&onceToken, ^{
-        operationQueue = [NSOperationQueue new];
-        operationQueue.qualityOfService = NSOperationQualityOfServiceUserInitiated;
-        operationQueue.name = @"MessageSender-Global";
-        operationQueue.maxConcurrentOperationCount = 5;
-    });
-    return operationQueue;
-}
-
 - (void)sendMessage:(OutgoingMessagePreparer *)outgoingMessagePreparer
             success:(void (^)(void))successHandler
             failure:(void (^)(NSError *error))failureHandler
@@ -362,29 +348,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
             [OWSUploadOperation.uploadQueue addOperation:uploadAttachmentOperation];
         }
 
-        NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
-        NSOperationQueue *globalSendingQueue = MessageSender.globalSendingQueue;
-
-        // We use two "global" operations and the globalSendingQueue
-        // to limit how many message sends are in flight at once globally.
-        //
-        // One global operation runs _before_ sendMessageOperation and
-        // ensures that it will not begin while more than N messages
-        // sends are in flight at a time.
-        //
-        // One global operation runs _after_ sendMessageOperation and
-        // ensures that subsequent message sends will block behind the
-        // message send which are currently enqueuing.
-        NSOperation *globalBeforeOperation = [NSOperation new];
-        [sendMessageOperation addDependency:globalBeforeOperation];
-        NSOperation *globalAfterOperation = [NSOperation new];
-        [globalAfterOperation addDependency:sendMessageOperation];
-
-        @synchronized(self) {
-            [globalSendingQueue addOperation:globalBeforeOperation];
-            [sendingQueue addOperation:sendMessageOperation];
-            [globalSendingQueue addOperation:globalAfterOperation];
-        }
+        [[self sendingQueueForMessage:message] addOperation:sendMessageOperation];
     });
 }
 
