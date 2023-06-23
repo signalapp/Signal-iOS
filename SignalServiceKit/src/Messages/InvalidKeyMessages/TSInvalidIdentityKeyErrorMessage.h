@@ -7,7 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSFingerprint;
 @class SignalServiceAddress;
 
 @interface TSInvalidIdentityKeyErrorMessage : TSErrorMessage

@@ -823,6 +823,8 @@
 		6675F64D2925C012007A311E /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
 		6675F64F29261C39007A311E /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64E29261C39007A311E /* SyncPushTokensJob.swift */; };
 		6675F65129261E0C007A311E /* APNSRotationStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F65029261E0C007A311E /* APNSRotationStoreTest.swift */; };
+		667664362A43BBCD00716B84 /* OWSFingerprint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667664352A43BBCD00716B84 /* OWSFingerprint.swift */; };
+		667664382A44B6C200716B84 /* OWSFingerprintBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667664372A44B6C200716B84 /* OWSFingerprintBuilder.swift */; };
 		66783C2B29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */; };
 		667E90D028E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */; };
 		667EDE6428F8D6B7001FB487 /* YYAnimatedImage+Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */; };
@@ -2215,13 +2217,9 @@
 		F9C5CE67289453B400548EEE /* TSConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB97289453B200548EEE /* TSConstants.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE68289453B400548EEE /* OWSRecipientIdentity.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB99289453B200548EEE /* OWSRecipientIdentity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE69289453B400548EEE /* OWSHTTPSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB9A289453B200548EEE /* OWSHTTPSecurityPolicy.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE6A289453B400548EEE /* OWSFingerprint.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB9B289453B200548EEE /* OWSFingerprint.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CE6B289453B400548EEE /* OWSFingerprintBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB9C289453B200548EEE /* OWSFingerprintBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE6C289453B400548EEE /* OWSHTTPSecurityPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB9D289453B200548EEE /* OWSHTTPSecurityPolicy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE6D289453B400548EEE /* OWSRecipientIdentity.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB9E289453B200548EEE /* OWSRecipientIdentity.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE6E289453B400548EEE /* OWSRecipientIdentity+Queries.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB9F289453B200548EEE /* OWSRecipientIdentity+Queries.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE6F289453B400548EEE /* OWSFingerprintBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBA0289453B200548EEE /* OWSFingerprintBuilder.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE70289453B400548EEE /* OWSFingerprint.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBA1289453B200548EEE /* OWSFingerprint.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE71289453B400548EEE /* OWSRecipientIdentity+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBA2289453B200548EEE /* OWSRecipientIdentity+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE72289453B400548EEE /* GroupMembership.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBA4289453B200548EEE /* GroupMembership.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE73289453B400548EEE /* GroupAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBA5289453B200548EEE /* GroupAccess.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -3299,6 +3297,8 @@
 		6675F64C2925C012007A311E /* APNSRotationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSRotationStore.swift; sourceTree = "<group>"; };
 		6675F64E29261C39007A311E /* SyncPushTokensJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncPushTokensJob.swift; sourceTree = "<group>"; };
 		6675F65029261E0C007A311E /* APNSRotationStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSRotationStoreTest.swift; sourceTree = "<group>"; };
+		667664352A43BBCD00716B84 /* OWSFingerprint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprint.swift; sourceTree = "<group>"; };
+		667664372A44B6C200716B84 /* OWSFingerprintBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprintBuilder.swift; sourceTree = "<group>"; };
 		66783C2A29CA4F6C00FC4E4E /* RegistrationTransferQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferQRCodeViewController.swift; sourceTree = "<group>"; };
 		667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyStorySettingsLearnMoreSheetViewController.swift; sourceTree = "<group>"; };
 		667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YYAnimatedImage+Duration.swift"; sourceTree = "<group>"; };
@@ -4779,13 +4779,9 @@
 		F9C5CB97289453B200548EEE /* TSConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TSConstants.swift; path = src/TSConstants.swift; sourceTree = "<group>"; };
 		F9C5CB99289453B200548EEE /* OWSRecipientIdentity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSRecipientIdentity.h; sourceTree = "<group>"; };
 		F9C5CB9A289453B200548EEE /* OWSHTTPSecurityPolicy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSHTTPSecurityPolicy.m; sourceTree = "<group>"; };
-		F9C5CB9B289453B200548EEE /* OWSFingerprint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSFingerprint.h; sourceTree = "<group>"; };
-		F9C5CB9C289453B200548EEE /* OWSFingerprintBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSFingerprintBuilder.h; sourceTree = "<group>"; };
 		F9C5CB9D289453B200548EEE /* OWSHTTPSecurityPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSHTTPSecurityPolicy.h; sourceTree = "<group>"; };
 		F9C5CB9E289453B200548EEE /* OWSRecipientIdentity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSRecipientIdentity.m; sourceTree = "<group>"; };
 		F9C5CB9F289453B200548EEE /* OWSRecipientIdentity+Queries.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSRecipientIdentity+Queries.swift"; sourceTree = "<group>"; };
-		F9C5CBA0289453B200548EEE /* OWSFingerprintBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSFingerprintBuilder.m; sourceTree = "<group>"; };
-		F9C5CBA1289453B200548EEE /* OWSFingerprint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSFingerprint.m; sourceTree = "<group>"; };
 		F9C5CBA2289453B200548EEE /* OWSRecipientIdentity+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSRecipientIdentity+SDS.swift"; sourceTree = "<group>"; };
 		F9C5CBA4289453B200548EEE /* GroupMembership.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMembership.swift; sourceTree = "<group>"; };
 		F9C5CBA5289453B200548EEE /* GroupAccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupAccess.swift; sourceTree = "<group>"; };
@@ -9447,10 +9443,8 @@
 		F9C5CB98289453B200548EEE /* Security */ = {
 			isa = PBXGroup;
 			children = (
-				F9C5CB9B289453B200548EEE /* OWSFingerprint.h */,
-				F9C5CBA1289453B200548EEE /* OWSFingerprint.m */,
-				F9C5CB9C289453B200548EEE /* OWSFingerprintBuilder.h */,
-				F9C5CBA0289453B200548EEE /* OWSFingerprintBuilder.m */,
+				667664352A43BBCD00716B84 /* OWSFingerprint.swift */,
+				667664372A44B6C200716B84 /* OWSFingerprintBuilder.swift */,
 				F9C5CB9D289453B200548EEE /* OWSHTTPSecurityPolicy.h */,
 				F9C5CB9A289453B200548EEE /* OWSHTTPSecurityPolicy.m */,
 				F9C5CB9F289453B200548EEE /* OWSRecipientIdentity+Queries.swift */,
@@ -9604,8 +9598,6 @@
 				F9C5CE01289453B400548EEE /* OWSError.h in Headers */,
 				F9C5CE5F289453B400548EEE /* OWSFakeProfileManager.h in Headers */,
 				F9C5CE1B289453B400548EEE /* OWSFileSystem.h in Headers */,
-				F9C5CE6A289453B400548EEE /* OWSFingerprint.h in Headers */,
-				F9C5CE6B289453B400548EEE /* OWSFingerprintBuilder.h in Headers */,
 				F9C5CC36289453B300548EEE /* OWSGroupCallMessage.h in Headers */,
 				F9C5CE6C289453B400548EEE /* OWSHTTPSecurityPolicy.h in Headers */,
 				F9C5CC35289453B300548EEE /* OWSIdentityManager.h in Headers */,
@@ -12109,8 +12101,8 @@
 				F9C5CE53289453B400548EEE /* OWSFakeProfileManager.m in Sources */,
 				F9C5CDCC289453B400548EEE /* OWSFileSystem.m in Sources */,
 				F9C5CDD7289453B400548EEE /* OWSFileSystem.swift in Sources */,
-				F9C5CE70289453B400548EEE /* OWSFingerprint.m in Sources */,
-				F9C5CE6F289453B400548EEE /* OWSFingerprintBuilder.m in Sources */,
+				667664362A43BBCD00716B84 /* OWSFingerprint.swift in Sources */,
+				667664382A44B6C200716B84 /* OWSFingerprintBuilder.swift in Sources */,
 				F9C5CE1A289453B400548EEE /* OWSFormat.swift in Sources */,
 				F9C5CBF9289453B300548EEE /* OWSGiftBadge.swift in Sources */,
 				F9C5CC46289453B300548EEE /* OWSGroupCallMessage+SDS.swift in Sources */,

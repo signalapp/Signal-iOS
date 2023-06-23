@@ -6,7 +6,6 @@
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "AxolotlExceptions.h"
 #import "NSData+keyVersionByte.h"
-#import "OWSFingerprint.h"
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
 #import "TSContactThread.h"

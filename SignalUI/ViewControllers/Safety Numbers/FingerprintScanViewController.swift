@@ -17,16 +17,19 @@ class FingerprintScanViewController: OWSViewController {
 
     private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .normal)
 
-    init(recipientAddress: SignalServiceAddress, recipientIdentity: OWSRecipientIdentity) {
+    init?(recipientAddress: SignalServiceAddress, recipientIdentity: OWSRecipientIdentity) {
         owsAssertDebug(recipientAddress.isValid)
 
         self.recipientAddress = recipientAddress
         self.recipientIdentity = recipientIdentity
         self.identityKey = recipientIdentity.identityKey
-        self.fingerprint = OWSFingerprintBuilder(
+        guard let fingerprint = OWSFingerprintBuilder(
             accountManager: TSAccountManager.shared,
             contactsManager: SSKEnvironment.shared.contactsManagerRef
-        ).fingerprint(withTheirSignal: recipientAddress, theirIdentityKey: recipientIdentity.identityKey)
+        ).fingerprint(theirSignalAddress: recipientAddress, theirIdentityKey: recipientIdentity.identityKey) else {
+            return nil
+        }
+        self.fingerprint = fingerprint
         self.contactName = SSKEnvironment.shared.contactsManagerRef.displayName(for: recipientAddress)
 
         super.init()
@@ -83,9 +86,8 @@ class FingerprintScanViewController: OWSViewController {
     private func verifyCombinedFingerprintData(_ combinedFingerprintData: Data) {
         AssertIsOnMainThread()
 
-        do {
-            try fingerprint.matchesLogicalFingerprintsData(combinedFingerprintData)
-
+        switch fingerprint.matchesLogicalFingerprintsData(combinedFingerprintData) {
+        case .match:
             FingerprintScanViewController.showVerificationSucceeded(
                 from: self,
                 identityKey: identityKey,
@@ -93,10 +95,11 @@ class FingerprintScanViewController: OWSViewController {
                 contactName: contactName,
                 tag: logTag
             )
-        } catch {
+        case .noMatch(let localizedErrorDescription):
             FingerprintScanViewController.showVerificationFailed(
                 from: self,
-                error: error,
+                isUserError: false,
+                localizedErrorDescription: localizedErrorDescription,
                 retry: { self.qrCodeScanViewController.tryToStartScanning() },
                 cancel: { self.navigationController?.popViewController(animated: true) },
                 tag: logTag
@@ -152,22 +155,19 @@ class FingerprintScanViewController: OWSViewController {
 
     static func showVerificationFailed(
         from viewController: UIViewController,
-        error: Error,
+        isUserError: Bool,
+        localizedErrorDescription: String,
         retry: (() -> Void)? = nil,
         cancel: (() -> Void)? = nil,
         tag: String
     ) {
         Logger.info("\(tag) Failed to verify safety numbers.")
 
-        let failureTitle: String?
-        if (error as NSError).code != OWSErrorCode.userError.rawValue {
-            failureTitle = NSLocalizedString("FAILED_VERIFICATION_TITLE", comment: "alert title")
-        } else {
-            // else no title. We don't want to show a big scary "VERIFICATION FAILED" when it's just user error.
-            failureTitle = nil
-        }
-
-        let actionSheet = ActionSheetController(title: failureTitle, message: error.userErrorDescription)
+        // We don't want to show a big scary "VERIFICATION FAILED" when it's just user error.
+        let actionSheet = ActionSheetController(
+            title: isUserError ? nil : NSLocalizedString("FAILED_VERIFICATION_TITLE", comment: "alert title"),
+            message: localizedErrorDescription
+        )
 
         if let retry {
             actionSheet.addAction(ActionSheetAction(
@@ -183,7 +183,7 @@ class FingerprintScanViewController: OWSViewController {
 
         viewController.presentActionSheet(actionSheet)
 
-        Logger.warn("\(tag) Identity verification failed with error: \(error)")
+        Logger.warn("\(tag) Identity verification failed")
     }
 }
 

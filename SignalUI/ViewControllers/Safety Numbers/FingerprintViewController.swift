@@ -35,7 +35,8 @@ public class FingerprintViewController: OWSViewController {
         }
 
         guard let recipientIdentity = OWSIdentityManager.shared.recipientIdentity(for: address),
-              canRenderSafetyNumber
+              canRenderSafetyNumber,
+              let fingerprintViewController = FingerprintViewController(recipientAddress: address, recipientIdentity: recipientIdentity)
         else {
             OWSActionSheets.showActionSheet(
                 title: NSLocalizedString("CANT_VERIFY_IDENTITY_ALERT_TITLE",
@@ -46,22 +47,24 @@ public class FingerprintViewController: OWSViewController {
             return
         }
 
-        let fingerprintViewController = FingerprintViewController(recipientAddress: address, recipientIdentity: recipientIdentity)
         let navigationController = OWSNavigationController(rootViewController: fingerprintViewController)
         viewController.presentFormSheet(navigationController, animated: true)
     }
 
-    private init(recipientAddress: SignalServiceAddress, recipientIdentity: OWSRecipientIdentity) {
+    private init?(recipientAddress: SignalServiceAddress, recipientIdentity: OWSRecipientIdentity) {
         self.recipientAddress = recipientAddress
         self.contactName = SSKEnvironment.shared.contactsManagerRef.displayName(for: recipientAddress)
         // By capturing the identity key when we enter these views, we prevent the edge case
         // where the user verifies a key that we learned about while this view was open.
         self.recipientIdentity = recipientIdentity
         self.identityKey = recipientIdentity.identityKey
-        self.fingerprint = OWSFingerprintBuilder(
+        guard let fingerprint = OWSFingerprintBuilder(
             accountManager: TSAccountManager.shared,
             contactsManager: SSKEnvironment.shared.contactsManagerRef
-        ).fingerprint(withTheirSignal: recipientAddress, theirIdentityKey: recipientIdentity.identityKey)
+        ).fingerprint(theirSignalAddress: recipientAddress, theirIdentityKey: recipientIdentity.identityKey) else {
+            return nil
+        }
+        self.fingerprint = fingerprint
 
         super.init()
 
@@ -370,7 +373,10 @@ public class FingerprintViewController: OWSViewController {
     }
 
     private func showScanner() {
-        let viewController = FingerprintScanViewController(recipientAddress: recipientAddress, recipientIdentity: recipientIdentity)
+        guard let viewController = FingerprintScanViewController(recipientAddress: recipientAddress, recipientIdentity: recipientIdentity) else {
+            owsFailDebug("Unable to create fingerprint")
+            return
+        }
         navigationController?.pushViewController(viewController, animated: true)
     }
 
@@ -397,9 +403,12 @@ extension FingerprintViewController: CompareSafetyNumbersActivityDelegate {
     }
 
     public func compareSafetyNumbersActivity(_ activity: CompareSafetyNumbersActivity, failedWithError error: Error) {
+        let isUserError = (error as NSError).code == OWSErrorCode.userError.rawValue
+
         FingerprintScanViewController.showVerificationFailed(
             from: self,
-            error: error,
+            isUserError: isUserError,
+            localizedErrorDescription: error.userErrorDescription,
             tag: logTag
         )
     }
