@@ -398,7 +398,7 @@ open class BodyRangesTextView: OWSTextView {
     // MARK: Menu items
 
     private let cutUIMenuAction = #selector(cut)
-    private let copyUIMenuAction = #selector(copy)
+    private let copyUIMenuAction = #selector(UIResponderStandardEditActions.copy(_:))
     private let pasteUIMenuAction = #selector(UIResponderStandardEditActions.paste(_:))
 
     private let uiMenuPromptReplaceAction = Selector(("_promptForReplace:"))
@@ -756,10 +756,12 @@ extension BodyRangesTextView {
 
 extension BodyRangesTextView {
     open override func cut(_ sender: Any?) {
+        let selectedRange = self.selectedRange
         copy(sender)
         editableBody.beginEditing()
         editableBody.replaceCharacters(in: selectedRange, with: "", selectedRange: selectedRange)
         editableBody.endEditing()
+        self.selectedRange = NSRange(location: selectedRange.location, length: 0)
     }
 
     public class func copyAttributedStringToPasteboard(_ attributedString: NSAttributedString) {
