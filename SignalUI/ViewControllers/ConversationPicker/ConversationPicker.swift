@@ -694,7 +694,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             mediaPreviewBorder.layer.cornerRadius = mediaPreview.layer.cornerRadius
             container.insertSubview(mediaPreviewBorder, belowSubview: mediaPreview)
 
-            mediaPreviewBorder.autoPin(toEdgesOf: mediaPreview, with: .init(margin: -3))
+            mediaPreviewBorder.autoPinEdges(toEdgesOf: mediaPreview, with: .init(margin: -3))
 
             secondMediaPreview.layer.masksToBounds = true
             secondMediaPreview.layer.cornerRadius = 18

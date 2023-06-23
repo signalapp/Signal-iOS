@@ -18,4 +18,3 @@
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalUI/UIView+SignalUI.h>

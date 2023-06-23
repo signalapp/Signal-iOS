@@ -5,7 +5,6 @@
 
 import SignalServiceKit
 
-@objc
 public protocol FindByPhoneNumberDelegate: AnyObject {
     func findByPhoneNumber(_ findByPhoneNumber: FindByPhoneNumberViewController,
                            didSelectAddress address: SignalServiceAddress)
@@ -24,7 +23,6 @@ public class FindByPhoneNumberViewController: OWSViewController, OWSNavigationCh
     let countryRowTitleLabel = UILabel()
     let phoneNumberRowTitleLabel = UILabel()
 
-    @objc
     public init(delegate: FindByPhoneNumberDelegate, buttonText: String?, requiresRegisteredNumber: Bool) {
         self.delegate = delegate
         self.buttonText = buttonText

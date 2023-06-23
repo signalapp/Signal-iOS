@@ -519,7 +519,6 @@ private protocol OptionViewDelegate: AnyObject {
     func didSelectOptionView(_ optionView: OptionView, model: AvatarModel)
     func didEditOptionView(_ optionView: OptionView, model: AvatarModel)
     func didDeleteOptionView(_ optionView: OptionView, model: AvatarModel)
-    func presentActionSheet(_ alert: ActionSheetController)
 }
 
 private class OptionView: UIView {
@@ -527,7 +526,7 @@ private class OptionView: UIView {
     private var imageViewInsetConstraints: [NSLayoutConstraint]?
     private let editOverlayView = AvatarImageView()
 
-    private weak var delegate: OptionViewDelegate?
+    private weak var delegate: (OptionViewDelegate & UIViewController)?
 
     var isSelected = false {
         didSet {
@@ -536,7 +535,7 @@ private class OptionView: UIView {
         }
     }
 
-    init(delegate: OptionViewDelegate) {
+    init(delegate: OptionViewDelegate & UIViewController) {
         self.delegate = delegate
 
         super.init(frame: .zero)

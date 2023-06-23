@@ -103,8 +103,7 @@ class CallHeader: UIView {
             $0.dataSource = .thread(call.thread)
         }
         avatarPaddingView.addSubview(avatarView)
-        avatarView.autoPinLeadingAndTrailingToSuperviewMargin()
-        avatarView.autoPinBottomToSuperviewMargin()
+        avatarView.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
 
         vStack.addArrangedSubview(avatarPaddingView)
         vStack.setCustomSpacing(16, after: avatarPaddingView)
@@ -118,7 +117,7 @@ class CallHeader: UIView {
         callTitleLabel.fadeLength = 10.0
         callTitleLabel.animationDelay = 5
         // Add trailing space after the name scrolls before it wraps around and scrolls back in.
-        callTitleLabel.trailingBuffer = ScaleFromIPhone5(80.0)
+        callTitleLabel.trailingBuffer = .scaleFromIPhone5(80)
 
         callTitleLabel.font = UIFont.dynamicTypeHeadline.semibold()
         callTitleLabel.textAlignment = .center

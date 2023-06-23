@@ -33,7 +33,7 @@ public class ContactFieldView: UIView {
             let row = UIView()
             row.backgroundColor = Theme.hairlineColor
             self.addSubview(row)
-            row.autoSetDimension(.height, toSize: CGHairlineWidth())
+            row.autoSetDimension(.height, toSize: .hairlineWidth)
             row.autoPinLeadingToSuperviewMargin(withInset: hMargin)
             row.autoPinTrailingToSuperviewMargin()
             row.autoPinEdge(.top, to: .bottom, of: prevRow, withOffset: 0)

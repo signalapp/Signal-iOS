@@ -179,7 +179,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
         countryRow.spacing = 10
         countryRow.isUserInteractionEnabled = true
         countryRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(countryRowTapped)))
-        _ = countryRow.addBottomStroke(color: .ows_gray20, strokeWidth: CGHairlineWidth())
+        _ = countryRow.addBottomStroke(color: .ows_gray20, strokeWidth: .hairlineWidth)
         countryChevron.setContentHuggingHorizontalHigh()
         countryChevron.setCompressionResistanceHigh()
 
@@ -187,7 +187,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
         phoneNumberRow.axis = .horizontal
         phoneNumberRow.alignment = .center
         phoneNumberRow.spacing = 10
-        phoneStrokeNormal = phoneNumberRow.addBottomStroke(color: .ows_gray20, strokeWidth: CGHairlineWidth())
+        phoneStrokeNormal = phoneNumberRow.addBottomStroke(color: .ows_gray20, strokeWidth: .hairlineWidth)
         phoneStrokeError = phoneNumberRow.addBottomStroke(color: .ows_accentRed, strokeWidth: 1)
         callingCodeLabel.autoSetDimension(.width, toSize: 45, relation: .greaterThanOrEqual)
         callingCodeLabel.setCompressionResistanceHigh()

@@ -809,7 +809,7 @@ public class Deprecated_OnboardingController: NSObject {
 
 public extension UIView {
     func addBottomStroke() -> UIView {
-        return addBottomStroke(color: .ows_middleGray, strokeWidth: CGHairlineWidth())
+        return addBottomStroke(color: .ows_middleGray, strokeWidth: .hairlineWidth)
     }
 
     func addBottomStroke(color: UIColor, strokeWidth: CGFloat) -> UIView {

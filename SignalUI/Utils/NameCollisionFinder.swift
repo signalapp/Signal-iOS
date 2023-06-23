@@ -72,7 +72,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
             return []
         }
 
-        let collisionCandidates = Self.contactsViewHelper.signalAccounts(
+        let collisionCandidates = contactsViewHelper.signalAccounts(
             matchingSearch: contactThread.contactAddress.displayName(transaction: transaction),
             transaction: transaction)
 

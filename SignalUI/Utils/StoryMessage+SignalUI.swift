@@ -7,7 +7,6 @@ import SignalServiceKit
 
 extension StoryMessage {
 
-    @objc
     func quotedBody(transaction: SDSAnyReadTransaction) -> MessageBody? {
         switch attachment {
         case .file(let file):
@@ -40,7 +39,6 @@ extension StoryMessage {
         }
     }
 
-    @objc
     func quotedAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
         switch attachment {
         case .file(let file):
@@ -54,7 +52,6 @@ extension StoryMessage {
         }
     }
 
-    @objc
     func thumbnailImage(transaction: SDSAnyReadTransaction) -> UIImage? {
         switch attachment {
         case .text:
@@ -74,7 +71,6 @@ extension StoryMessage {
         }
     }
 
-    @objc
     func thumbnailView() -> UIView? {
         guard case .text(let attachment) = attachment else { return nil }
         return TextAttachmentView(attachment: attachment).asThumbnailView()

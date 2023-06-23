@@ -645,7 +645,7 @@ open class BodyRangesTextView: OWSTextView {
     // MARK: - Text Container Insets
 
     open var defaultTextContainerInset: UIEdgeInsets {
-        UIEdgeInsets(hMargin: 7, vMargin: 7 - CGHairlineWidth())
+        UIEdgeInsets(hMargin: 7, vMargin: 7 - .hairlineWidth)
     }
 
     public func updateTextContainerInset() {

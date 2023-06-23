@@ -7,7 +7,7 @@ import Foundation
 import SignalMessaging
 
 public final class NonContactTableViewCell: UITableViewCell, ReusableTableViewCell {
-    @objc
+
     public static let reuseIdentifier = "NonContactTableViewCell"
 
     private let iconView: UIImageView = {

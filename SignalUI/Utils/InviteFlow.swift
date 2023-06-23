@@ -9,7 +9,6 @@ import MessageUI
 import SignalMessaging
 import SignalServiceKit
 
-@objc(OWSInviteFlow)
 public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, ContactsPickerDelegate {
     private enum Channel {
         case message, mail
@@ -41,7 +40,6 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
 
     private var channel: Channel?
 
-    @objc
     public required init(presentingViewController: UIViewController) {
         self.presentingViewController = presentingViewController
 
@@ -63,7 +61,6 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
 
     // MARK: -
 
-    @objc
     public func present(isAnimated: Bool, completion: (() -> Void)?) {
         let channels = [messageChannel(), mailChannel()].compacted()
         if channels.count > 1 {

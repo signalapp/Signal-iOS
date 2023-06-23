@@ -384,7 +384,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         contactNameLabel.fadeLength = 10.0
         contactNameLabel.animationDelay = 5
         // Add trailing space after the name scrolls before it wraps around and scrolls back in.
-        contactNameLabel.trailingBuffer = ScaleFromIPhone5(80.0)
+        contactNameLabel.trailingBuffer = .scaleFromIPhone5(80)
 
         // label config
         contactNameLabel.font = UIFont.dynamicTypeTitle1
@@ -588,8 +588,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     func createViewConstraints() {
 
         let contactVSpacing: CGFloat = 3
-        let bottomMargin = ScaleFromIPhone5To7Plus(23, 41)
-        let avatarMargin = ScaleFromIPhone5To7Plus(25, 50)
+        let bottomMargin = CGFloat.scaleFromIPhone5To7Plus(23, 41)
+        let avatarMargin = CGFloat.scaleFromIPhone5To7Plus(25, 50)
 
         backButton.autoPinEdge(toSuperviewEdge: .leading)
 

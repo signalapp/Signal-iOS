@@ -121,7 +121,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
     }()
 
     private lazy var nameFieldStrokes: [UIView] = [givenNameTextField, familyNameTextField].map {
-        $0.addBottomStroke(color: Theme.cellSeparatorColor, strokeWidth: CGHairlineWidth())
+        $0.addBottomStroke(color: Theme.cellSeparatorColor, strokeWidth: .hairlineWidth)
     }
 
     // For CJKV locales, display family name field first

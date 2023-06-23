@@ -56,7 +56,7 @@ extension ImageEditorViewController {
         textViewBackgroundView.autoPinHeightToSuperviewMargins(relation: .lessThanOrEqual)
         textViewBackgroundView.autoCenterInSuperview()
         // These inset values provide the best visual match with CATextLayer's bounds when background color is set.
-        textView.autoPin(toEdgesOf: textViewBackgroundView, with: UIEdgeInsets(top: -6, left: 6, bottom: -7, right: 6))
+        textView.autoPinEdges(toEdgesOf: textViewBackgroundView, with: UIEdgeInsets(top: -6, left: 6, bottom: -7, right: 6))
 
         textViewContainer.addSubview(textViewWrapperView)
         textViewWrapperView.autoVCenterInSuperview()

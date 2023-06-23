@@ -4,7 +4,9 @@
 //
 
 import XCTest
+
 @testable import Signal
+@testable import SignalServiceKit
 @testable import SignalUI
 
 extension ImageEditorModel {

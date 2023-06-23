@@ -186,12 +186,12 @@ class CropScaleImageViewController: OWSViewController {
         let titleLabel = UILabel()
         titleLabel.textColor = UIColor.white
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.semiboldFont(ofSize: ScaleFromIPhone5(16))
+        titleLabel.font = UIFont.semiboldFont(ofSize: .scaleFromIPhone5(16))
         titleLabel.text = OWSLocalizedString("CROP_SCALE_IMAGE_VIEW_TITLE",
                                             comment: "Title for the 'crop/scale image' dialog.")
         contentView.addSubview(titleLabel)
         titleLabel.autoPinWidthToSuperview()
-        let titleLabelMargin = ScaleFromIPhone5(16)
+        let titleLabelMargin = CGFloat.scaleFromIPhone5(16)
         titleLabel.autoPin(toTopLayoutGuideOf: self, withInset: titleLabelMargin)
 
         createButtonRow(contentView: contentView)
@@ -425,8 +425,8 @@ class CropScaleImageViewController: OWSViewController {
     }
 
     private func createButtonRow(contentView: UIView) {
-        let buttonTopMargin = ScaleFromIPhone5To7Plus(30, 40)
-        let buttonBottomMargin = ScaleFromIPhone5To7Plus(25, 40)
+        let buttonTopMargin = CGFloat.scaleFromIPhone5To7Plus(30, 40)
+        let buttonBottomMargin = CGFloat.scaleFromIPhone5To7Plus(25, 40)
 
         let buttonRow = UIView()
         self.view.addSubview(buttonRow)
@@ -450,9 +450,9 @@ class CropScaleImageViewController: OWSViewController {
     }
 
     private func createButton(title: String, action: Selector) -> UIButton {
-        let buttonFont = UIFont.semiboldFont(ofSize: ScaleFromIPhone5To7Plus(18, 22))
-        let buttonWidth = ScaleFromIPhone5To7Plus(110, 140)
-        let buttonHeight = ScaleFromIPhone5To7Plus(35, 45)
+        let buttonFont = UIFont.semiboldFont(ofSize: .scaleFromIPhone5To7Plus(18, 22))
+        let buttonWidth = CGFloat.scaleFromIPhone5To7Plus(110, 140)
+        let buttonHeight = CGFloat.scaleFromIPhone5To7Plus(35, 45)
 
         let button = UIButton()
         button.setTitle(title, for: .normal)

@@ -517,7 +517,7 @@ class PlayerProgressView: UIView {
         compactLayoutConstraints = [
             positionLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
             remainingLabel.centerYAnchor.constraint(equalTo: positionLabel.centerYAnchor),
-            slider.centerYAnchor.constraint(equalTo: positionLabel.centerYAnchor, constant: -CGHairlineWidth()),
+            slider.centerYAnchor.constraint(equalTo: positionLabel.centerYAnchor, constant: -.hairlineWidth),
 
             positionLabel.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
             remainingLabel.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),

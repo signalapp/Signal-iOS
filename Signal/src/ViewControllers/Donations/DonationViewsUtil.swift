@@ -263,7 +263,7 @@ public final class DonationViewsUtil {
                 hStackView.addSubview(redemptionLoadingSpinner)
                 redemptionLoadingSpinner.loopMode = .loop
                 redemptionLoadingSpinner.contentMode = .scaleAspectFit
-                redemptionLoadingSpinner.autoPin(toEdgesOf: badgeImageView, with: UIEdgeInsets(hMargin: 14, vMargin: 14))
+                redemptionLoadingSpinner.autoPinEdges(toEdgesOf: badgeImageView, with: UIEdgeInsets(margin: 14))
                 redemptionLoadingSpinner.play()
             }
 

@@ -5,7 +5,6 @@
 
 import SignalServiceKit
 
-@objc
 public enum OWSNavigationBarStyle: Int {
     case solid, alwaysDark, blur
 

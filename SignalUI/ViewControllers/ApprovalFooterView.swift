@@ -83,7 +83,7 @@ public class ApprovalFooterView: UIView {
 
         addSubview(topStrokeView)
         topStrokeView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        topStrokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
+        topStrokeView.autoSetDimension(.height, toSize: .hairlineWidth)
 
         hStackView.addArrangedSubviews([labelScrollView, proceedButton])
         hStackView.axis = .horizontal

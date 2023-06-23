@@ -6,10 +6,8 @@
 import UIKit
 import SignalMessaging
 
-@objc
 open class OWSButton: UIButton {
 
-    @objc
     public var block: () -> Void = { }
 
     public var dimsWhenHighlighted = false {
@@ -30,7 +28,6 @@ open class OWSButton: UIButton {
 
     // MARK: -
 
-    @objc
     public init(block: @escaping () -> Void = { }) {
         super.init(frame: .zero)
 
@@ -38,7 +35,6 @@ open class OWSButton: UIButton {
         addTarget(self, action: #selector(didTap), for: .touchUpInside)
     }
 
-    @objc
     public init(title: String, block: @escaping () -> Void = { }) {
         super.init(frame: .zero)
 
@@ -47,7 +43,6 @@ open class OWSButton: UIButton {
         setTitle(title, for: .normal)
     }
 
-    @objc
     public init(
         imageName: String,
         tintColor: UIColor?,
@@ -62,7 +57,6 @@ open class OWSButton: UIButton {
         self.tintColor = tintColor
     }
 
-    @objc
     public func setImage(imageName: String?) {
         guard let imageName = imageName else {
             setImage(nil, for: .normal)
@@ -81,7 +75,6 @@ open class OWSButton: UIButton {
 
     // MARK: - Common Style Reuse
 
-    @objc
     public class func sendButton(imageName: String, block: @escaping () -> Void) -> OWSButton {
         let button = OWSButton(imageName: imageName, tintColor: .white, block: block)
 
@@ -95,7 +88,6 @@ open class OWSButton: UIButton {
     }
 
     /// Mimics a UIBarButtonItem of type .cancel, but with a shadow.
-    @objc
     public class func shadowedCancelButton(block: @escaping () -> Void) -> OWSButton {
         let cancelButton = OWSButton(title: CommonStrings.cancelButton, block: block)
         cancelButton.setTitleColor(.white, for: .normal)
@@ -110,7 +102,6 @@ open class OWSButton: UIButton {
         return cancelButton
     }
 
-    @objc
     public class func navigationBarButton(imageName: String, block: @escaping () -> Void) -> OWSButton {
         let button = OWSButton(imageName: imageName, tintColor: .white, block: block)
         button.layer.shadowColor = UIColor.black.cgColor

@@ -32,7 +32,6 @@ public class ConversationStyle: NSObject {
     // The width of the collection view.
     public let viewWidth: CGFloat
 
-    @objc
     public let isDarkThemeEnabled: Bool
 
     public let hasWallpaper: Bool
@@ -324,7 +323,6 @@ public class ConversationStyle: NSObject {
     }
 }
 
-@objc
 extension ConversationStyle {
 
     public func quotedReplyHighlightColor() -> UIColor {

@@ -193,7 +193,7 @@ class RegistrationProfileViewController: OWSViewController {
 
     private lazy var textFieldStrokes: [UIView] = [givenNameTextField, familyNameTextField].map {
         // This color will be swiftly updated during renders.
-        $0.addBottomStroke(color: Theme.cellSeparatorColor, strokeWidth: CGHairlineWidth())
+        $0.addBottomStroke(color: Theme.cellSeparatorColor, strokeWidth: .hairlineWidth)
     }
 
     private enum NameOrder {

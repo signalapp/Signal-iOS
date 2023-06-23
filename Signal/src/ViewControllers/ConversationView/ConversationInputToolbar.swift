@@ -1327,7 +1327,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         updateVoiceMemo()
 
-        let cancelArrowFontSize = ScaleFromIPhone5To7Plus(18.4, 20)
+        let cancelArrowFontSize = CGFloat.scaleFromIPhone5To7Plus(18.4, 20)
         let cancelString = NSMutableAttributedString(
             string: "\u{F104}",
             attributes: [

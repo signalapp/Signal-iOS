@@ -175,7 +175,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
         buttonStack.spacing = 10
 
         let divider = UIView()
-        divider.autoSetDimension(.height, toSize: CGHairlineWidth())
+        divider.autoSetDimension(.height, toSize: .hairlineWidth)
         divider.backgroundColor = buttonColor
 
         let stackView = UIStackView(arrangedSubviews: [

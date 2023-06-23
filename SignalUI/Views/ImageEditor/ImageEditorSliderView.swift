@@ -27,7 +27,7 @@ class ImageEditorSlider: UISlider {
         super.layoutSubviews()
         let backgroundWidth: CGFloat = 16
         let backgroundViewFrame = bounds.insetBy(dx: 6, dy: 0.5*(bounds.height - backgroundWidth))
-        backgroundView.frame = backgroundViewFrame.offsetBy(dx: 0, dy: -CGHairlineWidth())
+        backgroundView.frame = backgroundViewFrame.offsetBy(dx: 0, dy: -.hairlineWidth)
         sendSubviewToBack(backgroundView)
     }
 

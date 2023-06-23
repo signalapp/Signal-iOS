@@ -71,7 +71,7 @@ class SAELoadViewController: UIViewController {
 
         self.view.addSubview(progressView)
         progressView.autoVCenterInSuperview()
-        progressView.autoPinWidthToSuperview(withMargin: ScaleFromIPhone5(30))
+        progressView.autoPinWidthToSuperview(withMargin: .scaleFromIPhone5(30))
         progressView.progressTintColor = Theme.accentBlueColor
 
         updateProgressViewVisability()

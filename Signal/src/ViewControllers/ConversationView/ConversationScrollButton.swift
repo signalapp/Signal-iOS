@@ -31,7 +31,7 @@ public class ConversationScrollButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private class var circleSize: CGFloat { ScaleFromIPhone5To7Plus(35, 40) }
+    private class var circleSize: CGFloat { .scaleFromIPhone5To7Plus(35, 40) }
 
     class var buttonSize: CGFloat { circleSize + 2 * 15 }
 

@@ -6,7 +6,6 @@
 import SignalServiceKit
 import SignalUI
 
-@objc
 public class DisplayableText: NSObject {
 
     private struct Content {
@@ -48,7 +47,6 @@ public class DisplayableText: NSObject {
         }
     }
 
-    @objc
     public var fullAttributedText: NSAttributedString {
         switch fullContent.textValue {
         case .text(let text):
@@ -58,7 +56,6 @@ public class DisplayableText: NSObject {
         }
     }
 
-    @objc
     public var fullTextNaturalAlignment: NSTextAlignment {
         return fullContent.naturalAlignment
     }

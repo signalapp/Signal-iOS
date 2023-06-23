@@ -5,16 +5,12 @@
 
 import SignalCoreKit
 
-@objc
-class DeviceProvisioningURL: NSObject {
+class DeviceProvisioningURL {
 
-    @objc
     let ephemeralDeviceId: String
 
-    @objc
     let publicKey: Data
 
-    @objc
     init?(urlString: String) {
         guard let queryItems = URLComponents(string: urlString)?.queryItems else {
             return nil

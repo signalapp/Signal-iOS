@@ -146,7 +146,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
             self?.playVideo()
         }
         view.addSubview(buttonPlayVideo)
-        buttonPlayVideo.autoSetDimensions(to: .square(ScaleFromIPhone5(70)))
+        buttonPlayVideo.autoSetDimensions(to: .square(.scaleFromIPhone5(70)))
         buttonPlayVideo.autoCenterInSuperview()
         self.buttonPlayVideo = buttonPlayVideo
 
@@ -159,7 +159,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         let playVideoIconView = UIImageView.withTemplateImageName("play-fill-32", tintColor: .black)
         playVideoIconView.isUserInteractionEnabled = false
         buttonPlayVideo.addSubview(playVideoIconView)
-        playVideoIconView.autoSetDimensions(to: .square(ScaleFromIPhone5(30)))
+        playVideoIconView.autoSetDimensions(to: .square(.scaleFromIPhone5(30)))
         playVideoIconView.autoCenterInSuperview()
     }
 

@@ -485,7 +485,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             if let separatorLayer = separatorLayer {
                 separatorLayer.frame = view.bounds
                 var separatorFrame = pillFrame
-                let separatorThickness: CGFloat = CGHairlineWidth()
+                let separatorThickness: CGFloat = .hairlineWidth
                 separatorFrame.y = pillFrame.height - separatorThickness
                 separatorFrame.size.height = separatorThickness
 

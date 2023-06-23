@@ -45,7 +45,6 @@ class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
         gestureBeganLocation = nil
     }
 
-    @objc
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesBegan(touches, with: event)
 
@@ -70,7 +69,6 @@ class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
         }
     }
 
-    @objc
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesMoved(touches, with: event)
 
@@ -104,7 +102,6 @@ class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
         }
     }
 
-    @objc
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesEnded(touches, with: event)
 
@@ -124,7 +121,6 @@ class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
         }
     }
 
-    @objc
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesCancelled(touches, with: event)
 

@@ -5,7 +5,6 @@
 
 import SignalCoreKit
 
-@objc
 public enum ThemeIcon: UInt {
     case settingsAccount
     case settingsLinkedDevices
@@ -154,7 +153,6 @@ public enum ThemeIcon: UInt {
 
 public extension Theme {
 
-    @objc
     class func iconImage(_ icon: ThemeIcon) -> UIImage {
         iconImage(icon, isDarkThemeEnabled: isDarkThemeEnabled)
     }

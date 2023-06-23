@@ -9,7 +9,6 @@ import SignalMessaging
 import SignalServiceKit
 import Vision
 
-@objc
 public enum QRCodeScanOutcome: UInt {
     case stopScanning
     case continueScanning
@@ -17,7 +16,6 @@ public enum QRCodeScanOutcome: UInt {
 
 // MARK: -
 
-@objc
 public protocol QRCodeScanDelegate: AnyObject {
     // A QR code scan might yield a String payload, Data payload or both.
     //
@@ -55,10 +53,8 @@ public protocol QRCodeScanDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class QRCodeScanViewController: OWSViewController {
 
-    @objc(QRCodeScanViewAppearance)
     public enum Appearance: UInt {
         case normal
         case unadorned
@@ -84,14 +80,12 @@ public class QRCodeScanViewController: OWSViewController {
 
     private let appearance: Appearance
 
-    @objc
     public weak var delegate: QRCodeScanDelegate?
 
     private var scanner: QRCodeScanner?
 
     private let canDeliverResultsFlag = AtomicBool(false)
 
-    @objc
     public required init(appearance: Appearance) {
         self.appearance = appearance
         super.init()
@@ -222,7 +216,7 @@ public class QRCodeScanViewController: OWSViewController {
             let maskingView = BezierPathView { layer, bounds in
                 // Add a circular mask
                 let path = UIBezierPath(rect: bounds)
-                let margin = ScaleFromIPhone5To7Plus(8, 16)
+                let margin = CGFloat.scaleFromIPhone5To7Plus(8, 16)
 
                 // Center the circle's bounding rectangle
                 let circleDiameter = bounds.size.smallerAxis - margin * 2

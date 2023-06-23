@@ -598,7 +598,7 @@ extension RecipientPickerViewController {
         let heroImageView = UIImageView(image: .init(named: "uiEmptyContact"))
         heroImageView.layer.minificationFilter = .trilinear
         heroImageView.layer.magnificationFilter = .trilinear
-        let heroSize = ScaleFromIPhone5To7Plus(100, 150)
+        let heroSize = CGFloat.scaleFromIPhone5To7Plus(100, 150)
         heroImageView.autoSetDimensions(to: CGSize(square: heroSize))
 
         let titleLabel = UILabel()
@@ -607,7 +607,7 @@ extension RecipientPickerViewController {
             comment: "Full width label displayed when attempting to compose message"
         )
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = .semiboldFont(ofSize: ScaleFromIPhone5To7Plus(17, 20))
+        titleLabel.font = .semiboldFont(ofSize: .scaleFromIPhone5To7Plus(17, 20))
         titleLabel.textAlignment = .center
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.numberOfLines = 0
@@ -618,7 +618,7 @@ extension RecipientPickerViewController {
             comment: "Full width label displayed when attempting to compose message"
         )
         subtitleLabel.textColor = Theme.secondaryTextAndIconColor
-        subtitleLabel.font = .regularFont(ofSize: ScaleFromIPhone5To7Plus(12, 14))
+        subtitleLabel.font = .regularFont(ofSize: .scaleFromIPhone5To7Plus(12, 14))
         subtitleLabel.textAlignment = .center
         subtitleLabel.lineBreakMode = .byWordWrapping
         subtitleLabel.numberOfLines = 0

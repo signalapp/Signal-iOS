@@ -186,7 +186,7 @@ class MediaPageViewController: UIPageViewController {
             // the workaround is to detect exactly safe area of 59 points and decrease it.
             var topInset = view.safeAreaInsets.top
             if topInset == 59 {
-                topInset -= 5 + CGHairlineWidth()
+                topInset -= 5 + .hairlineWidth
             }
             topBarVerticalPositionConstraint.constant = topInset
         }

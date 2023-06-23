@@ -243,7 +243,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     }
 
     private var createHeroViewSize: CGFloat {
-        ScaleFromIPhone5(100)
+        .scaleFromIPhone5(100)
     }
 
     private func createHeroImageView(imageName: String) -> UIView {
@@ -262,7 +262,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     }
 
     private var labelFont: UIFont {
-        UIFont.regularFont(ofSize: ScaleFromIPhone5To7Plus(18, 24))
+        UIFont.regularFont(ofSize: .scaleFromIPhone5To7Plus(18, 24))
     }
 
     private func formattedFileExtension() -> String? {

@@ -7,6 +7,7 @@ import BonMot
 import SafariServices
 import SignalServiceKit
 
+@objc
 open class ActionSheetController: OWSViewController {
     private enum Message {
         case text(String)
@@ -321,6 +322,7 @@ open class ActionSheetController: OWSViewController {
 
 // MARK: -
 
+@objc
 public class ActionSheetAction: NSObject {
 
     public let title: String
@@ -368,7 +370,6 @@ public class ActionSheetAction: NSObject {
         self.init(title: title, accessibilityIdentifier: nil, style: style, handler: handler)
     }
 
-    @objc
     public init(title: String, accessibilityIdentifier: String?, style: Style = .default, handler: Handler? = nil) {
         self.title = title
         self.accessibilityIdentifier = accessibilityIdentifier

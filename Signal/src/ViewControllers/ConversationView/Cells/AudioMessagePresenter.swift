@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Lottie
+import SignalServiceKit
 import SignalUI
-import UIKit
 
 // Defines the look of audio messages in the conversation view.
 class AudioMessagePresenter: AudioPresenter {

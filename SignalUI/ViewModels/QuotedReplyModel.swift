@@ -7,18 +7,11 @@ import SignalServiceKit
 
 // View model which has already fetched any attachments.
 
-@objc(OWSQuotedReplyModel)
 public class QuotedReplyModel: NSObject {
 
     public let timestamp: UInt64
-
-    @objc
     public let authorAddress: SignalServiceAddress
-
-    @objc
     public let attachmentStream: TSAttachmentStream?
-
-    @objc
     public let failedThumbnailAttachmentPointer: TSAttachmentPointer?
 
     // This property should be set IFF we are quoting a text message
@@ -28,12 +21,10 @@ public class QuotedReplyModel: NSObject {
     private let bodySource: TSQuotedMessageContentSource
     public let reactionEmoji: String?
 
-    @objc
     public var isRemotelySourced: Bool { bodySource == .remote }
 
     public var isStory: Bool { bodySource == .story }
 
-    @objc
     public let isGiftBadge: Bool
 
     // MARK: Attachments
@@ -41,13 +32,10 @@ public class QuotedReplyModel: NSObject {
     // This is a MIME type.
     //
     // This property should be set IFF we are quoting an attachment message.
-    @objc
     public let contentType: String?
 
-    @objc
     public let sourceFilename: String?
 
-    @objc
     public let thumbnailImage: UIImage?
     public let thumbnailViewFactory: (() -> UIView?)?
 

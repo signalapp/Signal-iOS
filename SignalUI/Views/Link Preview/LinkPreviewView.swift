@@ -1375,7 +1375,7 @@ public extension ManualLayoutView {
                                   layoutMargins: UIEdgeInsets = .zero) {
         addSubview(subview) { view in
             var subviewFrame = view.bounds.inset(by: layoutMargins)
-            subviewFrame.size.height = CGHairlineWidth()
+            subviewFrame.size.height = .hairlineWidth
             subviewFrame.y = view.bounds.height - (subviewFrame.height +
                                                     layoutMargins.bottom)
             subview.frame = subviewFrame

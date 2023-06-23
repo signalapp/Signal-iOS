@@ -124,10 +124,10 @@ public class FingerprintViewController: OWSViewController {
         verifyUnverifyPillbox.layer.masksToBounds = true
         verifyUnverifyButton.addSubview(verifyUnverifyPillbox)
         verifyUnverifyPillbox.autoHCenterInSuperview()
-        verifyUnverifyPillbox.autoPinEdge(toSuperviewEdge: .top, withInset: ScaleFromIPhone5To7Plus(10, 15))
-        verifyUnverifyPillbox.autoPinEdge(toSuperviewEdge: .bottom, withInset: ScaleFromIPhone5To7Plus(10, 20))
+        verifyUnverifyPillbox.autoPinEdge(toSuperviewEdge: .top, withInset: .scaleFromIPhone5To7Plus(10, 15))
+        verifyUnverifyPillbox.autoPinEdge(toSuperviewEdge: .bottom, withInset: .scaleFromIPhone5To7Plus(10, 20))
 
-        verifyUnverifyButtonLabel.font = .systemFont(ofSize: ScaleFromIPhone5To7Plus(14, 20), weight: .semibold)
+        verifyUnverifyButtonLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(14, 20), weight: .semibold)
         verifyUnverifyButtonLabel.textColor = .white
         verifyUnverifyButtonLabel.textAlignment = .center
         verifyUnverifyPillbox.addSubview(verifyUnverifyButtonLabel)
@@ -147,13 +147,13 @@ public class FingerprintViewController: OWSViewController {
             string: CommonStrings.learnMore,
             attributes: [ .underlineStyle: NSUnderlineStyle.single ]
         )
-        learnMoreLabel.font = .systemFont(ofSize: ScaleFromIPhone5To7Plus(13, 16))
+        learnMoreLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(13, 16))
         learnMoreLabel.textColor = Theme.accentBlueColor
         learnMoreLabel.textAlignment = .center
         learnMoreButton.addSubview(learnMoreLabel)
         learnMoreLabel.autoPinWidthToSuperview()
-        learnMoreLabel.autoPinEdge(toSuperviewEdge: .top, withInset: ScaleFromIPhone5To7Plus(5, 10))
-        learnMoreLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: ScaleFromIPhone5To7Plus(5, 10))
+        learnMoreLabel.autoPinEdge(toSuperviewEdge: .top, withInset: .scaleFromIPhone5To7Plus(5, 10))
+        learnMoreLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: .scaleFromIPhone5To7Plus(5, 10))
 
         // Instructions
         let instructionsFormat = NSLocalizedString(
@@ -162,7 +162,7 @@ public class FingerprintViewController: OWSViewController {
         )
         let instructionsLabel = UILabel()
         instructionsLabel.text = String(format: instructionsFormat, contactName)
-        instructionsLabel.font = .systemFont(ofSize: ScaleFromIPhone5To7Plus(11, 14))
+        instructionsLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(11, 14))
         instructionsLabel.textColor = Theme.secondaryTextAndIconColor
         instructionsLabel.textAlignment = .center
         instructionsLabel.numberOfLines = 0
@@ -174,7 +174,7 @@ public class FingerprintViewController: OWSViewController {
         // Fingerprint Label
         let fingerprintLabel = UILabel()
         fingerprintLabel.text = fingerprint.displayableText
-        fingerprintLabel.font = UIFont(name: "Menlo-Regular", size: ScaleFromIPhone5To7Plus(20, 23))
+        fingerprintLabel.font = UIFont(name: "Menlo-Regular", size: .scaleFromIPhone5To7Plus(20, 23))
         fingerprintLabel.textAlignment = .center
         fingerprintLabel.textColor = Theme.secondaryTextAndIconColor
         fingerprintLabel.numberOfLines = 3
@@ -184,8 +184,8 @@ public class FingerprintViewController: OWSViewController {
         fingerprintLabel.accessibilityIdentifier = "FingerprintViewController.fingerprintLabel"
         fingerprintLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapFingerprintLabel)))
         view.addSubview(fingerprintLabel)
-        fingerprintLabel.autoPinWidthToSuperview(withMargin: ScaleFromIPhone5To7Plus(50, 60))
-        fingerprintLabel.autoPinEdge(.bottom, to: .top, of: instructionsLabel, withOffset: -ScaleFromIPhone5To7Plus(8, 15))
+        fingerprintLabel.autoPinWidthToSuperview(withMargin: .scaleFromIPhone5To7Plus(50, 60))
+        fingerprintLabel.autoPinEdge(.bottom, to: .top, of: instructionsLabel, withOffset: -.scaleFromIPhone5To7Plus(8, 15))
 
         // Fingerprint Image
         let fingerprintView = UIView()
@@ -193,7 +193,7 @@ public class FingerprintViewController: OWSViewController {
         fingerprintView.accessibilityIdentifier = "FingerprintViewController.fingerprintView"
         view.addSubview(fingerprintView)
         fingerprintView.autoPinWidthToSuperviewMargins()
-        fingerprintView.autoPinEdge(.bottom, to: .top, of: fingerprintLabel, withOffset: -ScaleFromIPhone5To7Plus(10, 15))
+        fingerprintView.autoPinEdge(.bottom, to: .top, of: fingerprintLabel, withOffset: -.scaleFromIPhone5To7Plus(10, 15))
         fingerprintView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapFingerprintView)))
 
         let fingerprintCircle = CircleView()
@@ -218,7 +218,7 @@ public class FingerprintViewController: OWSViewController {
 
         let scanLabel = UILabel()
         scanLabel.text = NSLocalizedString("PRIVACY_TAP_TO_SCAN", comment: "Button that shows the 'scan with camera' view.")
-        scanLabel.font = .systemFont(ofSize: ScaleFromIPhone5To7Plus(14, 16), weight: .semibold)
+        scanLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(14, 16), weight: .semibold)
         scanLabel.textColor = Theme.secondaryTextAndIconColor
         fingerprintView.addSubview(scanLabel)
         scanLabel.autoHCenterInSuperview()
@@ -226,7 +226,7 @@ public class FingerprintViewController: OWSViewController {
         scanLabel.autoPinEdge(.bottom, to: .bottom, of: fingerprintCircle, withOffset: -4)
 
         // Verification State
-        verificationStateLabel.font = .systemFont(ofSize: ScaleFromIPhone5To7Plus(16, 20), weight: .semibold)
+        verificationStateLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(16, 20), weight: .semibold)
         verificationStateLabel.textColor = Theme.secondaryTextAndIconColor
         verificationStateLabel.textAlignment = .center
         verificationStateLabel.numberOfLines = 0
@@ -238,8 +238,8 @@ public class FingerprintViewController: OWSViewController {
         // layout from changing if the user is marked as verified or not
         // verified.
         verificationStateLabel.autoSetDimension(.height, toSize: round(verificationStateLabel.font.lineHeight * 2.25))
-        verificationStateLabel.autoPin(toTopLayoutGuideOf: self, withInset: ScaleFromIPhone5To7Plus(15, 20))
-        verificationStateLabel.autoPinEdge(.bottom, to: .top, of: fingerprintView, withOffset: -ScaleFromIPhone5To7Plus(10, 15))
+        verificationStateLabel.autoPin(toTopLayoutGuideOf: self, withInset: .scaleFromIPhone5To7Plus(15, 20))
+        verificationStateLabel.autoPinEdge(.bottom, to: .top, of: fingerprintView, withOffset: -.scaleFromIPhone5To7Plus(10, 15))
 
         updateVerificationStateLabel()
     }

@@ -5,12 +5,10 @@
 
 import SignalCoreKit
 
-@objc
 open class OWSLayerView: UIView {
 
     public var shouldAnimate = true
 
-    @objc
     public var layoutCallback: (UIView) -> Void
 
     public init() {
@@ -19,7 +17,6 @@ open class OWSLayerView: UIView {
         super.init(frame: .zero)
     }
 
-    @objc
     public init(frame: CGRect, layoutCallback: @escaping (UIView) -> Void) {
         self.layoutCallback = layoutCallback
         super.init(frame: frame)

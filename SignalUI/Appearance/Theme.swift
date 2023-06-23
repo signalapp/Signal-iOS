@@ -83,7 +83,6 @@ final public class Theme: NSObject {
 
     // MARK: - Theme Mode
 
-    @objc
     public static var isDarkThemeEnabled: Bool { shared.isDarkThemeEnabled }
 
     public class func getOrFetchCurrentMode() -> Mode {
@@ -251,7 +250,6 @@ final public class Theme: NSObject {
         isDarkThemeEnabled ? .ows_gray80 : .ows_gray02
     }
 
-    @objc
     public class var washColor: UIColor {
         isDarkThemeEnabled ? darkThemeWashColor : .ows_gray05
     }
@@ -264,7 +262,6 @@ final public class Theme: NSObject {
         isDarkThemeEnabled ? darkThemeNavbarIconColor : .ows_gray75
     }
 
-    @objc
     public class var secondaryTextAndIconColor: UIColor {
         isDarkThemeEnabled ? darkThemeSecondaryTextAndIconColor : lightThemeSecondaryTextAndIconColor
     }
@@ -296,7 +293,6 @@ final public class Theme: NSObject {
     // * Flat areas (e.g. button backgrounds) should use UIColor.ows_accentBlue.
     // * Fine detail (e.g., text, non-filled icons) should use Theme.accentBlueColor.
     //   It is brighter in dark mode, improving legibility.
-    @objc
     public class var accentBlueColor: UIColor {
         isDarkThemeEnabled ? .ows_accentBlueDark : .ows_accentBlue
     }
@@ -320,7 +316,6 @@ final public class Theme: NSObject {
         isDarkThemeEnabled ? UIColor(white: 0.2, alpha: 1) : UIColor(white: 0.92, alpha: 1)
     }
 
-    @objc
     public class var cellSeparatorColor: UIColor { hairlineColor }
 
     public class var tableCell2BackgroundColor: UIColor {
@@ -331,7 +326,6 @@ final public class Theme: NSObject {
         isDarkThemeEnabled ? darkThemeTableCell2PresentedBackgroundColor : .white
     }
 
-    @objc
     public class var tableCell2SelectedBackgroundColor: UIColor {
         isDarkThemeEnabled ? darkThemeTableCell2SelectedBackgroundColor : .ows_gray15
     }
@@ -340,7 +334,6 @@ final public class Theme: NSObject {
         isDarkThemeEnabled ? darkThemeTableCell2SelectedBackgroundColor2 : .ows_gray15
     }
 
-    @objc
     public class var tableCell2MultiSelectedBackgroundColor: UIColor {
         isDarkThemeEnabled ? darkThemeTableCell2MultiSelectedBackgroundColor : .ows_gray05
     }
@@ -367,10 +360,8 @@ final public class Theme: NSObject {
 
     // MARK: - Light Theme Colors
 
-    @objc
     public class var lightThemePrimaryColor: UIColor { .ows_gray90 }
 
-    @objc
     public class var lightThemeSecondaryTextAndIconColor: UIColor { .ows_gray60 }
 
     // MARK: - Dark Theme Colors
@@ -379,7 +370,6 @@ final public class Theme: NSObject {
 
     public class var darkThemePrimaryColor: UIColor { .ows_gray02 }
 
-    @objc
     public class var darkThemeSecondaryTextAndIconColor: UIColor { .ows_gray25 }
 
     public class var darkThemeWashColor: UIColor { .ows_gray75 }

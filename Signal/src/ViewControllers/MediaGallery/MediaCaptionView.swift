@@ -254,7 +254,7 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
 
         // MARK: Layout metrics
 
-        private static let maxHeight: CGFloat = ScaleFromIPhone5(200)
+        private static let maxHeight = CGFloat.scaleFromIPhone5(200)
         private static let collapsedNumberOfLines = 3
 
         private var collapsedSize: CGSize = .zero // 3 lines of text

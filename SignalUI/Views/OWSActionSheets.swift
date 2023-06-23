@@ -41,7 +41,13 @@ public enum OWSActionSheets {
         showActionSheet(actionSheet, fromViewController: fromViewController)
     }
 
-    public static func showConfirmationAlert(title: String? = nil, message: String? = nil, proceedTitle: String? = nil, proceedStyle: ActionSheetAction.Style = .default, proceedAction: @escaping ActionSheetAction.Handler) {
+    public static func showConfirmationAlert(
+        title: String? = nil,
+        message: String? = nil,
+        proceedTitle: String? = nil,
+        proceedStyle: ActionSheetAction.Style = .default,
+        proceedAction: @escaping ActionSheetAction.Handler
+    ) {
         assert(!title.isEmptyOrNil || !message.isEmptyOrNil)
 
         let actionSheet = ActionSheetController(title: title, message: message)
@@ -163,19 +169,4 @@ fileprivate extension ActionSheetController {
         okAction.accessibilityIdentifier = "OWSActionSheets.\("ok")"
         addAction(okAction)
     }
-}
-
-// MARK: - Objective-C bridge
-
-@objc(OWSActionSheets)
-@objcMembers
-public class OWSActionSheetsForObjC: NSObject {
-
-    public class func showActionSheet(title: String, message: String) {
-        OWSActionSheets.showActionSheet(title: title, message: message)
-    }
-
-    public class var cancelAction: ActionSheetAction { OWSActionSheets.cancelAction }
-
-    public class var dismissAction: ActionSheetAction { OWSActionSheets.dismissAction }
 }

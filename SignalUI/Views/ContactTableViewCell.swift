@@ -8,7 +8,6 @@ import SignalMessaging
 
 open class ContactTableViewCell: UITableViewCell, ReusableTableViewCell {
 
-    @objc
     open class var reuseIdentifier: String { "ContactTableViewCell" }
 
     private let cellView = ContactCellView()

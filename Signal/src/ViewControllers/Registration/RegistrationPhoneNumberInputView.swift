@@ -117,7 +117,7 @@ class RegistrationPhoneNumberInputView: UIStackView {
 
     private let dividerView: UIView = {
         let result = UIView()
-        result.autoSetDimension(.width, toSize: CGHairlineWidth())
+        result.autoSetDimension(.width, toSize: .hairlineWidth)
         result.setContentHuggingHorizontalHigh()
         return result
     }()

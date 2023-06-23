@@ -144,7 +144,7 @@ extension ShareAppExtensionContext: AppContext {
     var statusBarHeight: CGFloat { 20 }
 
     func frontmostViewController() -> UIViewController? {
-        return rootViewController.findFrontmostViewController(true)
+        return rootViewController.findFrontmostViewController(ignoringAlerts: true)
     }
 
     func openSystemSettings() { }

@@ -28,7 +28,7 @@ public extension UIApplication {
             owsFailDebug("Missing root view controller.")
             return nil
         }
-        return viewController.findFrontmostViewController(ignoringAlerts)
+        return viewController.findFrontmostViewController(ignoringAlerts: ignoringAlerts)
     }
 
     func openSystemSettings() {

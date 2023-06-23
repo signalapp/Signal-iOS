@@ -118,7 +118,6 @@ public class ContactShareViewModel: NSObject {
         return dbRecord.e164PhoneNumbers()
     }
 
-    @objc
     public var displayName: String {
         return dbRecord.name.displayName
     }

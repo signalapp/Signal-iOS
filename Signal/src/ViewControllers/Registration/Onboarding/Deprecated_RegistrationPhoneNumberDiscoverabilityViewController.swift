@@ -203,7 +203,7 @@ private class ButtonRow: UIButton {
         let divider = UIView()
         divider.backgroundColor = .ows_middleGray
         addSubview(divider)
-        divider.autoSetDimension(.height, toSize: CGHairlineWidth())
+        divider.autoSetDimension(.height, toSize: .hairlineWidth)
         divider.autoPinEdge(toSuperviewEdge: .trailing)
         divider.autoPinEdge(toSuperviewEdge: .bottom)
         divider.autoPinEdge(toSuperviewEdge: .leading, withInset: Self.hInset)

@@ -6,7 +6,6 @@
 import Foundation
 import SignalMessaging
 
-@objc
 public class ContactCellAccessoryView: NSObject {
     let accessoryView: UIView
     let size: CGSize
@@ -48,7 +47,6 @@ public class ContactCellConfiguration: NSObject {
         accessoryMessage?.nilIfEmpty != nil
     }
 
-    @objc
     public init(address: SignalServiceAddress, localUserDisplayMode: LocalUserDisplayMode) {
         self.dataSource = .address(address)
         self.localUserDisplayMode = localUserDisplayMode
@@ -106,7 +104,6 @@ public class ContactCellView: ManualStackView {
 
     public var tooltipTailReferenceView: UIView { return avatarView }
 
-    @objc
     public static let avatarTextHSpacing: CGFloat = 12
 
     private let nameLabel = CVLabel()

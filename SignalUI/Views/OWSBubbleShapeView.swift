@@ -245,7 +245,6 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
 
     // MARK: - CALayerDelegate
 
-    @objc
     public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
         // Disable all implicit CALayer animations.
         NSNull()

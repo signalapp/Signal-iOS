@@ -7,6 +7,7 @@ import BonMot
 import XCTest
 
 @testable import Signal
+@testable import SignalServiceKit
 @testable import SignalUI
 
 class CVTextTest: XCTestCase {

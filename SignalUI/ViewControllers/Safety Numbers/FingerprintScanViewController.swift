@@ -60,14 +60,14 @@ class FingerprintScanViewController: OWSViewController {
             "SCAN_CODE_INSTRUCTIONS",
             comment: "label presented once scanning (camera) view is visible."
         )
-        cameraInstructionLabel.font = .systemFont(ofSize: ScaleFromIPhone5To7Plus(14, 18))
+        cameraInstructionLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(14, 18))
         cameraInstructionLabel.textColor = .white
         cameraInstructionLabel.textAlignment = .center
         cameraInstructionLabel.numberOfLines = 0
         cameraInstructionLabel.lineBreakMode = .byWordWrapping
         footerView.addSubview(cameraInstructionLabel)
-        cameraInstructionLabel.autoPinWidthToSuperview(withMargin: ScaleFromIPhone5To7Plus(16, 30))
-        let instructionsVMargin = ScaleFromIPhone5To7Plus(10, 20)
+        cameraInstructionLabel.autoPinWidthToSuperview(withMargin: .scaleFromIPhone5To7Plus(16, 30))
+        let instructionsVMargin = CGFloat.scaleFromIPhone5To7Plus(10, 20)
         cameraInstructionLabel.autoPin(toBottomLayoutGuideOf: self, withInset: instructionsVMargin)
         cameraInstructionLabel.autoPinEdge(toSuperviewEdge: .top, withInset: instructionsVMargin)
     }

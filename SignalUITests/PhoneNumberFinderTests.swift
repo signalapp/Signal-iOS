@@ -4,6 +4,8 @@
 //
 
 import XCTest
+
+@testable import SignalServiceKit
 @testable import SignalUI
 
 final class PhoneNumberFinderTests: XCTestCase {

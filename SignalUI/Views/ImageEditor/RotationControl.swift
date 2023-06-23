@@ -164,7 +164,7 @@ class RotationControl: UIControl {
         static let stepRange = -45...45         // 45 degrees each direction
         static let stepValue: CGFloat = 3       // 1 mark = 3 degrees
         static let stepWidth: CGFloat = 12      // distance between markings
-        static let markingWidth: CGFloat = 2*CGHairlineWidth()
+        static let markingWidth: CGFloat = .hairlineWidthFraction(2)
         static let bandHeight: CGFloat = 32
         static let markingHeight: CGFloat = 12
     }

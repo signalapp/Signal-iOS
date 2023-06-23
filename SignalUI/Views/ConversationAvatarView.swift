@@ -12,10 +12,10 @@ public protocol ConversationAvatarViewDelegate: AnyObject {
 
     func presentStoryViewController()
     func presentAvatarViewController()
-
-    func presentActionSheet(_ vc: ActionSheetController, animated: Bool)
 }
-public extension ConversationAvatarViewDelegate {
+
+public extension ConversationAvatarViewDelegate where Self: UIViewController {
+
     func didTapAvatar(_ configuration: ConversationAvatarView.Configuration) {
         if configuration.hasStoriesToDisplay {
             let actionSheet = ActionSheetController()
@@ -509,7 +509,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         return tapGestureRecognizer
     }()
 
-    public weak var interactionDelegate: ConversationAvatarViewDelegate? {
+    public weak var interactionDelegate: (ConversationAvatarViewDelegate & UIViewController)? {
         didSet {
             if interactionDelegate != nil, oldValue == nil {
                 avatarView.addGestureRecognizer(avatarTapGestureRecognizer)

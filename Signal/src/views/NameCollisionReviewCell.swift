@@ -155,7 +155,7 @@ class NameCollisionCell: UITableViewCell {
     let separatorView: UIView = {
         let hairline = UIView()
         hairline.backgroundColor = Theme.cellSeparatorColor
-        hairline.autoSetDimension(.height, toSize: CGHairlineWidth())
+        hairline.autoSetDimension(.height, toSize: .hairlineWidth)
         let separator = UIView()
         separator.addSubview(hairline)
         hairline.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(hMargin: 0, vMargin: 12))

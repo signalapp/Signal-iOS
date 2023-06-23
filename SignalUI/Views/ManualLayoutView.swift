@@ -56,7 +56,6 @@ open class ManualLayoutView: UIView, CVView {
         AssertIsOnMainThread()
     }
 
-    @objc
     public var shouldDeactivateConstraints = true
 
     public override func updateConstraints() {
