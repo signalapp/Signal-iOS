@@ -119,7 +119,7 @@ public class FeatureFlags: BaseFlags {
         }
     }
 
-    public static let textFormattingSend = build.includes(.dev)
+    public static let textFormattingSend = build.includes(.internal)
 }
 
 // MARK: -
