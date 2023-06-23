@@ -20,7 +20,7 @@ class JoinGroupCallPill: UIControl {
 
     private let callImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.setTemplateImageName("video-solid-24", tintColor: .ows_white)
+        imageView.setTemplateImageName("video-fill", tintColor: .ows_white)
         imageView.isUserInteractionEnabled = false
         return imageView
     }()

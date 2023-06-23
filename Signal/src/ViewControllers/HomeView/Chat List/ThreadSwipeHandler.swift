@@ -29,7 +29,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
             }
             pinnedStateAction.backgroundColor = UIColor(rgbHex: 0xff990a)
             pinnedStateAction.accessibilityLabel = CommonStrings.unpinAction
-            pinnedStateAction.image = actionImage(name: "unpin-solid-24", title: CommonStrings.unpinAction)
+            pinnedStateAction.image = actionImage(name: "pin-slash-fill", title: CommonStrings.unpinAction)
         } else {
             pinnedStateAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
                 self?.pinThread(threadViewModel: threadViewModel)
@@ -37,7 +37,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
             }
             pinnedStateAction.backgroundColor = UIColor(rgbHex: 0xff990a)
             pinnedStateAction.accessibilityLabel = CommonStrings.pinAction
-            pinnedStateAction.image = actionImage(name: "pin-solid-24", title: CommonStrings.pinAction)
+            pinnedStateAction.image = actionImage(name: "pin-fill", title: CommonStrings.pinAction)
         }
 
         let readStateAction: UIContextualAction
@@ -48,7 +48,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
             }
             readStateAction.backgroundColor = .ows_accentBlue
             readStateAction.accessibilityLabel = CommonStrings.readAction
-            readStateAction.image = actionImage(name: "read-solid-24", title: CommonStrings.readAction)
+            readStateAction.image = actionImage(name: "chat-check-fill", title: CommonStrings.readAction)
         } else {
             readStateAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completion) in
                 completion(false)
@@ -56,7 +56,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
             }
             readStateAction.backgroundColor = .ows_accentBlue
             readStateAction.accessibilityLabel = CommonStrings.unreadAction
-            readStateAction.image = actionImage(name: "unread-solid-24", title: CommonStrings.unreadAction)
+            readStateAction.image = actionImage(name: "chat-badge-fill", title: CommonStrings.unreadAction)
         }
 
         // The first action will be auto-performed for "very long swipes".
@@ -79,8 +79,10 @@ extension ThreadSwipeHandler where Self: UIViewController {
             completion(false)
         }
         muteAction.backgroundColor = .ows_accentIndigo
-        muteAction.image = actionImage(name: threadViewModel.isMuted ? "bell-solid-24" : "bell-disabled-solid-24",
-                                       title: threadViewModel.isMuted ? CommonStrings.unmuteButton : CommonStrings.muteButton)
+        muteAction.image = actionImage(
+            name: threadViewModel.isMuted ? "bell-fill" : "bell-slash-fill",
+            title: threadViewModel.isMuted ? CommonStrings.unmuteButton : CommonStrings.muteButton
+        )
         muteAction.accessibilityLabel = threadViewModel.isMuted ? CommonStrings.unmuteButton : CommonStrings.muteButton
 
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
@@ -88,7 +90,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
             completion(false)
         }
         deleteAction.backgroundColor = .ows_accentRed
-        deleteAction.image = actionImage(name: "trash-solid-24", title: CommonStrings.deleteButton)
+        deleteAction.image = actionImage(name: "trash-fill", title: CommonStrings.deleteButton)
         deleteAction.accessibilityLabel = CommonStrings.deleteButton
 
         let archiveAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completion) in
@@ -97,8 +99,9 @@ extension ThreadSwipeHandler where Self: UIViewController {
         }
 
         let archiveTitle = threadViewModel.isArchived ? CommonStrings.unarchiveAction : CommonStrings.archiveAction
+        let iconName = threadViewModel.isArchived ? "archive-up-fill" : "archive-fill"
         archiveAction.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray45 : .ows_gray25
-        archiveAction.image = actionImage(name: "archive-solid-24", title: archiveTitle)
+        archiveAction.image = actionImage(name: iconName, title: archiveTitle)
         archiveAction.accessibilityLabel = archiveTitle
 
         // The first action will be auto-performed for "very long swipes".

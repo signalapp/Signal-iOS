@@ -32,7 +32,7 @@ class GetStartedBannerCell: UICollectionViewCell {
     }()
 
     private let closeButton: OWSButton = {
-        let button = OWSButton(imageName: "x-16", tintColor: .ows_white)
+        let button = OWSButton(imageName: "x-compact", tintColor: .ows_white)
         button.backgroundColor = .ows_gray40
         return button
     }()

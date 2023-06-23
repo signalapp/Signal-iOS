@@ -200,12 +200,7 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
         confirmButton.autoPinEdges(toEdgesOf: confirmButtonContainer)
 
         let closeButton = OWSButton()
-        closeButton.setImage(
-            UIImage(named: "x-24")?
-                .withRenderingMode(.alwaysTemplate)
-                .asTintedImage(color: .ows_white),
-            for: .normal
-        )
+        closeButton.setImage(Theme.iconImage(.buttonX).asTintedImage(color: .ows_white), for: .normal)
         closeButton.contentMode = .center
         closeButton.block = { [weak self] in
             guard let self = self else { return }

@@ -194,13 +194,11 @@ public class SearchResultsBar: UIView {
             leftInteriorChevronMargin = 8
         }
 
-        let upChevron = #imageLiteral(resourceName: "ic_chevron_up").withRenderingMode(.alwaysTemplate)
-        showLessRecentButton = UIBarButtonItem(image: upChevron, style: .plain, target: self, action: #selector(didTapShowLessRecent))
+        showLessRecentButton = UIBarButtonItem(image: Theme.iconImage(.chevronUp), style: .plain, target: self, action: #selector(didTapShowLessRecent))
         showLessRecentButton.imageInsets = UIEdgeInsets(top: 2, left: leftExteriorChevronMargin, bottom: 2, right: leftInteriorChevronMargin)
         showLessRecentButton.tintColor = Theme.accentBlueColor
 
-        let downChevron = #imageLiteral(resourceName: "ic_chevron_down").withRenderingMode(.alwaysTemplate)
-        showMoreRecentButton = UIBarButtonItem(image: downChevron, style: .plain, target: self, action: #selector(didTapShowMoreRecent))
+        showMoreRecentButton = UIBarButtonItem(image: Theme.iconImage(.chevronDown), style: .plain, target: self, action: #selector(didTapShowMoreRecent))
         showMoreRecentButton.imageInsets = UIEdgeInsets(top: 2, left: leftInteriorChevronMargin, bottom: 2, right: leftExteriorChevronMargin)
         showMoreRecentButton.tintColor = Theme.accentBlueColor
 

@@ -159,8 +159,7 @@ class ProfileBioViewController: OWSTableViewController2 {
         emojiButton.block = { [weak self] in
             self?.didTapEmojiButton()
         }
-        addEmojiImageView.setTemplateImageName("add-emoji-outline-24",
-                                               tintColor: Theme.secondaryTextAndIconColor)
+        addEmojiImageView.setTemplateImageName("emoji-plus", tintColor: Theme.secondaryTextAndIconColor)
         addEmojiImageView.autoSetDimensions(to: .square(Self.bioButtonHeight))
         emojiButton.addSubview(bioEmojiLabel)
         emojiButton.addSubview(addEmojiImageView)
@@ -181,7 +180,7 @@ class ProfileBioViewController: OWSTableViewController2 {
         bioTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidEnd)
 
         let cancelColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray45 : UIColor.ows_gray25
-        let cancelIcon = UIImageView.withTemplateImageName("x-circle-solid-16", tintColor: cancelColor)
+        let cancelIcon = UIImageView.withTemplateImageName("x-circle-fill-compact", tintColor: cancelColor)
 
         cancelIcon.autoSetDimensions(to: .square(16))
         cancelButton.autoSetDimensions(to: .square(Self.bioButtonHeight))

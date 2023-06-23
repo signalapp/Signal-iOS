@@ -933,6 +933,8 @@
 		766035A9286CE4CB00F6B71C /* MediaTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766035A8286CE4CB00F6B71C /* MediaTopBar.swift */; };
 		76616C9D2A266A05005F7001 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76616C9C2A266A05005F7001 /* WindowManager.swift */; };
 		76616C9F2A268073005F7001 /* WindowManagerFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE69271EF500000AC89F /* WindowManagerFix.m */; };
+		7665BC9D2A3A72910060279B /* Symbols.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7665BC9C2A3A72910060279B /* Symbols.xcassets */; };
+		7665BC9E2A3A72910060279B /* Symbols.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7665BC9C2A3A72910060279B /* Symbols.xcassets */; };
 		7666D54428331E1100A3BDB9 /* ImageEditorViewController+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */; };
 		7666D54628331E4800A3BDB9 /* ImageEditorViewController+Blur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */; };
 		7666D54828331E6900A3BDB9 /* ImageEditorViewController+Text.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */; };
@@ -3411,6 +3413,7 @@
 		766035A8286CE4CB00F6B71C /* MediaTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTopBar.swift; sourceTree = "<group>"; };
 		76616C9C2A266A05005F7001 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		76616C9E2A2678C4005F7001 /* WindowManagerFix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WindowManagerFix.h; path = UserInterface/WindowManagerFix.h; sourceTree = "<group>"; };
+		7665BC9C2A3A72910060279B /* Symbols.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Symbols.xcassets; sourceTree = "<group>"; };
 		7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Draw.swift"; sourceTree = "<group>"; };
 		7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Blur.swift"; sourceTree = "<group>"; };
 		7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Text.swift"; sourceTree = "<group>"; };
@@ -7743,6 +7746,7 @@
 				F0C124B626D4788A0031C96F /* NSE-Images.xcassets */,
 				881FF30623B5B1520023B620 /* Signal-AppStore.entitlements */,
 				B657DDC91911A40500F45B0C /* Signal.entitlements */,
+				7665BC9C2A3A72910060279B /* Symbols.xcassets */,
 			);
 			path = Signal;
 			sourceTree = "<group>";
@@ -10154,6 +10158,7 @@
 			files = (
 				3478504C1FD7496D007B8332 /* Images.xcassets in Resources */,
 				4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */,
+				7665BC9E2A3A72910060279B /* Symbols.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10263,6 +10268,7 @@
 				66586D3829005A1B00DDA9B9 /* story_viewer_onboarding_1.json in Resources */,
 				66586D3729005A1B00DDA9B9 /* story_viewer_onboarding_2.json in Resources */,
 				66586D3929005A1B00DDA9B9 /* story_viewer_onboarding_3.json in Resources */,
+				7665BC9D2A3A72910060279B /* Symbols.xcassets in Resources */,
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */,

@@ -174,7 +174,7 @@ class StoryContextViewController: OWSViewController {
     private lazy var zoomPinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchZoom))
     private lazy var zoomPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePinchZoom))
 
-    private lazy var closeButton = OWSButton(imageName: "x-24", tintColor: .ows_white)
+    private lazy var closeButton = OWSButton(imageName: Theme.iconName(.buttonX), tintColor: .ows_white)
 
     private lazy var mediaViewContainer = UIView()
 
@@ -413,7 +413,7 @@ class StoryContextViewController: OWSViewController {
 
             let failedIcon = UIImageView()
             failedIcon.contentMode = .scaleAspectFit
-            failedIcon.setTemplateImageName("error-20", tintColor: .ows_accentRed)
+            failedIcon.setTemplateImageName("error-circle-20", tintColor: .ows_accentRed)
             failedIcon.autoSetDimension(.width, toSize: 20)
             sendingIndicatorStackView.addArrangedSubview(failedIcon)
 
@@ -472,12 +472,12 @@ class StoryContextViewController: OWSViewController {
             case .incoming:
                 if case .groupId = context {
                     if currentItem.numberOfReplies == 0 {
-                        leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
+                        leadingIcon = UIImage(imageLiteralResourceName: "reply-20")
                         repliesAndViewsButtonText = OWSLocalizedString(
                             "STORY_REPLY_TO_GROUP_BUTTON",
                             comment: "Button for replying to a group story with no existing replies.")
                     } else {
-                        trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
+                        trailingIcon = UIImage(imageLiteralResourceName: "chevron-right-20")
                         let format = OWSLocalizedString(
                             "STORY_REPLIES_COUNT_%d",
                             tableName: "PluralAware",
@@ -485,7 +485,7 @@ class StoryContextViewController: OWSViewController {
                         repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.numberOfReplies)
                     }
                 } else {
-                    leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
+                    leadingIcon = UIImage(imageLiteralResourceName: "reply-20")
                     repliesAndViewsButtonText = OWSLocalizedString(
                         "STORY_REPLY_BUTTON",
                         comment: "Button for replying to a story with no existing replies.")
@@ -518,7 +518,7 @@ class StoryContextViewController: OWSViewController {
                         comment: "Text indicating that the user has views turned off"
                     )
                 } else {
-                    trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
+                    trailingIcon = UIImage(imageLiteralResourceName: "chevron-right-20")
                     repliesAndViewsButtonText = textSegments.joined(separator: "  ")
                 }
             }

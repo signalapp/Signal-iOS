@@ -91,7 +91,7 @@ class RegistrationPhoneNumberInputView: UIStackView {
     }()
 
     private lazy var countryCodeChevron: UIImageView = {
-        let result = UIImageView(image: .init(named: "chevron-down-18"))
+        let result = UIImageView(image: UIImage(imageLiteralResourceName: "chevron-down-extra-small"))
         result.autoSetDimensions(to: .square(12))
         result.setCompressionResistanceHigh()
         return result

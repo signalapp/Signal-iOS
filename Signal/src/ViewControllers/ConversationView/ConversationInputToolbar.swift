@@ -191,7 +191,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     }()
 
     private lazy var stickerButton: UIButton = {
-        let imageResourceName = Theme.isDarkThemeEnabled ? "sticker-solid-24" : "sticker-outline-24"
         let button = UIButton(type: .system)
         button.tintColor = Theme.primaryIconColor
         button.accessibilityLabel = OWSLocalizedString(
@@ -199,7 +198,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             comment: "accessibility label for the button which shows the sticker picker"
         )
         button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "stickerButton")
-        button.setImage(UIImage(imageLiteralResourceName: imageResourceName), for: .normal)
+        button.setImage(UIImage(imageLiteralResourceName: "sticker"), for: .normal)
         button.addTarget(self, action: #selector(stickerButtonPressed), for: .touchUpInside)
         button.autoSetDimensions(to: CGSize(width: 40, height: LayoutMetrics.minTextViewHeight))
         button.setContentHuggingHorizontalHigh()
@@ -208,7 +207,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     }()
 
     private lazy var keyboardButton: UIButton = {
-        let imageResourceName = Theme.isDarkThemeEnabled ? "keyboard-solid-24" : "keyboard-outline-24"
         let button = UIButton(type: .system)
         button.tintColor = Theme.primaryIconColor
         button.accessibilityLabel = OWSLocalizedString(
@@ -216,7 +214,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             comment: "accessibility label for the button which shows the regular keyboard instead of sticker picker"
         )
         button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "keyboardButton")
-        button.setImage(UIImage(imageLiteralResourceName: imageResourceName), for: .normal)
+        button.setImage(UIImage(imageLiteralResourceName: "keyboard"), for: .normal)
         button.addTarget(self, action: #selector(keyboardButtonPressed), for: .touchUpInside)
         button.autoSetDimensions(to: CGSize(width: 40, height: LayoutMetrics.minTextViewHeight))
         button.setContentHuggingHorizontalHigh()
@@ -636,7 +634,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
                 comment: "Accessibility hint describing what you can do with the camera button"
             )
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "cameraButton")
-            button.setImage(Theme.iconImage(.cameraButton), for: .normal)
+            button.setImage(Theme.iconImage(.buttonCamera), for: .normal)
             button.bounds.size = CGSize(width: 40, height: LayoutMetrics.minToolbarItemHeight)
             return button
         }()
@@ -653,7 +651,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
                 comment: "accessibility hint for the button which records voice memos"
             )
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "voiceMemoButton")
-            button.setImage(Theme.iconImage(.micButton), for: .normal)
+            button.setImage(Theme.iconImage(.buttonMicrophone), for: .normal)
             button.bounds.size = CGSize(width: 40, height: LayoutMetrics.minToolbarItemHeight)
             return button
         }()
@@ -746,7 +744,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             return view
         }()
 
-        private let iconImageView = UIImageView(image: UIImage(imageLiteralResourceName: "plus-24"))
+        private let iconImageView = UIImageView(image: UIImage(imageLiteralResourceName: "plus"))
 
         private override init(frame: CGRect) {
             super.init(frame: frame)
@@ -1365,7 +1363,9 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         let redCircleView = CircleView(diameter: 80)
         redCircleView.backgroundColor = .ows_accentRed
-        let whiteIconView = UIImageView(image: UIImage(imageLiteralResourceName: "mic-solid-36"))
+        let whiteIconView = UIImageView(image: UIImage(imageLiteralResourceName: "mic-fill"))
+        whiteIconView.tintColor = .white
+        whiteIconView.autoSetDimensions(to: .square(36))
         redCircleView.addSubview(whiteIconView)
         whiteIconView.autoCenterInSuperview()
         addSubview(redCircleView)
@@ -1373,9 +1373,9 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         redCircleView.autoPinEdge(toSuperviewEdge: .right, withInset: 12)
         self.voiceMemoRedRecordingCircle = redCircleView
 
-        let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "mic-solid-24").withRenderingMode(.alwaysTemplate))
+        let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "mic-fill"))
         imageView.tintColor = .ows_accentRed
-        imageView.setContentHuggingHigh()
+        imageView.autoSetDimensions(to: .square(24))
         voiceMemoContentView.addSubview(imageView)
         imageView.autoVCenterInSuperview()
         imageView.autoPinEdge(toSuperviewEdge: .left, withInset: 12)

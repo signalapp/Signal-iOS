@@ -19,7 +19,7 @@ class DeviceTransferNavigationController: UINavigationController {
         setNavigationBarHidden(true, animated: false)
 
         let dismissButton = UIButton()
-        dismissButton.setTemplateImageName("x-24", tintColor: Theme.primaryIconColor)
+        dismissButton.setTemplateImage(Theme.iconImage(.buttonX), tintColor: Theme.primaryIconColor)
         dismissButton.addTarget(self, action: #selector(tappedDismiss), for: .touchUpInside)
 
         view.addSubview(dismissButton)

@@ -142,7 +142,6 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
 
     var item: AllMediaItem?
 
-    private static let selectedBadgeImage = UIImage(named: "media-composer-checkmark")
     public var loadingColor = Theme.washColor
     private(set) var allowsMultipleSelection = false {
         didSet {
@@ -185,7 +184,7 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
                 badgeShadow.gradientLayer.endPoint = CGPoint(x: 1, y: 1)
                 badgeIconView.addSubview(badgeShadow)
 
-                let badgeIcon = UIImageView(image: Theme.iconImage(.heart16, isDarkThemeEnabled: true).withRenderingMode(.alwaysTemplate))
+                let badgeIcon = UIImageView(image: UIImage(imageLiteralResourceName: "heart-fill-compact"))
                 badgeIcon.tintColor = .white
                 badgeIconView.addSubview(badgeIcon)
 
@@ -238,8 +237,8 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
         highlightedMaskView.autoPinEdgesToSuperviewEdges()
         selectedMaskView.autoPinEdgesToSuperviewEdges()
 
-        selectionButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
-        selectionButton.autoPinEdge(toSuperviewEdge: .top, withInset: 6)
+        selectionButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 5)
+        selectionButton.autoPinEdge(toSuperviewEdge: .top, withInset: 5)
     }
 
     @available(*, unavailable, message: "Unimplemented")

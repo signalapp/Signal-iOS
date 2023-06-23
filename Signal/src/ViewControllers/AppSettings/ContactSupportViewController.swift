@@ -147,8 +147,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
 
     func setupNavigationBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.cancelButton,
-            style: .plain,
+            barButtonSystemItem: .cancel,
             target: self,
             action: #selector(didTapCancel)
         )
@@ -393,7 +392,7 @@ extension ContactSupportViewController {
         label.numberOfLines = 0
         label.textColor = Theme.primaryTextColor
 
-        let infoButton = OWSButton(imageName: "help-outline-24", tintColor: Theme.secondaryTextAndIconColor) { [weak self] in
+        let infoButton = OWSButton(imageName: "help", tintColor: Theme.secondaryTextAndIconColor) { [weak self] in
             let vc = SFSafariViewController(url: SupportConstants.debugLogsInfoURL)
             self?.present(vc, animated: true)
         }
@@ -440,7 +439,7 @@ extension ContactSupportViewController {
                 self?.updateRightBarButton()
                 self?.rebuildTableContents()
             }
-            if selectedFilter == filter { action.trailingIcon = .checkCircle24 }
+            if selectedFilter == filter { action.trailingIcon = .checkCircle }
             actionSheet.addAction(action)
         }
 

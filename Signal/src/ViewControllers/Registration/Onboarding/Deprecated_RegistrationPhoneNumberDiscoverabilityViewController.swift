@@ -180,7 +180,7 @@ private class ButtonRow: UIButton {
         titleLabel.text = title
 
         selectedImageView.isHidden = true
-        selectedImageView.setTemplateImageName(Theme.iconName(.accessoryCheckmark), tintColor: Theme.primaryIconColor)
+        selectedImageView.setTemplateImage(Theme.iconImage(.checkmark), tintColor: Theme.primaryIconColor)
         selectedImageView.contentMode = .scaleAspectFit
         selectedImageView.autoSetDimension(.width, toSize: 24)
 

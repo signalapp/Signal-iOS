@@ -2,7 +2,8 @@
   "images" : [
     {
       "filename" : "chevron-right-colored-42.pdf",
-      "idiom" : "universal"
+      "idiom" : "universal",
+      "language-direction" : "left-to-right"
     }
   ],
   "info" : {

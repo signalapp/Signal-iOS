@@ -200,7 +200,7 @@ extension ConversationSettingsViewController {
 
             return OWSTableItem.buildDisclosureCell(name: OWSLocalizedString("VERIFY_PRIVACY",
                                                                             comment: "Label for button or row which allows users to verify the safety number of another user."),
-                                                    icon: .settingsViewSafetyNumber,
+                                                    icon: .contactInfoSafetyNumber,
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "safety_numbers"))
         },
         actionBlock: { [weak self] in
@@ -223,7 +223,7 @@ extension ConversationSettingsViewController {
                         "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
                         comment: "Indicates that user is in the system contacts list."
                     ),
-                    icon: .settingsUserInContacts,
+                    icon: .contactInfoUserInContacts,
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "is_in_contacts")
                 )
             },
@@ -245,7 +245,7 @@ extension ConversationSettingsViewController {
                         "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
                         comment: "button in conversation settings view."
                     ),
-                    icon: .settingsAddToContacts,
+                    icon: .contactInfoAddToContacts,
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "add_to_system_contacts")
                 )
             },
@@ -263,7 +263,7 @@ extension ConversationSettingsViewController {
             }
 
             let cell = OWSTableItem.buildCell(
-                icon: .color24,
+                icon: .chatSettingsWallpaper,
                 itemName: OWSLocalizedString(
                     "SETTINGS_ITEM_COLOR_AND_WALLPAPER",
                     comment: "Label for settings view that allows user to change the chat color and wallpaper."
@@ -286,7 +286,7 @@ extension ConversationSettingsViewController {
             }
 
             let cell = OWSTableItem.buildCell(
-                icon: .settingsMessageSound,
+                icon: .chatSettingsMessageSound,
                 itemName: OWSLocalizedString(
                     "SOUND_AND_NOTIFICATION_SETTINGS",
                     comment: "table cell label in conversation settings"
@@ -312,8 +312,8 @@ extension ConversationSettingsViewController {
                 guard let self = self else { return UITableViewCell() }
                 let cell = OWSTableItem.buildCell(
                     icon: disappearingMessagesConfiguration.isEnabled
-                        ? .settingsTimer
-                        : .settingsTimerDisabled,
+                        ? .chatSettingsTimerOn
+                        : .chatSettingsTimerOff,
                     itemName: OWSLocalizedString(
                         "DISAPPEARING_MESSAGES",
                         comment: "table cell label in conversation settings"
@@ -358,11 +358,15 @@ extension ConversationSettingsViewController {
                     return OWSTableItem.newCell()
                 }
 
-                return OWSTableItem.buildCell(icon: .settingsLeaveGroup,
-                                                      itemName: OWSLocalizedString("LEAVE_GROUP_ACTION",
-                                                                                  comment: "table cell label in conversation settings"),
-                                                      customColor: UIColor.ows_accentRed,
-                                                      accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "leave_group"))
+                return OWSTableItem.buildCell(
+                    icon: .groupInfoLeaveGroup,
+                    itemName: OWSLocalizedString(
+                        "LEAVE_GROUP_ACTION",
+                        comment: "table cell label in conversation settings"
+                    ),
+                    customColor: UIColor.ows_accentRed,
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "leave_group")
+                )
             },
             actionBlock: { [weak self] in
                 self?.didTapLeaveGroup()
@@ -393,10 +397,12 @@ extension ConversationSettingsViewController {
                                             comment: "Label for 'block user' action in conversation settings view."))
                 customColor = UIColor.ows_accentRed
             }
-            let cell = OWSTableItem.buildCell(icon: .settingsBlock,
-                                                      itemName: cellTitle,
-                                                      customColor: customColor,
-                                                      accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "block"))
+            let cell = OWSTableItem.buildCell(
+                icon: .chatSettingsBlock,
+                itemName: cellTitle,
+                customColor: customColor,
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "block")
+            )
             return cell
         },
         actionBlock: { [weak self] in
@@ -419,10 +425,12 @@ extension ConversationSettingsViewController {
                 return OWSTableItem.newCell()
             }
 
-            return OWSTableItem.buildCell(icon: .settingsAdvanced,
-                                                  itemName: "Internal",
-                                                  accessoryType: .disclosureIndicator,
-                                                  accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "internal"))
+            return OWSTableItem.buildCell(
+                icon: .settingsAdvanced,
+                itemName: "Internal",
+                accessoryType: .disclosureIndicator,
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "internal")
+            )
         },
         actionBlock: { [weak self] in
             self?.didTapInternalSettings()
@@ -466,10 +474,12 @@ extension ConversationSettingsViewController {
                 cell.preservesSuperviewLayoutMargins = true
                 cell.contentView.preservesSuperviewLayoutMargins = true
 
-                let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers,
-                                                                  iconSize: AvatarBuilder.smallAvatarSizePoints,
-                                                                  innerIconSize: 24,
-                                                                  iconTintColor: Theme.primaryTextColor)
+                let iconView = OWSTableItem.buildIconInCircleView(
+                    icon: .groupInfoAddMembers,
+                    iconSize: AvatarBuilder.smallAvatarSizePoints,
+                    innerIconSize: 20,
+                    iconTintColor: Theme.primaryTextColor
+                )
 
                 let rowLabel = UILabel()
                 rowLabel.text = OWSLocalizedString("CONVERSATION_SETTINGS_ADD_MEMBERS",
@@ -583,10 +593,12 @@ extension ConversationSettingsViewController {
                     cell.preservesSuperviewLayoutMargins = true
                     cell.contentView.preservesSuperviewLayoutMargins = true
 
-                    let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsShowAllMembers,
-                                                                      iconSize: AvatarBuilder.smallAvatarSizePoints,
-                                                                      innerIconSize: 24,
-                                                                      iconTintColor: Theme.primaryTextColor)
+                    let iconView = OWSTableItem.buildIconInCircleView(
+                        icon: .groupInfoShowAllMembers,
+                        iconSize: AvatarBuilder.smallAvatarSizePoints,
+                        innerIconSize: 20,
+                        iconTintColor: Theme.primaryTextColor
+                    )
 
                     let rowLabel = UILabel()
                     rowLabel.text = CommonStrings.seeAllButton
@@ -621,24 +633,30 @@ extension ConversationSettingsViewController {
         let groupLinkStatus = (groupModelV2.isGroupInviteLinkEnabled
                                ? CommonStrings.switchOn
                                : CommonStrings.switchOff)
-        section.add(OWSTableItem.disclosureItem(icon: .settingsLink,
-                                                name: OWSLocalizedString("CONVERSATION_SETTINGS_GROUP_LINK",
-                                                                        comment: "Label for 'group link' action in conversation settings view."),
-                                                accessoryText: groupLinkStatus,
-                                                accessibilityIdentifier: "conversation_settings_group_link",
-                                                actionBlock: { [weak self] in
-            self?.showGroupLinkView()
-        }))
+        section.add(OWSTableItem.disclosureItem(
+            icon: .groupInfoGroupLink,
+            name: OWSLocalizedString(
+                "CONVERSATION_SETTINGS_GROUP_LINK",
+                comment: "Label for 'group link' action in conversation settings view."
+            ),
+            accessoryText: groupLinkStatus,
+            accessibilityIdentifier: "conversation_settings_group_link",
+            actionBlock: { [weak self] in
+                self?.showGroupLinkView()
+            })
+        )
 
         let itemTitle = OWSLocalizedString("CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",
                                           comment: "Label for 'member requests & invites' action in conversation settings view.")
-        section.add(OWSTableItem.disclosureItem(icon: .settingsViewRequestAndInvites,
-                                                name: itemTitle,
-                                                accessoryText: OWSFormat.formatInt(groupModelV2.groupMembership.invitedOrRequestMembers.count),
-                                                accessibilityIdentifier: "conversation_settings_requests_and_invites",
-                                                actionBlock: { [weak self] in
-                                                    self?.showMemberRequestsAndInvitesView()
-        }))
+        section.add(OWSTableItem.disclosureItem(
+            icon: .groupInfoRequestAndInvites,
+            name: itemTitle,
+            accessoryText: OWSFormat.formatInt(groupModelV2.groupMembership.invitedOrRequestMembers.count),
+            accessibilityIdentifier: "conversation_settings_requests_and_invites",
+            actionBlock: { [weak self] in
+                self?.showMemberRequestsAndInvitesView()
+            })
+        )
 
         if canEditPermissions {
             let itemTitle = OWSLocalizedString(
@@ -646,7 +664,7 @@ extension ConversationSettingsViewController {
                 comment: "Label for 'permissions' action in conversation settings view."
             )
             section.add(OWSTableItem.disclosureItem(
-                icon: .settingsPrivacy,
+                icon: .groupInfoPermissions,
                 name: itemTitle,
                 accessibilityIdentifier: "conversation_settings_permissions",
                 actionBlock: { [weak self] in
@@ -674,9 +692,9 @@ extension ConversationSettingsViewController {
                 cell.contentView.preservesSuperviewLayoutMargins = true
 
                 let iconView = OWSTableItem.buildIconInCircleView(
-                    icon: .settingsAddMembers,
+                    icon: .groupInfoAddMembers,
                     iconSize: AvatarBuilder.smallAvatarSizePoints,
-                    innerIconSize: 24,
+                    innerIconSize: 20,
                     iconTintColor: Theme.primaryTextColor
                 )
 
@@ -749,10 +767,10 @@ extension ConversationSettingsViewController {
                     cell.contentView.preservesSuperviewLayoutMargins = true
 
                     let iconView = OWSTableItem.buildIconInCircleView(
-                        icon: .settingsShowAllMembers,
-                                                                      iconSize: AvatarBuilder.smallAvatarSizePoints,
-                                                                      innerIconSize: 24,
-                                                                      iconTintColor: Theme.primaryTextColor
+                        icon: .groupInfoShowAllMembers,
+                        iconSize: AvatarBuilder.smallAvatarSizePoints,
+                        innerIconSize: 20,
+                        iconTintColor: Theme.primaryTextColor
                     )
 
                     let rowLabel = UILabel()

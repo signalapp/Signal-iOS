@@ -44,11 +44,8 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
     /// display of the current username.
     private func buildQRCodeView() -> UIView {
         let qrCodeImageView: UIImageView = {
-            let imageView = UIImageView(image: Theme
-                .iconImage(.attachmentCamera)
-                .asTintedImage(color: .ows_white)
-            )
-
+            let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "camera-28"))
+            imageView.tintColor = .white
             imageView.autoPinToSquareAspectRatio()
             imageView.layer.cornerRadius = 12
 
@@ -68,11 +65,8 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
         }()
 
         let copyUsernameView: UIView = {
-            let copyIconImage = Theme
-                .iconImage(.copy24, isDarkThemeEnabled: false) // hardcode light theme to get outline
-                .asTintedImage(color: .ows_white)
-
-            let copyImageView = UIImageView(image: copyIconImage)
+            let copyImageView = UIImageView(image: Theme.iconImage(.buttonCopy))
+            copyImageView.tintColor = .white
             copyImageView.autoSetDimensions(to: .square(24))
 
             return CenteringStackView(centeredSubviews: [
@@ -136,7 +130,7 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
                 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON",
                 comment: "Title for a button to share your username link QR code. Lowercase styling is intentional."
             ),
-            icon: .messageActionShare24,
+            icon: .buttonShare,
             block: {
                 // TODO: implement button
             }
@@ -147,7 +141,7 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
                 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON",
                 comment: "Title for a button to pick the color of your username link QR code. Lowercase styling is intentional."
             ),
-            icon: .color24,
+            icon: .chatSettingsWallpaper,
             block: {
                 // TODO: Implement button
             }
@@ -279,8 +273,7 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
         super.viewDidLoad()
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.doneButton,
-            style: .done,
+            barButtonSystemItem: .done,
             target: self,
             action: #selector(didTapDone),
             accessibilityIdentifier: "done"

@@ -38,21 +38,21 @@ class VideoPlaybackControlView: UIView {
 
     private lazy var buttonPlay: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(.init(imageLiteralResourceName: "media-viewer-play-24"), for: .normal)
+        button.setImage(.init(imageLiteralResourceName: "play-fill"), for: .normal)
         button.addTarget(self, action: #selector(didTapPlay), for: .touchUpInside)
         return button
     }()
 
     private lazy var buttonPause: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(.init(imageLiteralResourceName: "media-viewer-pause-24"), for: .normal)
+        button.setImage(.init(imageLiteralResourceName: "pause-fill"), for: .normal)
         button.addTarget(self, action: #selector(didTapPause), for: .touchUpInside)
         return button
     }()
 
     private lazy var buttonRewind: UIButton = {
         let button = RewindAndFFButton(type: .system)
-        button.setImage(.init(imageLiteralResourceName: "media-viewer-video-rewind-24"), for: .normal)
+        button.setImage(.init(imageLiteralResourceName: "skip-backward"), for: .normal)
         button.setAttributedTitle(titleForRewindAndFFBUttons(), for: .normal)
         button.addTarget(self, action: #selector(didTapRewind), for: .touchDown)
         button.addTarget(self, action: #selector(didReleaseRewind), for: .touchUpInside)
@@ -63,7 +63,7 @@ class VideoPlaybackControlView: UIView {
 
     private lazy var buttonFastForward: UIButton = {
         let button = RewindAndFFButton(type: .system)
-        button.setImage(.init(imageLiteralResourceName: "media-viewer-video-forward-24"), for: .normal)
+        button.setImage(.init(imageLiteralResourceName: "skip-forward"), for: .normal)
         button.setAttributedTitle(titleForRewindAndFFBUttons(), for: .normal)
         button.addTarget(self, action: #selector(didTapFastForward), for: .touchDown)
         button.addTarget(self, action: #selector(didReleaseFastForward), for: .touchUpInside)

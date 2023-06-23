@@ -63,9 +63,9 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
             cell.contentView.preservesSuperviewLayoutMargins = true
 
             let iconView = OWSTableItem.buildIconInCircleView(
-                icon: .settingsAddMembers,
+                icon: .groupInfoAddMembers,
                 iconSize: AvatarBuilder.smallAvatarSizePoints,
-                innerIconSize: 24,
+                innerIconSize: 20,
                 iconTintColor: Theme.primaryTextColor
             )
 
@@ -135,9 +135,9 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
                     cell.contentView.preservesSuperviewLayoutMargins = true
 
                     let iconView = OWSTableItem.buildIconInCircleView(
-                        icon: .settingsShowAllMembers,
+                        icon: .groupInfoShowAllMembers,
                         iconSize: AvatarBuilder.smallAvatarSizePoints,
-                        innerIconSize: 24,
+                        innerIconSize: 20,
                         iconTintColor: Theme.primaryTextColor
                     )
 

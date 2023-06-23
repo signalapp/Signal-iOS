@@ -772,49 +772,17 @@ extension CVComponentSystemMessage {
             case .profileUpdate:
                 return Theme.iconImage(.profile16)
             case .phoneNumberChange:
-                let offerTypeString = "phone"
-                let themeString = Theme.isDarkThemeEnabled ? "solid" : "outline"
-                let imageName = "\(offerTypeString)-\(themeString)-16"
-                return UIImage(named: imageName)
+                return Theme.iconImage(.phone16)
             }
         } else if let call = interaction as? TSCall {
-
-            let offerTypeString: String
             switch call.offerType {
             case .audio:
-                offerTypeString = "phone"
+                return Theme.iconImage(.phone16)
             case .video:
-                offerTypeString = "video"
+                return Theme.iconImage(.video16)
             }
-
-            let directionString: String
-            switch call.callType {
-            case .incomingMissed,
-                 .incomingMissedBecauseOfChangedIdentity,
-                 .incomingMissedBecauseOfDoNotDisturb,
-                 .incomingBusyElsewhere,
-                 .incomingDeclined,
-                 .incomingDeclinedElsewhere:
-                directionString = "x"
-            case .incoming,
-                 .incomingIncomplete,
-                 .incomingAnsweredElsewhere:
-                directionString = "incoming"
-            case .outgoing,
-                 .outgoingIncomplete,
-                 .outgoingMissed:
-                directionString = "outgoing"
-            @unknown default:
-                owsFailDebug("Unknown value.")
-                return nil
-            }
-
-            let themeString = Theme.isDarkThemeEnabled ? "solid" : "outline"
-            let imageName = "\(offerTypeString)-\(directionString)-\(themeString)-16"
-            return UIImage(named: imageName)
         } else if nil != interaction as? OWSGroupCallMessage {
-            let imageName = Theme.isDarkThemeEnabled ? "video-solid-16" : "video-outline-16"
-            return UIImage(named: imageName)
+            return Theme.iconImage(.video16)
         } else {
             owsFailDebug("Unknown interaction type: \(type(of: interaction))")
             return nil

@@ -123,7 +123,7 @@ public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_Onboa
                     )
                 ),
                 .init(
-                    icon: #imageLiteral(resourceName: "toggle-32"),
+                    icon: UIImage(imageLiteralResourceName: "toggle-32"),
                     text: OWSLocalizedString(
                         "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE",
                         comment: "Third step for local network permission action sheet"

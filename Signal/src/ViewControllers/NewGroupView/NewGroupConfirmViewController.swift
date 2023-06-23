@@ -145,8 +145,8 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                 guard let self = self else { return UITableViewCell() }
                 let cell = OWSTableItem.buildCell(
                     icon: self.disappearingMessagesConfiguration.isEnabled
-                        ? .settingsTimer
-                        : .settingsTimerDisabled,
+                        ? .chatSettingsTimerOn
+                        : .chatSettingsTimerOff,
                     itemName: OWSLocalizedString(
                         "DISAPPEARING_MESSAGES",
                         comment: "table cell label in conversation settings"

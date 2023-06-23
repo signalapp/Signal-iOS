@@ -134,7 +134,7 @@ extension SelectMyStoryRecipientsViewController: MemberViewDelegate {
     public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool { false }
 
     public func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String? {
-        mode == .blockList ? "x-circle-solid-24" : nil
+        mode == .blockList ? "x-circle-fill" : nil
     }
 
     public func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor? {

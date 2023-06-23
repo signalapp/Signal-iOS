@@ -182,14 +182,9 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
         backButton.autoPinEdge(toSuperviewEdge: .top)
         backButton.autoPinLeadingToSuperviewMargin()
 
-        let backIconName = (CurrentAppContext().isRTL ? "system_disclosure_indicator" : "system_disclosure_indicator_rtl")
-        guard let backIconImage = UIImage(named: backIconName) else {
-            owsFailDebug("missing icon.")
-            return topView
-        }
-        let backIconView = UIImageView(image: backIconImage.withRenderingMode(.alwaysTemplate))
+        let backIconView = UIImageView(image: UIImage(imageLiteralResourceName: "NavBarBack"))
         backIconView.contentMode = .scaleAspectFit
-        backIconView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
+        backIconView.tintColor = Theme.primaryIconColor
         backButton.addSubview(backIconView)
         backIconView.autoCenterInSuperview()
 
@@ -235,26 +230,32 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
             let stackView = UIStackView()
             stackView.axis = .horizontal
             stackView.distribution = .fillEqually
-            stackView.addArrangedSubview(createCircleActionButton(text: CommonStrings.sendMessage,
-                                                                  imageName: "contact_view_message",
-                                                                  actionBlock: { [weak self] in
-                                                                    guard let strongSelf = self else { return }
-                                                                    strongSelf.didPressSendMessage()
-            }))
-                stackView.addArrangedSubview(createCircleActionButton(text: OWSLocalizedString("ACTION_AUDIO_CALL",
-                                                                                              comment: "Label for 'voice call' button in contact view."),
-                                                                      imageName: "contact_view_audio_call",
-                                                                      actionBlock: { [weak self] in
-                                                                        guard let strongSelf = self else { return }
-                                                                        strongSelf.didPressAudioCall()
-                }))
-                stackView.addArrangedSubview(createCircleActionButton(text: OWSLocalizedString("ACTION_VIDEO_CALL",
-                                                                                              comment: "Label for 'video call' button in contact view."),
-                                                                      imageName: "contact_view_video_call",
-                                                                      actionBlock: { [weak self] in
-                                                                        guard let strongSelf = self else { return }
-                                                                        strongSelf.didPressVideoCall()
-                }))
+            stackView.addArrangedSubview(createCircleActionButton(
+                text: CommonStrings.sendMessage,
+                image: Theme.iconImage(.buttonMessage),
+                actionBlock: { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.didPressSendMessage()
+                }
+            ))
+            stackView.addArrangedSubview(createCircleActionButton(
+                text: OWSLocalizedString("ACTION_AUDIO_CALL",
+                                         comment: "Label for 'voice call' button in contact view."),
+                image: Theme.iconImage(.buttonVoiceCall),
+                actionBlock: { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.didPressAudioCall()
+                }
+            ))
+            stackView.addArrangedSubview(createCircleActionButton(
+                text: OWSLocalizedString("ACTION_VIDEO_CALL",
+                                         comment: "Label for 'video call' button in contact view."),
+                image: Theme.iconImage(.buttonVideoCall),
+                actionBlock: { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.didPressVideoCall()
+                }
+            ))
             topView.addSubview(stackView)
             stackView.autoPinEdge(.top, to: .bottom, of: lastView, withOffset: 20)
             stackView.autoPinLeadingToSuperviewMargin(withInset: hMargin)
@@ -380,7 +381,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
     }
 
     // TODO: Use real assets.
-    private func createCircleActionButton(text: String, imageName: String, actionBlock: @escaping () -> Void) -> UIView {
+    private func createCircleActionButton(text: String, image: UIImage, actionBlock: @escaping () -> Void) -> UIView {
         let buttonSize = CGFloat(50)
 
         let button = TappableView(actionBlock: actionBlock)
@@ -393,11 +394,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, 
         circleView.autoPinEdge(toSuperviewEdge: .top)
         circleView.autoHCenterInSuperview()
 
-        guard let image = UIImage(named: imageName) else {
-            owsFailDebug("missing image.")
-            return button
-        }
-        let imageView = UIImageView(image: image.withRenderingMode(.alwaysTemplate))
+        let imageView = UIImageView(image: image)
         imageView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
         circleView.addSubview(imageView)
         imageView.autoCenterInSuperview()

@@ -17,7 +17,8 @@ public class FingerprintViewController: OWSViewController {
     private let fingerprint: OWSFingerprint
 
     private lazy var shareBarButtonItem = UIBarButtonItem(
-        barButtonSystemItem: .action,
+        image: Theme.iconImage(.buttonShare),
+        style: .plain,
         target: self,
         action: #selector(didTapShare),
         accessibilityIdentifier: "FingerprintViewController.share"

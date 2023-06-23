@@ -54,7 +54,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
 
     let cameraImageViewSize = CGSize(square: 32)
     private lazy var cameraImageView: UIImageView = {
-        let cameraImageView = UIImageView.withTemplateImageName("camera-outline-24", tintColor: Theme.secondaryTextAndIconColor)
+        let cameraImageView = UIImageView.withTemplateImageName("camera", tintColor: Theme.secondaryTextAndIconColor)
         cameraImageView.autoSetDimensions(to: cameraImageViewSize)
         cameraImageView.contentMode = .center
         cameraImageView.layer.cornerRadius = cameraImageViewSize.largerAxis / 2

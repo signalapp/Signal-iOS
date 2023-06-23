@@ -36,7 +36,7 @@ class VoiceMessageDraftView: UIStackView {
             voiceMessageInterruptedDraft.audioPlayer.stop()
             deleteAction()
         }
-        trashButton.setTemplateImageName("trash-solid-24", tintColor: .ows_accentRed)
+        trashButton.setTemplateImageName("trash-fill", tintColor: .ows_accentRed)
         trashButton.autoSetDimensions(to: CGSize(square: 24))
         addArrangedSubview(trashButton)
 

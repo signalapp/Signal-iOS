@@ -310,7 +310,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
         if shouldShowNewGroup && !isSearching {
             staticSection.add(OWSTableItem.disclosureItem(
-                icon: .composeNewGroup,
+                icon: .genericGroup,
                 name: OWSLocalizedString(
                     "NEW_GROUP_BUTTON",
                     comment: "Label for the 'create new group' button."
@@ -325,7 +325,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         // Find Non-Contacts by Phone Number
         if allowsAddByPhoneNumber && !isSearching {
             staticSection.add(OWSTableItem.disclosureItem(
-                icon: .composeFindByPhoneNumber,
+                icon: .phoneNumber,
                 name: OWSLocalizedString(
                     "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
                     comment: "A label the cell that lets you add a new member to a group."
@@ -346,7 +346,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         // Invite Contacts
         if shouldShowInvites && !isSearching && contactsManagerImpl.sharingAuthorization != .denied {
             staticSection.add(OWSTableItem.disclosureItem(
-                icon: .composeInvite,
+                icon: .settingsInvite,
                 name: OWSLocalizedString(
                     "INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                     comment: "Label for the cell that presents the 'invite contacts' workflow."

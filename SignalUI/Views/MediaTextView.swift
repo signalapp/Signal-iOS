@@ -150,7 +150,7 @@ public class TextStylingToolbar: UIControl {
     }
 
     private static func buttonImage(forTextStyle textStyle: MediaTextView.TextStyle) -> UIImage? {
-        return UIImage(imageLiteralResourceName: "media-editor-font-" + textStyle.rawValue)
+        return UIImage(imageLiteralResourceName: "font-" + textStyle.rawValue)
     }
 
     public var textForegroundColor: UIColor {
@@ -184,14 +184,17 @@ public class TextStylingToolbar: UIControl {
         }
     }
 
-    public let decorationStyleButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-text-style-1"), backgroundStyle: .blur)
+    public let decorationStyleButton = RoundMediaButton(
+        image: UIImage(imageLiteralResourceName: "text_effects"),
+        backgroundStyle: .blur
+    )
     public var decorationStyle: MediaTextView.DecorationStyle = .none {
         didSet {
             decorationStyleButton.isSelected = (decorationStyle != .none)
         }
     }
 
-    public lazy var doneButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "check-24"), backgroundStyle: .blur)
+    public lazy var doneButton = RoundMediaButton(image: Theme.iconImage(.checkmark), backgroundStyle: .blur)
 
     public private(set) var contentWidthConstraint: NSLayoutConstraint?
     private lazy var stackView: UIStackView = {
@@ -213,7 +216,7 @@ public class TextStylingToolbar: UIControl {
         colorPickerView.delegate = self
 
         decorationStyleButton.setContentCompressionResistancePriority(.required, for: .vertical)
-        decorationStyleButton.setImage(#imageLiteral(resourceName: "media-editor-text-style-2"), for: .selected)
+        decorationStyleButton.setImage(UIImage(imageLiteralResourceName: "text_effects-fill"), for: .selected)
 
         // A container with width capped at a predefined size,
         // centered in superview and constrained to layout margins.

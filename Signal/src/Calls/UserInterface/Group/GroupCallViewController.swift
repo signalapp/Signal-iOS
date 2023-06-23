@@ -224,7 +224,7 @@ class GroupCallViewController: UIViewController {
     private func createNoVideoIndicatorView() -> UIStackView {
         let icon = UIImageView()
         icon.contentMode = .scaleAspectFit
-        icon.setTemplateImage(#imageLiteral(resourceName: "video-off-solid-28"), tintColor: .ows_white)
+        icon.setTemplateImageName("video-slash-fill-28", tintColor: .ows_white)
 
         let label = UILabel()
         label.font = .dynamicTypeCaption1

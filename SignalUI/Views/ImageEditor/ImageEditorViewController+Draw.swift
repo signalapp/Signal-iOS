@@ -136,7 +136,10 @@ extension ImageEditorViewController {
 
         let colorPickerView: ColorPickerBarView
 
-        let strokeTypeButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-draw-pen"), backgroundStyle: .blur)
+        let strokeTypeButton = RoundMediaButton(
+            image: UIImage(imageLiteralResourceName: "brush-pen"),
+            backgroundStyle: .blur
+        )
 
         init(currentColor: ColorPickerBarColor) {
             self.colorPickerView = ColorPickerBarView(currentColor: currentColor)
@@ -145,7 +148,7 @@ extension ImageEditorViewController {
             layoutMargins.top = 0
             layoutMargins.bottom = 2
 
-            strokeTypeButton.setImage(#imageLiteral(resourceName: "media-editor-draw-highlighter"), for: .selected)
+            strokeTypeButton.setImage(UIImage(imageLiteralResourceName: "brush-highlighter"), for: .selected)
 
             // A container with width capped at a predefined size,
             // centered in superview and constrained to layout margins.

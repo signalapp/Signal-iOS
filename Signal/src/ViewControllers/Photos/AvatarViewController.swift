@@ -110,7 +110,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
         let navigationItem = UINavigationItem(title: "")
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(imageLiteralResourceName: "x-24"),
+            image: Theme.iconImage(.buttonX),
             style: .plain,
             target: self,
             action: #selector(didTapClose),

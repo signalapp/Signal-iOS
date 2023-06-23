@@ -35,7 +35,7 @@ public class CompareSafetyNumbersActivity: UIActivity {
         OWSLocalizedString("COMPARE_SAFETY_NUMBER_ACTION", comment: "Activity Sheet label")
     }
 
-    public override var activityImage: UIImage? { #imageLiteral(resourceName: "ic_lock_outline") }
+    public override var activityImage: UIImage? { UIImage(imageLiteralResourceName: "lock") }
 
     public override func canPerform(withActivityItems activityItems: [Any]) -> Bool {
         return stringsFrom(activityItems: activityItems).count > 0

@@ -103,7 +103,7 @@ public class MessageTimerView: ManualLayoutView {
         owsAssertDebug(progress12 >= 0)
         owsAssertDebug(progress12 <= 12)
 
-        let imageName = String(format: "timer-%02ld-12", progress12 * 5)
+        let imageName = String(format: "messagetimer-%02ld", progress12 * 5)
         guard let image = UIImage(named: imageName) else {
             owsFailDebug("Missing icon.")
             return nil

@@ -11,13 +11,13 @@ class AttachmentApprovalTopBar: MediaTopBar {
     // MARK: - Subviews
 
     let cancelButton: UIButton = {
-        let button = RoundMediaButton(image: #imageLiteral(resourceName: "media-composer-close"), backgroundStyle: .blur)
+        let button = RoundMediaButton(image: UIImage(imageLiteralResourceName: "x-28"), backgroundStyle: .blur)
         button.accessibilityLabel = CommonStrings.dismissButton
         return button
     }()
 
     let backButton: UIButton = {
-        let backButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "chevron-left-28"), backgroundStyle: .blur)
+        let backButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "chevron-left-bold-28"), backgroundStyle: .blur)
         backButton.accessibilityLabel = CommonStrings.backButton
         return backButton
     }()

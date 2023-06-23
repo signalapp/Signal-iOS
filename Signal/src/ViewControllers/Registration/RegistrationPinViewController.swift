@@ -404,10 +404,10 @@ class RegistrationPinViewController: OWSViewController {
         }
 
         view.backgroundColor = Theme.backgroundColor
-        moreButton.setImage(Theme.iconImage(.more24), for: .normal)
+        moreButton.setImage(Theme.iconImage(.buttonMore), for: .normal)
         moreButton.tintColor = Theme.accentBlueColor
         backButton.setTemplateImage(
-            UIImage(named: CurrentAppContext().isRTL ? "NavBarBackRTL" : "NavBarBack"),
+            UIImage(imageLiteralResourceName: "NavBarBack"),
             tintColor: Theme.accentBlueColor
         )
         nextBarButton.tintColor = Theme.accentBlueColor

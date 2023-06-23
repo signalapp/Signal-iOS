@@ -800,7 +800,7 @@ class CameraZoomSelectionControl: UIView {
 
 private class LockView: UIView {
 
-    private let imageViewLock = UIImageView(image: UIImage(named: "media-composer-lock-outline"))
+    private let imageViewLock = UIImageView(image: UIImage(named: "lock-28"))
     private let blurBackgroundView = CircleBlurView(effect: UIBlurEffect(style: .dark))
     private let whiteBackgroundView = CircleView()
     private let whiteCircleView = CircleView()
@@ -1115,9 +1115,9 @@ class MediaDoneButton: UIButton {
 
 class FlashModeButton: RoundMediaButton {
 
-    private static let flashOn = UIImage(named: "media-composer-flash-filled")
-    private static let flashOff = UIImage(named: "media-composer-flash-outline")
-    private static let flashAuto = UIImage(named: "media-composer-flash-auto")
+    private static let flashOn = UIImage(named: "flash-on")
+    private static let flashOff = UIImage(named: "flash-off")
+    private static let flashAuto = UIImage(named: "flash-auto")
 
     private var flashMode: AVCaptureDevice.FlashMode = .auto
 
@@ -1151,7 +1151,7 @@ class CameraChooserButton: RoundMediaButton {
     var isFrontCameraActive = false
 
     init(backgroundStyle: RoundMediaButton.BackgroundStyle) {
-        super.init(image: UIImage(named: "media-composer-switch-camera"), backgroundStyle: backgroundStyle, customView: nil)
+        super.init(image: UIImage(named: "switch-camera-28"), backgroundStyle: backgroundStyle, customView: nil)
     }
 
     func performSwitchAnimation() {
@@ -1164,8 +1164,8 @@ class CameraChooserButton: RoundMediaButton {
 
 class CaptureModeButton: RoundMediaButton {
 
-    private static let batchModeOn = UIImage(named: "media-composer-create-album-solid")
-    private static let batchModeOff = UIImage(named: "media-composer-create-album-outline")
+    private static let batchModeOn = UIImage(named: "multicapture-on")
+    private static let batchModeOff = UIImage(named: "multicapture-off")
 
     init() {
         super.init(image: CaptureModeButton.batchModeOff, backgroundStyle: .blur, customView: nil)
@@ -1261,7 +1261,7 @@ class MediaPickerThumbnailButton: UIButton {
 
 class CameraTopBar: MediaTopBar {
 
-    let closeButton = RoundMediaButton(image: UIImage(named: "media-composer-close"), backgroundStyle: .blur)
+    let closeButton = RoundMediaButton(image: UIImage(named: "x-28"), backgroundStyle: .blur)
 
     private let cameraControlsContainerView: UIStackView
     let flashModeButton = FlashModeButton()

@@ -354,7 +354,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             statusLabel.delegate = self
 
             section.add(.disclosureItem(
-                icon: .settingsManage,
+                icon: .donateManageSubscription,
                 name: OWSLocalizedString("DONATION_VIEW_MANAGE_SUBSCRIPTION", comment: "Title for the 'Manage Subscription' button on the donation screen"),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "manageSubscription"),
                 actionBlock: { [weak self] in
@@ -365,7 +365,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
         if hasAnyBadges {
             section.add(.disclosureItem(
-                icon: .settingsBadges,
+                icon: .donateBadges,
                 name: OWSLocalizedString("DONATION_VIEW_MANAGE_BADGES", comment: "Title for the 'Badges' button on the donation screen"),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
                 actionBlock: { [weak self] in
@@ -392,7 +392,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         let section = OWSTableSection(title: title)
 
         section.add(.disclosureItem(
-            icon: .settingsGift,
+            icon: .donateGift,
             name: OWSLocalizedString(
                 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND",
                 comment: "Title for the \"donate for a friend\" button on the donation view."
@@ -469,7 +469,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     private func donationReceiptsItem(profileBadgeLookup: ProfileBadgeLookup) -> OWSTableItem {
         .disclosureItem(
-            icon: .settingsReceipts,
+            icon: .donateReceipts,
             name: OWSLocalizedString("DONATION_RECEIPTS", comment: "Title of view where you can see all of your donation receipts, or button to take you there"),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "subscriptionReceipts"),
             actionBlock: { [weak self] in

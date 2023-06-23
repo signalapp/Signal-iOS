@@ -250,7 +250,7 @@ private class GroupCallMemberCell: UITableViewCell {
         nameLabel.font = .dynamicTypeBody
 
         audioMutedIndicator.contentMode = .scaleAspectFit
-        audioMutedIndicator.setTemplateImage(#imageLiteral(resourceName: "mic-off-solid-28"), tintColor: .ows_white)
+        audioMutedIndicator.setTemplateImageName("mic-slash-fill-compact", tintColor: .ows_white)
         audioMutedIndicator.autoSetDimensions(to: CGSize(square: 16))
         audioMutedIndicator.setContentHuggingHorizontalHigh()
         let audioMutedWrapper = UIView()
@@ -258,12 +258,12 @@ private class GroupCallMemberCell: UITableViewCell {
         audioMutedIndicator.autoPinEdgesToSuperviewEdges()
 
         videoMutedIndicator.contentMode = .scaleAspectFit
-        videoMutedIndicator.setTemplateImage(#imageLiteral(resourceName: "video-off-solid-28"), tintColor: .ows_white)
+        videoMutedIndicator.setTemplateImageName("video-slash-fill-compact", tintColor: .ows_white)
         videoMutedIndicator.autoSetDimensions(to: CGSize(square: 16))
         videoMutedIndicator.setContentHuggingHorizontalHigh()
 
         presentingIndicator.contentMode = .scaleAspectFit
-        presentingIndicator.setTemplateImage(#imageLiteral(resourceName: "share-screen-solid-28"), tintColor: .ows_white)
+        presentingIndicator.setTemplateImageName("share_screen-fill-compact", tintColor: .ows_white)
         presentingIndicator.autoSetDimensions(to: CGSize(square: 16))
         presentingIndicator.setContentHuggingHorizontalHigh()
 

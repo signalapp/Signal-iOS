@@ -8,11 +8,32 @@ import SignalUI
 /// A checkmark in a circle to indicate an item (typically in a table view or collection view) is
 /// selected.
 class SelectionButton: UIView {
-    private let outlineBadgeView: UIView
-    private let selectedBadgeView: UIView
+    private let outlineBadgeView: UIView = {
+        let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "circle"))
+        imageView.contentMode = .center
+        imageView.tintColor = .white
+        imageView.isHidden = true
+        return imageView
+    }()
+    private let selectedBadgeView: UIView = {
+        let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "check-circle"))
+        imageView.contentMode = .center
+        imageView.tintColor = .white
 
-    private let selectionBadgeSize: CGFloat = 22
-    private static let selectedBadgeImage = UIImage(named: "media-composer-checkmark")
+        let circleView = CircleView(diameter: 21.5)
+        circleView.backgroundColor = .ows_accentBlue
+
+        let containerView = UIView(frame: imageView.bounds)
+        containerView.isHidden = true
+
+        containerView.addSubview(circleView)
+        circleView.autoCenterInSuperview()
+
+        containerView.addSubview(imageView)
+        imageView.autoPinEdgesToSuperviewEdges()
+
+        return containerView
+    }()
 
     var isSelected: Bool = false {
         didSet {
@@ -26,41 +47,25 @@ class SelectionButton: UIView {
         }
     }
 
-    var outlineColor: UIColor = UIColor.ows_white {
-        didSet {
-            outlineBadgeView.layer.borderColor = outlineColor.cgColor
+    var outlineColor: UIColor {
+        get {
+            outlineBadgeView.tintColor
+        }
+        set {
+            outlineBadgeView.tintColor = newValue
         }
     }
 
     init() {
-        selectedBadgeView = CircleView(diameter: selectionBadgeSize)
-        selectedBadgeView.backgroundColor = .ows_accentBlue
-        selectedBadgeView.isHidden = true
-
-        let checkmarkImageView = UIImageView(image: Self.selectedBadgeImage)
-        checkmarkImageView.tintColor = .white
-        selectedBadgeView.addSubview(checkmarkImageView)
-        checkmarkImageView.autoCenterInSuperview()
-
-        outlineBadgeView = CircleView()
-        outlineBadgeView.backgroundColor = .clear
-        outlineBadgeView.layer.borderWidth = 1.5
-        outlineBadgeView.layer.borderColor = UIColor.ows_white.cgColor
-        selectedBadgeView.isHidden = true
-
-        super.init(frame: CGRect(x: 0.0, y: 0.0, width: selectionBadgeSize, height: selectionBadgeSize))
+        super.init(frame: .zero)
 
         addSubview(selectedBadgeView)
+        selectedBadgeView.autoCenterInSuperview()
+
         addSubview(outlineBadgeView)
+        outlineBadgeView.autoCenterInSuperview()
 
-        outlineBadgeView.autoSetDimensions(to: CGSize(square: selectionBadgeSize))
-
-        selectedBadgeView.autoSetDimensions(to: CGSize(square: selectionBadgeSize))
-        selectedBadgeView.autoAlignAxis(.vertical, toSameAxisOf: outlineBadgeView)
-        selectedBadgeView.autoAlignAxis(.horizontal, toSameAxisOf: outlineBadgeView)
-
-        autoSetDimensions(to: CGSize(square: selectionBadgeSize))
-        reset()
+        autoSetDimensions(to: .square(24))
     }
 
     required init?(coder: NSCoder) {

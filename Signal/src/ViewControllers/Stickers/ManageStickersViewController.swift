@@ -298,10 +298,8 @@ public class ManageStickersViewController: OWSTableViewController2 {
     }
 
     private func buildTableCell(installedStickerPack dataSource: StickerPackDataSource) -> UITableViewCell {
-        let actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
-
         return buildTableCell(dataSource: dataSource,
-                              actionIconName: actionIconName) { [weak self] in
+                              actionIconName: "reply-fill") { [weak self] in
                                 guard let packInfo = dataSource.info else {
                                     owsFailDebug("Source missing info.")
                                     return
@@ -312,7 +310,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
 
     private func buildTableCell(availableStickerPack dataSource: StickerPackDataSource) -> UITableViewCell {
         if let stickerPack = dataSource.getStickerPack() {
-            let actionIconName = Theme.iconName(.messageActionSave24)
+            let actionIconName = Theme.iconName(.buttonSave)
             return buildTableCell(dataSource: dataSource,
                                   actionIconName: actionIconName) { [weak self] in
                                     self?.install(stickerPack: stickerPack)
@@ -398,7 +396,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         var authorViews = [UIView]()
         if isDefaultStickerPack {
             let builtInPackView = UIImageView()
-            builtInPackView.setTemplateImageName("check-circle-filled-16", tintColor: Theme.accentBlueColor)
+            builtInPackView.setTemplateImageName("check-circle-fill-compact", tintColor: Theme.accentBlueColor)
             builtInPackView.setCompressionResistanceHigh()
             builtInPackView.setContentHuggingHigh()
             authorViews.append(builtInPackView)

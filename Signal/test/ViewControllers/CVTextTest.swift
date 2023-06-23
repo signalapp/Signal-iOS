@@ -90,7 +90,7 @@ class CVTextTest: XCTestCase {
             ),
             CVTextViewConfig(
                 attributedText: NSAttributedString.composed(of: [
-                    #imageLiteral(resourceName: "video-solid-16"), "Some text", "\n", #imageLiteral(resourceName: "video-solid-16"), "Some text2"
+                    Theme.iconImage(.video16), "Some text", "\n", Theme.iconImage(.video16), "Some text2"
                 ]),
                 font: .dynamicTypeBody,
                 textColor: .black
@@ -99,12 +99,12 @@ class CVTextTest: XCTestCase {
                 attributedText: {
                     let labelText = NSMutableAttributedString()
 
-                    labelText.appendTemplatedImage(named: "compose-outline-16",
+                    labelText.appendTemplatedImage(named: Theme.iconName(.compose16),
                                                    font: .dynamicTypeFootnote,
                                                    heightReference: .lineHeight)
                     labelText.append("  You changed the group name to “Test Group Call 2“.\n", attributes: [:])
 
-                    labelText.appendTemplatedImage(named: "photo-outline-16",
+                    labelText.appendTemplatedImage(named: Theme.iconName(.photo16),
                                                    font: .dynamicTypeFootnote,
                                                    heightReference: .lineHeight)
                     labelText.append("  You updated the photo.", attributes: [:])
@@ -233,7 +233,7 @@ class CVTextTest: XCTestCase {
             ),
             CVLabelConfig(
                 attributedText: NSAttributedString.composed(of: [
-                    #imageLiteral(resourceName: "video-solid-16"), "Some text", "\n", #imageLiteral(resourceName: "video-solid-16"), "Some text2"
+                    Theme.iconImage(.video16), "Some text", "\n", Theme.iconImage(.video16), "Some text2"
                 ]),
                 font: .dynamicTypeBody,
                 textColor: .black,
@@ -243,12 +243,12 @@ class CVTextTest: XCTestCase {
                 attributedText: {
                     let labelText = NSMutableAttributedString()
 
-                    labelText.appendTemplatedImage(named: "compose-outline-16",
+                    labelText.appendTemplatedImage(named: Theme.iconName(.compose16),
                                                    font: .dynamicTypeFootnote,
                                                    heightReference: .lineHeight)
                     labelText.append("  You changed the group name to “Test Group Call 2“.\n", attributes: [:])
 
-                    labelText.appendTemplatedImage(named: "photo-outline-16",
+                    labelText.appendTemplatedImage(named: Theme.iconName(.photo16),
                                                    font: .dynamicTypeFootnote,
                                                    heightReference: .lineHeight)
                     labelText.append("  You updated the photo.", attributes: [:])

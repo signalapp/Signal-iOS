@@ -259,10 +259,10 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
             imageView.contentMode = .center
             imageView.autoSetDimension(.width, toSize: 24)
             if isSelected {
-                imageView.image = #imageLiteral(resourceName: "check-circle-solid-new-24").withRenderingMode(.alwaysTemplate)
+                imageView.image = Theme.iconImage(.checkCircleFill)
                 imageView.tintColor = Theme.accentBlueColor
             } else {
-                imageView.image = #imageLiteral(resourceName: "empty-circle-outline-24").withRenderingMode(.alwaysTemplate)
+                imageView.image = Theme.iconImage(.circle)
                 imageView.tintColor = .ows_gray25
             }
             hStack.addArrangedSubview(imageView)

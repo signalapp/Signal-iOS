@@ -415,7 +415,7 @@ private class DeviceTableViewCell: UITableViewCell {
     private lazy var unlinkButton: UIButton = {
         let button = UIButton()
         button.imageView?.contentMode = .scaleAspectFit
-        button.setImage(UIImage(imageLiteralResourceName: "minus-circle-solid-24"), for: .normal)
+        button.setImage(UIImage(imageLiteralResourceName: "minus-circle-fill"), for: .normal)
         button.addTarget(self, action: #selector(didTapUnlink(sender:)), for: .touchUpInside)
         button.tintColor = .ows_accentRed
         button.isHidden = true

@@ -245,7 +245,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
                                          isWordCorrect: Bool,
                                          wordTextfield: UITextField,
                                          correctnessIconView: UIImageView) {
-            let iconName = isWordCorrect ? "check-circle-outline-24" : "x-circle-outline-24"
+            let iconName = isWordCorrect ? "check-circle" : "x-circle"
             let tintColor: UIColor = isWordCorrect ? .ows_accentGreen : .ows_accentRed
             correctnessIconView.setTemplateImageName(iconName, tintColor: tintColor)
             // Always show the correct indicator.

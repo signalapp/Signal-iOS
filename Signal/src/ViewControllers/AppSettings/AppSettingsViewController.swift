@@ -144,7 +144,7 @@ class AppSettingsViewController: OWSTableViewController2 {
             guard let self = self else { return UITableViewCell() }
             let accessoryView: UIView?
             if self.hasExpiredGiftBadge {
-                let imageView = UIImageView(image: UIImage(named: "info-solid-24")?.withRenderingMode(.alwaysTemplate))
+                let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "info-fill"))
                 imageView.tintColor = Theme.accentBlueColor
                 imageView.autoSetDimensions(to: CGSize(square: 24))
                 accessoryView = imageView

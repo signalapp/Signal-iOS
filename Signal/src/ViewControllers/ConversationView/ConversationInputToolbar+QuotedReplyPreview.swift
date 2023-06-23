@@ -254,8 +254,7 @@ private class QuotedMessageSnippetView: UIView {
     }()
 
     private func buildRemoteContentSourceView() -> UIView {
-        let glyphImage = UIImage(imageLiteralResourceName: "ic_broken_link").withRenderingMode(.alwaysTemplate)
-        let glyphImageView = UIImageView(image: glyphImage)
+        let glyphImageView = UIImageView(image: UIImage(imageLiteralResourceName: "link-slash-compact"))
         glyphImageView.tintColor = Theme.lightThemePrimaryColor
         glyphImageView.autoSetDimensions(to: .square(Layout.remotelySourcedContentGlyphLength))
 
@@ -390,8 +389,7 @@ private class QuotedMessageSnippetView: UIView {
                 contentImageView.clipsToBounds = true
 
                 if let contentType = quotedMessage.contentType, MIMETypeUtil.isVideo(contentType) {
-                    let playIcon = UIImage(imageLiteralResourceName: "attachment_play_button").withRenderingMode(.alwaysTemplate)
-                    let playIconImageView = buildImageView(image: playIcon)
+                    let playIconImageView = buildImageView(image: UIImage(imageLiteralResourceName: "play-fill"))
                     playIconImageView.tintColor = .white
                     contentImageView.addSubview(playIconImageView)
                     playIconImageView.autoCenterInSuperview()
@@ -399,9 +397,7 @@ private class QuotedMessageSnippetView: UIView {
 
                 quotedAttachmentView = contentImageView
             } else if quotedMessage.failedThumbnailAttachmentPointer != nil {
-                // TODO design review icon and color
-                let contentIcon = UIImage(imageLiteralResourceName: "btnRefresh--white").withRenderingMode(.alwaysTemplate)
-                let contentImageView = buildImageView(image: contentIcon)
+                let contentImageView = buildImageView(image: UIImage(imageLiteralResourceName: "refresh"))
                 contentImageView.contentMode = .scaleAspectFit
                 contentImageView.tintColor = .white
                 contentImageView.autoSetDimensions(to: .square(Layout.quotedAttachmentSize * 0.5))
@@ -456,7 +452,7 @@ private class QuotedMessageSnippetView: UIView {
         }
 
         let cancelButton = UIButton(type: .custom)
-        cancelButton.setImage(UIImage(imageLiteralResourceName: "compose-cancel").withRenderingMode(.alwaysTemplate), for: .normal)
+        cancelButton.setImage(UIImage(imageLiteralResourceName: "x-20"), for: .normal)
         cancelButton.tintColor = Theme.secondaryTextAndIconColor
         cancelButton.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
         cancelButton.setContentHuggingHorizontalHigh()

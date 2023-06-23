@@ -98,7 +98,7 @@ class MemberActionSheet: OWSTableSheetViewController {
         // If blocked, only show unblock as an option
         guard !threadViewModel.isBlocked else {
             section.add(.item(
-                icon: .settingsBlock,
+                icon: .chatSettingsBlock,
                 name: OWSLocalizedString(
                     "BLOCK_LIST_UNBLOCK_BUTTON",
                     comment: "Button label for the 'unblock' button"
@@ -112,7 +112,7 @@ class MemberActionSheet: OWSTableSheetViewController {
         }
 
         section.add(.item(
-            icon: .settingsBlock,
+            icon: .chatSettingsBlock,
             name: OWSLocalizedString(
                 "BLOCK_LIST_BLOCK_BUTTON",
                 comment: "Button label for the 'block' button"
@@ -133,7 +133,7 @@ class MemberActionSheet: OWSTableSheetViewController {
         if let groupViewHelper = self.groupViewHelper, groupViewHelper.isFullOrInvitedMember(address) {
             if groupViewHelper.canRemoveFromGroup(address: address) {
                 section.add(.item(
-                    icon: .settingsViewRemoveFromGroup,
+                    icon: .groupMemberRemoveFromGroup,
                     name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
                         comment: "Label for 'remove from group' button in conversation settings view."
@@ -149,7 +149,7 @@ class MemberActionSheet: OWSTableSheetViewController {
             }
             if groupViewHelper.memberActionSheetCanMakeGroupAdmin(address: address) {
                 section.add(.item(
-                    icon: .settingsViewMakeGroupAdmin,
+                    icon: .groupMemberMakeGroupAdmin,
                     name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON",
                         comment: "Label for 'make group admin' button in conversation settings view."
@@ -165,7 +165,7 @@ class MemberActionSheet: OWSTableSheetViewController {
             }
             if groupViewHelper.memberActionSheetCanRevokeGroupAdmin(address: address) {
                 section.add(.item(
-                    icon: .settingsViewRevokeGroupAdmin,
+                    icon: .groupMemberRevokeGroupAdmin,
                     name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON",
                         comment: "Label for 'revoke group admin' button in conversation settings view."
@@ -182,7 +182,7 @@ class MemberActionSheet: OWSTableSheetViewController {
         }
 
         section.add(.item(
-            icon: .settingsAddToGroup,
+            icon: .groupMemberAddToGroup,
             name: OWSLocalizedString(
                 "ADD_TO_GROUP",
                 comment: "Label for button or row which allows users to add to another group."
@@ -201,7 +201,7 @@ class MemberActionSheet: OWSTableSheetViewController {
         }
         if isSystemContact {
             section.add(.item(
-                icon: .settingsUserInContacts,
+                icon: .contactInfoUserInContacts,
                 name: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
                     comment: "Indicates that user is in the system contacts list."
@@ -213,7 +213,7 @@ class MemberActionSheet: OWSTableSheetViewController {
             ))
         } else {
             section.add(.item(
-                icon: .settingsAddToContacts,
+                icon: .contactInfoAddToContacts,
                 name: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
                     comment: "button in conversation settings view."
@@ -226,7 +226,7 @@ class MemberActionSheet: OWSTableSheetViewController {
         }
 
         section.add(.item(
-            icon: .settingsViewSafetyNumber,
+            icon: .contactInfoSafetyNumber,
             name: OWSLocalizedString(
                 "VERIFY_PRIVACY",
                 comment: "Label for button or row which allows users to verify the safety number of another user."

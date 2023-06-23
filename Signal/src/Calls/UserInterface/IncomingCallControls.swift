@@ -22,7 +22,7 @@ class IncomingCallControls: UIView {
 
     private lazy var declineButton: CallButton = {
         let button = createButton(
-            iconName: "phone-down-solid-28",
+            iconName: "phone-down-fill-28",
             label: OWSLocalizedString("CALL_CONTROLS_INCOMING_DECLINE", comment: "label for button shown when an incoming call rings"),
             action: #selector(IncomingCallControlsDelegate.didDeclineIncomingCall)
         )
@@ -31,7 +31,7 @@ class IncomingCallControls: UIView {
     }()
     private lazy var answerAudioButton: CallButton = {
         let button = createButton(
-            iconName: "phone-solid-28",
+            iconName: "phone-fill-28",
             label: OWSLocalizedString("CALL_CONTROLS_INCOMING_ANSWER", comment: "label for button shown when an incoming call rings"),
             action: #selector(IncomingCallControlsDelegate.didAcceptIncomingCall(sender:))
         )
@@ -41,7 +41,7 @@ class IncomingCallControls: UIView {
     }()
     private lazy var answerVideoButton: CallButton = {
         let button = createButton(
-            iconName: "video-solid-28",
+            iconName: "video-fill-28",
             label: OWSLocalizedString("CALL_CONTROLS_INCOMING_ANSWER", comment: "label for button shown when an incoming call rings"),
             action: #selector(IncomingCallControlsDelegate.didAcceptIncomingCall(sender:))
         )
@@ -51,7 +51,7 @@ class IncomingCallControls: UIView {
     }()
     private lazy var answerWithoutVideoButton: CallButton = {
         let button = createButton(
-            iconName: "video-off-solid-28",
+            iconName: "video-slash-fill-28",
             // genstrings doesn't expand '\n' in a comment, so we don't need to escape the backslash.
             label: OWSLocalizedString("CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO", comment: "Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation."),
             action: #selector(IncomingCallControlsDelegate.didAcceptIncomingCall(sender:))

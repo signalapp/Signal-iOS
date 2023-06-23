@@ -350,6 +350,7 @@ public extension OWSTableItem {
         let iconImage = Theme.iconImage(icon)
         let iconView = imageView(forImage: iconImage)
         iconView.tintColor = tintColor ?? Theme.primaryIconColor
+        iconView.autoSetDimensions(to: .square(iconSize))
         return iconView
     }
 

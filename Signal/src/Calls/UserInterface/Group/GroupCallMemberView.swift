@@ -66,7 +66,7 @@ class GroupCallMemberView: UIView {
         blurView.autoPinEdgesToSuperviewEdges()
 
         muteIndicatorImage.contentMode = .scaleAspectFit
-        muteIndicatorImage.setTemplateImage(#imageLiteral(resourceName: "mic-off-solid-28"), tintColor: .ows_white)
+        muteIndicatorImage.setTemplateImageName("mic-slash-fill-28", tintColor: .ows_white)
         addSubview(muteIndicatorImage)
         muteIndicatorImage.autoMatch(.width, to: .height, of: muteIndicatorImage)
 
@@ -140,7 +140,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         super.init()
 
         videoOffIndicatorImage.contentMode = .scaleAspectFit
-        videoOffIndicatorImage.setTemplateImage(#imageLiteral(resourceName: "video-off-solid-28"), tintColor: .ows_white)
+        videoOffIndicatorImage.setTemplateImageName("video-slash-fill-28", tintColor: .ows_white)
         noVideoView.addSubview(videoOffIndicatorImage)
         videoOffIndicatorImage.autoMatch(.height, to: .width, of: videoOffIndicatorImage)
         videoOffIndicatorImage.autoCenterInSuperview()
@@ -406,7 +406,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         let labelFormat = isBlocked ? blockFormat : missingKeyFormat
         let label = String(format: labelFormat, arguments: [displayName])
-        let image = isBlocked ? UIImage(named: "block-24") : UIImage(named: "error-solid-24")
+        let image = isBlocked ? UIImage(named: "block") : UIImage(named: "error-circle-fill")
 
         errorView.iconImage = image
         errorView.labelText = label

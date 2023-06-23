@@ -812,13 +812,22 @@ class ImageEditorCropViewController: OWSViewController {
 extension ImageEditorCropViewController: ImageEditorBottomBarButtonProvider {
 
     var middleButtons: [UIButton] {
-        let rotateButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-rotate"), backgroundStyle: .none)
+        let rotateButton = RoundMediaButton(
+            image: UIImage(imageLiteralResourceName: "rotate-28"),
+            backgroundStyle: .none
+        )
         rotateButton.addTarget(self, action: #selector(didTapRotateImage), for: .touchUpInside)
 
-        let flipButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-flip"), backgroundStyle: .none)
+        let flipButton = RoundMediaButton(
+            image: UIImage(imageLiteralResourceName: "flip-28"),
+            backgroundStyle: .none
+        )
         flipButton.addTarget(self, action: #selector(didTapFlipImage), for: .touchUpInside)
 
-        let aspectRatioButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-aspect"), backgroundStyle: .none)
+        let aspectRatioButton = RoundMediaButton(
+            image: UIImage(imageLiteralResourceName: "ratio-28"),
+            backgroundStyle: .none
+        )
         aspectRatioButton.addTarget(self, action: #selector(didTapChooseAspectRatio), for: .touchUpInside)
 
         return [ rotateButton, flipButton, aspectRatioButton ]

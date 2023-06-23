@@ -28,8 +28,7 @@ public class Deprecated_OnboardingBaseViewController: Deprecated_RegistrationBas
 
         if shouldShowBackButton() {
             let backButton = UIButton()
-            let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
-            backButton.setTemplateImage(backButtonImage, tintColor: Theme.secondaryTextAndIconColor)
+            backButton.setTemplateImage(UIImage(imageLiteralResourceName: "NavBarBack"), tintColor: Theme.secondaryTextAndIconColor)
             backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
 
             view.addSubview(backButton)

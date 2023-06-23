@@ -537,7 +537,9 @@ class BlurButton: UIButton {
     override var isSelected: Bool {
         didSet {
             UIView.transition(with: checkImageView, duration: 0.15, options: .transitionCrossDissolve) {
-                self.checkImageView.image = self.isSelected ? #imageLiteral(resourceName: "check-circle-filled-16") : #imageLiteral(resourceName: "circle-outline-16")
+                self.checkImageView.image = self.isSelected
+                    ? UIImage(imageLiteralResourceName: "check-circle-fill-compact")
+                    : UIImage(imageLiteralResourceName: "circle-compact")
             } completion: { _ in }
         }
     }

@@ -273,7 +273,7 @@ private class ButtonRow: UIButton {
 
         divider.backgroundColor = .ows_middleGray
 
-        selectedImageView.setTemplateImageName(Theme.iconName(.accessoryCheckmark), tintColor: Theme.primaryIconColor)
+        selectedImageView.setTemplateImage(Theme.iconImage(.checkmark), tintColor: Theme.primaryIconColor)
     }
 
     @objc

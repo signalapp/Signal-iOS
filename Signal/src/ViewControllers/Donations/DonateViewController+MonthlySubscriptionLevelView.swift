@@ -113,7 +113,7 @@ extension DonateViewController {
             headingStackView.removeAllSubviews()
             headingStackView.addArrangedSubview(headingLabel)
             if isCurrentSubscription {
-                let checkmark = UIImageView(image: UIImage(named: "check-20")?.withRenderingMode(.alwaysTemplate))
+                let checkmark = UIImageView(image: UIImage(named: "check-20"))
                 checkmark.tintColor = Theme.primaryTextColor
                 headingStackView.addArrangedSubview(checkmark)
                 checkmark.setCompressionResistanceHorizontalHigh()

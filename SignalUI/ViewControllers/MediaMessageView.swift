@@ -94,8 +94,6 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
         var subviews = [UIView]()
 
         setAudioIconToPlay()
-        audioPlayButton.imageView?.layer.minificationFilter = .trilinear
-        audioPlayButton.imageView?.layer.magnificationFilter = .trilinear
         audioPlayButton.addTarget(self, action: #selector(audioPlayButtonPressed), for: .touchUpInside)
         let buttonSize = createHeroViewSize
         audioPlayButton.autoSetDimension(.width, toSize: buttonSize)
@@ -223,7 +221,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     private func createGenericPreview() {
         var subviews = [UIView]()
 
-        let imageView = createHeroImageView(imageName: "file-thin-black-filled-large")
+        let imageView = createHeroImageView(imageName: "file-display")
         subviews.append(imageView)
 
         let fileNameLabel = createFileNameLabel()
@@ -252,8 +250,6 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
         let imageSize = createHeroViewSize
 
         let imageView = UIImageView(image: UIImage(named: imageName))
-        imageView.layer.minificationFilter = .trilinear
-        imageView.layer.magnificationFilter = .trilinear
         imageView.layer.shadowColor = UIColor.black.cgColor
         let shadowScaling: CGFloat = 5.0
         imageView.layer.shadowRadius = CGFloat(2.0 * shadowScaling)
@@ -347,10 +343,10 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     }
 
     private func setAudioIconToPlay() {
-        audioPlayButton.setImage(UIImage(named: "audio_play_black_large"), for: .normal)
+        audioPlayButton.setImage(UIImage(named: "play-circle-display"), for: .normal)
     }
 
     private func setAudioIconToPause() {
-        audioPlayButton.setImage(UIImage(named: "audio_pause_black_large"), for: .normal)
+        audioPlayButton.setImage(UIImage(named: "pause-circle-display"), for: .normal)
     }
 }

@@ -72,10 +72,8 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
     }
 
     private func updateNavbar() {
-        let closeButton = UIImage(named: "x-24")?.withRenderingMode(.alwaysTemplate)
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: closeButton,
-            landscapeImagePhone: nil,
+            image: Theme.iconImage(.buttonX),
             style: .plain,
             target: self,
             action: #selector(didTapDismiss),

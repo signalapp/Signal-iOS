@@ -289,9 +289,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private func updateNavbar() {
         if paymentsHelperSwift.arePaymentsEnabled {
-            let moreOptionsIcon = UIImage(named: "more-horiz-24")?.withRenderingMode(.alwaysTemplate)
             navigationItem.rightBarButtonItem = UIBarButtonItem(
-                image: moreOptionsIcon,
+                image: Theme.iconImage(.buttonMore),
                 landscapeImagePhone: nil,
                 style: .plain,
                 target: self,
@@ -453,8 +452,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         conversionLabel.textColor = Theme.secondaryTextAndIconColor
 
         let conversionInfoView = UIImageView()
-        conversionInfoView.setTemplateImageName("info-outline-24",
-                                                        tintColor: Theme.secondaryTextAndIconColor)
+        conversionInfoView.setTemplateImageName("info-compact", tintColor: Theme.secondaryTextAndIconColor)
         conversionInfoView.autoSetDimensions(to: .square(16))
         conversionInfoView.setCompressionResistanceHigh()
 
@@ -503,7 +501,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
         let addMoneyButton = buildHeaderButton(title: OWSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY",
                                                                         comment: "Label for 'add money' view in the payment settings."),
-                                               iconName: "plus-24",
+                                               iconName: "plus",
                                                selector: #selector(didTapAddMoneyButton))
         let sendPaymentButton = buildHeaderButton(title: OWSLocalizedString("SETTINGS_PAYMENTS_SEND_PAYMENT",
                                                                            comment: "Label for 'send payment' button in the payment settings."),
@@ -884,10 +882,10 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             cell.contentView.addSubview(hStack)
             hStack.autoPinEdgesToSuperviewMargins()
 
-            let dismissIconView = UIImageView.withTemplateImageName("x-24",
-                                                                    tintColor: (Theme.isDarkThemeEnabled
-                                                                                    ? .ows_gray05
-                                                                                    : .ows_gray45))
+            let dismissIconView = UIImageView.withTemplateImage(Theme.iconImage(.buttonX),
+                                                                tintColor: (Theme.isDarkThemeEnabled
+                                                                            ? .ows_gray05
+                                                                            : .ows_gray45))
             dismissIconView.autoSetDimensions(to: .square(10))
             let dismissButton = OWSLayerView.circleView()
             dismissButton.backgroundColor = (Theme.isDarkThemeEnabled

@@ -129,7 +129,7 @@ class RegistrationProfileViewController: OWSViewController {
 
     private lazy var cameraImageView: UIImageView = {
         let result = UIImageView.withTemplateImageName(
-            "camera-outline-24",
+            "camera-compact",
             // This color will be swiftly updated during renders.
             tintColor: Theme.secondaryTextAndIconColor
         )
@@ -562,8 +562,7 @@ extension RegistrationProfileViewController {
         public func render() {
             button.setBackgroundColors(upColor: Theme.backgroundColor)
 
-            let disclosureIconName = CurrentAppContext().isRTL ? "chevron-left-20" : "chevron-right-20"
-            let labelIconName = isDiscoverable ? "group-outline-24" : "lock-outline-24"
+            let labelIconName = isDiscoverable ? "group" : "lock"
 
             titleLabel.text = OWSLocalizedString(
                 "REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE",
@@ -590,8 +589,8 @@ extension RegistrationProfileViewController {
             subTitleLabel.font = UIFont.dynamicTypeCaption1Clamped
             subTitleLabel.textColor = Theme.secondaryTextAndIconColor
 
-            disclosureView.setTemplateImageName(
-                disclosureIconName,
+            disclosureView.setTemplateImage(
+                UIImage(imageLiteralResourceName: "chevron-right-20"),
                 tintColor: Theme.secondaryTextAndIconColor
             )
         }

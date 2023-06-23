@@ -185,11 +185,9 @@ public class Deprecated_OnboardingTransferChoiceViewController: Deprecated_Onboa
 
         // Disclosure Indicator
 
-        let disclosureIconName = CurrentAppContext().isRTL ? "chevron-left-20" : "chevron-right-20"
-
         let disclosureContainer = UIView()
         let disclosureView = UIImageView()
-        disclosureView.setTemplateImageName(disclosureIconName, tintColor: Theme.secondaryTextAndIconColor)
+        disclosureView.setTemplateImage(UIImage(imageLiteralResourceName: "chevron-right-20"), tintColor: Theme.secondaryTextAndIconColor)
         disclosureView.contentMode = .scaleAspectFit
         disclosureContainer.addSubview(disclosureView)
         disclosureView.autoPinEdgesToSuperviewEdges()

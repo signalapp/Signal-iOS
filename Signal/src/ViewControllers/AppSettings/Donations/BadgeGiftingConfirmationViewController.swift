@@ -289,7 +289,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             contactCellView.addArrangedSubview(avatarAndNameView)
 
             if disappearingMessagesDuration != 0 {
-                let iconView = UIImageView(image: Theme.iconImage(.settingsTimer))
+                let iconView = UIImageView(image: UIImage(imageLiteralResourceName: "timer"))
                 iconView.contentMode = .scaleAspectFit
 
                 let disappearingMessagesTimerLabelView = UILabel()

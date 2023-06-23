@@ -102,7 +102,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             .color(Theme.secondaryTextAndIconColor)
         )
         mainSection.add(.disclosureItem(
-            icon: .settingsProfile,
+            icon: .profileName,
             name: fullName ?? OWSLocalizedString(
                 "PROFILE_SETTINGS_NAME_PLACEHOLDER",
                 comment: "Placeholder when the user doesn't have a 'name' defined for profile settings screen."
@@ -153,7 +153,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         }
 
         mainSection.add(.disclosureItem(
-            icon: .settingsAbout,
+            icon: .profileAbout,
             name: OWSUserProfile.bioForDisplay(bio: bio, bioEmoji: bioEmoji) ?? OWSLocalizedString(
                 "PROFILE_SETTINGS_BIO_PLACEHOLDER",
                 comment: "Placeholder when the user doesn't have an 'about' for profile settings screen."
@@ -167,7 +167,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         ))
         if RemoteConfig.donorBadgeDisplay, !allBadges.isEmpty {
             mainSection.add(.disclosureItem(
-                icon: .settingsBadges,
+                icon: .profileBadges,
                 name: OWSLocalizedString(
                     "BADGE_CONFIGURATION_TITLE",
                     comment: "The title for the badge configuration page"
@@ -212,7 +212,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
     private func buildUsernamePlaceholderCell() -> UITableViewCell {
         return OWSTableItem.buildCell(
-            icon: .settingsMention,
+            icon: .profileUsername,
             itemName: OWSLocalizedString(
                 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER",
                 comment: "A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username."
@@ -225,12 +225,12 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         username: String,
         localAci: ServiceId
     ) -> UITableViewCell {
-       let editUsernameAction = ContextMenuAction(
+        let editUsernameAction = ContextMenuAction(
             title: OWSLocalizedString(
                 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION",
                 comment: "Title for a menu action allowing users to edit their existing username."
             ),
-            image: Theme.iconImage(.settingsAbout),
+            image: Theme.iconImage(.contextMenuEdit),
             handler: { [weak self] _ in
                 guard let self else { return }
 
@@ -243,7 +243,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 "PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION",
                 comment: "Title for a menu action allowing users to view their username link QR code."
             ),
-            image: Theme.iconImage(.audioCall),
+            image: UIImage(imageLiteralResourceName: "qr_code-light"),
             handler: { [weak self] _ in
                 guard let self else { return }
 
@@ -253,7 +253,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         let deleteUsernameAction = ContextMenuAction(
             title: CommonStrings.deleteButton,
-            image: Theme.iconImage(.trash24),
+            image: Theme.iconImage(.contextMenuDelete),
             attributes: .destructive,
             handler: { [weak self] _ in
                 guard let self else { return }
@@ -287,7 +287,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         return OWSTableItem.buildCell(
             baseCell: contextMenuPresentingCell,
             contentWrapperView: contextMenuButton,
-            icon: .settingsMention,
+            icon: .profileUsername,
             itemName: username,
             accessoryType: .disclosureIndicator
         )

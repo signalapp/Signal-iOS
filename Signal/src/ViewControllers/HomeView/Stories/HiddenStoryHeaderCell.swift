@@ -49,19 +49,11 @@ class HiddenStoryHeaderCell: UITableViewCell {
         label.textColor = Theme.primaryTextColor
         iconView.tintColor = Theme.primaryIconColor
 
-        let iconName: String
-        let expandedRotationAngle: CGFloat
-        if CurrentAppContext().isRTL {
-            iconName = "chevron-left-20"
-            expandedRotationAngle = -90 * .pi / 180
-        } else {
-            iconName = "chevron-right-20"
-            expandedRotationAngle = 90 * .pi / 180
-        }
-        iconView.image = .init(named: iconName)?.withRenderingMode(.alwaysTemplate)
+        iconView.image = UIImage(imageLiteralResourceName: "chevron-right-20")
 
         // Rotate the chevron down when not collapsed
         let applyIconRotation = {
+            let expandedRotationAngle: CGFloat = CurrentAppContext().isRTL ? -.pi/2 : .pi/2
             self.iconView.transform = CGAffineTransform.init(
                 rotationAngle: isCollapsed ? 0 : expandedRotationAngle
             )

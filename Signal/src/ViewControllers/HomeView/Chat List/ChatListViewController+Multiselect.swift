@@ -26,8 +26,7 @@ extension ChatListViewController {
         viewState.multiSelectState.title = title
         if chatListMode == .inbox {
             let doneButton = UIBarButtonItem(
-                title: CommonStrings.cancelButton,
-                style: .plain,
+                barButtonSystemItem: .cancel,
                 target: self,
                 action: #selector(done),
                 accessibilityIdentifier: CommonStrings.cancelButton

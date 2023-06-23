@@ -21,8 +21,9 @@ public extension ConversationViewController {
         let label = buildBannerLabel(title: title)
         label.textAlignment = .center
 
-        let closeIcon = UIImage(named: "banner_close")!
+        let closeIcon = UIImage(imageLiteralResourceName: "x-extra-small")
         let closeButton = UIImageView(image: closeIcon)
+        closeButton.tintColor = .white
         bannerView.addSubview(closeButton)
         let kBannerCloseButtonPadding: CGFloat = 8
         closeButton.autoPinEdge(toSuperviewEdge: .top, withInset: kBannerCloseButtonPadding)
@@ -334,9 +335,7 @@ private class NameCollisionBanner: UIView {
         let borderWidth: CGFloat = 2
         let totalSize = avatarSize.plus(CGSize(square: borderWidth))
 
-        let imageView = UIImageView.withTemplateImageName(
-            "info-outline-24",
-            tintColor: Theme.secondaryTextAndIconColor)
+        let imageView = UIImageView.withTemplateImageName("info", tintColor: Theme.secondaryTextAndIconColor)
         imageView.contentMode = .center
 
         imageView.layer.borderColor = Theme.secondaryBackgroundColor.cgColor
@@ -363,7 +362,7 @@ private class NameCollisionBanner: UIView {
 
     private let closeButton: OWSButton = {
         let button = OWSButton(
-            imageName: "x-circle-16",
+            imageName: "x-circle-compact",
             tintColor: Theme.secondaryTextAndIconColor)
         button.accessibilityLabel = OWSLocalizedString("BANNER_CLOSE_ACCESSIBILITY_LABEL",
                                                       comment: "Accessibility label for banner close button")

@@ -89,10 +89,10 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         ]
     )
 
-    private lazy var audioModeHangUpButton = createButton(iconName: "phone-down-solid-28", action: #selector(didPressHangup))
-    private lazy var audioModeSourceButton = createButton(iconName: "speaker-solid-28", action: #selector(didPressAudioSource))
-    private lazy var audioModeMuteButton = createButton(iconName: "mic-off-solid-28", action: #selector(didPressMute))
-    private lazy var audioModeVideoButton = createButton(iconName: "video-solid-28", action: #selector(didPressVideo))
+    private lazy var audioModeHangUpButton = createButton(iconName: "phone-down-fill-28", action: #selector(didPressHangup))
+    private lazy var audioModeSourceButton = createButton(iconName: "speaker-fill-28", action: #selector(didPressAudioSource))
+    private lazy var audioModeMuteButton = createButton(iconName: "mic-slash-fill-28", action: #selector(didPressMute))
+    private lazy var audioModeVideoButton = createButton(iconName: "video-fill-28", action: #selector(didPressVideo))
 
     // MARK: - Ongoing Video Call Controls
 
@@ -108,10 +108,10 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         ]
     )
 
-    private lazy var videoModeHangUpButton = createButton(iconName: "phone-down-solid-28", action: #selector(didPressHangup))
-    private lazy var videoModeAudioSourceButton = createButton(iconName: "speaker-solid-28", action: #selector(didPressAudioSource))
-    private lazy var videoModeMuteButton = createButton(iconName: "mic-off-solid-28", action: #selector(didPressMute))
-    private lazy var videoModeVideoButton = createButton(iconName: "video-solid-28", action: #selector(didPressVideo))
+    private lazy var videoModeHangUpButton = createButton(iconName: "phone-down-fill-28", action: #selector(didPressHangup))
+    private lazy var videoModeAudioSourceButton = createButton(iconName: "speaker-fill-28", action: #selector(didPressAudioSource))
+    private lazy var videoModeMuteButton = createButton(iconName: "mic-slash-fill-28", action: #selector(didPressMute))
+    private lazy var videoModeVideoButton = createButton(iconName: "video-fill-28", action: #selector(didPressVideo))
     private lazy var videoModeFlipCameraButton = createButton(iconName: "switch-camera-28", action: #selector(didPressFlipCamera))
 
     // MARK: - Incoming Audio Call Controls
@@ -126,8 +126,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         ]
     )
 
-    private lazy var audioAnswerIncomingButton = createButton(iconName: "phone-solid-28", action: #selector(didPressAnswerCall))
-    private lazy var audioDeclineIncomingButton = createButton(iconName: "phone-down-solid-28", action: #selector(didPressDeclineCall))
+    private lazy var audioAnswerIncomingButton = createButton(iconName: "phone-fill-28", action: #selector(didPressAnswerCall))
+    private lazy var audioDeclineIncomingButton = createButton(iconName: "phone-down-fill-28", action: #selector(didPressDeclineCall))
 
     // MARK: - Incoming Video Call Controls
 
@@ -148,9 +148,9 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         ]
     )
 
-    private lazy var videoAnswerIncomingButton = createButton(iconName: "video-solid-28", action: #selector(didPressAnswerCall))
-    private lazy var videoAnswerIncomingAudioOnlyButton = createButton(iconName: "video-off-solid-28", action: #selector(didPressAnswerCall))
-    private lazy var videoDeclineIncomingButton = createButton(iconName: "phone-down-solid-28", action: #selector(didPressDeclineCall))
+    private lazy var videoAnswerIncomingButton = createButton(iconName: "video-fill-28", action: #selector(didPressAnswerCall))
+    private lazy var videoAnswerIncomingAudioOnlyButton = createButton(iconName: "video-slash-fill-28", action: #selector(didPressAnswerCall))
+    private lazy var videoDeclineIncomingButton = createButton(iconName: "phone-down-fill-28", action: #selector(didPressDeclineCall))
 
     // MARK: - Video Views
 
@@ -370,9 +370,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     }
 
     func createContactViews() {
-
-        let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
-        backButton.setImage(backButtonImage, for: .normal)
+        backButton.setImage(UIImage(imageLiteralResourceName: "NavBarBack"), for: .normal)
+        backButton.tintColor = Theme.darkThemeNavbarIconColor
         backButton.autoSetDimensions(to: CGSize(square: 40))
         backButton.addTarget(self, action: #selector(didTapLeaveCall(sender:)), for: .touchUpInside)
         topGradientView.addSubview(backButton)
@@ -495,7 +494,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
             // create checkmark for active audio source.
             if currentAudioSource == audioSource {
-                routeAudioAction.trailingIcon = .checkCircle24
+                routeAudioAction.trailingIcon = .checkCircle
             }
 
             actionSheetController.addAction(routeAudioAction)
@@ -896,14 +895,14 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
             videoControls.forEach { $0.isSmall = true }
 
             if audioSource.isBuiltInEarPiece {
-                audioModeSourceButton.iconName = "phone-solid-28"
-                videoModeAudioSourceButton.iconName = "phone-solid-28"
+                audioModeSourceButton.iconName = "phone-fill-28"
+                videoModeAudioSourceButton.iconName = "phone-fill-28"
             } else if audioSource.isBuiltInSpeaker {
-                audioModeSourceButton.iconName = "speaker-solid-28"
-                videoModeAudioSourceButton.iconName = "speaker-solid-28"
+                audioModeSourceButton.iconName = "speaker-fill-28"
+                videoModeAudioSourceButton.iconName = "speaker-fill-28"
             } else {
-                audioModeSourceButton.iconName = "speaker-bt-solid-28"
-                videoModeAudioSourceButton.iconName = "speaker-bt-solid-28"
+                audioModeSourceButton.iconName = "speaker-bt-fill-28"
+                videoModeAudioSourceButton.iconName = "speaker-bt-fill-28"
             }
         } else if UIDevice.current.isIPad {
             // iPad *only* supports speaker mode, if there are no external
@@ -916,10 +915,10 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
             videoModeAudioSourceButton.isHidden = false
 
             // No bluetooth audio detected
-            audioModeSourceButton.iconName = "speaker-solid-28"
+            audioModeSourceButton.iconName = "speaker-fill-28"
             audioModeSourceButton.showDropdownArrow = false
 
-            videoModeAudioSourceButton.iconName = "speaker-solid-28"
+            videoModeAudioSourceButton.iconName = "speaker-fill-28"
             videoModeAudioSourceButton.showDropdownArrow = false
 
             videoControls.forEach { $0.isSmall = false }

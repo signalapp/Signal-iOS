@@ -196,7 +196,7 @@ class BadgeCollectionViewCell: UICollectionViewCell {
 
         imageView.contentMode = .scaleAspectFit
         imageView.autoSetDimensions(to: imageViewSize)
-        imageView.setTemplateImageName("check-circle-solid-new-24", tintColor: .ows_accentBlue)
+        imageView.setTemplateImage(Theme.iconImage(.checkCircleFill), tintColor: .ows_accentBlue)
         imageView.isHidden = true
 
         imageView.backgroundColor = .ows_gray02

@@ -428,8 +428,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 let fiatFormat = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT",
                                                    comment: "Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}.")
 
-                let currencyConversionInfoView = UIImageView.withTemplateImageName("info-outline-24",
-                                                                                   tintColor: Theme.secondaryTextAndIconColor)
+                let currencyConversionInfoView = UIImageView.withTemplateImageName("info-compact", tintColor: Theme.secondaryTextAndIconColor)
                 currencyConversionInfoView.autoSetDimensions(to: .square(16))
                 currencyConversionInfoView.setCompressionResistanceHigh()
 

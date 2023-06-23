@@ -34,7 +34,7 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
 
             let imageView = UIImageView()
             imageView.contentMode = .scaleAspectFit
-            imageView.image = UIImage(named: "proxy_avatar_96")
+            imageView.image = UIImage(named: "proxy_avatar")
             imageView.autoSetDimension(.height, toSize: 96)
 
             let titleLabel = UILabel()

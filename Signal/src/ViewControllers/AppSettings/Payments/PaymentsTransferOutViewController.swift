@@ -108,7 +108,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
                                                 comment: "Footer of the 'transfer currency out' view in the payment settings.")
         let addressTextfield = self.addressTextfield
 
-        let iconView = UIImageView.withTemplateImageName("qr-24", tintColor: Theme.primaryIconColor)
+        let iconView = UIImageView.withTemplateImageName("qr_code", tintColor: Theme.primaryIconColor)
         iconView.autoSetDimensions(to: .square(24))
         iconView.setCompressionResistanceHigh()
         iconView.setContentHuggingHigh()

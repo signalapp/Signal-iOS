@@ -16,7 +16,7 @@ extension ConversationViewController {
         // If the user is in the system contacts, show a badge
         headerView.titleIcon = (
             conversationViewModel.isSystemContact
-            ? UIImage(named: "contact-outline-16")?.withRenderingMode(.alwaysTemplate)
+            ? UIImage(imageLiteralResourceName: "person-circle-compact")
             : nil
         )
 
@@ -110,7 +110,7 @@ extension ConversationViewController {
                         pill.buttonText = self.isCurrentCallForThread ? returnString : joinString
                         videoCallButton.customView = pill
                     } else {
-                        videoCallButton.image = Theme.iconImage(.videoCall)
+                        videoCallButton.image = Theme.iconImage(.buttonVideoCall)
                         videoCallButton.target = self
                         videoCallButton.action = #selector(showGroupLobbyOrActiveCall)
                     }
@@ -123,7 +123,7 @@ extension ConversationViewController {
                     barButtons.append(videoCallButton)
                 } else {
                     let audioCallButton = UIBarButtonItem(
-                        image: Theme.iconImage(.audioCall),
+                        image: Theme.iconImage(.buttonVoiceCall),
                         style: .plain,
                         target: self,
                         action: #selector(startIndividualAudioCall)
@@ -134,7 +134,7 @@ extension ConversationViewController {
                     barButtons.append(audioCallButton)
 
                     let videoCallButton = UIBarButtonItem(
-                        image: Theme.iconImage(.videoCall),
+                        image: Theme.iconImage(.buttonVideoCall),
                         style: .plain,
                         target: self,
                         action: #selector(startIndividualVideoCall)
@@ -177,7 +177,7 @@ extension ConversationViewController {
         let isVerified = conversationViewModel.shouldShowVerifiedBadge
 
         if isMuted {
-            subtitleText.appendTemplatedImage(named: "bell-disabled-outline-24", font: subtitleFont)
+            subtitleText.appendTemplatedImage(named: "bell-slash-compact", font: subtitleFont)
             if !isVerified {
                 subtitleText.append(iconSpacer, attributes: attributes)
                 subtitleText.append(OWSLocalizedString("MUTED_BADGE",
@@ -191,7 +191,7 @@ extension ConversationViewController {
                 subtitleText.append(betweenItemSpacer, attributes: attributes)
             }
 
-            subtitleText.appendTemplatedImage(named: "timer-outline-16", font: subtitleFont)
+            subtitleText.appendTemplatedImage(named: Theme.iconName(.timer16), font: subtitleFont)
             subtitleText.append(iconSpacer, attributes: attributes)
             subtitleText.append(DateUtil.formatDuration(
                 seconds: disappearingMessagesConfiguration.durationSeconds,
@@ -205,7 +205,7 @@ extension ConversationViewController {
                 subtitleText.append(betweenItemSpacer, attributes: attributes)
             }
 
-            subtitleText.appendTemplatedImage(named: "check-12", font: subtitleFont)
+            subtitleText.appendTemplatedImage(named: "check-extra-small", font: subtitleFont)
             subtitleText.append(iconSpacer, attributes: attributes)
             subtitleText.append(OWSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
                                                   comment: "Badge indicating that the user is verified."),

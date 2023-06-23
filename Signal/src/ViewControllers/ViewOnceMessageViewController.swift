@@ -234,7 +234,7 @@ class ViewOnceMessageViewController: OWSViewController {
         mediaView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
         mediaView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
 
-        let dismissButton = OWSButton(imageName: "x-24", tintColor: Theme.darkThemePrimaryColor) { [weak self] in
+        let dismissButton = OWSButton(imageName: Theme.iconName(.buttonX), tintColor: Theme.darkThemePrimaryColor) { [weak self] in
             self?.dismissButtonPressed()
         }
         dismissButton.layer.shadowColor = Theme.darkThemeBackgroundColor.cgColor

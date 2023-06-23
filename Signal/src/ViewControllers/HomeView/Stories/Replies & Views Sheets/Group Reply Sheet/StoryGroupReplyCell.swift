@@ -37,7 +37,7 @@ class StoryGroupReplyCell: UITableViewCell {
     private lazy var sendFailureIcon: UIView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = #imageLiteral(resourceName: "error-20").withRenderingMode(.alwaysTemplate)
+        imageView.image = UIImage(imageLiteralResourceName: "error-circle-20")
         imageView.tintColor = .ows_accentRed
         imageView.autoSetDimensions(to: .square(20))
 

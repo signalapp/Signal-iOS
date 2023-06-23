@@ -27,7 +27,7 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
 
         view.addSubview(modeSwitchButton)
         modeSwitchButton.setTemplateImageName(
-            Deprecated_OnboardingController.defaultOnboardingMode == .registering ? "link-24" : "link-broken-24",
+            Deprecated_OnboardingController.defaultOnboardingMode == .registering ? "link" : "link-slash",
             tintColor: .ows_gray25
         )
         modeSwitchButton.autoSetDimensions(to: CGSize(square: 40))

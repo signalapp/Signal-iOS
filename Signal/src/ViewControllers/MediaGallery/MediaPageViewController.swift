@@ -320,7 +320,7 @@ class MediaPageViewController: UIPageViewController {
             owsFailDebug("button is nil")
             return
         }
-        let imageResourceName = needsCompactToolbars ? "ellipsis-circle-20" : "ellipsis-circle-24"
+        let imageResourceName = needsCompactToolbars ? "more-circle-20" : "more-circle"
         let buttonImage = UIImage(imageLiteralResourceName: imageResourceName)
         button.setImage(buttonImage, for: .normal)
     }
@@ -339,27 +339,28 @@ class MediaPageViewController: UIPageViewController {
                 "MEDIA_VIEWER_DELETE_MEDIA_ACTION",
                 comment: "Context menu item in media viewer. Refers to deleting currently displayed photo/video."
             ),
-            image: UIImage(imageLiteralResourceName: "trash-outline-24"),
+            image: Theme.iconImage(.contextMenuDelete),
             attributes: .destructive,
             handler: { [weak self] _ in
                 self?.deleteCurrentMedia()
-            }))
+            }
+        ))
         contextMenuButton.contextMenu = ContextMenu(contextMenuActions)
     }
 
     // MARK: Bar Buttons
 
     private lazy var barButtonShareMedia = UIBarButtonItem(
-        image: UIImage(imageLiteralResourceName: "media-viewer-share-24"),
-        landscapeImagePhone: UIImage(imageLiteralResourceName: "media-viewer-share-20"),
+        image: Theme.iconImage(.buttonShare),
+        landscapeImagePhone: UIImage(imageLiteralResourceName: "share-20"),
         style: .plain,
         target: self,
         action: #selector(didPressShare)
     )
 
     private lazy var barButtonForwardMedia = UIBarButtonItem(
-        image: UIImage(imageLiteralResourceName: "media-viewer-forward-24"),
-        landscapeImagePhone: UIImage(imageLiteralResourceName: "media-viewer-forward-20"),
+        image: Theme.iconImage(.buttonForward),
+        landscapeImagePhone: UIImage(imageLiteralResourceName: "forward-20"),
         style: .plain,
         target: self,
         action: #selector(didPressForward)

@@ -941,11 +941,11 @@ private class ForwardPickerViewController: ConversationPickerViewController {
         title = OWSLocalizedString("FORWARD_MESSAGE_TITLE",
                                   comment: "Title for the 'forward message(s)' view.")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.cancel24),
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.buttonX),
                                                            style: .plain,
                                                            target: self,
                                                            action: #selector(didPressCancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.settingsSearch),
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.buttonSearch),
                                                             style: .plain,
                                                             target: self,
                                                             action: #selector(didPressSearch))

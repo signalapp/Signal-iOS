@@ -179,7 +179,7 @@ class GiftBadgeView: ManualStackView {
                 nonAttributedString = CommonStrings.redeemGiftButton
             case .redeemed:
                 let attrString = NSMutableAttributedString()
-                attrString.appendTemplatedImage(named: "check-circle-outline-24", font: font)
+                attrString.appendTemplatedImage(named: Theme.iconName(.checkCircle), font: font)
                 attrString.append("\u{2004}\u{2009}")
                 attrString.append(OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED",

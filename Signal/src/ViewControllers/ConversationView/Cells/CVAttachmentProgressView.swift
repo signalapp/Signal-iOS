@@ -137,13 +137,11 @@ public class CVAttachmentProgressView: ManualLayoutView {
                 reset()
             case .tapToDownload:
                 if oldState != newState {
-                    presentIcon(templateName: "arrow-down-24",
-                                isInsideProgress: false)
+                    presentIcon(templateName: Theme.iconName(.arrowDown), isInsideProgress: false)
                 }
             case .downloadFailed:
                 if oldState != newState {
-                    presentIcon(templateName: "retry-alt-24",
-                                isInsideProgress: false)
+                    presentIcon(templateName: Theme.iconName(.refresh), isInsideProgress: false)
                 }
             case .downloadProgress(let progress):
                 switch oldState {
@@ -151,8 +149,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
                     updateProgress(progress: progress)
                 default:
                     presentProgress(progress: progress)
-                    presentIcon(templateName: "x-24",
-                                isInsideProgress: true)
+                    presentIcon(templateName: Theme.iconName(.buttonX), isInsideProgress: true)
                 }
             case .uploadProgress(let progress):
                 switch oldState {
@@ -163,8 +160,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
                 }
             case .downloadUnknownProgress:
                 presentUnknownProgress()
-                presentIcon(templateName: "x-24",
-                            isInsideProgress: true)
+                presentIcon(templateName: Theme.iconName(.buttonX), isInsideProgress: true)
             case .uploadUnknownProgress:
                 presentUnknownProgress()
             }

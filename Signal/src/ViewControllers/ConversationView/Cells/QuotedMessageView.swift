@@ -540,7 +540,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                     wrapper.addSubviewToFillSuperviewEdges(overlayView)
 
                     let contentImageView = CVImageView()
-                    contentImageView.setTemplateImageName("play-solid-24", tintColor: .ows_white)
+                    contentImageView.setTemplateImageName("play-fill", tintColor: .ows_white)
                     contentImageView.setShadow(radius: 6, opacity: 0.24, offset: .zero, color: .ows_black)
                     wrapper.addSubviewToCenterOnSuperviewWithDesiredSize(contentImageView)
                 }
@@ -550,7 +550,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 wrapper.backgroundColor = configurator.highlightColor
 
                 // TODO: design review icon and color
-                quotedImageView.setTemplateImageName("btnRefresh--white", tintColor: .white)
+                quotedImageView.setTemplateImageName("refresh", tintColor: .white)
                 quotedImageView.contentMode = .scaleAspectFit
                 quotedImageView.clipsToBounds = false
                 let iconSize = CGSize.square(configurator.quotedAttachmentSize.width * 0.5)
@@ -659,8 +659,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         if configurator.isForPreview {
             let cancelButton = UIButton(type: .custom)
-            let cancelIcon = UIImage(named: "compose-cancel")?.withRenderingMode(.alwaysTemplate)
-            cancelButton.setImage(cancelIcon, for: .normal)
+            cancelButton.setImage(UIImage(imageLiteralResourceName: "x-20"), for: .normal)
             cancelButton.imageView?.tintColor = Theme.secondaryTextAndIconColor
             cancelButton.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
 
@@ -680,8 +679,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         outerVStackSubviews.append(hStack)
 
         if quotedReplyModel.isRemotelySourced {
-            remotelySourcedContentIconView.setTemplateImageName("ic_broken_link",
-                                                                tintColor: Theme.lightThemePrimaryColor)
+            remotelySourcedContentIconView.setTemplateImageName("link-slash-compact", tintColor: Theme.lightThemePrimaryColor)
 
             let quoteContentSourceLabelConfig = configurator.quoteContentSourceLabelConfig
             quoteContentSourceLabelConfig.applyForRendering(label: quoteContentSourceLabel)

@@ -16,8 +16,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "share-outline-24"),
-                                                            landscapeImagePhone: nil,
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.buttonShare),
                                                             style: .plain,
                                                             target: self,
                                                             action: #selector(didTapShare))

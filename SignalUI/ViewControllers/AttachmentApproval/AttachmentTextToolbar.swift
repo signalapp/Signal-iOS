@@ -259,7 +259,7 @@ class AttachmentTextToolbar: UIView {
     }()
 
     private lazy var doneButton: UIButton = {
-        let doneButton = OWSButton(imageName: "check-24", tintColor: .white) { [weak self] in
+        let doneButton = OWSButton(imageName: Theme.iconName(.checkmark), tintColor: .white) { [weak self] in
             guard let self = self else { return }
             self.didTapFinishEditing()
         }

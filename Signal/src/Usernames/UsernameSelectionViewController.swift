@@ -160,15 +160,12 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     // MARK: Views
 
     /// Navbar button for finishing this view.
-    private lazy var doneBarButtonItem: UIBarButtonItem = {
-        UIBarButtonItem(
-            title: CommonStrings.doneButton,
-            style: .done,
-            target: self,
-            action: #selector(didTapDone),
-            accessibilityIdentifier: "done_button"
-        )
-    }()
+    private lazy var doneBarButtonItem = UIBarButtonItem(
+        barButtonSystemItem: .done,
+        target: self,
+        action: #selector(didTapDone),
+        accessibilityIdentifier: "done_button"
+    )
 
     private lazy var wrapperScrollView = UIScrollView()
 

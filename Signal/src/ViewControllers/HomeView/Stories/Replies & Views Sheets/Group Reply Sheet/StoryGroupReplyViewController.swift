@@ -400,7 +400,7 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
                     title: OWSLocalizedString(
                         "STORIES_COPY_REPLY_ACTION",
                         comment: "Context menu action to copy the selected story reply"),
-                    image: Theme.iconImage(.messageActionCopy, isDarkThemeEnabled: true),
+                    image: Theme.iconImage(.contextMenuCopy, isDarkThemeEnabled: true),
                     handler: { _ in
                         guard let displayableText = item.displayableText else { return }
                         BodyRangesTextView.copyAttributedStringToPasteboard(displayableText.fullAttributedText)
@@ -411,7 +411,7 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
                 title: OWSLocalizedString(
                     "STORIES_DELETE_REPLY_ACTION",
                     comment: "Context menu action to delete the selected story reply"),
-                image: Theme.iconImage(.messageActionDelete, isDarkThemeEnabled: true),
+                image: Theme.iconImage(.contextMenuDelete, isDarkThemeEnabled: true),
                 attributes: .destructive,
                 handler: { [weak self] _ in
                     guard let self = self else { return }

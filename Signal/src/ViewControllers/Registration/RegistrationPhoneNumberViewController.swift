@@ -274,7 +274,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         contextButton.contextMenu = ContextMenu(actions)
         navigationItem.leftBarButtonItem = contextBarButton
 
-        contextButton.setImage(Theme.iconImage(.more24), for: .normal)
+        contextButton.setImage(Theme.iconImage(.buttonMore), for: .normal)
         contextButton.tintColor = Theme.accentBlueColor
 
         navigationItem.rightBarButtonItem = canSubmit ? nextBarButton : nil

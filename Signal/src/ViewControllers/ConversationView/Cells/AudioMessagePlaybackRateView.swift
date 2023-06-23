@@ -377,9 +377,9 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
         static var image: UIImage? {
             switch UIApplication.shared.preferredContentSizeCategory {
             case .extraSmall, .small, .medium, .large, .extraLarge:
-                return UIImage(named: "x-10")
+                return UIImage(named: "x-extra-small")
             default:
-                return UIImage(named: "x-16")
+                return UIImage(named: "x-compact")
             }
         }
         static let margins = UIEdgeInsets(hMargin: 8, vMargin: 2)

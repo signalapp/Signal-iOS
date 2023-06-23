@@ -47,7 +47,6 @@ public class CountryCodeViewController: OWSTableViewController2 {
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .stop,
-
             target: self,
             action: #selector(didPressCancel),
             accessibilityIdentifier: "cancel")

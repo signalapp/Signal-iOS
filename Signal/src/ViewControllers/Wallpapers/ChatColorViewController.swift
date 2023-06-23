@@ -328,9 +328,6 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
     }
 
     // TODO: Use new context menus when they are available.
-    //       Until we do, hide the trailing icons.
-    private let showTrailingIcons = false
-
     fileprivate func didLongPressOption(option: Option) {
         switch option {
         case .auto, .builtInValue, .addNewOption:
@@ -343,9 +340,6 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
             ) { [weak self] _ in
                 self?.showCustomColorView(valueMode: .editExisting(value: value))
             }
-            if showTrailingIcons {
-                editAction.trailingIcon = .compose24
-            }
             actionSheet.addAction(editAction)
 
             let duplicateAction = ActionSheetAction(
@@ -354,18 +348,12 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
             ) { [weak self] _ in
                 self?.duplicateValue(value)
             }
-            if showTrailingIcons {
-                duplicateAction.trailingIcon = .copy24
-            }
             actionSheet.addAction(duplicateAction)
 
             let deleteAction = ActionSheetAction(
                 title: CommonStrings.deleteButton
             ) { [weak self] _ in
                 self?.showDeleteUI(value)
-            }
-            if showTrailingIcons {
-                deleteAction.trailingIcon = .trash24
             }
             actionSheet.addAction(deleteAction)
 
@@ -496,7 +484,8 @@ private class ChatColorPicker: UIView {
 
                     let isSelected = currentValue.selected == value
 
-                    let editIconView = UIImageView.withTemplateImageName("compose-solid-24", tintColor: .ows_white)
+                    let editIconView = UIImageView(image: UIImage(imageLiteralResourceName: "edit-fill"))
+                    editIconView.tintColor = .white
                     view.addSubview(editIconView)
                     editIconView.autoSetDimensions(to: .square(24))
                     editIconView.autoCenterInSuperview()
@@ -506,7 +495,7 @@ private class ChatColorPicker: UIView {
                     let view = OWSLayerView.circleView()
                     view.backgroundColor = Theme.washColor
 
-                    let imageView = UIImageView.withTemplateImageName("plus-24", tintColor: Theme.primaryIconColor)
+                    let imageView = UIImageView.withTemplateImageName("plus-bold", tintColor: Theme.primaryIconColor)
                     view.addSubview(imageView)
                     imageView.autoSetDimensions(to: .square(24))
                     imageView.autoCenterInSuperview()

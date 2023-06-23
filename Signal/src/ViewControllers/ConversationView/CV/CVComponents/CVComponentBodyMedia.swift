@@ -148,7 +148,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         if hasDownloadButton {
             let iconView = CVImageView()
-            iconView.setTemplateImageName("arrow-down-24", tintColor: UIColor.ows_white)
+            iconView.setTemplateImageName(Theme.iconName(.arrowDown), tintColor: UIColor.ows_white)
             if albumView.itemViews.count > 1 {
                 let downloadStackConfig = ManualStackView.Config(axis: .horizontal,
                                                                  alignment: .center,

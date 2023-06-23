@@ -7,7 +7,10 @@ import SignalCoreKit
 
 class ImageEditorTopBar: MediaTopBar {
 
-    let undoButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-undo"), backgroundStyle: .blur)
+    let undoButton = RoundMediaButton(
+        image: UIImage(imageLiteralResourceName: "undo-28"),
+        backgroundStyle: .blur
+    )
     var isUndoButtonHidden: Bool {
         get { undoButton.alpha == 0 }
         set { undoButton.alpha = newValue ? 0 : 1 }
@@ -64,10 +67,14 @@ protocol ImageEditorBottomBarProvider: AnyObject {
 
 class ImageEditorBottomBar: UIView {
 
-    let cancelButton: UIButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-discard"),
-                                                  backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor))
-    let doneButton: UIButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-done"),
-                                                backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor))
+    let cancelButton: UIButton = RoundMediaButton(
+        image: UIImage(imageLiteralResourceName: "x-28"),
+        backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor)
+    )
+    let doneButton: UIButton = RoundMediaButton(
+        image: UIImage(imageLiteralResourceName: "check-28"),
+        backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor)
+    )
 
     let buttons: [UIButton]
 

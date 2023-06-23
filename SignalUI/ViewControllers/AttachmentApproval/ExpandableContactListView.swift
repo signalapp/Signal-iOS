@@ -38,7 +38,7 @@ class ExpandableContactListView: UIView {
         pillView.addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
 
-        let arrowView = UIImageView(image: UIImage(imageLiteralResourceName: "arrow-up-16"))
+        let arrowView = UIImageView(image: UIImage(imageLiteralResourceName: "arrow-up-compact"))
         pillView.addSubview(arrowView)
         arrowView.autoPinEdge(toSuperviewMargin: .leading, withInset: 2)
         arrowView.autoVCenterInSuperview()

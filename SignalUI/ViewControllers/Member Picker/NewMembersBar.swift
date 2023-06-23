@@ -186,7 +186,7 @@ private class NewMemberCell: UICollectionViewCell {
         textLabel.lineBreakMode = .byTruncatingTail
 
         let removeButton = UIButton(type: .custom)
-        removeButton.setTemplateImageName("x-24", tintColor: Theme.primaryTextColor)
+        removeButton.setTemplateImage(Theme.iconImage(.buttonX), tintColor: Theme.primaryTextColor)
         // Extend the hot area of the remove button.
         removeButton.imageEdgeInsets = UIEdgeInsets(top: Self.removeButtonInset,
                                                     left: Self.removeButtonInset,

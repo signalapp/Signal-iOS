@@ -375,7 +375,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
         let section = OWSTableSection()
         section.add(.disclosureItem(
-            icon: .settingsEditGroup,
+            icon: .buttonEdit,
             name: OWSLocalizedString(
                 "MESSAGE_DETAILS_EDIT_HISTORY_TITLE",
                 comment: "Title for the 'edit history' section on the 'message details' view."

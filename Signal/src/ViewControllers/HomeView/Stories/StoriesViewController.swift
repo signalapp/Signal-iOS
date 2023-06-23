@@ -286,14 +286,14 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         contextButton.contextMenu = .init([
             .init(
                 title: OWSLocalizedString("STORY_PRIVACY_TITLE", comment: "Title for the story privacy settings view"),
-                image: Theme.iconImage(.settingsPrivacy),
+                image: Theme.iconImage(.contextMenuPrivacy),
                 handler: { [weak self] _ in
                     self?.showPrivacySettings()
                 }
             ),
             .init(
                 title: CommonStrings.openSettingsButton,
-                image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"),
+                image: Theme.iconImage(.contextMenuSettings),
                 handler: { [weak self] _ in
                     self?.showAppSettings()
                 }
@@ -315,7 +315,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
 
         navigationItem.leftBarButtonItem = .init(customView: contextButton)
 
-        let cameraButton = UIBarButtonItem(image: Theme.iconImage(.cameraButton), style: .plain, target: self, action: #selector(showCameraView))
+        let cameraButton = UIBarButtonItem(image: Theme.iconImage(.buttonCamera), style: .plain, target: self, action: #selector(showCameraView))
         cameraButton.accessibilityLabel = OWSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
         cameraButton.accessibilityHint = OWSLocalizedString("CAMERA_BUTTON_HINT", comment: "Accessibility hint describing what you can do with the camera button")
 

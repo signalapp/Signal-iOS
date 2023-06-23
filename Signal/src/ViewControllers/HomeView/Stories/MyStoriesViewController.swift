@@ -465,7 +465,7 @@ class SentStoryCell: UITableViewCell {
         }
 
         saveButton.tintColor = Theme.primaryIconColor
-        saveButton.setImage(Theme.iconImage(.messageActionSave20), for: .normal)
+        saveButton.setImage(UIImage(imageLiteralResourceName: "save-20"), for: .normal)
         saveButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
 
         if item.attachment.isSaveable {
@@ -477,7 +477,7 @@ class SentStoryCell: UITableViewCell {
         }
 
         contextButton.tintColor = Theme.primaryIconColor
-        contextButton.setImage(Theme.iconImage(.more16), for: .normal)
+        contextButton.setImage(UIImage(imageLiteralResourceName: "more-compact"), for: .normal)
         contextButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
         contextButton.delegate = contextMenuButtonDelegate
         contextButton.indexPath = indexPath

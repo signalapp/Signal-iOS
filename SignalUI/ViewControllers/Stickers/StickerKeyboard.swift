@@ -151,7 +151,7 @@ public class StickerKeyboard: CustomKeyboard {
         packsCollectionView.backgroundColor = Theme.keyboardBackgroundColor
         headerView.addArrangedSubview(packsCollectionView)
 
-        let manageButton = buildHeaderButton("plus-24") { [weak self] in
+        let manageButton = buildHeaderButton("plus") { [weak self] in
             self?.manageButtonWasTapped()
         }
         headerView.addArrangedSubview(manageButton)

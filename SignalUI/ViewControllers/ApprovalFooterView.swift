@@ -191,7 +191,7 @@ public class ApprovalFooterView: UIView {
     var proceedLoadingIndicator = UIActivityIndicatorView(style: .medium)
     lazy var proceedButton: OWSButton = {
 		let button = OWSButton.sendButton(
-			imageName: self.approvalMode.proceedButtonImageName ?? "arrow-right-24"
+            imageName: self.approvalMode.proceedButtonImageName ?? Theme.iconName(.arrowRight)
 		) { [weak self] in
             guard let self = self else { return }
             self.delegate?.approvalFooterDelegateDidRequestProceed(self)
@@ -241,9 +241,9 @@ fileprivate extension ApprovalMode {
 
     var proceedButtonImageName: String? {
         switch self {
-        case .next: return "arrow-right-24"
-        case .send: return "arrow-up-24"
-        case .select: return "check-24"
+        case .next: return Theme.iconName(.arrowRight)
+        case .send: return Theme.iconName(.arrowUp)
+        case .select: return Theme.iconName(.checkmark)
         case .loading: return nil
         }
     }

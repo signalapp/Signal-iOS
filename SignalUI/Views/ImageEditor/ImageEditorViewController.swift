@@ -560,17 +560,29 @@ extension ImageEditorViewController {
 extension ImageEditorViewController: ImageEditorBottomBarButtonProvider {
 
     var middleButtons: [UIButton] {
-        let penButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-pen"), backgroundStyle: .solid(.clear))
+        let penButton = RoundMediaButton(
+            image: UIImage(imageLiteralResourceName: "edit-28"),
+            backgroundStyle: .solid(.clear)
+        )
         penButton.tag = Mode.draw.rawValue
         penButton.addTarget(self, action: #selector(didTapPen(sender:)), for: .touchUpInside)
 
-        let textButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-text"), backgroundStyle: .solid(.clear))
+        let textButton = RoundMediaButton(
+            image: UIImage(imageLiteralResourceName: "text-28"),
+            backgroundStyle: .solid(.clear)
+        )
         textButton.addTarget(self, action: #selector(didTapAddText(sender:)), for: .touchUpInside)
 
-//        let stickerButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-emoji"), backgroundStyle: .solid(.clear))
+//        let stickerButton = RoundMediaButton(
+//            image: UIImage(imageLiteralResourceName: "sticker-smiley-28"),
+//            backgroundStyle: .solid(.clear)
+//        )
 //        stickerButton.addTarget(self, action: #selector(didTapAddSticker(sender:)), for: .touchUpInside)
 
-        let blurButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-blur"), backgroundStyle: .solid(.clear))
+        let blurButton = RoundMediaButton(
+            image: UIImage(imageLiteralResourceName: "blur-28"),
+            backgroundStyle: .solid(.clear)
+        )
         blurButton.tag = Mode.blur.rawValue
         blurButton.addTarget(self, action: #selector(didTapBlur(sender:)), for: .touchUpInside)
 

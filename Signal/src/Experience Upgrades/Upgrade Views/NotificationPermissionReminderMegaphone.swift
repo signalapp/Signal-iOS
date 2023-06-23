@@ -49,7 +49,7 @@ class NotificationPermissionReminderMegaphone: MegaphoneView {
                         )
                     ),
                     .init(
-                        icon: #imageLiteral(resourceName: "toggle-32"),
+                        icon: UIImage(imageLiteralResourceName: "toggle-32"),
                         text: OWSLocalizedString(
                             "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE",
                             comment: "Third step for notification permission action sheet"

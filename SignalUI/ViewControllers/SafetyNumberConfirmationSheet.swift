@@ -626,7 +626,7 @@ private extension NSAttributedString {
     ) -> NSAttributedString {
         let string = NSMutableAttributedString()
 
-        string.appendTemplatedImage(named: "check-12", font: UIFont.regularFont(ofSize: 11))
+        string.appendTemplatedImage(named: "check-extra-small", font: UIFont.regularFont(ofSize: 11))
         string.append(" ")
         string.append(text)
 

@@ -226,21 +226,21 @@ fileprivate extension CVComponentViewOnce {
         switch viewOnceState {
         case .unknown:
             owsFailDebug("Invalid value.")
-            return "viewed-once-24"
+            return "view_once-dash"
         case .incomingExpired:
-            return "viewed-once-24"
+            return "view_once-dash"
         case .incomingDownloading:
             owsFailDebug("Unexpected state.")
             return nil
         case .incomingFailed, .incomingPending:
-            return "arrow-down-circle-outline-24"
+            return "arrow-circle-down"
         case .incomingAvailable:
-            return "view-once-24"
+            return "view_once"
         case .outgoingFailed:
-            return "retry-24"
+            return "refresh"
         case .outgoingSending,
              .outgoingSentExpired:
-            return "viewed-once-24"
+            return "view_once-dash"
         case .incomingInvalidContent:
             owsFailDebug("Unexpected state.")
             return nil

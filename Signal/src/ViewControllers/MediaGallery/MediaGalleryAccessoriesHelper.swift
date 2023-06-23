@@ -192,14 +192,22 @@ public class MediaGalleryAccessoriesHelper: NSObject {
             return
         }
         if isInBatchSelectMode {
-            viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didCancelSelect),
-                                                                               accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "cancel_select_button"))
+            viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .cancel,
+                target: self,
+                action: #selector(didCancelSelect),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "cancel_select_button")
+            )
         } else {
-            viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(title: OWSLocalizedString("BUTTON_SELECT", comment: "Button text to enable batch selection mode"),
-                                                                               style: .plain,
-                                                                               target: self,
-                                                                               action: #selector(didTapSelect),
-                                                                               accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "select_button"))
+            viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(
+                title: OWSLocalizedString(
+                    "BUTTON_SELECT",
+                    comment: "Button text to enable batch selection mode"),
+                style: .plain,
+                target: self,
+                action: #selector(didTapSelect),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "select_button")
+            )
         }
     }
 
@@ -262,13 +270,8 @@ public class MediaGalleryAccessoriesHelper: NSObject {
                                action: #selector(disableFiltering))
     }()
 
-    private lazy var allMediaFilterIcon: UIImage = {
-        UIImage(named: "all-media-filter")!
-    }()
-
-    private lazy var selectedAllMediaFilterIcon: UIImage = {
-        UIImage(named: "all-media-filter-selected")!
-    }()
+    private lazy var allMediaFilterIcon = UIImage(imageLiteralResourceName: "filter-circle")
+    private lazy var selectedAllMediaFilterIcon = UIImage(imageLiteralResourceName: "filter-circle-fill")
 
     private func legacyFilterButton() -> UIBarButtonItem {
         return UIBarButtonItem(image: allMediaFilterIcon,
@@ -304,7 +307,7 @@ public class MediaGalleryAccessoriesHelper: NSObject {
     private lazy var listMenuAction = {
         MenuAction(
             title: Mode.list.titleString,
-            icon: UIImage(named: "all-media-list"),
+            icon: UIImage(named: "list-bullet-light"),
             handler: { [weak self] in
                 self?.mode = .list
             })
@@ -313,7 +316,7 @@ public class MediaGalleryAccessoriesHelper: NSObject {
     private lazy var gridMenuAction = {
         MenuAction(
             title: Mode.grid.titleString,
-            icon: UIImage(named: "all-media-grid"),
+            icon: UIImage(named: "grid-square-light"),
             handler: { [weak self] in
                 self?.mode = .grid
             })
@@ -590,14 +593,13 @@ public class MediaGalleryAccessoriesHelper: NSObject {
 
     // MARK: - Delete
 
-    private lazy var deleteButton: UIBarButtonItem = {
-        let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash,
-                                           target: self,
-                                           action: #selector(didPressDelete),
-                                           accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_button"))
-
-        return deleteButton
-    }()
+    private lazy var deleteButton = UIBarButtonItem(
+        image: Theme.iconImage(.buttonDelete),
+        style: .plain,
+        target: self,
+        action: #selector(didPressDelete),
+        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_button")
+    )
 
     private func updateDeleteButton() {
         guard let viewController else {
@@ -620,13 +622,13 @@ public class MediaGalleryAccessoriesHelper: NSObject {
 
     // MARK: - Share
 
-    private lazy var shareButton: UIBarButtonItem = {
-        let shareButton = UIBarButtonItem(barButtonSystemItem: .action,
-                                          target: self,
-                                          action: #selector(didPressShare),
-                                          accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "share_button"))
-        return shareButton
-    }()
+    private lazy var shareButton = UIBarButtonItem(
+        image: Theme.iconImage(.buttonShare),
+        style: .plain,
+        target: self,
+        action: #selector(didPressShare),
+        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "share_button")
+    )
 
     private func updateShareButton() {
         guard let viewController else {

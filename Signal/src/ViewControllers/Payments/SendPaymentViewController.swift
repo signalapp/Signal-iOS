@@ -449,8 +449,7 @@ public class SendPaymentViewController: OWSViewController {
         let bigAmountLeft = UIView.container()
         let bigAmountRight: UIView
         if nil != currentCurrencyConversion {
-            bigAmountRight = UIImageView.withTemplateImageName("payments-toggle-24",
-                                                               tintColor: .ows_gray45)
+            bigAmountRight = UIImageView.withTemplateImageName("transfer", tintColor: .ows_gray45)
             bigAmountRight.autoPinToSquareAspectRatio()
             bigAmountRight.isUserInteractionEnabled = true
             bigAmountRight.addGestureRecognizer(UITapGestureRecognizer(target: self,
@@ -682,7 +681,7 @@ public class SendPaymentViewController: OWSViewController {
                 buildAmountKeyboardButton(title: "0") { [weak self] in
                     self?.keyboardPressedNumeral("0")
                 },
-                buildAmountKeyboardButton(imageName: "delete-32") { [weak self] in
+                buildAmountKeyboardButton(imageName: "backspace-32") { [weak self] in
                     self?.keyboardPressedBackspace()
                 }
             ])
@@ -733,8 +732,7 @@ public class SendPaymentViewController: OWSViewController {
         smallAmountLabel.setContentHuggingVerticalHigh()
         smallAmountLabel.setCompressionResistanceVerticalHigh()
 
-        currencyConversionInfoView.setTemplateImageName("info-outline-24",
-                                                        tintColor: Theme.secondaryTextAndIconColor)
+        currencyConversionInfoView.setTemplateImageName("info-compact", tintColor: Theme.secondaryTextAndIconColor)
         currencyConversionInfoView.autoSetDimensions(to: .square(16))
         currencyConversionInfoView.setCompressionResistanceHigh()
     }

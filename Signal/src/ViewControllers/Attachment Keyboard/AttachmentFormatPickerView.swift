@@ -209,32 +209,27 @@ private class AttachmentFormatCell: UICollectionViewCell {
         switch type {
         case .camera:
             text = OWSLocalizedString("ATTACHMENT_KEYBOARD_CAMERA", comment: "A button to open the camera from the Attachment Keyboard")
-            imageName = Theme.iconName(.attachmentCamera)
+            imageName = "camera-28"
         case .contact:
             text = OWSLocalizedString("ATTACHMENT_KEYBOARD_CONTACT", comment: "A button to select a contact from the Attachment Keyboard")
-            imageName = Theme.iconName(.attachmentContact)
+            imageName = "person-circle-28"
         case .file:
             text = OWSLocalizedString("ATTACHMENT_KEYBOARD_FILE", comment: "A button to select a file from the Attachment Keyboard")
-            imageName = Theme.iconName(.attachmentFile)
+            imageName = "file-28"
         case .gif:
             text = OWSLocalizedString("ATTACHMENT_KEYBOARD_GIF", comment: "A button to select a GIF from the Attachment Keyboard")
-            imageName = Theme.iconName(.attachmentGif)
+            imageName = "gif-28"
         case .location:
             text = OWSLocalizedString("ATTACHMENT_KEYBOARD_LOCATION", comment: "A button to select a location from the Attachment Keyboard")
-            imageName = Theme.iconName(.attachmentLocation)
+            imageName = "location-28"
         case .payment:
             text = OWSLocalizedString("ATTACHMENT_KEYBOARD_PAYMENT", comment: "A button to select a payment from the Attachment Keyboard")
-            imageName = Theme.iconName(.attachmentPayment)
-        }
-
-        // The light theme images come with a background baked in, so we don't tint them.
-        if Theme.isDarkThemeEnabled {
-            imageView.setTemplateImageName(imageName, tintColor: Theme.attachmentKeyboardItemImageColor)
-        } else {
-            imageView.setImage(imageName: imageName)
+            imageName = "payment-28"
         }
 
         label.text = text
+        imageView.image = UIImage(imageLiteralResourceName: imageName)
+        imageView.tintColor = Theme.isDarkThemeEnabled ? Theme.attachmentKeyboardItemImageColor : Theme.primaryIconColor
 
         self.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "format-\(type.rawValue)")
     }

@@ -52,7 +52,7 @@ public class RegistrationSplashViewController: OWSViewController {
             let modeSwitchButton = UIButton()
 
             modeSwitchButton.setTemplateImageName(
-                UIDevice.current.isIPad ? "link-24" : "link-broken-24",
+                UIDevice.current.isIPad ? "link" : "link-slash",
                 tintColor: .ows_gray25
             )
             modeSwitchButton.addTarget(self, action: #selector(didTapModeSwitch), for: .touchUpInside)

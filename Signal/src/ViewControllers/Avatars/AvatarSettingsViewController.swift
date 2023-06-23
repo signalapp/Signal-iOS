@@ -157,7 +157,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         clearButton.addSubview(secondaryShadowView)
         secondaryShadowView.autoPinEdgesToSuperviewEdges()
 
-        xImageView.image = #imageLiteral(resourceName: "x-20").withRenderingMode(.alwaysTemplate)
+        xImageView.image = UIImage(imageLiteralResourceName: "x-20")
         xImageView.autoSetDimensions(to: CGSize.square(20))
         xImageView.contentMode = .scaleAspectFit
 
@@ -327,7 +327,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     private func buildHeaderButtons() -> [UIView] {
         return [
             buildHeaderButton(
-                icon: .cameraButton,
+                icon: .buttonCamera,
                 text: OWSLocalizedString(
                     "AVATAR_SETTINGS_VIEW_CAMERA_BUTTON",
                     comment: "Text indicating the user can select an avatar from their camera"
@@ -346,7 +346,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                 }
             ),
             buildHeaderButton(
-                icon: .settingsAllMedia,
+                icon: .buttonPhotoLibrary,
                 text: OWSLocalizedString(
                     "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON",
                     comment: "Text indicating the user can select an avatar from their photos"
@@ -364,7 +364,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                 }
             ),
             buildHeaderButton(
-                icon: .text24,
+                icon: .buttonText,
                 text: OWSLocalizedString(
                     "AVATAR_SETTINGS_VIEW_TEXT_BUTTON",
                     comment: "Text indicating the user can create a new avatar with text"
@@ -545,8 +545,9 @@ private class OptionView: UIView {
         imageView.autoPinEdgesToSuperviewEdges()
         updateSelectionState()
 
+        editOverlayView.image = UIImage(imageLiteralResourceName: "edit-fill")
         editOverlayView.backgroundColor = .ows_blackAlpha20
-        editOverlayView.image = #imageLiteral(resourceName: "compose-solid-24").tintedImage(color: .ows_white)
+        editOverlayView.tintColor = .white
         editOverlayView.contentMode = .center
         imageView.addSubview(editOverlayView)
         editOverlayView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(margin: 2.5))

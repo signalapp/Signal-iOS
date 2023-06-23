@@ -42,11 +42,7 @@ extension UsernameSelectionViewController {
 
         // MARK: Views
 
-        private let iconImage: UIImage = Theme.iconImage(.settingsMention)
-
-        private lazy var iconImageView: UIImageView = {
-            UIImageView(image: iconImage)
-        }()
+        private lazy var iconImageView = UIImageView(image: UIImage(imageLiteralResourceName: "at-display"))
 
         /// Displays an icon over a circular, square-aspect-ratio, colored
         /// background.
@@ -81,8 +77,7 @@ extension UsernameSelectionViewController {
         }
 
         func setColorsForCurrentTheme() {
-            iconImageView.image = iconImage
-                .tintedImage(color: Theme.isDarkThemeEnabled ? .ows_gray02 : .ows_gray90)
+            iconImageView.tintColor = Theme.isDarkThemeEnabled ? .ows_gray02 : .ows_gray90
 
             iconView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
 

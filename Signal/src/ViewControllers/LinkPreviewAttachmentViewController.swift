@@ -58,8 +58,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         return view
     }()
     private let doneButton: UIButton = {
-        let button = RoundMediaButton(image: UIImage(imageLiteralResourceName: "check-24"),
-                                      backgroundStyle: .solid(.ows_accentBlue))
+        let button = RoundMediaButton(image: Theme.iconImage(.checkmark), backgroundStyle: .solid(.ows_accentBlue))
         button.layoutMargins = .zero
         button.contentEdgeInsets = UIEdgeInsets(margin: 10)
         button.layoutMargins = UIEdgeInsets(margin: 4)
@@ -264,7 +263,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         // MARK: - Layout
 
         private lazy var placeholderView: UIView = {
-            let icon = UIImageView(image: UIImage(imageLiteralResourceName: "link-diagonal"))
+            let icon = UIImageView(image: UIImage(imageLiteralResourceName: "link"))
             icon.tintColor = .ows_gray45
             icon.setContentHuggingHigh()
 
@@ -295,7 +294,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         private var linkPreviewView: TextAttachmentView.LinkPreviewView?
 
         private lazy var errorView: UIView = {
-            let exclamationMark = UIImageView(image: UIImage(imageLiteralResourceName: "error-outline-24"))
+            let exclamationMark = UIImageView(image: UIImage(imageLiteralResourceName: "error-circle"))
             exclamationMark.tintColor = .ows_gray15
             exclamationMark.setContentHuggingHigh()
 

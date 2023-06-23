@@ -388,8 +388,7 @@ private class GroupThreadPicker: OWSTableViewController {
 
     private func setupNavigationBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.cancelButton,
-            style: .plain,
+            barButtonSystemItem: .cancel,
             target: self,
             action: #selector(didTapCancel)
         )

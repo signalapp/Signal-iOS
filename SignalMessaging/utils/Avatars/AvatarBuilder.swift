@@ -550,11 +550,11 @@ public class AvatarBuilder: NSObject {
         }
 
         static func groupDefault(theme: AvatarTheme) -> Self {
-            return .tintedImage(name: "group-outline-resizable", theme: theme)
+            return .tintedImage(name: "group-resizable", theme: theme)
         }
 
         static func contactDefaultIcon(theme: AvatarTheme) -> Self {
-            return .tintedImage(name: "contact-outline-resizable", theme: theme)
+            return .tintedImage(name: "person-resizable", theme: theme)
         }
 
         fileprivate var cacheKey: String {

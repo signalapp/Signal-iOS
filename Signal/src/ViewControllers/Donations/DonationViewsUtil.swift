@@ -85,7 +85,7 @@ public class DonationCurrencyPickerButton: UIStackView {
             currentCurrencyCode,
             Special.noBreakSpace,
             NSAttributedString.with(
-                image: #imageLiteral(resourceName: "chevron-down-18").withRenderingMode(.alwaysTemplate),
+                image: UIImage(imageLiteralResourceName: "chevron-down-extra-small"),
                 font: .regularFont(ofSize: 17)
             ).styled(
                 with: .color(DonationViewsUtil.bubbleBorderColor)

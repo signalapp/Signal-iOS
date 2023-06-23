@@ -62,12 +62,9 @@ public class CVContactShareView: ManualStackView {
 
         avatarView.image = state.avatar
 
-        let disclosureImageName = (CurrentAppContext().isRTL
-                                    ? "small_chevron_left"
-                                    : "small_chevron_right")
         let disclosureColor = state.conversationStyle.bubbleTextColor(isIncoming: state.isIncoming)
-        disclosureImageView.setTemplateImageName(disclosureImageName,
-                                                 tintColor: disclosureColor)
+        disclosureImageView.setTemplateImage(UIImage(imageLiteralResourceName: "chevron-right-20"),
+                                             tintColor: disclosureColor)
 
         self.configure(config: Self.outerStackConfig,
                              cellMeasurement: cellMeasurement,

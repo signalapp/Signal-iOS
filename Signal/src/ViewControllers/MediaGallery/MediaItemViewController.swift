@@ -156,7 +156,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         buttonPlayVideo.addSubview(playVideoCircleView)
         playVideoCircleView.autoPinEdgesToSuperviewEdges()
 
-        let playVideoIconView = UIImageView.withTemplateImageName("play-solid-32", tintColor: .black)
+        let playVideoIconView = UIImageView.withTemplateImageName("play-fill-32", tintColor: .black)
         playVideoIconView.isUserInteractionEnabled = false
         buttonPlayVideo.addSubview(playVideoIconView)
         playVideoIconView.autoSetDimensions(to: .square(ScaleFromIPhone5(30)))

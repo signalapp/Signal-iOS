@@ -549,7 +549,7 @@ open class TextAttachmentView: UIView {
                 layout = .compact
                 thumbnailImageView.backgroundColor = .ows_gray02
                 thumbnailImageView.contentMode = .center
-                thumbnailImageView.image = UIImage(imageLiteralResourceName: "link-diagonal")
+                thumbnailImageView.image = UIImage(imageLiteralResourceName: "link")
                 thumbnailImageView.tintColor = Theme.lightThemePrimaryColor
             }
 

@@ -473,7 +473,7 @@ public class ChatListViewController: OWSViewController {
         var rightBarButtonItems = [UIBarButtonItem]()
 
         let compose = UIBarButtonItem(
-            image: Theme.iconImage(.compose24),
+            image: Theme.iconImage(.buttonCompose),
             style: .plain,
             target: self,
             action: #selector(showNewConversationView),
@@ -487,7 +487,7 @@ public class ChatListViewController: OWSViewController {
         rightBarButtonItems.append(compose)
 
         let camera = UIBarButtonItem(
-            image: Theme.iconImage(.cameraButton),
+            image: Theme.iconImage(.buttonCamera),
             style: .plain,
             target: self,
             action: #selector(showCameraView),
@@ -505,15 +505,15 @@ public class ChatListViewController: OWSViewController {
             let tintColor: UIColor
             switch socketManager.socketState(forType: .identified) {
             case .open:
-                proxyStatusImage = UIImage(named: "proxy_connected_24")
+                proxyStatusImage = UIImage(named: "safety-number")
                 tintColor = UIColor.ows_accentGreen
 
             case .closed:
-                proxyStatusImage = UIImage(named: "proxy_failed_24")
+                proxyStatusImage = UIImage(named: "error-shield")
                 tintColor = UIColor.ows_accentRed
 
             case .connecting:
-                proxyStatusImage = UIImage(named: "proxy_failed_24")
+                proxyStatusImage = UIImage(named: "error-shield")
                 tintColor = UIColor.ows_middleGray
             }
 
@@ -848,10 +848,10 @@ public class ChatListViewController: OWSViewController {
             title = String(format: format, OWSFormat.formatUInt(unreadCount))
         }
 
-        let iconView = UIImageView.withTemplateImageName(Theme.iconName(.paymentNotification),
-                                                         tintColor: (Theme.isDarkThemeEnabled
-                                                                        ? .ows_gray15
-                                                                        : .ows_white))
+        let iconView = UIImageView.withTemplateImageName(
+            "payment",
+            tintColor: Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_white
+        )
         iconView.autoSetDimensions(to: .square(24))
         let iconCircleView = OWSLayerView.circleView(size: CGFloat(Self.paymentsBannerAvatarSize))
         iconCircleView.backgroundColor = (Theme.isDarkThemeEnabled
@@ -935,7 +935,7 @@ public class ChatListViewController: OWSViewController {
         dismissButton.setCompressionResistanceHigh()
         dismissButton.setContentHuggingHigh()
 
-        let dismissIcon = UIImageView.withTemplateImageName("x-16",
+        let dismissIcon = UIImageView.withTemplateImageName("x-compact",
                                                             tintColor: (Theme.isDarkThemeEnabled
                                                                             ? .ows_white
                                                                             : .ows_gray60))
@@ -995,29 +995,32 @@ extension ChatListViewController {
             contextMenuActions.append(
                 ContextMenuAction(
                     title: OWSLocalizedString("HOME_VIEW_TITLE_SELECT_CHATS", comment: "Title for the 'Select Chats' option in the ChatList."),
-                    image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"),
+                    image: Theme.iconImage(.contextMenuSelect),
                     attributes: [],
                     handler: { [weak self] (_) in
                         self?.willEnterMultiselectMode()
-                    }))
+                    }
+                ))
         }
         contextMenuActions.append(
             ContextMenuAction(
                 title: CommonStrings.openSettingsButton,
-                image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"),
+                image: Theme.iconImage(.contextMenuSettings),
                 attributes: [],
                 handler: { [weak self] (_) in
-                        self?.showAppSettings(mode: .none)
-            }))
+                    self?.showAppSettings(mode: .none)
+                }
+            ))
         if renderState.archiveCount > 0 {
             contextMenuActions.append(
                 ContextMenuAction(
                     title: OWSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."),
-                    image: Theme.isDarkThemeEnabled ? UIImage(named: "archive-solid-24")?.tintedImage(color: .white) : UIImage(named: "archive-outline-24"),
+                    image: Theme.iconImage(.contextMenuArchive),
                     attributes: [],
                     handler: { [weak self] (_) in
                         self?.showArchivedConversations(offerMultiSelectMode: true)
-                }))
+                    }
+                ))
         }
         return .init(contextMenuActions)
     }

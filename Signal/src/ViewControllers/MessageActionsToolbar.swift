@@ -42,27 +42,44 @@ public class MessageAction: NSObject {
         self.accessibilityLabel = accessibilityLabel
     }
 
-    var image: UIImage {
-        switch actionType {
-        case .reply:
-            return Theme.iconImage(.messageActionReply)
-        case .copy:
-            return Theme.iconImage(.messageActionCopy)
-        case .info:
-            return Theme.iconImage(.contextMenuInfo24)
-        case .delete:
-            return Theme.iconImage(.messageActionDelete)
-        case .share:
-            return Theme.iconImage(.messageActionShare24)
-        case .forward:
-            return Theme.iconImage(.messageActionForward24)
-        case .select:
-            return Theme.iconImage(.contextMenuSelect)
-        case .speak:
-            return Theme.iconImage(.messageActionSpeak)
-        case .stopSpeaking:
-            return Theme.iconImage(.messageActionStopSpeaking)
-        }
+    var contextMenuIcon: UIImage {
+        let icon: ThemeIcon = {
+            switch actionType {
+            case .reply:
+                return .contextMenuReply
+            case .copy:
+                return .contextMenuCopy
+            case .info:
+                return .contextMenuInfo
+            case .delete:
+                return .contextMenuDelete
+            case .share:
+                return .contextMenuShare
+            case .forward:
+                return .contextMenuForward
+            case .select:
+                return .contextMenuSelect
+            case .speak:
+                return .contextMenuSpeak
+            case .stopSpeaking:
+                return .contextMenuStopSpeaking
+            }
+        }()
+        return Theme.iconImage(icon)
+    }
+
+    var barButtonImage: UIImage {
+        let icon: ThemeIcon = {
+            switch actionType {
+            case .delete:
+                return .buttonDelete
+            case .forward:
+                return .buttonForward
+            default:
+                owsFail("Invalid icon")
+            }
+        }()
+        return Theme.iconImage(icon)
     }
 }
 
@@ -217,7 +234,7 @@ class MessageActionsToolbarButton: UIBarButtonItem {
 
         super.init()
 
-        self.image = messageAction.image.withRenderingMode(.alwaysTemplate)
+        self.image = messageAction.barButtonImage
         self.style = .plain
         self.target = self
         self.action = #selector(didTapItem(_:))

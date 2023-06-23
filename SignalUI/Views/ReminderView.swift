@@ -61,8 +61,7 @@ open class ReminderView: UIStackView {
     // MARK: - Rendering
 
     private lazy var iconView: UIImageView = {
-        let image = UIImage(named: "error-outline-24")
-        let result = UIImageView(image: image?.withRenderingMode(.alwaysTemplate))
+        let result = UIImageView(image: UIImage(imageLiteralResourceName: "error-circle"))
         result.contentMode = .scaleAspectFit
         result.autoSetDimensions(to: CGSize(square: 22))
         return result

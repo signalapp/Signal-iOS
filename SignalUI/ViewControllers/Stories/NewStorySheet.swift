@@ -48,7 +48,7 @@ public class NewStorySheet: OWSTableSheetViewController {
         optionsSection.customHeaderHeight = 28
         contents.add(optionsSection)
         optionsSection.add(buildOptionItem(
-            icon: .settingsStories,
+            icon: .genericStories,
             title: OWSLocalizedString("NEW_STORY_SHEET_CUSTOM_STORY_TITLE",
                                      comment: "Title for create custom story row on the 'new story sheet'"),
             subtitle: OWSLocalizedString("NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE",
@@ -63,7 +63,7 @@ public class NewStorySheet: OWSTableSheetViewController {
             }))
 
         optionsSection.add(buildOptionItem(
-            icon: .settingsShowGroup,
+            icon: .genericGroup,
             title: OWSLocalizedString("NEW_STORY_SHEET_GROUP_STORY_TITLE",
                                      comment: "Title for create group story row on the 'new story sheet'"),
             subtitle: OWSLocalizedString("NEW_STORY_SHEET_GROUP_STORY_SUBTITLE",

@@ -142,7 +142,7 @@ class StoryReplyInputToolbar: UIView {
     }()
 
     private lazy var reactButton: UIButton = {
-        let button = OWSButton(imageName: "add-reaction-outline-24", tintColor: Theme.darkThemePrimaryColor) { [weak self] in
+        let button = OWSButton(imageName: "heart-plus", tintColor: Theme.darkThemePrimaryColor) { [weak self] in
             self?.didTapReact()
         }
         button.autoSetDimensions(to: CGSize(square: 48))

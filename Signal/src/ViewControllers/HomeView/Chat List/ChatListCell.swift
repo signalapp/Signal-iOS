@@ -376,8 +376,7 @@ public class ChatListCell: UITableViewCell {
         topRowStackSubviews.append(nameLabel)
 
         if shouldShowMuteIndicator {
-            muteIconView.setTemplateImageName("bell-disabled-outline-24",
-                                              tintColor: Theme.primaryTextColor)
+            muteIconView.image = UIImage(imageLiteralResourceName: "bell-slash")
             muteIconView.tintColor = Self.snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
             topRowStackSubviews.append(muteIconView)
         }
@@ -580,10 +579,10 @@ public class ChatListCell: UITableViewCell {
             }
             statusIndicatorImage = UIImage(named: "message_status_read")
         case .failed:
-            statusIndicatorImage = UIImage(named: "error-outline-12")
+            statusIndicatorImage = UIImage(named: "error-circle-extra-small")
             messageStatusViewTintColor = .ows_accentRed
         case .pending:
-            statusIndicatorImage = UIImage(named: "error-outline-12")
+            statusIndicatorImage = UIImage(named: "error-circle-extra-small")
             messageStatusViewTintColor = .ows_gray60
         }
         if statusIndicatorImage == nil {

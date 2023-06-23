@@ -200,14 +200,14 @@ public class LongTextViewController: OWSViewController {
 
         footer.items = [
             UIBarButtonItem(
-                image: Theme.iconImage(.messageActionShare24),
+                image: Theme.iconImage(.buttonShare),
                 style: .plain,
                 target: self,
                 action: #selector(shareButtonPressed)
             ),
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
             UIBarButtonItem(
-                image: Theme.iconImage(.messageActionForward24),
+                image: Theme.iconImage(.buttonForward),
                 style: .plain,
                 target: self,
                 action: #selector(forwardButtonPressed)

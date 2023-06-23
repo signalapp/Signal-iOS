@@ -78,7 +78,7 @@ public class LocationPicker: UIViewController {
         currentLocationButton.layer.cornerRadius = 24
 
         // This icon doesn't look right when it's actually centered due to its odd shape.
-        currentLocationButton.setTemplateImageName("current-location-outline-24", tintColor: .white)
+        currentLocationButton.setTemplateImageName("location", tintColor: .white)
         currentLocationButton.contentEdgeInsets = UIEdgeInsets(top: 2, left: 0, bottom: 0, right: 2)
 
         view.addSubview(currentLocationButton)
@@ -95,7 +95,7 @@ public class LocationPicker: UIViewController {
         title = OWSLocalizedString("LOCATION_PICKER_TITLE", comment: "The title for the location picker view")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(named: "x-24")?.withRenderingMode(.alwaysTemplate),
+            image: Theme.iconImage(.buttonX),
             style: .plain,
             target: self,
             action: #selector(cancelButtonPressed)

@@ -60,7 +60,7 @@ class ReplaceAdminViewController: OWSTableViewController2 {
                     Self.databaseStorage.read { transaction in
                         let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
                         let imageView = CVImageView()
-                        imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
+                        imageView.setTemplateImageName(Theme.iconName(.circle), tintColor: .ows_gray25)
                         configuration.accessoryView = ContactCellAccessoryView(accessoryView: imageView, size: .square(24))
 
                         cell.configure(configuration: configuration, transaction: transaction)

@@ -71,7 +71,7 @@ public class StickerPackViewController: OWSViewController {
 
         let hMargin: CGFloat = 16
 
-        dismissButton.setTemplateImageName("x-24", tintColor: Theme.darkThemePrimaryColor)
+        dismissButton.setTemplateImage(Theme.iconImage(.buttonX), tintColor: Theme.darkThemePrimaryColor)
         dismissButton.addTarget(self, action: #selector(dismissButtonPressed(sender:)), for: .touchUpInside)
         dismissButton.contentEdgeInsets = UIEdgeInsets(top: 20, leading: hMargin, bottom: 20, trailing: hMargin)
         dismissButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "dismissButton")
@@ -87,10 +87,10 @@ public class StickerPackViewController: OWSViewController {
 
         authorLabel.font = UIFont.dynamicTypeBody
 
-        defaultPackIconView.setTemplateImageName("check-circle-filled-16", tintColor: Theme.accentBlueColor)
+        defaultPackIconView.setTemplateImageName("check-circle-fill-compact", tintColor: Theme.accentBlueColor)
         defaultPackIconView.isHidden = true
 
-        shareButton.setTemplateImageName("forward-solid-24", tintColor: Theme.darkThemePrimaryColor)
+        shareButton.setTemplateImageName("forward-fill", tintColor: Theme.darkThemePrimaryColor)
         shareButton.addTarget(self, action: #selector(shareButtonPressed(sender:)), for: .touchUpInside)
         shareButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "shareButton")
 

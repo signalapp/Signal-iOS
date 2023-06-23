@@ -31,7 +31,7 @@ class ApprovalRailCellView: GalleryRailCellView {
 
         button.alpha = 0
         button.bounds = CGRect(origin: .zero, size: CGSize(square: 24))
-        button.setImage(#imageLiteral(resourceName: "media-composer-trash"), for: .normal)
+        button.setImage(UIImage(imageLiteralResourceName: "trash-20"), for: .normal)
         button.tintColor = .white
         return button
     }()

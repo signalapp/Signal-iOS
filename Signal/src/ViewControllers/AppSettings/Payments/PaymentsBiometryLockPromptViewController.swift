@@ -61,7 +61,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
 
     private func updateNavbar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(named: "x-24")?.withRenderingMode(.alwaysTemplate),
+            image: Theme.iconImage(.buttonX),
             style: .plain,
             target: self,
             action: #selector(didTapClose),

@@ -29,9 +29,7 @@ class MyStoryCell: UITableViewCell {
 
         titleLabel.text = OWSLocalizedString("MY_STORIES_TITLE", comment: "Title for the 'My Stories' view")
 
-        let chevronImage = CurrentAppContext().isRTL ? UIImage(named: "chevron-left-20")! : UIImage(named: "chevron-right-20")!
-
-        titleChevron.image = chevronImage.withRenderingMode(.alwaysTemplate)
+        titleChevron.image = UIImage(imageLiteralResourceName: "chevron-right-20")
 
         let titleStack = UIStackView(arrangedSubviews: [titleLabel, titleChevron])
         titleStack.axis = .horizontal
@@ -243,7 +241,7 @@ class MyStoryCell: UITableViewCell {
             addSubview(outerCircle)
             addSubview(iconView)
 
-            iconView.image = #imageLiteral(resourceName: "plus-my-story").withRenderingMode(.alwaysTemplate)
+            iconView.image = UIImage(imageLiteralResourceName: "plus-20")
             iconView.tintColor = .white
             iconView.contentMode = .center
             iconView.autoSetDimensions(to: .square(20))

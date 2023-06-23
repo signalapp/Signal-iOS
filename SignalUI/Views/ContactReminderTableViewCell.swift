@@ -58,7 +58,7 @@ class ContactReminderTableViewCell: UITableViewCell {
 
     private lazy var contactIcon: UIImageView = {
         let imageView = UIImageView()
-        imageView.setTemplateImageName("contact-outline-32", tintColor: textColor)
+        imageView.setTemplateImageName("person-circle", tintColor: textColor)
         imageView.autoSetDimensions(to: CGSize(square: 24))
         return imageView
     }()

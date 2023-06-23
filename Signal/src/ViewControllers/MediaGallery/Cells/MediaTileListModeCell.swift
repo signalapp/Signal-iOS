@@ -37,20 +37,13 @@ class MediaTileListModeCell: UICollectionViewCell, MediaTileCell {
         return view
     }()
 
-    let selectionButton: SelectionButton = {
-        SelectionButton()
-    }()
+    let selectionButton = SelectionButton()
 
     private let selectedMaskView = UIView()
 
     // TODO(george): This will change when dynamic text support is added.
     class var desiredHeight: CGFloat { 64.0 }
 
-    private var desiredSelectionOutlineColor: UIColor {
-        return UIColor.ows_gray20
-    }
-
-    @available(iOS 13.0, *)
     private var dynamicDesiredSelectionOutlineColor: UIColor {
         return UIColor { _ in
             Theme.isDarkThemeEnabled ? UIColor.ows_gray25 : UIColor.ows_gray20
@@ -78,11 +71,7 @@ class MediaTileListModeCell: UICollectionViewCell, MediaTileCell {
         self.constraintWithSelectionButton = constraintWithSelectionButton
         self.constraintWithoutSelectionButton = constraintWithoutSelectionButton
 
-        if #available(iOS 13.0, *) {
-            selectionButton.outlineColor = dynamicDesiredSelectionOutlineColor
-        } else {
-            selectionButton.outlineColor = desiredSelectionOutlineColor
-        }
+        selectionButton.outlineColor = dynamicDesiredSelectionOutlineColor
 
         if #available(iOS 13.0, *) {
             contentView.backgroundColor = UIColor(dynamicProvider: { _ in

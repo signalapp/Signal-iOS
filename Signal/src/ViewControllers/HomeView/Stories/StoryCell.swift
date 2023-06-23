@@ -73,9 +73,9 @@ class StoryCell: UITableViewCell {
 
         switch model.context {
         case .authorUuid:
-            replyImageView.image = #imageLiteral(resourceName: "reply-solid-20").withRenderingMode(.alwaysTemplate)
+            replyImageView.image = UIImage(imageLiteralResourceName: "reply-fill-20")
         case .groupId:
-            replyImageView.image = #imageLiteral(resourceName: "messages-solid-20").withRenderingMode(.alwaysTemplate)
+            replyImageView.image = UIImage(imageLiteralResourceName: "thread-fill-20").withRenderingMode(.alwaysTemplate)
         case .privateStory:
             owsFailDebug("Unexpectedly had private story on stories list")
         case .none:
@@ -91,7 +91,7 @@ class StoryCell: UITableViewCell {
         nameLabel.text = model.latestMessageName
 
         nameIconView.contentMode = .center
-        nameIconView.image = UIImage(named: "official-checkmark-20")
+        nameIconView.image = Theme.iconImage(.official)
         nameIconView.isHiddenInStackView = !model.isSystemStory
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in

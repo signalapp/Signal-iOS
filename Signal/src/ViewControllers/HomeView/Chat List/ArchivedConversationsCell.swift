@@ -11,14 +11,16 @@ public class ArchivedConversationsCell: UITableViewCell {
     public static let reuseIdentifier = "ArchivedConversationsCell"
 
     private let label = UILabel()
+    private let disclosureImageView = UIImageView(image: UIImage(imageLiteralResourceName: "chevron-right-20"))
 
     var enabled = true {
         didSet {
             if enabled {
-                label.textColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray90
+                label.textColor = Theme.primaryTextColor
             } else {
-                label.textColor = Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray25
+                label.textColor = Theme.secondaryTextAndIconColor
             }
+            disclosureImageView.tintColor = label.textColor
         }
     }
 
@@ -37,9 +39,7 @@ public class ArchivedConversationsCell: UITableViewCell {
     private func commonInit() {
         self.selectionStyle = .none
 
-        let disclosureImageName = CurrentAppContext().isRTL ? "NavBarBack" : "NavBarBackRTL"
-        let disclosureImageView = UIImageView.withTemplateImageName(disclosureImageName,
-                                                                    tintColor: UIColor(rgbHex: 0xd1d1d6))
+        disclosureImageView.tintColor = Theme.primaryTextColor
         disclosureImageView.setContentHuggingHigh()
         disclosureImageView.setCompressionResistanceHigh()
 

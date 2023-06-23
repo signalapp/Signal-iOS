@@ -115,12 +115,10 @@ public class LogViewController: UIViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.rightBarButtonItems = [UIBarButtonItem(barButtonSystemItem: .action,
-                                                              target: self,
-                                                              action: #selector(didTapShare(_:))),
-                                              UIBarButtonItem(barButtonSystemItem: .trash,
-                                                              target: self,
-                                                              action: #selector(didTapTrash(_:)))]
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(image: Theme.iconImage(.buttonShare), style: .plain, target: self, action: #selector(didTapShare(_:))),
+            UIBarButtonItem(image: Theme.iconImage(.buttonDelete), style: .plain, target: self, action: #selector(didTapTrash(_:)))
+        ]
     }
 
     func loadLogText() {

@@ -30,7 +30,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
     private func updateBarButtons() {
         title = thread.groupNameOrDefault
 
-        contextButton.setImage(Theme.iconImage(.more24).withRenderingMode(.alwaysTemplate), for: .normal)
+        contextButton.setImage(Theme.iconImage(.buttonMore), for: .normal)
         contextButton.showsContextMenuAsPrimaryAction = true
         contextButton.contextMenu = .init([
             .init(
@@ -38,7 +38,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
                     "STORIES_GO_TO_CHAT_ACTION",
                     comment: "Context menu action to open the chat associated with the selected story"
                 ),
-                image: Theme.iconImage(.open24),
+                image: Theme.iconImage(.contextMenuOpenInChat),
                 handler: { [weak self] _ in
                     guard let self = self else { return }
                     self.dismiss(animated: true) {
@@ -122,9 +122,9 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
                     cell.contentView.preservesSuperviewLayoutMargins = true
 
                     let iconView = OWSTableItem.buildIconInCircleView(
-                        icon: .settingsShowAllMembers,
+                        icon: .groupInfoShowAllMembers,
                         iconSize: AvatarBuilder.smallAvatarSizePoints,
-                        innerIconSize: 24,
+                        innerIconSize: 20,
                         iconTintColor: Theme.primaryTextColor
                     )
 

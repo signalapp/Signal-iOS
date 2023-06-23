@@ -172,7 +172,8 @@ class GroupAttributesEditorHelper: NSObject {
         cameraImageContainer.addSubview(secondaryShadowView)
         secondaryShadowView.autoPinEdgesToSuperviewEdges()
 
-        let cameraImageView = UIImageView.withTemplateImageName("camera-outline-32", tintColor: Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_black)
+        let cameraImageView = UIImageView(image: Theme.iconImage(.buttonCamera))
+        cameraImageView.tintColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_black
         cameraImageView.autoSetDimensions(to: CGSize.square(20))
         cameraImageView.contentMode = .scaleAspectFit
 
@@ -184,7 +185,7 @@ class GroupAttributesEditorHelper: NSObject {
 
     public static func buildCameraButtonForCenter() -> UIView {
         let cameraImageView = UIImageView()
-        cameraImageView.setTemplateImageName("camera-outline-24", tintColor: Theme.primaryIconColor)
+        cameraImageView.setTemplateImageName("camera", tintColor: Theme.primaryIconColor)
         let iconSize: CGFloat = 32
         cameraImageView.autoSetDimensions(to: CGSize(square: iconSize))
         return cameraImageView

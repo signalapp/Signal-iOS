@@ -18,16 +18,16 @@ class HomeTabBarController: UITabBarController {
     lazy var chatListNavController = OWSNavigationController(rootViewController: chatListViewController)
     lazy var chatListTabBarItem = UITabBarItem(
         title: OWSLocalizedString("CHAT_LIST_TITLE_INBOX", comment: "Title for the chat list's default mode."),
-        image: UIImage(named: "chats-tab-bar"),
-        selectedImage: UIImage(named: "chats-tab-bar")
+        image: UIImage(imageLiteralResourceName: "tab-chats"),
+        selectedImage: UIImage(named: "tab-chats")
     )
 
     lazy var storiesViewController = StoriesViewController()
     lazy var storiesNavController = OWSNavigationController(rootViewController: storiesViewController)
     lazy var storiesTabBarItem = UITabBarItem(
         title: OWSLocalizedString("STORIES_TITLE", comment: "Title for the stories view."),
-        image: UIImage(named: "stories-tab-bar"),
-        selectedImage: UIImage(named: "stories-tab-bar")
+        image: UIImage(named: "tab-stories"),
+        selectedImage: UIImage(named: "tab-stories")
     )
 
     var selectedTab: Tabs {

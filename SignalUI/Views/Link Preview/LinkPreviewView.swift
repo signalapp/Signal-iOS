@@ -575,8 +575,7 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         }
         cancelButton.accessibilityLabel = MessageStrings.removePreviewButtonLabel
         linkPreviewView.cancelButton = cancelButton
-        cancelButton.setTemplateImageName("compose-cancel",
-                                          tintColor: Theme.secondaryTextAndIconColor)
+        cancelButton.setTemplateImageName("x-20", tintColor: Theme.secondaryTextAndIconColor)
         let cancelSize = self.cancelSize
         let cancelContainer = ManualLayoutView(name: "cancelContainer")
         cancelContainer.addSubview(cancelButton) { view in

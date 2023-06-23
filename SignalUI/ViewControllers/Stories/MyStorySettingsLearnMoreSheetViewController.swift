@@ -52,9 +52,9 @@ public class MyStorySettingsLearnMoreSheetViewController: InteractiveSheetViewCo
 
     let connectionsImageView: UIImageView = {
         let view = UIImageView()
-        view.image = UIImage(named: "signal_connections")?.withRenderingMode(.alwaysTemplate)
+        view.image = UIImage(named: "signal_connections")
         view.tintColor = .ows_accentBlue
-        view.contentMode = .center
+        view.contentMode = .scaleAspectFit
         view.autoSetDimension(.height, toSize: 88)
         return view
     }()

@@ -389,7 +389,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         let isPreExistingMember = memberViewDelegate.memberViewIsPreExistingMember(recipient,
                                                                                    transaction: transaction)
 
-        let pickedIconName = memberViewDelegate.memberViewCustomIconNameForPickedMember(recipient) ?? "check-circle-solid-new-24"
+        let pickedIconName = memberViewDelegate.memberViewCustomIconNameForPickedMember(recipient) ?? Theme.iconName(.checkCircleFill)
         let pickedIconColor = memberViewDelegate.memberViewCustomIconColorForPickedMember(recipient) ?? Theme.accentBlueColor
 
         let imageView = CVImageView()
@@ -398,7 +398,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         } else if isCurrentMember {
             imageView.setTemplateImageName(pickedIconName, tintColor: pickedIconColor)
         } else {
-            imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
+            imageView.setTemplateImageName(Theme.iconName(.circle), tintColor: .ows_gray25)
         }
         return ContactCellAccessoryView(accessoryView: imageView, size: .square(24))
     }

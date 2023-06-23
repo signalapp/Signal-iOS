@@ -43,7 +43,7 @@ class ContactPermissionReminderMegaphone: MegaphoneView {
                         )
                     ),
                     .init(
-                        icon: #imageLiteral(resourceName: "toggle-32"),
+                        icon: UIImage(imageLiteralResourceName: "toggle-32"),
                         text: OWSLocalizedString(
                             "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO",
                             comment: "Third step for contact permission action sheet"

@@ -62,8 +62,7 @@ class CallHeader: UIView {
         // Back button
 
         let backButton = UIButton()
-        let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
-        backButton.setTemplateImage(backButtonImage, tintColor: .ows_white)
+        backButton.setTemplateImage(UIImage(imageLiteralResourceName: "NavBarBack"), tintColor: .ows_white)
         backButton.autoSetDimensions(to: CGSize(square: 40))
         backButton.imageEdgeInsets = UIEdgeInsets(top: -12, leading: -18, bottom: 0, trailing: 0)
         backButton.addTarget(delegate, action: #selector(CallHeaderDelegate.didTapBackButton), for: .touchUpInside)
@@ -444,7 +443,7 @@ private class GroupMembersButton: UIButton {
         autoSetDimension(.height, toSize: 40)
 
         iconImageView.contentMode = .scaleAspectFit
-        iconImageView.setTemplateImage(#imageLiteral(resourceName: "group-solid-24"), tintColor: .ows_white)
+        iconImageView.setTemplateImage(#imageLiteral(resourceName: "group-fill"), tintColor: .ows_white)
         addSubview(iconImageView)
         iconImageView.autoPinEdge(toSuperviewEdge: .leading)
         iconImageView.autoSetDimensions(to: CGSize(square: 22))

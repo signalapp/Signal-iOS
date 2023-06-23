@@ -490,11 +490,9 @@ private class MiniPreviewView: UIView {
         hStackView.autoSetDimension(.height, toSize: 14)
         vStackView.addArrangedSubview(hStackView)
 
-        let backImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
-
         let backImageView = UIImageView()
         backImageView.contentMode = .scaleAspectFit
-        backImageView.setTemplateImage(backImage, tintColor: Theme.primaryIconColor)
+        backImageView.setTemplateImage(UIImage(imageLiteralResourceName: "NavBarBack"), tintColor: Theme.primaryIconColor)
         backImageView.autoSetDimension(.width, toSize: 10)
         hStackView.addArrangedSubview(backImageView)
 
@@ -520,7 +518,7 @@ private class MiniPreviewView: UIView {
         let videoCallImageView = UIImageView()
         videoCallImageView.contentMode = .scaleAspectFit
         videoCallImageView.autoSetDimension(.width, toSize: 10)
-        videoCallImageView.setTemplateImageName(Theme.iconName(.videoCall), tintColor: Theme.primaryIconColor)
+        videoCallImageView.setTemplateImageName(Theme.iconName(.buttonVideoCall), tintColor: Theme.primaryIconColor)
         hStackView.addArrangedSubview(videoCallImageView)
 
         hStackView.addArrangedSubview(.spacer(withWidth: 8))
@@ -528,7 +526,7 @@ private class MiniPreviewView: UIView {
         let audioCallImageView = UIImageView()
         audioCallImageView.contentMode = .scaleAspectFit
         audioCallImageView.autoSetDimension(.width, toSize: 10)
-        audioCallImageView.setTemplateImageName(Theme.iconName(.audioCall), tintColor: Theme.primaryIconColor)
+        audioCallImageView.setTemplateImageName(Theme.iconName(.buttonVoiceCall), tintColor: Theme.primaryIconColor)
         hStackView.addArrangedSubview(audioCallImageView)
 
         return vStackView
@@ -543,7 +541,7 @@ private class MiniPreviewView: UIView {
 
         let plusImageView = UIImageView()
         plusImageView.contentMode = .scaleAspectFit
-        plusImageView.setTemplateImageName("plus-24", tintColor: Theme.primaryIconColor)
+        plusImageView.setTemplateImageName("plus", tintColor: Theme.primaryIconColor)
         plusImageView.autoSetDimension(.width, toSize: 10)
         stackView.addArrangedSubview(plusImageView)
 
@@ -558,7 +556,7 @@ private class MiniPreviewView: UIView {
         let cameraImageView = UIImageView()
         cameraImageView.contentMode = .scaleAspectFit
         cameraImageView.autoSetDimension(.width, toSize: 10)
-        cameraImageView.setTemplateImageName(Theme.iconName(.cameraButton), tintColor: Theme.primaryIconColor)
+        cameraImageView.setTemplateImageName(Theme.iconName(.buttonCamera), tintColor: Theme.primaryIconColor)
         stackView.addArrangedSubview(cameraImageView)
 
         stackView.addArrangedSubview(.spacer(withWidth: 8))
@@ -566,7 +564,7 @@ private class MiniPreviewView: UIView {
         let microphoneImageView = UIImageView()
         microphoneImageView.contentMode = .scaleAspectFit
         microphoneImageView.autoSetDimension(.width, toSize: 10)
-        microphoneImageView.setTemplateImageName(Theme.iconName(.micButton), tintColor: Theme.primaryIconColor)
+        microphoneImageView.setTemplateImageName(Theme.iconName(.buttonMicrophone), tintColor: Theme.primaryIconColor)
         stackView.addArrangedSubview(microphoneImageView)
 
         return stackView

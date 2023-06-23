@@ -64,9 +64,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
     }()
 
     private let countryChevron: UIImageView = {
-        let countryIconImage = CurrentAppContext().isRTL ? "small_chevron_left" : "small_chevron_right"
-        let countryIcon = UIImage(named: countryIconImage)
-        let imageView = UIImageView(image: countryIcon?.withRenderingMode(.alwaysTemplate))
+        let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "chevron-right-20"))
         imageView.tintColor = .ows_gray20
         imageView.accessibilityIdentifier = "onboarding.phoneNumber." + "countryImageView"
         return imageView
@@ -156,7 +154,7 @@ public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_Onboar
             )
         ]))
         proxyButton.showsContextMenuAsPrimaryAction = true
-        proxyButton.setImage(Theme.iconImage(.more24), for: .normal)
+        proxyButton.setImage(Theme.iconImage(.buttonMore), for: .normal)
         proxyButton.tintColor = Theme.primaryIconColor
         proxyButton.autoSetDimensions(to: .square(40))
 

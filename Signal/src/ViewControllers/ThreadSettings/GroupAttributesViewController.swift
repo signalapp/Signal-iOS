@@ -84,7 +84,7 @@ class GroupAttributesViewController: OWSTableViewController2 {
 
         let nameAndDescriptionSection = OWSTableSection()
         nameAndDescriptionSection.add(.disclosureItem(
-            icon: .settingsAddToGroup,
+            icon: .groupInfoEditName,
             name: helper.groupNameCurrent ?? OWSLocalizedString(
                 "GROUP_NAME_VIEW_TITLE",
                 comment: "Title for the group name view."
@@ -101,7 +101,7 @@ class GroupAttributesViewController: OWSTableViewController2 {
             }
         ))
         nameAndDescriptionSection.add(.disclosureItem(
-            icon: .compose24,
+            icon: .groupInfoEditDescription,
             name: helper.groupDescriptionCurrent ?? OWSLocalizedString(
                 "GROUP_DESCRIPTION_VIEW_TITLE",
                 comment: "Title for the group description view."

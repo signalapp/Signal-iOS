@@ -783,10 +783,12 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     cell.preservesSuperviewLayoutMargins = true
                     cell.contentView.preservesSuperviewLayoutMargins = true
 
-                    let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsShowAllMembers,
-                                                                      iconSize: AvatarBuilder.smallAvatarSizePoints,
-                                                                      innerIconSize: 24,
-                                                                      iconTintColor: Theme.primaryTextColor)
+                    let iconView = OWSTableItem.buildIconInCircleView(
+                        icon: .groupInfoShowAllMembers,
+                        iconSize: AvatarBuilder.smallAvatarSizePoints,
+                        innerIconSize: 20,
+                        iconTintColor: Theme.primaryTextColor
+                    )
 
                     let rowLabel = UILabel()
                     rowLabel.text = CommonStrings.seeAllButton
@@ -1373,13 +1375,13 @@ internal class ConversationPickerCell: ContactTableViewCell {
     }
 
     lazy var unselectedBadgeView: UIView = {
-        let imageView = UIImageView(image: #imageLiteral(resourceName: "empty-circle-outline-24").withRenderingMode(.alwaysTemplate))
+        let imageView = UIImageView(image: Theme.iconImage(.circle))
         imageView.tintColor = .ows_gray25
         return imageView
     }()
 
     lazy var selectedBadgeView: UIView = {
-        let imageView = UIImageView(image: #imageLiteral(resourceName: "check-circle-solid-new-24").withRenderingMode(.alwaysTemplate))
+        let imageView = UIImageView(image: Theme.iconImage(.checkCircleFill))
         imageView.tintColor = Theme.accentBlueColor
         return imageView
     }()

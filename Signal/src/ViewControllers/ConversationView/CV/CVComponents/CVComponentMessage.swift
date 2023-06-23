@@ -537,7 +537,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             // Send failures are rare, so it's cheaper to only build these views when we need them.
             let sendFailureBadge = CVImageView()
             sendFailureBadge.contentMode = .center
-            sendFailureBadge.setTemplateImageName("error-outline-24", tintColor: badgeConfig.color)
+            sendFailureBadge.setTemplateImageName("error-circle", tintColor: badgeConfig.color)
             if conversationStyle.hasWallpaper {
                 sendFailureBadge.backgroundColor = conversationStyle.bubbleColorIncoming
                 sendFailureBadge.layer.cornerRadius = sendFailureBadgeSize / 2
@@ -583,14 +583,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             swipeToReplyIconView.backgroundColor = conversationStyle.bubbleColorIncoming
             swipeToReplyIconView.clipsToBounds = true
             swipeToReplySize = 34
-            swipeToReplyIconView.setTemplateImageName("reply-outline-20",
-                                                      tintColor: .ows_gray45)
+            swipeToReplyIconView.setTemplateImageName("reply-20", tintColor: .ows_gray45)
         } else {
             swipeToReplyIconView.backgroundColor = .clear
             swipeToReplyIconView.clipsToBounds = false
             swipeToReplySize = 24
-            swipeToReplyIconView.setTemplateImageName("reply-outline-24",
-                                                      tintColor: .ows_gray45)
+            swipeToReplyIconView.setTemplateImageName("reply", tintColor: .ows_gray45)
         }
         hInnerStack.addLayoutBlock { _ in
             guard let superview = swipeToReplyView.superview else {

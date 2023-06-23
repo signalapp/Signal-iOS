@@ -1302,7 +1302,10 @@ extension AttachmentApprovalItem: GalleryRailItem {
 extension AddMoreRailItem: GalleryRailItem {
 
     func buildRailItemView() -> UIView {
-        let button = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-add-photos"), backgroundStyle: .blur)
+        let button = RoundMediaButton(
+            image: UIImage(imageLiteralResourceName: "plus-square-28"),
+            backgroundStyle: .blur
+        )
         button.isUserInteractionEnabled = false
         button.layoutMargins = .zero
         button.contentEdgeInsets = .zero

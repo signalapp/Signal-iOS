@@ -148,16 +148,17 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
     }()
 
     private lazy var backButton: UIButton = {
-        let topButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
-        let backButton = UIButton.withTemplateImage(topButtonImage, tintColor: Theme.secondaryTextAndIconColor)
-
+        let backButton = UIButton.withTemplateImage(
+            UIImage(imageLiteralResourceName: "NavBarBack"),
+            tintColor: Theme.secondaryTextAndIconColor
+        )
         backButton.autoSetDimensions(to: CGSize(square: 40))
         backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
         return backButton
     }()
 
     private lazy var moreButton: UIButton = {
-        let moreButton = UIButton.withTemplateImageName("more-horiz-24", tintColor: Theme.primaryIconColor)
+        let moreButton = UIButton.withTemplateImage(Theme.iconImage(.buttonMore), tintColor: Theme.primaryIconColor)
         moreButton.autoSetDimensions(to: CGSize(square: 40))
         moreButton.addTarget(self, action: #selector(didTapMoreButton), for: .touchUpInside)
         return moreButton
@@ -390,8 +391,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
         if isNavigationBarVisible, showDisablePinButton {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-                image: UIImage(named: "more-horiz-24")?.withRenderingMode(.alwaysTemplate),
-                landscapeImagePhone: nil,
+                image: Theme.iconImage(.buttonMore),
                 style: .plain,
                 target: self,
                 action: #selector(didTapMoreButton(_:))

@@ -73,7 +73,7 @@ class SetWallpaperViewController: OWSTableViewController2 {
         photosSection.customHeaderHeight = 14
 
         let choosePhotoItem = OWSTableItem.disclosureItem(
-            icon: .settingsAllMedia,
+            icon: .buttonPhotoLibrary,
             name: OWSLocalizedString("SET_WALLPAPER_CHOOSE_PHOTO",
                                     comment: "Title for the wallpaper choose from photos option"),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "choose_photo")

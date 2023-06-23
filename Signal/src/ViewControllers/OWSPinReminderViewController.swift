@@ -232,7 +232,7 @@ public class PinReminderViewController: OWSViewController {
         topSpacer.autoSetDimension(.height, toSize: 20, relation: .greaterThanOrEqual)
 
         let dismissButton = UIButton()
-        dismissButton.setTemplateImageName("x-24", tintColor: Theme.primaryIconColor)
+        dismissButton.setTemplateImage(Theme.iconImage(.buttonX), tintColor: Theme.primaryIconColor)
         dismissButton.addTarget(self, action: #selector(dismissPressed), for: .touchUpInside)
         containerView.addSubview(dismissButton)
         dismissButton.autoSetDimensions(to: CGSize(square: 44))

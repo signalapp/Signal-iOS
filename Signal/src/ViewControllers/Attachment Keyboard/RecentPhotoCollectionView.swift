@@ -402,7 +402,7 @@ private class RecentPhotoCell: UICollectionViewCell {
 
         switch item.type {
         case .animated:
-            setContentTypeBadge(image: #imageLiteral(resourceName: "ic_gallery_badge_gif"))
+            setContentTypeBadge(image: UIImage(imageLiteralResourceName: "gif-rectangle"))
         case .photo, .video:
             setContentTypeBadge(image: nil)
         }

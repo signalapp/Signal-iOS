@@ -327,7 +327,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
 
     func addDismissButton() {
         let dismissButton = UIButton()
-        dismissButton.setTemplateImageName("x-24", tintColor: Theme.darkThemePrimaryColor)
+        dismissButton.setTemplateImage(Theme.iconImage(.buttonX), tintColor: Theme.darkThemePrimaryColor)
         dismissButton.addTarget(self, action: #selector(tappedDismiss), for: .touchUpInside)
 
         addSubview(dismissButton)

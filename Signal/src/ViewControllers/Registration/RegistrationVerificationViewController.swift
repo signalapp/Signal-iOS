@@ -322,7 +322,7 @@ class RegistrationVerificationViewController: OWSViewController {
             ])
         }
 
-        contextButton.setImage(Theme.iconImage(.more24), for: .normal)
+        contextButton.setImage(Theme.iconImage(.buttonMore), for: .normal)
         contextButton.tintColor = Theme.accentBlueColor
 
         renderResendButton(

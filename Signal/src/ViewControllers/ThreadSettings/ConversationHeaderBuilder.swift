@@ -202,7 +202,7 @@ struct ConversationHeaderBuilder: Dependencies {
         ) == .verified
         if isVerified {
             let subtitle = NSMutableAttributedString()
-            subtitle.appendTemplatedImage(named: "check-12", font: .dynamicTypeSubheadlineClamped)
+            subtitle.appendTemplatedImage(named: "check-extra-small", font: .dynamicTypeSubheadlineClamped)
             subtitle.append(" ")
             subtitle.append(OWSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
                                               comment: "Badge indicating that the user is verified."))
@@ -262,7 +262,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
             if options.contains(.videoCall) {
                 buttons.append(buildIconButton(
-                    icon: .videoCall,
+                    icon: .buttonVideoCall,
                     text: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON",
                         comment: "Button to start a video call"
@@ -276,7 +276,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
             if !delegate.thread.isGroupThread, options.contains(.audioCall) {
                 buttons.append(buildIconButton(
-                    icon: .audioCall,
+                    icon: .buttonVoiceCall,
                     text: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON",
                         comment: "Button to start a audio call"
@@ -291,7 +291,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
         if options.contains(.mute) {
             buttons.append(buildIconButton(
-                icon: .settingsMuted,
+                icon: .buttonMute,
                 text: delegate.threadViewModel.isMuted
                     ? OWSLocalizedString(
                         "CONVERSATION_SETTINGS_MUTED_BUTTON",
@@ -315,7 +315,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
         if options.contains(.search), !delegate.isGroupV1Thread {
             buttons.append(buildIconButton(
-                icon: .settingsSearch,
+                icon: .buttonSearch,
                 text: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_SEARCH_BUTTON",
                     comment: "Button to search the chat"

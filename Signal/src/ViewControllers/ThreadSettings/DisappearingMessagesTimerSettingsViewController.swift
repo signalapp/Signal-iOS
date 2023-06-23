@@ -124,7 +124,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
 
         let section = OWSTableSection()
         section.add(.item(
-            icon: configuration.isEnabled ? .empty : .accessoryCheckmark,
+            icon: configuration.isEnabled ? .empty : .checkmark,
             name: CommonStrings.switchOff,
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "timer_off"),
             actionBlock: { [weak self] in
@@ -137,7 +137,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
 
         for duration in disappearingMessagesDurations {
             section.add(.item(
-                icon: (configuration.isEnabled && duration == configuration.durationSeconds) ? .accessoryCheckmark : .empty,
+                icon: (configuration.isEnabled && duration == configuration.durationSeconds) ? .checkmark : .empty,
                 name: DateUtil.formatDuration(seconds: duration, useShortFormat: false),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "timer_\(duration)"),
                 actionBlock: { [weak self] in
@@ -152,7 +152,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
         let isCustomTime = configuration.isEnabled && !disappearingMessagesDurations.contains(configuration.durationSeconds)
 
         section.add(.disclosureItem(
-            icon: isCustomTime ? .accessoryCheckmark : .empty,
+            icon: isCustomTime ? .checkmark : .empty,
             name: OWSLocalizedString(
                 "DISAPPEARING_MESSAGES_CUSTOM_TIME",
                 comment: "Disappearing message option to define a custom time"

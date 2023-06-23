@@ -279,7 +279,7 @@ class StoryItemMediaView: UIView {
         let nameTrailingView: UIView
         let nameTrailingSpacing: CGFloat
         if item.message.authorAddress.isSystemStoryAddress {
-            let icon = UIImageView(image: UIImage(named: "official-checkmark-20"))
+            let icon = UIImageView(image: Theme.iconImage(.official))
             icon.contentMode = .center
             nameTrailingView = icon
             nameTrailingSpacing = 3
@@ -307,7 +307,7 @@ class StoryItemMediaView: UIView {
             // For private stories, other than "My Story", render the name of the story
 
             let contextIcon = UIImageView()
-            contextIcon.setTemplateImageName("stories-16", tintColor: Theme.darkThemePrimaryColor)
+            contextIcon.setTemplateImageName("stories-fill-compact", tintColor: Theme.darkThemePrimaryColor)
             contextIcon.autoSetDimensions(to: .square(16))
 
             let contextNameLabel = UILabel()
@@ -432,7 +432,7 @@ class StoryItemMediaView: UIView {
         let contextButton = DelegatingContextMenuButton(delegate: delegate)
         contextButton.showsContextMenuAsPrimaryAction = true
         contextButton.tintColor = Theme.darkThemePrimaryColor
-        contextButton.setImage(Theme.iconImage(.more24), for: .normal)
+        contextButton.setImage(Theme.iconImage(.buttonMore), for: .normal)
         contextButton.contentMode = .center
 
         contextButton.autoSetDimensions(to: .square(Self.contextButtonSize))

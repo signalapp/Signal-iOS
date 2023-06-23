@@ -114,7 +114,7 @@ class CallButton: UIButton {
     private func updateAppearance() {
         circleView.backgroundColor = currentBackgroundColor
         iconView.setTemplateImageName(currentIconName, tintColor: currentIconColor)
-        dropdownIconView?.setTemplateImageName("arrow-down-12", tintColor: currentIconColor)
+        dropdownIconView?.setTemplateImageName("dropdown-triangle-12", tintColor: currentIconColor)
 
         if let text = text {
             label.isHidden = false

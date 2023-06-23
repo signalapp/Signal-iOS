@@ -21,26 +21,26 @@ protocol CallControlsDelegate: AnyObject {
 class CallControls: UIView {
     private lazy var hangUpButton: CallButton = {
         let button = createButton(
-            iconName: "phone-down-solid-28",
+            iconName: "phone-down-fill-28",
             action: #selector(CallControlsDelegate.didPressHangup)
         )
         button.unselectedBackgroundColor = .ows_accentRed
         return button
     }()
     private(set) lazy var audioSourceButton = createButton(
-        iconName: "speaker-solid-28",
+        iconName: "speaker-fill-28",
         action: #selector(CallControlsDelegate.didPressAudioSource)
     )
     private lazy var muteButton = createButton(
-        iconName: "mic-off-solid-28",
+        iconName: "mic-slash-fill-28",
         action: #selector(CallControlsDelegate.didPressMute)
     )
     private lazy var videoButton = createButton(
-        iconName: "video-solid-28",
+        iconName: "video-fill-28",
         action: #selector(CallControlsDelegate.didPressVideo)
     )
     private lazy var ringButton = createButton(
-        iconName: "ring-28",
+        iconName: "bell-ring-fill-28",
         action: #selector(CallControlsDelegate.didPressRing)
     )
     private lazy var flipCameraButton: CallButton = {
@@ -189,11 +189,11 @@ class CallControls: UIView {
             audioSourceButton.isHidden = false
 
             if audioSource.isBuiltInEarPiece {
-                audioSourceButton.iconName = "phone-solid-28"
+                audioSourceButton.iconName = "phone-fill-28"
             } else if audioSource.isBuiltInSpeaker {
-                audioSourceButton.iconName = "speaker-solid-28"
+                audioSourceButton.iconName = "speaker-fill-28"
             } else {
-                audioSourceButton.iconName = "speaker-bt-solid-28"
+                audioSourceButton.iconName = "speaker-bt-fill-28"
             }
         } else if UIDevice.current.isIPad {
             // iPad *only* supports speaker mode, if there are no external
@@ -206,7 +206,7 @@ class CallControls: UIView {
             audioSourceButton.isHidden = !isLocalVideoMuted
 
             // No bluetooth audio detected
-            audioSourceButton.iconName = "speaker-solid-28"
+            audioSourceButton.iconName = "speaker-fill-28"
             audioSourceButton.showDropdownArrow = false
         }
 

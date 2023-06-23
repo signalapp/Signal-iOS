@@ -34,7 +34,7 @@ class VideoEditorView: UIView {
         return playerView
     }()
     private lazy var playButton: UIButton = {
-        let playButton = RoundMediaButton(image: #imageLiteral(resourceName: "play-solid-34"), backgroundStyle: .blur)
+        let playButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "play-fill-32"), backgroundStyle: .blur)
         playButton.accessibilityLabel = OWSLocalizedString("PLAY_BUTTON_ACCESSABILITY_LABEL",
                                                            comment: "Accessibility label for button to start media playback")
         // this makes the blur circle 72 pts in diameter
