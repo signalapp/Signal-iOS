@@ -48,23 +48,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
                       context:(id<DeliveryReceiptContext>)context
                   transaction:(SDSAnyWriteTransaction *)transaction;
 
-// exposed for testing
-- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
-               withSyncMessage:(SSKProtoSyncMessage *)syncMessage
-                 plaintextData:(NSData *)plaintextData
-               wasReceivedByUD:(BOOL)wasReceivedByUD
-       serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-                   transaction:(SDSAnyWriteTransaction *)transaction;
-
-// exposed for testing
-- (void)handleIncomingEnvelope:(IdentifiedIncomingEnvelope *)identifiedEnvelope
-                 withDataMessage:(SSKProtoDataMessage *)dataMessage
-                   plaintextData:(NSData *)plaintextData
-                 wasReceivedByUD:(BOOL)wasReceivedByUD
-         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-    shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
-                     transaction:(SDSAnyWriteTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END

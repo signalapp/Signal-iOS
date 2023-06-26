@@ -29,7 +29,7 @@ public class InteractionReactionState: NSObject {
 
         let finder = ReactionFinder(uniqueMessageId: message.uniqueId)
         let allReactions = finder.allReactions(transaction: transaction.unwrapGrdbRead)
-        let localUserReaction = finder.reaction(for: localAddress, transaction: transaction.unwrapGrdbRead)
+        let localUserReaction = allReactions.first(where: { $0.reactor == localAddress })
 
         reactionsByEmoji = allReactions.reduce(
             into: [Emoji: [OWSReaction]]()

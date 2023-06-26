@@ -70,7 +70,7 @@ public class ReactionManager: NSObject {
 
         Logger.info("Sending reaction, isRemoving: \(isRemoving)")
 
-        guard let localAddress = tsAccountManager.localIdentifiers(transaction: tx)?.aciAddress else {
+        guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
             throw OWSAssertionError("missing local address")
         }
 
@@ -89,17 +89,17 @@ public class ReactionManager: NSObject {
             transaction: tx
         )
 
-        outgoingMessage.previousReaction = message.reaction(for: localAddress, transaction: tx)
+        outgoingMessage.previousReaction = message.reaction(for: ServiceIdObjC(localAci), tx: tx)
 
         if isRemoving {
-            message.removeReaction(for: localAddress, transaction: tx)
+            message.removeReaction(for: ServiceIdObjC(localAci), tx: tx)
         } else {
             outgoingMessage.createdReaction = message.recordReaction(
-                for: localAddress,
+                for: ServiceIdObjC(localAci),
                 emoji: emoji,
                 sentAtTimestamp: outgoingMessage.timestamp,
                 receivedAtTimestamp: outgoingMessage.timestamp,
-                transaction: tx
+                tx: tx
             )
 
             // Always immediately mark outgoing reactions as read.
@@ -120,7 +120,7 @@ public class ReactionManager: NSObject {
     public class func processIncomingReaction(
         _ reaction: SSKProtoDataMessageReaction,
         thread: TSThread,
-        reactor: SignalServiceAddress,
+        reactor: ServiceIdObjC,
         timestamp: UInt64,
         serverTimestamp: UInt64,
         expiresInSeconds: UInt32,
@@ -167,22 +167,25 @@ public class ReactionManager: NSObject {
             // If this is a reaction removal, we want to remove *any* reaction from this author
             // on this message, regardless of the specified emoji.
             if reaction.hasRemove, reaction.remove {
-                message.removeReaction(for: reactor, transaction: transaction)
+                message.removeReaction(for: reactor, tx: transaction)
             } else {
                 let reaction = message.recordReaction(
                     for: reactor,
                     emoji: emoji,
                     sentAtTimestamp: timestamp,
                     receivedAtTimestamp: NSDate.ows_millisecondTimeStamp(),
-                    transaction: transaction
+                    tx: transaction
                 )
 
                 // If this is a reaction to a message we sent, notify the user.
-                if let reaction = reaction, let message = message as? TSOutgoingMessage, !reactor.isLocalAddress {
-                    self.notificationsManager?.notifyUser(forReaction: reaction,
-                                                          onOutgoingMessage: message,
-                                                          thread: thread,
-                                                          transaction: transaction)
+                let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+                if let reaction, let message = message as? TSOutgoingMessage, reactor.wrappedValue != localAci {
+                    self.notificationsManager?.notifyUser(
+                        forReaction: reaction,
+                        onOutgoingMessage: message,
+                        thread: thread,
+                        transaction: transaction
+                    )
                 }
             }
 
@@ -214,13 +217,14 @@ public class ReactionManager: NSObject {
 
             let message: TSMessage
 
-            if reactor.isLocalAddress {
+            let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+            if reactor.wrappedValue == localAci {
                 let builder = TSOutgoingMessageBuilder(thread: thread)
                 populateStoryContext(on: builder)
                 message = builder.build(transaction: transaction)
             } else {
                 let builder = TSIncomingMessageBuilder(thread: thread)
-                builder.authorAddress = reactor
+                builder.authorAddress = SignalServiceAddress(reactor.wrappedValue)
                 builder.serverTimestamp = NSNumber(value: serverTimestamp)
                 populateStoryContext(on: builder)
                 message = builder.build()

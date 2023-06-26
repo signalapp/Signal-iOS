@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 // MARK: -
 
@@ -20,45 +21,45 @@ public class ReactionFinder: NSObject {
     }
 
     /// Returns the given users reaction if it exists, otherwise nil
-    @objc
-    public func reaction(for reactor: SignalServiceAddress, transaction: GRDBReadTransaction) -> OWSReaction? {
-        if let reaction = reactionForUUID(reactor.uuid, transaction: transaction) {
-            return reaction
-        } else if let reaction = reactionForE164(reactor.phoneNumber, transaction: transaction) {
-            return reaction
-        } else {
-            return nil
-        }
-    }
-
-    private func reactionForUUID(_ uuid: UUID?, transaction: GRDBReadTransaction) -> OWSReaction? {
-        guard let uuidString = uuid?.uuidString else { return nil }
-        let sql = """
-            SELECT * FROM \(OWSReaction.databaseTableName)
-            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
-            AND \(OWSReaction.columnName(.reactorUUID)) = ?
-        """
+    public func reaction(for aci: ServiceId, tx: GRDBReadTransaction) -> OWSReaction? {
+        // If there is a reaction for the ACI, return it.
         do {
-            return try OWSReaction.fetchOne(transaction.database, sql: sql, arguments: [uniqueMessageId, uuidString])
+            let sql = """
+                SELECT * FROM \(OWSReaction.databaseTableName)
+                WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
+                AND \(OWSReaction.columnName(.reactorUUID)) = ?
+            """
+            let aciString = aci.uuidValue.uuidString
+            if let result = try OWSReaction.fetchOne(tx.database, sql: sql, arguments: [uniqueMessageId, aciString]) {
+                return result
+            }
         } catch {
             owsFailDebug("Failed to fetch reaction \(error)")
             return nil
         }
-    }
 
-    private func reactionForE164(_ e164: String?, transaction: GRDBReadTransaction) -> OWSReaction? {
-        guard let e164 = e164 else { return nil }
-        let sql = """
-            SELECT * FROM \(OWSReaction.databaseTableName)
-            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
-            AND \(OWSReaction.columnName(.reactorE164)) = ?
-        """
+        // Otherwise, if there is a reaction for the phone number *without* an ACI,
+        // return it. (This handles cases where we saved a reaction before we knew
+        // the ACI that was associated with that phone number.)
+        guard let phoneNumber = SignalServiceAddress(aci).phoneNumber else {
+            return nil
+        }
         do {
-            return try OWSReaction.fetchOne(transaction.database, sql: sql, arguments: [uniqueMessageId, e164])
+            let sql = """
+                SELECT * FROM \(OWSReaction.databaseTableName)
+                WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
+                AND \(OWSReaction.columnName(.reactorUUID)) IS NULL
+                AND \(OWSReaction.columnName(.reactorE164)) = ?
+            """
+            if let result = try OWSReaction.fetchOne(tx.database, sql: sql, arguments: [uniqueMessageId, phoneNumber]) {
+                return result
+            }
         } catch {
             owsFailDebug("Failed to fetch reaction \(error)")
             return nil
         }
+
+        return nil
     }
 
     /// Returns a list of all reactions to this message

@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     switch (request.messageType) {
         case OWSMessageManagerMessageTypeSyncMessage:
-            [self handleIncomingEnvelope:request.envelope
+            [self handleIncomingEnvelope:request.identifiedEnvelope
                          withSyncMessage:contentProto.syncMessage
                            plaintextData:request.plaintextData
                          wasReceivedByUD:request.wasReceivedByUD
@@ -334,7 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsProfileKeyUpdate) != 0) {
         // Do nothing, we handle profile keys on all incoming messages above.
     } else {
-        message = [self handleReceivedEnvelope:envelope
+        message = [self handleReceivedEnvelope:identifiedEnvelope
                                withDataMessage:dataMessage
                                         thread:thread
                                  plaintextData:plaintextData
@@ -845,14 +845,14 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
+- (void)handleIncomingEnvelope:(IdentifiedIncomingEnvelope *)identifiedEnvelope
                withSyncMessage:(SSKProtoSyncMessage *)syncMessage
                  plaintextData:(NSData *)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
        serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (!envelope) {
+    if (!identifiedEnvelope) {
         OWSFailDebug(@"Missing envelope.");
         return;
     }
@@ -864,6 +864,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
+    SSKProtoEnvelope *envelope = identifiedEnvelope.envelope;
 
     if (!envelope.sourceAddress.isLocalAddress) {
         // Sync messages should only come from linked devices.
@@ -917,9 +918,9 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSReactionProcessingResult result =
                     [OWSReactionManager processIncomingReaction:dataMessage.reaction
                                                          thread:transcript.thread
-                                                        reactor:envelope.sourceAddress
+                                                        reactor:identifiedEnvelope.sourceServiceIdObjC
                                                       timestamp:syncMessage.sent.timestamp
-                                                serverTimestamp:envelope.serverTimestamp
+                                                serverTimestamp:identifiedEnvelope.serverTimestamp
                                                expiresInSeconds:dataMessage.expireTimer
                                                  sentTranscript:transcript
                                                     transaction:transaction];
@@ -1178,7 +1179,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  transaction:transaction];
 }
 
-- (TSIncomingMessage *_Nullable)handleReceivedEnvelope:(SSKProtoEnvelope *)envelope
+- (TSIncomingMessage *_Nullable)handleReceivedEnvelope:(IdentifiedIncomingEnvelope *)incomingEnvelope
                                        withDataMessage:(SSKProtoDataMessage *)dataMessage
                                                 thread:(TSThread *)thread
                                          plaintextData:(NSData *)plaintextData
@@ -1187,7 +1188,7 @@ NS_ASSUME_NONNULL_BEGIN
                           shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
                                            transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (!envelope) {
+    if (!incomingEnvelope) {
         OWSFailDebug(@"Missing envelope.");
         return nil;
     }
@@ -1203,12 +1204,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing thread.");
         return nil;
     }
-
-    SignalServiceAddress *authorAddress = envelope.sourceAddress;
-    if (!authorAddress.isValid) {
-        OWSFailDebug(@"invalid authorAddress");
-        return nil;
-    }
+    SSKProtoEnvelope *envelope = incomingEnvelope.envelope;
 
     if (dataMessage.hasRequiredProtocolVersion
         && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
@@ -1247,14 +1243,15 @@ NS_ASSUME_NONNULL_BEGIN
         if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
             OWSLogInfo(@"Reaction: %@", messageDescription);
         }
-        OWSReactionProcessingResult result = [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                                                                  thread:thread
-                                                                                 reactor:envelope.sourceAddress
-                                                                               timestamp:timestamp
-                                                                         serverTimestamp:envelope.serverTimestamp
-                                                                        expiresInSeconds:dataMessage.expireTimer
-                                                                          sentTranscript:nil
-                                                                             transaction:transaction];
+        OWSReactionProcessingResult result =
+            [OWSReactionManager processIncomingReaction:dataMessage.reaction
+                                                 thread:thread
+                                                reactor:incomingEnvelope.sourceServiceIdObjC
+                                              timestamp:timestamp
+                                        serverTimestamp:incomingEnvelope.serverTimestamp
+                                       expiresInSeconds:dataMessage.expireTimer
+                                         sentTranscript:nil
+                                            transaction:transaction];
 
         switch (result) {
             case OWSReactionProcessingResultSuccess:
@@ -1431,7 +1428,8 @@ NS_ASSUME_NONNULL_BEGIN
     TSIncomingMessageBuilder *incomingMessageBuilder =
         [TSIncomingMessageBuilder builderWithThread:thread
                                           timestamp:timestamp
-                                      authorAddress:authorAddress
+                                      authorAddress:[[SignalServiceAddress alloc]
+                                                        initWithServiceIdObjC:incomingEnvelope.sourceServiceIdObjC]
                                      sourceDeviceId:envelope.sourceDevice
                                         messageBody:body
                                          bodyRanges:bodyRanges
@@ -1482,7 +1480,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Check for any placeholders inserted because of a previously undecryptable message
     // The sender may have resent the message. If so, we should swap it in place of the placeholder
-    [message insertOrReplacePlaceholderFrom:authorAddress transaction:transaction];
+    [message insertOrReplacePlaceholderFrom:[[SignalServiceAddress alloc]
+                                                initWithServiceIdObjC:incomingEnvelope.sourceServiceIdObjC]
+                                transaction:transaction];
 
     // Inserting the message may have modified the thread on disk, so reload it.
     // For example, we may have marked the thread as visible.

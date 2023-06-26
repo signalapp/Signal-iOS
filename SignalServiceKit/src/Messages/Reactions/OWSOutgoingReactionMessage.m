@@ -108,11 +108,12 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    SignalServiceAddress *_Nullable localAddress = TSAccountManager.shared.localAddress;
-    if (!localAddress) {
+    NSUUID *_Nullable localUuid = TSAccountManager.shared.localUuid;
+    if (!localUuid) {
         OWSFailDebug(@"unexpectedly missing local address");
         return;
     }
+    ServiceIdObjC *localAci = [[ServiceIdObjC alloc] initWithUuidValue:localUuid];
 
     TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:self.messageUniqueId transaction:transaction];
     if (!message) {
@@ -122,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogError(@"Failed to send reaction to all recipients: %@", error.userErrorDescription);
 
-    OWSReaction *_Nullable currentReaction = [message reactionForReactor:localAddress transaction:transaction];
+    OWSReaction *_Nullable currentReaction = [message reactionFor:localAci tx:transaction];
 
     if (![NSString isNullableObject:currentReaction.uniqueId equalTo:self.createdReaction.uniqueId]) {
         OWSLogInfo(@"Skipping reversion, changes have been made since we tried to send this message.");
@@ -130,13 +131,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (self.previousReaction) {
-        [message recordReactionForReactor:self.previousReaction.reactor
-                                    emoji:self.previousReaction.emoji
-                          sentAtTimestamp:self.previousReaction.sentAtTimestamp
-                      receivedAtTimestamp:self.previousReaction.receivedAtTimestamp
-                              transaction:transaction];
+        [message recordReactionFor:localAci
+                             emoji:self.previousReaction.emoji
+                   sentAtTimestamp:self.previousReaction.sentAtTimestamp
+               receivedAtTimestamp:self.previousReaction.receivedAtTimestamp
+                                tx:transaction];
     } else {
-        [message removeReactionForReactor:localAddress transaction:transaction];
+        [message removeReactionFor:localAci tx:transaction];
     }
 }
 

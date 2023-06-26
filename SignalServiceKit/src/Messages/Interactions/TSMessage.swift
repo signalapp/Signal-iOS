@@ -85,19 +85,19 @@ public extension TSMessage {
         unreadReactions.forEach { $0.markAsRead(transaction: transaction) }
     }
 
-    @objc(reactionForReactor:transaction:)
-    func reaction(for reactor: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSReaction? {
-        return reactionFinder.reaction(for: reactor, transaction: transaction.unwrapGrdbRead)
+    @objc(reactionFor:tx:)
+    func reaction(for reactor: ServiceIdObjC, tx: SDSAnyReadTransaction) -> OWSReaction? {
+        return reactionFinder.reaction(for: reactor.wrappedValue, tx: tx.unwrapGrdbRead)
     }
 
-    @objc(recordReactionForReactor:emoji:sentAtTimestamp:receivedAtTimestamp:transaction:)
+    @objc(recordReactionFor:emoji:sentAtTimestamp:receivedAtTimestamp:tx:)
     @discardableResult
     func recordReaction(
-        for reactor: SignalServiceAddress,
+        for reactor: ServiceIdObjC,
         emoji: String,
         sentAtTimestamp: UInt64,
         receivedAtTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) -> OWSReaction? {
         Logger.info("")
 
@@ -109,36 +109,36 @@ public extension TSMessage {
         assert(emoji.isSingleEmoji)
 
         // Remove any previous reaction, there can only be one
-        removeReaction(for: reactor, transaction: transaction)
+        removeReaction(for: reactor, tx: tx)
 
         let reaction = OWSReaction(
             uniqueMessageId: uniqueId,
             emoji: emoji,
-            reactor: reactor,
+            reactor: SignalServiceAddress(reactor.wrappedValue),
             sentAtTimestamp: sentAtTimestamp,
             receivedAtTimestamp: receivedAtTimestamp
         )
 
-        reaction.anyInsert(transaction: transaction)
+        reaction.anyInsert(transaction: tx)
 
         // Reactions to messages we send need to be manually marked
         // as read as they trigger notifications we need to clear
         // out. Everything else can be automatically read.
-        if !(self is TSOutgoingMessage) { reaction.markAsRead(transaction: transaction) }
+        if !(self is TSOutgoingMessage) { reaction.markAsRead(transaction: tx) }
 
-        databaseStorage.touch(interaction: self, shouldReindex: false, transaction: transaction)
+        databaseStorage.touch(interaction: self, shouldReindex: false, transaction: tx)
 
         return reaction
     }
 
-    @objc(removeReactionForReactor:transaction:)
-    func removeReaction(for reactor: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+    @objc(removeReactionFor:tx:)
+    func removeReaction(for reactor: ServiceIdObjC, tx: SDSAnyWriteTransaction) {
         Logger.info("")
 
-        guard let reaction = reaction(for: reactor, transaction: transaction) else { return }
+        guard let reaction = reaction(for: reactor, tx: tx) else { return }
 
-        reaction.anyRemove(transaction: transaction)
-        databaseStorage.touch(interaction: self, shouldReindex: false, transaction: transaction)
+        reaction.anyRemove(transaction: tx)
+        databaseStorage.touch(interaction: self, shouldReindex: false, transaction: tx)
 
         Self.notificationsManager?.cancelNotifications(reactionId: reaction.uniqueId)
     }
