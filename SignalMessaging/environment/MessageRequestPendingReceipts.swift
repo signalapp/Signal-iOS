@@ -186,11 +186,13 @@ public class PendingReceiptFinder {
             throw OWSAssertionError("threadId was unexpectedly nil")
         }
 
-        let record = PendingReadReceiptRecord(threadId: threadId,
-                                              messageTimestamp: Int64(message.timestamp),
-                                              messageUniqueId: message.uniqueId,
-                                              authorPhoneNumber: message.authorPhoneNumber,
-                                              authorUuid: message.authorUUID)
+        let record = PendingReadReceiptRecord(
+            threadId: threadId,
+            messageTimestamp: Int64(message.timestamp),
+            messageUniqueId: message.uniqueId,
+            authorPhoneNumber: message.authorPhoneNumber,
+            authorUuid: message.authorUUID
+        )
 
         Logger.debug("pending read receipt: \(record)")
         try record.insert(transaction.database)
