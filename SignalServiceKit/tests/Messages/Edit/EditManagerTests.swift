@@ -39,7 +39,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                targetMessage: targetMessage,
+                editTarget: .incomingMessage(targetMessage),
                 serverTimestamp: 1,
                 tx: tx
             )
@@ -79,7 +79,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                targetMessage: targetMessage,
+                editTarget: .incomingMessage(targetMessage),
                 serverTimestamp: 1,
                 tx: tx
             )
@@ -107,7 +107,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                targetMessage: targetMessage,
+                editTarget: .incomingMessage(targetMessage),
                 serverTimestamp: 1,
                 tx: tx
             )
@@ -136,7 +136,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                targetMessage: targetMessage,
+                editTarget: .incomingMessage(targetMessage),
                 serverTimestamp: expiredTS,
                 tx: tx
             )
@@ -165,7 +165,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                targetMessage: targetMessage,
+                editTarget: .incomingMessage(targetMessage),
                 serverTimestamp: bigInt + 1,
                 tx: tx
             )

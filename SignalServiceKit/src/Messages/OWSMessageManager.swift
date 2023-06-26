@@ -390,7 +390,7 @@ extension OWSMessageManager {
 
     @objc
     func handleIncomingEnvelope(
-        _ envelope: SSKProtoEnvelope,
+        _ identifiedEnvelope: IdentifiedIncomingEnvelope,
         editSyncMessage: SSKProtoSyncMessage,
         transaction tx: SDSAnyWriteTransaction
     ) -> EditProcessingResult {
@@ -401,7 +401,7 @@ extension OWSMessageManager {
 
         guard let transcript = OWSIncomingSentMessageTranscript(
             proto: sentMessage,
-            serverTimestamp: envelope.serverTimestamp,
+            serverTimestamp: identifiedEnvelope.serverTimestamp,
             transaction: tx
         ) else {
             Logger.warn("Missing edit transcript.")
@@ -410,11 +410,6 @@ extension OWSMessageManager {
 
         guard let thread = transcript.thread else {
             Logger.warn("Missing edit message thread.")
-            return .invalidEdit
-        }
-
-        guard let author = envelope.sourceAddress else {
-            Logger.warn("Missing edit message author.")
             return .invalidEdit
         }
 
@@ -428,17 +423,18 @@ extension OWSMessageManager {
         guard
             let targetMessage = EditMessageFinder.editTarget(
                 timestamp: editMessage.targetSentTimestamp,
-                author: author,
+                authorAci: nil,
                 transaction: tx
-        ) else {
+            )
+        else {
             Logger.warn("Edit cannot find the target message")
             return .editedMessageMissing
         }
 
         guard let message = handleMessageEdit(
-            envelope: envelope,
+            envelope: identifiedEnvelope,
             thread: thread,
-            targetMessage: targetMessage,
+            editTarget: targetMessage,
             editMessage: editMessage,
             transaction: tx
         ) else {
@@ -460,7 +456,7 @@ extension OWSMessageManager {
 
     @objc
     func handleIncomingEnvelope(
-        _ envelope: SSKProtoEnvelope,
+        _ identifiedEnvelope: IdentifiedIncomingEnvelope,
         withEditMessage editMessage: SSKProtoEditMessage,
         wasReceivedByUD: Bool,
         transaction tx: SDSAnyWriteTransaction
@@ -471,14 +467,9 @@ extension OWSMessageManager {
             return .invalidEdit
         }
 
-        guard let author = envelope.sourceAddress else {
-            Logger.warn("Missing edit source address.")
-            return .invalidEdit
-        }
-
         guard let thread = preprocessDataMessage(
             dataMessage,
-            envelope: envelope,
+            envelope: identifiedEnvelope.envelope,
             transaction: tx
         ) else {
             Logger.warn("Missing edit message thread.")
@@ -489,7 +480,7 @@ extension OWSMessageManager {
         // return and enqueue the message to be handled as early delivery
         guard let targetMessage = EditMessageFinder.editTarget(
             timestamp: editMessage.targetSentTimestamp,
-            author: author,
+            authorAci: identifiedEnvelope.sourceServiceId,
             transaction: tx
         ) else {
             Logger.warn("Edit cannot find the target message")
@@ -497,9 +488,9 @@ extension OWSMessageManager {
         }
 
         guard let message = handleMessageEdit(
-            envelope: envelope,
+            envelope: identifiedEnvelope,
             thread: thread,
-            targetMessage: targetMessage,
+            editTarget: targetMessage,
             editMessage: editMessage,
             transaction: tx
         ) else {
@@ -509,7 +500,7 @@ extension OWSMessageManager {
 
         if wasReceivedByUD {
             self.outgoingReceiptManager.enqueueDeliveryReceipt(
-                for: envelope,
+                for: identifiedEnvelope.envelope,
                 messageUniqueId: message.uniqueId,
                 transaction: tx
             )
@@ -519,20 +510,15 @@ extension OWSMessageManager {
     }
 
     private func handleMessageEdit(
-        envelope: SSKProtoEnvelope,
+        envelope: IdentifiedIncomingEnvelope,
         thread: TSThread,
-        targetMessage: TSMessage,
+        editTarget: EditMessageTarget,
         editMessage: SSKProtoEditMessage,
         transaction tx: SDSAnyWriteTransaction
     ) -> TSMessage? {
 
         guard let dataMessage = editMessage.dataMessage else {
             owsFailDebug("Missing dataMessage in edit")
-            return nil
-        }
-
-        guard let sourceAddress = envelope.sourceAddress else {
-            Logger.warn("Missing edit source address.")
             return nil
         }
 
@@ -547,7 +533,7 @@ extension OWSMessageManager {
         let message = editManager.processIncomingEditMessage(
             dataMessage,
             thread: thread,
-            targetMessage: targetMessage,
+            editTarget: editTarget,
             serverTimestamp: envelope.serverTimestamp,
             tx: tx.asV2Write
         )
@@ -565,8 +551,8 @@ extension OWSMessageManager {
         DispatchQueue.main.async {
             self.typingIndicatorsImpl.didReceiveIncomingMessage(
                 inThread: thread,
-                address: sourceAddress,
-                deviceId: UInt(envelope.sourceDevice)
+                address: SignalServiceAddress(envelope.sourceServiceId),
+                deviceId: UInt(envelope.sourceDeviceId)
             )
         }
 

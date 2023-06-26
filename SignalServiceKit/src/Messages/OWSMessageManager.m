@@ -194,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
             // See: OWSMessageManager.preprocessEnvelope(envelope:plaintext:transaction:)
             break;
         case OWSMessageManagerMessageTypeEditMessage: {
-            OWSEditProcessingResult result = [self handleIncomingEnvelope:request.envelope
+            OWSEditProcessingResult result = [self handleIncomingEnvelope:request.identifiedEnvelope
                                                           withEditMessage:contentProto.editMessage
                                                           wasReceivedByUD:request.wasReceivedByUD
                                                               transaction:transaction];
@@ -992,7 +992,7 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
         } else if (syncMessage.sent.editMessage) {
-            OWSEditProcessingResult result = [self handleIncomingEnvelope:envelope
+            OWSEditProcessingResult result = [self handleIncomingEnvelope:identifiedEnvelope
                                                           editSyncMessage:syncMessage
                                                               transaction:transaction];
 

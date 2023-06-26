@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public class EditManager {
 
@@ -42,20 +43,14 @@ public class EditManager {
     public func processIncomingEditMessage(
         _ newDataMessage: SSKProtoDataMessage,
         thread: TSThread,
-        targetMessage: TSMessage?,
+        editTarget: EditMessageTarget,
         serverTimestamp: UInt64,
         tx: DBWriteTransaction
     ) -> TSMessage? {
 
-        guard let targetMessage = targetMessage as? MessageCopyable else {
-            // Unsupported type
-            Logger.warn("Edit cannot find the target message")
-            return nil
-        }
-
         guard checkForValidEdit(
             thread: thread,
-            targetMessage: targetMessage.message,
+            editTarget: editTarget,
             editMessage: newDataMessage,
             serverTimestamp: serverTimestamp,
             tx: tx)
@@ -64,14 +59,14 @@ public class EditManager {
         // Create a copy of the existing message and update with the edit
         let editedMessage = createEditedMessage(
             thread: thread,
-            targetMessage: targetMessage,
+            editTarget: editTarget,
             editMessage: newDataMessage,
             tx: tx
         )
         context.dataStore.updateEditedMessage(message: editedMessage, tx: tx)
 
         // Insert a new copy of the original message to preserve edit history.
-        let newMessage = targetMessage.createMessageCopy(
+        let newMessage = editTarget.createMessageCopy(
             dataStore: context.dataStore,
             thread: thread,
             isLatestRevision: false,
@@ -106,7 +101,7 @@ public class EditManager {
     /// message, while preserving the readonly behavior of the TSMessage
     private func createEditedMessage(
         thread: TSThread,
-        targetMessage: MessageCopyable,
+        editTarget: EditMessageTarget,
         editMessage: SSKProtoDataMessage,
         tx: DBWriteTransaction
     ) -> TSMessage {
@@ -129,7 +124,7 @@ public class EditManager {
             }
         }
 
-        let editedMessage = targetMessage.createMessageCopy(
+        let editedMessage = editTarget.createMessageCopy(
             dataStore: context.dataStore,
             thread: thread,
             isLatestRevision: true,
@@ -144,10 +139,7 @@ public class EditManager {
             // If the editMessage quote field is present, preserve the exisiting
             // quote. If the field is nil, remove any quote on the current message.
             let preserveExistingQuote = (editMessage.quote != nil)
-            if
-                targetMessage.message.quotedMessage != nil,
-                !preserveExistingQuote
-            {
+            if editTarget.message.quotedMessage != nil, !preserveExistingQuote {
                 builder.quotedMessage = nil
             }
 
@@ -155,7 +147,7 @@ public class EditManager {
             // This currently only affects the long text attachment but could
             // expand out to removing/adding other attachments in the future.
             builder.attachmentIds = self.updateAttachments(
-                targetMessage: targetMessage.message,
+                targetMessage: editTarget.message,
                 editMessage: editMessage,
                 tx: tx
             )
@@ -165,12 +157,12 @@ public class EditManager {
         // one from the original message
         // This prevents needing to expose things like uniqueID as
         // writeable on the base model objects.
-        if let rowId = targetMessage.message.grdbId {
+        if let rowId = editTarget.message.grdbId {
             editedMessage.replaceRowId(
                 rowId.int64Value,
-                uniqueId: targetMessage.message.uniqueId
+                uniqueId: editTarget.message.uniqueId
             )
-            editedMessage.replaceSortId(targetMessage.message.sortId)
+            editedMessage.replaceSortId(editTarget.message.sortId)
         } else {
             owsFailDebug("Missing edit target rowID")
         }
@@ -180,17 +172,18 @@ public class EditManager {
 
     private func checkForValidEdit(
         thread: TSThread,
-        targetMessage: TSMessage,
+        editTarget: EditMessageTarget,
         editMessage: SSKProtoDataMessage,
         serverTimestamp: UInt64,
         tx: DBReadTransaction
     ) -> Bool {
+        let targetMessage = editTarget.message
 
         // check edit window (by comparing target message server timestamp
         // and incoming edit server timestamp)
         // drop silent and warn if outside of valid range
-        switch targetMessage {
-        case let incomingMessage as TSIncomingMessage:
+        switch editTarget {
+        case .incomingMessage(let incomingMessage):
             guard let originalServerTimestamp = incomingMessage.serverTimestamp?.uint64Value else {
                 Logger.warn("Edit message target doesn't have a server timestamp")
                 return false
@@ -201,12 +194,9 @@ public class EditManager {
                 Logger.warn("Message edit outside of allowed timeframe")
                 return false
             }
-        case is TSOutgoingMessage:
+        case .outgoingMessage:
             // Don't validate the edit window for outgoing/sync messages
             break
-        default:
-            owsFailDebug("Can't edit message of type \(type(of: targetMessage))")
-            return false
         }
 
         let numberOfEdits = context.dataStore.numberOfEdits(for: targetMessage, tx: tx)
@@ -290,101 +280,69 @@ public class EditManager {
     }
 }
 
-private protocol MessageCopyable {
-    var message: TSMessage { get }
-
+private extension EditMessageTarget {
     func createMessageCopy(
         dataStore: EditManager.Shims.DataStore,
         thread: TSThread,
         isLatestRevision: Bool,
         tx: DBWriteTransaction,
         updateBlock: ((TSMessageBuilder) -> Void)?
-    ) -> TSMessage
-}
-
-extension TSIncomingMessage: MessageCopyable {
-    fileprivate var message: TSMessage { return self }
-
-    fileprivate func createMessageCopy(
-        dataStore: EditManager.Shims.DataStore,
-        thread: TSThread,
-        isLatestRevision: Bool,
-        tx: DBWriteTransaction,
-        updateBlock: ((TSMessageBuilder) -> Void)?
     ) -> TSMessage {
+        switch self {
+        case .incomingMessage(let message):
+            let builder = TSIncomingMessageBuilder(
+                thread: thread,
+                timestamp: message.timestamp,
+                authorAddress: message.authorAddress,
+                sourceDeviceId: message.sourceDeviceId,
+                messageBody: message.body,
+                bodyRanges: message.bodyRanges,
+                attachmentIds: message.attachmentIds,
+                editState: isLatestRevision ? .latestRevision : .pastRevision,
+                expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
+                expireStartedAt: message.expireStartedAt,
+                quotedMessage: message.quotedMessage,
+                contactShare: message.contactShare,
+                linkPreview: message.linkPreview,
+                messageSticker: message.messageSticker,
+                read: !isLatestRevision,
+                serverTimestamp: message.serverTimestamp,
+                serverDeliveryTimestamp: message.serverDeliveryTimestamp,
+                serverGuid: message.serverGuid,
+                wasReceivedByUD: message.wasReceivedByUD,
+                isViewOnceMessage: message.isViewOnceMessage,
+                storyAuthorAddress: message.storyAuthorAddress,
+                storyTimestamp: message.storyTimestamp?.uint64Value,
+                storyReactionEmoji: message.storyReactionEmoji,
+                giftBadge: message.giftBadge
+            )
+            updateBlock?(builder)
+            return builder.build()
 
-        let builder = TSIncomingMessageBuilder(
-            thread: thread,
-            timestamp: self.timestamp,
-            authorAddress: self.authorAddress,
-            sourceDeviceId: self.sourceDeviceId,
-            messageBody: self.body,
-            bodyRanges: self.bodyRanges,
-            attachmentIds: self.attachmentIds,
-            editState: isLatestRevision ? .latestRevision : .pastRevision,
-            expiresInSeconds: isLatestRevision ? self.expiresInSeconds : 0,
-            expireStartedAt: self.expireStartedAt,
-            quotedMessage: self.quotedMessage,
-            contactShare: self.contactShare,
-            linkPreview: self.linkPreview,
-            messageSticker: self.messageSticker,
-            read: !isLatestRevision,
-            serverTimestamp: self.serverTimestamp,
-            serverDeliveryTimestamp: self.serverDeliveryTimestamp,
-            serverGuid: self.serverGuid,
-            wasReceivedByUD: self.wasReceivedByUD,
-            isViewOnceMessage: self.isViewOnceMessage,
-            storyAuthorAddress: self.storyAuthorAddress,
-            storyTimestamp: self.storyTimestamp?.uint64Value,
-            storyReactionEmoji: self.storyReactionEmoji,
-            giftBadge: self.giftBadge
-        )
-
-        updateBlock?(builder)
-
-        let message = builder.build()
-
-        return message
-    }
-}
-
-extension TSOutgoingMessage: MessageCopyable {
-    fileprivate var message: TSMessage { return self }
-
-    fileprivate func createMessageCopy(
-        dataStore: EditManager.Shims.DataStore,
-        thread: TSThread,
-        isLatestRevision: Bool,
-        tx: DBWriteTransaction,
-        updateBlock: ((TSMessageBuilder) -> Void)?
-    ) -> TSMessage {
-
-        let builder = TSOutgoingMessageBuilder(
-            thread: thread,
-            timestamp: self.timestamp,
-            messageBody: self.body,
-            bodyRanges: self.bodyRanges,
-            attachmentIds: self.attachmentIds,
-            editState: isLatestRevision ? .latestRevision : .pastRevision,
-            expiresInSeconds: isLatestRevision ? self.expiresInSeconds : 0,
-            quotedMessage: self.quotedMessage,
-            contactShare: self.contactShare,
-            linkPreview: self.linkPreview,
-            messageSticker: self.messageSticker,
-            isViewOnceMessage: self.isViewOnceMessage,
-            storyAuthorAddress: self.storyAuthorAddress,
-            storyTimestamp: self.storyTimestamp?.uint64Value,
-            storyReactionEmoji: self.storyReactionEmoji,
-            giftBadge: self.giftBadge
-        )
-
-        updateBlock?(builder)
-
-        let message = dataStore.createOutgoingMessage(with: builder, tx: tx)
-
-        // Need to copy over the recipient address from the old message
-        dataStore.copyRecipients(from: self, to: message, tx: tx)
-
-        return message
+        case .outgoingMessage(let message):
+            let builder = TSOutgoingMessageBuilder(
+                thread: thread,
+                timestamp: message.timestamp,
+                messageBody: message.body,
+                bodyRanges: message.bodyRanges,
+                attachmentIds: message.attachmentIds,
+                editState: isLatestRevision ? .latestRevision : .pastRevision,
+                expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
+                quotedMessage: message.quotedMessage,
+                contactShare: message.contactShare,
+                linkPreview: message.linkPreview,
+                messageSticker: message.messageSticker,
+                isViewOnceMessage: message.isViewOnceMessage,
+                storyAuthorAddress: message.storyAuthorAddress,
+                storyTimestamp: message.storyTimestamp?.uint64Value,
+                storyReactionEmoji: message.storyReactionEmoji,
+                giftBadge: message.giftBadge
+            )
+            updateBlock?(builder)
+            let messageCopy = dataStore.createOutgoingMessage(with: builder, tx: tx)
+            // Need to copy over the recipient address from the old message
+            dataStore.copyRecipients(from: message, to: messageCopy, tx: tx)
+            return messageCopy
+        }
     }
 }

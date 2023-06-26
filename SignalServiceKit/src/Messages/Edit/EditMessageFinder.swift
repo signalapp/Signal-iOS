@@ -6,46 +6,49 @@
 import Foundation
 import GRDB
 
+public enum EditMessageTarget {
+    case outgoingMessage(TSOutgoingMessage)
+    case incomingMessage(TSIncomingMessage)
+
+    var message: TSMessage {
+        switch self {
+        case .outgoingMessage(let outgoingMessage):
+            return outgoingMessage
+        case .incomingMessage(let incomingMessage):
+            return incomingMessage
+        }
+    }
+}
+
 public class EditMessageFinder {
     public static func editTarget(
         timestamp: UInt64,
-        author: SignalServiceAddress,
+        authorAci: ServiceId?,
         transaction: SDSAnyReadTransaction
-    ) -> TSMessage? {
-
-        let arguments: StatementArguments
-        let authorClause: String
-
-        if author.isLocalAddress {
-            authorClause = "AND \(interactionColumn: .authorUUID) IS NULL"
-            arguments = [timestamp]
-        } else if let authorUuid = author.uuid?.uuidString {
-            authorClause = "AND \(interactionColumn: .authorUUID) = ?"
-            arguments = [timestamp, authorUuid]
-        } else {
-            return nil
-        }
-
+    ) -> EditMessageTarget? {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .timestamp) = ?
-            \(authorClause)
+            AND \(interactionColumn: .authorUUID) IS ?
             LIMIT 1
         """
-
         let interaction = TSInteraction.grdbFetchOne(
             sql: sql,
-            arguments: arguments,
+            arguments: [timestamp, authorAci?.uuidValue.uuidString],
             transaction: transaction.unwrapGrdbRead
         )
-
-        guard let message = interaction as? TSMessage else {
+        switch (interaction, authorAci) {
+        case (let outgoingMessage as TSOutgoingMessage, nil):
+            return .outgoingMessage(outgoingMessage)
+        case (let incomingMessage as TSIncomingMessage, .some):
+            return .incomingMessage(incomingMessage)
+        case (.some, _):
             Logger.warn("Unexpected message type found for edit")
+            fallthrough
+        default:
             return nil
         }
-
-        return message
     }
 
     public class func findMessage(
