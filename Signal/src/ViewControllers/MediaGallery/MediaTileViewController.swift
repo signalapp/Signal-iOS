@@ -1408,18 +1408,39 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
             return
         }
 
-        let format = OWSLocalizedString("MEDIA_GALLERY_DELETE_MESSAGES_%d", tableName: "PluralAware",
-                                       comment: "Confirmation button text to delete selected media message(s) from the gallery")
-        let confirmationTitle = String.localizedStringWithFormat(format, indexPaths.count)
+        let actionSheetTitle = String.localizedStringWithFormat(
+            OWSLocalizedString(
+                "MEDIA_GALLERY_DELETE_MEDIA_TITLE",
+                tableName: "PluralAware",
+                comment: "Title for confirmation prompt when deleting N items in All Media screen."
+            ),
+            indexPaths.count
+        )
+        let actionSheetMessage = OWSLocalizedString(
+            "MEDIA_GALLERY_DELETE_MEDIA_BODY",
+            comment: "Explanatory text displayed when deleting N items in All Media screen."
+        )
+        let toastText = String.localizedStringWithFormat(
+            OWSLocalizedString(
+                "MEDIA_GALLERY_DELETE_MEDIA_TOAST",
+                tableName: "PluralAware",
+                comment: "Toast displayed after successful deletion of N items in All Media screen."),
+            indexPaths.count
+        )
 
-        let deleteAction = ActionSheetAction(title: confirmationTitle, style: .destructive) { _ in
-            let galleryIndexPaths = indexPaths.map { self.mediaGalleryIndexPath($0) }
-            self.mediaGallery.delete(items: items, atIndexPaths: galleryIndexPaths, initiatedBy: self)
-            self.accessoriesHelper.endSelectMode()
-        }
-
-        let actionSheet = ActionSheetController(title: nil, message: nil)
-        actionSheet.addAction(deleteAction)
+        let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.deleteButton,
+            style: .destructive,
+            handler: { [self] _ in
+                let galleryIndexPaths = indexPaths.map { self.mediaGalleryIndexPath($0) }
+                self.mediaGallery.delete(items: items, atIndexPaths: galleryIndexPaths, initiatedBy: self)
+                self.accessoriesHelper.endSelectMode()
+                DispatchQueue.main.async {
+                    self.presentToast(text: toastText, extraVInset: self.collectionView.contentInset.bottom)
+                }
+            }
+        ))
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         presentActionSheet(actionSheet)
