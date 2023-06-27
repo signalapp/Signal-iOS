@@ -32,7 +32,7 @@ public protocol SignalServiceClient {
     func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
     func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI>
     func requestStorageAuth(chatServiceAuth: ChatServiceAuth) -> Promise<(username: String, password: String)>
-    func getRemoteConfig(auth: ChatServiceAuth) -> Promise<[String: RemoteConfigItem]>
+    func getRemoteConfig(auth: ChatServiceAuth) -> Promise<RemoteConfigResponse>
 
     // MARK: - Secondary Devices
 
@@ -44,6 +44,11 @@ public protocol SignalServiceClient {
 public enum RemoteConfigItem {
     case isEnabled(isEnabled: Bool)
     case value(value: AnyObject)
+}
+
+public struct RemoteConfigResponse {
+    public let items: [String: RemoteConfigItem]
+    public let serverEpochTimeSeconds: UInt64?
 }
 
 // MARK: -
@@ -234,7 +239,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     }
 
     // yields a map of ["feature_name": isEnabled]
-    public func getRemoteConfig(auth: ChatServiceAuth) -> Promise<[String: RemoteConfigItem]> {
+    public func getRemoteConfig(auth: ChatServiceAuth) -> Promise<RemoteConfigResponse> {
         let request = OWSRequestFactory.getRemoteConfigRequest()
         request.setAuth(auth)
 
@@ -249,8 +254,9 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
             }
 
             let config: [[String: Any]] = try parser.required(key: "config")
+            let serverEpochTimeSeconds: UInt64? = try parser.optional(key: "serverEpochTime")
 
-            return try config.reduce([:]) { accum, item in
+            let items: [String: RemoteConfigItem] = try config.reduce([:]) { accum, item in
                 var accum = accum
                 guard let itemParser = ParamParser(responseObject: item) else {
                     throw OWSAssertionError("Missing or invalid remote config item.")
@@ -267,6 +273,8 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
 
                 return accum
             }
+
+            return .init(items: items, serverEpochTimeSeconds: serverEpochTimeSeconds)
         }
     }
 

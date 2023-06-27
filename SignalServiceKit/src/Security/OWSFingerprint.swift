@@ -8,9 +8,13 @@ import CommonCrypto
 
 public class OWSFingerprint {
 
-    public let myStableAddress: SignalServiceAddress
+    public enum Source {
+        case aci(myAci: ServiceId, theirAci: ServiceId)
+        case e164(myE164: E164, theirE164: E164)
+    }
+
+    public let source: Source
     public let myIdentityKey: Data
-    public let theirStableAddress: SignalServiceAddress
     public let theirIdentityKey: Data
 
     private let hashIterations: UInt32
@@ -30,29 +34,28 @@ public class OWSFingerprint {
     }
 
     public init(
-        myStableAddress: SignalServiceAddress,
+        source: Source,
         myIdentityKey: Data,
-        theirStableAddress: SignalServiceAddress,
         theirIdentityKey: Data,
         theirName: String,
         hashIterations: UInt32 = Constants.defaultHashIterations
     ) {
-        self.myStableAddress = myStableAddress
+        self.source = source
         let myIdentityKey = myIdentityKey.prependKeyType()
         self.myIdentityKey = myIdentityKey
-        self.theirStableAddress = theirStableAddress
         let theirIdentityKey = theirIdentityKey.prependKeyType()
         self.theirIdentityKey = theirIdentityKey
         self.hashIterations = hashIterations
         self.theirName = theirName
 
+        let (myStableSourceData, theirStableSourceData) = Self.stableData(for: source)
         self.myFingerprintData = Self.dataForStableAddress(
-            Self.stableData(for: myStableAddress),
+            myStableSourceData,
             publicKey: myIdentityKey,
             hashIterations: hashIterations
         )
         self.theirFingerprintData = Self.dataForStableAddress(
-            Self.stableData(for: theirStableAddress),
+            theirStableSourceData,
             publicKey: theirIdentityKey,
             hashIterations: hashIterations
         )
@@ -203,21 +206,18 @@ public class OWSFingerprint {
 
     // MARK: - Private helpers
 
-    private static func stableData(for address: SignalServiceAddress) -> Data {
-        // For now, leave safety number based on phone number unless the feature flag is enabled.
-        // This prevents mismatch from occurring against old apps until we formally roll out the feature.
-        if let uuid = address.uuid, RemoteConfig.uuidSafetyNumbers {
-            // TODO UUID: Right now, uuid is nullable, but safety numbers require us to always have
-            // the UUID for a user. This will need to be updated once we change this field to nonnull.
-            return uuid.data
-        } else if
-            let phoneNumber = address.phoneNumber,
-            phoneNumber.isEmpty.negated,
-            let data = phoneNumber.data(using: .utf8)
-        {
-            return data
-        } else {
-            owsFail("Invalid address")
+    private static func stableData(for source: Source) -> (my: Data, their: Data) {
+        switch source {
+        case let .aci(myAci, theirAci):
+            return (my: myAci.uuidValue.data, their: theirAci.uuidValue.data)
+        case let .e164(myE164, theirE164):
+            guard
+                let myData = myE164.stringValue.data(using: .utf8),
+                let theirData = theirE164.stringValue.data(using: .utf8)
+            else {
+                owsFail("Unable to serialize e164")
+            }
+            return (my: myData, their: theirData)
         }
     }
 
@@ -288,16 +288,18 @@ public class OWSFingerprint {
     }
 
     private var scannableFingerprintVersion: UInt32 {
-        if !RemoteConfig.uuidSafetyNumbers {
-            return Constants.preUUIDScannableFormatVersion
+        switch source {
+        case .e164:
+            return Constants.e164ScannableFormatVersion
+        case .aci:
+            return Constants.aciScannableFormatVersion
         }
-        return Constants.scannableFormatVersion
     }
 
     public enum Constants {
         static let hashingVersion: UInt32 = 0
-        static let preUUIDScannableFormatVersion: UInt32 = 1
-        static let scannableFormatVersion: UInt32 = 2
+        static let e164ScannableFormatVersion: UInt32 = 1
+        static let aciScannableFormatVersion: UInt32 = 2
         public static let defaultHashIterations: UInt32 = 5200
     }
 }

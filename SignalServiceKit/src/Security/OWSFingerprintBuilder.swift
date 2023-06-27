@@ -35,8 +35,13 @@ public class OWSFingerprintBuilder {
             return nil
         }
         let theirName = self.contactsManager.displayName(for: theirSignalAddress)
-        guard let mySignalAddress = accountManager.localAddress else {
-            owsFailDebug("Missing local address")
+        guard let myE164 = accountManager.localAddress?.e164 else {
+            owsFailDebug("Missing local e164")
+            return nil
+        }
+
+        guard let theirE164 = theirSignalAddress.e164 else {
+            owsFailDebug("Missing their e164")
             return nil
         }
 
@@ -46,9 +51,8 @@ public class OWSFingerprintBuilder {
             return nil
         }
         return OWSFingerprint(
-            myStableAddress: mySignalAddress,
+            source: .e164(myE164: myE164, theirE164: theirE164),
             myIdentityKey: myIdentityKey,
-            theirStableAddress: theirSignalAddress,
             theirIdentityKey: theirIdentityKey,
             theirName: theirName
         )

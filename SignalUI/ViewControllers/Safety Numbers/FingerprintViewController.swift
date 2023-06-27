@@ -27,15 +27,7 @@ public class FingerprintViewController: OWSViewController {
     public class func present(from viewController: UIViewController, address: SignalServiceAddress) {
         owsAssertBeta(address.isValid)
 
-        let canRenderSafetyNumber: Bool
-        if RemoteConfig.uuidSafetyNumbers {
-            canRenderSafetyNumber = address.uuid != nil
-        } else {
-            canRenderSafetyNumber = address.phoneNumber != nil
-        }
-
         guard let recipientIdentity = OWSIdentityManager.shared.recipientIdentity(for: address),
-              canRenderSafetyNumber,
               let fingerprintViewController = FingerprintViewController(recipientAddress: address, recipientIdentity: recipientIdentity)
         else {
             OWSActionSheets.showActionSheet(

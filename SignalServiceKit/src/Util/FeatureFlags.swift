@@ -120,6 +120,8 @@ public class FeatureFlags: BaseFlags {
     }
 
     public static let textFormattingSend = build.includes(.internal)
+
+    public static let aciSafetyNumbers = build.includes(.dev)
 }
 
 // MARK: -

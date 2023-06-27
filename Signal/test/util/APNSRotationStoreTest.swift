@@ -15,7 +15,13 @@ final class APNSRotationStoreTest: SignalBaseTest {
         super.setUp()
 
         let remoteConfigManager = self.remoteConfigManager as! StubbableRemoteConfigManager
-        remoteConfigManager.cachedConfig = RemoteConfig(isEnabledFlags: ["ios.enableAutoAPNSRotation": true], valueFlags: [:], account: .implicit())
+        remoteConfigManager.cachedConfig = RemoteConfig(
+            clockSkew: 0,
+            isEnabledFlags: ["ios.enableAutoAPNSRotation": true],
+            valueFlags: [:],
+            timeGatedFlags: [:],
+            account: .implicit()
+        )
     }
 
     override func tearDown() {
