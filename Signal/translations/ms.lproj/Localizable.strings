@@ -5045,7 +5045,7 @@
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nama Pengguna";
 
 /* Title for a menu action allowing users to view their username link QR code. */
-"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "View QR Code";
+"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "Lihat Kod QR";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Nama terakhir anda terlalu panjang.";
@@ -7079,19 +7079,19 @@
 "TEXT_MENU_ITALIC" = "Italic";
 
 /* Option in selected text edit menu to look up word definitions */
-"TEXT_MENU_LOOK_UP" = "Look Up";
+"TEXT_MENU_LOOK_UP" = "Cari";
 
 /* Option in selected text edit menu to make text monospace */
 "TEXT_MENU_MONOSPACE" = "Monospace";
 
 /* Option in selected text edit menu to replace text with suggestions */
-"TEXT_MENU_REPLACE" = "Replace";
+"TEXT_MENU_REPLACE" = "Gantikan";
 
 /* Option in selected text edit menu to share selected text */
-"TEXT_MENU_SHARE" = "Share";
+"TEXT_MENU_SHARE" = "Kongsi";
 
 /* Option in selected text edit menu to make text spoiler */
-"TEXT_MENU_SPOILER" = "Spoiler";
+"TEXT_MENU_SPOILER" = "Bocoran";
 
 /* Option in selected text edit menu to make text strikethrough */
 "TEXT_MENU_STRIKETHROUGH" = "Strikethrough";
@@ -7277,19 +7277,19 @@
 "USERNAME_LINK_DESCRIPTION" = "Setiap nama pengguna mempunyai pautan unik yang anda boleh kongsikan dengan rakan untuk memulakan sembang dengan anda";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
-"USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "color";
+"USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Warna";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Only share your QR code and link with people you trust. When shared others will be able to see your username and start a chat with you.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Hanya kongsi kod QR dan pautan anda dengan orang yang dipercayai. Apabila dikongsi, orang lain akan dapat melihat nama pengguna anda dan memulakan sembang dengan anda.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Reset";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Tetap semula";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
-"USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "share";
+"USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Kongsi";
 
 /* A title for a view that allows you to view and interact with a QR code for your username link. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Code";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Kod";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Ralat berlaku semasa melihat nama pengguna. Sila cuba lagi kemudian.";

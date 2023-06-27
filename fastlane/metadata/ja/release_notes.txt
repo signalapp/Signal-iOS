@@ -1,1 +1,1 @@
-• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?
+• @mentionする際の書式設定や新しい連絡先の検索に関するいくつかの細かいバグを修正しました。本格的な夏の前に片づけることができてすっきり。

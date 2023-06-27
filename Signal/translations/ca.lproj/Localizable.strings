@@ -5045,7 +5045,7 @@
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nom d'usuari";
 
 /* Title for a menu action allowing users to view their username link QR code. */
-"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "View QR Code";
+"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "Veure codi QR";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "El cognom és massa llarg.";
@@ -7070,31 +7070,31 @@
 "TAP_REPLACE_EMOJI" = "Feu un toc per substituir l'emoticona";
 
 /* Option in selected text edit menu to make text bold */
-"TEXT_MENU_BOLD" = "Bold";
+"TEXT_MENU_BOLD" = "Negreta";
 
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "Format";
 
 /* Option in selected text edit menu to make text italic */
-"TEXT_MENU_ITALIC" = "Italic";
+"TEXT_MENU_ITALIC" = "Cursiva";
 
 /* Option in selected text edit menu to look up word definitions */
-"TEXT_MENU_LOOK_UP" = "Look Up";
+"TEXT_MENU_LOOK_UP" = "Buscar";
 
 /* Option in selected text edit menu to make text monospace */
-"TEXT_MENU_MONOSPACE" = "Monospace";
+"TEXT_MENU_MONOSPACE" = "Monoespai";
 
 /* Option in selected text edit menu to replace text with suggestions */
-"TEXT_MENU_REPLACE" = "Replace";
+"TEXT_MENU_REPLACE" = "Substituir";
 
 /* Option in selected text edit menu to share selected text */
-"TEXT_MENU_SHARE" = "Share";
+"TEXT_MENU_SHARE" = "Comparteix-lo";
 
 /* Option in selected text edit menu to make text spoiler */
 "TEXT_MENU_SPOILER" = "Spoiler";
 
 /* Option in selected text edit menu to make text strikethrough */
-"TEXT_MENU_STRIKETHROUGH" = "Strikethrough";
+"TEXT_MENU_STRIKETHROUGH" = "Ratllat";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Aquest missatge s'ha suprimit.";
@@ -7277,19 +7277,19 @@
 "USERNAME_LINK_DESCRIPTION" = "Cada àlies té un enllaç únic que pots compartir amb els teus amics perquè iniciïn un xat amb tu";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
-"USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "color";
+"USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Color";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Only share your QR code and link with people you trust. When shared others will be able to see your username and start a chat with you.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Comparteix el teu codi QR i enllaç només amb persones de confiança. Quan ho comparteixis, els altres podran veure el teu nom d'usuari i iniciar un xat amb tu.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Reset";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Restableix";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
-"USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "share";
+"USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Comparteix-lo";
 
 /* A title for a view that allows you to view and interact with a QR code for your username link. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Code";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Codi";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Hi ha hagut un error en cercar el nom d'usuari. Torneu-ho a provar més tard.";

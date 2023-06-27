@@ -1,1 +1,1 @@
-• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?
+• Διορθώσαμε μερικά δευτερεύοντα σφάλματα που σχετίζονται με τη μορφοποίηση στις @Αναφορές και την αναζήτηση νέων επαφών και τώρα όλα είναι έτοιμα για το καλοκαιράκι!

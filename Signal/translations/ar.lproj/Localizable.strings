@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ليس الآن";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "حول Signal";
+"ABOUT_SECTION_TITLE" = "حول سيجنال";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "قبول رقم الأمان الجديد";
@@ -32,7 +32,7 @@
 "ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "تصدير التقرير";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "لا تُشارك بيانات حساب Signal الخاص بك إلا مع الأشخاص أو التطبيقات التي تثق بها.";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "لا تُشارك بيانات حساب سيجنال الخاص بك إلا مع الأشخاص أو التطبيقات التي تثق بها.";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
 "ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "تحقّق من اتصالك بالشبكة ثم حاول مُجددًا.";
@@ -56,19 +56,19 @@
 "ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "تصدير التقرير";
 
 /* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
-"ACCOUNT_DATA_REPORT_FOOTER" = "يتم إنشاء تقريرك فقط في وقت التصدير ولا يتم تخزينُه بواسطة Signal على جهازك.";
+"ACCOUNT_DATA_REPORT_FOOTER" = "يتم إنشاء تقريرك فقط في وقت التصدير ولا يتم تخزينُه بواسطة سيجنال على جهازك.";
 
 /* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
-"ACCOUNT_DATA_REPORT_SUBTITLE" = "تنزيل وتصدير تقرير عن بيانات حساب Signal الخاص بك. لا يتضمّن هذا التقرير أي رسائل أو وسائط.";
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "تنزيل وتصدير تقرير عن بيانات حساب سيجنال الخاص بك. لا يتضمّن هذا التقرير أي رسائل أو وسائط.";
 
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
 "ACCOUNT_DATA_REPORT_TITLE" = "بيانات حسابك";
 
 /* Label for 'voice call' button in contact view. */
-"ACTION_AUDIO_CALL" = "مكالمة Signal";
+"ACTION_AUDIO_CALL" = "مكالمة سيجنال";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "ادعُ إلى Signal";
+"ACTION_INVITE" = "ادعُ إلى سيجنال";
 
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "إرسال رسالة";
@@ -191,40 +191,40 @@
 "APN_Message" = "قد تكون لديك رسائل جديدة";
 
 /* Default message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "يتعذَّر بدء Signal. لتمكيننا من مساعَفتك حول المشكل، الرجاء إرسال سجلات التصحيح إلى بريد الدعم : support@signal.org";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "يتعذَّر بدء سيجنال. لتمكيننا من مساعَفتك حول المشكل، الرجاء إرسال سجلات التصحيح إلى بريد الدعم : support@signal.org";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "محاولة فتح Signal";
+"APP_LAUNCH_FAILURE_CONTINUE" = "محاولة فتح سيجنال";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "يُرجى إرسال سِجلات التصحيح إلى support@signal.org لكي نتمكّن من مساعفتك مع هذه المشكلة.";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "لقد تعذّر فتح Signal";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "لقد تعذّر فتح سيجنال";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "يتعذّر تحميل قاعدة البيانات";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "يرجى التحديث لآخر إصدار من Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "يرجى التحديث لآخر إصدار من سيجنال.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "إصدار قاعدة البيانات مجهول.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "لقد وقع خطأ لـ Signal أثناء محاولة فتحه. يُرجى إرسال سِجل التصحيح إلى support@signal.org لتمكيننا من القيام بالمساعفة اللازمة حول هذا المشكل.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "لقد وقع خطأ لسيجنال أثناء محاولة فتحه. يُرجى إرسال سِجل التصحيح إلى support@signal.org لتمكيننا من القيام بالمساعفة اللازمة حول هذا المشكل.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "لقد تعذر فتح Signal";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "لقد تعذر فتح سيجنال";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "تعذّر فتح Signal لأن مساحة تخزين جهازك مُنخفضة. لاستخدام Signal، يُرجى إفراغ المساحة عن طريق إدارة التخزين في الإعدادات.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "تعذّر فتح سيجنال لأن مساحة تخزين جهازك مُنخفضة. لاستخدام سيجنال، يُرجى إفراغ المساحة عن طريق إدارة التخزين في الإعدادات.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "مساحة التخزين مُنخفضة";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "تعذَّر استعادة البيانات المنقولة من جهازك القديم. يُرجى إرسال سِجل التصحيح إلى support@signal.org حتى نتمكّن من رصد المُشكلة. إذا قمت بإعادة تثبيت Signal، فقد تفقد محفوظات رسائلك.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "تعذَّر استعادة البيانات المنقولة من جهازك القديم. يُرجى إرسال سِجل التصحيح إلى support@signal.org حتى نتمكّن من رصد المُشكلة. إذا قمت بإعادة تثبيت سيجنال، فقد تفقد محفوظات رسائلك.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "تعذّر إتمام عملية النقل";
@@ -239,7 +239,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "الإصدار %1$@ غير متاح في متجر App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "هناك إصدار Signal جديد متوفر";
+"APP_UPDATE_NAG_ALERT_TITLE" = "هناك إصدار سيجنال جديد متوفر";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "تحديث التطبيق";
@@ -293,7 +293,7 @@
 "APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "يُرجى التحقّق من أن طريقة دفعك في Apple Pay مُحيّنة. إن لم تكن كذلك، قم بتحيينها وحاول مجددًا.";
 
 /* Name of application */
-"APPLICATION_NAME" = "Signal";
+"APPLICATION_NAME" = "سيجنال";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
 "APPLICATION_SHORTCUT_NEW_MESSAGE" = "رِسالة جديدة";
@@ -389,7 +389,7 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "الموقع";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "يحتاج Signal إلى إذن لإظهار الصور ومقاطع الفيديو الخاصة بك.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "يحتاج سيجنال إلى إذن لإظهار الصور ومقاطع الفيديو الخاصة بك.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "بمُجرد التقاطك صورا، سيصبح بإمكانك إرسال الأخيرة من هنا.";
@@ -476,10 +476,10 @@
 "BADGE_DETAILS_DONATE_TO_SIGNAL" = "تبرّع الآن";
 
 /* When viewing someone else's donor badge, you'll see a sheet. This is the title on that sheet. Embeds {badge owner's short name} */
-"BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "يدعم %1$@ Signal";
+"BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "يدعم %1$@ سيجنال";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "لقد نفذت صلاحية شارة الدعم الخاصة بك، لذلك لم تعُد ظاهرة في حسابك.\n\nيُمكنك الاستمرار في استخدام Signal لكن لتدعم التقنية التي بُنيت من أجلك، يُرجى التفكير في أن تصبح داعمًا شهريًا.";
+"BADGE_EXPIRED_BOOST_BODY" = "لقد نفذت صلاحية شارة الدعم الخاصة بك، لذلك لم تعُد ظاهرة في حسابك.\n\nيُمكنك الاستمرار في استخدام سيجنال لكن لتدعم التقنية التي بُنيت من أجلك، يُرجى التفكير في أن تصبح داعمًا شهريًا.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "لقد نفذت صلاحية شارة الدعم الخاصة بك، لذلك لم تعُد ظاهرة في حسابك.يُمكنك إعادة تفعيل شارة الدعم الخاصة بك لمدة 30 يوماً أخرى بتبرّع لمرة واحدة.";
@@ -497,13 +497,13 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "تم إلغاء التبرعات الشهرية";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "تم إلغاء التبرّع الشهري المُتكرر. %1$@ لم تعد شارتك ظاهرة على حسابك.\n\nللاستمرار في دعم Signal وإعادة تفعيل شارتك، يُرجى تحديث تفاصيل الدفع الخاصة بك والتبرّع مرة أخرى.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "تم إلغاء التبرّع الشهري المُتكرر. %1$@ لم تعد شارتك ظاهرة على حسابك.\n\nللاستمرار في دعم سيجنال وإعادة تفعيل شارتك، يُرجى تحديث تفاصيل الدفع الخاصة بك والتبرّع مرة أخرى.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "لقد أُلغيَ تبرّعك الشهري المُتكرر تلقائيًا بسبب طول غياب نشاطك لفترة طويلة. لم تعُد شارتك %1$@ ظاهرة في حسابك.\n\nيُمكنك الاستمرار في استخدام Signal، ولكن يُرجى التجديد الآن لدعم التطبيق وإعادة تفعيل شارتك، تبرّع الآن.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "لقد أُلغيَ تبرّعك الشهري المُتكرر تلقائيًا بسبب طول غياب نشاطك لفترة طويلة. لم تعُد شارتك %1$@ ظاهرة في حسابك.\n\nيُمكنك الاستمرار في استخدام سيجنال، ولكن يُرجى التجديد الآن لدعم التطبيق وإعادة تفعيل شارتك، تبرّع الآن.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "لقد حصلت على شارة مُتبرع من Signal! اعرضها في حسابك الشخصي لإظهار دعمك.";
+"BADGE_THANKS_BODY" = "لقد حصلت على شارة مُتبرع من سيجنال! اعرضها في حسابك الشخصي لإظهار دعمك.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "عرض في الملف الشخصي";
@@ -674,7 +674,7 @@
 "CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞مكالمة صوتية فائتة يوم %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "يُمكِنُك تفعيل الوصول للميكروفون من خلال ‫تطبيق إعدادات iOS‬، للتمكن من إجراء مكالمات وإرسال رسائل صوتية في Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "يُمكِنُك تفعيل الوصول للميكروفون من خلال ‫تطبيق إعدادات iOS‬، للتمكن من إجراء مكالمات وإرسال رسائل صوتية في سيجنال.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "إذن استخدام الميكروفون ضروري";
@@ -704,7 +704,7 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "لم يتم الرد";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "‪Signal %1$@";
+"CALL_STATUS_FORMAT" = "‪سيجنال %1$@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "اتصل";
@@ -767,10 +767,10 @@
 "CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "الكاميرا غير مشغلة";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "مُستخدم Signal";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "مُستخدم سيجنال";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "مجموعة Signal";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "مجموعة سيجنال";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "اِلتَقِط صُّورَةً ثُمَّ أرسِلها";
@@ -875,7 +875,7 @@
 "CARD_DONATION_HEADER" = "مَبلَغ التَّبَرُّع: %1$@";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
-"CARD_DONATION_READ_MORE_SHEET_BODY" = "لا يقوم Signal بجمع أو تخزين معلوماتك الشخصية عند قيامك بتبرع.\n\nنستخدم Stripe كمعالج عمليات الدفع الخاصة بنا لتلقي تبرعاتك. لا يُمكننا الوصول إلى أو تخزين أو حفظ أي من المعلومات التي تُقدمها.\n\nلا يقوم تطبيق Signal ولا يمكنه ربط تبرعاتك بحسابك على Signal.شكراً لدعمك!";
+"CARD_DONATION_READ_MORE_SHEET_BODY" = "لا يقوم سيجنال بجمع أو تخزين معلوماتك الشخصية عند قيامك بتبرع.\n\nنستخدم Stripe كمعالج عمليات الدفع الخاصة بنا لتلقي تبرعاتك. لا يُمكننا الوصول إلى أو تخزين أو حفظ أي من المعلومات التي تُقدمها.\n\nلا يقوم تطبيق سيجنال ولا يمكنه ربط تبرعاتك بحسابك على سيجنال.\n\nشكراً لدعمك!";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the title of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_TITLE" = "معلوماتك تبقى خاصة";
@@ -884,7 +884,7 @@
 "CARD_DONATION_SUBHEADER_LEARN_MORE" = "لمعرفة المزيد.";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information. */
-"CARD_DONATION_SUBHEADER_TEXT" = "يُرجى إدخال معلومات بطاقتك. لا يقوم Signal بجمع أو تخزين معلوماتك الشخصية.";
+"CARD_DONATION_SUBHEADER_TEXT" = "يُرجى إدخال معلومات بطاقتك. لا يقوم سيجنال بجمع أو تخزين معلوماتك الشخصية.";
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "عليك باختيار الدولة";
@@ -950,7 +950,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "المُقارنة مع الحافظة";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "حَدِّد أو ابِحث عَن مُستخدِم Signal لِبدء دردشة مَعه.";
+"COMPOSE_BUTTON_HINT" = "حَدِّد أو ابِحث عَن مُستخدِم سيجنال لِبدء دردشة مَعه.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "تَحرِير";
@@ -968,7 +968,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "العثور باسم المستخدم";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "يمكنك تفعيل الوصول إلى جهات الاتصال من خلال تطبيق إعدادات iOS لترى من يستخدم Signal من جهات الاتصالك.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "يمكنك تفعيل الوصول إلى جهات الاتصال من خلال تطبيق إعدادات iOS لترى من يستخدم سيجنال من جهات الاتصالك.";
 
 /* Configure reactions title text */
 "CONFIGURE_REACTIONS" = "ضبط ردود الفعل";
@@ -1148,7 +1148,7 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "شيء ما لا يعمل";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "تعذَّر على Signal إكمال طَلب الدَّعم.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "تعذَّر على سيجنال إكمال طَلب الدَّعم.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "حاوِل مرة أُخرى";
@@ -1277,7 +1277,7 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "صوتيَّة";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "احصل على شارة لملفك الشخصي عن طريق دعم Signal. انقر على شارة لمعرفة المزيد.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "احصل على شارة لملفك الشخصي عن طريق دعم سيجنال. انقر على شارة لمعرفة المزيد.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "الشارات";
@@ -1469,7 +1469,7 @@
 "CREATE_USERNAME_MEGAPHONE_SET_UP_BUTTON_TITLE" = "إعداد";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "إعداد اِسمُ المُستخدِم الخاص بك على Signal";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "إعداد اِسمُ المُستخدِم الخاص بك على سيجنال";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "انتهت صلاحية بطاقتك. تأكد من صحة تفاصيل بطاقتك وأعد المحاولة مرة أخرى.";
@@ -1520,7 +1520,7 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "تشغيل";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "سَيساعدنا هذا في حل مشكلتك وقد يستغرق استكماله عدة دقائق. يُمكنك إغلاق تطبيق Signal أثناء تشغيل هذا الفحص، ولكن يُرجى العودة لرفع سِجلاتك.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "سَيساعدنا هذا في حل مشكلتك وقد يستغرق استكماله عدة دقائق. يُمكنك إغلاق تطبيق سيجنال أثناء تشغيل هذا الفحص، ولكن يُرجى العودة لرفع سِجلاتك.";
 
 /* Button to skip database integrity check step */
 "DATABASE_INTEGRITY_CHECK_SKIP" = "تخطي";
@@ -1544,10 +1544,10 @@
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "يُرجى إخلاء مساحة التخزين";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "تعذّر استعادة محفوظات رسائلك. يمكنك الاستمرار في استخدام تطبيق Signal بعد إعادة التثبيت. أرسل سِجل التصحيح حتى نتمكن من فهم الخطأ الذي حدث بشكل أفضل.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "تعذّر استعادة محفوظات رسائلك. يمكنك الاستمرار في استخدام تطبيق سيجنال بعد إعادة التثبيت. أرسل سِجل التصحيح حتى نتمكن من فهم الخطأ الذي حدث بشكل أفضل.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "إعادة تعيين Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "إعادة تعيين سيجنال";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "إعادة التعيين";
@@ -1556,7 +1556,7 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "سيتم مسح معلومات حسابك وحسابك الشخصي وجميع رسائلك. سيتم إغلاق التطبيق بعد اكتمال هذه العملية.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "إعادة تعيين Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "إعادة تعيين سيجنال";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "تسليم سجل التصحيح";
@@ -1631,7 +1631,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "حذف الحساب";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "سَيُؤدِّي هَذَا إلى حَذف حِسابك عَلَى Signal وإعداة تَعيِين التَّطبيق. سَيَتِمّ إغلاق التَّطبيق بَعدَ اِكتِمال هَذِهِ العَمَليَّة.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "سَيُؤدِّي هَذَا إلى حَذف حِسابك عَلَى سيجنال وإعداة تَعيِين التَّطبيق. سَيَتِمّ إغلاق التَّطبيق بَعدَ اِكتِمال هَذِهِ العَمَليَّة.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "هَل أنتَ مُتأكِد مِن أنَّكَ تُرِيدُ حَذف حِسابك؟";
@@ -1655,7 +1655,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "رقم الهاتف";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "أكِّد رَقم Signal الخاصّ بِك";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "أكِّد رَقم سيجنال الخاصّ بِك";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "حذف الحساب";
@@ -1670,13 +1670,13 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "حَذف جَميع الرَّسائل";
 
 /* Notification warning the user that they have been de-registered. */
-"DEREGISTRATION_NOTIFICATION" = "لقد تم تسجيل خروجك من تطبيق Signal على هذا الجهاز.";
+"DEREGISTRATION_NOTIFICATION" = "لقد تم تسجيل خروجك من تطبيق سيجنال على هذا الجهاز.";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "أعد تسجيل رقم الهاتف المعنيّ";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "هذا الجهاز لم يعد مسجلاً هذا على الأرجح بسبب قيامك بتسجيل رقم هاتفك على Signal في جهاز مختلف";
+"DEREGISTRATION_WARNING" = "هذا الجهاز لم يعد مسجلاً. هذا على الأرجح بسبب قيامك بتسجيل رقم هاتفك على سيجنال في جهاز مختلف.";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
 "DEREGISTRATION_WARNING_ACTION_TITLE" = "أعد تسجيل الجهاز";
@@ -1709,7 +1709,7 @@
 "DEVICE_TRANSFER_CHOICE_EXPLANATION" = "إذا كان جهازك الـiOS القديم متاحاً، يمكنك نقل حسابك والرسائل بأمان إلى هذا الجهاز.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "إذا كُنتَ تَستخدِم Signal مُسبقًا عَلى جِهاز iPad مُرتَبِط، يُمكِنُكَ نَقل حِسابك وَالرَّسائِل إلى هَذَا الجِهاز بِشَكل آمن.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "إذا كُنتَ تَستخدِم سيجنال مُسبقًا عَلى جِهاز iPad مُرتَبِط، يُمكِنُكَ نَقل حِسابك وَالرَّسائِل إلى هَذَا الجِهاز بِشَكل آمن.";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "الاِستِمر دُونَ نَقل حِسابَك وَرَسائِلك";
@@ -1739,7 +1739,7 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "النقل من جهاز iOS";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "الاستمرار سوف يُعطل Signal على الأجهزة الأُخرى المُسجلة بنفس رقم الهاتف.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "الاستمرار سوف يُعطل سيجنال على الأجهزة الأُخرى المُسجلة بنفس رقم الهاتف.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "تعذَّر التَّحقُّق مِن جِهازك الجَديد، مِن فَضلِك حاوِل مُجددًا";
@@ -1757,16 +1757,16 @@
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "لا توجد مساحة خالية بشكل كافي لإتمام النقل";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "حَدِّث إلى آخَر إصدار مِن Signal ثُمَّ حاوِل مَرة أُخرى";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "حَدِّث إلى آخَر إصدار مِن سيجنال ثُمَّ حاوِل مَرة أُخرى";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "إنقل حساب Signal الخاص بك إلى جهاز iOS جديد. تأكد من أن جهازك الجديد قريب و قيد التشغيل.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "إنقل حساب سيجنال الخاص بك إلى جهاز iOS جديد. تأكد من أن جهازك الجديد قريب و قيد التشغيل.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "نقل الحساب";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "افتَح Signal عَلى جِهازك القَديم، ضَعه بِمَكان قَريب، وتأكَّد مِن تَمكيِّن الـWi-Fi والبلوتوث في كِلا الجِهازين.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "افتَح سيجنال عَلى جِهازك القَديم، ضَعه بِمَكان قَريب، وتأكَّد مِن تَمكيِّن الـWi-Fi والبلوتوث في كِلا الجِهازين.";
 
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "مَوضِع رَمز الاِستجابة السَريعة في إطار جِهازك الآخر.";
@@ -1778,7 +1778,7 @@
 "DEVICE_TRANSFER_QRCODE_TITLE" = "في انتظار جهاز آخر…";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "أبقي الجهازين بالقرب من بعضهما البعض. لا تقم بإيقاف تشغيل أياً مِنهُما وحافظ على Signal مفتوحاً. عمليات النقل مُعمّاة من النهاية إلى النهاية.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "أبقي الجهازين بالقرب من بعضهما البعض. لا تقم بإيقاف تشغيل أياً مِنهُما وحافظ على سيجنال مفتوحاً. عمليات النقل مُعمّاة من النهاية إلى النهاية.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "يَجري اِستِقبال البَيانات";
@@ -1793,7 +1793,7 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "ضع جهازك الجديد أمام الكاميرا";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "أبقي الجهازين بالقرب من بعضهما البعض. لا تقم بإيقاف تشغيل أياً مِنهُما وحافظ على Signal مفتوحاً.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "أبقي الجهازين بالقرب من بعضهما البعض. لا تقم بإيقاف تشغيل أياً مِنهُما وحافظ على سيجنال مفتوحاً.";
 
 /* The title on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "نَقل البيانات";
@@ -1862,13 +1862,13 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "احصل على شارة %1$@ لشهر واحد";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ تبرّع لـ Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ تبرّع لسيجنال";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "تبرّع بـ %1$@ لـ Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "تبرّع بـ %1$@ لسيجنال";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "تبرّع بـ %1$@ لـ Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "تبرّع بـ %1$@ لسيجنال";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "سَيتم إخطار المُستلم بالتبرع في رسالة مباشرة منك إليه. أضف رسالتك الخاصة أدناه.";
@@ -1925,7 +1925,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "تمّ الاسترداد";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "ادعم Signal عن طريق تقديم تبرع إلى صديق أو فرد من العائلة يستخدم Signal. سَيتم منحهُم خيار إظهار دعمهم على حسابهم الشخصي.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "ادعم سيجنال عن طريق تقديم تبرع إلى صديق أو فرد من العائلة يستخدم سيجنال. سَيتم منحهُم خيار إظهار دعمهم على حسابهم الشخصي.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "تبرّع لصديق";
@@ -1955,7 +1955,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "فشلت عملية الدّفع";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "تمت مُعالجة عملية دفعك ولكن لم يتمكّن Signal من إرسال رسالة التبرع. يُرجى الاتصال بفريق الدعم.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "تمت مُعالجة عملية دفعك ولكن لم يتمكّن سيجنال من إرسال رسالة التبرع. يُرجى الاتصال بفريق الدعم.";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "تعذّر التبرع";
@@ -1967,10 +1967,10 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨قدّمت تبرعًا لـ %1$@";
 
 /* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "قدم %1$@ تبرّعًا لـ Signal نيابة عنك";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "قدم %1$@ تبرّعًا لسيجنال نيابة عنك";
 
 /* Users can donate on a friend's behalf. If the friend cannot receive these donations, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY" = "لا يُمكنك تقديم تبرّع لهذا المُستخدم حتى يقوم بترقية تطبيق Signal.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY" = "لا يُمكنك تقديم تبرّع لهذا المُستخدم حتى يقوم بترقية تطبيق سيجنال.";
 
 /* Users can donate on a friend's behalf. If the friend cannot receive these donations, an error dialog will be shown. This is the title of that error dialog. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "تعذّر تقديم التبرّع";
@@ -1997,7 +1997,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "تبرع نيابة عن %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "قدّمت تبرّعًا لـ Signal نيابة عن %1$@. سَيتم منحهم خيار إظهار دعمهم على حسابهم الشخصي.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "قدّمت تبرّعًا لسيجنال نيابة عن %1$@. سَيتم منحهم خيار إظهار دعمهم على حسابهم الشخصي.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "شكراً لدعمك!";
@@ -2006,19 +2006,19 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "إظهار";
 
 /* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "قدّم %1$@ تبرّعًا لـ Signal نيابة عنك! أظهر دعمك لـ Signal على حسابك الشخصي.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "قدّم %1$@ تبرّعًا لسيجنال نيابة عنك! أظهر دعمك لسيجنال على حسابك الشخصي.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "التراسل الخاص. بدون إعلانات، بدون مُتعقبات، بدون رقابة.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "يتم دعم Signal من خلال التبرعات، مما يعني أن خصوصيتك هي محور كل ما نقوم به. أُنشِئ تطبيق Signal من أجلك؛ لا لأجل بياناتك ولا لأجل الربح.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "يتم دعم سيجنال من خلال التبرعات، مما يعني أن خصوصيتك هي محور كل ما نقوم به. أُنشِئ تطبيق سيجنال من أجلك؛ لا لأجل بياناتك ولا لأجل الربح.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "إذا استطعت، يُرجى التبرع اليوم للحفاظ على تطبيق Signal مُمتعًا وموثوقًا به ومتاحًا للجميع.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "إذا استطعت، يُرجى التبرع اليوم للحفاظ على تطبيق سيجنال مُمتعًا وموثوقًا به ومتاحًا للجميع.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
-"DONATION_READ_MORE_SCREEN_TITLE" = "Signal تطبيق مُختلف.";
+"DONATION_READ_MORE_SCREEN_TITLE" = "سيجنال تطبيق مُختلف.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "المبلغ";
@@ -2033,7 +2033,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "مشاركة الوصل";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "نشكرك على دعم Signal. تمكننا مساهمتك من الالتزام بمهمة تطوير تقنية خصوصية مفتوحة المصدر تحمي حرية التعبير وتتيح اتصالا عالميا آمنا للملايين عبر العالم. إذا كنت من المقيمين بالولايات المتحدة الأمريكية، يُرجى الاحتفاظ بهذا التوصيل للإدلاء به عند مصلحة الضرائب. إن ‫مؤسسة تكنولوجيا Signal‬ مؤسسة خيرية عمومية وغير ربحية، أُحدثَت بالولايات المتحدة اﻷمريكية، وهي معفية من الضرائب بموجب الفقرة 501c3 من قانون الإيرادات الداخلية. مُعرِّفنا الضريبي هو ‎.82-4506840‎";
+"DONATION_RECEIPT_FOOTER" = "نشكرك على دعم سيجنال. تمكننا مساهمتك من الالتزام بمهمة تطوير تقنية خصوصية مفتوحة المصدر تحمي حرية التعبير وتتيح اتصالا عالميا آمنا للملايين عبر العالم. إذا كنت من المقيمين بالولايات المتحدة الأمريكية، يُرجى الاحتفاظ بهذا التوصيل للإدلاء به عند مصلحة الضرائب. إن ‫مؤسسة تكنولوجيا سيجنال‬ مؤسسة خيرية عمومية وغير ربحية، أُحدثَت بالولايات المتحدة اﻷمريكية، وهي معفية من الضرائب بموجب الفقرة 501c3 من قانون الإيرادات الداخلية. مُعرِّفنا الضريبي هو ‎.82-4506840‎";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "تقديم تبرع لصديق";
@@ -2054,13 +2054,13 @@
 "DONATION_RECEIPTS" = "وصولات التبرعات";
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
-"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "إذا أعدت تثبيت Signal، فلن تصبح وصولات التبرعات السابقة متاحة.";
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "إذا أعدت تثبيت سيجنال، فلن تصبح وصولات التبرعات السابقة متاحة.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
 "DONATION_SCREEN_DONATE_BUTTON" = "تبرّع";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "تراسل خاص، مُموّل من طرفك. بدون إعلانات، بدون مُتعقبات، بدون رقابة. تبرّع الآن لدعم Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "تراسل خاص، مُموّل من طرفك. بدون إعلانات، بدون مُتعقبات، بدون رقابة. تبرّع الآن لدعم سيجنال.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "قراءة المزيد";
@@ -2072,7 +2072,7 @@
 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "تبرّع لصديق";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "التَّبّرُّع لِـ Signal";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "التَّبّرُّع لِسيجنال";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "لقد حدث خطأ في الشبكة. يُرجى التحقق من اتصالك بالانترنت ثم المحاولة مرة أخرى.";
@@ -2084,7 +2084,7 @@
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "إدارة الاشتراك";
 
 /* Text describing to the user that they're going to pay a monthly donation to Signal */
-"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "التبرعات الشهرية لـ Signal";
+"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "التبرعات الشهرية لسيجنال";
 
 /* Title for the 'more' section on the donation screen */
 "DONATION_VIEW_MORE_SECTION_TITLE" = "المزيد";
@@ -2099,7 +2099,7 @@
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "الأسئلة الشائعة حول الاشتراك";
 
 /* Title on the 'Donate to Signal' screen */
-"DONATION_VIEW_TITLE" = "تبرَّع لـ Signal";
+"DONATION_VIEW_TITLE" = "تبرَّع لسيجنال";
 
 /* Label for the currency picker button in donation views */
 "DONATIONS_CURRENCY_PICKER_LABEL" = "العملة";
@@ -2108,13 +2108,13 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "يُمكِنُك تمكين الوصول من خِلال تطبيق إعدادات iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "يحتاج Signal الصلاحية بالوصول إلى جهات الاتصال من اجل تعديل البيانات الخاصة بجهة الإتصال.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "يحتاج سيجنال الصلاحية بالوصول إلى جهات الاتصال من اجل تعديل البيانات الخاصة بجهة الإتصال";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "تعديل المجموعة";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "لا يُمكن إضافة هذا المستخدم إلى المجموعة حتى يُحدِّث Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "لا يُمكن إضافة هذا المستخدم إلى المجموعة حتى يُحدِّث سيجنال.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "صورة غير صالحة.";
@@ -2135,10 +2135,10 @@
 "EDIT_ITEM_COPY_ACTION" = "نسخ";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "مرحباً,\n\nمؤخرًا، أصبحتُ أستخدِم Signal عَلى الـiPhone الخاصّ بي لِجعل دردشاتي خُصُوصيَّة. أودُ لو تُثبِّته أنتَ كَذَلِك، حَتّى يَتَسنى لَنا التَّأكُّد أنَنا الوَحيدان اللَّذان يُمكِنُهُما قِراءة رَسائلنا أو سَماع مُكالماتنا.\n\nSignal مُتاحٌ على الآيفون والأندرويد. احصل عَليه مِن هُنا: %1$@\n\nيَعملُ Signal مِثل تَطبيق تَراسُلَك الحالي. نَستَطيع إرسال الصُوَر والمَقاطِع المَرئية، إجراء مُكالمات، وبدء دردشة جَماعية. أفضلُ شيء فيه هو أنَّ لا أحد آخَر قادِر على رُؤية أي شَيء مِن ذَلك، بِما في ذَلك مُصَمِّمو Signal عَينَهُم\n\nتَستطيعُ قِراءة المَزيد عَن Open Whisper Systems، مُصمّمو Signal، هُنا: %2$@";
+"EMAIL_INVITE_BODY" = "مرحباً,\n\nمؤخرًا، أصبحتُ أستخدِم سيجنال عَلى الـiPhone الخاصّ بي لِجعل دردشاتي خُصُوصيَّة. أودُ لو تُثبِّته أنتَ كَذَلِك، حَتّى يَتَسنى لَنا التَّأكُّد أنَنا الوَحيدان اللَّذان يُمكِنُهُما قِراءة رَسائلنا أو سَماع مُكالماتنا.\n\nسيجنال مُتاحٌ على الآيفون والأندرويد. احصل عَليه مِن هُنا: %1$@\n\nيَعملُ سيجنال مِثل تَطبيق تَراسُلَك الحالي. نَستَطيع إرسال الصُوَر والمَقاطِع المَرئية، إجراء مُكالمات، وبدء دردشة جَماعية. أفضلُ شيء فيه هو أنَّ لا أحد آخَر قادِر على رُؤية أي شَيء مِن ذَلك، بِما في ذَلك مُصَمِّمو سيجنال عَينَهُم\n\nتَستطيعُ قِراءة المَزيد عَن Open Whisper Systems، مُصمّمو سيجنال، هُنا: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "لننتقل إلى Signal";
+"EMAIL_INVITE_SUBJECT" = "لننتقل إلى سيجنال";
 
 /* Description for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_MESSAGE" = "لم يتمّ تجهيز جهازك لإرسال البريد الإلكتروني. لإرسال طَلب دَّعم، قم بإعداد البريد إلكتروني على جهازك أو ارسل بَريد إلكتروني إلى support@signal.org";
@@ -2177,7 +2177,7 @@
 "EMOJI_CATEGORY_TRAVEL_NAME" = "السفر والأماكن";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "لا أحد من جهات اتصالك لديه Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "لا أحد من جهات اتصالك لديه سيجنال.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "لمَ لا تدعُ أحدهم؟";
@@ -2231,7 +2231,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "إجابة غير صالحة من الخدمة.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "لم يعُد هَذَا الجِهاز مُسجلاً مَع رَقم هاتفك. يُرجى إعادَة تَثبيت Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "لم يعُد هَذَا الجِهاز مُسجلاً مَع رَقم هاتفك. يُرجى إعادَة تَثبيت سيجنال.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "خلل في الخادم، الرجاء تكرار المحاولة لاحقاً.";
@@ -2243,7 +2243,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "حدث خطأ مجهول.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "جهة الاتصال ليست من مستخدمي Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "جهة الاتصال ليست من مستخدمي سيجنال.";
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "فشل تحميل المُرفق.";
@@ -2288,10 +2288,10 @@
 "ERROR_NETWORK_FAILURE" = "خلل في الشبكة";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "‫نرجو منك مساعدتنا على تحسين Signal، وذلك بالإبلاغ عن هذا الخطأ مع إرفاق سِجلات التصحيح التي في جهازك إلى support@signal.org‏ ;‏%1$@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "‫نرجو منك مساعدتنا على تحسين سيجنال، وذلك بالإبلاغ عن هذا الخطأ مع إرفاق سِجلات التصحيح التي في جهازك إلى support@signal.org ; %1$@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "‫إصدار Signal التجريبي‬ : حدث خطأ ما";
+"ERROR_NOTIFICATION_TITLE" = "‫إصدار سيجنال التجريبي‬ : حدث خطأ ما";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "لم يعد جهازك مُرتبطًا. يُرجى إعادة ربطه لإرسال رسائل مستقبلاً.";
@@ -2300,7 +2300,7 @@
 "ERROR_SENDING_DEREGISTERED" = "لم يعد جهازك مُسجلاً. يُرجى إعادة التسجيل لإرسال رسائل مستقبلاً.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "انتهت صلاحية إصدار Signal الخاص بك. يُرجى تحديثه لإرسال رسائل مستقبلاً.";
+"ERROR_SENDING_EXPIRED" = "انتهت صلاحية إصدار سيجنال الخاص بك. يُرجى تحديثه لإرسال رسائل مستقبلاً.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "مُستخدم غير مسجل: %1$@";
@@ -2312,16 +2312,16 @@
 "EXIT_REREGISTRATION" = "الخروج من التسجيل";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "لقد انتهت صلاحية هذا الإصدار من Signal. قم بالتحديث لترسل وتصلك الرسائل.";
+"EXPIRATION_ERROR" = "لقد انتهت صلاحية هذا الإصدار من سيجنال. قم بالتحديث لترسل وتصلك الرسائل.";
 
 /* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
 "EXPIRATION_WARNING_ACTION_TITLE" = "حدِّث الآن";
 
 /* Label warning the user that the app will expire soon. Embeds {{date}}. */
-"EXPIRATION_WARNING_SOON" = "سَتنتهي صلاحية هذا الإصدار من Signal في %1$@. قم بالتحديث لتواصل المراسلة.";
+"EXPIRATION_WARNING_SOON" = "سَتنتهي صلاحية هذا الإصدار من سيجنال في %1$@. قم بالتحديث لتواصل المراسلة.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "سَتنتهي صلاحية هذا الإصدار من Signal اليوم. قم بالتحديث لتواصل المراسلة.";
+"EXPIRATION_WARNING_TODAY" = "سَتنتهي صلاحية هذا الإصدار من سيجنال اليوم. قم بالتحديث لتواصل المراسلة.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "العديد من الأخطاء مع جهة الاتصال هذه. يُرجى إعادة المحاولة لاحقا.";
@@ -2597,10 +2597,10 @@
 "GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "سَيتم إشعار %1$@ و%2$@";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "سَيتصل Signal بـ %1$@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "سَيتصل سيجنال بـ %1$@";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "سَيتصل Signal بـ %1$@ و%2$@";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "سَيتصل سيجنال بـ %1$@ و%2$@";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "إنك في مُكالمة جماعية";
@@ -2783,7 +2783,7 @@
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "رابط غير صالح";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "حدّث Signal على هذا الجهاز للانضمام إلى المجموعة.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "حدّث سيجنال على هذا الجهاز للانضمام إلى المجموعة.";
 
 /* Explanation of the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "تتطلب موافقة المشرف لقبول انضمام أعضاء جُدد عبر رابط المجموعة.";
@@ -2843,7 +2843,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "الرمز المربع";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "المشاركة عبر Signal";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "المشاركة عبر سيجنال";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "أي شخص لديه هذا الرابط يُمكنه رؤية اسم هذه المجموعة وأعضائها وإرسال طلب للانضمام. شاركه مع من تثق به.";
@@ -3209,13 +3209,13 @@
 "HOME_VIEW_DRAFT_PREFIX" = "مُسوَّدَة: ";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %1$@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "بعض جهات اتصالك بالفعل في سيجنال، بما في ذلك %1$@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %1$@ و%2$@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "بعض جهات اتصالك بالفعل في سيجنال، بما في ذلك %1$@ و%2$@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %1$@، %2$@ و%3$@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "بعض جهات اتصالك بالفعل في سيجنال، بما في ذلك %1$@، %2$@ و%3$@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "اِبدأ أوَّلَ دردشة لكَ مِن هُنا.";
@@ -3254,7 +3254,7 @@
 "IMAGE_PICKER_CHANGE_PHOTOS" = "تغيير الصور";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "امنح حق الوصول الكامل في الإعدادات أو غير الصور التي يحقّ لـSignal الوصول إليها.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "امنح حق الوصول الكامل في الإعدادات أو غير الصور التي يحقّ لسيجنال الوصول إليها.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "ألا ترى صورك؟";
@@ -3314,7 +3314,7 @@
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ غيَّرَ رقم هاتفِه.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "إنَّ %1$@ مُتواجدٌ على Signal!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "إنَّ %1$@ مُتواجدٌ على سيجنال!";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "لوحة المفاتيح";
@@ -3338,13 +3338,13 @@
 "INVALID_PROXY_HOST_ERROR" = "عنوان الوكيل الذي أدخلته غير صحيح، يُرجى التحقّق من العنوان والمحاولة مرة أخرى.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "يمكنك تفعيل الوصول إلى جهات الاتصال في تطبيق إعدادات iOS لدعوة أصدقائك للانضمام إلى Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "يمكنك تفعيل الوصول إلى جهات الاتصال في تطبيق إعدادات iOS لدعوة أصدقائك للانضمام إلى سيجنال.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "السماح بالوصول لجهات الاتصال";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "دعوة الأصدقاء إلى Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "دعوة الأصدقاء إلى سيجنال";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "بحث";
@@ -3458,10 +3458,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "مُعاينة الرابط";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "لم تعد إدارة جهات اتصال النظام متاحة على iPad. لإضافة جهات اتصال Signal إلى جهات اتصال نظامك، افتح تطبيق Signal على هاتفك.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "لم تعد إدارة جهات اتصال النظام متاحة على iPad. لإضافة جهات اتصال سيجنال إلى جهات اتصال نظامك، افتح تطبيق سيجنال على هاتفك.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "لم تعد إدارة جهات اتصال النظام مدعومة على iPad. سَيستمر هذا الجهاز في مزامنة أي تغييرات طرأت على قائمة جهات اتصالك من Signal على هاتفك.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "لم تعد إدارة جهات اتصال النظام مدعومة على iPad. سَيستمر هذا الجهاز في مزامنة أي تغييرات طرأت على قائمة جهات اتصالك من سيجنال على هاتفك.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "معرفة المزيد";
@@ -3482,7 +3482,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "فشل ربط الجهاز";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "من أجل نقل حساب Signal الخاص بك، يجب عليك تفعيل الوصول إلى الشبكة المحلية في كلا الجهازين.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "من أجل نقل حساب سيجنال الخاص بك، يجب عليك تفعيل الوصول إلى الشبكة المحلية في كلا الجهازين.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "هل تحتاج مُساعدة؟";
@@ -3494,7 +3494,7 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "تشغيل \"الشبكة المحلية\"";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "انتقل إلى Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "انتقل إلى سيجنال";
 
 /* Title for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "تشغيل الوصول إلى الشبكة المحلية";
@@ -3509,7 +3509,7 @@
 "LOGGING_SECTION" = "التسجيل";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "سِجِلَّاتُ التَّصحِيح يُمكِنُ أنَّ تُسَاعِدَ Signal عَلَى إصلاحِ المُشكِلات وَالاِنهِيارَات.";
+"LOGGING_SECTION_FOOTER" = "سِجِلَّاتُ التَّصحِيح يُمكِنُ أنَّ تُسَاعِدَ سيجنال عَلَى إصلاحِ المُشكِلات وَالاِنهِيارَات.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "الرسالة";
@@ -3563,7 +3563,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "حذف للجميع";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "ستُحذَف هذه الرسالة لأياً كان في هذه الدردشة إن كانوا يستخدمون إصدار حديث مِن Signal. سيكون بمقدرتهم رؤية أنك قد حذفت رسالة.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "ستُحذَف هذه الرسالة لأياً كان في هذه الدردشة إن كانوا يستخدمون إصدار حديث مِن سيجنال. سيكون بمقدرتهم رؤية أنك قد حذفت رسالة.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "من هم الأشخاص الذين تريد حذف هذه الرسالة لديهم؟";
@@ -3599,7 +3599,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "فتح الوصلة";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "فتح وكيل Signal";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "فتح وكيل سيجنال";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "عرض حزمة الملصقات";
@@ -3746,7 +3746,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "حذف ومُغادرة المجموعة؟";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "راجع الطلبات بعِناية. عثرَ Signal على جهة اتصال أُخرى بنفس الاسم.";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "راجع الطلبات بعِناية. عثرَ سيجنال على جهة اتصال أُخرى بنفس الاسم.";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "جهة الاتصال الخاصة بك";
@@ -3887,22 +3887,22 @@
 "MISSED_VIDEO_CALL" = "مكالمة فيديو فائتة";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "يُمكنك إتاحة الوصول إلى الكاميرا من خلال تطبيق إعدادات iOS للقيام بمكالمة فيديو في Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "يُمكنك إتاحة الوصول إلى الكاميرا من خلال تطبيق إعدادات iOS للقيام بمكالمة فيديو في سيجنال.";
 
 /* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "يحتاج Signal الوصول إلى الكاميرا الخاصة بك";
+"MISSING_CAMERA_PERMISSION_TITLE" = "يحتاج سيجنال الوصول إلى الكاميرا الخاصة بك.";
 
 /* Alert body indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "يُمكنك إتاحة هذا الإذن في تطبيق إعدادات iOS.";
 
 /* Alert title indicating the user has denied location permissions */
-"MISSING_LOCATION_PERMISSION_TITLE" = "يتطلب Signal الوصول إلى موقعك لهذه الميزة.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "يتطلب سيجنال الوصول إلى موقعك لهذه الميزة.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "يُمكنك إتاحة هذا الإذن في تطبيق إعدادات iOS.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "يتطلب Signal الوصول إلى الصوة الخاصة بك لهذه الميزة.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "يتطلب سيجنال الوصول إلى الصوة الخاصة بك لهذه الميزة.";
 
 /* Generic indicator that no value is available for display */
 "MISSING_VALUE" = "لا شيء";
@@ -3923,7 +3923,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "الجميع ما عدا…";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "جميع جهات اتصال Signal";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "جميع جهات اتصال سيجنال";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "مشاركة فقط مع…";
@@ -4163,7 +4163,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "ربط iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "بالنقر على \"تسجيل iPad\" سوف ينشيء لك حساباً جديداً في Signal أو ينقل حساباً حالياً إلى هذا الـiPad. هذا سوف يلغي Signal في أي جهاز آخر مُسجل حالياً بنفس رقم الهاتف.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "بالنقر على \"تسجيل iPad\" سوف ينشيء لك حساباً جديداً في سيجنال أو ينقل حساباً حالياً إلى هذا الـiPad. هذا سوف يلغي سيجنال في أي جهاز آخر مُسجل حالياً بنفس رقم الهاتف.";
 
 /* explanation to the user they're switching from registering to linking flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "بالنقر على \"ربط iPhone\" سوف يتيح لك ربط الـiPhone الخاص بك مع حساب حالي. لا يُنصح عمومًا بربط الـiPhone الخاص بك وسيحدُّ هذا من بعض الوظائفن، مثل إجراء الاتصالات.";
@@ -4175,7 +4175,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "ربط هذا الـiPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "تسجيل هذا الـiPad سوف يلغي Signal في أي جهاز آخر مُسجل حالياً بنفس رقم الهاتف.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "تسجيل هذا الـiPad سوف يلغي سيجنال في أي جهاز آخر مُسجل حالياً بنفس رقم الهاتف.";
 
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "لا يُوصى بربط الـiPhone الخاص بك، إذ سيحدّ من بعض الوظف الأساسية.";
@@ -4184,13 +4184,13 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "السَّماح بالصَّلاحيَّات";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "يُتيحُ لكَ السَّماح بالإشعارات وجِهات الاتصال المَعرفة عِندَ وصول الرَّسائل ويُساعدك في العُثور على الأشخاص الذين تعرفهم. يتم تعمِيَة جهات الاتصال بحيث لا يُمكن لخدمة Signal رؤيتَها.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "يُتيحُ لكَ السَّماح بالإشعارات وجِهات الاتصال المَعرفة عِندَ وصول الرَّسائل ويُساعدك في العُثور على الأشخاص الذين تعرفهم. يتم تعمِيَة جهات الاتصال بحيث لا يُمكن لخدمة سيجنال رؤيتَها.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "تَمكينُ الصّلاحيّات";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "اختر من يُمكنه العثور عليكَ في Signal بواسطة رقم الهاتف الخاص بك %1$@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "اختر من يُمكنه العثور عليكَ في سيجنال بواسطة رقم الهاتف الخاص بك %1$@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "مَن يُمكنه العثور عليك بواسطة الرقم الخاص بك؟";
@@ -4208,7 +4208,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "رقم غير صالِح. للتَّسجيل يُرجى إدخال رقم هاتف صالِح.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين الـPIN، لكن يُمكنك الوصول إلى حساب Signal الخاص بِكَ عبر إنشاء PIN جديد. للحفاظ على خصوصيتك وأمانك سوف يُستعاد حسابك من غير أي معلومات ملف شخصي أو إعادادات محفوظة مُسبقًا.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين الـPIN، لكن يُمكنك الوصول إلى حساب سيجنال الخاص بِكَ عبر إنشاء PIN جديد. للحفاظ على خصوصيتك وأمانك سوف يُستعاد حسابك من غير أي معلومات ملف شخصي أو إعادادات محفوظة مُسبقًا.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "تعرّف على المزيد حول الـPIN";
@@ -4226,7 +4226,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN غير صحيح";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين رقم التعريف الشخصي، لكن يُمكنك الوصول إلى حساب Signal الخاص بِكَ عبر التحقق من رقم هاتفك. للحفاظ على خصوصيتك وأمانك سَيُستعاد حسابك من غير أي معلومات ملف شخصي أو إعدادات محفوظة مُسبقًا.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين رقم التعريف الشخصي، لكن يُمكنك الوصول إلى حساب سيجنال الخاص بِكَ عبر التحقق من رقم هاتفك. للحفاظ على خصوصيتك وأمانك سَيُستعاد حسابك من غير أي معلومات ملف شخصي أو إعدادات محفوظة مُسبقًا.";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "أدخل الـPIN الذى أنشأته للحساب الخاص بِكَ مُسبقًا. هذا مُختلف عن رمز SMS الخاص بِكَ للتحقق.";
@@ -4292,19 +4292,19 @@
 "OPEN_SETTINGS_BUTTON" = "الإعدادات";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
-"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "لم يعُد تطبيق Signal يَعمل على هذا الجهاز. لاستخدام Signal مُجددًا، يُرجى تحديث إصدار iOS على جهازك.";
+"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "لم يعُد تطبيق سيجنال يَعمل على هذا الجهاز. لاستخدام سيجنال مُجددًا، يُرجى تحديث إصدار iOS على جهازك.";
 
 /* Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems. */
-"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "لم يعُد تطبيق Signal يَعمل على هذا الجهاز. لاستخدام Signal مجددًا، يُرجى الانتقال إلى جهاز أحدث.";
+"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "لم يعُد تطبيق سيجنال يَعمل على هذا الجهاز. لاستخدام سيجنال مجددًا، يُرجى الانتقال إلى جهاز أحدث.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions. */
 "OS_SOON_TO_EXPIRE_ACTION_TITLE" = "حدِّث الآن";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're an old version that will soon lose support. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "سَيتوقف Signal عن دعم إصدار iOS على جهازك قريبًا. للاستمرار في استخدام Signal، يُرجى تحديث إصدار iOS على جهازك قبل %1$@.";
+"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "سَيتوقف سيجنال عن دعم إصدار iOS على جهازك قريبًا. للاستمرار في استخدام سيجنال، يُرجى تحديث إصدار iOS على جهازك قبل %1$@.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version that will soon lose support. This is the text on that warning when users can't upgrade iOS without getting a new device. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "سَيتوقف Signal عن دعم إصدار iOS على جهازك قريبًا. لمُواصلة استخدام Signal، يُرجى تغيير جهازك إلى جهاز أحدث قبل %1$@.";
+"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "سَيتوقف سيجنال عن دعم إصدار iOS على جهازك قريبًا. لمُواصلة استخدام سيجنال، يُرجى تغيير جهازك إلى جهاز أحدث قبل %1$@.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "عطل %1$@ الرسائل المختفية.";
@@ -4313,13 +4313,13 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ضَبَطَ %1$@ وقت إختفاء الرسائل على %2$@.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "إنَّ Signal يواجِهُ صُعوبات تَقنية. نحنُ نعملُ بجد لاستعادة الخِدمة في أسرع وقت ممكن.";
+"OUTAGE_WARNING" = "إنَّ سيجنال يواجِهُ صُعوبات تَقنية. نحنُ نعملُ بجد لاستعادة الخِدمة في أسرع وقت ممكن.";
 
 /* Label for action link when the user has an outdated payment client */
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "حدِّث الآن";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "حدِّث تطبيق Signal للاستمرار في استخدام عمليات الدفع. قد لا يكون رصيدك مُحدثًا.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "حدِّث تطبيق سيجنال للاستمرار في استخدام عمليات الدفع. قد لا يكون رصيدك مُحدثًا.";
 
 /* info message text in conversation view */
 "OUTGOING_AUDIO_CALL" = "مكالمة صوتية صادرة";
@@ -4460,7 +4460,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "مُعاملة غير صالحة";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "حدِّث تطبيق Signal لاستخدام المدفوعات.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "حدِّث تطبيق سيجنال لاستخدام المدفوعات.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "لم يُتحقَّق بعد من الدفع";
@@ -4682,13 +4682,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "الجميع";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "كُل شخص يملك رقم هاتفك في جهات اتصاله سيعثُر عليك كجهة اتصال في Signal. سَيتمكن الآخرون من العثور عليك باستخدام رقم هاتفك عند بدء دردشة أو مجموعة جديدة.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "كُل شخص يملك رقم هاتفك في جهات اتصاله سيعثُر عليك كجهة اتصال في سيجنال. سَيتمكن الآخرون من العثور عليك باستخدام رقم هاتفك عند بدء دردشة أو مجموعة جديدة.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "لا أحد";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "لن يتمكّن أي شخص على Signal من العثور عليك باستخدام رقم هاتفك.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "لن يتمكّن أي شخص على سيجنال من العثور عليك باستخدام رقم هاتفك.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "مِثال: %1$@";
@@ -4697,13 +4697,13 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "الجميع";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "سيكون رقم هاتفك مرئيًا للأشخاص والمجموعات التي تراسلها. الأشخاص الذين لديهم رقمك في جهات اتصال هواتفهم سيروه أيضًا على Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "سيكون رقم هاتفك مرئيًا للأشخاص والمجموعات التي تراسلها. الأشخاص الذين لديهم رقمك في جهات اتصال هواتفهم سيروه أيضًا على سيجنال.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "لا أحد";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "لن يرى أي أحد رقم هاتفك في Signal.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "لن يرى أي أحد رقم هاتفك في سيجنال.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
@@ -4784,7 +4784,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "تعطيل الـPIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "إذا عطّلتَ الـPIN، ستفقد جميع البيانات عند إعادة التسجيل في Signal إلّا إذا قمت بنقلِها مِن جهاز  iOS آخر. لا يُمكنُك تفعيل قفل التسجيل أثناء تعطيل الـPIN.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "إذا عطّلتَ الـPIN، ستفقد جميع البيانات عند إعادة التسجيل في سيجنال إلّا إذا قمت بنقلِها مِن جهاز  iOS آخر. لا يُمكنُك تفعيل قفل التسجيل أثناء تعطيل الـPIN.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "تحذير";
@@ -4796,16 +4796,16 @@
 "PIN_CREATION_ERROR_TITLE" = "فشل إنشاء الـPIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "الـPIN يُبقي المعلومات المحفوظة مع Signal مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
+"PIN_CREATION_EXPLANATION" = "الـPIN يُبقي المعلومات المحفوظة مع سيجنال مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "المزيد بخصوص رموز PIN";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
-"PIN_CREATION_LEARN_MORE_TEXT" = "يمكِّنك رمز PIN من حفظ معلوماتك بشكل مُعمَّى في Signal بحيث يمكنك الوصول إليها وحدك. سَتتم استعادة حسابك وإعداداتك وجهات اتصالك عند إعادة تثبيت Signal.";
+"PIN_CREATION_LEARN_MORE_TEXT" = "يمكِّنك رمز PIN من حفظ معلوماتك بشكل مُعمَّى في سيجنال بحيث يمكنك الوصول إليها وحدك. سَتتم استعادة حسابك وإعداداتك وجهات اتصالك عند إعادة تثبيت سيجنال.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "نبذة حول رموز PIN لـ Signal";
+"PIN_CREATION_LEARN_MORE_TITLE" = "نبذة حول رموز PIN لسيجنال";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "الـPIN غير مُطابق. حاول مرة أُخرى.";
@@ -4853,7 +4853,7 @@
 "PIN_CREATION_WEAK_ERROR" = "اختر PIN أقوى";
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
-"PIN_CREATION_WEAK_ERROR_MESSAGE" = "يمكِّنك الرقم التعريفي الشخصي من حفظ معلوماتك بشكل مُعمَّى في Signal بحيث يمكنك الوصول إليها وحدك. اختر رقم تعريف شخصي أقوى لحماية حسابك.";
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "يمكِّنك الرقم التعريفي الشخصي من حفظ معلوماتك بشكل مُعمَّى في سيجنال بحيث يمكنك الوصول إليها وحدك. اختر رقم تعريف شخصي أقوى لحماية حسابك.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "لقد تعذّر تعطيل الـPIN الخاص بك. سنُطالِبُك مرة أُخرى لاحقًا.";
@@ -4886,7 +4886,7 @@
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "سنذكِرك مرة أُخرى في غُضون بضعة أيام.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "التحقق من الـPIN الخاص بك في Signal";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "التحقق من الـPIN الخاص بك في سيجنال";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "سنُذكرك مرة أُخرى غداً.";
@@ -4901,7 +4901,7 @@
 "PIN_REMINDER_MISMATCH_ERROR" = "إنَّ الـPIN غير صالح، حاول مرة أُخرى.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "أدخل الـPIN الخاص بك في Signal";
+"PIN_REMINDER_TITLE" = "أدخل الـPIN الخاص بك في سيجنال";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "الـPIN يجب أن يحوي اربعة ارقام على الأقل.";
@@ -4916,7 +4916,7 @@
 "PINS_MEGAPHONE_ACTION" = "إنشاء PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "أتمِم إنشاء رقم التعريف لـ Signal.";
+"PINS_MEGAPHONE_BODY" = "أتمِم إنشاء رقم التعريف لسيجنال.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "أنشيء PIN";
@@ -4949,19 +4949,19 @@
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "لا يبدو الرقم الذي في حافظتك أنه رقم الأمان الصحيح لهذه الدردشة.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "لم يجد Signal أي رقم أمان في حافظتك. هل نسخته بشكل صحيح ؟";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "لم يجد سيجنال أي رقم أمان في حافظتك. هل نسخته بشكل صحيح ؟";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "كل زوج من مستخدمي Signal يتشاركان رقم أمان فريد. يُرجى التأكد أن %1$@ يعرض رقم أمانك الفريد.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "كل زوج من مستخدمي سيجنال يتشاركان رقم أمان فريد. يُرجى التأكد أن %1$@ يعرض رقم أمانك الفريد.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "أنت تستخدم إصدارا قديما من Signal. تحتاج للتحديث لتتمكن من التحقق.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "أنت تستخدم إصدارا قديما من سيجنال. تحتاج للتحديث لتتمكن من التحقق.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "شريكك يستخدم إصدارا قديما من Signal. سيحتاج للتحديث ليتمكن من التحقق.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "شريكك يستخدم إصدارا قديما من سيجنال. سيحتاج للتحديث ليتمكن من التحقق.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "الرمز الممسوح لا يبدو كرقم أمان. هل تستخدمان إصدارًا حديثًا من Signal؟";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "الرمز الممسوح لا يبدو كرقم أمان. هل تستخدمان إصدارًا حديثًا من سيجنال؟";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "إذا رغبتَ في التحقق مِن أمان تَعمية النِهاية-إلى-النِهاية الخاصة بكَ أنتَ مع %1$@, قارِن الأرقام في الأعلى مع الأرقام في الجهاز الخاص به.\n\nكبديل، يُمكنك مسح الرمز الذي في هاتفه أو اخبره أن يمسح الرمز الخاص بك.";
@@ -5045,7 +5045,7 @@
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "اِسمُ المُستخدِم";
 
 /* Title for a menu action allowing users to view their username link QR code. */
-"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "View QR Code";
+"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "عرض رمز الاستجابة السريعة";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "اسمكَ الأخير طويلٌ جدًا.";
@@ -5186,7 +5186,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "يتعذّر تحديد المُستخدم.";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "لم يعُد %1$@ من مستخدمي Signal. أعد المحاولة مرة أخرى باستخدام رقم هاتف صحيح.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "لم يعُد %1$@ من مستخدمي سيجنال. أعد المحاولة مرة أخرى باستخدام رقم هاتف صحيح.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "رقم الهاتف خاطئ";
@@ -5195,10 +5195,10 @@
 "RECIPIENT_PICKER_INVITE_ACTION" = "رسالة";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "لم يعُد %1$@ من مستخدمي Signal. هل تريد دعوة هذا الرقم؟";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "لم يعُد %1$@ من مستخدمي سيجنال. هل تريد دعوة هذا الرقم؟";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_TITLE" = "ادعُ إلى Signal";
+"RECIPIENT_PICKER_INVITE_TITLE" = "ادعُ إلى سيجنال";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "هل تُريد المُساعدة؟";
@@ -5240,7 +5240,7 @@
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "تحديث";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "لمتابعة التسجيل، يُرجى التحديث إلى أحدث إصدار من Signal.";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "لمتابعة التسجيل، يُرجى التحديث إلى أحدث إصدار من سيجنال.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "يَجب تحديث التطبيق";
@@ -5252,7 +5252,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "رمز البلد";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
-"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "الاستمرار سيُعطل Signal على الأجهزة الأُخرى المُسجلة بنفس رقم الهاتف.";
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "الاستمرار سيُعطل سيجنال على الأجهزة الأُخرى المُسجلة بنفس رقم الهاتف.";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "نَقل الحساب والرسائل";
@@ -5312,13 +5312,13 @@
 "REGISTRATION_PIN_CONFIRM_TITLE" = "تأكيد PIN الخاص بك";
 
 /* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PIN_CREATE_SUBTITLE" = "يُمكن أن تساعدك أرقام التعريف الشخصية على استعادة حسابك والحفاظ على معلوماتك مُشفّرة مع Signal.";
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "يُمكن أن تساعدك أرقام التعريف الشخصية على استعادة حسابك والحفاظ على معلوماتك مُشفّرة مع سيجنال.";
 
 /* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
 "REGISTRATION_PIN_CREATE_TITLE" = "إنشاء الـPIN الخاص بك";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "يُمكن أن تساعدك أرقام التعريف الشخصية على استعادة حسابك والحفاظ على معلوماتك مُشفّرة مع Signal.";
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "يُمكن أن تساعدك أرقام التعريف الشخصية على استعادة حسابك والحفاظ على معلوماتك مُشفّرة مع سيجنال.";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
 "REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "أدخل PIN الخاص بِكَ";
@@ -5345,10 +5345,10 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "إعداد الملف الشخصي";
 
 /* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "لم يتمكن Signal من إرسال رمز عبر رسالة قصيرة إلى هاتفك نظرًا لعطب خارجي.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "لم يتمكن سيجنال من إرسال رمز عبر رسالة قصيرة إلى هاتفك نظرًا لعطب خارجي.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "لم يتمكن Signal من إرسال رمز عبر رسالة قصيرة الآن نظرًا لعطب خارجي، يُرجى المحاولة مجددًا لاحقًا.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "لم يتمكن سيجنال من إرسال رمز عبر رسالة قصيرة الآن نظرًا لعطب خارجي، يُرجى المحاولة مجددًا لاحقًا.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "يجب عليك التسجيل قبل أن تتمكن من إرسال رسالة.";
@@ -5453,7 +5453,7 @@
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "إظهار";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان Signal الخاص بنا:\n%1$@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان سيجنال الخاص بنا:\n%1$@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "تغير رقم أمانك مع %1$@. قد ترغب بالتحقق منه.";
@@ -5486,13 +5486,13 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "يجب عليك تمكين رمز المرور في إعدادات الـiOS الخاصة بك من أجل استخدام قفل الشاشة.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "صَادِق  لِفَتح Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "صَادِق لِفَتح سيجنال.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "فشلت المُصادَقة.";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "فَكّ قُفل Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "فَكّ قُفل سيجنال";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "اسم، اسم مُستخدم، أو رقم";
@@ -5528,13 +5528,13 @@
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "الحساب غير متوافق";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "حدِّث Signal في هذا الجهاز حتى تستطيع ربطه بهاتفك.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "حدِّث سيجنال في هذا الجهاز حتى تستطيع ربطه بهاتفك.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "إصدار غير مدعوم";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "إن الجهاز الآخر الخاص بك يُشغِّل إصدار قديم من Signal وهو لا يدعم مسح رُموز الاستجابة السريعة للـiPad. يُرجى تثبيت آخر إصدار من Signal ثم المُحاولة مرة أُخرى.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "إن الجهاز الآخر الخاص بك يُشغِّل إصدار قديم من سيجنال وهو لا يدعم مسح رُموز الاستجابة السريعة للـiPad. يُرجى تثبيت آخر إصدار من سيجنال ثم المُحاولة مرة أُخرى.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "حَدِّث الجِهاز الماسِح";
@@ -5555,19 +5555,19 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "إنهاء الارتباط";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "شغِّل  Signal على الهاتف الخاص بك لربط هذا الـiPad بحسابك";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "شغِّل  سيجنال على الهاتف الخاص بك لربط هذا الـiPad بحسابك";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "ليس لديّ تطبيق Signal على هاتفي…";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "ليس لديّ تطبيق سيجنال على هاتفي…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "اذهب إلى الـAppStore على هاتفك ، ثبِّت Signal، أكمل عملية التسجيل، وبعد ذلك يُمكنك ربط الـiPad الخاص بك بنفس الحساب.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "اذهب إلى الـAppStore على هاتفك ، ثبِّت سيجنال، أكمل عملية التسجيل، وبعد ذلك يُمكنك ربط الـiPad الخاص بك بنفس الحساب.";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "ثبِّت Signal على الهاتف الخاص بك";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "ثبِّت سيجنال على الهاتف الخاص بك";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "انقر على صورة ملفك الشخصي لفتح ‫إعدادات ‫‫Signal‬‬‫ على الهاتف الخاص بك. بعد ذلك \"اﻷجهزة المُرتبطة\" ثم \"ربط جهاز جديد\" لمسح هذا الرمز عن طريق هاتفك:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "انقر على صورة ملفك الشخصي لفتح ‫إعدادات ‫‫سيجنال‬‬‫ على الهاتف الخاص بك. بعد ذلك \"اﻷجهزة المُرتبطة\" ثم \"ربط جهاز جديد\" لمسح هذا الرمز عن طريق هاتفك:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "مِن هُنا احصل على المُساعدة في ربط الـiPad الخاص بك";
@@ -5576,7 +5576,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "اِمسَح رَمز الاِستِجابَة السَّريعَة عَن طَريق هاتِفك";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "شَغِّل Signal على جهاز الـiPad القديم الخاص بك لكي تنقل الحساب الخاص بك";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "شَغِّل سيجنال على جهاز الـiPad القديم الخاص بك لكي تنقل الحساب الخاص بك";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "أُعيدَ ضبط الجلسة الآمنة.";
@@ -5618,7 +5618,7 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "قياسي";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "يستخدم Signal تعمية النهاية-إلى-النهاية وقد يحتاج إلى إنعاش جلسة الدردشة الخاصة بك في بعض الأحيان. لا يُؤثر هذا على أمان الدردشة ولكن أنت رُبما تكون قد فوّتَ رسالة من جهة الاتصال هذه، يُمكِنُك سؤاله لإعادة إرسالها.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "يستخدم سيجنال تعمية النهاية-إلى-النهاية وقد يحتاج إلى إنعاش جلسة الدردشة الخاصة بك في بعض الأحيان. لا يُؤثر هذا على أمان الدردشة ولكن أنت رُبما تكون قد فوّتَ رسالة من جهة الاتصال هذه، يُمكِنُك سؤاله لإعادة إرسالها.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "تمَّ إنعاش جلسة الدردشة";
@@ -5648,7 +5648,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "الموقع الجغرافي";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "في حالة التفعيل، سيُحاول تطبيق Signal تجاوز الرقابة. لا تُفعِّل هذه الميزة إلا إذا كنتَ في مكان يخضع فيه Signal للرقابة.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "في حالة التفعيل، سيُحاول تطبيق سيجنال تجاوز الرقابة. لا تُفعِّل هذه الميزة إلا إذا كنتَ في مكان يخضع فيه سيجنال للرقابة.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "تم تنشيط تجاوز الرقابة إستنادًا على رقم الهاتف الخاص بحسابك.";
@@ -5660,7 +5660,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "لا يمكن تفعيل تجاوز الرقابة إلا عند الاتصال بالإنترنت.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "تجاوز الرقابة ليس ضُروريًا ؛ أنت بالفعل مُتصل بخدمة Signal.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "تجاوز الرقابة ليس ضُروريًا ؛ أنت بالفعل مُتصل بخدمة سيجنال.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "تفعيل سجل التصحيح";
@@ -5702,7 +5702,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "إضافة مستخدم محظور";
 
 /* A label that indicates the user has no Signal contacts that they haven't blocked. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "ليس لديك جهات اتصال على Signal.";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "ليس لديك جهات اتصال على سيجنال.";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "لا نتائج للبحث";
@@ -5714,7 +5714,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "إعادة توجيه المكالمات دائماً";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "إعادة توجيه جميع المكالمات عبر خادم Signal لتفادي كشف عنوان بروتوكول الإنترنت الخاص بك لجهة اتصالك. ستنخفض جودة المكالمات عند التفعيل.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "إعادة توجيه جميع المكالمات عبر خادم سيجنال لتفادي كشف عنوان بروتوكول الإنترنت الخاص بك لجهة اتصالك. ستنخفض جودة المكالمات عند التفعيل.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "تعديل الرقم";
@@ -5768,7 +5768,7 @@
 "SETTINGS_CLEAR_HISTORY" = "مسح تاريخ الدردشات";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "حقوق النشر محفوظة لـ Signal Messenger\nمُرخص بموجب AGPLv3";
+"SETTINGS_COPYRIGHT" = "حقوق النشر محفوظة لسيجنال Messenger\nمُرخص بموجب AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "استخدام البيانات";
@@ -5834,7 +5834,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "تحديد مدة افتراضية لمؤقت اختفاء الرسائل، لجميع الدردشات الجديدة التي قمت ببدئها.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "تبرَّع لـ Signal";
+"SETTINGS_DONATE" = "تبرَّع لسيجنال";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "المُساعدة";
@@ -5903,7 +5903,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "مُحتوى الإشعارات";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "جِهَةُ اِتِّصالٍ اِنضَمَّت إلى Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "جِهَةُ اِتِّصالٍ اِنضَمَّت إلى سيجنال";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "اخطِرني مَتَى مَا…";
@@ -5915,7 +5915,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "تفعيل";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "يمكنك استخدام Signal لإرسال وتلقي MobileCoin. إن كل الدفوعات تخضع لشروط استخدام MobileCoin بما في ذلك محفظة MobileCoin. إن هذه الميزة تجريبية حاليا، لذا قد تحدث لك بعض المشاكل. كما أن الدفوعات وحسابك قد تصبحان عرضة للضياع، ولن يكون بالإمكان حينها استرجاعهما.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "يمكنك استخدام سيجنال لإرسال وتلقي MobileCoin. إن كل الدفوعات تخضع لشروط استخدام MobileCoin بما في ذلك محفظة MobileCoin. إن هذه الميزة تجريبية حاليا، لذا قد تحدث لك بعض المشاكل. كما أن الدفوعات وحسابك قد تصبحان عرضة للضياع، ولن يكون بالإمكان حينها استرجاعهما.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "تفعيل";
@@ -5939,7 +5939,7 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ بتاريخ %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "لم تعد الدفوعات متاحة في Signal. يمكنك دوما إرسال الدفوعات إلى منصة للتداول لكن لم يعد بإمكانك إرسال أو استلام الدفوعات أو إضافة المبالغ.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "لم تعد الدفوعات متاحة في سيجنال. يمكنك دوما إرسال الدفوعات إلى منصة للتداول لكن لم يعد بإمكانك إرسال أو استلام الدفوعات أو إضافة المبالغ.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
 "SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "لقد تعذر إلغاء تفعيل الدفوعات لأن رصيدك غير متاح. يُرجى التحقق من اتصالك بالانترنت ثم المحاولة مرة أخرى.";
@@ -5948,10 +5948,10 @@
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "تعذر إتمام الدفع لأن رصيدك غير متاح. يُرجى التحقق من اتصالك بالانترنت ثم المحاولة مرة أخرى.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "لم تعد الدفوعات متاحة في Signal. يمكنك دوما إرسال الدفوعات إلى منصة للتداول لكن لم يعد بإمكانك إرسال أو استلام الدفوعات أو إضافة مبالغ.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "لم تعد الدفوعات متاحة في سيجنال. يمكنك دوما إرسال الدفوعات إلى منصة للتداول لكن لم يعد بإمكانك إرسال أو استلام الدفوعات أو إضافة مبالغ.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "لم تعد الدفوعات متاحة في Signal. يمكنك دوما إرسال الدفوعات إلى منصة للتداول لكن لم يعد بإمكانك إرسال أو استلام الدفوعات أو إضافة مبالغ.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "لم تعد الدفوعات متاحة في سيجنال. يمكنك دوما إرسال الدفوعات إلى منصة للتداول لكن لم يعد بإمكانك إرسال أو استلام الدفوعات أو إضافة مبالغ.";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "إن التحويلات هي تقديرات فقط، وقد لا تكون دقيقة.";
@@ -5969,7 +5969,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "تعطيل المدفوعات";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "لن يصبح بإمكانك إرسال أو استلام Mobilecoin في Signal إذا عطلت الدفوعات.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "لن يصبح بإمكانك إرسال أو استلام Mobilecoin في سيجنال إذا عطلت الدفوعات.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "تعطيل المدفوعات؟";
@@ -5978,10 +5978,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "تعطيل المدفوعات";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "يوصَى بإرسال رصيدك المالي إلى عنوان محفظة أخرى قبل تعطيل عمليات الدفع. إذا اخترت عدم إرسال رصيدك المالي الآن، سَتبقى في محفظتك مرتبطة بـ Signal إذا أعدت تفعيل الدفوعات.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "يوصَى بإرسال رصيدك المالي إلى عنوان محفظة أخرى قبل تعطيل عمليات الدفع. إذا اخترت عدم إرسال رصيدك المالي الآن، سَتبقى في محفظتك مرتبطة بسيجنال إذا أعدت تفعيل الدفوعات.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "سَيبقى رصيدك في محفظتك مرتبطًا بـ Signal إذا اخترت إعادة تفعيل عمليات الدفع.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "سَيبقى رصيدك في محفظتك مرتبطًا بسيجنال إذا اخترت إعادة تفعيل عمليات الدفع.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "تعطيل بدون أي إرسال ؟";
@@ -6008,7 +6008,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "حَول MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "يمكنك إضافة مبالغ لاستخدامها في Signal عبر إرسال MobileCoin إلى عنوان محفظتك.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "يمكنك إضافة مبالغ لاستخدامها في سيجنال عبر إرسال MobileCoin إلى عنوان محفظتك.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "إضافة الرصيد";
@@ -6065,7 +6065,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "لقد فُعلت الدفوعات.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "استخدم Signal لإرسال واستلام MobileCoin، العملة الرقمية الجديدة التي تركز على الخصوصي. عليك بتفعيلها للبدء بالاستخدام.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "استخدم سيجنال لإرسال واستلام MobileCoin، العملة الرقمية الجديدة التي تركز على الخصوصي. عليك بتفعيلها للبدء بالاستخدام.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "إعادة تفعيل عمليات الدفع";
@@ -6083,7 +6083,7 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "متابعة بدون حفظ؟";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "سوف يُستعاد رصيدك تلقائيا فور الانتهاء من إعادة تثبيت Signal، وذلك إذا قمت بتأكيد ‫رقم Signal التعريفي الشخصي‬. يمكنك أيضا استعادة حسابك باستخدام جملة الاستعادة، والتي تتكون من 24 كلمة فريدة خاصك بك فقط. يٌرجى كتابتها ثم حفظها في مكان آمن.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "سوف يُستعاد رصيدك تلقائيا فور الانتهاء من إعادة تثبيت سيجنال، وذلك إذا قمت بتأكيد ‫رقم سيجنال التعريفي الشخصي‬. يمكنك أيضا استعادة حسابك باستخدام جملة الاستعادة، والتي تتكون من 24 كلمة فريدة خاصك بك فقط. يٌرجى كتابتها ثم حفظها في مكان آمن.";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "لديك رصيد! حان وقت حفظ جملة الاستعادة الخاصة بك—مفتاح من 24 كلمة يُمكنك استخدامه لاستعادة رصيدك.";
@@ -6173,7 +6173,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "ساعد في منع أي شخص يستخدم هاتفكَ من الوصول إلى أموالك عن طريق تفعيل بصمة الأصبع. يُمكنك تعطيل هذا الخيار في الإعدادات.";
 
 /* Button for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "‫تحديث Signal‬";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "‫تحديث سيجنال‬";
 
 /* Message for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "يَجب تحديث التطبيق لمتابعة إرسال عمليات الدفع واستلامها، ولعرض رصيد عمليات الدفع المُحدثة الخاصة بك.";
@@ -6305,7 +6305,7 @@
 "SETTINGS_PAYMENTS_TITLE" = "المدفوعات";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "لا يمكنك الإرسال إلى عنوان محفظتك بـ Signal. يُرجى إدخال عنوان المحفظة انطلاقا من حسابك في منصة تداول تدعم ذلك.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "لا يمكنك الإرسال إلى عنوان محفظتك بسيجنال. يُرجى إدخال عنوان المحفظة انطلاقا من حسابك في منصة تداول تدعم ذلك.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "يمكنك إتمام إرسال Mobilecoin إلى محفظة حساب متوفرة في منصة التداول. إن عنوان المحفظة عبارة عن سلسلة من الحروف والأرقام، والتي غالبا ما تكون ظاهرة تحت الرمز المربع.";
@@ -6389,7 +6389,7 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "مَن يُمكنه العثور عليَّ باستخدام رقمي";
 
 /* Description label for Phone Number Privacy */
-"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "اختر من يمكنه رؤية رقم هاتفك ومن يمكنه الاتصال بك على Signal باستخدامه.";
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "اختر من يمكنه رؤية رقم هاتفك ومن يمكنه الاتصال بك على سيجنال باستخدامه.";
 
 /* The title for phone number privacy settings. */
 "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "رقم الهاتف";
@@ -6401,16 +6401,16 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "تعطيل التذكيرات";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "تأكد من حفظ الـPIN الخاص بك أو تخزينه بشكل آمن لأنه لا يُمكن استعادته. إذا نسيت الـPIN الخاص بك، قد تفقد البيانات عند إعادة تسجيل حساب Signal الخاص بك.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "تأكد من حفظ الـPIN الخاص بك أو تخزينه بشكل آمن لأنه لا يُمكن استعادته. إذا نسيت الـPIN الخاص بك، قد تفقد البيانات عند إعادة تسجيل حساب سيجنال الخاص بك.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "تأكيد الـPIN الخاص بك لـSignal";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "تأكيد الـPIN الخاص بك لسيجنال";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "تذكيرات الـPIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "الـPIN يُبقي المعلومات المحفوظة مع Signal مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. لا يمكن استرداد الـPIN الخاص بك. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد تثبيت Signal.";
+"SETTINGS_PINS_FOOTER" = "الـPIN يُبقي المعلومات المحفوظة مع سيجنال مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. لا يمكن استرداد الـPIN الخاص بك. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد تثبيت سيجنال.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "تغيير الـPIN الخاص بك";
@@ -6419,7 +6419,7 @@
 "SETTINGS_PINS_ITEM_CREATE" = "إنشاء PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "الـPIN الخاص بـSignal";
+"SETTINGS_PINS_TITLE" = "الـPIN الخاص بسيجنال";
 
 /* Footer for table section */
 "SETTINGS_PRIVACY_ADVANCED_FOOTER" = "تجاوز الرقابة، الوكيل، إعادَة توجيه المُكالَمات، وإعدَادَاتُ المُرسِل المَخفي.";
@@ -6446,7 +6446,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "تفعيل";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "إذا نسيت الـPIN الخاص بك لـSignal خلال التسجيل مرة أُخرى في Signal، سوف يُقفَل حسابك لمدة سبعة أيام.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "إذا نسيت الـPIN الخاص بك لسيجنال خلال التسجيل مرة أُخرى في سيجنال، سوف يُقفَل حسابك لمدة سبعة أيام.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "تفعيل قفل التسجيل؟";
@@ -6476,16 +6476,16 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "المكالمات";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "اِستخدامُ Face ID, Touch ID أو رَمز سِر جِهاز iOS الخاصّ بك لفَكّ قُفل Signal.";
+"SETTINGS_SECURITY_DETAIL" = "اِستخدامُ Face ID, Touch ID أو رَمز سِر جِهاز iOS الخاصّ بك لفَكّ قُفل سيجنال.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "اِستِخدامُ Face ID لِفَكّ فُقل Signal.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "اِستِخدامُ Face ID لِفَكّ فُقل سيجنال.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "اِستِخدامُ رَمز السِّرّ الخاصّ بالجِهاز لفَكّ قُفل Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "اِستِخدامُ رَمز السِّرّ الخاصّ بالجِهاز لفَكّ قُفل سيجنال.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "اِستِخدامُ Touch ID لِفَكّ فقل Signal.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "اِستِخدامُ Touch ID لِفَكّ فقل سيجنال.";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "حماية التطبيق";
@@ -6500,16 +6500,16 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "مشاركة جهات الاتصال مع ‫نظام iOS‬";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "السماح لنظام iOS‬ بالوصول إلى جهات الاتصال Signal وإلى الدردشات لاستخدام ميزات مثل مشاركة الاقتراحات.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "السماح لنظام iOS‬ بالوصول إلى جهات الاتصال سيجنال وإلى الدردشات لاستخدام ميزات مثل مشاركة الاقتراحات.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "السماح لنظام iOS‬ بالوصول إلى جهات الاتصال Signal وإلى الدردشات لاستخدام ميزات مثل مشاركة الاقتراحات والإشعارات.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "السماح لنظام iOS‬ بالوصول إلى جهات الاتصال سيجنال وإلى الدردشات لاستخدام ميزات مثل مشاركة الاقتراحات والإشعارات.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "قفل التسجيل";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "مطلوب الـPIN الخاص بك في Signal لتسجيل رقم هاتفك مع Signal مرة أُخرى.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "مطلوب الـPIN الخاص بك في سيجنال لتسجيل رقم هاتفك مع سيجنال مرة أُخرى.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "مؤشرات الكتابة";
@@ -6542,13 +6542,13 @@
 "SHARE_EXTENSION_LOADING" = "يَجري التَّحميل..";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "شغِّل تطبيق Signal للتسجيل.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "شغِّل تطبيق سيجنال للتسجيل.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "غير مُسجِل";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "شغِّل تطبيق Signal للتحديث أو للتسجيل.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "شغِّل تطبيق سيجنال للتحديث أو للتسجيل.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "غير مُستَعِد";
@@ -6566,7 +6566,7 @@
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "تعذَّر تجهيز  المُرفق";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "شارك على Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "شارك على سيجنال";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "فَشَلَ تعطيل اقتراحات المُشاركة.";
@@ -6578,7 +6578,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "إظهار الدردشة";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "أنا أدعوك لتثبيت تطبيق Signal! ها هو الرابط:";
+"SMS_INVITE_BODY" = "أنا أدعوك لتثبيت تطبيق سيجنال! ها هو الرابط:";
 
 /* An error message generically indicating that something went wrong. */
 "SOMETHING_WENT_WRONG_ERROR" = "حدث خطأ ما.";
@@ -6602,7 +6602,7 @@
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "هَل تُريد المُتابعة دُونَ تَحقُّق؟";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "للمساعدة على الوقاية من البريد العشوائي في Signal، يُرجى إتمام عملية التحقق.\n\nبعد التأكد من ذلك، يمكنك الاستمرار في التراسُل. إن أي رسالة متوقفة مؤقتا سوف تُرسَل تلقائيا.";
+"SPAM_CAPTCHA_SHEET_BODY" = "للمساعدة على الوقاية من البريد العشوائي في سيجنال، يُرجى إتمام عملية التحقق.\n\nبعد التأكد من ذلك، يمكنك الاستمرار في التراسُل. إن أي رسالة متوقفة مؤقتا سوف تُرسَل تلقائيا.";
 
 /* Title for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_TITLE" = "تَحقَّق لِلاِستِمرار فِي المُراسَلَة";
@@ -6893,19 +6893,19 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "يمكن لِجهات اتصالكَ رؤية اسمك وصورتك، كما يمكنهم الاطلاع على منشوراتك في \"قصتي\" إلا إذا أخفيتها عنهم.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<strong>‫جهات اتصال Signal‬</strong> هم الأفراد الذي اخترت الثقة بهم، إما عبر:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<strong>‫جهات اتصال سيجنال‬</strong> هم الأفراد الذي اخترت الثقة بهم، إما عبر:";
 
 /* Label for the stories section of the settings view */
 "STORY_SETTINGS_TITLE" = "القِصَص";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "اِختر من يُمكنه رؤية قصتك من علاقات Signal. لن تؤثر التغييرات على القِصص التي أرسلتها من قبل.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "اِختر من يُمكنه رؤية قصتك من علاقات سيجنال. لن تؤثر التغييرات على القِصص التي أرسلتها من قبل.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "من يمكنه مشاهدة هذه القصة";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "اِختر من يُمكنه مشاهدة قصتك من جهات اتصال Signal. يُمكنك تغيير هذا في أي وقت في إعدادات الخصوصية.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "اِختر من يُمكنه مشاهدة قصتك من جهات اتصال سيجنال. يُمكنك تغيير هذا في أي وقت في إعدادات الخصوصية.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "سَيتم تجزئة الفيديوهات المُرسلة إلى القِصص إلى مقاطع من %1$d ثانية وإرسالها كعِدة قصص.";
@@ -7052,7 +7052,7 @@
 "SWITCH_ON" = "مُفعَّل";
 
 /* Name to display for the 'system' sender, e.g. for release notes and the onboarding story */
-"SYSTEM_ADDRESS_NAME" = "Signal";
+"SYSTEM_ADDRESS_NAME" = "سيجنال";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "التحقق";
@@ -7070,31 +7070,31 @@
 "TAP_REPLACE_EMOJI" = "المس لاستبدال الوجه المُعبِّر";
 
 /* Option in selected text edit menu to make text bold */
-"TEXT_MENU_BOLD" = "Bold";
+"TEXT_MENU_BOLD" = "خط Bold";
 
 /* Option in selected text edit menu to view text formatting options */
-"TEXT_MENU_FORMAT" = "Format";
+"TEXT_MENU_FORMAT" = "التنسيق";
 
 /* Option in selected text edit menu to make text italic */
-"TEXT_MENU_ITALIC" = "Italic";
+"TEXT_MENU_ITALIC" = "خط Italic";
 
 /* Option in selected text edit menu to look up word definitions */
-"TEXT_MENU_LOOK_UP" = "Look Up";
+"TEXT_MENU_LOOK_UP" = "بحث عن";
 
 /* Option in selected text edit menu to make text monospace */
-"TEXT_MENU_MONOSPACE" = "Monospace";
+"TEXT_MENU_MONOSPACE" = "خط Monospace";
 
 /* Option in selected text edit menu to replace text with suggestions */
-"TEXT_MENU_REPLACE" = "Replace";
+"TEXT_MENU_REPLACE" = "استبدال";
 
 /* Option in selected text edit menu to share selected text */
-"TEXT_MENU_SHARE" = "Share";
+"TEXT_MENU_SHARE" = "المُشاركة";
 
 /* Option in selected text edit menu to make text spoiler */
-"TEXT_MENU_SPOILER" = "Spoiler";
+"TEXT_MENU_SPOILER" = "تنسيق نص سبويلر";
 
 /* Option in selected text edit menu to make text strikethrough */
-"TEXT_MENU_STRIKETHROUGH" = "Strikethrough";
+"TEXT_MENU_STRIKETHROUGH" = "تنسيق يتوسطه خط";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "تمَّ حذف هذه الرسالة.";
@@ -7175,25 +7175,25 @@
 "UNKNOWN_CONTACT_NAME" = "جهة اتصال مجهولة";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "أرسل أحد أجهزتك رسالة لا يُمكن مُعالجتها أو عرضها هُنا لأنها تستخدم ميزة جديدة في Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "أرسل أحد أجهزتك رسالة لا يُمكن مُعالجتها أو عرضها هُنا لأنها تستخدم ميزة جديدة في سيجنال.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "لَقَد أرسلَ لكَ %1$@ رِسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "لَقَد أرسلَ لكَ %1$@ رِسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في سيجنال.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "أنت قد تلقيت رسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "أنت قد تلقيت رسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في سيجنال.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "حدِّث Signal الآن";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "حدِّث سيجنال الآن";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "تمَّ التحديث إلى آخر إصدار من Signal. يُمكنك الآن تلقي هذا النوع من الرسائل على جهازك.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "تمَّ التحديث إلى آخر إصدار من سيجنال. يُمكنك الآن تلقي هذا النوع من الرسائل على جهازك.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "يُمكن أن تطلب من %1$@ إعادة إرسال هذه الرسالة بما أنك الآن تستخدم آخر إصدار من Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "يُمكن أن تطلب من %1$@ إعادة إرسال هذه الرسالة بما أنك الآن تستخدم آخر إصدار من سيجنال.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "يُمكن أن تطلب من المُرسِل إعادة إرسال هذه الرسالة بما أنك الآن تستخدم آخر إصدار من Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "يُمكن أن تطلب من المُرسِل إعادة إرسال هذه الرسالة بما أنك الآن تستخدم آخر إصدار من سيجنال.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "مجهول";
@@ -7217,13 +7217,13 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "فصل ارتباط \"%1$@\"؟";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "لم يعد هذا الجهاز مرتبطًا. أعد ربط Signal مع هاتفك لتواصل المراسلة.";
+"UNLINKED_WARNING" = "لم يعد هذا الجهاز مرتبطًا. أعد ربط سيجنال مع هاتفك لتواصل المراسلة.";
 
 /* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
 "UNLINKED_WARNING_ACTION_TITLE" = "أعد ربط الجهاز";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "لم يتمكن Signal من فصل ارتباط جهازك.";
+"UNLINKING_FAILED_ALERT_TITLE" = "لم يتمكن سيجنال من فصل ارتباط جهازك.";
 
 /* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "فَكّ التَّثبيت";
@@ -7244,7 +7244,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "جهازك لا يدعم هذه الميزة.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "لقد تغير رقم أمانك مع %1$@، من المحتمل أن يكون ذلك الشخص قد أعاد تثبيت Signal أو قام بتغيير الأجهزة. يُرجى اللمس لتأكيد رقم الأمان الجديد. هذا اﻹجراء اختياري.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "لقد تغير رقم أمانك مع %1$@، من المحتمل أن يكون ذلك الشخص قد أعاد تثبيت سيجنال أو قام بتغيير الأجهزة. يُرجى اللمس لتأكيد رقم الأمان الجديد. هذا اﻹجراء اختياري.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "التَّحَقُق";
@@ -7262,7 +7262,7 @@
 "USE_PROXY_BUTTON" = "استخدم الوكيل";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "اِستخدم الوكيل فقط إذا تعذّر عليك الاتصال بـ Signal (عبر البيانات الخلوية أو عبر شبكة Wi-Fi).";
+"USE_PROXY_EXPLANATION" = "اِستخدم الوكيل فقط إذا تعذّر عليك الاتصال بسيجنال (عبر البيانات الخلوية أو عبر شبكة Wi-Fi).";
 
 /* Description of how to update discovery */
 "USERNAME_DISCOVERY_DESCRIPTION" = "عطّل اكتشاف رقم الهاتف ضمن الإعدادات > الخصوصية > رقم الهاتف > من يُمكنه العثور على رقمي، لاستخدام اسم المُستخدم الخاص بك كالطريقة الأساسية التي يُمكن للآخرين استخدامها للاتصال بك.";
@@ -7271,25 +7271,25 @@
 "USERNAME_DISCRIMINATOR_DESCRIPTION" = "يتم إقران أسماء المُستخدمين بمجموعة من الأرقام ولا تتم مُشاركتها في ملفك الشخصي";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "إعداد اِسمُ المُستخدِم الخاص بك على Signal";
+"USERNAME_EDUCATION_TITLE" = "إعداد اِسمُ المُستخدِم الخاص بك على سيجنال";
 
 /* Description of username link */
 "USERNAME_LINK_DESCRIPTION" = "لكل اسم مستخدم رابط خاص يُمكنك مُشاركته مع أصدقائك لكي يبدؤوا الدردشة معك";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
-"USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "color";
+"USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "اللون";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Only share your QR code and link with people you trust. When shared others will be able to see your username and start a chat with you.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "لا تُشارك الرمز المربع الخاص بك والرابط إلاّ مع الأشخاص الذين تثق بهم. عند المشاركة، سيتمكن الآخرون من رؤية اسم المستخدم الخاص بك وبدء محادثة معك.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Reset";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "إعادة التعيين";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
-"USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "share";
+"USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "المُشاركة";
 
 /* A title for a view that allows you to view and interact with a QR code for your username link. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Code";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "الرمز";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "حدث خطأ أثناء البحث عن اسم المُستخدم. يُرجى إعادة المُحاولة في وقت لاحق.";
@@ -7301,7 +7301,7 @@
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "اسم مستخدم غير صالح";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ ليس مُستخدم Signal. تأكد من إدخالك لاسم المُستخدم الكامل.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ ليس مُستخدم سيجنال. تأكد من إدخالك لاسم المُستخدم الكامل.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "لم يتمّ العُثور على المُستخدم.";
@@ -7403,7 +7403,7 @@
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "إضغَط مَعَ الاِستِمرار فِي الضَّغط لِلتَسجِيل.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "أكمل الإعداد على Signal للحاسوب المكتبي.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "أكمل الإعداد على سيجنال للحاسوب المكتبي.";
 
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "اسم جهة الاتصال";

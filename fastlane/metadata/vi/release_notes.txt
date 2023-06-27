@@ -1,1 +1,1 @@
-• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?
+• Sửa một số lỗi nhỏ liên quan đến tính năng nhắc đến người khác bằng cách gõ @tên và tìm kiếm liên hệ mới.

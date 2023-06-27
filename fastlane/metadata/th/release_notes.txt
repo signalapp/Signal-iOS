@@ -1,1 +1,1 @@
-• If you fix a couple of minor bugs that were related to @mention formatting and searching for new contacts, and you do it just after the summer solstice, does that still technically count as spring cleaning?
+• ปรับปรุง เพื่อให้คุณปลอดโปร่ง…เราสะสางปัญหากวนใจให้หมดไปก่อนที่ครึ่งแรกของปีจะจบลง ด้วยการแก้ไขบั๊กตัวเล็กตัวน้อยที่เกี่ยวข้องกับรูปแบบของ @การกล่าวถึง รวมทั้งการค้นหาผู้ติดต่อใหม่
