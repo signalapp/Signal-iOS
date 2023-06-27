@@ -25,6 +25,7 @@ protocol MediaGalleryPrimaryViewController: UIViewController {
     var isFiltering: Bool { get }
     var isEmpty: Bool { get }
     var hasSelection: Bool { get }
+    func selectionInfo() -> (count: Int, totalSize: Int64)?
     func disableFiltering()
     func batchSelectionModeDidChange(isInBatchSelectMode: Bool)
     func didEndSelectMode()
@@ -160,6 +161,7 @@ public class MediaGalleryAccessoriesHelper {
             let didChange = isInBatchSelectMode != oldValue
             if didChange {
                 viewController?.batchSelectionModeDidChange(isInBatchSelectMode: isInBatchSelectMode)
+                updateSelectionInfoLabel()
                 updateSelectButton()
                 updateDeleteButton()
                 updateShareButton()
@@ -172,6 +174,7 @@ public class MediaGalleryAccessoriesHelper {
         guard isInBatchSelectMode else {
             return
         }
+        updateSelectionInfoLabel()
         updateDeleteButton()
         updateShareButton()
     }
@@ -439,7 +442,7 @@ public class MediaGalleryAccessoriesHelper {
             case .hidden:
                 return nil
             case .selection, .selectionFiltering:
-                return [ shareButton, flexibleSpace(), deleteButton ]
+                return [ shareButton, flexibleSpace(), selectionInfoButton, flexibleSpace(), deleteButton ]
             case .regular:
                 if isGridViewAllowed {
                     return [
@@ -575,6 +578,49 @@ public class MediaGalleryAccessoriesHelper {
     private func didPressShare(_ sender: Any) {
         Logger.debug("")
         viewController?.shareSelectedItems(sender)
+    }
+
+    // MARK: - Selection Info
+
+    private lazy var selectionCountLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.textColor = UIColor(dynamicProvider: { _ in Theme.primaryTextColor })
+        label.font = .dynamicTypeSubheadlineClamped.semibold()
+        label.adjustsFontForContentSizeCategory = true
+        return label
+    }()
+
+    private lazy var selectionSizeLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.textColor = UIColor(dynamicProvider: { _ in Theme.primaryTextColor })
+        label.font = .dynamicTypeSubheadlineClamped
+        label.adjustsFontForContentSizeCategory = true
+        return label
+    }()
+
+    private lazy var selectionInfoButton = UIBarButtonItem(customView: {
+        let stackView = UIStackView(arrangedSubviews: [ selectionCountLabel, selectionSizeLabel ])
+        stackView.axis = .vertical
+        stackView.spacing = 0
+        return stackView
+    }())
+
+    private func updateSelectionInfoLabel() {
+        guard isInBatchSelectMode, let (selectionCount, totalSize) = viewController?.selectionInfo() else {
+            selectionCountLabel.text = ""
+            selectionSizeLabel.text = ""
+            selectionInfoButton.customView?.sizeToFit()
+            return
+        }
+        selectionCountLabel.text = String.localizedStringWithFormat(
+            OWSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d", tableName: "PluralAware", comment: ""),
+            selectionCount
+        )
+        selectionSizeLabel.text = OWSFormat.localizedFileSizeString(from: totalSize)
+
+        selectionInfoButton.customView?.sizeToFit()
     }
 
     private var fileType: AllMediaFileType {

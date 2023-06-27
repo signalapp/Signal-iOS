@@ -1312,6 +1312,18 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
         return false
     }
 
+    func selectionInfo() -> (count: Int, totalSize: Int64)? {
+        guard
+            let items = collectionView.indexPathsForSelectedItems?.compactMap({ galleryItem(at: $0) }),
+            !items.isEmpty
+        else {
+            return nil
+        }
+
+        let totalSize = items.reduce(Int64(0), { result, item in result + Int64(item.attachmentStream.byteCount) })
+        return (items.count, totalSize)
+    }
+
     var mediaGalleryFilterMenuActions: [MediaGalleryAccessoriesHelper.MenuAction] {
         return [
             MenuAction(
