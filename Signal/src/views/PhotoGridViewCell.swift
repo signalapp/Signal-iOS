@@ -7,7 +7,7 @@ import SignalMessaging
 import SignalUI
 import UIKit
 
-public enum PhotoGridItemType {
+enum PhotoGridItemType {
     case photo
     case animated
     case video(Promise<TimeInterval>)
@@ -46,69 +46,6 @@ public enum PhotoGridItemType {
     }
 }
 
-public enum AllMediaItem {
-    case graphic(any PhotoGridItem)
-    case audio(AudioItem)
-
-    var attachmentStream: TSAttachmentStream? {
-        switch self {
-        case .graphic(let photoItem):
-            return (photoItem as? GalleryGridCellItem)?.galleryItem.attachmentStream
-        case .audio(let audioItem):
-            return audioItem.attachmentStream
-        }
-    }
-}
-
-extension AllMediaItem: Equatable {
-    public static func == (lhs: AllMediaItem, rhs: AllMediaItem) -> Bool {
-        switch (lhs, rhs) {
-        case let (.graphic(lvalue), .graphic(rvalue)):
-            return lvalue === rvalue
-        case let (.audio(lvalue), .audio(rvalue)):
-            return lvalue.attachmentStream == rvalue.attachmentStream
-        case (.graphic, _), (.audio, _):
-            return false
-        }
-    }
-}
-public struct AudioItem {
-    var message: TSMessage
-    var interaction: TSInteraction
-    var thread: TSThread
-    var attachmentStream: TSAttachmentStream
-    var mediaCache: CVMediaCache
-    var metadata: MediaMetadata
-
-    var size: UInt {
-        UInt(attachmentStream.byteCount)
-    }
-    var date: Date {
-        attachmentStream.creationTimestamp
-    }
-    var duration: TimeInterval {
-        attachmentStream.audioDurationSeconds()
-    }
-
-    enum AttachmentType {
-        case file
-        case voiceMessage
-    }
-    var attachmentType: AttachmentType {
-        let isVoiceMessage = attachmentStream.isVoiceMessageIncludingLegacyMessages
-        return isVoiceMessage ? .voiceMessage : .file
-    }
-
-    var localizedString: String {
-        switch attachmentType {
-        case .file:
-            return "Audio file"  // ATTACHMENT_TYPE_AUDIO
-        case .voiceMessage:
-            return "Voice message"  // ATTACHMENT_TYPE_VOICE_MESSAGE
-        }
-    }
-}
-
 public struct MediaMetadata {
     var sender: String
     var abbreviatedSender: String
@@ -117,14 +54,14 @@ public struct MediaMetadata {
     var creationDate: Date?
 }
 
-public protocol PhotoGridItem: AnyObject {
+protocol PhotoGridItem: AnyObject {
     var type: PhotoGridItemType { get }
     var isFavorite: Bool { get }
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage?
     var mediaMetadata: MediaMetadata? { get }
 }
 
-public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
+class PhotoGridViewCell: UICollectionViewCell {
 
     static let reuseIdentifier = "PhotoGridViewCell"
 
@@ -140,17 +77,14 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
     private let highlightedMaskView: UIView
     private let selectedMaskView: UIView
 
-    var item: AllMediaItem?
+    private(set) var photoGridItem: PhotoGridItem?
 
     public var loadingColor = Theme.washColor
-    private(set) var allowsMultipleSelection = false {
+
+    var allowsMultipleSelection = false {
         didSet {
             updateSelectionState()
         }
-    }
-
-    func setAllowsMultipleSelection(_ allowed: Bool, animated: Bool) {
-        allowsMultipleSelection = allowed
     }
 
     public override var isHighlighted: Bool {
@@ -246,7 +180,7 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    fileprivate func updateSelectionState() {
+    private func updateSelectionState() {
         selectedMaskView.isHidden = !isSelected
         selectionButton.isSelected = isSelected
         selectionButton.allowsMultipleSelection = allowsMultipleSelection
@@ -287,9 +221,9 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
     }
 
     private func updateVideoDurationWhenPromiseFulfilled(_ promisedDuration: Promise<TimeInterval>) {
-        let originalItem = item
+        let originalItem = photoGridItem
         promisedDuration.observe { [weak self] result in
-            guard let self, self.item == originalItem, case .success(let duration) = result else {
+            guard let self, self.photoGridItem === originalItem, case .success(let duration) = result else {
                 return
             }
             self.setCaption(OWSFormat.localizedDurationString(from: duration))
@@ -365,34 +299,15 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
     }
 
     public func makePlaceholder() {
-        self.item = nil
-        self.image = nil
+        photoGridItem = nil
+        image = nil
         setMedia(itemType: .photo)
         setUpAccessibility(item: nil)
     }
 
-    public func configure(item: AllMediaItem, spoilerReveal: SpoilerRevealState) {
-        switch item {
-        case .graphic(let photoGridItem):
-            self.item = item
-            reallyConfigure(photoGridItem)
-        default:
-            owsFailDebug("Unexpected item type \(item)")
-        }
-    }
+    func configure(item: PhotoGridItem) {
+        photoGridItem = item
 
-    private var photoGridItem: PhotoGridItem? {
-        switch item {
-        case .graphic(let result):
-            return result
-        case .none:
-            return nil
-        default:
-            return nil
-        }
-    }
-
-    private func reallyConfigure(_ item: PhotoGridItem) {
         // PHCachingImageManager returns multiple progressively better
         // thumbnails in the async block. We want to avoid calling
         // `configure(item:)` multiple times because the high-quality image eventually applied
@@ -424,7 +339,7 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
     override public func prepareForReuse() {
         super.prepareForReuse()
 
-        item = nil
+        photoGridItem = nil
         imageView.image = nil
         isFavoriteBadge?.isHidden = true
         durationLabel?.isHidden = true
@@ -434,22 +349,17 @@ public class PhotoGridViewCell: UICollectionViewCell, MediaTileCell {
         selectionButton.reset()
     }
 
-    func mediaPresentationContext(
-        collectionView: UICollectionView,
-        in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
-            guard let mediaSuperview = imageView.superview else {
-                owsFailDebug("mediaSuperview was unexpectedly nil")
-                return nil
-            }
-            let presentationFrame = coordinateSpace.convert(imageView.frame, from: mediaSuperview)
-            let clippingAreaInsets = UIEdgeInsets(top: collectionView.adjustedContentInset.top, leading: 0, bottom: 0, trailing: 0)
-            return MediaPresentationContext(
-                mediaView: imageView,
-                presentationFrame: presentationFrame,
-                clippingAreaInsets: clippingAreaInsets
-            )
+    func mediaPresentationContext(collectionView: UICollectionView, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        guard let mediaSuperview = imageView.superview else {
+            owsFailDebug("mediaSuperview was unexpectedly nil")
+            return nil
         }
-
-    func indexPathDidChange(_ indexPath: IndexPath, itemCount: Int) {
+        let presentationFrame = coordinateSpace.convert(imageView.frame, from: mediaSuperview)
+        let clippingAreaInsets = UIEdgeInsets(top: collectionView.adjustedContentInset.top, leading: 0, bottom: 0, trailing: 0)
+        return MediaPresentationContext(
+            mediaView: imageView,
+            presentationFrame: presentationFrame,
+            clippingAreaInsets: clippingAreaInsets
+        )
     }
 }

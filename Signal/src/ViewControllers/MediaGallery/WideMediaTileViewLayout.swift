@@ -29,37 +29,15 @@ class WideMediaTileViewLayout: UICollectionViewFlowLayout, ScrollPositionPreserv
         }
     }
 
-    private var sectionSpacing: CGFloat = 20.0
-
-    init(sectionSpacing: CGFloat, interItemSpacing: CGFloat) {
-        self.sectionSpacing = sectionSpacing
+    init(interItemSpacing: CGFloat) {
         super.init()
-        self.scrollDirection = .vertical
+        scrollDirection = .vertical
         minimumLineSpacing = interItemSpacing
         minimumInteritemSpacing = interItemSpacing
     }
 
     required init?(coder: NSCoder) {
         owsFail("init(coder:) has not been implemented")
-    }
-
-    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        let layoutAttributes = super.layoutAttributesForElements(in: rect)
-
-        layoutAttributes?.forEach { attributes in
-            if attributes.representedElementKind == UICollectionView.elementKindSectionHeader {
-                guard let collectionView = collectionView else { return }
-                let contentInset = collectionView.contentInset
-                let bounds = collectionView.bounds
-
-                let width = bounds.width - contentInset.left - contentInset.right
-                let height = attributes.frame.height
-
-                attributes.frame = CGRect(x: contentInset.left, y: attributes.frame.origin.y, width: width, height: height)
-            }
-        }
-
-        return layoutAttributes
     }
 
     override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {

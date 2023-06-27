@@ -119,7 +119,6 @@
 		3402AA8C271D9E180084CBAE /* LoopingVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9552F271B510400B05242 /* LoopingVideoView.swift */; };
 		3402AA8D271D9E180084CBAE /* ManualStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9550C271B510400B05242 /* ManualStackView.swift */; };
 		3402AA8E271D9E180084CBAE /* TextViewWithPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9553E271B510400B05242 /* TextViewWithPlaceholder.swift */; };
-		3402AA8F271D9E180084CBAE /* ThemeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95537271B510400B05242 /* ThemeHeaderView.swift */; };
 		3402AA90271D9E180084CBAE /* ImageEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9555A271B510400B05242 /* ImageEditorModel.swift */; };
 		3402AA91271D9E180084CBAE /* GalleryRailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95548271B510400B05242 /* GalleryRailView.swift */; };
 		3402AA92271D9E180084CBAE /* CVText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95525271B510400B05242 /* CVText.swift */; };
@@ -588,7 +587,6 @@
 		45DDD06729C1365100FD9670 /* MediaGalleryAccessoriesHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DDD06629C1365100FD9670 /* MediaGalleryAccessoriesHelper.swift */; };
 		45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */; };
 		45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */; };
-		45EFA8D82A391EE800DB91C6 /* MediaTileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45069FCB29D4FFD200D0DD14 /* MediaTileCell.swift */; };
 		45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F32C1D205718B000A300D5 /* MediaPageViewController.swift */; };
 		45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */; };
 		4AC4EA13C8A444455DAB351F /* Pods_SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */; };
@@ -911,6 +909,7 @@
 		7609818C2936EF22008F8300 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7609818B2936EF22008F8300 /* AudioPlayer.swift */; };
 		7609819429382EFF008F8300 /* UIGeometry+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7609819329382EFF008F8300 /* UIGeometry+Signal.swift */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
+		7622B3B22A4510D7000E31DA /* MediaGalleryCellItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7622B3B12A4510D7000E31DA /* MediaGalleryCellItem.swift */; };
 		7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBC28075056009AA53D /* ImageEditorCropView.swift */; };
 		7628DDBF2807505D009AA53D /* RotationControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBD2807505D009AA53D /* RotationControl.swift */; };
 		7628DDC1280750BC009AA53D /* ExpandableContactListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDC0280750BC009AA53D /* ExpandableContactListView.swift */; };
@@ -2795,7 +2794,6 @@
 		34A95532271B510400B05242 /* TappableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableView.swift; sourceTree = "<group>"; };
 		34A95535271B510400B05242 /* OWSBubbleShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSBubbleShapeView.swift; sourceTree = "<group>"; };
 		34A95536271B510400B05242 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
-		34A95537271B510400B05242 /* ThemeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeHeaderView.swift; sourceTree = "<group>"; };
 		34A95538271B510400B05242 /* OWSLayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLayerView.swift; sourceTree = "<group>"; };
 		34A9553A271B510400B05242 /* CustomKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomKeyboard.swift; sourceTree = "<group>"; };
 		34A9553D271B510400B05242 /* OWSActionSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSActionSheets.swift; sourceTree = "<group>"; };
@@ -2968,7 +2966,6 @@
 		45069FC529D3A7C800D0DD14 /* WideMediaTileViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WideMediaTileViewLayout.swift; sourceTree = "<group>"; };
 		45069FC729D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquareMediaTileViewLayout.swift; sourceTree = "<group>"; };
 		45069FC929D4FFBB00D0DD14 /* MediaTileDateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTileDateFormatter.swift; sourceTree = "<group>"; };
-		45069FCB29D4FFD200D0DD14 /* MediaTileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTileCell.swift; sourceTree = "<group>"; };
 		45069FCD29D64CB300D0DD14 /* SelectionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionButton.swift; sourceTree = "<group>"; };
 		450B0FC829FB301700B9A458 /* AudioMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessageView.swift; sourceTree = "<group>"; };
 		451166BF1FD86B98000739BA /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
@@ -3396,6 +3393,7 @@
 		7609818B2936EF22008F8300 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		7609819329382EFF008F8300 /* UIGeometry+Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIGeometry+Signal.swift"; sourceTree = "<group>"; };
 		760D93AA27A0E28600F351AC /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		7622B3B12A4510D7000E31DA /* MediaGalleryCellItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaGalleryCellItem.swift; sourceTree = "<group>"; };
 		7628DDBC28075056009AA53D /* ImageEditorCropView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorCropView.swift; sourceTree = "<group>"; };
 		7628DDBD2807505D009AA53D /* RotationControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationControl.swift; sourceTree = "<group>"; };
 		7628DDC0280750BC009AA53D /* ExpandableContactListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpandableContactListView.swift; sourceTree = "<group>"; };
@@ -5729,7 +5727,6 @@
 				885275BF27E26775003F2F9B /* TextAttachmentView.swift */,
 				34A95528271B510400B05242 /* TextFieldWithPlaceholder.swift */,
 				34A9553E271B510400B05242 /* TextViewWithPlaceholder.swift */,
-				34A95537271B510400B05242 /* ThemeHeaderView.swift */,
 				34A95564271B510400B05242 /* Toast.swift */,
 				34A95519271B510400B05242 /* VideoPlayerView.swift */,
 			);
@@ -6330,6 +6327,7 @@
 				76AE4D9C2A14611C000D98A4 /* MediaControlPanelView.swift */,
 				452EC6DE205E9E30000E787C /* MediaGallery.swift */,
 				45DDD06629C1365100FD9670 /* MediaGalleryAccessoriesHelper.swift */,
+				7622B3B12A4510D7000E31DA /* MediaGalleryCellItem.swift */,
 				4585B4A2291B2BFB003A8F8E /* MediaGalleryCollectionViewUpdater.swift */,
 				1700E33828B568200073D949 /* MediaGallerySections.swift */,
 				76BB06F929AD84DB00978856 /* MediaItemViewController.swift */,
@@ -6928,7 +6926,6 @@
 				32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */,
 				88A941982409A391000E9700 /* LottieToggleButton.swift */,
 				45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */,
-				45069FCB29D4FFD200D0DD14 /* MediaTileCell.swift */,
 				45069FC929D4FFBB00D0DD14 /* MediaTileDateFormatter.swift */,
 				8829883A25B9FD6700DEE1E3 /* MockConversationView.swift */,
 				3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */,
@@ -10947,7 +10944,6 @@
 				34A954DC271B4F3E00B05242 /* Theme+Icons.swift in Sources */,
 				7677E40D29F75C4200AC6A75 /* Theme.swift in Sources */,
 				66FC638429E2201500F00DAC /* ThemedColor+Theme.swift in Sources */,
-				3402AA8F271D9E180084CBAE /* ThemeHeaderView.swift in Sources */,
 				3402AA62271D9DEC0084CBAE /* ThreadUtil+SignalUI.swift in Sources */,
 				3402AA65271D9DEC0084CBAE /* ThreadViewModel.swift in Sources */,
 				3402AA96271D9E180084CBAE /* Toast.swift in Sources */,
@@ -11524,13 +11520,13 @@
 				346C19E125ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift in Sources */,
 				452EC6DF205E9E30000E787C /* MediaGallery.swift in Sources */,
 				45DDD06729C1365100FD9670 /* MediaGalleryAccessoriesHelper.swift in Sources */,
+				7622B3B22A4510D7000E31DA /* MediaGalleryCellItem.swift in Sources */,
 				4585B4A3291B2BFB003A8F8E /* MediaGalleryCollectionViewUpdater.swift in Sources */,
 				1700E33928B568200073D949 /* MediaGallerySections.swift in Sources */,
 				4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */,
 				76BB06FA29AD84DB00978856 /* MediaItemViewController.swift in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
 				4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */,
-				45EFA8D82A391EE800DB91C6 /* MediaTileCell.swift in Sources */,
 				45069FCA29D4FFBB00D0DD14 /* MediaTileDateFormatter.swift in Sources */,
 				45D9784229F0B50000BBB3C0 /* MediaTileListModeCell.swift in Sources */,
 				45CADA8B298DD2B4009EBDF5 /* MediaTileScrollFlag.swift in Sources */,

@@ -9,9 +9,9 @@ import SignalUI
 
 class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
     static let reuseIdentifier = "AudioCell"
-    private var audioItem: AudioItem?
+    private var audioItem: MediaGalleryCellItemAudio?
     // TODO(george): Add support for dynamic size.
-    override class var desiredHeight: CGFloat { 86.0 }
+    class var desiredHeight: CGFloat { 86.0 }
     private var tapGestureRecognizer: UITapGestureRecognizer!
     private var panGestureRecognizer: UIPanGestureRecognizer!
     private var itemModel: CVItemModel?
@@ -20,10 +20,11 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
     private var conversationStyle: ConversationStyle?
     private var cellMeasurement: CVCellMeasurement?
 
-    private func createAudioMessageView(audioItem: AudioItem?, spoilerReveal: SpoilerRevealState, transaction: SDSAnyReadTransaction) -> AudioMessageView? {
-        guard let audioItem else {
-            return nil
-        }
+    private func createAudioMessageView(
+        audioItem: MediaGalleryCellItemAudio,
+        spoilerReveal: SpoilerRevealState,
+        transaction: SDSAnyReadTransaction
+    ) -> AudioMessageView? {
         guard let attachment = AudioAttachment(attachment: audioItem.attachmentStream,
                                                owningMessage: audioItem.message,
                                                metadata: audioItem.metadata) else {
@@ -130,10 +131,9 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
     private let leadingMargin = 16.0
     private let trailingMargin = 14.0
 
-    static func sizeForItem(_ item: AllMediaItem,
-                            defaultSize: CGSize) -> CGSize {
+    static func sizeForItem(_ item: MediaGalleryCellItem, defaultSize: CGSize) -> CGSize {
         switch item {
-        case .graphic:
+        case .photoVideo:
             return defaultSize
         case .audio(let audioItem):
             if AudioAllMediaPresenter.hasAttachmentLabel(attachment: audioItem.attachmentStream) {
@@ -144,9 +144,8 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
             return defaultSize
         }
     }
-    private func setupViews() {
-        willSetupViews()
 
+    private func setupViews() {
         contentView.addSubview(audioMessageContainerView)
         contentView.layer.cornerRadius = 10.0
         NSLayoutConstraint.activate([
@@ -221,37 +220,35 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
         cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
     }
 
-    private func setUpAccessibility(item: AudioItem?) {
-        self.isAccessibilityElement = true
+    private func setUpAccessibility(item: MediaGalleryCellItemAudio?) {
+        isAccessibilityElement = true
 
         if let audioItem {
-            self.accessibilityLabel = [
+            accessibilityLabel = [
                 audioItem.localizedString,
                 MediaTileDateFormatter.formattedDateString(for: audioItem.date)
             ]
                 .compactMap { $0 }
                 .joined(separator: ", ")
         } else {
-            self.accessibilityLabel = ""
+            accessibilityLabel = ""
         }
     }
 
     private var audioMessageView: AudioMessageView?
 
     override var cellsAbut: Bool { false }
-    private var allMediaItem: AllMediaItem?
     private var spoilerReveal: SpoilerRevealState?
 
-    override func configure(item: AllMediaItem,
-                            spoilerReveal: SpoilerRevealState) {
+    override func configure(item: MediaGalleryCellItem, spoilerReveal: SpoilerRevealState) {
         super.configure(item: item, spoilerReveal: spoilerReveal)
         guard case let .audio(audioItem) = item else {
             owsFailDebug("Unexpected item type")
             return
         }
         self.audioItem = audioItem
-        self.allMediaItem = item
         self.spoilerReveal = spoilerReveal
+
         audioMessageContainerView.subviews.first?.removeFromSuperview()
 
         SDSDatabaseStorage.shared.read { transaction in
@@ -269,8 +266,8 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        if let allMediaItem, let spoilerReveal {
-            configure(item: allMediaItem, spoilerReveal: spoilerReveal)
+        if let item, let spoilerReveal {
+            configure(item: item, spoilerReveal: spoilerReveal)
         }
     }
 
@@ -286,9 +283,8 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
     }
 
     func enqueueReloadWithoutCaches() {
-        if let allMediaItem, let spoilerReveal {
-            configure(item: allMediaItem, spoilerReveal: spoilerReveal)
+        if let item, let spoilerReveal {
+            configure(item: item, spoilerReveal: spoilerReveal)
         }
     }
-
 }

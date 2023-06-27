@@ -25,7 +25,7 @@ class MediaPageViewController: UIPageViewController {
     ) {
         self.init(
             initialMediaAttachment: initialMediaAttachment,
-            mediaGallery: MediaGallery(thread: thread, fileType: .media, spoilerReveal: spoilerReveal),
+            mediaGallery: MediaGallery(thread: thread, fileType: .photoVideo, spoilerReveal: spoilerReveal),
             spoilerReveal: spoilerReveal,
             showingSingleMessage: showingSingleMessage
         )

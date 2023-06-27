@@ -16,18 +16,19 @@ class SelectionButton: UIView {
         return imageView
     }()
     private let selectedBadgeView: UIView = {
-        let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "check-circle"))
+        let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "check-circle-fill"))
         imageView.contentMode = .center
-        imageView.tintColor = .white
+        imageView.tintColor = .ows_accentBlue
 
-        let circleView = CircleView(diameter: 21.5)
-        circleView.backgroundColor = .ows_accentBlue
+        // This will give checkmark it's color.
+        let backgroundView = CircleView(diameter: 18)
+        backgroundView.backgroundColor = .white
 
         let containerView = UIView(frame: imageView.bounds)
         containerView.isHidden = true
 
-        containerView.addSubview(circleView)
-        circleView.autoCenterInSuperview()
+        containerView.addSubview(backgroundView)
+        backgroundView.autoCenterInSuperview()
 
         containerView.addSubview(imageView)
         imageView.autoPinEdgesToSuperviewEdges()
@@ -37,22 +38,25 @@ class SelectionButton: UIView {
 
     var isSelected: Bool = false {
         didSet {
-            updateHidden()
+            updateAppearance()
         }
     }
 
     var allowsMultipleSelection: Bool = false {
         didSet {
-            updateHidden()
+            updateAppearance()
         }
     }
 
-    var outlineColor: UIColor {
-        get {
-            outlineBadgeView.tintColor
+    var outlineColor: UIColor = .white {
+        didSet {
+            outlineBadgeView.tintColor = outlineColor
         }
-        set {
-            outlineBadgeView.tintColor = newValue
+    }
+
+    var hidesOutlineWhenSelected: Bool = false {
+        didSet {
+            updateAppearance()
         }
     }
 
@@ -72,9 +76,9 @@ class SelectionButton: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func updateHidden() {
+    private func updateAppearance() {
         if isSelected {
-            outlineBadgeView.isHidden = false
+            outlineBadgeView.isHidden = hidesOutlineWhenSelected
             selectedBadgeView.isHidden = false
         } else if allowsMultipleSelection {
             outlineBadgeView.isHidden = false

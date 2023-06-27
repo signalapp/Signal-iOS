@@ -474,7 +474,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         cell.loadingColor = UIColor(white: 0.2, alpha: 1)
         let assetItem = photoAlbumContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
-        cell.configure(item: .graphic(assetItem), spoilerReveal: SpoilerRevealState())
+        cell.configure(item: assetItem)
         return cell
     }
 
@@ -492,7 +492,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             collectionView.deselectItem(at: indexPath, animated: false)
         }
         photoGridViewCell.isSelected = isSelected
-        photoGridViewCell.setAllowsMultipleSelection(collectionView.allowsMultipleSelection, animated: false)
+        photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
     }
 
     private func updateVisibleCells() {
@@ -504,14 +504,13 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                 continue
             }
 
-            guard case let .graphic(photoItem) = photoGridViewCell.item,
-                  let assetItem = photoItem as? PhotoPickerAssetItem else {
-                owsFailDebug("unexpected photoGridViewCell.item: \(String(describing: photoGridViewCell.item))")
+            guard let assetItem = photoGridViewCell.photoGridItem as? PhotoPickerAssetItem else {
+                owsFailDebug("unexpected photoGridViewCell.item: \(String(describing: photoGridViewCell.photoGridItem))")
                 continue
             }
 
             photoGridViewCell.isSelected = dataSource.imagePicker(self, isAssetSelected: assetItem.asset)
-            photoGridViewCell.setAllowsMultipleSelection(collectionView.allowsMultipleSelection, animated: true)
+            photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
         }
     }
 }

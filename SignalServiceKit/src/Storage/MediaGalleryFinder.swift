@@ -262,7 +262,7 @@ public final class MediaGalleryManager: NSObject {
 // MARK: - MediaGalleryFinder (GRDB only)
 
 public enum AllMediaFileType: Int, CaseIterable {
-    case media = 0
+    case photoVideo = 0
     case audio = 1
 }
 
@@ -283,7 +283,7 @@ public struct MediaGalleryFinder {
 
         public static func defaultMediaType(for fileType: AllMediaFileType) -> MediaType {
             switch fileType {
-            case .media:
+            case .photoVideo:
                 return .graphicMedia
             case .audio:
                 return .audio
