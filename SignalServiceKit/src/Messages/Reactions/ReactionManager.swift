@@ -140,12 +140,25 @@ public class ReactionManager: NSObject {
             return .invalidReaction
         }
 
-        if let message = InteractionFinder.findMessage(
+        if var message = InteractionFinder.findMessage(
             withTimestamp: reaction.timestamp,
             threadId: thread.uniqueId,
             author: SignalServiceAddress(messageAuthor),
             transaction: transaction
         ) {
+            if message.editState == .pastRevision {
+                // Reaction targeted an old edit revision, fetch the latest
+                // version to ensure the reaction shows up properly.
+                if let latestEdit = EditMessageFinder.findMessage(
+                    fromEdit: message,
+                    transaction: transaction) {
+                    message = latestEdit
+                } else {
+                    Logger.info("Ignoring reaction for missing edit target.")
+                    return .invalidReaction
+                }
+            }
+
             guard !message.wasRemotelyDeleted else {
                 Logger.info("Ignoring reaction for a message that was remotely deleted")
                 return .invalidReaction

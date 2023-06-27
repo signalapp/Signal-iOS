@@ -219,7 +219,22 @@ public extension TSMessage {
             if messageToDelete is TSOutgoingMessage, authorAddress.isLocalAddress {
                 messageToDelete.markMessageAsRemotelyDeleted(transaction: transaction)
                 return .success
-            } else if let incomingMessageToDelete = messageToDelete as? TSIncomingMessage {
+            } else if var incomingMessageToDelete = messageToDelete as? TSIncomingMessage {
+                if incomingMessageToDelete.editState == .pastRevision {
+                    // The remote delete targeted an old revision, fetch
+                    // swap out the target message for the latest (or return an error)
+                    // This avoids cases where older edits could be deleted and
+                    // leave newer revisions
+                    if let latestEdit = EditMessageFinder.findMessage(
+                        fromEdit: incomingMessageToDelete,
+                        transaction: transaction) as? TSIncomingMessage {
+                        incomingMessageToDelete = latestEdit
+                    } else {
+                        Logger.info("Ignoring delete for missing edit target.")
+                        return .invalidDelete
+                    }
+                }
+
                 guard let messageToDeleteServerTimestamp = incomingMessageToDelete.serverTimestamp?.uint64Value else {
                     // Older messages might be missing this, but since we only allow deleting for a small
                     // window after you send a message we should generally never hit this path.
