@@ -523,6 +523,9 @@ private struct Flags {
     // wait for an app restart.
     enum HotSwappableIsEnabledFlags: String, FlagType {
         case barrierFsyncKillSwitch
+        case mirrorToSVR2
+        case stopMirroringToSVR2Override
+        case exclusiveSVR2
     }
 
     // We filter the received config down to just the supported flags.
