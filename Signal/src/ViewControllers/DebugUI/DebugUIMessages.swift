@@ -3266,12 +3266,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             now - 2 * 30 * kDayInMs
         ]
 
-        guard let incomingSenderAddress = anyIncomingSenderAddress(forThread: thread) else {
-            owsFailDebug("Missing incomingSenderAddress.")
-            return
-        }
-        guard let incomingSenderServiceId = incomingSenderAddress.serviceIdObjC else {
-            owsFailDebug("Missing incomingSenderServiceId.")
+        guard let incomingSenderAci = anyIncomingSenderAddress(forThread: thread)?.serviceId else {
+            owsFailDebug("Missing incomingSenderAci.")
             return
         }
 
@@ -3282,7 +3278,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 // Legit usage of SenderTimestamp to backdate incoming sent messages for Debug
                 let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: randomText)
                 incomingMessageBuilder.timestamp = timestamp
-                incomingMessageBuilder.authorAddress = incomingSenderAddress
+                incomingMessageBuilder.authorAci = ServiceIdObjC(incomingSenderAci)
                 let incomingMessage = incomingMessageBuilder.build()
                 incomingMessage.anyInsert(transaction: transaction)
                 incomingMessage.debugonly_markAsReadNow(transaction: transaction)
@@ -3293,16 +3289,16 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 let outgoingMessage = outgoingMessageBuilder.build(transaction: transaction)
                 outgoingMessage.anyInsert(transaction: transaction)
                 outgoingMessage.update(withFakeMessageState: .sent, transaction: transaction)
-                outgoingMessage.update(withSentRecipient: incomingSenderServiceId, wasSentByUD: false, transaction: transaction)
+                outgoingMessage.update(withSentRecipient: ServiceIdObjC(incomingSenderAci), wasSentByUD: false, transaction: transaction)
                 outgoingMessage.update(
-                    withDeliveredRecipient: incomingSenderAddress,
+                    withDeliveredRecipient: SignalServiceAddress(incomingSenderAci),
                     recipientDeviceId: 0,
                     deliveryTimestamp: timestamp,
                     context: PassthroughDeliveryReceiptContext(),
                     transaction: transaction
                 )
                 outgoingMessage.update(
-                    withReadRecipient: incomingSenderAddress,
+                    withReadRecipient: SignalServiceAddress(incomingSenderAci),
                     recipientDeviceId: 0,
                     readTimestamp: timestamp,
                     transaction: transaction
@@ -3417,8 +3413,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
     ) {
         Logger.info("createFakeMessages: \(counter)")
 
-        guard let incomingSenderAddress = anyIncomingSenderAddress(forThread: thread) else {
-            owsFailDebug("Missing incomingSenderAddress.")
+        guard let incomingSenderAci = anyIncomingSenderAddress(forThread: thread)?.serviceId else {
+            owsFailDebug("Missing incomingSenderAci.")
             return
         }
 
@@ -3435,7 +3431,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             switch Int.random(in: 0..<numberOfCases) {
             case 0:
                 let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: randomText)
-                incomingMessageBuilder.authorAddress = incomingSenderAddress
+                incomingMessageBuilder.authorAci = ServiceIdObjC(incomingSenderAci)
                 let message = incomingMessageBuilder.build()
                 message.anyInsert(transaction: transaction)
                 message.debugonly_markAsReadNow(transaction: transaction)
@@ -3471,7 +3467,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 pointer.anyInsert(transaction: transaction)
 
                 let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread)
-                incomingMessageBuilder.authorAddress = incomingSenderAddress
+                incomingMessageBuilder.authorAci = ServiceIdObjC(incomingSenderAci)
                 incomingMessageBuilder.attachmentIds = [ pointer.uniqueId ]
 
                 let message = incomingMessageBuilder.build()
@@ -3712,7 +3708,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
     // MARK: Disappearing Messages
 
     private static func createDisappearingMessagesWhichFailedToStartInThread(_ thread: TSThread) {
-        guard let address = thread.recipientAddressesWithSneakyTransaction.first else {
+        guard let aci = thread.recipientAddressesWithSneakyTransaction.first?.serviceId else {
             owsFailDebug("No recipient")
             return
         }
@@ -3720,7 +3716,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let now = Date.ows_millisecondTimestamp()
         let messageBody = "Should disappear 60s after \(now)"
         let incomingMessageBuilder = TSIncomingMessageBuilder.incomingMessageBuilder(thread: thread, messageBody: messageBody)
-        incomingMessageBuilder.authorAddress = address
+        incomingMessageBuilder.authorAci = ServiceIdObjC(aci)
         incomingMessageBuilder.expiresInSeconds = 60
         let message = incomingMessageBuilder.build()
         // private setter to avoid starting expire machinery.
@@ -4204,10 +4200,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             attachmentIds = []
         }
 
-        let address = DebugUIMessages.anyIncomingSenderAddress(forThread: thread) ?? SignalServiceAddress(phoneNumber: "+19174054215")
+        let authorAci = DebugUIMessages.anyIncomingSenderAddress(forThread: thread)!.serviceId!
 
         let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: messageBody)
-        incomingMessageBuilder.authorAddress = address
+        incomingMessageBuilder.authorAci = ServiceIdObjC(authorAci)
         incomingMessageBuilder.attachmentIds = attachmentIds
         incomingMessageBuilder.quotedMessage = quotedMessage
         let message = incomingMessageBuilder.build()

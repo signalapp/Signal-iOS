@@ -8,20 +8,20 @@ import XCTest
 
 class EditManagerTests: SSKBaseTestSwift {
     var db: DB!
-    var author: SignalServiceAddress!
+    var authorAci: ServiceIdObjC!
     var thread: TSThread!
 
     override func setUp() {
         super.setUp()
         db = MockDB()
-        author = SignalServiceAddress(phoneNumber: "+12345678900")
+        authorAci = ServiceIdObjC(ServiceId(uuidString: "00000000-0000-4000-8000-000000000000")!)
         thread = TSThread(uniqueId: "1")
     }
 
     func testBasicValidation() {
         let targetMessage = createIncomingMessage(with: thread) { builder in
             builder.messageBody = "BAR"
-            builder.authorAddress = author
+            builder.authorAci = authorAci
             builder.expireStartedAt = 3
         }
 
@@ -39,7 +39,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                editTarget: .incomingMessage(targetMessage),
+                editTarget: .incomingMessage(targetMessage, authorAci: authorAci.wrappedValue),
                 serverTimestamp: 1,
                 tx: tx
             )
@@ -62,7 +62,7 @@ class EditManagerTests: SSKBaseTestSwift {
 
     func testViewOnceMessage() {
         let targetMessage = createIncomingMessage(with: thread) { builder in
-            builder.authorAddress = author
+            builder.authorAci = authorAci
             builder.isViewOnceMessage = true
         }
         let editMessage = createEditDataMessage { _ in }
@@ -79,7 +79,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                editTarget: .incomingMessage(targetMessage),
+                editTarget: .incomingMessage(targetMessage, authorAci: authorAci.wrappedValue),
                 serverTimestamp: 1,
                 tx: tx
             )
@@ -89,7 +89,7 @@ class EditManagerTests: SSKBaseTestSwift {
 
     func testContactShareEditMessageFails() {
         let targetMessage = createIncomingMessage(with: thread) { builder in
-            builder.authorAddress = author
+            builder.authorAci = authorAci
             builder.contactShare = OWSContact()
         }
 
@@ -107,7 +107,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                editTarget: .incomingMessage(targetMessage),
+                editTarget: .incomingMessage(targetMessage, authorAci: authorAci.wrappedValue),
                 serverTimestamp: 1,
                 tx: tx
             )
@@ -116,8 +116,8 @@ class EditManagerTests: SSKBaseTestSwift {
     }
 
     func testExpiredEditWindow() {
-        let targetMessage = createIncomingMessage(with: thread) {
-            $0.authorAddress = author
+        let targetMessage = createIncomingMessage(with: thread) { builder in
+            builder.authorAci = authorAci
         }
         let editMessage = createEditDataMessage { _ in }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
@@ -136,7 +136,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                editTarget: .incomingMessage(targetMessage),
+                editTarget: .incomingMessage(targetMessage, authorAci: authorAci.wrappedValue),
                 serverTimestamp: expiredTS,
                 tx: tx
             )
@@ -146,9 +146,9 @@ class EditManagerTests: SSKBaseTestSwift {
 
     func testOverflowEditWindow() {
         let bigInt: UInt64 = .max - 100
-        let targetMessage = createIncomingMessage(with: thread) {
-            $0.authorAddress = author
-            $0.serverTimestamp = NSNumber(value: bigInt)
+        let targetMessage = createIncomingMessage(with: thread) { builder in
+            builder.authorAci = authorAci
+            builder.serverTimestamp = NSNumber(value: bigInt)
         }
         let editMessage = createEditDataMessage { _ in }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
@@ -165,7 +165,7 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                editTarget: .incomingMessage(targetMessage),
+                editTarget: .incomingMessage(targetMessage, authorAci: authorAci.wrappedValue),
                 serverTimestamp: bigInt + 1,
                 tx: tx
             )

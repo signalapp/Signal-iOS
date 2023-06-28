@@ -183,7 +183,7 @@ public class EditManager {
         // and incoming edit server timestamp)
         // drop silent and warn if outside of valid range
         switch editTarget {
-        case .incomingMessage(let incomingMessage):
+        case .incomingMessage(let incomingMessage, authorAci: _):
             guard let originalServerTimestamp = incomingMessage.serverTimestamp?.uint64Value else {
                 Logger.warn("Edit message target doesn't have a server timestamp")
                 return false
@@ -289,11 +289,11 @@ private extension EditMessageTarget {
         updateBlock: ((TSMessageBuilder) -> Void)?
     ) -> TSMessage {
         switch self {
-        case .incomingMessage(let message):
+        case .incomingMessage(let message, authorAci: let authorAci):
             let builder = TSIncomingMessageBuilder(
                 thread: thread,
                 timestamp: message.timestamp,
-                authorAddress: message.authorAddress,
+                authorAci: authorAci,
                 sourceDeviceId: message.sourceDeviceId,
                 messageBody: message.body,
                 bodyRanges: message.bodyRanges,

@@ -74,7 +74,10 @@ class MockConversationView: UIView {
         return stackView
     }()
 
-    private let thread = MockThread(contactAddress: SignalServiceAddress(phoneNumber: "+fake-id"))
+    private let thread = MockThread(
+        // Use a v5 UUID that's in a separate namespace from ACIs/PNIs.
+        contactAddress: SignalServiceAddress(ServiceId(uuidString: "00000000-0000-5000-8000-000000000000")!)
+    )
 
     override var frame: CGRect {
         didSet {
@@ -194,11 +197,13 @@ private class MockThread: TSContactThread {
 // MARK: -
 
 private class MockIncomingMessage: TSIncomingMessage {
-    init(messageBody: String, thread: TSThread) {
-        let builder = TSIncomingMessageBuilder(thread: thread,
-                                               authorAddress: SignalServiceAddress(phoneNumber: "+fake-id"),
-                                               sourceDeviceId: 1,
-                                               messageBody: messageBody)
+    init(messageBody: String, thread: MockThread) {
+        let builder = TSIncomingMessageBuilder(
+            thread: thread,
+            authorAci: thread.contactAddress.serviceId!,
+            sourceDeviceId: 1,
+            messageBody: messageBody
+        )
         super.init(incomingMessageWithBuilder: builder)
     }
 

@@ -45,6 +45,10 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
         }
     }
 
+    if (_authorUUID != nil) {
+        _authorPhoneNumber = nil;
+    }
+
     _incomingMessageSchemaVersion = TSIncomingMessageSchemaVersion;
 
     return self;
@@ -58,9 +62,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
         return self;
     }
 
-    _authorPhoneNumber = incomingMessageBuilder.authorAddress.phoneNumber;
-    _authorUUID = incomingMessageBuilder.authorAddress.uuidString;
-
+    _authorUUID = incomingMessageBuilder.authorAci.uuidValue.UUIDString;
     _sourceDeviceId = incomingMessageBuilder.sourceDeviceId;
     _read = incomingMessageBuilder.read;
     _serverTimestamp = incomingMessageBuilder.serverTimestamp;
@@ -146,8 +148,11 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
         return self;
     }
 
-    _authorPhoneNumber = authorPhoneNumber;
-    _authorUUID = authorUUID;
+    if (authorUUID != nil) {
+        _authorUUID = authorUUID;
+    } else if (authorPhoneNumber != nil) {
+        _authorPhoneNumber = authorPhoneNumber;
+    }
     _read = read;
     _serverDeliveryTimestamp = serverDeliveryTimestamp;
     _serverGuid = serverGuid;

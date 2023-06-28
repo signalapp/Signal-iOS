@@ -24,14 +24,24 @@
 
 @implementation TSMessageStorageTests
 
+- (ServiceIdObjC *)localAci
+{
+    return [[ServiceIdObjC alloc] initWithUuidString:@"00000000-0000-4000-8000-000000000000"];
+}
+
 - (SignalServiceAddress *)localAddress
 {
-    return [[SignalServiceAddress alloc] initWithPhoneNumber:@"+13334445555"];
+    return [[SignalServiceAddress alloc] initWithServiceIdObjC:[self localAci]];
+}
+
+- (ServiceIdObjC *)otherAci
+{
+    return [[ServiceIdObjC alloc] initWithUuidString:@"00000000-0000-4000-8000-000000000001"];
 }
 
 - (SignalServiceAddress *)otherAddress
 {
-    return [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    return [[SignalServiceAddress alloc] initWithServiceIdObjC:[self otherAci]];
 }
 
 - (void)setUp
@@ -62,7 +72,7 @@
         TSIncomingMessageBuilder *incomingMessageBuilder =
             [TSIncomingMessageBuilder incomingMessageBuilderWithThread:self.thread messageBody:body];
         incomingMessageBuilder.timestamp = timestamp;
-        incomingMessageBuilder.authorAddress = self.otherAddress;
+        incomingMessageBuilder.authorAci = [self otherAci];
         incomingMessageBuilder.sourceDeviceId = 1;
         TSIncomingMessage *newMessage = [incomingMessageBuilder build];
 
@@ -93,7 +103,7 @@
             TSIncomingMessageBuilder *incomingMessageBuilder =
                 [TSIncomingMessageBuilder incomingMessageBuilderWithThread:self.thread messageBody:body];
             incomingMessageBuilder.timestamp = i + 1;
-            incomingMessageBuilder.authorAddress = self.otherAddress;
+            incomingMessageBuilder.authorAci = [self otherAci];
             incomingMessageBuilder.sourceDeviceId = 1;
             TSIncomingMessage *newMessage = [incomingMessageBuilder build];
 
@@ -146,7 +156,7 @@
             TSIncomingMessageBuilder *incomingMessageBuilder =
                 [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:body];
             incomingMessageBuilder.timestamp = i + 1;
-            incomingMessageBuilder.authorAddress = authorAddress;
+            incomingMessageBuilder.authorAci = authorAddress.serviceIdObjC;
             incomingMessageBuilder.sourceDeviceId = 1;
             TSIncomingMessage *newMessage = [incomingMessageBuilder build];
             [newMessage anyInsertWithTransaction:transaction];

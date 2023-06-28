@@ -128,7 +128,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             let messageBuilder = TSIncomingMessageBuilder(
                 thread: oldThread,
-                authorAddress: oldAddress,
+                authorAci: aci,
                 messageBody: "Test 123"
             )
             let oldMessage = messageBuilder.build()
@@ -184,8 +184,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertEqual(newAddress, newThread.contactAddress)
 
             XCTAssertEqual(oldMessage.uniqueId, newMessage.uniqueId)
-            XCTAssertNotEqual(oldMessage.authorPhoneNumber, newMessage.authorPhoneNumber)
             XCTAssertEqual(newAddress, newMessage.authorAddress)
+            XCTAssertNil(oldMessage.authorPhoneNumber)
+            XCTAssertNil(newMessage.authorPhoneNumber)
 
             XCTAssertEqual(newProfile.uniqueId, oldPhoneNumberProfile.uniqueId)
             XCTAssertEqual(newProfile.recipientPhoneNumber, newPhoneNumber.stringValue)
@@ -210,7 +211,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             let messageBuilder = TSIncomingMessageBuilder(
                 thread: oldThread,
-                authorAddress: oldAddress,
+                authorAci: oldAci,
                 messageBody: "Test 123"
             )
             let oldMessage = messageBuilder.build()

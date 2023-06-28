@@ -32,8 +32,9 @@
 
 - (void)testDeletingThreadDeletesInteractions
 {
-    TSContactThread *thread = [[TSContactThread alloc]
-        initWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13334445555"]];
+    ServiceIdObjC *aci = [[ServiceIdObjC alloc] initWithUuidString:@"00000000-0000-4000-8000-000000000000"];
+    TSContactThread *thread =
+        [[TSContactThread alloc] initWithContactAddress:[[SignalServiceAddress alloc] initWithServiceIdObjC:aci]];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [thread anyInsertWithTransaction:transaction];
     }];
@@ -44,7 +45,7 @@
 
     TSIncomingMessageBuilder *incomingMessageBuilder =
         [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Incoming message body"];
-    incomingMessageBuilder.authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    incomingMessageBuilder.authorAci = aci;
     incomingMessageBuilder.timestamp = 10000;
     TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -73,8 +74,9 @@
 
 - (void)testDeletingThreadDeletesAttachmentFiles
 {
-    TSContactThread *thread = [[TSContactThread alloc]
-        initWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13334445555"]];
+    ServiceIdObjC *aci = [[ServiceIdObjC alloc] initWithUuidString:@"00000000-0000-4000-8000-000000000000"];
+    TSContactThread *thread =
+        [[TSContactThread alloc] initWithContactAddress:[[SignalServiceAddress alloc] initWithServiceIdObjC:aci]];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [thread anyInsertWithTransaction:transaction];
     }];
@@ -98,7 +100,7 @@
 
     TSIncomingMessageBuilder *incomingMessageBuilder =
         [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Incoming message body"];
-    incomingMessageBuilder.authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    incomingMessageBuilder.authorAci = aci;
     incomingMessageBuilder.timestamp = 10000;
     incomingMessageBuilder.attachmentIds = [@[ incomingAttachment.uniqueId ] mutableCopy];
     TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];

@@ -1097,35 +1097,19 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     func latestInteraction(from address: SignalServiceAddress, transaction: GRDBReadTransaction) -> TSInteraction? {
-        var latestInteraction: TSInteraction?
-
-        if let uuidString = address.uuidString {
-            let sql = """
-                SELECT *
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .authorUUID) = ?
-                ORDER BY \(interactionColumn: .id) DESC
-                LIMIT 1
-            """
-            let arguments: StatementArguments = [threadUniqueId, uuidString]
-            latestInteraction = TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
-        }
-
-        if latestInteraction == nil, let phoneNumber = address.phoneNumber {
-            let sql = """
-                SELECT *
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .authorPhoneNumber) = ?
-                ORDER BY \(interactionColumn: .id) DESC
-                LIMIT 1
-            """
-            let arguments: StatementArguments = [threadUniqueId, phoneNumber]
-            latestInteraction = TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
-        }
-
-        return latestInteraction
+        let sql = """
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND (
+                \(interactionColumn: .authorUUID) = ?
+                OR (\(interactionColumn: .authorUUID) IS NULL AND \(interactionColumn: .authorPhoneNumber) = ?)
+            )
+            ORDER BY \(interactionColumn: .id) DESC
+            LIMIT 1
+        """
+        let arguments: StatementArguments = [threadUniqueId, address.uuidString, address.phoneNumber]
+        return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
 
     func mostRecentInteractionForInbox(transaction: GRDBReadTransaction) -> TSInteraction? {

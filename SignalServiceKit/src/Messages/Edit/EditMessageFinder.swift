@@ -8,13 +8,13 @@ import GRDB
 
 public enum EditMessageTarget {
     case outgoingMessage(TSOutgoingMessage)
-    case incomingMessage(TSIncomingMessage)
+    case incomingMessage(TSIncomingMessage, authorAci: ServiceId)
 
     var message: TSMessage {
         switch self {
         case .outgoingMessage(let outgoingMessage):
             return outgoingMessage
-        case .incomingMessage(let incomingMessage):
+        case .incomingMessage(let incomingMessage, authorAci: _):
             return incomingMessage
         }
     }
@@ -41,8 +41,8 @@ public class EditMessageFinder {
         switch (interaction, authorAci) {
         case (let outgoingMessage as TSOutgoingMessage, nil):
             return .outgoingMessage(outgoingMessage)
-        case (let incomingMessage as TSIncomingMessage, .some):
-            return .incomingMessage(incomingMessage)
+        case (let incomingMessage as TSIncomingMessage, let authorAci?):
+            return .incomingMessage(incomingMessage, authorAci: authorAci)
         case (.some, _):
             Logger.warn("Unexpected message type found for edit")
             fallthrough

@@ -112,8 +112,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
         let (databaseStorage, url) = database()
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
 
-        let contactUuid = UUID()
-        let contactAddress = SignalServiceAddress(uuid: contactUuid)
+        let contactAci = ServiceId(UUID())
 
         guard let localAddress = tsAccountManager.localAddress else {
             XCTFail("No local address. Test is not set up correctly")
@@ -123,7 +122,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
         try! databaseStorage.write { transaction in
             // Threads
             let contactThread = insertContactThread(
-                contactAddress: contactAddress,
+                contactAddress: SignalServiceAddress(contactAci),
                 transaction: transaction
             )
             guard let contactThreadId = contactThread.grdbId?.int64Value else {
@@ -137,7 +136,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
                 messageBody: "test outgoing message"
             )
             messageBuilder.timestamp = 1234
-            messageBuilder.authorAddress = contactAddress
+            messageBuilder.authorAci = ServiceIdObjC(contactAci)
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)
 
@@ -157,7 +156,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
                 messageTimestamp: Int64(message.timestamp),
                 messageUniqueId: message.uniqueId,
                 authorPhoneNumber: nil,
-                authorUuid: contactUuid.uuidString
+                authorUuid: contactAci.uuidValue.uuidString
             )
             try pendingReadReceipt.insert(transaction.unwrapGrdbWrite.database)
         }
@@ -174,7 +173,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
         finishedDatabaseStorage.read { transaction in
             // Thread
             let thread = TSContactThread.getWithContactAddress(
-                contactAddress,
+                SignalServiceAddress(contactAci),
                 transaction: transaction
             )
             guard let thread = thread else {
@@ -276,10 +275,10 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
 
         databaseStorage.write { transaction in
-            let contactAddress = SignalServiceAddress(uuid: UUID())
+            let contactAci = ServiceId(UUID())
 
             let contactThread = insertContactThread(
-                contactAddress: contactAddress,
+                contactAddress: SignalServiceAddress(contactAci),
                 transaction: transaction
             )
 
@@ -288,7 +287,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
                 messageBody: "foo bar"
             )
             messageBuilder.timestamp = 1234
-            messageBuilder.authorAddress = contactAddress
+            messageBuilder.authorAci = ServiceIdObjC(contactAci)
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)
         }

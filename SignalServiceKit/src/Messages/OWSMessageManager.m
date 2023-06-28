@@ -1428,8 +1428,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSIncomingMessageBuilder *incomingMessageBuilder =
         [TSIncomingMessageBuilder builderWithThread:thread
                                           timestamp:timestamp
-                                      authorAddress:[[SignalServiceAddress alloc]
-                                                        initWithServiceIdObjC:incomingEnvelope.sourceServiceIdObjC]
+                                          authorAci:incomingEnvelope.sourceServiceIdObjC
                                      sourceDeviceId:envelope.sourceDevice
                                         messageBody:body
                                          bodyRanges:bodyRanges

@@ -1076,6 +1076,8 @@ extension %s {
                         objc_initializer_assigns.append('_%s = %s ? [%s mutableCopy] : [NSMutableArray new];' % ( str(property.name), str(property.name), str(property.name), ) )
                     elif str(property.objc_type_safe()).startswith('NSMutableDictionary'):
                         objc_initializer_assigns.append('_%s = %s ? [%s mutableCopy] : [NSMutableDictionary new];' % ( str(property.name), str(property.name), str(property.name), ) )
+                    elif deserialize_class.name == "TSIncomingMessage" and property.name in ("authorUUID", "authorPhoneNumber"):
+                        pass
                     else:
                         objc_initializer_assigns.append('_%s = %s;' % ( str(property.name), str(property.name), ) )
 
@@ -1129,6 +1131,16 @@ extension %s {
     }
 
 '''
+
+            if deserialize_class.name == "TSIncomingMessage":
+                m_snippet += '''
+    if (authorUUID != nil) {
+        _authorUUID = authorUUID;
+    } else if (authorPhoneNumber != nil) {
+        _authorPhoneNumber = authorPhoneNumber;
+    }
+'''
+
             for objc_initializer_assign in objc_initializer_assigns:
                 m_snippet += (' ' * 4) + objc_initializer_assign + '\n'
 

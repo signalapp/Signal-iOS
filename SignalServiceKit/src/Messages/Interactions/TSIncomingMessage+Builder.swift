@@ -12,7 +12,7 @@ import Foundation
 @objc
 public class TSIncomingMessageBuilder: TSMessageBuilder {
     @objc
-    public var authorAddress: SignalServiceAddress?
+    public var authorAci: ServiceIdObjC?
     @objc
     public var sourceDeviceId: UInt32 = OWSDevice.primaryDeviceId
     @objc
@@ -26,7 +26,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
 
     public required init(thread: TSThread,
                          timestamp: UInt64? = nil,
-                         authorAddress: SignalServiceAddress? = nil,
+                         authorAci: ServiceId? = nil,
                          sourceDeviceId: UInt32 = 0,
                          messageBody: String? = nil,
                          bodyRanges: MessageBodyRanges? = nil,
@@ -69,7 +69,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                    storyReactionEmoji: storyReactionEmoji,
                    giftBadge: giftBadge)
 
-        self.authorAddress = authorAddress
+        self.authorAci = authorAci.map { ServiceIdObjC($0) }
         self.sourceDeviceId = sourceDeviceId
         self.serverTimestamp = serverTimestamp
         self.serverDeliveryTimestamp = serverDeliveryTimestamp
@@ -95,7 +95,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     @objc
     public class func builder(thread: TSThread,
                               timestamp: UInt64,
-                              authorAddress: SignalServiceAddress?,
+                              authorAci: ServiceIdObjC?,
                               sourceDeviceId: UInt32,
                               messageBody: String?,
                               bodyRanges: MessageBodyRanges?,
@@ -117,7 +117,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                               giftBadge: OWSGiftBadge?) -> TSIncomingMessageBuilder {
         return TSIncomingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
-                                        authorAddress: authorAddress,
+                                        authorAci: authorAci?.wrappedValue,
                                         sourceDeviceId: sourceDeviceId,
                                         messageBody: messageBody,
                                         bodyRanges: bodyRanges,
