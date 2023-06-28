@@ -54,6 +54,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let accountServiceClient = FakeAccountServiceClient()
         let aciSignalProtocolStore = SignalProtocolStore(for: .aci)
         let dateProvider = Date.provider
+        let groupsV2 = MockGroupsV2()
         let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
         let messageProcessor = MessageProcessor()
         let messageSender = FakeMessageSender()
@@ -76,6 +77,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             appVersion: AppVersion.shared,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
+            groupsV2: groupsV2,
             identityManager: identityManager,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
@@ -114,7 +116,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let attachmentDownloads = OWSAttachmentDownloads()
         let stickerManager = StickerManager()
         let sskPreferences = SSKPreferences()
-        let groupsV2 = MockGroupsV2()
         let groupV2Updates = MockGroupV2Updates()
         let messageFetcherJob = MessageFetcherJob()
         let bulkProfileFetch = BulkProfileFetch()

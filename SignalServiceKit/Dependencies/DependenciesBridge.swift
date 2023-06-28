@@ -49,6 +49,8 @@ public class DependenciesBridge {
 
     public let deviceManager: OWSDeviceManager
 
+    public let editManager: EditManager
+
     public let groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter
 
     public let svrCredentialStorage: SVRAuthCredentialStorage
@@ -76,6 +78,7 @@ public class DependenciesBridge {
         appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
+        groupsV2: GroupsV2,
         identityManager: OWSIdentityManager,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
@@ -98,6 +101,7 @@ public class DependenciesBridge {
             appVersion: appVersion,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
+            groupsV2: groupsV2,
             identityManager: identityManager,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
@@ -125,6 +129,7 @@ public class DependenciesBridge {
         appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
+        groupsV2: GroupsV2,
         identityManager: OWSIdentityManager,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
@@ -172,6 +177,14 @@ public class DependenciesBridge {
         self.deviceManager = OWSDeviceManagerImpl(
             databaseStorage: db,
             keyValueStoreFactory: keyValueStoreFactory
+        )
+
+        self.editManager = EditManager(
+            context: .init(
+                dataStore: EditManager.Wrappers.DataStore(),
+                groupsShim: EditManager.Wrappers.Groups(groupsV2: groupsV2),
+                linkPreviewShim: EditManager.Wrappers.LinkPreview()
+            )
         )
 
         self.groupUpdateInfoMessageInserter = GroupUpdateInfoMessageInserterImpl(

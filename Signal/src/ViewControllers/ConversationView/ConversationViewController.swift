@@ -36,6 +36,9 @@ public enum ConversationViewAction {
 // MARK: -
 
 public final class ConversationViewController: OWSViewController {
+
+    internal let context: ViewControllerContext
+
     public let viewState: CVViewState
     public let loadCoordinator: CVLoadCoordinator
     public let layout: ConversationViewLayout
@@ -117,6 +120,8 @@ public final class ConversationViewController: OWSViewController {
         oldestUnreadMessage: TSInteraction?
     ) {
         AssertIsOnMainThread()
+
+        self.context = ViewControllerContext.shared
 
         self.viewState = CVViewState(
             threadUniqueId: threadViewModel.threadRecord.uniqueId,

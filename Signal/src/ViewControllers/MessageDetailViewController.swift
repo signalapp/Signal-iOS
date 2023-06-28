@@ -26,6 +26,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private(set) var message: TSMessage
     public let spoilerReveal: SpoilerRevealState
+    private let editManager: EditManager
     private var wasDeleted: Bool = false
     private var isIncoming: Bool { message as? TSIncomingMessage != nil }
     private var expires: Bool { message.expiresInSeconds > 0 }
@@ -118,10 +119,12 @@ class MessageDetailViewController: OWSTableViewController2 {
     required init(
         message: TSMessage,
         spoilerReveal: SpoilerRevealState,
+        editManager: EditManager,
         thread: TSThread
     ) {
         self.message = message
         self.spoilerReveal = spoilerReveal
+        self.editManager = editManager
         super.init()
     }
 

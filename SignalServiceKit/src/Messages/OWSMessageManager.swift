@@ -522,15 +522,7 @@ extension OWSMessageManager {
             return nil
         }
 
-        let editManager = EditManager(
-            context: .init(
-                dataStore: EditManager.Wrappers.DataStore(),
-                groupsShim: EditManager.Wrappers.Groups(groupsV2: groupsV2),
-                linkPreviewShim: EditManager.Wrappers.LinkPreview()
-            )
-        )
-
-        let message = editManager.processIncomingEditMessage(
+        let message = DependenciesBridge.shared.editManager.processIncomingEditMessage(
             dataMessage,
             thread: thread,
             editTarget: editTarget,

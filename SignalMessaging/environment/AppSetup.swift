@@ -49,6 +49,7 @@ public class AppSetup {
         let accountServiceClient = AccountServiceClient()
         let aciSignalProtocolStore = SignalProtocolStore(for: .aci)
         let dateProvider = Date.provider
+        let groupsV2 = GroupsV2Impl()
         let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
         let messageProcessor = MessageProcessor()
         let messageSender = MessageSender()
@@ -69,6 +70,7 @@ public class AppSetup {
             appVersion: appVersion,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
+            groupsV2: groupsV2,
             identityManager: identityManager,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
@@ -120,7 +122,6 @@ public class AppSetup {
         let attachmentDownloads = OWSAttachmentDownloads()
         let stickerManager = StickerManager()
         let sskPreferences = SSKPreferences()
-        let groupsV2 = GroupsV2Impl()
         let groupV2Updates = GroupV2UpdatesImpl()
         let messageFetcherJob = MessageFetcherJob()
         let bulkProfileFetch = BulkProfileFetch()

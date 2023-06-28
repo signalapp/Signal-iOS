@@ -13,9 +13,9 @@ extension EditManager {
     }
 
     public enum Wrappers {
-        internal typealias LinkPreview = _EditManager_LinkPreviewWrapper
-        internal typealias DataStore = _EditManager_DataStoreWrapper
-        internal typealias Groups = _EditManager_GroupsWrapper
+        public typealias LinkPreview = _EditManager_LinkPreviewWrapper
+        public typealias DataStore = _EditManager_DataStoreWrapper
+        public typealias Groups = _EditManager_GroupsWrapper
     }
 }
 
@@ -70,16 +70,16 @@ public protocol _EditManager_DataStore {
     ) -> Int
 }
 
-internal class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
+public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
 
-    func createOutgoingMessage(
+    public func createOutgoingMessage(
         with builder: TSOutgoingMessageBuilder,
         tx: DBReadTransaction
     ) -> TSOutgoingMessage {
         return builder.build(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    func copyRecipients(
+    public func copyRecipients(
         from source: TSOutgoingMessage,
         to target: TSOutgoingMessage,
         tx: DBWriteTransaction
@@ -90,35 +90,35 @@ internal class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
         )
     }
 
-    func getMediaAttachments(
+    public func getMediaAttachments(
         message: TSMessage,
         tx: DBReadTransaction
     ) -> [TSAttachment] {
         message.mediaAttachments(with: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
     }
 
-    func getOversizedTextAttachments(
+    public func getOversizedTextAttachments(
         message: TSMessage,
         tx: DBReadTransaction
     ) -> TSAttachment? {
         message.oversizeTextAttachment(with: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
     }
 
-    func insertMessageCopy(
+    public func insertMessageCopy(
         message: TSMessage,
         tx: DBWriteTransaction
     ) {
         message.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    func updateEditedMessage(
+    public func updateEditedMessage(
         message: TSMessage,
         tx: DBWriteTransaction
     ) {
         message.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    func insertEditRecord(
+    public func insertEditRecord(
         record: EditRecord,
         tx: DBWriteTransaction
     ) {
@@ -129,14 +129,14 @@ internal class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
         }
     }
 
-    func insertAttachment(
+    public func insertAttachment(
         attachment: TSAttachmentPointer,
         tx: DBWriteTransaction
     ) {
         attachment.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    func numberOfEdits(for message: TSMessage, tx: DBReadTransaction) -> Int {
+    public func numberOfEdits(for message: TSMessage, tx: DBReadTransaction) -> Int {
         return EditMessageFinder.numberOfEdits(for: message, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
@@ -147,12 +147,12 @@ public protocol _EditManager_GroupsShim {
     func groupId(for message: SSKProtoDataMessage) -> GroupV2ContextInfo?
 }
 
-internal class _EditManager_GroupsWrapper: EditManager.Shims.Groups {
+public class _EditManager_GroupsWrapper: EditManager.Shims.Groups {
 
     private let groupsV2: GroupsV2
-    init(groupsV2: GroupsV2) { self.groupsV2 = groupsV2 }
+    public init(groupsV2: GroupsV2) { self.groupsV2 = groupsV2 }
 
-    func groupId(for message: SSKProtoDataMessage) -> GroupV2ContextInfo? {
+    public func groupId(for message: SSKProtoDataMessage) -> GroupV2ContextInfo? {
         guard let masterKey = message.groupV2?.masterKey else { return nil }
         return try? groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
     }
@@ -168,7 +168,9 @@ public protocol _EditManager_LinkPreviewShim {
     ) throws -> OWSLinkPreview
 }
 
-internal class _EditManager_LinkPreviewWrapper: EditManager.Shims.LinkPreview {
+public class _EditManager_LinkPreviewWrapper: EditManager.Shims.LinkPreview {
+
+    public init() { }
 
     public func buildPreview(
         dataMessage: SSKProtoDataMessage,
