@@ -3538,6 +3538,9 @@
 /* Shown in place of message input text in media editor when 'View Once' is on. */
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "એકવાર જોઈ શકાય તેવા મીડિયા";
 
+/* Explanatory text displayed when deleting N items in All Media screen. */
+"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "This will permanently delete the selected files. Any message text associated with these items will also be deleted.";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
@@ -5045,7 +5048,7 @@
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "વપરાશકર્તા નામ";
 
 /* Title for a menu action allowing users to view their username link QR code. */
-"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "View QR Code";
+"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "QR કોડ જુઓ";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "તમારું છેલ્લું નામ ખૂબ લાંબું છે.";
@@ -7070,31 +7073,34 @@
 "TAP_REPLACE_EMOJI" = "ઇમોજી બદલવા માટે ટેપ કરો";
 
 /* Option in selected text edit menu to make text bold */
-"TEXT_MENU_BOLD" = "Bold";
+"TEXT_MENU_BOLD" = "ઘાટા";
+
+/* Option in selected text edit menu to clear all text formatting in the selected text range */
+"TEXT_MENU_CLEAR_FORMATTING" = "Clear Formatting";
 
 /* Option in selected text edit menu to view text formatting options */
-"TEXT_MENU_FORMAT" = "Format";
+"TEXT_MENU_FORMAT" = "ફોર્મેટ કરો";
 
 /* Option in selected text edit menu to make text italic */
-"TEXT_MENU_ITALIC" = "Italic";
+"TEXT_MENU_ITALIC" = "ત્રાંસા";
 
 /* Option in selected text edit menu to look up word definitions */
-"TEXT_MENU_LOOK_UP" = "Look Up";
+"TEXT_MENU_LOOK_UP" = "વ્યાખ્યા જુઓ";
 
 /* Option in selected text edit menu to make text monospace */
-"TEXT_MENU_MONOSPACE" = "Monospace";
+"TEXT_MENU_MONOSPACE" = "મોનોસ્પેસ";
 
 /* Option in selected text edit menu to replace text with suggestions */
-"TEXT_MENU_REPLACE" = "Replace";
+"TEXT_MENU_REPLACE" = "બદલો";
 
 /* Option in selected text edit menu to share selected text */
-"TEXT_MENU_SHARE" = "Share";
+"TEXT_MENU_SHARE" = "શેર કરો";
 
 /* Option in selected text edit menu to make text spoiler */
-"TEXT_MENU_SPOILER" = "Spoiler";
+"TEXT_MENU_SPOILER" = "મેસેજ ઝાંખો કરનાર";
 
 /* Option in selected text edit menu to make text strikethrough */
-"TEXT_MENU_STRIKETHROUGH" = "Strikethrough";
+"TEXT_MENU_STRIKETHROUGH" = "વચ્ચે લીટી";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "આ મેસેજ ડિલીટ કર્યો હતો.";
@@ -7277,19 +7283,19 @@
 "USERNAME_LINK_DESCRIPTION" = "દરેક યુઝરનેમમાં એક અનન્ય લિંક હોય છે જે તમે, તમારા મિત્રો તમારી સાથે ચેટ શરૂ કરી શકે તે માટે તેમની સાથે શેર કરી શકો છો";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
-"USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "color";
+"USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "રંગ";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Only share your QR code and link with people you trust. When shared others will be able to see your username and start a chat with you.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "તમારો QR કોડ અને લિંક ફક્ત એવા લોકો સાથે જ શેર કરો જેમના પર તમને વિશ્વાસ હોય. જ્યારે શેર કરવામાં આવે ત્યારે અન્ય લોકો તમારું યુઝરનેમ જોઈ શકશે અને તમારી સાથે ચેટ શરૂ કરી શકશે.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Reset";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "ફરીથી સેટ કરો";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
-"USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "share";
+"USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "શેર કરો";
 
 /* A title for a view that allows you to view and interact with a QR code for your username link. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Code";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "કોડ";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "વપરાશકર્તા નામ શોધતી વખતે ભૂલ આવી. પછીથી ફરી પ્રયત્ન કરો.";

@@ -464,17 +464,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>تعمل مجموعات Signal بشكل أفضل مع %1$d عضو أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
+			<string>تعمل مجموعات سيجنال بشكل أفضل مع %1$d عضو أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
 			<key>one</key>
-			<string>تعمل مجموعات Signal بشكل أفضل مع %1$d عضو أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
+			<string>تعمل مجموعات سيجنال بشكل أفضل مع %1$d عضو أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
 			<key>two</key>
-			<string>تعمل مجموعات Signal بشكل أفضل مع عضوين %1$d أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
+			<string>تعمل مجموعات سيجنال بشكل أفضل مع عضوين %1$d أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
 			<key>few</key>
-			<string>تعمل مجموعات Signal بشكل أفضل مع %1$d أعضاء أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
+			<string>تعمل مجموعات سيجنال بشكل أفضل مع %1$d أعضاء أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
 			<key>many</key>
-			<string>تعمل مجموعات Signal بشكل أفضل مع %1$d عضوًا أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
+			<string>تعمل مجموعات سيجنال بشكل أفضل مع %1$d عضوًا أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
 			<key>other</key>
-			<string>تعمل مجموعات Signal بشكل أفضل مع %1$d عضو أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
+			<string>تعمل مجموعات سيجنال بشكل أفضل مع %1$d عضو أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -656,17 +656,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>سَيتصل Signal بـ %2$@ و%3$@ و%1$d آخرين</string>
+			<string>سَيتصل سيجنال بـ %2$@ و%3$@ و%1$d آخرين</string>
 			<key>one</key>
-			<string>سَيتصل Signal على %2$@ و%3$@ و%1$d آخر</string>
+			<string>سَيتصل سيجنال على %2$@ و%3$@ و%1$d آخر</string>
 			<key>two</key>
-			<string>سَيتصل Signal بـ %2$@ و%3$@ و%1$d آخرين</string>
+			<string>سَيتصل سيجنال بـ %2$@ و%3$@ و%1$d آخرين</string>
 			<key>few</key>
-			<string>سَيتصل Signal بـ %2$@ و%3$@ و%1$d آخرين</string>
+			<string>سَيتصل سيجنال بـ %2$@ و%3$@ و%1$d آخرين</string>
 			<key>many</key>
-			<string>سَيتصل Signal بـ %2$@ و%3$@ و%1$d آخرين</string>
+			<string>سَيتصل سيجنال بـ %2$@ و%3$@ و%1$d آخرين</string>
 			<key>other</key>
-			<string>سَيتصل Signal بـ %2$@ و%3$@ و%1$d آخرين</string>
+			<string>سَيتصل سيجنال بـ %2$@ و%3$@ و%1$d آخرين</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -981,7 +981,7 @@
 			<string>%1$d مجموعة مشتركة</string>
 		</dict>
 	</dict>
-	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
+	<key>MEDIA_GALLERY_DELETE_MEDIA_TITLE</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -992,17 +992,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>حذف %1$d رسالة</string>
+			<string>Delete %1$d Items?</string>
 			<key>one</key>
-			<string>حذف %1$d رسالة</string>
+			<string>Delete %1$d Item?</string>
 			<key>two</key>
-			<string>حذف رسالتين %1$d</string>
+			<string>Delete %1$d Items?</string>
 			<key>few</key>
-			<string>حذف %1$d رسائل</string>
+			<string>Delete %1$d Items?</string>
 			<key>many</key>
-			<string>حذف %1$d رسالة</string>
+			<string>Delete %1$d Items?</string>
 			<key>other</key>
-			<string>حذف %1$d رسالة</string>
+			<string>Delete %1$d Items?</string>
+		</dict>
+	</dict>
+	<key>MEDIA_GALLERY_DELETE_MEDIA_TOAST</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>%1$d items deleted</string>
+			<key>one</key>
+			<string>One item deleted</string>
+			<key>two</key>
+			<string>%1$d items deleted</string>
+			<key>few</key>
+			<string>%1$d items deleted</string>
+			<key>many</key>
+			<string>%1$d items deleted</string>
+			<key>other</key>
+			<string>%1$d items deleted</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -1208,17 +1232,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>جميع جهات اتصال Signal · %1$d مُشاهدين</string>
+			<string>جميع جهات اتصال سيجنال · %1$d مُشاهدين</string>
 			<key>one</key>
-			<string>جميع جهات اتصال Signal · %1$d مُشاهِد</string>
+			<string>جميع جهات اتصال سيجنال · %1$d مُشاهِد</string>
 			<key>two</key>
-			<string>جميع جهات اتصال Signal · %1$d مُشاهِدين</string>
+			<string>جميع جهات اتصال سيجنال · %1$d مُشاهِدين</string>
 			<key>few</key>
-			<string>جميع جهات اتصال Signal · %1$d مُشاهِدين</string>
+			<string>جميع جهات اتصال سيجنال · %1$d مُشاهِدين</string>
 			<key>many</key>
-			<string>جميع جهات اتصال Signal · %1$d مُشاهِدًا</string>
+			<string>جميع جهات اتصال سيجنال · %1$d مُشاهِدًا</string>
 			<key>other</key>
-			<string>جميع جهات اتصال Signal · %1$d مُشاهِد</string>
+			<string>جميع جهات اتصال سيجنال · %1$d مُشاهِد</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -1232,17 +1256,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>جميع جهات اتصال Signal · %1$d مُستبعد</string>
+			<string>جميع جهات اتصال سيجنال · %1$d مُستبعد</string>
 			<key>one</key>
-			<string>جميع جهات اتصال Signal · %1$d مُستبعد</string>
+			<string>جميع جهات اتصال سيجنال · %1$d مُستبعد</string>
 			<key>two</key>
-			<string>جميع جهات اتصال Signal · %1$d مُستَبعَدَيْن</string>
+			<string>جميع جهات اتصال سيجنال · %1$d مُستَبعَدَيْن</string>
 			<key>few</key>
-			<string>جميع جهات اتصال Signal · %1$d مُستبعدين</string>
+			<string>جميع جهات اتصال سيجنال · %1$d مُستبعدين</string>
 			<key>many</key>
-			<string>جميع جهات اتصال Signal · %1$d مُستبعدًا</string>
+			<string>جميع جهات اتصال سيجنال · %1$d مُستبعدًا</string>
 			<key>other</key>
-			<string>جميع جهات اتصال Signal · %1$d مُستبعد</string>
+			<string>جميع جهات اتصال سيجنال · %1$d مُستبعد</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
