@@ -2123,7 +2123,6 @@
 		F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF2289453B400548EEE /* NSString+SSK.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB20289453B200548EEE /* NSString+SSK.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF4289453B400548EEE /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB22289453B200548EEE /* Currency.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDF5289453B400548EEE /* OWSBackupFragment+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB23289453B200548EEE /* OWSBackupFragment+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF6289453B400548EEE /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB24289453B200548EEE /* LRUCache.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB25289453B200548EEE /* Atomics.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF8289453B400548EEE /* ReverseDispatchQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB26289453B200548EEE /* ReverseDispatchQueue.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2136,7 +2135,6 @@
 		F9C5CE00289453B400548EEE /* NSData+Image.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB2E289453B200548EEE /* NSData+Image.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE01289453B400548EEE /* OWSError.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB2F289453B200548EEE /* OWSError.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE02289453B400548EEE /* OWSBackgroundTask.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB30289453B200548EEE /* OWSBackgroundTask.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CE03289453B400548EEE /* OWSBackupFragment.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB31289453B200548EEE /* OWSBackupFragment.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE04289453B400548EEE /* SyncManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB32289453B200548EEE /* SyncManagerProtocol.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE05289453B400548EEE /* OWSAnalyticsEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB33289453B200548EEE /* OWSAnalyticsEvents.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE07289453B400548EEE /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB35289453B200548EEE /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2201,7 +2199,6 @@
 		F9C5CE47289453B400548EEE /* OWSAnalyticsEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB76289453B200548EEE /* OWSAnalyticsEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE49289453B400548EEE /* OWSError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB78289453B200548EEE /* OWSError.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE4A289453B400548EEE /* DecodableDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB79289453B200548EEE /* DecodableDefaults.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE4B289453B400548EEE /* OWSBackupFragment.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB7A289453B200548EEE /* OWSBackupFragment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE4C289453B400548EEE /* Sequence+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE4D289453B400548EEE /* Date+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB7C289453B200548EEE /* Date+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE4E289453B400548EEE /* OWSBackgroundTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB7D289453B200548EEE /* OWSBackgroundTask.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -4694,7 +4691,6 @@
 		F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRegularExpression+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB20289453B200548EEE /* NSString+SSK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+SSK.m"; sourceTree = "<group>"; };
 		F9C5CB22289453B200548EEE /* Currency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
-		F9C5CB23289453B200548EEE /* OWSBackupFragment+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSBackupFragment+SDS.swift"; sourceTree = "<group>"; };
 		F9C5CB24289453B200548EEE /* LRUCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
 		F9C5CB25289453B200548EEE /* Atomics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomics.swift; sourceTree = "<group>"; };
 		F9C5CB26289453B200548EEE /* ReverseDispatchQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReverseDispatchQueue.swift; sourceTree = "<group>"; };
@@ -4707,7 +4703,6 @@
 		F9C5CB2E289453B200548EEE /* NSData+Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Image.h"; sourceTree = "<group>"; };
 		F9C5CB2F289453B200548EEE /* OWSError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSError.h; sourceTree = "<group>"; };
 		F9C5CB30289453B200548EEE /* OWSBackgroundTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackgroundTask.h; sourceTree = "<group>"; };
-		F9C5CB31289453B200548EEE /* OWSBackupFragment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupFragment.m; sourceTree = "<group>"; };
 		F9C5CB32289453B200548EEE /* SyncManagerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncManagerProtocol.swift; sourceTree = "<group>"; };
 		F9C5CB33289453B200548EEE /* OWSAnalyticsEvents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAnalyticsEvents.m; sourceTree = "<group>"; };
 		F9C5CB35289453B200548EEE /* OWSUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUserProfile.h; sourceTree = "<group>"; };
@@ -4772,7 +4767,6 @@
 		F9C5CB76289453B200548EEE /* OWSAnalyticsEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAnalyticsEvents.h; sourceTree = "<group>"; };
 		F9C5CB78289453B200548EEE /* OWSError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSError.swift; sourceTree = "<group>"; };
 		F9C5CB79289453B200548EEE /* DecodableDefaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodableDefaults.swift; sourceTree = "<group>"; };
-		F9C5CB7A289453B200548EEE /* OWSBackupFragment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupFragment.h; sourceTree = "<group>"; };
 		F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Sequence+OWS.swift"; sourceTree = "<group>"; };
 		F9C5CB7C289453B200548EEE /* Date+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB7D289453B200548EEE /* OWSBackgroundTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackgroundTask.m; sourceTree = "<group>"; };
@@ -9366,9 +9360,6 @@
 				F9C5CB33289453B200548EEE /* OWSAnalyticsEvents.m */,
 				F9C5CB30289453B200548EEE /* OWSBackgroundTask.h */,
 				F9C5CB7D289453B200548EEE /* OWSBackgroundTask.m */,
-				F9C5CB23289453B200548EEE /* OWSBackupFragment+SDS.swift */,
-				F9C5CB7A289453B200548EEE /* OWSBackupFragment.h */,
-				F9C5CB31289453B200548EEE /* OWSBackupFragment.m */,
 				F9C5CB2F289453B200548EEE /* OWSError.h */,
 				F9C5CB80289453B200548EEE /* OWSError.m */,
 				F9C5CB78289453B200548EEE /* OWSError.swift */,
@@ -9605,7 +9596,6 @@
 				F9C5CDF9289453B400548EEE /* OWSAnalytics.h in Headers */,
 				F9C5CE47289453B400548EEE /* OWSAnalyticsEvents.h in Headers */,
 				F9C5CE02289453B400548EEE /* OWSBackgroundTask.h in Headers */,
-				F9C5CE4B289453B400548EEE /* OWSBackupFragment.h in Headers */,
 				F9C5CD04289453B300548EEE /* OWSBlockedPhoneNumbersMessage.h in Headers */,
 				F9C5CCE9289453B300548EEE /* OWSCallMessageHandler.h in Headers */,
 				F9C5CD93289453B300548EEE /* OWSCensorshipConfiguration.h in Headers */,
@@ -12106,8 +12096,6 @@
 				F9C5CE05289453B400548EEE /* OWSAnalyticsEvents.m in Sources */,
 				F9C5CC72289453B300548EEE /* OWSAttachmentDownloads.swift in Sources */,
 				F9C5CE4E289453B400548EEE /* OWSBackgroundTask.m in Sources */,
-				F9C5CDF5289453B400548EEE /* OWSBackupFragment+SDS.swift in Sources */,
-				F9C5CE03289453B400548EEE /* OWSBackupFragment.m in Sources */,
 				F9C5CD0C289453B300548EEE /* OWSBlockedPhoneNumbersMessage.m in Sources */,
 				F9C5CD9C289453B400548EEE /* OWSCensorshipConfiguration.m in Sources */,
 				F9C5CCF3289453B300548EEE /* OWSChunkedOutputStream.m in Sources */,

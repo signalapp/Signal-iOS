@@ -5,7 +5,6 @@
 
 #import "TSAttachmentPointer.h"
 #import "MIMETypeUtil.h"
-#import "OWSBackupFragment.h"
 #import "TSAttachmentStream.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -320,37 +319,7 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
     return [attachmentPointers copy];
 }
 
-- (nullable OWSBackupFragment *)lazyRestoreFragmentWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    if (!self.lazyRestoreFragmentId) {
-        return nil;
-    }
-    OWSBackupFragment *_Nullable backupFragment = [OWSBackupFragment anyFetchWithUniqueId:self.lazyRestoreFragmentId
-                                                                              transaction:transaction];
-    OWSAssertDebug(backupFragment);
-    return backupFragment;
-}
-
 #pragma mark - Update With... Methods
-
-- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
-                           transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(lazyRestoreFragment);
-    OWSAssertDebug(transaction);
-
-    if (!lazyRestoreFragment.uniqueId) {
-        // If metadata hasn't been saved yet, save now.
-        [lazyRestoreFragment anyInsertWithTransaction:transaction];
-
-        OWSAssertDebug(lazyRestoreFragment.uniqueId);
-    }
-    [self anyUpdateAttachmentPointerWithTransaction:transaction
-                                              block:^(TSAttachmentPointer *attachmentPointer) {
-                                                  [attachmentPointer
-                                                      setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
-                                              }];
-}
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {

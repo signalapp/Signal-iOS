@@ -7,7 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSBackupFragment;
 @class SDSAnyWriteTransaction;
 @class SSKProtoAttachmentPointer;
 @class TSAttachmentStream;
@@ -50,9 +49,6 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
 @property (nullable, nonatomic, readonly) NSData *digest;
 
 @property (nonatomic, readonly) CGSize mediaSize;
-
-// Non-nil for attachments which need "lazy backup restore."
-- (nullable OWSBackupFragment *)lazyRestoreFragmentWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (instancetype)initWithServerId:(UInt64)serverId
                           cdnKey:(NSString *)cdnKey
@@ -158,10 +154,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
                                                     albumMessage:(TSMessage *)message;
 
 #pragma mark - Update With... Methods
-
-// Marks attachment as needing "lazy backup restore."
-- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
-                           transaction:(SDSAnyWriteTransaction *)transaction;
 
 #if TESTABLE_BUILD
 - (void)setAttachmentPointerStateDebug:(TSAttachmentPointerState)state;

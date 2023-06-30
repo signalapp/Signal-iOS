@@ -11,8 +11,6 @@ protocol AttachmentFinderAdapter {
     associatedtype ReadTransaction
 
     static func attachmentPointerIdsToMarkAsFailed(tx: ReadTransaction) -> [String]
-
-    static func enumerateAttachmentPointersWithLazyRestoreFragments(transaction: ReadTransaction, block: @escaping (TSAttachmentPointer, UnsafeMutablePointer<ObjCBool>) -> Void)
 }
 
 // MARK: -
@@ -33,14 +31,6 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
         switch tx.readTransaction {
         case .grdbRead(let grdbRead):
             return GRDBAttachmentFinderAdapter.attachmentPointerIdsToMarkAsFailed(tx: grdbRead)
-        }
-    }
-
-    @objc
-    public class func enumerateAttachmentPointersWithLazyRestoreFragments(transaction: SDSAnyReadTransaction, block: @escaping (TSAttachmentPointer, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
-            return GRDBAttachmentFinderAdapter.enumerateAttachmentPointersWithLazyRestoreFragments(transaction: grdbRead, block: block)
         }
     }
 
@@ -115,10 +105,6 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
 
     let threadUniqueId: String
 
-    init(threadUniqueId: String) {
-        self.threadUniqueId = threadUniqueId
-    }
-
     // MARK: - static methods
 
     static func attachmentPointerIdsToMarkAsFailed(tx: ReadTransaction) -> [String] {
@@ -145,31 +131,6 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
         } catch {
             owsFailDebug("error: \(error)")
             return []
-        }
-    }
-
-    static func enumerateAttachmentPointersWithLazyRestoreFragments(transaction: GRDBReadTransaction, block: @escaping (TSAttachmentPointer, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        let sql: String = """
-        SELECT *
-        FROM \(AttachmentRecord.databaseTableName)
-        WHERE \(attachmentColumn: .recordType) = \(SDSRecordType.attachmentPointer.rawValue)
-        AND \(attachmentColumn: .lazyRestoreFragmentId) IS NOT NULL
-        """
-        let cursor = TSAttachment.grdbFetchCursor(sql: sql, transaction: transaction)
-        do {
-            while let attachment = try cursor.next() {
-                guard let attachmentPointer = attachment as? TSAttachmentPointer else {
-                    owsFailDebug("Unexpected object: \(type(of: attachment))")
-                    return
-                }
-                var stop: ObjCBool = false
-                block(attachmentPointer, &stop)
-                if stop.boolValue {
-                    return
-                }
-            }
-        } catch {
-            owsFailDebug("error: \(error)")
         }
     }
 

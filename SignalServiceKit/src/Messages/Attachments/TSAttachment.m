@@ -155,7 +155,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 // that represent downloaded incoming attachments.
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer transaction:(SDSAnyReadTransaction *)transaction
 {
-    if (![pointer lazyRestoreFragmentWithTransaction:transaction]) {
+    if (pointer.lazyRestoreFragmentId == nil) {
         OWSAssertDebug(pointer.serverId > 0 || pointer.cdnKey.length > 0);
         OWSAssertDebug(pointer.encryptionKey.length > 0);
         if (pointer.byteCount <= 0) {
