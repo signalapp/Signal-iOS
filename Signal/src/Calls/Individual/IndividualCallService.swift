@@ -21,8 +21,6 @@ final public class IndividualCallService: NSObject {
 
     // MARK: Class
 
-    static let fallbackIceServer = RTCIceServer(urlStrings: ["stun:stun1.l.google.com:19302"])
-
     public override init() {
         super.init()
 
@@ -1178,7 +1176,7 @@ final public class IndividualCallService: NSObject {
 
     /**
      * RTCIceServers are used when attempting to establish an optimal connection to the other party. SignalService supplies
-     * a list of servers, plus we have fallback servers hardcoded in the app.
+     * a list of servers.
      */
     private func getIceServers() -> Promise<[RTCIceServer]> {
 
@@ -1191,17 +1189,14 @@ final public class IndividualCallService: NSObject {
                 if url.hasPrefix("turn") {
                     // Only "turn:" servers require authentication. Don't include the credentials to other ICE servers
                     // as 1.) they aren't used, and 2.) the non-turn servers might not be under our control.
-                    // e.g. we use a public fallback STUN server.
                     return RTCIceServer(urlStrings: [url], username: turnServerInfo.username, credential: turnServerInfo.password)
                 } else {
                     return RTCIceServer(urlStrings: [url])
                 }
-            } + [IndividualCallService.fallbackIceServer]
+            }
         }.recover(on: DispatchQueue.global()) { (error: Error) -> Guarantee<[RTCIceServer]> in
             Logger.error("fetching ICE servers failed with error: \(error)")
-            Logger.warn("using fallback ICE Servers")
-
-            return Guarantee.value([IndividualCallService.fallbackIceServer])
+            throw error
         }
     }
 
