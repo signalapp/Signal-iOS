@@ -506,6 +506,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
 - (void)softDeleteThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    OWSLogInfo(@"Soft deleting thread with ID %@", self.uniqueId);
+
     [self removeAllThreadInteractionsWithTransaction:transaction];
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {

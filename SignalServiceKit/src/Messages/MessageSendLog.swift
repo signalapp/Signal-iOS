@@ -105,7 +105,6 @@ public class MessageSendLog {
 
     func recordPayload(_ plaintext: Data, for message: TSOutgoingMessage, tx: SDSAnyWriteTransaction) -> Int64? {
         guard !RemoteConfig.messageResendKillSwitch else {
-            Logger.info("Resend kill switch activated. Ignoring MSL payload save.")
             return nil
         }
         guard message.shouldRecordSendLog else { return nil }
@@ -125,8 +124,6 @@ public class MessageSendLog {
             // for subsequent sends because the timestamp and threadId will alias each
             // other.
             if existingValue.payload.plaintextContent == plaintext {
-                Logger.info("Reusing existing payloadId from a previous send: \(existingValue.payloadId)")
-
                 // If we're working to record a payload, this message is no longer
                 // complete. We set "sendComplete" false to make sure if a delivery receipt
                 // comes in before we finish sending to the remaining recipients that we
@@ -165,8 +162,6 @@ public class MessageSendLog {
                 throw OWSAssertionError("We must have a payloadId after inserting.")
             }
 
-            Logger.info("Inserted MSL payload with id: \(payloadId)")
-
             // If the payload was successfully recorded, we should also record any
             // interactions related to this payload. This should not fail.
             try message.relatedUniqueIds.forEach { uniqueId in
@@ -186,12 +181,10 @@ public class MessageSendLog {
         tx: SDSAnyReadTransaction
     ) -> Payload? {
         guard !RemoteConfig.messageResendKillSwitch else {
-            Logger.info("Resend kill switch activated. Ignoring MSL lookup.")
             return nil
         }
 
         guard timestamp > currentExpiredPayloadTimestamp() else {
-            Logger.info("Skipping lookup for expired payload.")
             return nil
         }
 
@@ -216,7 +209,6 @@ public class MessageSendLog {
 
     public func sendComplete(message: TSOutgoingMessage, tx: SDSAnyWriteTransaction) {
         guard !RemoteConfig.messageResendKillSwitch else {
-            Logger.info("Resend kill switch activated. Ignoring MSL payload save.")
             return
         }
         guard message.shouldRecordSendLog else { return }
@@ -303,7 +295,6 @@ public class MessageSendLog {
         tx: SDSAnyWriteTransaction
     ) {
         guard !RemoteConfig.messageResendKillSwitch else {
-            Logger.info("Resend kill switch activated. Ignoring MSL recipient save.")
             return
         }
         do {
@@ -333,7 +324,6 @@ public class MessageSendLog {
         tx: SDSAnyWriteTransaction
     ) {
         guard !RemoteConfig.messageResendKillSwitch else {
-            Logger.info("Resend kill switch activated. Ignoring MSL recipient save.")
             return
         }
         do {
@@ -358,7 +348,6 @@ public class MessageSendLog {
         _ interaction: TSInteraction,
         tx: SDSAnyWriteTransaction
     ) {
-        Logger.info("Deleting all MSL payload entries related to \(interaction.uniqueId)")
         do {
             let db = tx.unwrapGrdbWrite.database
             let messages = try Message.filter(Column("uniqueId") == interaction.uniqueId).fetchAll(db)
@@ -383,7 +372,6 @@ public class MessageSendLog {
                 let db = tx.unwrapGrdbWrite.database
                 return try Payload.filter(Column("sentTimestamp") < expirationTimestamp).deleteAll(db)
             }
-            Logger.info("Pruned stale MSL entries.")
         } catch {
             Logger.warn("Couldn't prune stale MSL entries \(error)")
         }

@@ -116,14 +116,10 @@ void AssertIsOnDisappearingMessagesQueue(void)
                                                       return;
                                                   }
 
-                                                  OWSLogInfo(
-                                                      @"Removing message which expired at: %lld", message.expiresAt);
                                                   [message anyRemoveWithTransaction:transaction];
                                                   expirationCount++;
                                               }];
     });
-
-    OWSLogDebug(@"Removed %lu expired messages", (unsigned long)expirationCount);
 
     OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
