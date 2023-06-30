@@ -39,7 +39,10 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                editTarget: .incomingMessage(targetMessage, authorAci: authorAci.wrappedValue),
+                editTarget: .incomingMessage(IncomingEditMessageWrapper(
+                    message: targetMessage,
+                    authorAci: authorAci.wrappedValue
+                )),
                 serverTimestamp: 1,
                 tx: tx
             )
@@ -79,7 +82,10 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                editTarget: .incomingMessage(targetMessage, authorAci: authorAci.wrappedValue),
+                editTarget: .incomingMessage(IncomingEditMessageWrapper(
+                    message: targetMessage,
+                    authorAci: authorAci.wrappedValue
+                )),
                 serverTimestamp: 1,
                 tx: tx
             )
@@ -107,7 +113,10 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                editTarget: .incomingMessage(targetMessage, authorAci: authorAci.wrappedValue),
+                editTarget: .incomingMessage(IncomingEditMessageWrapper(
+                    message: targetMessage,
+                    authorAci: authorAci.wrappedValue
+                )),
                 serverTimestamp: 1,
                 tx: tx
             )
@@ -136,7 +145,10 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                editTarget: .incomingMessage(targetMessage, authorAci: authorAci.wrappedValue),
+                editTarget: .incomingMessage(IncomingEditMessageWrapper(
+                    message: targetMessage,
+                    authorAci: authorAci.wrappedValue
+                )),
                 serverTimestamp: expiredTS,
                 tx: tx
             )
@@ -165,7 +177,10 @@ class EditManagerTests: SSKBaseTestSwift {
             let result = editManager.processIncomingEditMessage(
                 editMessage,
                 thread: thread,
-                editTarget: .incomingMessage(targetMessage, authorAci: authorAci.wrappedValue),
+                editTarget: .incomingMessage(IncomingEditMessageWrapper(
+                    message: targetMessage,
+                    authorAci: authorAci.wrappedValue
+                )),
                 serverTimestamp: bigInt + 1,
                 tx: tx
             )
@@ -260,6 +275,23 @@ class EditManagerTests: SSKBaseTestSwift {
     // MARK: - Test Mocks
 
     private class EditManagerDataStoreMock: EditManager.Shims.DataStore {
+        func createOutgoingEditMessage(
+            thread: TSThread,
+            targetMessageTimestamp: UInt64,
+            editMessage: TSOutgoingMessage,
+            tx: DBReadTransaction
+        ) -> OutgoingEditMessage {
+            return try! OutgoingEditMessage(dictionary: [:])
+        }
+
+        func findEditTarget(
+            timestamp: UInt64,
+            authorAci: ServiceId?,
+            tx: DBReadTransaction
+        ) -> EditMessageTarget? {
+            return nil
+        }
+
         func createOutgoingMessage(
             with builder: TSOutgoingMessageBuilder,
             tx: DBReadTransaction) -> TSOutgoingMessage {

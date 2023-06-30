@@ -101,15 +101,18 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
 
         let message = Self.databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(body: messageBody,
-                                      thread: self.thread,
-                                      quotedReplyModel: inputToolbar.quotedReply,
-                                      linkPreviewDraft: inputToolbar.linkPreviewDraft,
-                                      persistenceCompletionHandler: {
-                                            AssertIsOnMainThread()
-                                            self.loadCoordinator.enqueueReload()
-                                      },
-                                      transaction: transaction)
+            ThreadUtil.enqueueMessage(
+                body: messageBody,
+                thread: self.thread,
+                quotedReplyModel: inputToolbar.quotedReply,
+                linkPreviewDraft: inputToolbar.linkPreviewDraft,
+                editTarget: nil,
+                persistenceCompletionHandler: {
+                    AssertIsOnMainThread()
+                    self.loadCoordinator.enqueueReload()
+                },
+                transaction: transaction
+            )
         }
 
         // TODO: Audit optimistic insertion.
@@ -350,15 +353,18 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
             let message = Self.databaseStorage.read { transaction in
-                ThreadUtil.enqueueMessage(body: messageBody,
-                                          mediaAttachments: attachments,
-                                          thread: self.thread,
-                                          quotedReplyModel: inputToolbar.quotedReply,
-                                          persistenceCompletionHandler: {
-                                                AssertIsOnMainThread()
-                                                self.loadCoordinator.enqueueReload()
-                                            },
-                                          transaction: transaction)
+                ThreadUtil.enqueueMessage(
+                    body: messageBody,
+                    mediaAttachments: attachments,
+                    thread: self.thread,
+                    quotedReplyModel: inputToolbar.quotedReply,
+                    editTarget: nil,
+                    persistenceCompletionHandler: {
+                        AssertIsOnMainThread()
+                        self.loadCoordinator.enqueueReload()
+                    },
+                    transaction: transaction
+                )
             }
 
             self.messageWasSent(message)

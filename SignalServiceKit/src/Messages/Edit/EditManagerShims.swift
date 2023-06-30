@@ -28,6 +28,13 @@ public protocol _EditManager_DataStore {
         tx: DBReadTransaction
     ) -> TSOutgoingMessage
 
+    func createOutgoingEditMessage(
+        thread: TSThread,
+        targetMessageTimestamp: UInt64,
+        editMessage: TSOutgoingMessage,
+        tx: DBReadTransaction
+    ) -> OutgoingEditMessage
+
     func copyRecipients(
         from source: TSOutgoingMessage,
         to target: TSOutgoingMessage,
@@ -68,9 +75,29 @@ public protocol _EditManager_DataStore {
         for message: TSMessage,
         tx: DBReadTransaction
     ) -> Int
+
+    func findEditTarget(
+        timestamp: UInt64,
+        authorAci: ServiceId?,
+        tx: DBReadTransaction
+    ) -> EditMessageTarget?
 }
 
 public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
+
+    public func createOutgoingEditMessage(
+        thread: TSThread,
+        targetMessageTimestamp: UInt64,
+        editMessage: TSOutgoingMessage,
+        tx: DBReadTransaction
+    ) -> OutgoingEditMessage {
+        return OutgoingEditMessage(
+            thread: thread,
+            targetMessageTimestamp: targetMessageTimestamp,
+            editMessage: editMessage,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
 
     public func createOutgoingMessage(
         with builder: TSOutgoingMessageBuilder,
@@ -138,6 +165,18 @@ public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
 
     public func numberOfEdits(for message: TSMessage, tx: DBReadTransaction) -> Int {
         return EditMessageFinder.numberOfEdits(for: message, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func findEditTarget(
+        timestamp: UInt64,
+        authorAci: ServiceId?,
+        tx: DBReadTransaction
+    ) -> EditMessageTarget? {
+        return EditMessageFinder.editTarget(
+            timestamp: timestamp,
+            authorAci: authorAci,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
     }
 }
 

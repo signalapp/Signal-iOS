@@ -230,6 +230,7 @@ extension SharingThreadPickerViewController {
                         let preparer = OutgoingMessagePreparer(
                             messageBody: body,
                             thread: thread,
+                            editTarget: nil,
                             transaction: transaction
                         )
                         preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)

@@ -15,7 +15,11 @@ public class OutgoingMessagePreparer: NSObject {
 
     public var unpreparedMessage: TSOutgoingMessage {
         assert(!didCompletePrep)
-        return message
+        if let message = message as? OutgoingEditMessage {
+            return message.editedMessage
+        } else {
+            return message
+        }
     }
 
     @objc
@@ -31,7 +35,22 @@ public class OutgoingMessagePreparer: NSObject {
 
     public func insertMessage(linkPreviewDraft: OWSLinkPreviewDraft? = nil,
                               transaction: SDSAnyWriteTransaction) {
-        unpreparedMessage.anyInsert(transaction: transaction)
+
+        if let message = message as? OutgoingEditMessage {
+            // Write changes and insert new edit revisions/records
+            guard let thread = message.thread(tx: transaction) else {
+                owsFailDebug("Outgoing edit message missing thread.")
+                return
+            }
+            DependenciesBridge.shared.editManager.insertOutgoingEditRevisions(
+                for: message,
+                thread: thread,
+                tx: transaction.asV2Write
+            )
+        } else {
+            unpreparedMessage.anyInsert(transaction: transaction)
+        }
+
         if let linkPreviewDraft = linkPreviewDraft {
             do {
                 let linkPreview = try OWSLinkPreview.buildValidatedLinkPreview(fromInfo: linkPreviewDraft,
@@ -51,7 +70,7 @@ public class OutgoingMessagePreparer: NSObject {
             return false
         }
 
-        return !OutgoingMessagePreparerHelper.doesMessageNeedsToBePrepared(message)
+        return !OutgoingMessagePreparerHelper.doesMessageNeedsToBePrepared(unpreparedMessage)
     }
 
     @objc
@@ -71,11 +90,11 @@ public class OutgoingMessagePreparer: NSObject {
 
         if unsavedAttachmentInfos.count > 0 {
             try OutgoingMessagePreparerHelper.insertAttachments(unsavedAttachmentInfos,
-                                                                for: message,
+                                                                for: unpreparedMessage,
                                                                 transaction: transaction)
         }
 
-        self.savedAttachmentIds = OutgoingMessagePreparerHelper.prepareMessage(forSending: message,
+        self.savedAttachmentIds = OutgoingMessagePreparerHelper.prepareMessage(forSending: unpreparedMessage,
                                                                                transaction: transaction)
 
         didCompletePrep = true
