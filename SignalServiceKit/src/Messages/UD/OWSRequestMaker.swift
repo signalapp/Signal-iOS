@@ -127,7 +127,7 @@ public final class RequestMaker: Dependencies {
                 self.requestSucceeded(udAccess: udAccess)
                 return RequestMakerResult(response: response, wasSentByUD: isUDRequest, wasSentByWebsocket: true)
             }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<RequestMakerResult> in
-                return try self.requestFailed(error: error, isUDRequest: isUDRequest)
+                return try self.requestFailed(error: error, udAccess: udAccess)
             }
         } else {
             return firstly {
@@ -136,16 +136,25 @@ public final class RequestMaker: Dependencies {
                 self.requestSucceeded(udAccess: udAccess)
                 return RequestMakerResult(response: response, wasSentByUD: isUDRequest, wasSentByWebsocket: false)
             }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<RequestMakerResult> in
-                return try self.requestFailed(error: error, isUDRequest: isUDRequest)
+                return try self.requestFailed(error: error, udAccess: udAccess)
             }
         }
     }
 
-    private func requestFailed(error: Error, isUDRequest: Bool) throws -> Promise<RequestMakerResult> {
-        if isUDRequest && (error.httpStatusCode == 401 || error.httpStatusCode == 403) {
+    private func requestFailed(error: Error, udAccess: OWSUDAccess?) throws -> Promise<RequestMakerResult> {
+        if let udAccess, (error.httpStatusCode == 401 || error.httpStatusCode == 403) {
             // If a UD request fails due to service response (as opposed to network
             // failure), mark recipient as _not_ in UD mode, then retry.
-            self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
+            switch udAccess.udAccessMode {
+            case .unrestricted:
+                // If it was unrestricted, we *might* have the right profile key.
+                self.udManager.setUnidentifiedAccessMode(.unknown, address: self.address)
+            case .unknown, .enabled, .disabled:
+                // If it was unknown, we may have tried the real key (if we had it) or a
+                // random key. In either of these cases, we don't want to try again because
+                // it won't work.
+                self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
+            }
             if !self.options.contains(.isProfileFetch) {
                 self.profileManager.fetchProfile(for: self.address, authedAccount: self.authedAccount)
             }
