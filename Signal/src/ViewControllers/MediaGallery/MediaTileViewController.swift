@@ -237,6 +237,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier
         )
         collectionView.delegate = self
+        collectionView.alwaysBounceVertical = true
         collectionView.preservesSuperviewLayoutMargins = true
         collectionView.backgroundColor = UIColor(dynamicProvider: { _ in Theme.tableView2PresentedBackgroundColor })
 
