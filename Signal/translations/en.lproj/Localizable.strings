@@ -3907,9 +3907,6 @@
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal requires access to your photos for this feature.";
 
-/* Generic indicator that no value is available for display */
-"MISSING_VALUE" = "None";
-
 /* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
 

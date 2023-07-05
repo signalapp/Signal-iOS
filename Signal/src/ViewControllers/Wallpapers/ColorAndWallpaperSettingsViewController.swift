@@ -104,7 +104,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                 name: OWSLocalizedString("WALLPAPER_SETTINGS_SET_CHAT_COLOR",
                                         comment: "Set chat color action in color and wallpaper settings view."),
                 accessoryType: .disclosureIndicator,
-                accessoryView: defaultColorView,
+                accessoryContentView: defaultColorView,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_chat_color")
             ) { [weak self] in
                 guard let self = self else { return }

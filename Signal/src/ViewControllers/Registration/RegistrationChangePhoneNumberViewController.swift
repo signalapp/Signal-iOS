@@ -139,7 +139,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
         section.add(.item(name: OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD",
                                                   comment: "Label for the 'phone number' row in the 'change phone number' settings."),
                           textColor: Theme.primaryTextColor,
-                          accessoryView: valueViews.phoneNumberTextField,
+                          accessoryContentView: valueViews.phoneNumberTextField,
                           accessibilityIdentifier: valueViews.accessibilityIdentifier_CountryCode))
 
         switch valueViews.type {

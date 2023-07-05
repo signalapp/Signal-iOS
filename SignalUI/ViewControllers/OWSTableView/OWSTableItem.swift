@@ -67,17 +67,17 @@ public class OWSTableItem {
         accessoryType: UITableViewCell.AccessoryType,
         accessibilityIdentifier: String? = nil
     ) {
-        self.init(title: nil, actionBlock: actionBlock)
-        self.customCellBlock = {
-            OWSTableItem.buildCell(
-                itemName: text,
-                textColor: nil,
-                accessoryText: accessoryText,
-                accessoryType: accessoryType,
-                accessoryImage: nil,
-                accessibilityIdentifier: accessibilityIdentifier
-            )
-        }
+        self.init(
+            customCellBlock: {
+                return OWSTableItem.buildCell(
+                    itemName: text,
+                    accessoryText: accessoryText,
+                    accessoryType: accessoryType,
+                    accessibilityIdentifier: accessibilityIdentifier
+                )
+            },
+            actionBlock: actionBlock
+        )
     }
 
     // MARK: - Convenience constructors
@@ -88,11 +88,14 @@ public class OWSTableItem {
         accessibilityIdentifier: String? = nil
     ) -> OWSTableItem {
         return OWSTableItem(
-            text: text,
-            actionBlock: actionBlock,
-            accessoryText: nil,
-            accessoryType: .checkmark,
-            accessibilityIdentifier: accessibilityIdentifier
+            customCellBlock: {
+                return OWSTableItem.buildCell(
+                    itemName: text,
+                    accessoryType: .checkmark,
+                    accessibilityIdentifier: accessibilityIdentifier
+                )
+            },
+            actionBlock: actionBlock
         )
     }
 
@@ -102,14 +105,17 @@ public class OWSTableItem {
         accessibilityIdentifier: String? = nil,
         actionBlock: (() -> Void)? = nil
     ) -> OWSTableItem {
-        let item = OWSTableItem(
-            text: text,
-            actionBlock: actionBlock,
-            accessoryText: detailText,
-            accessoryType: .disclosureIndicator,
-            accessibilityIdentifier: accessibilityIdentifier
+        return OWSTableItem(
+            customCellBlock: {
+                return OWSTableItem.buildCell(
+                    itemName: text,
+                    accessoryText: detailText,
+                    accessoryType: .disclosureIndicator,
+                    accessibilityIdentifier: accessibilityIdentifier
+                )
+            },
+            actionBlock: actionBlock
         )
-        return item
     }
 
     public static func actionItem(
@@ -118,34 +124,17 @@ public class OWSTableItem {
         accessibilityIdentifier: String? = nil,
         actionBlock: (() -> Void)? = nil
     ) -> OWSTableItem {
-        let item = OWSTableItem(title: nil, actionBlock: actionBlock)
-        item.customCellBlock = {
-            OWSTableItem.buildCell(
-                itemName: text,
-                textColor: textColor,
-                accessoryType: .disclosureIndicator,
-                accessibilityIdentifier: accessibilityIdentifier
-            )
-        }
-        return item
-    }
-
-    public static func actionItem(
-        withText text: String,
-        accessoryImage: UIImage,
-        accessibilityIdentifier: String? = nil,
-        actionBlock: (() -> Void)? = nil
-    ) -> OWSTableItem {
-        let item = OWSTableItem(title: nil, actionBlock: actionBlock)
-        item.customCellBlock = {
-            OWSTableItem.buildCell(
-                itemName: text,
-                accessoryType: .disclosureIndicator,
-                accessoryImage: accessoryImage,
-                accessibilityIdentifier: accessibilityIdentifier
-            )
-        }
-        return item
+        return OWSTableItem(
+            customCellBlock: {
+                return OWSTableItem.buildCell(
+                    itemName: text,
+                    textColor: textColor,
+                    accessoryType: .disclosureIndicator,
+                    accessibilityIdentifier: accessibilityIdentifier
+                )
+            },
+            actionBlock: actionBlock
+        )
     }
 
     public static func subpage(
@@ -153,7 +142,14 @@ public class OWSTableItem {
         accessibilityIdentifier: String? = nil,
         actionBlock: @escaping ((UIViewController) -> Void)
     ) -> OWSTableItem {
-        let item = OWSTableItem()
+        let item = OWSTableItem(customCellBlock: {
+            return OWSTableItem.buildCell(
+                itemName: text,
+                accessoryType: .disclosureIndicator,
+                accessibilityIdentifier: accessibilityIdentifier
+            )
+        })
+
         item.actionBlock = { [weak item] in
             guard let item else { return }
             guard let viewController = item.tableViewController else {
@@ -162,21 +158,14 @@ public class OWSTableItem {
             }
             actionBlock(viewController)
         }
-        item.customCellBlock = {
-            OWSTableItem.buildCell(
-                itemName: text,
-                accessoryType: .disclosureIndicator,
-                accessibilityIdentifier: accessibilityIdentifier
-            )
-        }
+
         return item
     }
 
     public static func softCenterLabel(
         withText text: String
     ) -> OWSTableItem {
-        let item = OWSTableItem()
-        item.customCellBlock = {
+        return OWSTableItem(customCellBlock: {
             let cell = OWSTableItem.newCell()
             let textLabel = UILabel()
             textLabel.text = text
@@ -193,46 +182,47 @@ public class OWSTableItem {
             textLabel.autoPinEdgesToSuperviewMargins()
             cell.isUserInteractionEnabled = false
             return cell
-        }
-        return item
+        })
     }
 
     public static func label(
         withText text: String,
-        accessoryText: String? = nil
+        accessoryText: String? = nil,
+        accessoryType: UITableViewCell.AccessoryType = .disclosureIndicator
     ) -> OWSTableItem {
-        let item = OWSTableItem()
-        item.customCellBlock = {
+        return OWSTableItem(customCellBlock: {
             let cell = OWSTableItem.buildCell(
                 itemName: text,
                 accessoryText: accessoryText,
-                accessoryType: .disclosureIndicator
+                accessoryType: accessoryType
             )
+
             cell.isUserInteractionEnabled = false
+
             return cell
-        }
-        return item
+        })
     }
 
     public static func longDisclosure(
         withText text: String,
         actionBlock: (() -> Void)? = nil
     ) -> OWSTableItem {
-        let item = OWSTableItem(title: nil, actionBlock: actionBlock)
-        item.customCellBlock = {
-            let cell = OWSTableItem.newCell()
-            cell.accessoryType = .disclosureIndicator
+        return OWSTableItem(
+            customCellBlock: {
+                let cell = OWSTableItem.newCell()
+                cell.accessoryType = .disclosureIndicator
 
-            let textLabel = UILabel()
-            textLabel.text = text
-            textLabel.numberOfLines = 0
-            textLabel.lineBreakMode = .byWordWrapping
-            cell.contentView.addSubview(textLabel)
-            textLabel.autoPinEdgesToSuperviewMargins()
+                let textLabel = UILabel()
+                textLabel.text = text
+                textLabel.numberOfLines = 0
+                textLabel.lineBreakMode = .byWordWrapping
+                cell.contentView.addSubview(textLabel)
+                textLabel.autoPinEdgesToSuperviewMargins()
 
-            return cell
-        }
-        return item
+                return cell
+            },
+            actionBlock: actionBlock
+        )
     }
 
     public static func `switch`(
@@ -243,25 +233,22 @@ public class OWSTableItem {
         target: AnyObject,
         selector: Selector
     ) -> OWSTableItem {
-        let item = OWSTableItem()
-        item.customCellBlock = { [weak target] in
+        return OWSTableItem(customCellBlock: { [weak target] in
             let cell = OWSTableItem.buildCell(
                 itemName: text,
-                accessoryType: .disclosureIndicator,
                 accessibilityIdentifier: accessibilityIdentifier
             )
-            cell.selectionStyle = .none
 
             let cellSwitch = UISwitch()
-            cell.accessoryView = cellSwitch
             cellSwitch.isOn = isOn()
             cellSwitch.isEnabled = isEnabled()
             cellSwitch.accessibilityIdentifier = accessibilityIdentifier
             cellSwitch.addTarget(target, action: selector, for: .valueChanged)
 
+            cell.accessoryView = cellSwitch
+            cell.selectionStyle = .none
             return cell
-        }
-        return item
+        })
     }
 
     // MARK: - Table View Cells
@@ -300,11 +287,6 @@ public class OWSTableItem {
 }
 
 public extension OWSTableItem {
-
-    enum AccessoryImageTint: Int {
-        case untinted
-        case tinted
-    }
 
     static var primaryLabelFont: UIFont { .dynamicTypeBodyClamped }
     static var accessoryLabelFont: UIFont { .dynamicTypeBodyClamped }
@@ -427,10 +409,8 @@ public extension OWSTableItem {
         textColor: UIColor? = nil,
         accessoryText: String? = nil,
         accessoryType: UITableViewCell.AccessoryType = .none,
-        accessoryImage: UIImage? = nil,
-        accessoryImageTint: AccessoryImageTint = .tinted,
-        accessoryView: UIView? = nil,
-        accessibilityIdentifier: String,
+        accessoryContentView: UIView? = nil,
+        accessibilityIdentifier: String? = nil,
         actionBlock: (() -> Void)? = nil
     ) -> OWSTableItem {
         return OWSTableItem(
@@ -444,9 +424,7 @@ public extension OWSTableItem {
                     textColor: textColor,
                     accessoryText: accessoryText,
                     accessoryType: accessoryType,
-                    accessoryImage: accessoryImage,
-                    accessoryImageTint: accessoryImageTint,
-                    accessoryView: accessoryView,
+                    accessoryContentView: accessoryContentView,
                     accessibilityIdentifier: accessibilityIdentifier
                 )
             },
@@ -466,9 +444,7 @@ public extension OWSTableItem {
         accessoryText: String? = nil,
         accessoryTextColor: UIColor? = nil,
         accessoryType: UITableViewCell.AccessoryType = .none,
-        accessoryImage: UIImage? = nil,
-        accessoryImageTint: AccessoryImageTint = .tinted,
-        accessoryView: UIView? = nil,
+        accessoryContentView: UIView? = nil,
         customColor: UIColor? = nil,
         accessibilityIdentifier: String? = nil
     ) -> UITableViewCell {
@@ -490,9 +466,7 @@ public extension OWSTableItem {
             accessoryText: accessoryText,
             accessoryTextColor: accessoryTextColor,
             accessoryType: accessoryType,
-            accessoryImage: accessoryImage,
-            accessoryImageTint: accessoryImageTint,
-            accessoryView: accessoryView,
+            accessoryContentView: accessoryContentView,
             customColor: customColor,
             accessibilityIdentifier: accessibilityIdentifier
         )
@@ -539,9 +513,7 @@ public extension OWSTableItem {
         accessoryText: String? = nil,
         accessoryTextColor: UIColor? = nil,
         accessoryType: UITableViewCell.AccessoryType = .none,
-        accessoryImage: UIImage? = nil,
-        accessoryImageTint: AccessoryImageTint = .tinted,
-        accessoryView: UIView? = nil,
+        accessoryContentView: UIView? = nil,
         customColor: UIColor? = nil,
         accessibilityIdentifier: String? = nil
     ) -> UITableViewCell {
@@ -611,11 +583,11 @@ public extension OWSTableItem {
             nameLabel.textColor = customColor
         }
 
-        if let accessoryView = accessoryView {
+        if let  accessoryContentView {
             owsAssertDebug(accessoryText == nil)
 
-            subviews.append(accessoryView)
-        } else if let accessoryText = accessoryText {
+            subviews.append(accessoryContentView)
+        } else if let accessoryText {
             let accessoryLabel = UILabel()
             accessoryLabel.text = accessoryText
             accessoryLabel.textColor = accessoryTextColor ?? accessoryGray()
@@ -657,26 +629,7 @@ public extension OWSTableItem {
         }
 
         cell.accessibilityIdentifier = accessibilityIdentifier
-
-        if let accessoryImage = accessoryImage {
-            let accessoryImageView = UIImageView()
-
-            switch accessoryImageTint {
-            case .tinted:
-                accessoryImageView.setTemplateImage(
-                    accessoryImage,
-                    // Match the OS accessory view colors
-                    tintColor: Theme.isDarkThemeEnabled ? .ows_whiteAlpha25 : .ows_blackAlpha25
-                )
-            case .untinted:
-                accessoryImageView.image = accessoryImage
-            }
-
-            accessoryImageView.sizeToFit()
-            cell.accessoryView = accessoryImageView
-        } else {
-            cell.accessoryType = accessoryType
-        }
+        cell.accessoryType = accessoryType
 
         return cell
     }
@@ -691,9 +644,7 @@ public extension OWSTableItem {
     ) -> UIView {
         return buildIconInCircleView(
             icon: icon,
-            iconSize: nil,
-            innerIconSize: innerIconSize,
-            iconTintColor: nil
+            innerIconSize: innerIconSize
         )
     }
 
@@ -704,7 +655,6 @@ public extension OWSTableItem {
     ) -> UIView {
         return buildIconInCircleView(
             icon: icon,
-            iconSize: nil,
             innerIconSize: innerIconSize,
             iconTintColor: iconTintColor
         )
@@ -734,23 +684,27 @@ public extension OWSTableItem {
         iconWrapper.setContentHuggingHigh()
         return iconWrapper
     }
+}
 
-    // Factory method for rows that display a labeled value.
-    // The value can be copied to the pasteboard by tapping.
+// MARK: - Copyable item
+
+public extension OWSTableItem {
+
+    /// An item that displays a labeled value that is copied on selection. A
+    /// toast is presented on selection.
+    ///
+    /// - Parameter value
+    /// The value to display, if any.
+    /// - Parameter pasteboardValue
+    /// The value to copy, if different than ``value``.
     static func copyableItem(
         label: String,
         value displayValue: String?,
         pasteboardValue: String? = nil,
         accessibilityIdentifier: String? = nil
     ) -> OWSTableItem {
-        // If there is a custom pasteboardValue, honor it.
-        // Otherwise just default to using the displayValue.
         let pasteboardValue = pasteboardValue ?? displayValue
         let accessibilityIdentifier = accessibilityIdentifier ?? label
-        let displayValue = displayValue ?? OWSLocalizedString(
-            "MISSING_VALUE",
-            comment: "Generic indicator that no value is available for display"
-        )
 
         return .item(
             name: label,
@@ -774,5 +728,42 @@ public extension OWSTableItem {
                 fromVC.presentToast(text: toast)
             }
         )
+    }
+}
+
+// MARK: - Item wrapping custom view
+
+public extension OWSTableItem {
+    private class ViewWrappingTableViewCell: UITableViewCell {
+        init(viewToWrap: UIView, margins: UIEdgeInsets) {
+            super.init(style: .default, reuseIdentifier: nil)
+
+            selectionStyle = .none
+
+            contentView.addSubview(viewToWrap)
+            contentView.layoutMargins = margins
+
+            viewToWrap.autoPinEdgesToSuperviewMargins()
+        }
+
+        required init?(coder: NSCoder) {
+            owsFail("Not implemented!")
+        }
+    }
+
+    static func itemWrappingView(
+        viewBlock: @escaping () -> UIView?,
+        margins: UIEdgeInsets
+    ) -> OWSTableItem {
+        return OWSTableItem(customCellBlock: {
+            guard let view = viewBlock() else {
+                return UITableViewCell()
+            }
+
+            return ViewWrappingTableViewCell(
+                viewToWrap: view,
+                margins: margins
+            )
+        })
     }
 }
