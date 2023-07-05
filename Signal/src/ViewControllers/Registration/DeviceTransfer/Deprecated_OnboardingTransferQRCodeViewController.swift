@@ -79,7 +79,8 @@ public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_Onboa
             let url = try deviceTransferService.startAcceptingTransfersFromOldDevices(
                 mode: onboardingController.onboardingMode == .provisioning ? .linked : .primary
             )
-            try qrCodeView.setQR(url: url)
+
+            qrCodeView.setQR(url: url)
         } catch {
             owsFailDebug("error \(error)")
         }

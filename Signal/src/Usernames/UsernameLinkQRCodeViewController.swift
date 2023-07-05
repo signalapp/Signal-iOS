@@ -43,13 +43,27 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
     /// Builds the QR code view, including the QR code, colored background, and
     /// display of the current username.
     private func buildQRCodeView() -> UIView {
-        let qrCodeImageView: UIImageView = {
-            let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "camera-28"))
-            imageView.tintColor = .white
-            imageView.autoPinToSquareAspectRatio()
-            imageView.layer.cornerRadius = 12
+        // TODO: when we offer more colors, we need to persist/load this.
+        let accentColor = UIColor(
+            red: 36 / 255,
+            green: 73 / 255,
+            blue: 192 / 255,
+            alpha: 1
+        )
 
-            return imageView
+        let qrCodeView: QRCodeView = {
+            let view = QRCodeView(
+                qrCodeGenerator: UsernameLinkQRCodeGenerator(color: accentColor),
+                useCircularWrapper: false
+            )
+
+            view.setQR(url: usernameLink.asUrl)
+
+            view.backgroundColor = .white
+            view.layer.cornerRadius = 12
+            view.layoutMargins = UIEdgeInsets(margin: 10)
+
+            return view
         }()
 
         let copyUsernameLabel: UILabel = {
@@ -77,19 +91,20 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
 
         let wrapperView = UIView()
 
-        // TODO: when we offer more colors, we need to persist/load this.
-        wrapperView.backgroundColor = .ows_signalBlue
+        wrapperView.backgroundColor = accentColor
         wrapperView.layer.cornerRadius = 24
         wrapperView.layoutMargins = UIEdgeInsets(hMargin: 40, vMargin: 32)
 
-        wrapperView.addSubview(qrCodeImageView)
+        wrapperView.addSubview(qrCodeView)
         wrapperView.addSubview(copyUsernameView)
 
-        qrCodeImageView.autoPinTopToSuperviewMargin()
-        qrCodeImageView.autoPinLeadingToSuperviewMargin()
-        qrCodeImageView.autoPinTrailingToSuperviewMargin()
+        qrCodeView.autoPinTopToSuperviewMargin()
+        qrCodeView.autoAlignAxis(toSuperviewAxis: .vertical)
+        qrCodeView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
+        qrCodeView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
+        qrCodeView.autoSetDimension(.width, toSize: 250, relation: .lessThanOrEqual)
 
-        qrCodeImageView.autoPinEdge(.bottom, to: .top, of: copyUsernameView, withOffset: -16)
+        qrCodeView.autoPinEdge(.bottom, to: .top, of: copyUsernameView, withOffset: -16)
 
         copyUsernameView.autoPinLeadingToSuperviewMargin()
         copyUsernameView.autoPinTrailingToSuperviewMargin()
@@ -186,7 +201,7 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
         ), for: .normal)
 
         button.contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
-        button.backgroundColor = .ows_white.withAlphaComponent(0.7)
+        button.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_whiteAlpha70
         button.titleLabel?.font = .dynamicTypeBody2.bold()
         button.titleLabel?.textAlignment = .center
         button.setTitleColor(Theme.primaryTextColor, for: .normal)

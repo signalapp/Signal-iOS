@@ -1289,6 +1289,9 @@
 		D925F56B298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
 		D92C57552A2925AD00A03BB7 /* TSInfoMessage+GroupUpdateTypeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+GroupUpdateTypeTest.swift */; };
+		D9317FD32A4BAC8300075A92 /* BitmapsImagePixelMergingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD12A4BA7B000075A92 /* BitmapsImagePixelMergingTest.swift */; };
+		D9317FD52A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */; };
+		D9317FD82A4BC4FC00075A92 /* BitmapsRectTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */; };
 		D938CD6029283402006FB16A /* Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938CD5F29283402006FB16A /* Paypal.swift */; };
 		D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */; };
 		D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */; };
@@ -1320,6 +1323,9 @@
 		D99A0F5829F1ABBB002E02E3 /* TSGroupMemberRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */; };
 		D99A0F6029F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A0F5F29F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift */; };
 		D99A0F6229F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A0F6129F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift */; };
+		D99ABC742A3D0BE10034CD3B /* BitmapsImageParsingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99ABC722A3D0BBB0034CD3B /* BitmapsImageParsingTest.swift */; };
+		D99ABC782A3D132D0034CD3B /* blue-rectangle.png in Resources */ = {isa = PBXBuildFile; fileRef = D99ABC762A3D132D0034CD3B /* blue-rectangle.png */; };
+		D99ABC7A2A3D1D710034CD3B /* semitransparent.png in Resources */ = {isa = PBXBuildFile; fileRef = D99ABC792A3D1D710034CD3B /* semitransparent.png */; };
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
 		D9A3E22B2A0D633500E2A8B5 /* UsernameLookupRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */; };
 		D9A3E22D2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */; };
@@ -1361,8 +1367,17 @@
 		D9DCFDA52A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA42A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift */; };
 		D9DCFDA92A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA82A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift */; };
 		D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */; };
+		D9DCFDAE2A3BB25200C73C0B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */; };
+		D9DCFDB02A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAF2A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift */; };
+		D9DCFDB22A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */; };
+		D9DCFDB42A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */; };
 		D9E335A42993269100825677 /* MockDBV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAE2982F4C4002E0CFE /* MockDBV2.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
+		D9EB221E2A4B636C00C73E1D /* Bitmaps+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */; };
+		D9EB221F2A4B636C00C73E1D /* Bitmaps+Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */; };
+		D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */; };
+		D9EB22212A4B636C00C73E1D /* CGContext+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221C2A4B636B00C73E1D /* CGContext+LineDrawing.swift */; };
+		D9EB22222A4B636C00C73E1D /* Bitmaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */; };
 		D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */; };
 		D9F6553B29D6547F002A330A /* SDSCodableModelDatabaseInterface+Remove.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */; };
 		D9F6553C29D6547F002A330A /* SDSCodableModelDatabaseInterface+Save.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553629D6547E002A330A /* SDSCodableModelDatabaseInterface+Save.swift */; };
@@ -3849,6 +3864,9 @@
 		D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupRecordTest.swift; sourceTree = "<group>"; };
 		D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManager.swift; sourceTree = "<group>"; };
 		D92C57542A2925AD00A03BB7 /* TSInfoMessage+GroupUpdateTypeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateTypeTest.swift"; sourceTree = "<group>"; };
+		D9317FD12A4BA7B000075A92 /* BitmapsImagePixelMergingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsImagePixelMergingTest.swift; sourceTree = "<group>"; };
+		D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsImageCenteredDeadzoneTest.swift; sourceTree = "<group>"; };
+		D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsRectTest.swift; sourceTree = "<group>"; };
 		D938CD5F29283402006FB16A /* Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paypal.swift; sourceTree = "<group>"; };
 		D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManager.swift; sourceTree = "<group>"; };
 		D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManagerTest.swift; sourceTree = "<group>"; };
@@ -3882,6 +3900,9 @@
 		D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupMemberRole.swift; sourceTree = "<group>"; };
 		D99A0F5F29F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateInfoMessageInserter.swift; sourceTree = "<group>"; };
 		D99A0F6129F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift"; sourceTree = "<group>"; };
+		D99ABC722A3D0BBB0034CD3B /* BitmapsImageParsingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsImageParsingTest.swift; sourceTree = "<group>"; };
+		D99ABC762A3D132D0034CD3B /* blue-rectangle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-rectangle.png"; sourceTree = "<group>"; };
+		D99ABC792A3D1D710034CD3B /* semitransparent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = semitransparent.png; sourceTree = "<group>"; };
 		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
 		D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkOpener.swift; sourceTree = "<group>"; };
 		D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameQuerier.swift; sourceTree = "<group>"; };
@@ -3921,7 +3942,16 @@
 		D9DCFDA42A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeViewController.swift; sourceTree = "<group>"; };
 		D9DCFDA82A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuPresentingTableViewCell.swift; sourceTree = "<group>"; };
 		D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHeaderButton.swift; sourceTree = "<group>"; };
+		D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
+		D9DCFDAF2A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeGenerator.swift; sourceTree = "<group>"; };
+		D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportableQRCodeGenerator.swift; sourceTree = "<group>"; };
+		D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicDisplayQRCodeGenerator.swift; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
+		D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+LineDrawing.swift"; sourceTree = "<group>"; };
+		D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Shapes.swift"; sourceTree = "<group>"; };
+		D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Image.swift"; sourceTree = "<group>"; };
+		D9EB221C2A4B636B00C73E1D /* CGContext+LineDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGContext+LineDrawing.swift"; sourceTree = "<group>"; };
+		D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bitmaps.swift; sourceTree = "<group>"; };
 		D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+ColumnName.swift"; sourceTree = "<group>"; };
 		D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Remove.swift"; sourceTree = "<group>"; };
 		D9F6553629D6547E002A330A /* SDSCodableModelDatabaseInterface+Save.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Save.swift"; sourceTree = "<group>"; };
@@ -6111,6 +6141,8 @@
 		34C6B0A41FA0E46F00D35993 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				D99ABC762A3D132D0034CD3B /* blue-rectangle.png */,
+				D99ABC792A3D1D710034CD3B /* semitransparent.png */,
 				34C6B0A51FA0E46F00D35993 /* test-gif.gif */,
 				1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */,
 				34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */,
@@ -6854,6 +6886,7 @@
 				76EB041118170B33006006FC /* environment */,
 				5045F44129E0DAA400058E5F /* Launch */,
 				457F3AC01D14A0F700C51351 /* Models */,
+				D9DCFDAC2A3BB22800C73C0B /* QRCodes */,
 				45CD81A41DBFF8CF004C9430 /* Storyboards */,
 				450DF2061E0DD28D003D14BE /* UserInterface */,
 				D99840BB297A04A300F7ED6D /* Usernames */,
@@ -6930,7 +6963,6 @@
 				8829883A25B9FD6700DEE1E3 /* MockConversationView.swift */,
 				3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */,
 				4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */,
-				88A4CC11246CE2F50082211F /* QRCodeView.swift */,
 				88863A55280CD04A00977F69 /* ReactionFlybyAnimation.swift */,
 				45069FCD29D64CB300D0DD14 /* SelectionButton.swift */,
 				D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */,
@@ -7566,6 +7598,7 @@
 				458E38381D6699110094BD24 /* Models */,
 				3471210D25ED5F850037CD1F /* Payments */,
 				4C10B1C523176DB00099396B /* PerformanceTests */,
+				D99ABC712A3D0BAA0034CD3B /* QRCodes */,
 				661278052996BA6700A1D5A1 /* Registration */,
 				4C3EF8002109184A0007EBF7 /* SSKTests */,
 				E75DD3DC2810CD3500E32C36 /* subscriptions */,
@@ -7807,6 +7840,18 @@
 			path = Usernames;
 			sourceTree = "<group>";
 		};
+		D96343082A4B62CC0086C052 /* Bitmaps */ = {
+			isa = PBXGroup;
+			children = (
+				D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */,
+				D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */,
+				D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */,
+				D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */,
+				D9EB221C2A4B636B00C73E1D /* CGContext+LineDrawing.swift */,
+			);
+			path = Bitmaps;
+			sourceTree = "<group>";
+		};
 		D9668B30291B033800665298 /* Jobs */ = {
 			isa = PBXGroup;
 			children = (
@@ -7874,6 +7919,17 @@
 			path = Usernames;
 			sourceTree = "<group>";
 		};
+		D99ABC712A3D0BAA0034CD3B /* QRCodes */ = {
+			isa = PBXGroup;
+			children = (
+				D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */,
+				D99ABC722A3D0BBB0034CD3B /* BitmapsImageParsingTest.swift */,
+				D9317FD12A4BA7B000075A92 /* BitmapsImagePixelMergingTest.swift */,
+				D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */,
+			);
+			path = QRCodes;
+			sourceTree = "<group>";
+		};
 		D9A3E22E2A0DABC000E2A8B5 /* Usernames */ = {
 			isa = PBXGroup;
 			children = (
@@ -7908,6 +7964,19 @@
 				F9C5CB3C289453B200548EEE /* LegacyChangePhoneNumber.swift */,
 			);
 			path = ChangePhoneNumber;
+			sourceTree = "<group>";
+		};
+		D9DCFDAC2A3BB22800C73C0B /* QRCodes */ = {
+			isa = PBXGroup;
+			children = (
+				D96343082A4B62CC0086C052 /* Bitmaps */,
+				D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */,
+				D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */,
+				D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */,
+				88A4CC11246CE2F50082211F /* QRCodeView.swift */,
+				D9DCFDAF2A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift */,
+			);
+			path = QRCodes;
 			sourceTree = "<group>";
 		};
 		D9E335A52993269E00825677 /* Mocks */ = {
@@ -10290,6 +10359,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D99ABC782A3D132D0034CD3B /* blue-rectangle.png in Resources */,
+				D99ABC7A2A3D1D710034CD3B /* semitransparent.png in Resources */,
 				F927478B28CFEA680056EAFE /* test-apng.png in Resources */,
 				34C6B0A91FA0E46F00D35993 /* test-gif.gif in Resources */,
 				1704690C25D4C92B000793D8 /* test-jpg-rotated.jpg in Resources */,
@@ -11176,7 +11247,12 @@
 				50EF8DCF2A1E871400A00935 /* BadgeManager.swift in Sources */,
 				8880179427430DDB00346E9A /* BadgeThanksSheet.swift in Sources */,
 				349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */,
+				D9DCFDB42A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift in Sources */,
 				34F1072026D005340053EF4D /* BatchUpdate.swift in Sources */,
+				D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */,
+				D9EB221E2A4B636C00C73E1D /* Bitmaps+LineDrawing.swift in Sources */,
+				D9EB221F2A4B636C00C73E1D /* Bitmaps+Shapes.swift in Sources */,
+				D9EB22222A4B636C00C73E1D /* Bitmaps.swift in Sources */,
 				3491899B269CD68E008A18AF /* BlockingAnnouncementOnlyView.swift in Sources */,
 				347DE5BC2548967900C32CDC /* BlockingLegacyGroupView.swift in Sources */,
 				76847C962A1346A8008E2EAB /* BlockListViewController.swift in Sources */,
@@ -11191,6 +11267,7 @@
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* CameraCaptureSession.swift in Sources */,
 				4C46361122EB98EC00185951 /* CameraFirstCaptureSendFlow.swift in Sources */,
+				D9EB22212A4B636C00C73E1D /* CGContext+LineDrawing.swift in Sources */,
 				34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */,
 				346E09012662FBBE0042375E /* ChatListCell.swift in Sources */,
 				34E95C27269F6096004807EC /* ChatListViewController+Actions.swift in Sources */,
@@ -11448,6 +11525,7 @@
 				3428577A26BD8777005A2A96 /* EmojiWithSkinTones.swift in Sources */,
 				88A505F423DA16E10005C012 /* ExperienceUpgradeManager.swift in Sources */,
 				88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */,
+				D9DCFDB22A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift in Sources */,
 				326DF2612739F4D90017B789 /* FeaturedBadgeViewController.swift in Sources */,
 				344A761124B366F4009D69A5 /* FlagsViewController.swift in Sources */,
 				88EFF4F825AD1F0D000FAFBA /* ForwardMessageViewController.swift in Sources */,
@@ -11611,6 +11689,7 @@
 				88DF81A128E1538000F8BA80 /* ProxyLinkSheetViewController.swift in Sources */,
 				88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
+				D9DCFDAE2A3BB25200C73C0B /* QRCodeGenerator.swift in Sources */,
 				88A4CC12246CE2F50082211F /* QRCodeView.swift in Sources */,
 				3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */,
 				88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */,
@@ -11726,6 +11805,7 @@
 				5033D47029DCACEF007FEADA /* UrlOpener.swift in Sources */,
 				C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */,
 				D9A3E22D2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift in Sources */,
+				D9DCFDB02A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift in Sources */,
 				D9DCFDA52A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift in Sources */,
 				D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */,
 				D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */,
@@ -11763,6 +11843,10 @@
 				F9A335CA282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift in Sources */,
 				50EF8DD12A1E9B3800A00935 /* BadgeManagerTest.swift in Sources */,
 				34F1072226D045290053EF4D /* BatchUpdateTest.swift in Sources */,
+				D9317FD52A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift in Sources */,
+				D99ABC742A3D0BE10034CD3B /* BitmapsImageParsingTest.swift in Sources */,
+				D9317FD32A4BAC8300075A92 /* BitmapsImagePixelMergingTest.swift in Sources */,
+				D9317FD82A4BC4FC00075A92 /* BitmapsRectTest.swift in Sources */,
 				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
 				F9C612B4284E466B00B2199A /* CGPointExtensionsTest.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,

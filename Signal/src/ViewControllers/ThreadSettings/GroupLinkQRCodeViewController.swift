@@ -36,7 +36,8 @@ public class GroupLinkQRCodeViewController: OWSViewController {
 
         do {
             let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
-            try qrCodeView.setQR(url: inviteLinkUrl)
+
+            qrCodeView.setQR(url: inviteLinkUrl)
         } catch {
             owsFailDebug("error \(error)")
         }
@@ -81,8 +82,13 @@ public class GroupLinkQRCodeViewController: OWSViewController {
     @objc
     private func didTapShareCode(_ sender: UIButton) {
         do {
-            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
-            let qrCodeImage = try QRCodeView.buildQRImage(url: inviteLinkUrl, forExport: true)
+            guard let qrCodeImage = ExportableQRCodeGenerator().generateQRCode(
+                url: try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
+            ) else {
+                owsFailDebug("Failed to generate QR code image!")
+                return
+            }
+
             guard let imageData = qrCodeImage.pngData() else {
                 owsFailDebug("Could not encode QR code.")
                 return

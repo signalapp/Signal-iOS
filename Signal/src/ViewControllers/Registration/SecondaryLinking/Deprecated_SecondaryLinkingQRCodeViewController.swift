@@ -117,7 +117,7 @@ public class Deprecated_SecondaryLinkingQRCodeViewController: Deprecated_Onboard
 
         provisioningController.getProvisioningURL().done { url in
             self.qrCodeURL = url
-            try self.qrCodeView.setQR(url: url)
+            self.qrCodeView.setQR(url: url)
         }.catch { error in
             let title = OWSLocalizedString("SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE", comment: "alert title")
             let alert = ActionSheetController(title: title, message: error.userErrorDescription)

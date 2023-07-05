@@ -92,7 +92,8 @@ public class RegistrationTransferQRCodeViewController: OWSViewController {
             let url = try deviceTransferService.startAcceptingTransfersFromOldDevices(
                 mode: .primary
             )
-            try qrCodeView.setQR(url: url)
+
+            qrCodeView.setQR(url: url)
         } catch {
             owsFailDebug("error \(error)")
         }
