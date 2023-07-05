@@ -1,1 +1,1 @@
-• We updated the icons within the app to help improve legibility, especially if you live within the darkness of Dark Mode. The previous icons merely adopted the dark. These new icons were born in it, molded by it.
+• ダークモード使用中でも文字が見やすいようにアプリ内のアイコンを更新しました。以前のアイコンはただダークモードを取り入れたにすぎませんでしたが、新しいアイコンは「闇こそわが世界」とばかりにダークモードで存在感を示します。
