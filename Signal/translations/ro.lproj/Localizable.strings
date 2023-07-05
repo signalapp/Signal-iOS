@@ -3539,7 +3539,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Media vizibilă o singură dată";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
-"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "This will permanently delete the selected files. Any message text associated with these items will also be deleted.";
+"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Acest lucru va șterge permanent fișierele selectate. Orice mesaj text asociat cu aceste elemente va fi și el șters.";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
@@ -3906,9 +3906,6 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal are nevoie de acces la pozele tale pentru această funcționalitate.";
-
-/* Generic indicator that no value is available for display */
-"MISSING_VALUE" = "Niciunul";
 
 /* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Nu mai poți asocia alte dispozitive.";
@@ -7076,7 +7073,7 @@
 "TEXT_MENU_BOLD" = "Aldin";
 
 /* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "Clear Formatting";
+"TEXT_MENU_CLEAR_FORMATTING" = "Șterge formatarea";
 
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "Format";
@@ -7281,6 +7278,9 @@
 
 /* Description of username link */
 "USERNAME_LINK_DESCRIPTION" = "Fiecare nume de utilizator are un link unic și îl poți partaja prietenilor tăi iar ei îl pot folosi ca să înceapă o conversație cu tine";
+
+/* A title for a view that allows you to pick a color for a QR code for your username link. */
+"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Color";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Culoare";

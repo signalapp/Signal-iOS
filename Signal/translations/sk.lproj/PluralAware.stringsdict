@@ -828,13 +828,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete %1$d Item?</string>
+			<string>Vymazať %1$d položku?</string>
 			<key>few</key>
-			<string>Delete %1$d Items?</string>
+			<string>Vymazať %1$d položky?</string>
 			<key>many</key>
-			<string>Delete %1$d Items?</string>
+			<string>Vymazať %1$d položky?</string>
 			<key>other</key>
-			<string>Delete %1$d Items?</string>
+			<string>Vymazať %1$d položiek?</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MEDIA_TOAST</key>
@@ -848,13 +848,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>One item deleted</string>
+			<string>Bola vymazaná jedna položka</string>
 			<key>few</key>
-			<string>%1$d items deleted</string>
+			<string>Boli vymazané %1$d položky</string>
 			<key>many</key>
-			<string>%1$d items deleted</string>
+			<string>Bolo vymazanej %1$d položky</string>
 			<key>other</key>
-			<string>%1$d items deleted</string>
+			<string>Bolo vymazaných %1$d položiek</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>

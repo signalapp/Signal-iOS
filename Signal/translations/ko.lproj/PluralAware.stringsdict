@@ -582,7 +582,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Delete %1$d Items?</string>
+			<string>항목 %1$d개를 삭제할까요?</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MEDIA_TOAST</key>
@@ -596,7 +596,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d items deleted</string>
+			<string>항목 %1$d개를 삭제했습니다.</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>

@@ -3539,7 +3539,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "एक बार मीडिया देखें";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
-"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "This will permanently delete the selected files. Any message text associated with these items will also be deleted.";
+"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "इससे चयनित फाइलें स्थायी रूप से डिलीट कर दी जाएंगी। इन आइटम्स से जुड़ा कोई भी संदेश टेक्स्ट भी डिलीट कर दिया जाएगा।";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
@@ -3906,9 +3906,6 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "इस सुविधा के लिये Signal को आपकी तस्वीरें देखने की अनुमति चाहिए होगी।";
-
-/* Generic indicator that no value is available for display */
-"MISSING_VALUE" = "कुछ नहीं";
 
 /* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "आप औेर डिवाइस लिंक नहीं कर सकते।";
@@ -7076,7 +7073,7 @@
 "TEXT_MENU_BOLD" = "बोल्ड";
 
 /* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "Clear Formatting";
+"TEXT_MENU_CLEAR_FORMATTING" = "फॉर्मेटिंग साफ करें";
 
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "फॉर्मेट";
@@ -7281,6 +7278,9 @@
 
 /* Description of username link */
 "USERNAME_LINK_DESCRIPTION" = "प्रत्येक यूज़रनेम का एक यूनिक लिंक होता है, जिसे आप अपने दोस्तों के साथ साझा कर सकते हैं, ताकि वो आपके साथ चैट शुरू कर सकें";
+
+/* A title for a view that allows you to pick a color for a QR code for your username link. */
+"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Color";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "रंग";

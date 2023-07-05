@@ -992,17 +992,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>Delete %1$d Items?</string>
+			<string>حذف %1$d عنصر؟</string>
 			<key>one</key>
-			<string>Delete %1$d Item?</string>
+			<string>حذف %1$d عنصر؟</string>
 			<key>two</key>
-			<string>Delete %1$d Items?</string>
+			<string>حذف %1$d عنصرين؟</string>
 			<key>few</key>
-			<string>Delete %1$d Items?</string>
+			<string>حذف %1$d عناصر؟</string>
 			<key>many</key>
-			<string>Delete %1$d Items?</string>
+			<string>حذف %1$d عنصرا؟</string>
 			<key>other</key>
-			<string>Delete %1$d Items?</string>
+			<string>حذف %1$d عنصر؟</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MEDIA_TOAST</key>
@@ -1016,17 +1016,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d items deleted</string>
+			<string>%1$d عنصر محذوف</string>
 			<key>one</key>
-			<string>One item deleted</string>
+			<string>عنصر واحد محذوف</string>
 			<key>two</key>
-			<string>%1$d items deleted</string>
+			<string>%1$d عنصران محذوفان</string>
 			<key>few</key>
-			<string>%1$d items deleted</string>
+			<string>%1$d عناصر محذوفة</string>
 			<key>many</key>
-			<string>%1$d items deleted</string>
+			<string>%1$d عنصرًا محذوفًا</string>
 			<key>other</key>
-			<string>%1$d items deleted</string>
+			<string>%1$d عنصر محذوف</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
