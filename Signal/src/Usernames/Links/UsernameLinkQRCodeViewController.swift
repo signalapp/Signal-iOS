@@ -3,15 +3,60 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalCoreKit
 import SignalServiceKit
 import SignalMessaging
 import SignalUI
 
 class UsernameLinkQRCodeViewController: OWSTableViewController2 {
+    private struct ColorStore {
+        static let key = "color"
+
+        private let kvStore: KeyValueStore
+
+        init(kvStoreFactory: KeyValueStoreFactory) {
+            kvStore = kvStoreFactory.keyValueStore(collection: "UsernameLinkQRCode")
+        }
+
+        func get(tx: DBReadTransaction) -> UsernameLinkQRCodeColor? {
+            do {
+                return try kvStore.getCodableValue(forKey: Self.key, transaction: tx)
+            } catch let error {
+                owsFailDebug("Failed to load stored color! \(error)")
+                return nil
+            }
+        }
+
+        func set(_ color: UsernameLinkQRCodeColor, tx: DBWriteTransaction) {
+            do {
+                try kvStore.setCodable(color, key: Self.key, transaction: tx)
+            } catch let error {
+                owsFailDebug("Failed to store color! \(error)")
+            }
+        }
+    }
+
+    private struct QRCode {
+        let color: UsernameLinkQRCodeColor
+        let image: UIImage
+    }
+
+    private let db: DB
+    private let colorStore: ColorStore
+
     private let usernameLink: Usernames.UsernameLink
 
-    init(usernameLink: Usernames.UsernameLink) {
+    private var currentQRCode: QRCode?
+
+    init(
+        db: DB,
+        kvStoreFactory: KeyValueStoreFactory,
+        usernameLink: Usernames.UsernameLink
+    ) {
+        self.db = db
+        self.colorStore = ColorStore(kvStoreFactory: kvStoreFactory)
         self.usernameLink = usernameLink
+
         super.init()
     }
 
@@ -43,25 +88,21 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
     /// Builds the QR code view, including the QR code, colored background, and
     /// display of the current username.
     private func buildQRCodeView() -> UIView {
-        // TODO: when we offer more colors, we need to persist/load this.
-        let accentColor = UIColor(
-            red: 36 / 255,
-            green: 73 / 255,
-            blue: 192 / 255,
-            alpha: 1
-        )
+        let currentQRCodeImage: UIImage? = currentQRCode?.image
+        let currentQRCodeColor: UsernameLinkQRCodeColor = currentQRCode?.color ?? .grey
 
         let qrCodeView: QRCodeView = {
-            let view = QRCodeView(
-                qrCodeGenerator: UsernameLinkQRCodeGenerator(color: accentColor),
-                useCircularWrapper: false
-            )
+            let view = QRCodeView(useCircularWrapper: false)
 
-            view.setQR(url: usernameLink.asUrl)
-
-            view.backgroundColor = .white
+            view.backgroundColor = .ows_white
+            view.layer.borderWidth = 2
+            view.layer.borderColor = currentQRCodeColor.border.cgColor
             view.layer.cornerRadius = 12
             view.layoutMargins = UIEdgeInsets(margin: 10)
+
+            if let currentQRCodeImage {
+                view.setQR(image: currentQRCodeImage)
+            }
 
             return view
         }()
@@ -72,7 +113,7 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
             label.font = .dynamicTypeHeadline.semibold()
             label.numberOfLines = 0
             label.lineBreakMode = .byCharWrapping
-            label.textColor = .ows_white
+            label.textColor = currentQRCodeColor.username
             label.text = usernameLink.username
 
             return label
@@ -80,7 +121,7 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
 
         let copyUsernameView: UIView = {
             let copyImageView = UIImageView(image: Theme.iconImage(.buttonCopy))
-            copyImageView.tintColor = .white
+            copyImageView.tintColor = currentQRCodeColor.username
             copyImageView.autoSetDimensions(to: .square(24))
 
             return CenteringStackView(centeredSubviews: [
@@ -90,8 +131,7 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
         }()
 
         let wrapperView = UIView()
-
-        wrapperView.backgroundColor = accentColor
+        wrapperView.backgroundColor = currentQRCodeColor.background
         wrapperView.layer.cornerRadius = 24
         wrapperView.layoutMargins = UIEdgeInsets(hMargin: 40, vMargin: 32)
 
@@ -100,9 +140,7 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
 
         qrCodeView.autoPinTopToSuperviewMargin()
         qrCodeView.autoAlignAxis(toSuperviewAxis: .vertical)
-        qrCodeView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
-        qrCodeView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
-        qrCodeView.autoSetDimension(.width, toSize: 250, relation: .lessThanOrEqual)
+        qrCodeView.autoSetDimension(.width, toSize: 214)
 
         qrCodeView.autoPinEdge(.bottom, to: .top, of: copyUsernameView, withOffset: -16)
 
@@ -157,8 +195,25 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
                 comment: "Title for a button to pick the color of your username link QR code. Lowercase styling is intentional."
             ),
             icon: .chatSettingsWallpaper,
-            block: {
-                // TODO: Implement button
+            block: { [weak self] in
+                guard let self else { return }
+
+                guard let currentQRCode = self.currentQRCode else {
+                    owsFailDebug("Missing current QR code!")
+                    return
+                }
+
+                let colorPickerVC = UsernameLinkQRCodeColorPickerViewController(
+                    currentColor: currentQRCode.color,
+                    username: self.usernameLink.username,
+                    qrCodeImage: currentQRCode.image,
+                    delegate: self
+                )
+
+                self.presentFormSheet(
+                    OWSNavigationController(rootViewController: colorPickerVC),
+                    animated: true
+                )
             }
         )
 
@@ -218,13 +273,13 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
 
     private func buildTableContents() {
         let topSection = OWSTableSection(items: [
-            .wrapping(
+            .itemWrappingView(
                 viewBlock: { [weak self] in
                     return self?.buildQRCodeView()
                 },
                 margins: UIEdgeInsets(top: 32, leading: 48, bottom: 12, trailing: 48)
             ),
-            .wrapping(
+            .itemWrappingView(
                 viewBlock: { [weak self] in
                     return self?.buildActionButtonsView()
                 },
@@ -251,13 +306,13 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
         ])
 
         let bottomSection = OWSTableSection(items: [
-            .wrapping(
+            .itemWrappingView(
                 viewBlock: { [weak self] in
                     self?.buildDisclaimerLabel()
                 },
                 margins: UIEdgeInsets(top: 28, leading: 32, bottom: 12, trailing: 32)
             ),
-            .wrapping(
+            .itemWrappingView(
                 viewBlock: { [weak self] in
                     self?.buildResetButtonView()
                 },
@@ -299,6 +354,46 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
         )
 
         buildTableContents()
+        loadQRCodeAndReloadTable()
+    }
+
+    /// Asynchronously load the QR code and reload the table view.
+    ///
+    /// These operations may be slow, and so we do them asynchronously off the
+    /// main thread.
+    private func loadQRCodeAndReloadTable() {
+        owsAssert(
+            currentQRCode == nil,
+            "Current QR code was unexpectedly non-nil. How did something else set it?"
+        )
+
+        db.asyncRead(
+            block: { tx in
+                let color: UsernameLinkQRCodeColor = self.colorStore.get(tx: tx) ?? .blue
+
+                guard let image = UsernameLinkQRCodeGenerator(color: color.foreground)
+                    .generateQRCode(url: self.usernameLink.asUrl)
+                else {
+                    return
+                }
+
+                self.currentQRCode = QRCode(
+                    color: color,
+                    image: image
+                )
+            },
+            completion: { [weak self] in
+                guard let self, self.currentQRCode != nil else {
+                    return
+                }
+
+                self.reloadTableContents()
+            }
+        )
+    }
+
+    private func reloadTableContents() {
+        self.tableView.reloadData()
     }
 
     @objc
@@ -307,37 +402,24 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
     }
 }
 
-private extension OWSTableItem {
-    private class ViewWrappingTableViewCell: UITableViewCell {
-        init(viewToWrap: UIView, margins: UIEdgeInsets) {
-            super.init(style: .default, reuseIdentifier: nil)
-
-            selectionStyle = .none
-
-            contentView.addSubview(viewToWrap)
-            contentView.layoutMargins = margins
-
-            viewToWrap.autoPinEdgesToSuperviewMargins()
+extension UsernameLinkQRCodeViewController: UsernameLinkQRCodeColorPickerDelegate {
+    func didFinalizeSelectedColor(color: UsernameLinkQRCodeColor) {
+        guard let currentQRCode else {
+            owsFail("How did we get here without a QR code?")
         }
 
-        required init?(coder: NSCoder) {
-            owsFail("Not implemented!")
+        guard let newImage = currentQRCode.image.asTintedImage(
+            color: color.foreground
+        ) else {
+            owsFailDebug("Failed to generate new tinted QR code!")
+            return
         }
-    }
 
-    static func wrapping(
-        viewBlock: @escaping () -> UIView?,
-        margins: UIEdgeInsets
-    ) -> OWSTableItem {
-        return OWSTableItem(customCellBlock: {
-            guard let view = viewBlock() else {
-                return UITableViewCell()
-            }
+        db.write { tx in
+            self.colorStore.set(color, tx: tx)
+        }
 
-            return ViewWrappingTableViewCell(
-                viewToWrap: view,
-                margins: margins
-            )
-        })
+        self.currentQRCode = QRCode(color: color, image: newImage)
+        reloadTableContents()
     }
 }

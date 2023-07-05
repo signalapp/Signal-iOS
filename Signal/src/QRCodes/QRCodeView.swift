@@ -10,14 +10,9 @@ class QRCodeView: UIView {
 
     // MARK: - UIView overrides
 
-    private let qrCodeGenerator: QRCodeGenerator
     private let useCircularWrapper: Bool
 
-    public required init(
-        qrCodeGenerator: QRCodeGenerator = BasicDisplayQRCodeGenerator(),
-        useCircularWrapper: Bool = true
-    ) {
-        self.qrCodeGenerator = qrCodeGenerator
+    public required init(useCircularWrapper: Bool = true) {
         self.useCircularWrapper = useCircularWrapper
 
         super.init(frame: .zero)
@@ -80,15 +75,17 @@ class QRCodeView: UIView {
 
     // MARK: -
 
-    func setQR(url: URL) {
-        owsAssertDebug(qrCodeView == nil)
-
-        guard let qrCodeImage = qrCodeGenerator.generateQRCode(url: url) else {
+    func setQR(url: URL, generator: QRCodeGenerator = BasicDisplayQRCodeGenerator()) {
+        guard let qrCodeImage = generator.generateQRCode(url: url) else {
             owsFailDebug("Failed to generate QR code image!")
             return
         }
 
-        // Don't remove until we successfully generate the image!
+        setQR(image: qrCodeImage)
+    }
+
+    func setQR(image qrCodeImage: UIImage) {
+        qrCodeView?.removeFromSuperview()
         placeholderView.removeFromSuperview()
 
         let qrCodeView = UIImageView(image: qrCodeImage)

@@ -1292,6 +1292,8 @@
 		D9317FD32A4BAC8300075A92 /* BitmapsImagePixelMergingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD12A4BA7B000075A92 /* BitmapsImagePixelMergingTest.swift */; };
 		D9317FD52A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */; };
 		D9317FD82A4BC4FC00075A92 /* BitmapsRectTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */; };
+		D9317FDC2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */; };
+		D934279C2A4E43680062311B /* UsernameLinkQRCodeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D934279B2A4E43680062311B /* UsernameLinkQRCodeColor.swift */; };
 		D938CD6029283402006FB16A /* Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938CD5F29283402006FB16A /* Paypal.swift */; };
 		D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */; };
 		D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */; };
@@ -3867,6 +3869,8 @@
 		D9317FD12A4BA7B000075A92 /* BitmapsImagePixelMergingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsImagePixelMergingTest.swift; sourceTree = "<group>"; };
 		D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsImageCenteredDeadzoneTest.swift; sourceTree = "<group>"; };
 		D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsRectTest.swift; sourceTree = "<group>"; };
+		D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeColorPickerViewController.swift; sourceTree = "<group>"; };
+		D934279B2A4E43680062311B /* UsernameLinkQRCodeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeColor.swift; sourceTree = "<group>"; };
 		D938CD5F29283402006FB16A /* Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paypal.swift; sourceTree = "<group>"; };
 		D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManager.swift; sourceTree = "<group>"; };
 		D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManagerTest.swift; sourceTree = "<group>"; };
@@ -7840,6 +7844,28 @@
 			path = Usernames;
 			sourceTree = "<group>";
 		};
+		D9317FD92A4CE45500075A92 /* Selection */ = {
+			isa = PBXGroup;
+			children = (
+				D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */,
+				D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */,
+				D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */,
+				D95C39E9296E108100A9DA23 /* UsernameSelectionViewController.swift */,
+			);
+			path = Selection;
+			sourceTree = "<group>";
+		};
+		D9317FDA2A4CE47100075A92 /* Links */ = {
+			isa = PBXGroup;
+			children = (
+				D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */,
+				D934279B2A4E43680062311B /* UsernameLinkQRCodeColor.swift */,
+				D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */,
+				D9DCFDA42A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift */,
+			);
+			path = Links;
+			sourceTree = "<group>";
+		};
 		D96343082A4B62CC0086C052 /* Bitmaps */ = {
 			isa = PBXGroup;
 			children = (
@@ -7897,14 +7923,10 @@
 		D99840BB297A04A300F7ED6D /* Usernames */ = {
 			isa = PBXGroup;
 			children = (
+				D9317FDA2A4CE47100075A92 /* Links */,
+				D9317FD92A4CE45500075A92 /* Selection */,
 				D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */,
 				C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */,
-				D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */,
-				D9DCFDA42A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift */,
-				D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */,
-				D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */,
-				D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */,
-				D95C39E9296E108100A9DA23 /* UsernameSelectionViewController.swift */,
 			);
 			path = Usernames;
 			sourceTree = "<group>";
@@ -11805,6 +11827,8 @@
 				5033D47029DCACEF007FEADA /* UrlOpener.swift in Sources */,
 				C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */,
 				D9A3E22D2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift in Sources */,
+				D934279C2A4E43680062311B /* UsernameLinkQRCodeColor.swift in Sources */,
+				D9317FDC2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift in Sources */,
 				D9DCFDB02A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift in Sources */,
 				D9DCFDA52A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift in Sources */,
 				D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */,

@@ -313,6 +313,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
     private func presentUsernameLinkQRCode(username: String) {
         let usernameLinkQRCodeViewController = UsernameLinkQRCodeViewController(
+            db: DependenciesBridge.shared.db,
+            kvStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
             usernameLink: Usernames.UsernameLink(username: username)
         )
 
