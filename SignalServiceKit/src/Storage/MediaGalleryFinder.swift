@@ -292,9 +292,9 @@ public struct MediaGalleryFinder {
     }
 
     /// If non-nil, media will be restricted to this type. Otherwise there is no filtering.
-    public var allowedMediaType: MediaType?
+    public var allowedMediaType: MediaType
 
-    public init(thread: TSThread, allowedMediaType: MediaType?) {
+    public init(thread: TSThread, allowedMediaType: MediaType) {
         owsAssertDebug(thread.grdbId != 0, "only supports GRDB")
         self.thread = thread
         self.allowedMediaType = allowedMediaType
