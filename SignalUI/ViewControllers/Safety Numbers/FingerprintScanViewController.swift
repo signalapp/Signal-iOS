@@ -7,34 +7,49 @@ import SignalMessaging
 import SignalServiceKit
 import UIKit
 
-class FingerprintScanViewController: OWSViewController {
+class FingerprintScanViewController: OWSViewController, OWSNavigationChildController {
 
     private let recipientAddress: SignalServiceAddress
     private let recipientIdentity: OWSRecipientIdentity
     private let contactName: String
     private let identityKey: IdentityKey
-    private let fingerprint: OWSFingerprint
+    private let fingerprints: OWSFingerprintBuilder.Fingerprints
 
     private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .normal)
 
-    init?(recipientAddress: SignalServiceAddress, recipientIdentity: OWSRecipientIdentity) {
+    init(
+        recipientAddress: SignalServiceAddress,
+        recipientIdentity: OWSRecipientIdentity,
+        fingerprints: OWSFingerprintBuilder.Fingerprints
+    ) {
         owsAssertDebug(recipientAddress.isValid)
 
         self.recipientAddress = recipientAddress
         self.recipientIdentity = recipientIdentity
         self.identityKey = recipientIdentity.identityKey
-        guard let fingerprint = OWSFingerprintBuilder(
-            accountManager: TSAccountManager.shared,
-            contactsManager: SSKEnvironment.shared.contactsManagerRef
-        ).fingerprint(theirSignalAddress: recipientAddress, theirIdentityKey: recipientIdentity.identityKey) else {
-            return nil
-        }
-        self.fingerprint = fingerprint
+
+        self.fingerprints = fingerprints
         self.contactName = SSKEnvironment.shared.contactsManagerRef.displayName(for: recipientAddress)
 
         super.init()
 
         title = NSLocalizedString("SCAN_QR_CODE_VIEW_TITLE", comment: "Title for the 'scan QR code' view.")
+    }
+
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        if FeatureFlags.aciSafetyNumbers {
+            return .solid
+        } else {
+            return .blur
+        }
+    }
+
+    public var navbarBackgroundColorOverride: UIColor? {
+        if FeatureFlags.aciSafetyNumbers {
+            return .ows_gray10
+        } else {
+            return nil
+        }
     }
 
     override func viewDidLoad() {
@@ -49,7 +64,11 @@ class FingerprintScanViewController: OWSViewController {
         addChild(qrCodeScanViewController)
 
         let footerView = UIView()
-        footerView.backgroundColor = .ows_gray75
+        if FeatureFlags.aciSafetyNumbers {
+            footerView.backgroundColor = .ows_gray10
+        } else {
+            footerView.backgroundColor = .ows_gray75
+        }
         view.addSubview(footerView)
         footerView.autoPinWidthToSuperview()
         footerView.autoPinEdge(.top, to: .bottom, of: qrCodeScanViewController.view)
@@ -61,7 +80,11 @@ class FingerprintScanViewController: OWSViewController {
             comment: "label presented once scanning (camera) view is visible."
         )
         cameraInstructionLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(14, 18))
-        cameraInstructionLabel.textColor = .white
+        if FeatureFlags.aciSafetyNumbers {
+            cameraInstructionLabel.textColor = .ows_gray60
+        } else {
+            cameraInstructionLabel.textColor = .white
+        }
         cameraInstructionLabel.textAlignment = .center
         cameraInstructionLabel.numberOfLines = 0
         cameraInstructionLabel.lineBreakMode = .byWordWrapping
@@ -86,8 +109,7 @@ class FingerprintScanViewController: OWSViewController {
     private func verifyCombinedFingerprintData(_ combinedFingerprintData: Data) {
         AssertIsOnMainThread()
 
-        switch fingerprint.matchesLogicalFingerprintsData(combinedFingerprintData) {
-        case .match:
+        func showSuccess() {
             FingerprintScanViewController.showVerificationSucceeded(
                 from: self,
                 identityKey: identityKey,
@@ -95,7 +117,9 @@ class FingerprintScanViewController: OWSViewController {
                 contactName: contactName,
                 tag: logTag
             )
-        case .noMatch(let localizedErrorDescription):
+        }
+
+        func showFailure(localizedErrorDescription: String) {
             FingerprintScanViewController.showVerificationFailed(
                 from: self,
                 isUserError: false,
@@ -104,6 +128,30 @@ class FingerprintScanViewController: OWSViewController {
                 cancel: { self.navigationController?.popViewController(animated: true) },
                 tag: logTag
             )
+        }
+
+        switch fingerprints {
+        case .singleFingerprint(let fingerprint):
+            switch fingerprint.matchesLogicalFingerprintsData(combinedFingerprintData) {
+            case .match:
+                showSuccess()
+            case .noMatch(let localizedErrorDescription):
+                showFailure(localizedErrorDescription: localizedErrorDescription)
+            }
+        case .multiFingerprint(let fingerprints, _):
+            // Check all of them, if any succeed its success.
+            for (i, fingerprint) in fingerprints.enumerated() {
+                switch fingerprint.matchesLogicalFingerprintsData(combinedFingerprintData) {
+                case .match:
+                    showSuccess()
+                    return
+                case .noMatch(let localizedErrorDescription):
+                    if i == fingerprints.count - 1 {
+                        // We reached the end, show the error for the last one.
+                        showFailure(localizedErrorDescription: localizedErrorDescription)
+                    }
+                }
+            }
         }
     }
 

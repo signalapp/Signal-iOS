@@ -27,9 +27,7 @@ public class FingerprintViewController: OWSViewController {
     public class func present(from viewController: UIViewController, address: SignalServiceAddress) {
         owsAssertBeta(address.isValid)
 
-        guard let recipientIdentity = OWSIdentityManager.shared.recipientIdentity(for: address),
-              let fingerprintViewController = FingerprintViewController(recipientAddress: address, recipientIdentity: recipientIdentity)
-        else {
+        guard let recipientIdentity = OWSIdentityManager.shared.recipientIdentity(for: address) else {
             OWSActionSheets.showActionSheet(
                 title: NSLocalizedString("CANT_VERIFY_IDENTITY_ALERT_TITLE",
                                          comment: "Title for alert explaining that a user cannot be verified."),
@@ -39,23 +37,66 @@ public class FingerprintViewController: OWSViewController {
             return
         }
 
+        let fingerprints = OWSFingerprintBuilder(
+            accountManager: TSAccountManager.shared,
+            contactsManager: SSKEnvironment.shared.contactsManagerRef
+        ).fingerprints(theirSignalAddress: address, theirIdentityKey: recipientIdentity.identityKey)
+
+        let fingerprintViewController: UIViewController
+        switch fingerprints {
+        case .none:
+            let actionSheet = ActionSheetController(message: OWSLocalizedString(
+                "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES",
+                comment: "Alert shown when the user needs to exchange messages to see the safety number."
+            ))
+            actionSheet.addAction(.init(title: CommonStrings.learnMore, style: .default, handler: { _ in
+                guard let vc = CurrentAppContext().frontmostViewController() else {
+                    return
+                }
+                Self.showLearnMoreUrl(from: vc)
+            }))
+            actionSheet.addAction(OWSActionSheets.cancelAction)
+            viewController.presentActionSheet(actionSheet)
+            return
+        case .singleFingerprint(let fingerprint):
+            if FeatureFlags.aciSafetyNumbers {
+                fingerprintViewController = MultiFingerprintViewController(
+                    fingerprints: [fingerprint],
+                    defaultIndex: 0,
+                    recipientAddress: address,
+                    recipientIdentity: recipientIdentity
+                )
+            } else {
+                fingerprintViewController = FingerprintViewController(
+                    recipientAddress: address,
+                    recipientIdentity: recipientIdentity,
+                    fingerprint: fingerprint
+                )
+            }
+        case .multiFingerprint(let fingerprints, let defaultIndex):
+            fingerprintViewController = MultiFingerprintViewController(
+                fingerprints: fingerprints,
+                defaultIndex: defaultIndex,
+                recipientAddress: address,
+                recipientIdentity: recipientIdentity
+            )
+        }
+
         let navigationController = OWSNavigationController(rootViewController: fingerprintViewController)
         viewController.presentFormSheet(navigationController, animated: true)
     }
 
-    private init?(recipientAddress: SignalServiceAddress, recipientIdentity: OWSRecipientIdentity) {
+    private init(
+        recipientAddress: SignalServiceAddress,
+        recipientIdentity: OWSRecipientIdentity,
+        fingerprint: OWSFingerprint
+    ) {
         self.recipientAddress = recipientAddress
         self.contactName = SSKEnvironment.shared.contactsManagerRef.displayName(for: recipientAddress)
         // By capturing the identity key when we enter these views, we prevent the edge case
         // where the user verifies a key that we learned about while this view was open.
         self.recipientIdentity = recipientIdentity
         self.identityKey = recipientIdentity.identityKey
-        guard let fingerprint = OWSFingerprintBuilder(
-            accountManager: TSAccountManager.shared,
-            contactsManager: SSKEnvironment.shared.contactsManagerRef
-        ).fingerprint(theirSignalAddress: recipientAddress, theirIdentityKey: recipientIdentity.identityKey) else {
-            return nil
-        }
         self.fingerprint = fingerprint
 
         super.init()
@@ -311,10 +352,13 @@ public class FingerprintViewController: OWSViewController {
     @objc
     private func didTapLearnMore(_ gestureRecognizer: UITapGestureRecognizer) {
         guard gestureRecognizer.state == .recognized else { return }
+        Self.showLearnMoreUrl(from: self)
+    }
 
+    fileprivate static func showLearnMoreUrl(from viewController: UIViewController) {
         let learnMoreUrl = URL(string: "https://support.signal.org/hc/articles/213134107")!
         let safariVC = SFSafariViewController(url: learnMoreUrl)
-        present(safariVC, animated: true)
+        viewController.present(safariVC, animated: true)
     }
 
     @objc
@@ -365,10 +409,11 @@ public class FingerprintViewController: OWSViewController {
     }
 
     private func showScanner() {
-        guard let viewController = FingerprintScanViewController(recipientAddress: recipientAddress, recipientIdentity: recipientIdentity) else {
-            owsFailDebug("Unable to create fingerprint")
-            return
-        }
+        let viewController = FingerprintScanViewController(
+            recipientAddress: recipientAddress,
+            recipientIdentity: recipientIdentity,
+            fingerprints: .singleFingerprint(self.fingerprint)
+        )
         navigationController?.pushViewController(viewController, animated: true)
     }
 

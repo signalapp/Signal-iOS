@@ -844,6 +844,9 @@
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Error";
 
+/* Alert shown when the user needs to exchange messages to see the safety number. */
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "Invalid card number";
 
@@ -5455,6 +5458,21 @@
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
 
+/* Header informing the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+
+/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+
+/* Informs the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+
+/* Informs the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+
+/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
+
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
 
@@ -7377,6 +7395,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";
+
+/* Instructions for verifying your safety number. Embeds {{contact's name}} */
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "This video can’t be played";
