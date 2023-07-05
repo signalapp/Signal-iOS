@@ -251,10 +251,7 @@ public class RemoteConfig: BaseFlags {
         if isEnabled(.stopMirroringToSVR2Override) {
             return .kbsOnly
         }
-        if isEnabled(.mirrorToSVR2) {
-            return .mirroring
-        }
-        return .kbsOnly
+        return .mirroring
     }
 
     // MARK: UInt values
@@ -523,7 +520,6 @@ private struct Flags {
     // wait for an app restart.
     enum HotSwappableIsEnabledFlags: String, FlagType {
         case barrierFsyncKillSwitch
-        case mirrorToSVR2
         case stopMirroringToSVR2Override
         case exclusiveSVR2
     }
@@ -555,7 +551,6 @@ private struct Flags {
         case paypalMonthlyDonationKillSwitch
         case enableAutoAPNSRotation
         case ringrtcNwPathMonitorTrialKillSwitch
-        case mirrorToSVR2
         case stopMirroringToSVR2Override
         case exclusiveSVR2
     }
