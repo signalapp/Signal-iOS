@@ -881,7 +881,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         didSet { AssertIsOnMainThread() }
     }
 
-    private lazy var mediaGalleryFinder = MediaGalleryFinder(thread: thread, allowedMediaType: nil)
+    private lazy var mediaGalleryFinder = MediaGalleryFinder(thread: thread, allowedMediaType: .graphicMedia)
 
     func updateRecentAttachments() {
         let recentAttachments = databaseStorage.read { transaction in
