@@ -3539,7 +3539,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Đa phương tiện Xem Một Lần";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
-"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "This will permanently delete the selected files. Any message text associated with these items will also be deleted.";
+"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Thao tác này sẽ xóa vĩnh viễn tệp đã chọn. Các tin nhắn có liên kết với những mục này cũng sẽ bị xóa.";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %1$@";
@@ -7076,7 +7076,7 @@
 "TEXT_MENU_BOLD" = "Đậm";
 
 /* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "Clear Formatting";
+"TEXT_MENU_CLEAR_FORMATTING" = "Xóa định dạng";
 
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "Định dạng";

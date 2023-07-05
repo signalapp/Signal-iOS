@@ -3539,7 +3539,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Arxius multimèdia per veure una vegada";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
-"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "This will permanently delete the selected files. Any message text associated with these items will also be deleted.";
+"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Aquesta acció esborrarà permanentment els fitxers seleccionats. Qualsevol missatge de text que hi estigui associat també s'esborrarà.";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
@@ -7076,7 +7076,7 @@
 "TEXT_MENU_BOLD" = "Negreta";
 
 /* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "Clear Formatting";
+"TEXT_MENU_CLEAR_FORMATTING" = "Eliminar format";
 
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "Format";

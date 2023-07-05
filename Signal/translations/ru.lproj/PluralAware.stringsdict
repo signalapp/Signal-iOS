@@ -828,13 +828,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete %1$d Item?</string>
+			<string>Удалить %1$d элемент?</string>
 			<key>few</key>
-			<string>Delete %1$d Items?</string>
+			<string>Удалить %1$d элемента?</string>
 			<key>many</key>
-			<string>Delete %1$d Items?</string>
+			<string>Удалить %1$d элементов?</string>
 			<key>other</key>
-			<string>Delete %1$d Items?</string>
+			<string>Удалить %1$d элемента?</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MEDIA_TOAST</key>
@@ -848,13 +848,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>One item deleted</string>
+			<string>%1$d элемент удалён</string>
 			<key>few</key>
-			<string>%1$d items deleted</string>
+			<string>%1$d элемента удалено</string>
 			<key>many</key>
-			<string>%1$d items deleted</string>
+			<string>%1$d элементов удалено</string>
 			<key>other</key>
-			<string>%1$d items deleted</string>
+			<string>%1$d элемента удалено</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>

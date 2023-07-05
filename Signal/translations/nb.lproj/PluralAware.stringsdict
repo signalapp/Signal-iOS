@@ -664,9 +664,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete %1$d Item?</string>
+			<string>Vil du slette %1$d element?</string>
 			<key>other</key>
-			<string>Delete %1$d Items?</string>
+			<string>Vil du slette %1$d elementer?</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MEDIA_TOAST</key>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>One item deleted</string>
+			<string>%1$d element ble slettet</string>
 			<key>other</key>
-			<string>%1$d items deleted</string>
+			<string>%1$d elementer ble slettet</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
