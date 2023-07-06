@@ -236,6 +236,11 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier
         )
+        collectionView.register(
+            MediaGalleryEmptyContentView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: MediaGalleryEmptyContentView.reuseIdentifier
+        )
         collectionView.delegate = self
         collectionView.alwaysBounceVertical = true
         collectionView.preservesSuperviewLayoutMargins = true
@@ -659,22 +664,17 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             guard
                 let sectionHeader = collectionView.dequeueReusableSupplementaryView(
                     ofKind: kind,
-                    withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier,
+                    withReuseIdentifier: MediaGalleryEmptyContentView.reuseIdentifier,
                     for: indexPath
-                ) as? MediaGalleryStaticHeader else {
+                ) as? MediaGalleryEmptyContentView else {
                 owsFailDebug("unable to build section header for kLoadOlderSectionIdx")
                 return defaultView()
             }
-            let title: String
-            switch fileType {
-            case .photoVideo:
-                title = OWSLocalizedString("GALLERY_TILES_EMPTY_GALLERY",
-                                           comment: "Label indicating media gallery is empty")
-            case .audio:
-                title = OWSLocalizedString("GALLERY_TILES_EMPTY_GALLERY_AUDIO",
-                                           comment: "Label indicating media gallery with audio filter is empty")
+            sectionHeader.contentType = fileType
+            sectionHeader.isFilterOn = isFiltering
+            sectionHeader.clearFilterAction = { [weak self] in
+                self?.disableFiltering()
             }
-            sectionHeader.configure(title: title)
             return sectionHeader
         }
 
@@ -689,8 +689,10 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                     owsFailDebug("unable to build section header for \(indexPath)")
                     return defaultView()
                 }
-                let title = OWSLocalizedString("GALLERY_TILES_LOADING_OLDER_LABEL", comment: "Label indicating loading is in progress")
-                sectionHeader.configure(title: title)
+                sectionHeader.titleLabel.text = OWSLocalizedString(
+                    "GALLERY_TILES_LOADING_OLDER_LABEL",
+                    comment: "Label indicating loading is in progress"
+                )
                 return sectionHeader
             case loadNewerSectionIdx:
                 guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(
@@ -701,8 +703,10 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                     owsFailDebug("unable to build section header for \(indexPath)")
                     return defaultView()
                 }
-                let title = OWSLocalizedString("GALLERY_TILES_LOADING_MORE_RECENT_LABEL", comment: "Label indicating loading is in progress")
-                sectionHeader.configure(title: title)
+                sectionHeader.titleLabel.text = OWSLocalizedString(
+                    "GALLERY_TILES_LOADING_MORE_RECENT_LABEL",
+                    comment: "Label indicating loading is in progress"
+                )
                 return sectionHeader
             default:
                 guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(
@@ -997,8 +1001,8 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             return cachedLoadingDataHeaderHeight
         }
         let headerView = MediaGalleryStaticHeader()
-        headerView.configure(title: "M")
-        let size = headerView.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
+        headerView.titleLabel.text = "M"
+        let size = headerView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
         cachedLoadingDataHeaderHeight = size.height
         return size.height
     }
@@ -1224,29 +1228,25 @@ private class MediaGalleryStaticHeader: UICollectionReusableView {
 
     static let reuseIdentifier = "MediaGalleryStaticHeader"
 
-    private let label: UILabel = {
+    let titleLabel: UILabel = {
         let label = UILabel()
         label.adjustsFontForContentSizeCategory = true
         label.textAlignment = .center
-        label.font = .dynamicTypeBody2
-        label.numberOfLines = 3
-        label.textColor = UIColor(dynamicProvider: { _ in return Theme.primaryTextColor })
+        label.font = .dynamicTypeHeadlineClamped
+        label.numberOfLines = 2
+        label.textColor = UIColor(dynamicProvider: { _ in return Theme.secondaryTextAndIconColor })
         return label
     }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        addSubview(label)
-        label.autoPinEdgesToSuperviewMargins()
+        addSubview(titleLabel)
+        titleLabel.autoPinEdgesToSuperviewMargins()
     }
 
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    public func configure(title: String) {
-        label.text = title
     }
 }
 
@@ -1289,6 +1289,168 @@ private class MediaGalleryDateHeader: UICollectionReusableView {
 
     public func configure(title: String) {
         label.text = title
+    }
+}
+
+private class MediaGalleryEmptyContentView: UICollectionReusableView {
+
+    static let reuseIdentifier = "MediaGalleryEmptyContentView"
+
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 2
+        label.adjustsFontForContentSizeCategory = true
+        label.font = .dynamicTypeSubheadlineClamped.semibold()
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
+        label.textColor = UIColor(dynamicProvider: { _ in Theme.primaryTextColor })
+        return label
+    }()
+
+    private let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 5
+        label.adjustsFontForContentSizeCategory = true
+        label.font = .dynamicTypeSubheadlineClamped
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
+        label.textColor = UIColor(dynamicProvider: { _ in Theme.primaryTextColor })
+        return label
+    }()
+
+    private lazy var clearFilterButton: UIButton = {
+        let buttonTitle = OWSLocalizedString(
+            "MEDIA_GALLERY_CLEAR_FILTER_BUTTON",
+            comment: "Button to reset media filter. Displayed when filter results in no media visible."
+        )
+        let button = OutlineButton(type: .custom)
+        button.setTitle(buttonTitle, for: .normal)
+        button.titleLabel?.font = .dynamicTypeCaption1.semibold()
+        button.setTitleColor(UIColor(dynamicProvider: { _ in Theme.secondaryTextAndIconColor }), for: .normal)
+        button.setTitleColor(UIColor(dynamicProvider: { _ in Theme.secondaryTextAndIconColor.withAlphaComponent(0.5) }), for: .highlighted)
+        button.addTarget(self, action: #selector(clearFilterPressed), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
+        if isFilterOn {
+            stackView.addArrangedSubview(clearFilterButton)
+        }
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 4
+        stackView.setCustomSpacing(8, after: subtitleLabel)
+        return stackView
+    }()
+
+    var contentType: AllMediaFileType = .photoVideo {
+        didSet {
+            reload()
+        }
+    }
+
+    var isFilterOn: Bool = true {
+        didSet {
+            reload()
+        }
+    }
+
+    var clearFilterAction: (() -> Void)?
+
+    @objc
+    private func clearFilterPressed(_ sender: Any) {
+        clearFilterAction?()
+    }
+
+    private func reload() {
+        let title: String?
+        let subtitle: String?
+
+        if isFilterOn {
+            title = nil
+            subtitle = NSLocalizedString(
+                "MEDIA_GALLERY_NO_FILTER_RESULTS",
+                comment: "Displayed in All Media screen when there's no media - first line."
+            )
+        } else {
+            switch contentType {
+            case .photoVideo:
+                title = NSLocalizedString(
+                    "MEDIA_GALLERY_NO_MEDIA_TITLE",
+                    comment: "Displayed in All Media screen when there's no media - first line."
+                )
+                subtitle = NSLocalizedString(
+                    "MEDIA_GALLERY_NO_MEDIA_SUBTITLE",
+                    comment: "Displayed in All Media screen when there's no media - second line."
+                )
+            case .audio:
+                title = NSLocalizedString(
+                    "MEDIA_GALLERY_NO_AUDIO_TITLE",
+                    comment: "Displayed in All Media (Audio) screen when there's no audio files - first line."
+                )
+                subtitle = NSLocalizedString(
+                    "MEDIA_GALLERY_NO_AUDIO_SUBTITLE",
+                    comment: "Displayed in All Media (Audio) screen when there's no audio files - second line."
+                )
+            }
+        }
+
+        titleLabel.text = title
+        subtitleLabel.text = subtitle
+        if isFilterOn {
+            if stackView.arrangedSubviews.count == 2 {
+                stackView.addArrangedSubview(clearFilterButton)
+            }
+            clearFilterButton.isHidden = false
+        } else if stackView.arrangedSubviews.count > 2 {
+            clearFilterButton.isHidden = true
+        }
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        addSubview(stackView)
+        stackView.autoCenterInSuperview()
+        stackView.autoPinWidthToSuperview(withMargin: 32, relation: .lessThanOrEqual)
+        stackView.autoPinHeightToSuperview(withMargin: 32, relation: .lessThanOrEqual)
+        reload()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private class OutlineButton: UIButton {
+
+        private lazy var backgroundPillView: UIView = {
+            let view = PillView()
+            view.layer.borderWidth = 1.5
+            view.layer.borderColor = Self.normalBorderColor.cgColor
+            view.isUserInteractionEnabled = false
+            return view
+        }()
+
+        private static let normalBorderColor = UIColor.ows_gray45
+        private static let highlightedBorderColor = UIColor.ows_gray45.withAlphaComponent(0.5)
+
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+            contentEdgeInsets = UIEdgeInsets(hMargin: 22, vMargin: 12)
+            addSubview(backgroundPillView)
+            sendSubviewToBack(backgroundPillView)
+            backgroundPillView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(margin: 8))
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        override var isHighlighted: Bool {
+            didSet {
+                backgroundPillView.layer.borderColor = (isHighlighted ? Self.highlightedBorderColor : Self.normalBorderColor).cgColor
+            }
+        }
     }
 }
 
