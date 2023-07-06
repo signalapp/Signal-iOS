@@ -116,7 +116,7 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     var wallpaperBlurProvider: WallpaperBlurProvider? { get }
 
-    var spoilerReveal: SpoilerRevealState { get }
+    var spoilerState: SpoilerRenderState { get }
 
     // MARK: - Gift Badges
 

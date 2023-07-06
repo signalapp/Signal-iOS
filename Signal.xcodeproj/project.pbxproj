@@ -784,6 +784,9 @@
 		6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */; };
 		662ABF3329510F8300518D90 /* OutgoingCallEventSyncMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6640639A294D1F8D00997E0B /* OutgoingCallEventSyncMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		662AC9252A460477009E2D5F /* MultiFingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* MultiFingerprintViewController.swift */; };
+		662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */; };
+		662AC9292A4A4A0A009E2D5F /* SpoilerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9282A4A4A0A009E2D5F /* SpoilerAnimator.swift */; };
+		662AC92B2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC92A2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift */; };
 		662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44082A1567E4001F83E2 /* svr2.pb.swift */; };
 		662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */; };
 		662C440F2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */; };
@@ -791,6 +794,7 @@
 		662C44132A1835F4001F83E2 /* SVRLocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44122A1835F4001F83E2 /* SVRLocalStorage.swift */; };
 		662C44172A1D21D7001F83E2 /* SecureValueRecovery2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */; };
 		663BA31C2A4C9997004B9A43 /* safety-numbers.json in Resources */ = {isa = PBXBuildFile; fileRef = 663BA31B2A4C9997004B9A43 /* safety-numbers.json */; };
+		663BA3182A4B8595004B9A43 /* SpoilerRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */; };
 		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
 		6640639C294D201F00997E0B /* OutgoingCallEventSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6640639B294D201F00997E0B /* OutgoingCallEventSyncMessage.m */; };
 		6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */; };
@@ -3281,6 +3285,9 @@
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
 		6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2ConcurrencyTests.swift; sourceTree = "<group>"; };
 		662AC9242A460477009E2D5F /* MultiFingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiFingerprintViewController.swift; sourceTree = "<group>"; };
+		662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderer.swift; sourceTree = "<group>"; };
+		662AC9282A4A4A0A009E2D5F /* SpoilerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimator.swift; sourceTree = "<group>"; };
+		662AC92A2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimationTestController.swift; sourceTree = "<group>"; };
 		662C44082A1567E4001F83E2 /* svr2.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = svr2.pb.swift; sourceTree = "<group>"; };
 		662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Impl.swift; sourceTree = "<group>"; };
 		662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrchestratingSVRImpl.swift; sourceTree = "<group>"; };
@@ -3288,6 +3295,7 @@
 		662C44122A1835F4001F83E2 /* SVRLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRLocalStorage.swift; sourceTree = "<group>"; };
 		662C44152A1D2101001F83E2 /* SecureValueRecovery2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Tests.swift; sourceTree = "<group>"; };
 		663BA31B2A4C9997004B9A43 /* safety-numbers.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "safety-numbers.json"; sourceTree = "<group>"; };
+		663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderState.swift; sourceTree = "<group>"; };
 		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
 		6640639A294D1F8D00997E0B /* OutgoingCallEventSyncMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutgoingCallEventSyncMessage.h; sourceTree = "<group>"; };
 		6640639B294D201F00997E0B /* OutgoingCallEventSyncMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutgoingCallEventSyncMessage.m; sourceTree = "<group>"; };
@@ -5810,7 +5818,10 @@
 				66FC637D29E0B00F00F00DAC /* MentionDisplayConfigurations.swift */,
 				34A9552C271B510400B05242 /* MentionPicker.swift */,
 				66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */,
+				662AC9282A4A4A0A009E2D5F /* SpoilerAnimator.swift */,
 				66FC637F29E0B9DA00F00DAC /* SpoilerDisplayConfigurations.swift */,
+				662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */,
+				663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */,
 			);
 			path = BodyRanges;
 			sourceTree = "<group>";
@@ -6217,6 +6228,7 @@
 				76F958642A09A65B00B43E63 /* DebugUISyncMessages.swift */,
 				76E7A2102A01B6A500A8F538 /* DebugUITableViewController.swift */,
 				4CBBFE492306F5D300B37450 /* LogViewController.swift */,
+				662AC92A2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift */,
 			);
 			path = DebugUI;
 			sourceTree = "<group>";
@@ -11025,7 +11037,10 @@
 				34A954AC271A471300B05242 /* SignalUI.docc in Sources */,
 				342FFE57271DA8C9000AC89F /* Sounds+SignalUI.swift in Sources */,
 				3402AA4F271D9DCD0084CBAE /* SpamCaptchaViewController.swift in Sources */,
+				662AC9292A4A4A0A009E2D5F /* SpoilerAnimator.swift in Sources */,
 				66FC638029E0B9DA00F00DAC /* SpoilerDisplayConfigurations.swift in Sources */,
+				662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */,
+				663BA3182A4B8595004B9A43 /* SpoilerRenderState.swift in Sources */,
 				3402AA47271D9DCD0084CBAE /* StickerHorizontalListView.swift in Sources */,
 				3402AA48271D9DCD0084CBAE /* StickerKeyboard.swift in Sources */,
 				3402AA5B271D9DCD0084CBAE /* StickerPackCollectionView.swift in Sources */,
@@ -11785,6 +11800,7 @@
 				88BE44A626153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift in Sources */,
 				F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */,
 				34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */,
+				662AC92B2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift in Sources */,
 				45069FC829D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift in Sources */,
 				349767E425B8744700ECE1B0 /* StickerPackViewController.swift in Sources */,
 				8852572927DD366D0032073C /* StoriesViewController.swift in Sources */,

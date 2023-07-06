@@ -13,20 +13,20 @@ class MediaPageViewController: UIPageViewController {
 
     private let isShowingSingleMessage: Bool
     let mediaGallery: MediaGallery
-    let spoilerReveal: SpoilerRevealState
+    let spoilerState: SpoilerRenderState
 
     private var initialGalleryItem: MediaGalleryItem?
 
     convenience init(
         initialMediaAttachment: TSAttachment,
         thread: TSThread,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         showingSingleMessage: Bool = false
     ) {
         self.init(
             initialMediaAttachment: initialMediaAttachment,
-            mediaGallery: MediaGallery(thread: thread, fileType: .photoVideo, spoilerReveal: spoilerReveal),
-            spoilerReveal: spoilerReveal,
+            mediaGallery: MediaGallery(thread: thread, fileType: .photoVideo, spoilerState: spoilerState),
+            spoilerState: spoilerState,
             showingSingleMessage: showingSingleMessage
         )
     }
@@ -34,11 +34,11 @@ class MediaPageViewController: UIPageViewController {
     init(
         initialMediaAttachment: TSAttachment,
         mediaGallery: MediaGallery,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         showingSingleMessage: Bool = false
     ) {
         self.mediaGallery = mediaGallery
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
         self.isShowingSingleMessage = showingSingleMessage
 
         super.init(
@@ -85,7 +85,7 @@ class MediaPageViewController: UIPageViewController {
     private lazy var bottomMediaPanel = MediaControlPanelView(
         mediaGallery: mediaGallery,
         delegate: self,
-        spoilerReveal: spoilerReveal,
+        spoilerState: spoilerState,
         isLandscapeLayout: traitCollection.verticalSizeClass == .compact
     )
 

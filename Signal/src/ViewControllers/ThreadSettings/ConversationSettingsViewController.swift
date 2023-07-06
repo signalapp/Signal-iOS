@@ -35,7 +35,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
 
     private(set) var threadViewModel: ThreadViewModel
-    private let spoilerReveal: SpoilerRevealState
+    private let spoilerState: SpoilerRenderState
 
     var thread: TSThread {
         threadViewModel.threadRecord
@@ -64,10 +64,10 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     public required init(
         threadViewModel: ThreadViewModel,
-        spoilerReveal: SpoilerRevealState
+        spoilerState: SpoilerRenderState
     ) {
         self.threadViewModel = threadViewModel
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
         groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
 
         disappearingMessagesConfiguration = Self.databaseStorage.read { tx in
@@ -857,7 +857,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
         let tileVC = AllMediaViewController(
             thread: thread,
-            spoilerReveal: spoilerReveal,
+            spoilerState: spoilerState,
             name: threadViewModel.name
         )
         navigationController?.pushViewController(tileVC, animated: true)
@@ -867,7 +867,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         let vc = MediaPageViewController(
             initialMediaAttachment: attachmentStream,
             thread: thread,
-            spoilerReveal: spoilerReveal
+            spoilerState: spoilerState
         )
         if vc.viewControllers?.isEmpty ?? true {
             // Failed to load the item. Could be because it was deleted just as we tried to show it.

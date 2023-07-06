@@ -16,7 +16,7 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate, SpoilerRevea
 
     private let quotedReply: QuotedReplyModel
     private let conversationStyle: ConversationStyle
-    private let spoilerReveal: SpoilerRevealState
+    private let spoilerState: SpoilerRenderState
     private var quotedMessageView: QuotedMessageSnippetView?
     private var heightConstraint: NSLayoutConstraint!
 
@@ -33,11 +33,11 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate, SpoilerRevea
     init(
         quotedReply: QuotedReplyModel,
         conversationStyle: ConversationStyle,
-        spoilerReveal: SpoilerRevealState
+        spoilerState: SpoilerRenderState
     ) {
         self.quotedReply = quotedReply
         self.conversationStyle = conversationStyle
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
 
         super.init(frame: .zero)
 
@@ -45,7 +45,7 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate, SpoilerRevea
 
         updateContents()
 
-        spoilerReveal.observeChanges(
+        spoilerState.revealState.observeChanges(
             for: InteractionSnapshotIdentifier(
                 timestamp: quotedReply.timestamp,
                 authorUuid: quotedReply.authorAddress.uuidString
@@ -77,7 +77,7 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate, SpoilerRevea
         let quotedMessageView = QuotedMessageSnippetView(
             quotedMessage: quotedReply,
             conversationStyle: conversationStyle,
-            spoilerReveal: spoilerReveal
+            spoilerState: spoilerState
         )
         quotedMessageView.delegate = self
         self.quotedMessageView = quotedMessageView
@@ -125,22 +125,22 @@ private class QuotedMessageSnippetView: UIView {
 
     private let quotedMessage: QuotedReplyModel
     private let conversationStyle: ConversationStyle
-    private let spoilerReveal: SpoilerRevealState
+    private let spoilerState: SpoilerRenderState
     private lazy var displayableQuotedText: DisplayableText? = {
         QuotedMessageSnippetView.displayableTextWithSneakyTransaction(
             forPreview: quotedMessage,
-            spoilerReveal: spoilerReveal
+            spoilerState: spoilerState
         )
     }()
 
     init(
         quotedMessage: QuotedReplyModel,
         conversationStyle: ConversationStyle,
-        spoilerReveal: SpoilerRevealState
+        spoilerState: SpoilerRenderState
     ) {
         self.quotedMessage = quotedMessage
         self.conversationStyle = conversationStyle
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
 
         super.init(frame: .zero)
 
@@ -192,7 +192,7 @@ private class QuotedMessageSnippetView: UIView {
                 font: Layout.quotedTextFont,
                 textColor: conversationStyle.quotedReplyTextColor(),
                 quotedReplyModel: quotedMessage,
-                spoilerReveal: spoilerReveal
+                spoilerState: spoilerState
             )
         } else if let fileTypeForSnippet {
             attributedText = NSAttributedString(
@@ -522,7 +522,7 @@ private class QuotedMessageSnippetView: UIView {
 
     private static func displayableTextWithSneakyTransaction(
         forPreview quotedMessage: QuotedReplyModel,
-        spoilerReveal: SpoilerRevealState
+        spoilerState: SpoilerRenderState
     ) -> DisplayableText? {
         guard let text = quotedMessage.body, !text.isEmpty else {
             return nil
@@ -533,7 +533,7 @@ private class QuotedMessageSnippetView: UIView {
                 withMessageBody: messageBody,
                 displayConfig: HydratedMessageBody.DisplayConfiguration(
                     mention: .quotedReply,
-                    style: .quotedReply(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
+                    style: .quotedReply(revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
                         interactionIdentifier: InteractionSnapshotIdentifier(
                             timestamp: quotedMessage.timestamp,
                             authorUuid: quotedMessage.authorAddress.uuidString
@@ -551,7 +551,7 @@ private class QuotedMessageSnippetView: UIView {
         font: UIFont,
         textColor: UIColor,
         quotedReplyModel: QuotedReplyModel,
-        spoilerReveal: SpoilerRevealState
+        spoilerState: SpoilerRenderState
     ) -> NSAttributedString {
         let mutableCopy = NSMutableAttributedString(attributedString: displayableQuotedText.displayAttributedText)
         mutableCopy.addAttributesToEntireString([
@@ -571,7 +571,7 @@ private class QuotedMessageSnippetView: UIView {
                         baseFont: font,
                         textColor: .fixed(textColor),
                         revealAllIds: false,
-                        revealedIds: spoilerReveal.revealedSpoilerIds(
+                        revealedIds: spoilerState.revealState.revealedSpoilerIds(
                             interactionIdentifier: InteractionSnapshotIdentifier(
                                 timestamp: quotedReplyModel.timestamp,
                                 authorUuid: quotedReplyModel.authorAddress.uuidString

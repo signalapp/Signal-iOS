@@ -22,7 +22,7 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
 
     private func createAudioMessageView(
         audioItem: MediaGalleryCellItemAudio,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) -> AudioMessageView? {
         guard let attachment = AudioAttachment(attachment: audioItem.attachmentStream,
@@ -47,7 +47,9 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
         let coreState = CVCoreState(conversationStyle: conversationStyle,
                                     mediaCache: audioItem.mediaCache)
         let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(
-            coreState: coreState, spoilerReveal: spoilerReveal)
+            coreState: coreState,
+            spoilerReveal: spoilerState.revealState
+        )
         let itemBuildingContext = CVItemBuildingContextImpl(
             threadViewModel: threadViewModel,
             viewStateSnapshot: viewStateSnapshot,
@@ -238,21 +240,21 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
     private var audioMessageView: AudioMessageView?
 
     override var cellsAbut: Bool { false }
-    private var spoilerReveal: SpoilerRevealState?
+    private var spoilerState: SpoilerRenderState?
 
-    override func configure(item: MediaGalleryCellItem, spoilerReveal: SpoilerRevealState) {
-        super.configure(item: item, spoilerReveal: spoilerReveal)
+    override func configure(item: MediaGalleryCellItem, spoilerState: SpoilerRenderState) {
+        super.configure(item: item, spoilerState: spoilerState)
         guard case let .audio(audioItem) = item else {
             owsFailDebug("Unexpected item type")
             return
         }
         self.audioItem = audioItem
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
 
         audioMessageContainerView.subviews.first?.removeFromSuperview()
 
         SDSDatabaseStorage.shared.read { transaction in
-            if let audioMessageView = createAudioMessageView(audioItem: audioItem, spoilerReveal: spoilerReveal, transaction: transaction) {
+            if let audioMessageView = createAudioMessageView(audioItem: audioItem, spoilerState: spoilerState, transaction: transaction) {
                 audioMessageContainerView.addSubview(audioMessageView)
                 self.audioMessageView = audioMessageView
                 audioMessageView.autoPinEdgesToSuperviewEdges()
@@ -266,8 +268,8 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        if let item, let spoilerReveal {
-            configure(item: item, spoilerReveal: spoilerReveal)
+        if let item, let spoilerState {
+            configure(item: item, spoilerState: spoilerState)
         }
     }
 
@@ -283,8 +285,8 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
     }
 
     func enqueueReloadWithoutCaches() {
-        if let item, let spoilerReveal {
-            configure(item: item, spoilerReveal: spoilerReveal)
+        if let item, let spoilerState {
+            configure(item: item, spoilerState: spoilerState)
         }
     }
 }

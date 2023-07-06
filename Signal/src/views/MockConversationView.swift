@@ -148,7 +148,7 @@ class MockConversationView: UIView {
                     thread: self.thread,
                     threadAssociatedData: threadAssociatedData,
                     conversationStyle: conversationStyle,
-                    spoilerReveal: SpoilerRevealState(),
+                    spoilerState: SpoilerRenderState(),
                     transaction: transaction
                 ) else {
                     owsFailDebug("Could not build renderItem.")
@@ -383,7 +383,7 @@ extension MockConversationView: CVComponentDelegate {
 
     var wallpaperBlurProvider: WallpaperBlurProvider? { nil }
 
-    var spoilerReveal: SpoilerRevealState { return SpoilerRevealState() }
+    var spoilerState: SpoilerRenderState { return SpoilerRenderState() }
 
     // MARK: - Selection
 

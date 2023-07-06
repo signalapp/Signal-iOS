@@ -20,7 +20,7 @@ public class LongTextViewController: OWSViewController {
 
     let itemViewModel: CVItemViewModelImpl
     let threadViewModel: ThreadViewModel
-    let spoilerReveal: SpoilerRevealState
+    let spoilerState: SpoilerRenderState
 
     var messageTextView: UITextView!
     let footer = UIToolbar.clear()
@@ -35,11 +35,11 @@ public class LongTextViewController: OWSViewController {
     public required init(
         itemViewModel: CVItemViewModelImpl,
         threadViewModel: ThreadViewModel,
-        spoilerReveal: SpoilerRevealState
+        spoilerState: SpoilerRenderState
     ) {
         self.itemViewModel = itemViewModel
         self.threadViewModel = threadViewModel
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
         super.init()
     }
 
@@ -85,7 +85,7 @@ public class LongTextViewController: OWSViewController {
             mutableText = recoveredMessageBody.reapplyAttributes(
                 config: HydratedMessageBody.DisplayConfiguration(
                     mention: .longMessageView,
-                    style: .longTextView(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
+                    style: .longTextView(revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
                         interactionIdentifier: .fromInteraction(itemViewModel.interaction))
                     ),
                     searchRanges: nil
@@ -108,7 +108,7 @@ public class LongTextViewController: OWSViewController {
                 hasPendingMessageRequest: hasPendingMessageRequest,
                 shouldAllowLinkification: displayableText.shouldAllowLinkification,
                 textWasTruncated: false,
-                revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
+                revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
                     interactionIdentifier: .fromInteraction(itemViewModel.interaction)
                 ),
                 interactionUniqueId: itemViewModel.interaction.uniqueId,
@@ -123,7 +123,7 @@ public class LongTextViewController: OWSViewController {
                 .reapplyAttributes(
                     config: HydratedMessageBody.DisplayConfiguration(
                         mention: .longMessageView,
-                        style: .longTextView(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(
+                        style: .longTextView(revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
                             interactionIdentifier: .fromInteraction(itemViewModel.interaction))
                         ),
                         searchRanges: nil
@@ -275,7 +275,7 @@ public class LongTextViewController: OWSViewController {
                     actionSheet.present(from: self)
                     return
                 case .unrevealedSpoiler(let unrevealedSpoiler):
-                    self.spoilerReveal.setSpoilerRevealed(
+                    self.spoilerState.revealState.setSpoilerRevealed(
                         withID: unrevealedSpoiler.spoilerId,
                         interactionIdentifier: unrevealedSpoiler.interactionIdentifier
                     )

@@ -78,10 +78,10 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
 
     private let thread: TSThread
     private let accessoriesHelper: MediaGalleryAccessoriesHelper
-    private let spoilerReveal: SpoilerRevealState
+    private let spoilerState: SpoilerRenderState
 
     private lazy var mediaGallery: MediaGallery = {
-        let mediaGallery = MediaGallery(thread: thread, fileType: fileType, spoilerReveal: spoilerReveal)
+        let mediaGallery = MediaGallery(thread: thread, fileType: fileType, spoilerState: spoilerState)
         mediaGallery.addDelegate(self)
         return mediaGallery
     }()
@@ -96,7 +96,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             let fileTypeChanged = self.fileType != fileType
             if fileTypeChanged {
                 mediaGallery.removeAllDelegates()
-                mediaGallery = MediaGallery(thread: thread, fileType: fileType, spoilerReveal: spoilerReveal)
+                mediaGallery = MediaGallery(thread: thread, fileType: fileType, spoilerState: spoilerState)
                 mediaGallery.addDelegate(self)
                 self.fileType = fileType
             }
@@ -140,11 +140,11 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     public init(
         thread: TSThread,
         accessoriesHelper: MediaGalleryAccessoriesHelper,
-        spoilerReveal: SpoilerRevealState
+        spoilerState: SpoilerRenderState
     ) {
         self.thread = thread
         self.accessoriesHelper = accessoriesHelper
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
         let layout = Self.buildLayout(layout, fileType: fileType)
         self.currentCollectionViewLayout = layout
         super.init(collectionViewLayout: layout)
@@ -597,7 +597,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             let pageVC = MediaPageViewController(
                 initialMediaAttachment: attachmentStream,
                 mediaGallery: mediaGallery,
-                spoilerReveal: spoilerReveal
+                spoilerState: spoilerState
             )
             present(pageVC, animated: true)
         }
@@ -763,7 +763,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             }
 
             VideoDurationHelper.shared.with(context: videoDurationContext) {
-                cell.configure(item: cellItem(for: galleryItem), spoilerReveal: spoilerReveal)
+                cell.configure(item: cellItem(for: galleryItem), spoilerState: spoilerState)
             }
         }
         return cell
@@ -1485,7 +1485,7 @@ private class MediaTileCollectionViewCell: PhotoGridViewCell, MediaGalleryCollec
         allowsMultipleSelection = allowed
     }
 
-    func configure(item: MediaGalleryCellItem, spoilerReveal: SignalServiceKit.SpoilerRevealState) {
+    func configure(item: MediaGalleryCellItem, spoilerState: SpoilerRenderState) {
         self.item = item
         guard case .photoVideo(let mediaGalleryCellItemPhotoVideo) = item else {
             owsFailDebug("Invalid item.")

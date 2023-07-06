@@ -484,7 +484,7 @@ extension ConversationViewController: LongTextViewDelegate {
             let viewController = LongTextViewController(
                 itemViewModel: itemViewModel,
                 threadViewModel: self.threadViewModel,
-                spoilerReveal: self.viewState.spoilerReveal
+                spoilerState: self.viewState.spoilerState
             )
             viewController.delegate = self
             navigationController?.pushViewController(viewController, animated: true)

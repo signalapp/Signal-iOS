@@ -8,13 +8,13 @@ import SignalUI
 
 class MediaCaptionView: UIView, SpoilerRevealStateObserver {
 
-    private let spoilerReveal: SpoilerRevealState
+    private let spoilerState: SpoilerRenderState
 
     public enum Content: Equatable {
         case attachmentStreamCaption(String)
         case messageBody(HydratedMessageBody, InteractionSnapshotIdentifier)
 
-        func attributedString(spoilerReveal: SpoilerRevealState) -> NSAttributedString {
+        func attributedString(spoilerState: SpoilerRenderState) -> NSAttributedString {
             switch self {
             case .attachmentStreamCaption(let string):
                 return NSAttributedString(string: string)
@@ -22,7 +22,9 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
                 return messageBody.asAttributedStringForDisplay(
                     config: HydratedMessageBody.DisplayConfiguration(
                         mention: .mediaCaption,
-                        style: .mediaCaption(revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(interactionIdentifier: interactionIdentifier)),
+                        style: .mediaCaption(
+                            revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(interactionIdentifier: interactionIdentifier)
+                        ),
                         searchRanges: nil
                     ),
                     baseAttributes: [
@@ -66,10 +68,10 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
 
             if oldValue?.interactionIdentifier != newValue?.interactionIdentifier {
                 oldValue?.interactionIdentifier.map {
-                    spoilerReveal.removeObserver(for: $0, observer: self)
+                    spoilerState.revealState.removeObserver(for: $0, observer: self)
                 }
                 newValue?.interactionIdentifier.map {
-                    spoilerReveal.observeChanges(for: $0, observer: self)
+                    spoilerState.revealState.observeChanges(for: $0, observer: self)
                 }
             }
         }
@@ -92,9 +94,9 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
 
     init(
         frame: CGRect = .zero,
-        spoilerReveal: SpoilerRevealState
+        spoilerState: SpoilerRenderState
     ) {
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
         super.init(frame: frame)
 
         preservesSuperviewLayoutMargins = true
@@ -129,7 +131,7 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
         }
 
         for item in messageBody.tappableItems(
-            revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(interactionIdentifier: interactionIdentifier),
+            revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(interactionIdentifier: interactionIdentifier),
             dataDetector: nil /* Maybe in the future we should detect links here. We never have, before. */
         ) {
             switch item {
@@ -137,7 +139,7 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
                 continue
             case .unrevealedSpoiler(let unrevealedSpoiler):
                 if unrevealedSpoiler.range.contains(characterIndex) {
-                    spoilerReveal.setSpoilerRevealed(
+                    spoilerState.revealState.setSpoilerRevealed(
                         withID: unrevealedSpoiler.id,
                         interactionIdentifier: interactionIdentifier
                     )
@@ -156,20 +158,20 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
 
     private static let captionTextContainerInsets = UIEdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0)
 
-    private class func buildCaptionTextView(spoilerReveal: SpoilerRevealState) -> CaptionTextView {
-        let textView = CaptionTextView(spoilerReveal: spoilerReveal)
+    private class func buildCaptionTextView(spoilerState: SpoilerRenderState) -> CaptionTextView {
+        let textView = CaptionTextView(spoilerState: spoilerState)
         textView.font = MentionDisplayConfiguration.mediaCaption.font
         textView.textColor = MentionDisplayConfiguration.mediaCaption.foregroundColor.forCurrentTheme
         textView.backgroundColor = .clear
         textView.textContainerInset = Self.captionTextContainerInsets
         return textView
     }
-    private lazy var captionTextView = MediaCaptionView.buildCaptionTextView(spoilerReveal: spoilerReveal)
+    private lazy var captionTextView = MediaCaptionView.buildCaptionTextView(spoilerState: spoilerState)
 
     private class CaptionTextView: UITextView, NSLayoutManagerDelegate {
 
-        init(spoilerReveal: SpoilerRevealState) {
-            self.spoilerReveal = spoilerReveal
+        init(spoilerState: SpoilerRenderState) {
+            self.spoilerState = spoilerState
             super.init(frame: .zero, textContainer: nil)
 
             isEditable = false
@@ -182,18 +184,18 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
             fatalError("init(coder:) has not been implemented")
         }
 
-        private let spoilerReveal: SpoilerRevealState
+        private let spoilerState: SpoilerRenderState
 
         public var content: MediaCaptionView.Content? {
             didSet {
-                super.attributedText = content?.attributedString(spoilerReveal: spoilerReveal)
+                super.attributedText = content?.attributedString(spoilerState: spoilerState)
                 invalidateCachedSizes()
             }
         }
 
         public func didUpdateRevealedSpoilers() {
             // No need to recompute cached sizes; spoilers have no effect on size.
-            super.attributedText = content?.attributedString(spoilerReveal: spoilerReveal)
+            super.attributedText = content?.attributedString(spoilerState: spoilerState)
         }
 
         @available(*, unavailable)
@@ -294,7 +296,7 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
                 maxWidth = .greatestFiniteMagnitude
             }
 
-            let attributedText = content.attributedString(spoilerReveal: spoilerReveal)
+            let attributedText = content.attributedString(spoilerState: spoilerState)
 
             // 3 lines of text.
             let collapsedTextConfig = CVTextLabel.Config(

@@ -55,7 +55,7 @@ public class CVLoadCoordinator: NSObject {
     private let threadUniqueId: String
 
     private var conversationStyle: ConversationStyle
-    private let spoilerReveal: SpoilerRevealState
+    private let spoilerState: SpoilerRenderState
 
     var renderState: CVRenderState
 
@@ -89,7 +89,7 @@ public class CVLoadCoordinator: NSObject {
         self.threadUniqueId = threadViewModel.threadRecord.uniqueId
         self.thread = threadViewModel.threadRecord
         self.conversationStyle = viewState.conversationStyle
-        self.spoilerReveal = viewState.spoilerReveal
+        self.spoilerState = viewState.spoilerState
         self.oldestUnreadMessageSortId = oldestUnreadMessageSortId
         let viewStateSnapshot = CVViewStateSnapshot.snapshot(
             viewState: viewState,
@@ -507,7 +507,7 @@ public class CVLoadCoordinator: NSObject {
         AssertIsOnMainThread()
 
         let conversationStyle = self.conversationStyle
-        let spoilerReveal = self.spoilerReveal
+        let spoilerState = self.spoilerState
         guard conversationStyle.viewWidth > 0 else {
             Logger.info("viewWidth not yet set.")
             return
@@ -540,7 +540,7 @@ public class CVLoadCoordinator: NSObject {
             threadUniqueId: threadUniqueId,
             loadRequest: loadRequest,
             viewStateSnapshot: viewStateSnapshot,
-            spoilerReveal: spoilerReveal,
+            spoilerState: spoilerState,
             prevRenderState: prevRenderState,
             messageLoader: messageLoader
         )

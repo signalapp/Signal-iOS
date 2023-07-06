@@ -25,7 +25,7 @@ extension ConversationViewController: MessageActionsDelegate {
 
         let detailVC = MessageDetailViewController(
             message: message,
-            spoilerReveal: self.viewState.spoilerReveal,
+            spoilerState: self.viewState.spoilerState,
             editManager: self.context.editManager,
             thread: thread
         )
@@ -53,7 +53,7 @@ extension ConversationViewController: MessageActionsDelegate {
         } else {
             detailVC = MessageDetailViewController(
                 message: message,
-                spoilerReveal: self.viewState.spoilerReveal,
+                spoilerState: self.viewState.spoilerState,
                 editManager: self.context.editManager,
                 thread: thread
             )

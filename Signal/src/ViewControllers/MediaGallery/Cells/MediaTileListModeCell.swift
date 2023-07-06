@@ -165,7 +165,7 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
         owsFail("Subclass must override")
     }
 
-    func configure(item: MediaGalleryCellItem, spoilerReveal: SpoilerRevealState) {
+    func configure(item: MediaGalleryCellItem, spoilerState: SpoilerRenderState) {
         self.item = item
     }
 

@@ -458,7 +458,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         self.state = state
         self.delegate = delegate
 
-        let spoilerReveal = componentDelegate.spoilerReveal
+        let spoilerReveal = componentDelegate.spoilerState.revealState
         let quotedInteractionIdentifier = state.quotedInteractionIdentifier
         spoilerReveal.observeChanges(
             for: quotedInteractionIdentifier,

@@ -328,7 +328,7 @@ extension ConversationViewController {
             }
             guard let componentState = CVLoader.buildStandaloneComponentState(
                 interaction: interaction,
-                spoilerReveal: SpoilerRevealState(),
+                spoilerState: SpoilerRenderState(),
                 transaction: transaction
             ) else {
                 owsFailDebug("Could not load componentState.")

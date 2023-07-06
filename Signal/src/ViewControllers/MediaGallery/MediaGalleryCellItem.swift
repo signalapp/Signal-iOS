@@ -12,7 +12,7 @@ protocol MediaGalleryCollectionViewCell: UICollectionViewCell {
     func setAllowsMultipleSelection(_ allowed: Bool, animated: Bool)
 
     func makePlaceholder()
-    func configure(item: MediaGalleryCellItem, spoilerReveal: SpoilerRevealState)
+    func configure(item: MediaGalleryCellItem, spoilerState: SpoilerRenderState)
     func mediaPresentationContext(collectionView: UICollectionView, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext?
     func indexPathDidChange(_ indexPath: IndexPath, itemCount: Int)
 }

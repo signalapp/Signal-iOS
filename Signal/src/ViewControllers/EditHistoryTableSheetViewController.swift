@@ -14,14 +14,14 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
     var parentRenderItem: CVRenderItem?
     var renderItems = [CVRenderItem]()
-    let spoilerReveal: SpoilerRevealState
+    let spoilerState: SpoilerRenderState
 
     init(
         message: TSMessage,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         database: SDSDatabaseStorage
     ) {
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
 
         super.init()
 
@@ -161,7 +161,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             thread: thread,
             threadAssociatedData: threadAssociatedData,
             conversationStyle: conversationStyle,
-            spoilerReveal: self.spoilerReveal,
+            spoilerState: self.spoilerState,
             transaction: tx
         )
     }

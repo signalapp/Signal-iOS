@@ -17,7 +17,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     public var wallpaperBlurProvider: WallpaperBlurProvider? { backgroundContainer }
 
-    public var spoilerReveal: SpoilerRevealState { return self.viewState.spoilerReveal }
+    public var spoilerState: SpoilerRenderState { return self.viewState.spoilerState }
 
     public func enqueueReload() {
         self.loadCoordinator.enqueueReload()
@@ -185,7 +185,7 @@ extension ConversationViewController: CVComponentDelegate {
 
         let sheet = EditHistoryTableSheetViewController(
             message: message,
-            spoilerReveal: viewState.spoilerReveal,
+            spoilerState: viewState.spoilerState,
             database: databaseStorage
         )
         self.present(sheet, animated: true)
@@ -226,7 +226,7 @@ extension ConversationViewController: CVComponentDelegate {
         let pageVC = MediaPageViewController(
             initialMediaAttachment: attachmentStream,
             thread: self.thread,
-            spoilerReveal: self.viewState.spoilerReveal
+            spoilerState: self.viewState.spoilerState
         )
         self.present(pageVC, animated: true, completion: nil)
     }

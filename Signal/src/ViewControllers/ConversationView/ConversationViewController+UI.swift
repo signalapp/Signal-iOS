@@ -242,7 +242,7 @@ extension ConversationViewController {
 
         let inputToolbar = ConversationInputToolbar(
             conversationStyle: conversationStyle,
-            spoilerReveal: viewState.spoilerReveal,
+            spoilerState: viewState.spoilerState,
             mediaCache: mediaCache,
             messageDraft: messageDraft,
             quotedReply: quotedReply,
@@ -284,7 +284,7 @@ extension ConversationViewController {
             }
             guard let componentState = CVLoader.buildStandaloneComponentState(
                 interaction: interaction,
-                spoilerReveal: self.viewState.spoilerReveal,
+                spoilerState: self.viewState.spoilerState,
                 transaction: transaction
             ) else {
                 owsFailDebug("Failed to create component state.")

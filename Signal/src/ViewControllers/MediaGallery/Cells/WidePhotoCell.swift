@@ -93,10 +93,10 @@ class WidePhotoCell: MediaTileListModeCell {
         setUpAccessibility(item: nil)
     }
 
-    override public func configure(item: MediaGalleryCellItem, spoilerReveal: SpoilerRevealState) {
+    override public func configure(item: MediaGalleryCellItem, spoilerState: SpoilerRenderState) {
         switch item {
         case .photoVideo(let photoGridItem):
-            super.configure(item: item, spoilerReveal: spoilerReveal)
+            super.configure(item: item, spoilerState: spoilerState)
             configure(photoGridItem)
         default:
             owsFail("Unexpected item type \(item)")

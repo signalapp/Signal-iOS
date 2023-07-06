@@ -79,7 +79,7 @@ public class CVViewState: NSObject {
 
     public let selectionState = CVSelectionState()
     public let textExpansion = CVTextExpansion()
-    public let spoilerReveal = SpoilerRevealState()
+    public let spoilerState = SpoilerRenderState()
     public let messageSwipeActionState = CVMessageSwipeActionState()
 
     public var isDarkThemeEnabled: Bool = Theme.isDarkThemeEnabled

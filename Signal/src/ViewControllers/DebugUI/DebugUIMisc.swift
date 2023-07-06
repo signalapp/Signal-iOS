@@ -167,6 +167,10 @@ class DebugUIMisc: DebugUIPage, Dependencies {
 
             OWSTableItem(title: "Delete all persisted ExperienceUpgrade records", actionBlock: {
                 DebugUIMisc.removeAllRecordedExperienceUpgrades()
+            }),
+
+            OWSTableItem(title: "Test spoiler animations", actionBlock: {
+                DebugUIMisc.showSpoilerAnimationTestController()
             })
         ]
         return OWSTableSection(title: name, items: items)
@@ -474,6 +478,11 @@ class DebugUIMisc: DebugUIPage, Dependencies {
 
     private static func showPinReminder() {
         let viewController = PinReminderViewController()
+        UIApplication.shared.frontmostViewController!.present(viewController, animated: true)
+    }
+
+    private static func showSpoilerAnimationTestController() {
+        let viewController = SpoilerAnimationTestController()
         UIApplication.shared.frontmostViewController!.present(viewController, animated: true)
     }
 }

@@ -12,7 +12,7 @@ public class CVLoader: NSObject {
     private let threadUniqueId: String
     private let loadRequest: CVLoadRequest
     private let viewStateSnapshot: CVViewStateSnapshot
-    private let spoilerReveal: SpoilerRevealState
+    private let spoilerState: SpoilerRenderState
     private let prevRenderState: CVRenderState
     private let messageLoader: MessageLoader
 
@@ -20,14 +20,14 @@ public class CVLoader: NSObject {
         threadUniqueId: String,
         loadRequest: CVLoadRequest,
         viewStateSnapshot: CVViewStateSnapshot,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         prevRenderState: CVRenderState,
         messageLoader: MessageLoader
     ) {
         self.threadUniqueId = threadUniqueId
         self.loadRequest = loadRequest
         self.viewStateSnapshot = viewStateSnapshot
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
         self.prevRenderState = prevRenderState
         self.messageLoader = messageLoader
     }
@@ -36,7 +36,7 @@ public class CVLoader: NSObject {
         let threadUniqueId = self.threadUniqueId
         let loadRequest = self.loadRequest
         let viewStateSnapshot = self.viewStateSnapshot
-        let spoilerReveal = self.spoilerReveal
+        let spoilerState = self.spoilerState
         let prevRenderState = self.prevRenderState
         let messageLoader = self.messageLoader
 
@@ -69,7 +69,7 @@ public class CVLoader: NSObject {
                     loadRequest: loadRequest,
                     threadViewModel: threadViewModel,
                     viewStateSnapshot: viewStateSnapshot,
-                    spoilerReveal: spoilerReveal,
+                    spoilerState: spoilerState,
                     messageLoader: messageLoader,
                     prevRenderState: prevRenderState,
                     transaction: transaction
@@ -248,7 +248,7 @@ public class CVLoader: NSObject {
             thread: thread,
             threadAssociatedData: threadAssociatedData,
             containerView: containerView,
-            spoilerReveal: SpoilerRevealState(),
+            spoilerState: SpoilerRenderState(),
             transaction: transaction
         )
     }
@@ -260,7 +260,7 @@ public class CVLoader: NSObject {
         thread: TSThread,
         threadAssociatedData: ThreadAssociatedData,
         containerView: UIView,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) -> CVRenderItem? {
         let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
@@ -277,7 +277,7 @@ public class CVLoader: NSObject {
             thread: thread,
             threadAssociatedData: threadAssociatedData,
             coreState: coreState,
-            spoilerReveal: spoilerReveal,
+            spoilerState: spoilerState,
             transaction: transaction
         )
     }
@@ -287,7 +287,7 @@ public class CVLoader: NSObject {
         thread: TSThread,
         threadAssociatedData: ThreadAssociatedData,
         conversationStyle: ConversationStyle,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) -> CVRenderItem? {
         let coreState = CVCoreState(
@@ -299,7 +299,7 @@ public class CVLoader: NSObject {
             thread: thread,
             threadAssociatedData: threadAssociatedData,
             coreState: coreState,
-            spoilerReveal: spoilerReveal,
+            spoilerState: spoilerState,
             transaction: transaction
         )
     }
@@ -309,7 +309,7 @@ public class CVLoader: NSObject {
         thread: TSThread,
         threadAssociatedData: ThreadAssociatedData,
         coreState: CVCoreState,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) -> CVRenderItem? {
         AssertIsOnMainThread()
@@ -319,7 +319,7 @@ public class CVLoader: NSObject {
                                               transaction: transaction)
         let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(
             coreState: coreState,
-            spoilerReveal: spoilerReveal
+            spoilerReveal: spoilerState.revealState
         )
         let avatarBuilder = CVAvatarBuilder(transaction: transaction)
         let itemBuildingContext = CVItemBuildingContextImpl(
@@ -343,7 +343,7 @@ public class CVLoader: NSObject {
 
     public static func buildStandaloneComponentState(
         interaction: TSInteraction,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) -> CVComponentState? {
         AssertIsOnMainThread()
@@ -368,7 +368,7 @@ public class CVLoader: NSObject {
                                               transaction: transaction)
         let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(
             coreState: coreState,
-            spoilerReveal: spoilerReveal
+            spoilerReveal: spoilerState.revealState
         )
         let avatarBuilder = CVAvatarBuilder(transaction: transaction)
         let itemBuildingContext = CVItemBuildingContextImpl(

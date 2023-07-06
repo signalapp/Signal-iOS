@@ -184,7 +184,7 @@ public extension ConversationViewController {
 
         let settingsView = ConversationSettingsViewController(
             threadViewModel: threadViewModel,
-            spoilerReveal: viewState.spoilerReveal
+            spoilerState: viewState.spoilerState
         )
         settingsView.conversationSettingsViewDelegate = self
         viewControllers.append(settingsView)
@@ -201,7 +201,7 @@ public extension ConversationViewController {
         case .showAllMedia:
             viewControllers.append(AllMediaViewController(
                 thread: thread,
-                spoilerReveal: viewState.spoilerReveal,
+                spoilerState: viewState.spoilerState,
                 name: title
             ))
         }

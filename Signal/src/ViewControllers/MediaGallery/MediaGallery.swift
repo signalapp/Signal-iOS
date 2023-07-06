@@ -6,6 +6,7 @@
 import Foundation
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 public enum GalleryDirection {
     case before, after, around
@@ -49,7 +50,7 @@ public class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         message: TSMessage,
         sender: Sender?,
         attachmentStream: TSAttachmentStream,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) {
         self.message = message
@@ -267,17 +268,17 @@ class MediaGallery: Dependencies {
 
     private var mediaGalleryFinder: MediaGalleryFinder
     private var sections: Sections!
-    private let spoilerReveal: SpoilerRevealState
+    private let spoilerState: SpoilerRenderState
 
     deinit {
         Logger.debug("")
     }
 
-    init(thread: TSThread, fileType: AllMediaFileType, spoilerReveal: SpoilerRevealState) {
+    init(thread: TSThread, fileType: AllMediaFileType, spoilerState: SpoilerRenderState) {
         allowedMediaType = MediaType.defaultMediaType(for: fileType)
         let finder = MediaGalleryFinder(thread: thread, allowedMediaType: allowedMediaType)
         self.mediaGalleryFinder = finder
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
         self.fileType = fileType
         self.sections = MediaGallerySections(loader: Loader(mediaGallery: self, finder: finder))
         NotificationCenter.default.addObserver(self,
@@ -439,7 +440,7 @@ class MediaGallery: Dependencies {
 
     private func buildGalleryItem(
         attachment: TSAttachment,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) -> MediaGalleryItem? {
         guard let attachmentStream = attachment as? TSAttachmentStream else {
@@ -490,7 +491,7 @@ class MediaGallery: Dependencies {
             message: message,
             sender: sender,
             attachmentStream: attachmentStream,
-            spoilerReveal: spoilerReveal,
+            spoilerState: spoilerState,
             transaction: transaction
         )
     }
@@ -607,7 +608,7 @@ class MediaGallery: Dependencies {
         let newItem: MediaGalleryItem? = databaseStorage.read { transaction -> MediaGalleryItem? in
             guard let focusedItem = buildGalleryItem(
                 attachment: focusedAttachment,
-                spoilerReveal: spoilerReveal,
+                spoilerState: spoilerState,
                 transaction: transaction
             ) else {
                 return nil
@@ -964,7 +965,7 @@ extension MediaGallery {
                 block(offset, attachment.uniqueId) {
                     guard let item: MediaGalleryItem = mediaGallery.buildGalleryItem(
                         attachment: attachment,
-                        spoilerReveal: mediaGallery.spoilerReveal,
+                        spoilerState: mediaGallery.spoilerState,
                         transaction: transaction
                     ) else {
                         owsFail("unexpectedly failed to buildGalleryItem for attachment #\(offset) \(attachment)")

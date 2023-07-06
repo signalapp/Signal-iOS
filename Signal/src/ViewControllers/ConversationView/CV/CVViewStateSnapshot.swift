@@ -48,7 +48,7 @@ struct CVViewStateSnapshot: Dependencies {
     ) -> CVViewStateSnapshot {
         CVViewStateSnapshot(
             textExpansion: viewState.textExpansion.copy(),
-            spoilerReveal: viewState.spoilerReveal.snapshot(),
+            spoilerReveal: viewState.spoilerState.revealState.snapshot(),
             messageSwipeActionState: viewState.messageSwipeActionState.copy(),
             coreState: viewState.asCoreState,
             typingIndicatorsSender: typingIndicatorsSender,

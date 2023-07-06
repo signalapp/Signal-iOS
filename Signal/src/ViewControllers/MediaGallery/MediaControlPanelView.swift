@@ -21,13 +21,13 @@ protocol MediaControlPanelDelegate: GalleryRailViewDelegate {
 class MediaControlPanelView: UIView {
 
     private let mediaGallery: MediaGallery
-    private let spoilerReveal: SpoilerRevealState
+    private let spoilerState: SpoilerRenderState
     private weak var delegate: MediaControlPanelDelegate?
 
-    init(mediaGallery: MediaGallery, delegate: MediaControlPanelDelegate, spoilerReveal: SpoilerRevealState, isLandscapeLayout: Bool) {
+    init(mediaGallery: MediaGallery, delegate: MediaControlPanelDelegate, spoilerState: SpoilerRenderState, isLandscapeLayout: Bool) {
         self.mediaGallery = mediaGallery
         self.delegate = delegate
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
         self.isLandscapeLayout = isLandscapeLayout
 
         super.init(frame: .zero)
@@ -61,7 +61,7 @@ class MediaControlPanelView: UIView {
     private var videoPlaybackUIPortraitConstraints = [NSLayoutConstraint]()
     private var videoPlaybackUILandscapeConstraints = [NSLayoutConstraint]()
 
-    private lazy var captionView = MediaCaptionView(spoilerReveal: spoilerReveal)
+    private lazy var captionView = MediaCaptionView(spoilerState: spoilerState)
     private let captionViewArea = UILayoutGuide()
     private lazy var captionViewAreaZeroHeight = captionViewArea.heightAnchor.constraint(equalToConstant: 0)
 

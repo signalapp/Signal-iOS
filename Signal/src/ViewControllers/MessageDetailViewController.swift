@@ -25,7 +25,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private var thread: TSThread? { renderItem?.itemModel.thread }
 
     private(set) var message: TSMessage
-    public let spoilerReveal: SpoilerRevealState
+    public let spoilerState: SpoilerRenderState
     private let editManager: EditManager
     private var wasDeleted: Bool = false
     private var isIncoming: Bool { message as? TSIncomingMessage != nil }
@@ -118,12 +118,12 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     required init(
         message: TSMessage,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         editManager: EditManager,
         thread: TSThread
     ) {
         self.message = message
-        self.spoilerReveal = spoilerReveal
+        self.spoilerState = spoilerState
         self.editManager = editManager
         super.init()
     }
@@ -210,7 +210,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private func buildRenderItem(
         message interaction: TSMessage,
-        spoilerReveal: SpoilerRevealState,
+        spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) -> CVRenderItem? {
         guard let thread = TSThread.anyFetch(
@@ -238,7 +238,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             thread: thread,
             threadAssociatedData: threadAssociatedData,
             conversationStyle: conversationStyle,
-            spoilerReveal: spoilerReveal,
+            spoilerState: spoilerState,
             transaction: transaction
         )
     }
@@ -388,7 +388,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 guard let self else { return }
                 let sheet = EditHistoryTableSheetViewController(
                     message: self.message,
-                    spoilerReveal: self.spoilerReveal,
+                    spoilerState: self.spoilerState,
                     database: self.databaseStorage
                 )
                 self.present(sheet, animated: true)
@@ -879,7 +879,7 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
             self.attachments = newMessage.mediaAttachments(with: transaction.unwrapGrdbRead)
             guard let renderItem = buildRenderItem(
                 message: newMessage,
-                spoilerReveal: spoilerReveal,
+                spoilerState: spoilerState,
                 transaction: transaction
             ) else {
                 return false
@@ -1054,7 +1054,7 @@ extension MessageDetailViewController: CVComponentDelegate {
         let mediaPageVC = MediaPageViewController(
             initialMediaAttachment: attachmentStream,
             thread: thread,
-            spoilerReveal: self.spoilerReveal,
+            spoilerState: self.spoilerState,
             showingSingleMessage: true
         )
         mediaPageVC.mediaGallery.addDelegate(self)
