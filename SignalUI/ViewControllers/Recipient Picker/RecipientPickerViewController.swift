@@ -655,7 +655,9 @@ extension RecipientPickerViewController {
 
             let iconView = OWSTableItem.buildIconInCircleView(
                 icon: icon,
-                innerIconSize: innerIconSize
+                iconSize: AvatarBuilder.standardAvatarSizePoints,
+                innerIconSize: innerIconSize,
+                iconTintColor: Theme.accentBlueColor
             )
             iconView.backgroundColor = tableViewController.cellBackgroundColor
 

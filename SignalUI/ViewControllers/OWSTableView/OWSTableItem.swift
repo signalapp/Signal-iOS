@@ -640,40 +640,12 @@ public extension OWSTableItem {
 public extension OWSTableItem {
     static func buildIconInCircleView(
         icon: ThemeIcon,
-        innerIconSize: CGFloat
-    ) -> UIView {
-        return buildIconInCircleView(
-            icon: icon,
-            innerIconSize: innerIconSize
-        )
-    }
-
-    static func buildIconInCircleView(
-        icon: ThemeIcon,
+        iconSize iconSizeParam: UInt,
         innerIconSize: CGFloat,
         iconTintColor: UIColor
     ) -> UIView {
-        return buildIconInCircleView(
-            icon: icon,
-            innerIconSize: innerIconSize,
-            iconTintColor: iconTintColor
-        )
-    }
-
-    static func buildIconInCircleView(
-        icon: ThemeIcon,
-        iconSize iconSizeParam: UInt? = nil,
-        innerIconSize innerIconSizeParam: CGFloat? = nil,
-        iconTintColor: UIColor? = nil
-    ) -> UIView {
-        let iconSize = CGFloat(iconSizeParam ?? AvatarBuilder.standardAvatarSizePoints)
-        let innerIconSize: CGFloat
-        if let innerIconSizeParam = innerIconSizeParam {
-            innerIconSize = innerIconSizeParam
-        } else {
-            innerIconSize = CGFloat(iconSize) * 0.6
-        }
-        let iconView = OWSTableItem.imageView(forIcon: icon, tintColor: iconTintColor ?? Theme.accentBlueColor, iconSize: innerIconSize)
+        let iconSize = CGFloat(iconSizeParam)
+        let iconView = OWSTableItem.imageView(forIcon: icon, tintColor: iconTintColor, iconSize: innerIconSize)
         let iconWrapper = UIView.container()
         iconWrapper.addSubview(iconView)
         iconView.autoCenterInSuperview()
