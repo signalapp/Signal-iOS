@@ -3,26 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Foundation
+
+import Lottie
+import PureLayout
 import SafariServices
 import SignalMessaging
 import SignalServiceKit
 import UIKit
 
-public class FingerprintViewController: OWSViewController {
-
-    private let recipientAddress: SignalServiceAddress
-    private let recipientIdentity: OWSRecipientIdentity
-    private let contactName: String
-    private let identityKey: IdentityKey
-    private let fingerprint: OWSFingerprint
-
-    private lazy var shareBarButtonItem = UIBarButtonItem(
-        image: Theme.iconImage(.buttonShare),
-        style: .plain,
-        target: self,
-        action: #selector(didTapShare),
-        accessibilityIdentifier: "FingerprintViewController.share"
-    )
+public class FingerprintViewController: OWSViewController, OWSNavigationChildController {
 
     public class func present(from viewController: UIViewController, address: SignalServiceAddress) {
         owsAssertBeta(address.isValid)
@@ -37,14 +27,10 @@ public class FingerprintViewController: OWSViewController {
             return
         }
 
-        let fingerprints = OWSFingerprintBuilder(
+        guard let fingerprintResult = OWSFingerprintBuilder(
             accountManager: TSAccountManager.shared,
             contactsManager: SSKEnvironment.shared.contactsManagerRef
-        ).fingerprints(theirSignalAddress: address, theirIdentityKey: recipientIdentity.identityKey)
-
-        let fingerprintViewController: UIViewController
-        switch fingerprints {
-        case .none:
+        ).fingerprints(theirSignalAddress: address, theirIdentityKey: recipientIdentity.identityKey) else {
             let actionSheet = ActionSheetController(message: OWSLocalizedString(
                 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES",
                 comment: "Alert shown when the user needs to exchange messages to see the safety number."
@@ -58,38 +44,42 @@ public class FingerprintViewController: OWSViewController {
             actionSheet.addAction(OWSActionSheets.cancelAction)
             viewController.presentActionSheet(actionSheet)
             return
-        case .singleFingerprint(let fingerprint):
-            if FeatureFlags.aciSafetyNumbers {
-                fingerprintViewController = MultiFingerprintViewController(
-                    fingerprints: [fingerprint],
-                    defaultIndex: 0,
-                    recipientAddress: address,
-                    recipientIdentity: recipientIdentity
-                )
-            } else {
-                fingerprintViewController = FingerprintViewController(
-                    recipientAddress: address,
-                    recipientIdentity: recipientIdentity,
-                    fingerprint: fingerprint
-                )
-            }
-        case .multiFingerprint(let fingerprints, let defaultIndex):
-            fingerprintViewController = MultiFingerprintViewController(
-                fingerprints: fingerprints,
-                defaultIndex: defaultIndex,
-                recipientAddress: address,
-                recipientIdentity: recipientIdentity
-            )
         }
 
+        let fingerprintViewController = FingerprintViewController(
+            fingerprints: fingerprintResult.fingerprints,
+            defaultIndex: fingerprintResult.defaultIndex,
+            recipientAddress: address,
+            recipientIdentity: recipientIdentity
+        )
         let navigationController = OWSNavigationController(rootViewController: fingerprintViewController)
         viewController.presentFormSheet(navigationController, animated: true)
     }
 
-    private init(
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        return .solid
+    }
+
+    public var navbarBackgroundColorOverride: UIColor? {
+        return Self.backgroundColor
+    }
+
+    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
+
+    private let recipientAddress: SignalServiceAddress
+    private let recipientIdentity: OWSRecipientIdentity
+    private let contactName: String
+    private let identityKey: IdentityKey
+    private let fingerprints: [OWSFingerprint]
+    private var selectedIndex: Int
+
+    public init(
+        fingerprints: [OWSFingerprint],
+        defaultIndex: Int,
         recipientAddress: SignalServiceAddress,
-        recipientIdentity: OWSRecipientIdentity,
-        fingerprint: OWSFingerprint
+        recipientIdentity: OWSRecipientIdentity
     ) {
         self.recipientAddress = recipientAddress
         self.contactName = SSKEnvironment.shared.contactsManagerRef.displayName(for: recipientAddress)
@@ -97,17 +87,17 @@ public class FingerprintViewController: OWSViewController {
         // where the user verifies a key that we learned about while this view was open.
         self.recipientIdentity = recipientIdentity
         self.identityKey = recipientIdentity.identityKey
-        self.fingerprint = fingerprint
+        self.fingerprints = fingerprints
+        self.selectedIndex = defaultIndex
 
         super.init()
 
         title = NSLocalizedString("PRIVACY_VERIFICATION_TITLE", comment: "Navbar title")
         navigationItem.leftBarButtonItem = .init(
-            barButtonSystemItem: .stop,
-            target: self, action: #selector(didTapStop),
-            accessibilityIdentifier: "FingerprintViewController.stop"
+            barButtonSystemItem: .done,
+            target: self, action: #selector(didTapDone),
+            accessibilityIdentifier: "FingerprintViewController.done"
         )
-        navigationItem.rightBarButtonItem = shareBarButtonItem
 
         identityStateChangeObserver = NotificationCenter.default.addObserver(
             forName: .identityStateDidChange,
@@ -123,158 +113,244 @@ public class FingerprintViewController: OWSViewController {
         }
     }
 
+    private static var backgroundColor: UIColor {
+        return Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray02
+    }
+
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = Self.backgroundColor
 
         configureUI()
     }
 
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        scrollToSelectedIndex(animated: false)
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if !DependenciesBridge.shared.db.read(block: self.hasShownTransitionSheet) {
+            // Its fine to not re-read the value in the write tx; stakes are low.
+            DependenciesBridge.shared.db.write(block: self.showTransitionSheet)
+        }
+    }
+
     public override func themeDidChange() {
         super.themeDidChange()
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = Self.backgroundColor
+
+        updateVerificationStateLabel()
+        setSafetyNumbersUpdateTextViewText()
+        setCarouselPageControlColors()
+        setInstructionsText()
+        setVerifyUnverifyButtonColors()
     }
 
     // MARK: UI
 
+    private lazy var safetyNumbersUpdateTextView: LinkingTextView = {
+        let textView = LinkingTextView()
+        textView.delegate = self
+        return textView
+    }()
+
+    private func setSafetyNumbersUpdateTextViewText() {
+        // Link doesn't matter, we will override tap behavior.
+        let learnMoreString = CommonStrings.learnMore.styled(with: .link(URL(string: Constants.transitionLearnMoreUrl)!))
+        safetyNumbersUpdateTextView.attributedText = NSAttributedString.composed(of: [
+            OWSLocalizedString(
+                "SAFETY_NUMBER_TRANSITION_HEADER_ALERT",
+                comment: "Header informing the user about the transition from phone number to user identifier based."
+            ),
+            "\n",
+            learnMoreString
+        ]).styled(
+            with: .font(.dynamicTypeFootnote),
+            .color(Theme.secondaryTextAndIconColor)
+        )
+        safetyNumbersUpdateTextView.linkTextAttributes = [
+            .foregroundColor: Theme.primaryTextColor,
+            .underlineColor: UIColor.clear,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+    }
+
+    private lazy var safetyNumbersUpdateView: UIView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fill
+        stackView.alignment = .center
+        stackView.spacing = 16
+
+        let imageView = UIImageView(image: UIImage(named: "safety_number_transition"))
+        imageView.autoSetDimensions(to: .square(48))
+        stackView.addArrangedSubview(imageView)
+
+        stackView.addArrangedSubview(safetyNumbersUpdateTextView)
+
+        return stackView
+    }()
+
+    private lazy var fingerprintCards: [FingerprintCard] = {
+        return fingerprints.map { fingerprint in
+            return FingerprintCard(fingerprint: fingerprint, controller: self)
+        }
+    }()
+
+    private lazy var fingerprintCarousel: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.isPagingEnabled = true
+        scrollView.isDirectionalLockEnabled = true
+        scrollView.alwaysBounceVertical = false
+        scrollView.alwaysBounceHorizontal = true
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
+
+        var xOffset: CGFloat = Constants.cardHInset
+        var previousView: UIView = scrollView
+        var nextEdge: ALEdge = .leading
+        for fingerprintCard in fingerprintCards {
+            scrollView.addSubview(fingerprintCard)
+            fingerprintCard.autoPinVerticalEdges(toEdgesOf: scrollView)
+            scrollView.autoPinHeight(toHeightOf: fingerprintCard, relation: .greaterThanOrEqual)
+            fingerprintCard.autoPinEdge(.leading, to: nextEdge, of: previousView, withOffset: xOffset)
+            previousView = fingerprintCard
+            xOffset = Constants.interCardSpacing
+            nextEdge = .trailing
+        }
+        previousView.autoPinEdge(.trailing, to: .trailing, of: scrollView, withOffset: -Constants.cardHInset)
+
+        scrollView.delegate = self
+
+        return scrollView
+    }()
+
+    private lazy var fingerprintCarouselPageControl: UIPageControl = {
+        let control = UIPageControl()
+        control.numberOfPages = fingerprints.count
+        control.addTarget(self, action: #selector(didUpdatePageControl), for: .valueChanged)
+        return control
+    }()
+
+    private func setCarouselPageControlColors() {
+        fingerprintCarouselPageControl.pageIndicatorTintColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray25
+        fingerprintCarouselPageControl.currentPageIndicatorTintColor = Theme.primaryTextColor
+    }
+
+    private lazy var instructionsTextView: UITextView = {
+        let textView = LinkingTextView()
+        textView.delegate = self
+        return textView
+    }()
+
+    private func setInstructionsText() {
+        let instructionsFormat = OWSLocalizedString(
+            "VERIFY_SAFETY_NUMBER_INSTRUCTIONS",
+            comment: "Instructions for verifying your safety number. Embeds {{contact's name}}"
+        )
+        // Link doesn't matter, we will override tap behavior.
+        let learnMoreString = CommonStrings.learnMore.styled(with: .link(URL(string: Constants.learnMoreUrl)!))
+        instructionsTextView.attributedText = NSAttributedString.composed(of: [
+            String(format: instructionsFormat, contactName),
+            " ",
+            learnMoreString
+        ]).styled(
+            with: .font(.dynamicTypeFootnote),
+            .color(Theme.secondaryTextAndIconColor),
+            .alignment(.center)
+        )
+        instructionsTextView.linkTextAttributes = [
+            .foregroundColor: Theme.primaryTextColor,
+            .underlineColor: UIColor.clear,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+    }
+
     private lazy var verifyUnverifyButtonLabel = UILabel()
-    private lazy var verificationStateLabel = UILabel()
+    private lazy var verifyUnverifyPillbox = PillBoxView()
+
+    private lazy var verifyUnverifyButton: UIView = {
+        verifyUnverifyPillbox.layer.masksToBounds = true
+        verifyUnverifyPillbox.accessibilityIdentifier = "FingerprintViewController.verifyUnverifyButton"
+        verifyUnverifyPillbox.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapVerifyUnverify)))
+
+        verifyUnverifyButtonLabel.font = .systemFont(ofSize: 13, weight: .bold)
+        verifyUnverifyButtonLabel.textAlignment = .center
+        verifyUnverifyButtonLabel.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+        verifyUnverifyPillbox.addSubview(verifyUnverifyButtonLabel)
+        verifyUnverifyButtonLabel.autoPinWidthToSuperview(withMargin: 24)
+        verifyUnverifyButtonLabel.autoPinHeightToSuperview(withMargin: 12)
+
+        return verifyUnverifyPillbox
+    }()
+
+    private func setVerifyUnverifyButtonColors() {
+        verifyUnverifyButtonLabel.textColor = Theme.primaryTextColor
+        verifyUnverifyPillbox.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .white
+    }
 
     private func configureUI() {
 
-        // Verify/Unverify button
-        let verifyUnverifyButton = UIView()
-        verifyUnverifyButton.accessibilityIdentifier = "FingerprintViewController.verifyUnverifyButton"
-        verifyUnverifyButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapVerifyUnverify)))
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
+        let containerView = UIView()
+        view.addSubview(scrollView)
+        scrollView.addSubview(containerView)
+
+        scrollView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        containerView.autoPinEdges(toEdgesOf: scrollView)
+        containerView.autoPinWidth(toWidthOf: view)
+
+        containerView.addSubview(safetyNumbersUpdateView)
+        containerView.addSubview(fingerprintCarousel)
+        containerView.addSubview(fingerprintCarouselPageControl)
+        containerView.addSubview(instructionsTextView)
         view.addSubview(verifyUnverifyButton)
-        verifyUnverifyButton.autoPinWidthToSuperview()
-        verifyUnverifyButton.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
 
-        let verifyUnverifyPillbox = UIView()
-        verifyUnverifyPillbox.backgroundColor = .ows_accentBlue
-        verifyUnverifyPillbox.layer.cornerRadius = 3
-        verifyUnverifyPillbox.layer.masksToBounds = true
-        verifyUnverifyButton.addSubview(verifyUnverifyPillbox)
-        verifyUnverifyPillbox.autoHCenterInSuperview()
-        verifyUnverifyPillbox.autoPinEdge(toSuperviewEdge: .top, withInset: .scaleFromIPhone5To7Plus(10, 15))
-        verifyUnverifyPillbox.autoPinEdge(toSuperviewEdge: .bottom, withInset: .scaleFromIPhone5To7Plus(10, 20))
+        safetyNumbersUpdateView.autoPinEdge(.leading, to: .leading, of: containerView, withOffset: .scaleFromIPhone5To7Plus(18, 24))
+        safetyNumbersUpdateView.autoPinEdge(.trailing, to: .trailing, of: containerView, withOffset: -.scaleFromIPhone5To7Plus(18, 24))
+        safetyNumbersUpdateView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 12)
 
-        verifyUnverifyButtonLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(14, 20), weight: .semibold)
-        verifyUnverifyButtonLabel.textColor = .white
-        verifyUnverifyButtonLabel.textAlignment = .center
-        verifyUnverifyPillbox.addSubview(verifyUnverifyButtonLabel)
-        verifyUnverifyButtonLabel.autoPinWidthToSuperview(withMargin: 50)
-        verifyUnverifyButtonLabel.autoPinHeightToSuperview(withMargin: 8)
+        fingerprintCarousel.autoPinHorizontalEdges(toEdgesOf: containerView)
 
-        // Learn More
-        let learnMoreButton = UIView()
-        learnMoreButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapLearnMore)))
-        view.addSubview(learnMoreButton)
-        learnMoreButton.autoPinWidthToSuperviewMargins()
-        learnMoreButton.autoPinEdge(.bottom, to: .top, of: verifyUnverifyButton)
-        learnMoreButton.accessibilityIdentifier = "FingerprintViewController.learnMoreButton"
-
-        let learnMoreLabel = UILabel()
-        learnMoreLabel.attributedText = NSAttributedString(
-            string: CommonStrings.learnMore,
-            attributes: [ .underlineStyle: NSUnderlineStyle.single ]
-        )
-        learnMoreLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(13, 16))
-        learnMoreLabel.textColor = Theme.accentBlueColor
-        learnMoreLabel.textAlignment = .center
-        learnMoreButton.addSubview(learnMoreLabel)
-        learnMoreLabel.autoPinWidthToSuperview()
-        learnMoreLabel.autoPinEdge(toSuperviewEdge: .top, withInset: .scaleFromIPhone5To7Plus(5, 10))
-        learnMoreLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: .scaleFromIPhone5To7Plus(5, 10))
-
-        // Instructions
-        let instructionsFormat = NSLocalizedString(
-            "PRIVACY_VERIFICATION_INSTRUCTIONS",
-            comment: "Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}}"
-        )
-        let instructionsLabel = UILabel()
-        instructionsLabel.text = String(format: instructionsFormat, contactName)
-        instructionsLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(11, 14))
-        instructionsLabel.textColor = Theme.secondaryTextAndIconColor
-        instructionsLabel.textAlignment = .center
-        instructionsLabel.numberOfLines = 0
-        instructionsLabel.lineBreakMode = .byWordWrapping
-        view.addSubview(instructionsLabel)
-        instructionsLabel.autoPinWidthToSuperviewMargins()
-        instructionsLabel.autoPinEdge(.bottom, to: .top, of: learnMoreButton)
-
-        // Fingerprint Label
-        let fingerprintLabel = UILabel()
-        fingerprintLabel.text = fingerprint.displayableText
-        fingerprintLabel.font = UIFont(name: "Menlo-Regular", size: .scaleFromIPhone5To7Plus(20, 23))
-        fingerprintLabel.textAlignment = .center
-        fingerprintLabel.textColor = Theme.secondaryTextAndIconColor
-        fingerprintLabel.numberOfLines = 3
-        fingerprintLabel.lineBreakMode = .byTruncatingTail
-        fingerprintLabel.adjustsFontSizeToFitWidth = true
-        fingerprintLabel.isUserInteractionEnabled = true
-        fingerprintLabel.accessibilityIdentifier = "FingerprintViewController.fingerprintLabel"
-        fingerprintLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapFingerprintLabel)))
-        view.addSubview(fingerprintLabel)
-        fingerprintLabel.autoPinWidthToSuperview(withMargin: .scaleFromIPhone5To7Plus(50, 60))
-        fingerprintLabel.autoPinEdge(.bottom, to: .top, of: instructionsLabel, withOffset: -.scaleFromIPhone5To7Plus(8, 15))
-
-        // Fingerprint Image
-        let fingerprintView = UIView()
-        fingerprintView.isUserInteractionEnabled = true
-        fingerprintView.accessibilityIdentifier = "FingerprintViewController.fingerprintView"
-        view.addSubview(fingerprintView)
-        fingerprintView.autoPinWidthToSuperviewMargins()
-        fingerprintView.autoPinEdge(.bottom, to: .top, of: fingerprintLabel, withOffset: -.scaleFromIPhone5To7Plus(10, 15))
-        fingerprintView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapFingerprintView)))
-
-        let fingerprintCircle = CircleView()
-        fingerprintCircle.backgroundColor = Theme.washColor
-        fingerprintView.addSubview(fingerprintCircle)
-        fingerprintCircle.autoPin(toAspectRatio: 1)
-        fingerprintCircle.autoCenterInSuperview()
-        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            fingerprintCircle.autoPinEdgesToSuperviewEdges()
+        fingerprintCards.forEach {
+            $0.autoPinWidth(toWidthOf: containerView, offset: -.scaleFromIPhone5To7Plus(60, 105))
         }
 
-        let fingerprintImageView = UIImageView()
-        fingerprintImageView.image = fingerprint.image
-        // Don't antialias QR Codes.
-        fingerprintImageView.layer.magnificationFilter = .nearest
-        fingerprintImageView.layer.minificationFilter = .nearest
-        fingerprintImageView.setCompressionResistanceLow()
-        fingerprintView.addSubview(fingerprintImageView)
-        fingerprintImageView.autoCenterInSuperview()
-        fingerprintImageView.autoPin(toAspectRatio: 1)
-        fingerprintImageView.widthAnchor.constraint(equalTo: fingerprintCircle.widthAnchor, multiplier: 0.675).isActive = true
+        fingerprintCarouselPageControl.autoHCenterInSuperview()
+        fingerprintCarouselPageControl.autoPinEdge(.top, to: .bottom, of: fingerprintCarousel, withOffset: 8)
 
-        let scanLabel = UILabel()
-        scanLabel.text = NSLocalizedString("PRIVACY_TAP_TO_SCAN", comment: "Button that shows the 'scan with camera' view.")
-        scanLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(14, 16), weight: .semibold)
-        scanLabel.textColor = Theme.secondaryTextAndIconColor
-        fingerprintView.addSubview(scanLabel)
-        scanLabel.autoHCenterInSuperview()
-        scanLabel.autoPinEdge(.top, to: .bottom, of: fingerprintImageView)
-        scanLabel.autoPinEdge(.bottom, to: .bottom, of: fingerprintCircle, withOffset: -4)
+        instructionsTextView.autoPinEdge(.leading, to: .leading, of: containerView, withOffset: .scaleFromIPhone5To7Plus(18, 28))
+        instructionsTextView.autoPinEdge(.trailing, to: .trailing, of: containerView, withOffset: -.scaleFromIPhone5To7Plus(18, 28))
+        instructionsTextView.autoPinEdge(.bottom, to: .bottom, of: scrollView)
 
-        // Verification State
-        verificationStateLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(16, 20), weight: .semibold)
-        verificationStateLabel.textColor = Theme.secondaryTextAndIconColor
-        verificationStateLabel.textAlignment = .center
-        verificationStateLabel.numberOfLines = 0
-        verificationStateLabel.lineBreakMode = .byWordWrapping
-        view.addSubview(verificationStateLabel)
-        verificationStateLabel.autoPinWidthToSuperviewMargins()
-        // Bind height of label to height of two lines of text.
-        // This should always be sufficient, and will prevent the view's
-        // layout from changing if the user is marked as verified or not
-        // verified.
-        verificationStateLabel.autoSetDimension(.height, toSize: round(verificationStateLabel.font.lineHeight * 2.25))
-        verificationStateLabel.autoPin(toTopLayoutGuideOf: self, withInset: .scaleFromIPhone5To7Plus(15, 20))
-        verificationStateLabel.autoPinEdge(.bottom, to: .top, of: fingerprintView, withOffset: -.scaleFromIPhone5To7Plus(10, 15))
+        verifyUnverifyButton.autoHCenterInSuperview()
+        verifyUnverifyButton.autoPinEdge(.top, to: .bottom, of: scrollView, withOffset: .scaleFromIPhone5To7Plus(12, 24))
+        verifyUnverifyButton.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: .scaleFromIPhone5To7Plus(16, 40))
+
+        if fingerprints.count <= 1 {
+            safetyNumbersUpdateView.isHidden = true
+            fingerprintCarouselPageControl.isHidden = true
+            scrollView.isScrollEnabled = false
+
+            fingerprintCarousel.autoPinEdge(toSuperviewSafeArea: .top, withInset: 56)
+            instructionsTextView.autoPinEdge(.top, to: .bottom, of: fingerprintCarousel, withOffset: 24)
+        } else {
+            fingerprintCarousel.autoPinEdge(.top, to: .bottom, of: safetyNumbersUpdateView, withOffset: 24)
+            instructionsTextView.autoPinEdge(.top, to: .bottom, of: fingerprintCarouselPageControl, withOffset: 16)
+        }
 
         updateVerificationStateLabel()
+        setSafetyNumbersUpdateTextViewText()
+        setCarouselPageControlColors()
+        setInstructionsText()
+        setVerifyUnverifyButtonColors()
     }
 
     private func updateVerificationStateLabel() {
@@ -282,52 +358,348 @@ public class FingerprintViewController: OWSViewController {
 
         let isVerified = OWSIdentityManager.shared.verificationState(for: recipientAddress) == .verified
 
-        let symbolFont = UIFont.awesomeFont(ofSize: verificationStateLabel.font.pointSize)
-        let checkmark = NSAttributedString(string: LocalizationNotNeeded("\u{F00C} "), attributes: [ .font: symbolFont ])
-
         if isVerified {
-            verificationStateLabel.attributedText = checkmark.stringByAppendingString(NSAttributedString(string: String(
-                format: NSLocalizedString(
-                    "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT",
-                    comment: "Label indicating that the user is verified. Embeds  user's name or phone number}}."
-                ),
-                contactName
-            )))
-
             verifyUnverifyButtonLabel.text = NSLocalizedString(
                 "PRIVACY_UNVERIFY_BUTTON",
                 comment: "Button that lets user mark another user's identity as unverified."
             )
         } else {
-            verificationStateLabel.text = String(
-                format: NSLocalizedString(
-                    "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT",
-                    comment: "Label indicating that the user is not verified. Embeds {{the user's name or phone number}}."
-                ),
-                contactName
+            verifyUnverifyButtonLabel.text = OWSLocalizedString(
+                "PRIVACY_VERIFY_BUTTON",
+                comment: "Button that lets user mark another user's identity as verified."
             )
+        }
+        view.setNeedsLayout()
+    }
 
-            verifyUnverifyButtonLabel.attributedText = checkmark.stringByAppendingString(NSAttributedString(
-                string: NSLocalizedString(
-                    "PRIVACY_VERIFY_BUTTON",
-                    comment: "Button that lets user mark another user's identity as verified."
-                )
-            ))
+    // MARK: - Fingerprint Card
+
+    class FingerprintCard: UIView {
+
+        private let fingerprint: OWSFingerprint
+        private weak var controller: FingerprintViewController?
+
+        init(fingerprint: OWSFingerprint, controller: FingerprintViewController) {
+            self.fingerprint = fingerprint
+            self.controller = controller
+            super.init(frame: .zero)
+
+            layer.cornerRadius = Constants.cornerRadius
+
+            self.backgroundColor = {
+                switch fingerprint.source {
+                case .aci: return UIColor(rgbHex: 0x506ecd)
+                case .e164: return UIColor(rgbHex: 0xdeddda)
+                }
+            }()
+
+            addSubview(shareButton)
+            addSubview(qrCodeView)
+            addSubview(safetyNumberLabel)
+
+            shareButton.autoPinEdge(.top, to: .top, of: self, withOffset: 16)
+            shareButton.autoPinEdge(.trailing, to: .trailing, of: self, withOffset: -16)
+
+            qrCodeView.autoPinEdge(.top, to: .bottom, of: shareButton, withOffset: 8)
+            qrCodeView.autoPinEdge(.leading, to: .leading, of: self, withOffset: .scaleFromIPhone5To7Plus(44, 64))
+            qrCodeView.autoPinEdge(.trailing, to: .trailing, of: self, withOffset: -.scaleFromIPhone5To7Plus(44, 64))
+
+            safetyNumberLabel.autoPinEdge(.top, to: .bottom, of: qrCodeView, withOffset: 30)
+            safetyNumberLabel.autoPinEdge(.leading, to: .leading, of: self, withOffset: .scaleFromIPhone5To7Plus(20, 35))
+            safetyNumberLabel.autoPinEdge(.trailing, to: .trailing, of: self, withOffset: -.scaleFromIPhone5To7Plus(20, 35))
+            safetyNumberLabel.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: -.scaleFromIPhone5To7Plus(27, 47))
         }
 
-        view.setNeedsLayout()
+        required init?(coder: NSCoder) {
+            fatalError()
+        }
+
+        private lazy var shareButton: UIButton = {
+            let button = UIButton()
+            let tintColor: UIColor
+            switch fingerprint.source {
+            case .aci:
+                tintColor = .white
+            case .e164:
+                tintColor = .black
+            }
+            button.setTemplateImage(
+                Theme.iconImage(.buttonShare).withRenderingMode(.alwaysTemplate),
+                tintColor: tintColor
+            )
+            button.addTarget(self, action: #selector(didTapShare), for: .touchUpInside)
+            return button
+        }()
+
+        private lazy var qrCodeView: UIView = {
+            let containerView = UIView()
+            containerView.backgroundColor = .white
+            containerView.layer.cornerRadius = Constants.cornerRadius
+            containerView.layer.masksToBounds = true
+
+            let fingerprintImageView = UIImageView()
+            fingerprintImageView.image = fingerprint.image
+            // Don't antialias QR Codes.
+            fingerprintImageView.layer.magnificationFilter = .nearest
+            fingerprintImageView.layer.minificationFilter = .nearest
+            fingerprintImageView.setCompressionResistanceLow()
+            containerView.addSubview(fingerprintImageView)
+            fingerprintImageView.autoPin(toAspectRatio: 1)
+            fingerprintImageView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(margin: 20), excludingEdge: .bottom)
+
+            let scanLabel = UILabel()
+            scanLabel.text = NSLocalizedString("PRIVACY_TAP_TO_SCAN", comment: "Button that shows the 'scan with camera' view.")
+            scanLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(13, 15))
+            scanLabel.textColor = Theme.lightThemeSecondaryTextAndIconColor
+            containerView.addSubview(scanLabel)
+            scanLabel.autoHCenterInSuperview()
+            scanLabel.autoPinEdge(.top, to: .bottom, of: fingerprintImageView, withOffset: 12)
+            scanLabel.autoPinEdge(.bottom, to: .bottom, of: containerView, withOffset: -14)
+
+            containerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapToScan)))
+
+            return containerView
+        }()
+
+        private lazy var safetyNumberLabel: UILabel = {
+            let label = UILabel()
+            label.text = fingerprint.displayableText
+            label.font = UIFont(name: "Menlo-Regular", size: 23)
+            label.textAlignment = .center
+            switch fingerprint.source {
+            case .aci:
+                label.textColor = .white
+            case .e164:
+                label.textColor = Theme.lightThemeSecondaryTextAndIconColor
+            }
+            label.numberOfLines = 3
+            label.lineBreakMode = .byTruncatingTail
+            label.adjustsFontSizeToFitWidth = true
+            label.isUserInteractionEnabled = true
+            label.accessibilityIdentifier = "FingerprintViewController.fingerprintLabel"
+            return label
+        }()
+
+        @objc
+        func didTapToScan() {
+            controller?.didTapToScan()
+        }
+
+        @objc
+        func didTapShare() {
+            controller?.shareFingerprint(from: shareButton)
+        }
+
+        enum Constants {
+            static let cornerRadius: CGFloat = 18
+        }
+    }
+
+    // MARK: PillBoxView
+
+    class PillBoxView: UIView {
+
+        override var bounds: CGRect {
+            didSet {
+                self.layer.cornerRadius = bounds.height / 2
+            }
+        }
+    }
+
+    // MARK: - Transition Sheet
+
+    private lazy var kvStore: KeyValueStore = {
+        return DependenciesBridge.shared.keyValueStoreFactory.keyValueStore(collection: "MultiFingerprintVC")
+    }()
+
+    private static let hasShownTransitionSheetKey = "hasShownTransitionSheetKey"
+
+    private func hasShownTransitionSheet(_ tx: DBReadTransaction) -> Bool {
+        return self.kvStore.getBool(Self.hasShownTransitionSheetKey, defaultValue: false, transaction: tx)
+    }
+
+    private func setHasShownTransitionSheet(_ tx: DBWriteTransaction) {
+        self.kvStore.setBool(true, key: Self.hasShownTransitionSheetKey, transaction: tx)
+    }
+
+    private func showTransitionSheet(_ tx: DBWriteTransaction) {
+        self.setHasShownTransitionSheet(tx)
+        tx.addAsyncCompletion(on: DispatchQueue.main) {
+            let sheet = TransitionSheetViewController(parent: self)
+            self.present(sheet, animated: true)
+        }
+    }
+
+    class TransitionSheetViewController: InteractiveSheetViewController {
+        let contentScrollView = UIScrollView()
+        let stackView = UIStackView()
+        public override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
+        public override var sheetBackgroundColor: UIColor { Theme.tableView2PresentedBackgroundColor }
+
+        private weak var parentVc: FingerprintViewController?
+
+        init(parent: FingerprintViewController) {
+            self.parentVc = parent
+            super.init()
+        }
+
+        override public func viewDidLoad() {
+            super.viewDidLoad()
+
+            minimizedHeight = 600
+            super.allowsExpansion = true
+
+            contentView.addSubview(contentScrollView)
+
+            stackView.axis = .vertical
+            stackView.layoutMargins = UIEdgeInsets(hMargin: 24, vMargin: 24)
+            stackView.spacing = 16
+            stackView.isLayoutMarginsRelativeArrangement = true
+            contentScrollView.addSubview(stackView)
+            stackView.autoPinHeightToSuperview()
+            // Pin to the scroll view's viewport, not to its scrollable area
+            stackView.autoPinWidth(toWidthOf: contentScrollView)
+
+            contentScrollView.autoPinEdgesToSuperviewEdges()
+            contentScrollView.alwaysBounceVertical = true
+
+            buildContents()
+        }
+
+        override public func viewDidAppear(_ animated: Bool) {
+            super.viewDidAppear(animated)
+
+            if !animationView.isAnimationQueued && !animationView.isAnimationPlaying {
+                animationView.play { [weak self] success in
+                    guard success else { return }
+                    self?.loopAnimation()
+                }
+            }
+        }
+
+        override public func viewWillDisappear(_ animated: Bool) {
+            super.viewWillDisappear(animated)
+
+            if animationView.isAnimationQueued || animationView.isAnimationPlaying {
+                animationView.stop()
+            }
+        }
+
+        private func loopAnimation() {
+            animationView.play(fromFrame: 60, toFrame: 360, completion: { [weak self] success in
+                guard success else { return }
+                self?.loopAnimation()
+            })
+        }
+
+        private lazy var animationView: AnimationView = {
+            let animationView = AnimationView(name: "safety-numbers")
+            animationView.contentMode = .scaleAspectFit
+            animationView.isUserInteractionEnabled = false
+            animationView.backgroundColor = .white
+            animationView.layer.cornerRadius = 12
+            animationView.layer.masksToBounds = true
+            return animationView
+        }()
+
+        private func buildContents() {
+            let titleLabel = UILabel()
+            titleLabel.textAlignment = .center
+            titleLabel.font = UIFont.dynamicTypeTitle2.semibold()
+            titleLabel.text = OWSLocalizedString(
+                "SAFETY_NUMBER_TRANSITION_SHEET_TITLE",
+                comment: "Title for a sheet informing the user about the transition from phone number to user identifier based."
+            )
+            titleLabel.numberOfLines = 0
+            titleLabel.lineBreakMode = .byWordWrapping
+            stackView.addArrangedSubview(titleLabel)
+
+            let paragraphs: [String] = [
+                OWSLocalizedString(
+                    "SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1",
+                    comment: "Informs the user about the transition from phone number to user identifier based."
+                ),
+                OWSLocalizedString(
+                    "SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2",
+                    comment: "Informs the user about the transition from phone number to user identifier based."
+                )
+            ]
+            var lastParagraphLabel: UILabel!
+            for paragraph in paragraphs {
+                let paragraphLabel = UILabel()
+                paragraphLabel.text = paragraph
+                paragraphLabel.textAlignment = .natural
+                paragraphLabel.font = .dynamicTypeSubheadlineClamped
+                paragraphLabel.numberOfLines = 0
+                paragraphLabel.lineBreakMode = .byWordWrapping
+                paragraphLabel.textColor = Theme.secondaryTextAndIconColor
+                stackView.addArrangedSubview(paragraphLabel)
+                lastParagraphLabel = paragraphLabel
+            }
+            stackView.setCustomSpacing(20, after: lastParagraphLabel)
+
+            stackView.addArrangedSubview(animationView)
+            stackView.setCustomSpacing(24, after: animationView)
+            animationView.autoPinWidth(toWidthOf: self.view, offset: -48)
+            animationView.autoMatch(.height, to: .width, of: animationView, withMultiplier: 172/346)
+
+            let learnMoreLabel = UILabel()
+            learnMoreLabel.text = OWSLocalizedString(
+                "SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT",
+                comment: "Button text for a sheet informing the user about the transition from phone number to user identifier based."
+            )
+            learnMoreLabel.textAlignment = .center
+            learnMoreLabel.font = .dynamicTypeBody
+            learnMoreLabel.textColor = Theme.isDarkThemeEnabled ? .ows_accentBlueDark : .link
+            learnMoreLabel.isUserInteractionEnabled = true
+            learnMoreLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapLearnMore)))
+            stackView.addArrangedSubview(learnMoreLabel)
+            stackView.setCustomSpacing(30, after: learnMoreLabel)
+
+            let continueButton = OWSButton(
+                title: OWSLocalizedString(
+                    "ALERT_ACTION_ACKNOWLEDGE",
+                    comment: "generic button text to acknowledge that the corresponding text was read."
+                )
+            ) { [weak self] in
+                self?.dismiss(animated: true)
+            }
+            continueButton.layer.cornerRadius = 16
+            continueButton.backgroundColor = .ows_accentBlue
+            continueButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
+            continueButton.autoSetDimension(.height, toSize: 50, relation: .greaterThanOrEqual)
+            stackView.addArrangedSubview(continueButton)
+        }
+
+        @objc
+        func didTapLearnMore() {
+            self.dismiss(animated: true) { [weak self] in
+                self?.parentVc?.didTapLearnMore()
+            }
+        }
     }
 
     // MARK: Actions
 
     @objc
-    private func didTapStop() {
+    private func didTapDone() {
         dismiss(animated: true)
     }
 
+    private func didTapLearnMore() {
+        Self.showLearnMoreUrl(from: self)
+    }
+
+    fileprivate static func showLearnMoreUrl(from viewController: UIViewController) {
+        let learnMoreUrl = URL(string: "https://support.signal.org/hc/articles/213134107")!
+        let safariVC = SFSafariViewController(url: learnMoreUrl)
+        viewController.present(safariVC, animated: true)
+    }
+
     @objc
-    private func didTapShare() {
-        shareFingerprint()
+    private func didUpdatePageControl() {
+        self.selectedIndex = fingerprintCarouselPageControl.currentPage
+        scrollToSelectedIndex()
     }
 
     @objc
@@ -349,33 +721,9 @@ public class FingerprintViewController: OWSViewController {
         dismiss(animated: true)
     }
 
-    @objc
-    private func didTapLearnMore(_ gestureRecognizer: UITapGestureRecognizer) {
-        guard gestureRecognizer.state == .recognized else { return }
-        Self.showLearnMoreUrl(from: self)
-    }
+    private func shareFingerprint(from fromView: UIView) {
+        let fingerprint = fingerprints[selectedIndex]
 
-    fileprivate static func showLearnMoreUrl(from viewController: UIViewController) {
-        let learnMoreUrl = URL(string: "https://support.signal.org/hc/articles/213134107")!
-        let safariVC = SFSafariViewController(url: learnMoreUrl)
-        viewController.present(safariVC, animated: true)
-    }
-
-    @objc
-    private func didTapFingerprintLabel(_ gestureRecognizer: UITapGestureRecognizer) {
-        guard gestureRecognizer.state == .recognized else { return }
-
-        shareFingerprint()
-    }
-
-    @objc
-    private func didTapFingerprintView(_ gestureRecognizer: UITapGestureRecognizer) {
-        guard gestureRecognizer.state == .recognized else { return }
-
-        showScanner()
-    }
-
-    private func shareFingerprint() {
         Logger.debug("Sharing safety numbers")
 
         let compareActivity = CompareSafetyNumbersActivity(delegate: self)
@@ -392,7 +740,7 @@ public class FingerprintViewController: OWSViewController {
         )
 
         if let popoverPresentationController = activityController.popoverPresentationController {
-            popoverPresentationController.barButtonItem = shareBarButtonItem
+            popoverPresentationController.sourceView = fromView
         }
 
         // This value was extracted by inspecting `activityType` in the activityController.completionHandler
@@ -408,13 +756,23 @@ public class FingerprintViewController: OWSViewController {
         present(activityController, animated: true)
     }
 
-    private func showScanner() {
+    fileprivate func didTapToScan() {
         let viewController = FingerprintScanViewController(
             recipientAddress: recipientAddress,
             recipientIdentity: recipientIdentity,
-            fingerprints: .singleFingerprint(self.fingerprint)
+            fingerprints: self.fingerprints
         )
         navigationController?.pushViewController(viewController, animated: true)
+    }
+
+    private func scrollToSelectedIndex(animated: Bool = true) {
+        let xOffset: CGFloat
+        if selectedIndex == 0 {
+            xOffset = 0
+        } else {
+            xOffset = (CGFloat(selectedIndex) * UIScreen.main.bounds.width) - (Constants.interCardSpacing + Constants.cardHInset)
+        }
+        fingerprintCarousel.setContentOffset(.init(x: xOffset, y: 0), animated: animated)
     }
 
     // MARK: Notifications
@@ -424,6 +782,17 @@ public class FingerprintViewController: OWSViewController {
     private func identityStateDidChange() {
         AssertIsOnMainThread()
         updateVerificationStateLabel()
+    }
+
+    // MARK: - Constants
+
+    enum Constants {
+        static let cardHInset: CGFloat = .scaleFromIPhone5To7Plus(30, 53)
+        static var interCardSpacing: CGFloat = cardHInset / 2
+
+        // Link doesn't matter, we will override tap behavior.
+        static let transitionLearnMoreUrl = "https://support.signal.org/"
+        static let learnMoreUrl = "https://support.signal.org/learnMore"
     }
 }
 
@@ -450,4 +819,27 @@ extension FingerprintViewController: CompareSafetyNumbersActivityDelegate {
         )
     }
 
+}
+
+extension FingerprintViewController: UITextViewDelegate {
+
+    public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        if URL.absoluteString == Constants.transitionLearnMoreUrl {
+            DependenciesBridge.shared.db.write {
+                self.showTransitionSheet($0)
+            }
+        } else if URL.absoluteString == Constants.learnMoreUrl {
+            self.didTapLearnMore()
+        }
+        return false
+    }
+}
+
+extension FingerprintViewController: UIScrollViewDelegate {
+
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let selectedIndex = Int(scrollView.contentOffset.x / (scrollView.frame.width - (Constants.cardHInset * 2)))
+        self.selectedIndex = selectedIndex
+        self.fingerprintCarouselPageControl.currentPage = selectedIndex
+    }
 }

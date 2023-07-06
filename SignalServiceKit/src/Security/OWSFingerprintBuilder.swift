@@ -18,13 +18,9 @@ public class OWSFingerprintBuilder {
         self.contactsManager = contactsManager
     }
 
-    public enum Fingerprints {
-        // Show a single fingerprint.
-        case singleFingerprint(OWSFingerprint)
-        // Show multiple fingerprints in the provided order. The fingerprint at the provided
-        // index should be shown by default.
-        // (There will only be two: e164 fingerprint and aci fingerprint).
-        case multiFingerprint([OWSFingerprint], defaultIndex: Int)
+    public struct FingerprintResult {
+        public let fingerprints: [OWSFingerprint]
+        public let defaultIndex: Int
     }
 
     /**
@@ -42,7 +38,7 @@ public class OWSFingerprintBuilder {
     public func fingerprints(
         theirSignalAddress: SignalServiceAddress,
         theirIdentityKey: Data?
-    ) -> Fingerprints? {
+    ) -> FingerprintResult? {
         let theirIdentityKey: Data? = theirIdentityKey ?? OWSIdentityManager.shared.identityKey(for: theirSignalAddress)
         guard let theirIdentityKey else {
             owsFailDebug("Missing their identity key")
@@ -66,7 +62,7 @@ public class OWSFingerprintBuilder {
                 owsFailDebug("Unable to build aci fingerprint")
                 return nil
             }
-            return .singleFingerprint(aciFingerprint)
+            return .init(fingerprints: [aciFingerprint], defaultIndex: 0)
         } else if !FeatureFlags.aciSafetyNumbers {
             // ACI safety number disabled; just do e164
             guard let e164Fingerprint = self.e164Fingerprint(
@@ -78,7 +74,7 @@ public class OWSFingerprintBuilder {
                 owsFailDebug("Unable to build e164 fingerprint")
                 return nil
             }
-            return .singleFingerprint(e164Fingerprint)
+            return .init(fingerprints: [e164Fingerprint], defaultIndex: 0)
         } else {
             // Need both.
             guard
@@ -98,8 +94,8 @@ public class OWSFingerprintBuilder {
                 owsFailDebug("Unable to build fingerprints")
                 return nil
             }
-            return .multiFingerprint(
-                [e164Fingerprint, aciFingerprint],
+            return .init(
+                fingerprints: [e164Fingerprint, aciFingerprint],
                 defaultIndex: RemoteConfig.defaultToAciSafetyNumber ? 1 : 0
             )
         }

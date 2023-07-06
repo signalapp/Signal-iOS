@@ -13,14 +13,14 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
     private let recipientIdentity: OWSRecipientIdentity
     private let contactName: String
     private let identityKey: IdentityKey
-    private let fingerprints: OWSFingerprintBuilder.Fingerprints
+    private let fingerprints: [OWSFingerprint]
 
     private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .normal)
 
     init(
         recipientAddress: SignalServiceAddress,
         recipientIdentity: OWSRecipientIdentity,
-        fingerprints: OWSFingerprintBuilder.Fingerprints
+        fingerprints: [OWSFingerprint]
     ) {
         owsAssertDebug(recipientAddress.isValid)
 
@@ -130,26 +130,16 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
             )
         }
 
-        switch fingerprints {
-        case .singleFingerprint(let fingerprint):
+        // Check all of them, if any succeed its success.
+        for (i, fingerprint) in fingerprints.enumerated() {
             switch fingerprint.matchesLogicalFingerprintsData(combinedFingerprintData) {
             case .match:
                 showSuccess()
+                return
             case .noMatch(let localizedErrorDescription):
-                showFailure(localizedErrorDescription: localizedErrorDescription)
-            }
-        case .multiFingerprint(let fingerprints, _):
-            // Check all of them, if any succeed its success.
-            for (i, fingerprint) in fingerprints.enumerated() {
-                switch fingerprint.matchesLogicalFingerprintsData(combinedFingerprintData) {
-                case .match:
-                    showSuccess()
-                    return
-                case .noMatch(let localizedErrorDescription):
-                    if i == fingerprints.count - 1 {
-                        // We reached the end, show the error for the last one.
-                        showFailure(localizedErrorDescription: localizedErrorDescription)
-                    }
+                if i == fingerprints.count - 1 {
+                    // We reached the end, show the error for the last one.
+                    showFailure(localizedErrorDescription: localizedErrorDescription)
                 }
             }
         }
