@@ -10,6 +10,7 @@ import SignalUI
 class AudioAllMediaPresenter: AudioPresenter {
     private enum Constants {
         static let filenameFont: UIFont = .dynamicTypeCaption1
+        static let bottomLineFont: UIFont = .dynamicTypeFootnoteClamped
 
         static var bottomInnerStackSpacing: CGFloat {
             switch UIApplication.shared.preferredContentSizeCategory {
@@ -39,27 +40,27 @@ class AudioAllMediaPresenter: AudioPresenter {
 
     private static let middleDot = " · "
     func playedColor(isIncoming: Bool ) -> UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor(rgbHex: 0xf6f6f6) : UIColor(rgbHex: 0x1b1b1d)
+        return Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray90
     }
     func unplayedColor(isIncoming: Bool) -> UIColor {
-        return Theme.isDarkThemeEnabled ? .ows_gray25 : UIColor(rgbHex: 0xb9b9b9)
+        return Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray20
     }
     func thumbColor(isIncoming: Bool) -> UIColor {
         return playedColor(isIncoming: isIncoming)
     }
     func playPauseContainerBackgroundColor(isIncoming: Bool) -> UIColor {
-        return .ows_gray02
+        return Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
     }
 
     func playPauseAnimationColor(isIncoming: Bool) -> ColorValueProvider {
-        return ColorValueProvider(UIColor(rgbHex: 0x808389).lottieColorValue)
+        let color = playedColor(isIncoming: isIncoming)
+        return ColorValueProvider(color.lottieColorValue)
     }
 
-    func playedDotAnimationColor(conversationStyle: ConversationStyle,
-                                 isIncoming: Bool) -> ColorValueProvider {
+    func playedDotAnimationColor(conversationStyle: ConversationStyle, isIncoming: Bool) -> ColorValueProvider {
         return ColorValueProvider(conversationStyle.bubbleSecondaryTextColor(isIncoming: true).lottieColorValue)
     }
-    var bottomInnerStackSpacing: CGFloat { 0.0 }
+    var bottomInnerStackSpacing: CGFloat { 0 }
 
     let audioAttachment: AudioAttachment
     let threadUniqueId: String
@@ -124,9 +125,10 @@ class AudioAllMediaPresenter: AudioPresenter {
     ) -> CVLabelConfig {
         return CVLabelConfig(
             text: text,
-            font: UIFont.dynamicTypeCaption1Clamped,
+            font: Constants.bottomLineFont,
             textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: true),
-            lineBreakMode: lineBreakMode)
+            lineBreakMode: lineBreakMode
+        )
     }
 
     private var subviews: Subviews {
@@ -138,7 +140,8 @@ class AudioAllMediaPresenter: AudioPresenter {
             sizeLabel: sizeLabel,
             dateLabel: dateLabel,
             dot1: dot1,
-            dot2: dot2)
+            dot2: dot2
+        )
     }
 
     var bottomSubviews: [UIView] {
@@ -157,7 +160,7 @@ class AudioAllMediaPresenter: AudioPresenter {
         var dot2: UIView
     }
 
-    struct SubviewConfig {
+    private struct SubviewConfig {
         var dotSize: CGSize
         var maxWidth: CGFloat
         var playbackTimeLabelSize: CGSize
@@ -203,17 +206,11 @@ class AudioAllMediaPresenter: AudioPresenter {
                 view: { $0.dateLabel },
                 subviewInfo: { $0.dateSize.asManualSubviewInfo(hasFixedSize: true) },
                 shouldAddSubview: true),
-
             ViewWithSizingInfo(
                 id: "hStretchingSpacer",
                 view: { _ in .hStretchingSpacer() },
-                subviewInfo: {
-                    ManualStackSubviewInfo(measuredSize: CGSize(width: $0.maxWidth,
-                                                                height: 20.0),
-                                           hasFixedSize: false)
-                },
+                subviewInfo: { _ in .empty },
                 shouldAddSubview: false),
-
             ViewWithSizingInfo(
                 id: "transparentSpacer1",
                 view: { _ in UIView.transparentSpacer() },
@@ -314,15 +311,13 @@ class AudioAllMediaPresenter: AudioPresenter {
         }
     }
 
-    private func labelConfig_forMeasurement(
-        text: String,
-        conversationStyle: ConversationStyle) -> CVLabelConfig {
-            return CVLabelConfig(
-                text: text,
-                font: UIFont.dynamicTypeCaption1Clamped,
-                textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: true)
-            )
-        }
+    private func labelConfig_forMeasurement(text: String, conversationStyle: ConversationStyle) -> CVLabelConfig {
+        return CVLabelConfig(
+            text: text,
+            font: Constants.bottomLineFont,
+            textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: true)
+        )
+    }
 
     static func hasAttachmentLabel(attachment: TSAttachment) -> Bool {
         return !attachment.isVoiceMessage
@@ -331,6 +326,7 @@ class AudioAllMediaPresenter: AudioPresenter {
     func hasAttachmentLabel(attachment: TSAttachment) -> Bool {
         return Self.hasAttachmentLabel(attachment: attachment)
     }
+
     func topLabelConfig(
         audioAttachment: AudioAttachment,
         isIncoming: Bool,

@@ -8,7 +8,7 @@ import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
-public enum GalleryDirection {
+enum GalleryDirection {
     case before, after, around
 }
 
@@ -31,7 +31,7 @@ class MediaGalleryAlbum {
     }
 }
 
-public class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
+class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     struct Sender {
         let name: String
         let abbreviatedName: String
@@ -93,7 +93,7 @@ public class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
 
     var uniqueId: String { attachmentStream.uniqueId }
 
-    public typealias AsyncThumbnailBlock = (UIImage) -> Void
+    typealias AsyncThumbnailBlock = (UIImage) -> Void
     func thumbnailImage(async: @escaping AsyncThumbnailBlock) -> UIImage? {
         attachmentStream.thumbnailImageSmall(success: async, failure: {})
         return nil
@@ -105,13 +105,13 @@ public class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
 
     // MARK: Equatable
 
-    public static func == (lhs: MediaGalleryItem, rhs: MediaGalleryItem) -> Bool {
+    static func == (lhs: MediaGalleryItem, rhs: MediaGalleryItem) -> Bool {
         return lhs.attachmentStream.uniqueId == rhs.attachmentStream.uniqueId
     }
 
     // MARK: Hashable
 
-    public func hash(into hasher: inout Hasher) {
+    func hash(into hasher: inout Hasher) {
         hasher.combine(attachmentStream.uniqueId)
     }
 
@@ -339,7 +339,7 @@ class MediaGallery: Dependencies {
         runAsyncCompletionsIfPossible()
     }
 
-    public func runAsyncCompletionsIfPossible() {
+    func runAsyncCompletionsIfPossible() {
         if delegates.contains(where: { $0.mediaGalleryShouldDeferUpdate(self) }) {
             return
         }

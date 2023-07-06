@@ -3,49 +3,79 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalUI
 
-class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
+class AudioCell: MediaTileListModeCell {
+
     static let reuseIdentifier = "AudioCell"
-    private var audioItem: MediaGalleryCellItemAudio?
+
+    private var audioAttachment: AudioAttachment?
+
+    private var audioItem: MediaGalleryCellItemAudio? {
+        didSet {
+            guard let audioItem else {
+                audioAttachment = nil
+                return
+            }
+            audioAttachment = AudioAttachment(
+                attachment: audioItem.attachmentStream,
+                owningMessage: audioItem.message,
+                metadata: audioItem.metadata
+            )
+        }
+    }
+
     // TODO(george): Add support for dynamic size.
     class var desiredHeight: CGFloat { 86.0 }
-    private var tapGestureRecognizer: UITapGestureRecognizer!
-    private var panGestureRecognizer: UIPanGestureRecognizer!
-    private var itemModel: CVItemModel?
-    private var audioAttachment: AudioAttachment?
-    private var presentation: AudioAllMediaPresenter?
-    private var conversationStyle: ConversationStyle?
-    private var cellMeasurement: CVCellMeasurement?
 
-    private func createAudioMessageView(
-        audioItem: MediaGalleryCellItemAudio,
-        spoilerState: SpoilerRenderState,
-        transaction: SDSAnyReadTransaction
-    ) -> AudioMessageView? {
-        guard let attachment = AudioAttachment(attachment: audioItem.attachmentStream,
-                                               owningMessage: audioItem.message,
-                                               metadata: audioItem.metadata) else {
-            return nil
+    private lazy var tapGestureRecognizer: UITapGestureRecognizer = {
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
+        gestureRecognizer.delegate = self
+        return gestureRecognizer
+    }()
+
+    private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
+        let gestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture))
+        gestureRecognizer.delegate = self
+        return gestureRecognizer
+    }()
+
+    private var itemModel: CVItemModel?
+
+    private var audioMessageView: AudioMessageView?
+
+    private let audioMessageContainerView: UIView = {
+        let view = UIView.container()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    private func createAudioMessageView(transaction: SDSAnyReadTransaction) {
+        owsAssertDebug(audioMessageView == nil)
+
+        guard let audioItem, let audioAttachment, let spoilerState else {
+            owsFailDebug("audioItem or spoilerReveal not set")
+            return
         }
-        self.audioAttachment = attachment
 
         let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: audioItem.thread, transaction: transaction)
         // Make an itemModel which is needed to play the audio file.
         // This is only used to save the playback rate, which is kind of nuts.
-        let threadViewModel = ThreadViewModel(thread: audioItem.thread,
-                                              forChatList: false,
-                                              transaction: transaction)
-        let conversationStyle = ConversationStyle(type: .default,
-                                                  thread: audioItem.thread,
-                                                  viewWidth: contentView.bounds.width,
-                                                  hasWallpaper: false,
-                                                  isWallpaperPhoto: false,
-                                                  chatColor: ChatColor.placeholderValue)
-        let coreState = CVCoreState(conversationStyle: conversationStyle,
-                                    mediaCache: audioItem.mediaCache)
+        let threadViewModel = ThreadViewModel(
+            thread: audioItem.thread,
+            forChatList: false,
+            transaction: transaction
+        )
+        let conversationStyle = ConversationStyle(
+            type: .default,
+            thread: audioItem.thread,
+            viewWidth: contentView.bounds.width,
+            hasWallpaper: false,
+            isWallpaperPhoto: false,
+            chatColor: ChatColor.placeholderValue
+        )
+        let coreState = CVCoreState(conversationStyle: conversationStyle, mediaCache: audioItem.mediaCache)
         let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(
             coreState: coreState,
             spoilerReveal: spoilerState.revealState
@@ -54,71 +84,59 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
             threadViewModel: threadViewModel,
             viewStateSnapshot: viewStateSnapshot,
             transaction: transaction,
-            avatarBuilder: CVAvatarBuilder(transaction: transaction))
-        guard let componentState = try? CVComponentState.build(interaction: audioItem.interaction,
-                                                               itemBuildingContext: itemBuildingContext) else {
-            return nil
+            avatarBuilder: CVAvatarBuilder(transaction: transaction)
+        )
+        guard let componentState = try? CVComponentState.build(
+            interaction: audioItem.interaction,
+            itemBuildingContext: itemBuildingContext
+        ) else {
+            return
         }
-        itemModel = CVItemModel(interaction: audioItem.interaction,
-                                thread: audioItem.thread,
-                                threadAssociatedData: threadAssociatedData,
-                                componentState: componentState,
-                                itemViewState: CVItemViewState.Builder().build(),
-                                coreState: coreState)
-        guard let itemModel else {
-            return nil
-        }
+        let itemViewState = CVItemViewState.Builder()
+        itemViewState.audioPlaybackRate = threadAssociatedData.audioPlaybackRate
+        let itemModel = CVItemModel(
+            interaction: audioItem.interaction,
+            thread: audioItem.thread,
+            threadAssociatedData: threadAssociatedData,
+            componentState: componentState,
+            itemViewState: itemViewState.build(),
+            coreState: coreState
+        )
         let presentation = AudioAllMediaPresenter(
             sender: audioItem.metadata.abbreviatedSender,
-            audioAttachment: attachment,
+            audioAttachment: audioAttachment,
             threadUniqueId: audioItem.thread.uniqueId,
             playbackRate: AudioPlaybackRate(rawValue: itemModel.itemViewState.audioPlaybackRate),
-            isIncoming: audioItem.interaction is TSIncomingMessage)
+            isIncoming: audioItem.interaction is TSIncomingMessage
+        )
         let view = AudioMessageView(
             presentation: presentation,
             audioMessageViewDelegate: self,
-            mediaCache: audioItem.mediaCache)
+            mediaCache: audioItem.mediaCache
+        )
+        view.translatesAutoresizingMaskIntoConstraints = false
         if let incomingMessage = audioItem.interaction as? TSIncomingMessage {
             view.setViewed(incomingMessage.wasViewed, animated: false)
         } else if let outgoingMessage = audioItem.interaction as? TSOutgoingMessage {
             view.setViewed(!outgoingMessage.viewedRecipientAddresses().isEmpty, animated: false)
         }
 
-        self.presentation = presentation
-        self.conversationStyle = conversationStyle
+        let maxWidth = contentView.bounds.width - leadingMargin - trailingMargin
         let measurementBuilder = CVCellMeasurement.Builder()
-        measurementBuilder.cellSize = AudioMessageView.measure(maxWidth: contentView.bounds.width - leadingMargin - trailingMargin,
-                                                               sender: audioItem.metadata.abbreviatedSender,
-                                                               conversationStyle: conversationStyle,
-                                                               measurementBuilder: measurementBuilder,
-                                                               presentation: presentation)
-        cellMeasurement = measurementBuilder.build()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        configureAudioMessageView(view)
-        return view
-    }
+        measurementBuilder.cellSize = AudioMessageView.measure(
+            maxWidth: maxWidth,
+            sender: audioItem.metadata.abbreviatedSender,
+            conversationStyle: conversationStyle,
+            measurementBuilder: measurementBuilder,
+            presentation: presentation
+        )
+        let cellMeasurement = measurementBuilder.build()
+        view.configureForRendering(cellMeasurement: cellMeasurement, conversationStyle: conversationStyle)
+        audioMessageContainerView.addSubview(view)
+        view.autoPinEdgesToSuperviewEdges()
 
-    private func configureAudioMessageView(_ view: AudioMessageView) {
-        guard let conversationStyle, let cellMeasurement else {
-            return
-        }
-        view.configureForRendering(cellMeasurement: cellMeasurement,
-                                   conversationStyle: conversationStyle)
-    }
-
-    class AudioMessageContainerView: UIView {}
-    private let audioMessageContainerView: AudioMessageContainerView = {
-        let view = AudioMessageContainerView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-
-    private static var textColor: UIColor {
-        if #available(iOS 13, *) {
-            return .secondaryLabel
-        } else {
-            return .ows_gray45
-        }
+        self.itemModel = itemModel
+        self.audioMessageView = view
     }
 
     override init(frame: CGRect) {
@@ -130,8 +148,8 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private let leadingMargin = 16.0
-    private let trailingMargin = 14.0
+    private let leadingMargin: CGFloat = 16
+    private let trailingMargin: CGFloat = 14
 
     static func sizeForItem(_ item: MediaGalleryCellItem, defaultSize: CGSize) -> CGSize {
         switch item {
@@ -158,28 +176,25 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
 
         let constraintWithSelectionButton = audioMessageContainerView.leadingAnchor.constraint(
             equalTo: selectionButton.trailingAnchor,
-            constant: 13)
+            constant: 13
+        )
         let constraintWithoutSelectionButton = audioMessageContainerView.leadingAnchor.constraint(
             equalTo: contentView.leadingAnchor,
-            constant: leadingMargin)
+            constant: leadingMargin
+        )
 
-        tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(cellTapped(_:)))
         addGestureRecognizer(tapGestureRecognizer)
-
-        panGestureRecognizer = UIPanGestureRecognizer(
-            target: self,
-            action: #selector(pan(_:)))
-        panGestureRecognizer.require(toFail: tapGestureRecognizer)
         addGestureRecognizer(panGestureRecognizer)
+        tapGestureRecognizer.require(toFail: panGestureRecognizer)
+
         super.setupViews(constraintWithSelectionButton: constraintWithSelectionButton,
                          constraintWithoutSelectionButton: constraintWithoutSelectionButton)
     }
 
     @objc
-    func pan(_ sender: UIPanGestureRecognizer) {
-        guard let audioMessageView, let audioItem else {
-            return
-        }
+    private func handlePanGesture(_ sender: UIPanGestureRecognizer) {
+        guard let audioMessageView, let audioItem else { return }
+
         let location = panGestureRecognizer.location(in: audioMessageView)
         switch panGestureRecognizer.state {
         case .began:
@@ -206,7 +221,7 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
     }
 
     @objc
-    func cellTapped(_ sender: UITapGestureRecognizer) {
+    private func handleTapGesture(_ sender: UITapGestureRecognizer) {
         // TODO: When adding support for undownloaded attachments, tapping should cancel or retry downloading.
         // See the logic in CVComponentAudioAttachment.handleTap(sender:,componentDelegate:,componentView:,renderItem:)
         guard let itemModel, let audioMessageView, let audioItem, let audioAttachment else {
@@ -216,9 +231,7 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
             return
         }
         let cvAudioPlayer = AppEnvironment.shared.cvAudioPlayerRef
-        cvAudioPlayer.setPlaybackRate(
-            itemModel.itemViewState.audioPlaybackRate,
-            forThreadUniqueId: audioItem.thread.uniqueId)
+        cvAudioPlayer.setPlaybackRate(itemModel.itemViewState.audioPlaybackRate, forThreadUniqueId: audioItem.thread.uniqueId)
         cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
     }
 
@@ -237,13 +250,13 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
         }
     }
 
-    private var audioMessageView: AudioMessageView?
-
     override var cellsAbut: Bool { false }
+
     private var spoilerState: SpoilerRenderState?
 
     override func configure(item: MediaGalleryCellItem, spoilerState: SpoilerRenderState) {
         super.configure(item: item, spoilerState: spoilerState)
+
         guard case let .audio(audioItem) = item else {
             owsFailDebug("Unexpected item type")
             return
@@ -251,18 +264,17 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
         self.audioItem = audioItem
         self.spoilerState = spoilerState
 
-        audioMessageContainerView.subviews.first?.removeFromSuperview()
+        if let audioMessageView {
+            audioMessageView.removeFromSuperview()
+            self.audioMessageView = nil
+        }
 
-        SDSDatabaseStorage.shared.read { transaction in
-            if let audioMessageView = createAudioMessageView(audioItem: audioItem, spoilerState: spoilerState, transaction: transaction) {
-                audioMessageContainerView.addSubview(audioMessageView)
-                self.audioMessageView = audioMessageView
-                audioMessageView.autoPinEdgesToSuperviewEdges()
-            }
+        databaseStorage.read { transaction in
+            createAudioMessageView(transaction: transaction)
         }
     }
 
-    override public func makePlaceholder() {
+    override func makePlaceholder() {
         audioMessageView?.removeFromSuperview()
         audioMessageView = nil
     }
@@ -277,8 +289,27 @@ class AudioCell: MediaTileListModeCell, AudioMessageViewDelegate {
         tapGestureRecognizer.isEnabled = !allowed
         super.setAllowsMultipleSelection(allowed, animated: animated)
     }
+}
 
-    // MARK: - AudioMessageViewDelegate
+extension AudioCell: UIGestureRecognizerDelegate {
+
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard !allowsMultipleSelection else {
+            return false
+        }
+
+        if gestureRecognizer == panGestureRecognizer {
+            // Only allow the pan gesture to recognize horizontal panning,
+            // to avoid conflicts with the collection view scroll gesture.
+            let translation = panGestureRecognizer.translation(in: self)
+            return abs(translation.x) > abs(translation.y)
+        }
+
+        return true
+    }
+}
+
+extension AudioCell: AudioMessageViewDelegate {
 
     func beginCellAnimation(maximumDuration: TimeInterval) -> (() -> Void) {
         return {}
