@@ -677,6 +677,7 @@
 		500FE4E2288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */; };
 		5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */; };
 		5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */; };
+		5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */; };
 		5011D9722A04720E000FE8E5 /* OWSOrphanDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */; };
 		5011D9732A04721A000FE8E5 /* OWSOrphanDataCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */; };
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
@@ -685,6 +686,7 @@
 		502D45442A05A34B00B8BCE0 /* ThreadRemover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */; };
 		502D45462A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */; };
 		502D45482A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D45472A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift */; };
+		5033D45F29D4DAAC007FEADA /* ThreadMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D45E29D4DAAC007FEADA /* ThreadMerger.swift */; };
 		5033D46129D638FD007FEADA /* ThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46029D638FD007FEADA /* ThreadStore.swift */; };
 		5033D46329D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46229D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift */; };
 		5033D46529D65099007FEADA /* ThreadAssociatedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46429D65098007FEADA /* ThreadAssociatedDataStore.swift */; };
@@ -3176,12 +3178,14 @@
 		500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
 		5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainFrontingCountryViewController.swift; sourceTree = "<group>"; };
 		5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningURL.swift; sourceTree = "<group>"; };
+		5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMergerTest.swift; sourceTree = "<group>"; };
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		502B1B54297B28AF00FDB3AE /* ErrorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTest.swift; sourceTree = "<group>"; };
 		502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadRemover.swift; sourceTree = "<group>"; };
 		502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesConfigurationStore.swift; sourceTree = "<group>"; };
 		502D45472A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadReplyInfoStore.swift; sourceTree = "<group>"; };
+		5033D45E29D4DAAC007FEADA /* ThreadMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMerger.swift; sourceTree = "<group>"; };
 		5033D46029D638FD007FEADA /* ThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadStore.swift; sourceTree = "<group>"; };
 		5033D46229D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberChangedMessageInserter.swift; sourceTree = "<group>"; };
 		5033D46429D65098007FEADA /* ThreadAssociatedDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadAssociatedDataStore.swift; sourceTree = "<group>"; };
@@ -8302,6 +8306,7 @@
 				F942620C289B1B5500460798 /* PhoneNumberUtilTest.swift */,
 				506695E029C296D500B6D8D0 /* RecipientMergerTest.swift */,
 				F9426213289B1B5500460798 /* SignalRecipientTest.swift */,
+				5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */,
 				F972180128DCFDF100113D9F /* TSContactThreadTest.swift */,
 				F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */,
 				F9426214289B1B5500460798 /* TSThreadTest.m */,
@@ -8985,6 +8990,7 @@
 				66586D4029009C0000DDA9B9 /* TextAttachment.swift */,
 				F9C5C9F2289453B100548EEE /* ThreadAssociatedData.swift */,
 				5033D46429D65098007FEADA /* ThreadAssociatedDataStore.swift */,
+				5033D45E29D4DAAC007FEADA /* ThreadMerger.swift */,
 				45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */,
 				502D45472A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift */,
 				F9C5C9FD289453B100548EEE /* TSGroupMember.swift */,
@@ -12554,6 +12560,7 @@
 				5033D46529D65099007FEADA /* ThreadAssociatedDataStore.swift in Sources */,
 				F9C5CDE2289453B400548EEE /* ThreadBacked.swift in Sources */,
 				F9C5CD17289453B300548EEE /* ThreadFinder.swift in Sources */,
+				5033D45F29D4DAAC007FEADA /* ThreadMerger.swift in Sources */,
 				502D45442A05A34B00B8BCE0 /* ThreadRemover.swift in Sources */,
 				45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */,
 				502D45482A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift in Sources */,
@@ -12798,6 +12805,7 @@
 				F9426249289B1B5500460798 /* TestModelTests.swift in Sources */,
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
 				6600F38B299016BC00B1EDB7 /* TestSchedulerTest.swift in Sources */,
+				5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */,
 				66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */,
 				F903C29B28EC7AE60035B42B /* TSAccountManagerTest.swift in Sources */,
 				F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */,

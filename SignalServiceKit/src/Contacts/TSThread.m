@@ -589,6 +589,21 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     [self anyUpdateWithTransaction:transaction block:^(TSThread *thread) { thread.storyViewMode = storyViewMode; }];
 }
 
+#pragma mark - Merging
+
+- (void)mergeFrom:(TSThread *)otherThread
+{
+    self.shouldThreadBeVisible = self.shouldThreadBeVisible || otherThread.shouldThreadBeVisible;
+    self.lastInteractionRowId = MAX(self.lastInteractionRowId, otherThread.lastInteractionRowId);
+
+    // Copy the draft if this thread doesn't have one. We always assign both
+    // values if we assign one of them since they're related.
+    if (self.messageDraft == nil) {
+        self.messageDraft = otherThread.messageDraft;
+        self.messageDraftBodyRanges = otherThread.messageDraftBodyRanges;
+    }
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

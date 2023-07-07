@@ -108,18 +108,37 @@ class RecipientMergerImpl: RecipientMerger {
     }
 
     static func buildObservers(
+        chatColorSettingStore: ChatColorSettingStore,
+        disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         groupMemberUpdater: GroupMemberUpdater,
         groupMemberStore: GroupMemberStore,
         interactionStore: InteractionStore,
         signalServiceAddressCache: SignalServiceAddressCache,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
+        threadRemover: ThreadRemover,
+        threadReplyInfoStore: ThreadReplyInfoStore,
         threadStore: ThreadStore,
-        userProfileStore: UserProfileStore
+        userProfileStore: UserProfileStore,
+        wallpaperStore: WallpaperStore
     ) -> [RecipientMergeObserver] {
+        // PNI TODO: Merge ReceiptForLinkedDevice if needed.
         [
             signalServiceAddressCache,
             SignalAccountMergeObserver(),
             UserProfileMerger(userProfileStore: userProfileStore),
+            ThreadMerger(
+                chatColorSettingStore: chatColorSettingStore,
+                disappearingMessagesConfigurationManager: ThreadMerger.Wrappers.DisappearingMessagesConfigurationManager(),
+                disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+                pinnedThreadManager: ThreadMerger.Wrappers.PinnedThreadManager(),
+                sdsThreadMerger: ThreadMerger.Wrappers.SDSThreadMerger(),
+                threadAssociatedDataManager: ThreadMerger.Wrappers.ThreadAssociatedDataManager(),
+                threadAssociatedDataStore: threadAssociatedDataStore,
+                threadRemover: threadRemover,
+                threadReplyInfoStore: threadReplyInfoStore,
+                threadStore: threadStore,
+                wallpaperStore: wallpaperStore
+            ),
             // The group member MergeObserver depends on `SignalServiceAddressCache`,
             // so ensure that one's listed first.
             GroupMemberMergeObserverImpl(

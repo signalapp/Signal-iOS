@@ -552,9 +552,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
         static var all: [DBTableMapping] {
             return [
-                DBTableMapping(databaseTableName: "\(ThreadRecord.databaseTableName)",
-                               uuidColumn: "\(threadColumn: .contactUUID)",
-                               phoneNumberColumn: "\(threadColumn: .contactPhoneNumber)"),
                 DBTableMapping(databaseTableName: "\(OWSReaction.databaseTableName)",
                                uuidColumn: "\(OWSReaction.columnName(.reactorUUID))",
                                phoneNumberColumn: "\(OWSReaction.columnName(.reactorE164))"),

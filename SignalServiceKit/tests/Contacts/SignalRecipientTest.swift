@@ -402,7 +402,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         }
 
         databaseStorage.read { tx in
-            XCTAssertEqual(TSThread.anyCount(transaction: tx), 3)
+            XCTAssertEqual(TSThread.anyCount(transaction: tx), 2)
         }
 
         let finalGroupMembers = databaseStorage.read { tx in
@@ -536,7 +536,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         }
 
         databaseStorage.read { tx in
-            XCTAssertEqual(TSThread.anyCount(transaction: tx), 3)
+            XCTAssertEqual(TSThread.anyCount(transaction: tx), 2)
         }
 
         let finalGroupMembers = databaseStorage.read { tx in
@@ -572,7 +572,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         }
 
         databaseStorage.read { tx in
-            XCTAssertEqual(TSThread.anyCount(transaction: tx), 3)
+            XCTAssertEqual(TSThread.anyCount(transaction: tx), 2)
         }
 
         let finalGroupMembers = databaseStorage.read { tx in

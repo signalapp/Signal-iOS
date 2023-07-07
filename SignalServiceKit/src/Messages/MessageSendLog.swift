@@ -83,12 +83,6 @@ public class MessageSendLog {
         let payloadId: Int64
         let recipientUUID: String
         let recipientDeviceId: Int64
-
-        init(payloadId: Int64, recipientUUID: String, recipientDeviceId: Int64) {
-            self.payloadId = payloadId
-            self.recipientUUID = recipientUUID
-            self.recipientDeviceId = recipientDeviceId
-        }
     }
 
     struct Message: Codable, FetchableRecord, PersistableRecord {
@@ -96,11 +90,6 @@ public class MessageSendLog {
 
         let payloadId: Int64
         let uniqueId: String
-
-        init(payloadId: Int64, uniqueId: String) {
-            self.payloadId = payloadId
-            self.uniqueId = uniqueId
-        }
     }
 
     func recordPayload(_ plaintext: Data, for message: TSOutgoingMessage, tx: SDSAnyWriteTransaction) -> Int64? {
@@ -174,6 +163,15 @@ public class MessageSendLog {
         }
     }
 
+    func mergePayloads(from fromThreadUniqueId: String, into intoThreadUniqueId: String, tx: SDSAnyWriteTransaction) {
+        do {
+            let db = tx.unwrapGrdbWrite.database
+            try fetchRequest(threadUniqueId: fromThreadUniqueId).updateAll(db, Column("uniqueThreadId").set(to: intoThreadUniqueId))
+        } catch {
+            owsFailDebug("Couldn't update MSL entries: \(error)")
+        }
+    }
+
     func fetchPayload(
         recipientServiceId: ServiceId,
         recipientDeviceId: UInt32,
@@ -226,13 +224,15 @@ public class MessageSendLog {
         }
     }
 
+    private func fetchRequest(threadUniqueId: String) -> QueryInterfaceRequest<Payload> {
+        return Payload.filter(Column("uniqueThreadId") == threadUniqueId)
+    }
+
     private func fetchUniquePayload(
         for message: TSOutgoingMessage,
         tx: SDSAnyReadTransaction
     ) throws -> (Int64, Payload)? {
-        let query = Payload
-            .filter(Column("sentTimestamp") == message.timestamp)
-            .filter(Column("uniqueThreadId") == message.uniqueThreadId)
+        let query = fetchRequest(threadUniqueId: message.uniqueThreadId).filter(Column("sentTimestamp") == message.timestamp)
         return try fetchUniquePayload(query: query, tx: tx)
     }
 

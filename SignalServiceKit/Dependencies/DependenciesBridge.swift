@@ -262,14 +262,17 @@ public class DependenciesBridge {
         self.disappearingMessagesConfigurationStore = DisappearingMessagesConfigurationStoreImpl()
 
         self.threadRemover = ThreadRemoverImpl(
+            chatColorSettingStore: self.chatColorSettingStore,
             databaseStorage: ThreadRemoverImpl.Wrappers.DatabaseStorage(databaseStorage),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             fullTextSearchFinder: ThreadRemoverImpl.Wrappers.FullTextSearchFinder(),
             interactionRemover: ThreadRemoverImpl.Wrappers.InteractionRemover(),
+            sdsThreadRemover: ThreadRemoverImpl.Wrappers.SDSThreadRemover(),
             threadAssociatedDataStore: self.threadAssociatedDataStore,
             threadReadCache: ThreadRemoverImpl.Wrappers.ThreadReadCache(modelReadCaches.threadReadCache),
             threadReplyInfoStore: self.threadReplyInfoStore,
-            threadStore: threadStore
+            threadStore: threadStore,
+            wallpaperStore: self.wallpaperStore
         )
 
         let recipientStore = RecipientDataStoreImpl()
@@ -282,13 +285,18 @@ public class DependenciesBridge {
                 sessionStore: aciProtocolStore.sessionStore
             ),
             observers: RecipientMergerImpl.buildObservers(
+                chatColorSettingStore: self.chatColorSettingStore,
+                disappearingMessagesConfigurationStore: self.disappearingMessagesConfigurationStore,
                 groupMemberUpdater: self.groupMemberUpdater,
                 groupMemberStore: groupMemberStore,
                 interactionStore: interactionStore,
                 signalServiceAddressCache: signalServiceAddressCache,
                 threadAssociatedDataStore: self.threadAssociatedDataStore,
+                threadRemover: self.threadRemover,
+                threadReplyInfoStore: self.threadReplyInfoStore,
                 threadStore: threadStore,
-                userProfileStore: userProfileStore
+                userProfileStore: userProfileStore,
+                wallpaperStore: self.wallpaperStore
             ),
             recipientFetcher: self.recipientFetcher,
             dataStore: recipientStore,

@@ -328,7 +328,8 @@ public final class CallRecord: NSObject, SDSCodableModel, Decodable {
             }
         } else {
             // Create a new call record, and a TSCall interaction so it renders in chats.
-            guard let thread = AnyContactThreadFinder().contactThreadForUUID(peerUUID, transaction: transaction) else {
+            let finder = AnyContactThreadFinder()
+            guard let thread = finder.contactThreads(for: ServiceId(peerUUID), tx: transaction).first else {
                 Logger.error("Got a call sync message for a contact without a thread, dropping.")
                 return
             }

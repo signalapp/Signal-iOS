@@ -456,35 +456,46 @@ public class GroupManager: NSObject {
                                                                        transaction: transaction)
     }
 
-    public static func localUpdateDisappearingMessages(thread: TSThread,
-                                                       disappearingMessageToken: DisappearingMessageToken) -> Promise<Void> {
+    private static func localUpdateDisappearingMessageToken(
+        _ disappearingMessageToken: DisappearingMessageToken,
+        inContactOrGroupV1Thread thread: TSThread,
+        tx: SDSAnyWriteTransaction
+    ) {
+        let updateResult = self.updateDisappearingMessagesInDatabaseAndCreateMessages(
+            token: disappearingMessageToken,
+            thread: thread,
+            shouldInsertInfoMessage: true,
+            groupUpdateSourceAddress: nil,
+            transaction: tx
+        )
+        self.sendDisappearingMessagesConfigurationMessage(
+            updateResult: updateResult,
+            thread: thread,
+            transaction: tx
+        )
+    }
 
-        let simpleUpdate = {
-            return databaseStorage.write(.promise) { transaction in
-                let updateResult = self.updateDisappearingMessagesInDatabaseAndCreateMessages(token: disappearingMessageToken,
-                                                                                              thread: thread,
-                                                                                              shouldInsertInfoMessage: true,
-                                                                                              groupUpdateSourceAddress: nil,
-                                                                                              transaction: transaction)
-                self.sendDisappearingMessagesConfigurationMessage(updateResult: updateResult,
-                                                                  thread: thread,
-                                                                  transaction: transaction)
+    public static func localUpdateDisappearingMessageToken(
+        _ disappearingMessageToken: DisappearingMessageToken,
+        inContactThread thread: TSContactThread,
+        tx: SDSAnyWriteTransaction
+    ) {
+        localUpdateDisappearingMessageToken(disappearingMessageToken, inContactOrGroupV1Thread: thread, tx: tx)
+    }
+
+    public static func localUpdateDisappearingMessages(
+        thread: TSThread,
+        disappearingMessageToken: DisappearingMessageToken
+    ) -> Promise<Void> {
+        if let groupV2Model = (thread as? TSGroupThread)?.groupModel as? TSGroupModelV2 {
+            return updateGroupV2(groupModel: groupV2Model, description: "Update disappearing messages") { changeSet in
+                changeSet.setNewDisappearingMessageToken(disappearingMessageToken)
+            }.asVoid()
+        } else {
+            return databaseStorage.write(.promise) { tx in
+                localUpdateDisappearingMessageToken(disappearingMessageToken, inContactOrGroupV1Thread: thread, tx: tx)
             }
         }
-
-        guard let groupThread = thread as? TSGroupThread else {
-            return simpleUpdate()
-        }
-        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-            return simpleUpdate()
-        }
-
-        return firstly {
-            updateGroupV2(groupModel: groupModel,
-                          description: "Update disappearing messages") { groupChangeSet in
-                groupChangeSet.setNewDisappearingMessageToken(disappearingMessageToken)
-            }
-        }.asVoid()
     }
 
     private struct UpdateDMConfigurationResult {

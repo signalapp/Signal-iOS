@@ -8,8 +8,10 @@ import SignalCoreKit
 
 protocol ThreadStore {
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread?
-    func fetchThread(serviceId: ServiceId, tx: DBReadTransaction) -> TSContactThread?
+    func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread]
+    func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread]
     func removeThread(_ thread: TSThread, tx: DBWriteTransaction)
+    func updateThread(_ thread: TSThread, tx: DBWriteTransaction)
 }
 
 extension ThreadStore {
@@ -23,6 +25,10 @@ extension ThreadStore {
         }
         return groupThread
     }
+
+    func fetchThread(serviceId: ServiceId, tx: DBReadTransaction) -> TSContactThread? {
+        return fetchContactThreads(serviceId: serviceId, tx: tx).first
+    }
 }
 
 class ThreadStoreImpl: ThreadStore {
@@ -30,8 +36,12 @@ class ThreadStoreImpl: ThreadStore {
         TSThread.anyFetch(uniqueId: uniqueId, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    func fetchThread(serviceId: ServiceId, tx: DBReadTransaction) -> TSContactThread? {
-        TSContactThread.getWithContactAddress(SignalServiceAddress(serviceId), transaction: SDSDB.shimOnlyBridge(tx))
+    func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread] {
+        AnyContactThreadFinder().contactThreads(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
+    }
+
+    func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread] {
+        AnyContactThreadFinder().contactThreads(for: phoneNumber, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
@@ -45,6 +55,10 @@ class ThreadStoreImpl: ThreadStore {
         let sql = "DELETE FROM \(thread.sdsTableName) WHERE uniqueId = ?"
         tx.unwrapGrdbWrite.executeAndCacheStatement(sql: sql, arguments: [thread.uniqueId])
     }
+
+    func updateThread(_ thread: TSThread, tx: DBWriteTransaction) {
+        thread.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
+    }
 }
 
 #if TESTABLE_BUILD
@@ -56,12 +70,21 @@ class MockThreadStore: ThreadStore {
         threads.first(where: { $0.uniqueId == uniqueId })
     }
 
-    func fetchThread(serviceId: ServiceId, tx: DBReadTransaction) -> TSContactThread? {
-        threads.lazy.compactMap({ $0 as? TSContactThread }).first(where: { ServiceId(uuidString: $0.contactUUID) == serviceId })
+    func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread] {
+        threads.lazy.compactMap { $0 as? TSContactThread }.filter { ServiceId(uuidString: $0.contactUUID) == serviceId }
+    }
+
+    func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread] {
+        threads.lazy.compactMap { $0 as? TSContactThread }.filter { $0.contactPhoneNumber == phoneNumber }
     }
 
     func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
         threads.removeAll(where: { $0.uniqueId == thread.uniqueId })
+    }
+
+    func updateThread(_ thread: TSThread, tx: DBWriteTransaction) {
+        let threadIndex = threads.firstIndex(where: { $0.uniqueId == thread.uniqueId })!
+        threads[threadIndex] = thread
     }
 }
 

@@ -175,6 +175,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
                     transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(updateWithStoryViewMode(_:transaction:));
 
+#pragma mark - Merging
+
+- (void)mergeFrom:(TSThread *)otherThread;
+
 @end
 
 NS_ASSUME_NONNULL_END
