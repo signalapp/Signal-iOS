@@ -82,17 +82,13 @@ public class QRCodeScanViewController: OWSViewController {
 
     public weak var delegate: QRCodeScanDelegate?
 
-    private var scanner: QRCodeScanner?
+    private let delegateHasAcceptedScanResults = AtomicBool(false)
 
-    private let canDeliverResultsFlag = AtomicBool(false)
+    private var scanner: QRCodeScanner?
 
     public required init(appearance: Appearance) {
         self.appearance = appearance
         super.init()
-    }
-
-    deinit {
-        stopScanning()
     }
 
     public override var prefersStatusBarHidden: Bool {
@@ -196,17 +192,17 @@ public class QRCodeScanViewController: OWSViewController {
     private func startScanning() {
         AssertIsOnMainThread()
 
-        guard nil == scanner else {
+        guard
+            scanner == nil,
+            !delegateHasAcceptedScanResults.get()
+        else {
             return
         }
 
-        let couldEnable = canDeliverResultsFlag.tryToSetFlag()
-        owsAssertDebug(couldEnable)
-
-        view.removeAllSubviews()
-
         let scanner = QRCodeScanner(sampleBufferDelegate: self)
         self.scanner = scanner
+
+        view.removeAllSubviews()
 
         let previewView = scanner.previewView
         view.addSubview(previewView)
@@ -278,8 +274,7 @@ public class QRCodeScanViewController: OWSViewController {
     }()
 
     private func processClassification(_ request: VNRequest) {
-        guard canDeliverResultsFlag.get() else {
-            // Already complete.
+        guard !delegateHasAcceptedScanResults.get() else {
             return
         }
 
@@ -322,23 +317,27 @@ public class QRCodeScanViewController: OWSViewController {
             guard let barcodeDescriptor = barcode.barcodeDescriptor as? CIQRCodeDescriptor else {
                 return nil
             }
+
             let qrCodeCodewords = barcodeDescriptor.errorCorrectedPayload
             let qrCodeVersion = barcodeDescriptor.symbolVersion
             let qrCodeString: String? = barcode.payloadStringValue
-            let qrCodeData: Data? = QRCodePayload.parse(codewords: qrCodeCodewords,
-                                                        qrCodeVersion: qrCodeVersion)?.data
+            let qrCodeData: Data? = QRCodePayload.parse(
+                codewords: qrCodeCodewords,
+                qrCodeVersion: qrCodeVersion
+            )?.data
+
             guard qrCodeString != nil || qrCodeData != nil else {
                 return nil
             }
-            return QRCode(qrCodeCodewords: qrCodeCodewords,
-                          qrCodeVersion: qrCodeVersion,
-                          qrCodeString: qrCodeString,
-                          qrCodeData: qrCodeData)
+
+            return QRCode(
+                qrCodeCodewords: qrCodeCodewords,
+                qrCodeVersion: qrCodeVersion,
+                qrCodeString: qrCodeString,
+                qrCodeData: qrCodeData
+            )
         }
 
-        guard !qrCodes.isEmpty else {
-            return
-        }
         guard let qrCode = qrCodes.first else {
             return
         }
@@ -346,26 +345,26 @@ public class QRCodeScanViewController: OWSViewController {
         Logger.info("Scanned QR Code.")
 
         DispatchQueue.main.async { [weak self] in
-            guard let self = self,
-                  let delegate = self.delegate else {
+            guard
+                let self = self,
+                let delegate = self.delegate,
+                !self.delegateHasAcceptedScanResults.get()
+            else {
                 return
             }
 
-            let outcome = delegate.qrCodeScanViewScanned(self,
-                                                         qrCodeData: qrCode.qrCodeData,
-                                                         qrCodeString: qrCode.qrCodeString)
+            let outcome = delegate.qrCodeScanViewScanned(
+                self,
+                qrCodeData: qrCode.qrCodeData,
+                qrCodeString: qrCode.qrCodeString
+            )
+
             switch outcome {
             case .stopScanning:
-                guard self.canDeliverResultsFlag.tryToClearFlag() else {
-                    // Already complete.
-                    return
-                }
-
+                self.delegateHasAcceptedScanResults.set(true)
                 self.stopScanning()
 
-                // Vibrate
                 ImpactHapticFeedback.impactOccurred(style: .medium)
-
             case .continueScanning:
                 break
             }

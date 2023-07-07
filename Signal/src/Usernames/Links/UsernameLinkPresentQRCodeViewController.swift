@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalMessaging
 import SignalUI
 
-class UsernameLinkQRCodeViewController: OWSTableViewController2 {
+class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     private struct ColorStore {
         static let key = "color"
 
@@ -400,17 +400,6 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .done,
-            target: self,
-            action: #selector(didTapDone),
-            accessibilityIdentifier: "done"
-        )
-        navigationItem.title = OWSLocalizedString(
-            "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE",
-            comment: "A title for a view that allows you to view and interact with a QR code for your username link."
-        )
-
         buildTableContents()
         loadQRCodeAndReloadTable()
     }
@@ -456,14 +445,9 @@ class UsernameLinkQRCodeViewController: OWSTableViewController2 {
     private func reloadTableContents() {
         self.tableView.reloadData()
     }
-
-    @objc
-    private func didTapDone() {
-        dismiss(animated: true)
-    }
 }
 
-extension UsernameLinkQRCodeViewController: UsernameLinkQRCodeColorPickerDelegate {
+extension UsernameLinkPresentQRCodeViewController: UsernameLinkQRCodeColorPickerDelegate {
     func didFinalizeSelectedColor(color: UsernameLinkQRCodeColor) {
         guard let currentQRCode else {
             owsFail("How did we get here without a QR code?")

@@ -243,7 +243,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 "PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION",
                 comment: "Title for a menu action allowing users to view their username link QR code."
             ),
-            image: UIImage(imageLiteralResourceName: "qr_code-light"),
+            image: Theme.iconImage(.qrCode),
             handler: { [weak self] _ in
                 guard let self else { return }
 
@@ -312,14 +312,15 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     }
 
     private func presentUsernameLinkQRCode(username: String) {
-        let usernameLinkQRCodeViewController = UsernameLinkQRCodeViewController(
+        let usernameLinkContentController = UsernameLinkQRCodeContentController(
             db: DependenciesBridge.shared.db,
             kvStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
-            usernameLink: Usernames.UsernameLink(username: username)
+            usernameLink: Usernames.UsernameLink(username: username),
+            scanDelegate: self
         )
 
         presentFormSheet(
-            OWSNavigationController(rootViewController: usernameLinkQRCodeViewController),
+            OWSNavigationController(rootViewController: usernameLinkContentController),
             animated: true
         )
     }
@@ -643,5 +644,18 @@ extension ProfileSettingsViewController: UsernameSelectionDelegate {
         username = newValue
 
         updateTableContents()
+    }
+}
+
+extension ProfileSettingsViewController: UsernameLinkScanDelegate {
+    func usernameLinkScanned(_ usernameLink: Usernames.UsernameLink) {
+        guard let presentingViewController else {
+            return
+        }
+
+        presentingViewController.dismiss(animated: true) {
+            UsernameLinkOpener(link: usernameLink)
+                .open(fromViewController: presentingViewController)
+        }
     }
 }

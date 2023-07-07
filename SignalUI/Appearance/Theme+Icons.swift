@@ -67,6 +67,7 @@ public enum ThemeIcon: UInt {
     case chevronDown
     case refresh
     case official
+    case qrCode
 
     case buttonCamera
     case buttonMicrophone
@@ -296,6 +297,8 @@ public extension Theme {
             return "refresh"
         case .official:
             return isDarkThemeEnabled ? "official-dark" : "official"
+        case .qrCode:
+            return "qr_code-light"
 
             // Buttons (24 dp)
         case .buttonCamera:

@@ -7333,8 +7333,14 @@
 /* A title for a view that allows you to view and interact with a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Code";
 
+/* A title for a view that allows you to scan a username link QR code using the camera. */
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
 "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+
+/* Text providing instructions on how to use the username link QR code scanning. */
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
 "USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";

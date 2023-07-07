@@ -1373,8 +1373,10 @@
 		D9CAF74E2A09D2BD0049193A /* PniHelloWorldManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAF74C2A09D2AB0049193A /* PniHelloWorldManagerTest.swift */; };
 		D9CAF7502A0ACFF20049193A /* PniDistributionParameterBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */; };
 		D9CAF7532A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */; };
+		D9CAFAE42A538BDF00B32BDE /* UsernameLinkScanQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAFAE32A538BDF00B32BDE /* UsernameLinkScanQRCodeViewController.swift */; };
+		D9CAFAE62A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAFAE52A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift */; };
 		D9CD40622A155C4800545803 /* TSInfoMessage+UpdateMessagesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CD40612A155C4800545803 /* TSInfoMessage+UpdateMessagesTest.swift */; };
-		D9DCFDA52A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA42A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift */; };
+		D9DCFDA52A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */; };
 		D9DCFDA92A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA82A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift */; };
 		D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */; };
 		D9DCFDAE2A3BB25200C73C0B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */; };
@@ -3958,8 +3960,10 @@
 		D9CAF74C2A09D2AB0049193A /* PniHelloWorldManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniHelloWorldManagerTest.swift; sourceTree = "<group>"; };
 		D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniDistributionParameterBuilder.swift; sourceTree = "<group>"; };
 		D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniDistributionParameterBuilderTest.swift; sourceTree = "<group>"; };
+		D9CAFAE32A538BDF00B32BDE /* UsernameLinkScanQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkScanQRCodeViewController.swift; sourceTree = "<group>"; };
+		D9CAFAE52A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeContentController.swift; sourceTree = "<group>"; };
 		D9CD40612A155C4800545803 /* TSInfoMessage+UpdateMessagesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+UpdateMessagesTest.swift"; sourceTree = "<group>"; };
-		D9DCFDA42A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeViewController.swift; sourceTree = "<group>"; };
+		D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkPresentQRCodeViewController.swift; sourceTree = "<group>"; };
 		D9DCFDA82A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuPresentingTableViewCell.swift; sourceTree = "<group>"; };
 		D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHeaderButton.swift; sourceTree = "<group>"; };
 		D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
@@ -7887,9 +7891,11 @@
 			isa = PBXGroup;
 			children = (
 				D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */,
+				D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */,
 				D934279B2A4E43680062311B /* UsernameLinkQRCodeColor.swift */,
 				D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */,
-				D9DCFDA42A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift */,
+				D9CAFAE52A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift */,
+				D9CAFAE32A538BDF00B32BDE /* UsernameLinkScanQRCodeViewController.swift */,
 				D99840CD2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift */,
 			);
 			path = Links;
@@ -11862,10 +11868,12 @@
 				5033D47029DCACEF007FEADA /* UrlOpener.swift in Sources */,
 				C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */,
 				D9A3E22D2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift in Sources */,
+				D9DCFDA52A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift in Sources */,
 				D934279C2A4E43680062311B /* UsernameLinkQRCodeColor.swift in Sources */,
 				D9317FDC2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift in Sources */,
+				D9CAFAE62A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift in Sources */,
 				D9DCFDB02A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift in Sources */,
-				D9DCFDA52A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift in Sources */,
+				D9CAFAE42A538BDF00B32BDE /* UsernameLinkScanQRCodeViewController.swift in Sources */,
 				D99840CE2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift in Sources */,
 				D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */,
 				D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */,
