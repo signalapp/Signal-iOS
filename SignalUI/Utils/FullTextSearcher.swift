@@ -43,11 +43,11 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
     public let messageId: String?
     public let messageDate: Date?
 
-    public let snippet: NSAttributedString?
+    public let snippet: CVTextValue?
 
     private let sortKey: SortKey
 
-    init(thread: ThreadViewModel, sortKey: SortKey, messageId: String? = nil, messageDate: Date? = nil, snippet: NSAttributedString? = nil) {
+    init(thread: ThreadViewModel, sortKey: SortKey, messageId: String? = nil, messageDate: Date? = nil, snippet: CVTextValue? = nil) {
         self.thread = thread
         self.sortKey = sortKey
         self.messageId = messageId
@@ -681,7 +681,7 @@ public class FullTextSearcher: NSObject {
             )
         }
 
-        func appendMessage(_ message: TSMessage, snippet: NSAttributedString?) {
+        func appendMessage(_ message: TSMessage, snippet: CVTextValue?) {
             guard let thread = getThread(message.uniqueThreadId) else {
                 owsFailDebug("Missing thread: \(type(of: message))")
                 return
@@ -689,11 +689,13 @@ public class FullTextSearcher: NSObject {
 
             let threadViewModel = getThreadViewModel(thread)
             let sortKey = message.sortId
-            let searchResult = ConversationSearchResult(thread: threadViewModel,
-                                                        sortKey: sortKey,
-                                                        messageId: message.uniqueId,
-                                                        messageDate: NSDate.ows_date(withMillisecondsSince1970: message.timestamp),
-                                                        snippet: snippet)
+            let searchResult = ConversationSearchResult(
+                thread: threadViewModel,
+                sortKey: sortKey,
+                messageId: message.uniqueId,
+                messageDate: NSDate.ows_date(withMillisecondsSince1970: message.timestamp),
+                snippet: snippet
+            )
             guard messages[sortKey] == nil else { return }
             messages[sortKey] = searchResult
         }
@@ -705,18 +707,7 @@ public class FullTextSearcher: NSObject {
 
             getMentionedMessages(signalAccount.recipientAddress)
                 .forEach { message in
-                    appendMessage(
-                        message,
-                        snippet: message.conversationListPreviewText(transaction)
-                            .asAttributedStringForDisplay(
-                                config: HydratedMessageBody.DisplayConfiguration(
-                                    mention: .conversationListSearchResultSnippet,
-                                    style: .conversationListSearchResultSnippet,
-                                    searchRanges: nil
-                                ),
-                                isDarkThemeEnabled: Theme.isDarkThemeEnabled
-                            )
-                    )
+                    appendMessage(message, snippet: .messageBody(message.conversationListPreviewText(transaction)))
             }
         }
 
@@ -873,7 +864,7 @@ public class FullTextSearcher: NSObject {
                 stop = true
                 return
             }
-            let styledSnippet: NSAttributedString? = { () -> NSAttributedString? in
+            let styledSnippet: CVTextValue? = { () -> CVTextValue? in
                 guard let snippet else {
                     return nil
                 }
@@ -902,16 +893,8 @@ public class FullTextSearcher: NSObject {
                     }
                     mergedMessageBody = MessageBody(text: matchStyleApplied.string, ranges: .init(mentions: [:], styles: singleStyles))
                 }
-                return mergedMessageBody
-                    .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read))
-                    .asAttributedStringForDisplay(
-                        config: HydratedMessageBody.DisplayConfiguration(
-                            mention: .conversationListSearchResultSnippet,
-                            style: .conversationListSearchResultSnippet,
-                            searchRanges: nil
-                        ),
-                        isDarkThemeEnabled: Theme.isDarkThemeEnabled
-                    )
+                return .messageBody(mergedMessageBody
+                    .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read)))
             }()
             appendMessage(message, snippet: styledSnippet)
         }

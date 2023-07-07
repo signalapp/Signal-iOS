@@ -365,7 +365,7 @@ extension StoryReplyInputToolbar: BodyRangesTextViewDelegate {
     }
 
     public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
-        return .init(mention: .groupReply, style: .composingGroupReply, searchRanges: nil)
+        return .composingGroupStoryReply()
     }
 
     public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {

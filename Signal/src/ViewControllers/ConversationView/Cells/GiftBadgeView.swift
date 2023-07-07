@@ -78,8 +78,8 @@ class GiftBadgeView: ManualStackView {
 
         let textColor = state.conversationStyle.bubbleTextColor(isIncoming: state.isIncoming)
 
-        return CVLabelConfig(
-            text: text,
+        return CVLabelConfig.unstyledText(
+            text,
             font: .dynamicTypeBody,
             textColor: textColor,
             numberOfLines: 0
@@ -118,8 +118,8 @@ class GiftBadgeView: ManualStackView {
     private let timeRemainingLabel = CVLabel()
     private static func timeRemainingLabelConfig(for state: State) -> CVLabelConfig {
         let textColor = state.conversationStyle.bubbleSecondaryTextColor(isIncoming: state.isIncoming)
-        return CVLabelConfig(
-            text: state.timeRemainingText,
+        return CVLabelConfig.unstyledText(
+            state.timeRemainingText,
             font: .dynamicTypeSubheadline,
             textColor: textColor,
             numberOfLines: 0
@@ -150,10 +150,12 @@ class GiftBadgeView: ManualStackView {
     private let redeemButtonLabel = CVLabel()
     private static func redeemButtonLabelConfig(for state: State) -> CVLabelConfig {
         let font: UIFont = .dynamicTypeBody.semibold()
+        let color = self.redeemButtonTextColor(for: state)
         return CVLabelConfig(
-            attributedText: Self.redeemButtonText(for: state, font: font),
+            text: .attributedText(Self.redeemButtonText(for: state, font: font)),
+            displayConfig: .forUnstyledText(font: font, textColor: color),
             font: font,
-            textColor: Self.redeemButtonTextColor(for: state),
+            textColor: color,
             lineBreakMode: .byTruncatingTail,
             textAlignment: .center
         )
@@ -422,8 +424,8 @@ class GiftBadgeView: ManualStackView {
 
         let timeRemainingCandidates: [TimeInterval] = [59*kMinuteInterval, 23*kHourInterval, 59*kDayInterval]
         for timeRemaining in timeRemainingCandidates {
-            let candidateConfig = CVLabelConfig(
-                text: self.localizedDurationText(for: timeRemaining),
+            let candidateConfig = CVLabelConfig.unstyledText(
+                self.localizedDurationText(for: timeRemaining),
                 font: labelConfig.font,
                 textColor: labelConfig.textColor,
                 // Only consider the first line for these alternative values. This (a)

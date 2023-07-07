@@ -751,15 +751,10 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         }
         let config = editableBodyDelegate.editableMessageBodyDisplayConfig()
         let isDarkThemeEnabled = editableBodyDelegate.isEditableMessageBodyDarkThemeEnabled()
-        let baseAttributes: [NSAttributedString.Key: Any] = [
-            .font: config.mention.font,
-            .foregroundColor: config.mention.foregroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
-        ]
         let displayString = makeMessageBody()
             .hydrating(mentionHydrator: hydrator.hydrator, filterStringForDisplay: false)
             .asAttributedStringForDisplay(
                 config: config,
-                baseAttributes: baseAttributes,
                 isDarkThemeEnabled: isDarkThemeEnabled
             )
         self.displayString = (displayString as? NSMutableAttributedString) ?? NSMutableAttributedString(attributedString: displayString)

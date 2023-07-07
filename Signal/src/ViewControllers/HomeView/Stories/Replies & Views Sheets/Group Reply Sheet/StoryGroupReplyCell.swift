@@ -287,11 +287,27 @@ class StoryGroupReplyCell: UITableViewCell {
                     .alignment(.natural)
                 )
             } else if let displayableText = item.displayableText {
-                return displayableText.displayAttributedText.styled(
-                    with: .font(.dynamicTypeBodyClamped),
-                    .color(.ows_gray05),
-                    .alignment(displayableText.displayTextNaturalAlignment)
-                )
+                let paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.alignment = displayableText.displayTextNaturalAlignment
+                let baseAttrs: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.dynamicTypeBodyClamped,
+                    .foregroundColor: UIColor.ows_gray05,
+                    .paragraphStyle: paragraphStyle
+                ]
+                switch displayableText.displayTextValue {
+                case .text(let text):
+                    return NSAttributedString(string: text, attributes: baseAttrs)
+                case .attributedText(let text):
+                    let text = NSMutableAttributedString(attributedString: text)
+                    text.addAttributesToEntireString(baseAttrs)
+                    return text
+                case .messageBody(let messageBody):
+                    return messageBody.asAttributedStringForDisplay(
+                        config: .groupStoryReply(),
+                        textAlignment: displayableText.displayTextNaturalAlignment,
+                        isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                    )
+                }
             } else {
                 return nil
             }

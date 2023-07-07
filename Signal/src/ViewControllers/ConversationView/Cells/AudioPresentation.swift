@@ -113,8 +113,8 @@ extension AudioPresenter {
     func playbackTimeLabelConfig(text: String,
                                  isIncoming: Bool,
                                  conversationStyle: ConversationStyle) -> CVLabelConfig {
-        return CVLabelConfig(
-            text: text,
+        return CVLabelConfig.unstyledText(
+            text,
             font: UIFont.dynamicTypeCaption1Clamped,
             textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
         )

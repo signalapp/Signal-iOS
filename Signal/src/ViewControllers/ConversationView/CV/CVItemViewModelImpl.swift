@@ -177,7 +177,7 @@ extension CVItemViewModelImpl {
         guard let displayableBodyText = self.displayableBodyText else {
             return
         }
-        BodyRangesTextView.copyAttributedStringToPasteboard(displayableBodyText.fullAttributedText)
+        BodyRangesTextView.copyToPasteboard(displayableBodyText.fullTextValue)
     }
 
     var canShareMedia: Bool {

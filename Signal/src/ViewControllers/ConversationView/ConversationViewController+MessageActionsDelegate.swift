@@ -164,6 +164,8 @@ extension ConversationViewController: MessageActionsDelegate {
                 return AVSpeechUtterance(string: text)
             case .attributedText(let attributedText):
                 return AVSpeechUtterance(attributedString: attributedText)
+            case .messageBody(let messageBody):
+                return messageBody.utterance
             }
         }()
 

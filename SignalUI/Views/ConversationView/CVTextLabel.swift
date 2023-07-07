@@ -90,7 +90,8 @@ public class CVTextLabel: NSObject {
     // MARK: -
 
     public struct Config {
-        public let attributedString: NSAttributedString
+        public let text: CVTextValue
+        public let displayConfig: HydratedMessageBody.DisplayConfiguration
         public let font: UIFont
         public let textColor: UIColor
         public let selectionStyling: [NSAttributedString.Key: Any]
@@ -100,16 +101,20 @@ public class CVTextLabel: NSObject {
         public let cacheKey: String
         public let items: [Item]
 
-        public init(attributedString: NSAttributedString,
-                    font: UIFont,
-                    textColor: UIColor,
-                    selectionStyling: [NSAttributedString.Key: Any],
-                    textAlignment: NSTextAlignment,
-                    lineBreakMode: NSLineBreakMode,
-                    numberOfLines: Int = 0,
-                    cacheKey: String? = nil,
-                    items: [Item]) {
-            self.attributedString = attributedString
+        public init(
+            text: CVTextValue,
+            displayConfig: HydratedMessageBody.DisplayConfiguration,
+            font: UIFont,
+            textColor: UIColor,
+            selectionStyling: [NSAttributedString.Key: Any],
+            textAlignment: NSTextAlignment,
+            lineBreakMode: NSLineBreakMode,
+            numberOfLines: Int = 0,
+            cacheKey: String? = nil,
+            items: [Item]
+        ) {
+            self.text = text
+            self.displayConfig = displayConfig
             self.font = font
             self.textColor = textColor
             self.selectionStyling = selectionStyling
@@ -120,7 +125,7 @@ public class CVTextLabel: NSObject {
             if let cacheKey = cacheKey {
                 self.cacheKey = cacheKey
             } else {
-                self.cacheKey = "\(attributedString.string),\(font.fontName),\(font.pointSize),\(numberOfLines),\(lineBreakMode.rawValue),\(textAlignment.rawValue)"
+                self.cacheKey = "\(text.cacheKey),\(displayConfig.sizingCacheKey),\(font.fontName),\(font.pointSize),\(numberOfLines),\(lineBreakMode.rawValue),\(textAlignment.rawValue)"
             }
 
             self.items = items
@@ -169,7 +174,7 @@ public class CVTextLabel: NSObject {
     }
 
     public static func measureSize(config: Config, maxWidth: CGFloat) -> Measurement {
-        guard config.attributedString.length > 0 else {
+        guard config.text.isEmpty.negated else {
             return .empty
         }
         let attributedString = Label.formatAttributedString(config: config)
@@ -295,7 +300,7 @@ public class CVTextLabel: NSObject {
             textContainer.maximumNumberOfLines = config.numberOfLines
             textContainer.size = bounds.size
 
-            guard config.attributedString.length > 0 else {
+            guard config.text.isEmpty.negated else {
                 reset()
                 textStorage.setAttributedString(NSAttributedString())
                 setNeedsDisplay()
@@ -308,7 +313,19 @@ public class CVTextLabel: NSObject {
         }
 
         fileprivate static func formatAttributedString(config: Config) -> NSMutableAttributedString {
-            let attributedString = NSMutableAttributedString(attributedString: config.attributedString)
+            let attributedString: NSMutableAttributedString
+            switch config.text {
+            case .text(let text):
+                attributedString = NSMutableAttributedString(string: text)
+            case .attributedText(let attributedText):
+                attributedString = NSMutableAttributedString(attributedString: attributedText)
+            case .messageBody(let messageBody):
+                let attributedText = messageBody.asAttributedStringForDisplay(
+                    config: config.displayConfig,
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                )
+                attributedString = (attributedText as? NSMutableAttributedString) ?? NSMutableAttributedString(attributedString: attributedText)
+            }
 
             // The original attributed string may not have an overall font assigned.
             // Without it, measurement will not be correct. We assign the default font

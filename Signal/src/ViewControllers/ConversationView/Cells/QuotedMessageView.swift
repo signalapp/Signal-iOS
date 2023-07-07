@@ -34,14 +34,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
     }
 
-    private var stopObservingSpoilerReveal: (() -> Void)?
-
-    private var state: State? {
-        didSet {
-            stopObservingSpoilerReveal?()
-            self.stopObservingSpoilerReveal = nil
-        }
-    }
+    private var state: State?
 
     private weak var delegate: QuotedMessageViewDelegate?
 
@@ -86,33 +79,31 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     static func stateForPreview(
         quotedReplyModel: QuotedReplyModel,
         conversationStyle: ConversationStyle,
-        revealedSpoilerIdsSnapshot: Set<StyleIdType>,
         transaction: SDSAnyReadTransaction
     ) -> State {
 
-        let quotedAuthorName = contactsManager.displayName(for: quotedReplyModel.authorAddress,
-                                                           transaction: transaction)
+        let quotedAuthorName = contactsManager.displayName(
+            for: quotedReplyModel.authorAddress,
+            transaction: transaction
+        )
 
         var displayableQuotedText: DisplayableText?
         if let body = quotedReplyModel.body, !body.isEmpty {
             let messageBody = MessageBody(text: body, ranges: quotedReplyModel.bodyRanges ?? .empty)
             displayableQuotedText = DisplayableText.displayableText(
                 withMessageBody: messageBody,
-                displayConfig: HydratedMessageBody.DisplayConfiguration(
-                    mention: .quotedReply,
-                    style: .quotedReply(revealedSpoilerIds: revealedSpoilerIdsSnapshot),
-                    searchRanges: nil
-                ),
                 transaction: transaction
             )
         }
 
-        return State(quotedReplyModel: quotedReplyModel,
-                     displayableQuotedText: displayableQuotedText,
-                     conversationStyle: conversationStyle,
-                     isOutgoing: true,
-                     isForPreview: true,
-                     quotedAuthorName: quotedAuthorName)
+        return State(
+            quotedReplyModel: quotedReplyModel,
+            displayableQuotedText: displayableQuotedText,
+            conversationStyle: conversationStyle,
+            isOutgoing: true,
+            isForPreview: true,
+            quotedAuthorName: quotedAuthorName
+        )
     }
 
     // The Configurator can be used to:
@@ -121,7 +112,6 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     // * Measure this view _without_ creating its views.
     private struct Configurator {
         let state: State
-        let revealedSpoilerIds: Set<StyleIdType>
 
         var quotedReplyModel: QuotedReplyModel { state.quotedReplyModel }
         var displayableQuotedText: DisplayableText? { state.displayableQuotedText }
@@ -257,98 +247,109 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 text = authorName
             }
 
-            return CVLabelConfig(text: text,
-                                 font: quotedAuthorFont,
-                                 textColor: quotedAuthorColor,
-                                 numberOfLines: 1,
-                                 lineBreakMode: .byTruncatingTail)
+            return CVLabelConfig.unstyledText(
+                text,
+                font: quotedAuthorFont,
+                textColor: quotedAuthorColor,
+                numberOfLines: 1,
+                lineBreakMode: .byTruncatingTail
+            )
         }
 
         var hasQuotedText: Bool {
             if let displayableQuotedText = self.displayableQuotedText,
-               !displayableQuotedText.displayAttributedText.isEmpty {
+               !displayableQuotedText.displayTextValue.isEmpty {
                 return true
             } else {
                 return false
             }
         }
         var quotedTextLabelConfig: CVLabelConfig {
-            let attributedText: NSAttributedString
+            let labelText: CVTextValue
             var textAlignment: NSTextAlignment?
 
-            if let displayableQuotedText = self.displayableQuotedText,
-               !displayableQuotedText.displayAttributedText.isEmpty {
-                let displayAttributedText = displayableQuotedText.displayAttributedText
-                let mutableText = NSMutableAttributedString(attributedString: displayAttributedText)
+            let displayTextValue = self.displayableQuotedText?.displayTextValue.nilIfEmpty
+
+            switch displayTextValue {
+            case .text(let text):
+                labelText = .text(text)
+                textAlignment = text.naturalTextAlignment
+            case .attributedText(let attributedText):
+                let mutableText = NSMutableAttributedString(attributedString: attributedText)
                 mutableText.addAttributesToEntireString([
                     .font: quotedTextFont,
                     .foregroundColor: quotedTextColor
                 ])
-                attributedText = RecoveredHydratedMessageBody.recover(from: mutableText).reapplyAttributes(
-                    config: HydratedMessageBody.DisplayConfiguration(
-                        mention: MentionDisplayConfiguration(
-                            font: quotedTextFont,
-                            foregroundColor: .fixed(quotedTextColor),
-                            backgroundColor: nil
+                labelText = .attributedText(mutableText)
+                textAlignment = attributedText.string.naturalTextAlignment
+            case .messageBody(let messageBody):
+                labelText = .messageBody(messageBody)
+                textAlignment = messageBody.naturalTextAlignment
+            case .none:
+                if let fileTypeForSnippet = self.fileTypeForSnippet {
+                    labelText = .attributedText(NSAttributedString(
+                        string: fileTypeForSnippet,
+                        attributes: [
+                            .font: fileTypeFont,
+                            .foregroundColor: fileTypeTextColor
+                        ]
+                    ))
+                } else if let sourceFilename = quotedReplyModel.sourceFilename?.filterStringForDisplay() {
+                    labelText = .attributedText(NSAttributedString(
+                        string: sourceFilename,
+                        attributes: [
+                            .font: filenameFont,
+                            .foregroundColor: filenameTextColor
+                        ]
+                    ))
+                } else if self.quotedReplyModel.isGiftBadge {
+                    labelText = .attributedText(NSAttributedString(
+                        string: OWSLocalizedString(
+                            "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY",
+                            comment: "Shown when you're replying to a donation message."
                         ),
-                        style: StyleDisplayConfiguration(
-                            baseFont: quotedTextFont,
-                            textColor: .fixed(quotedTextColor),
-                            revealAllIds: false,
-                            revealedIds: revealedSpoilerIds
-                        ),
-                        searchRanges: nil
-                    ),
-                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
-                )
-                textAlignment = displayableQuotedText.displayTextNaturalAlignment
-            } else if let fileTypeForSnippet = self.fileTypeForSnippet {
-                attributedText = NSAttributedString(string: fileTypeForSnippet,
-                                                    attributes: [
-                                                        .font: fileTypeFont,
-                                                        .foregroundColor: fileTypeTextColor
-                                                    ])
-            } else if let sourceFilename = quotedReplyModel.sourceFilename?.filterStringForDisplay() {
-                attributedText = NSAttributedString(string: sourceFilename,
-                                                    attributes: [
-                                                        .font: filenameFont,
-                                                        .foregroundColor: filenameTextColor
-                                                    ])
-            } else if self.quotedReplyModel.isGiftBadge {
-                attributedText = NSAttributedString(
-                    string: OWSLocalizedString(
-                        "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY",
-                        comment: "Shown when you're replying to a donation message."
-                    ),
-                    // This appears in the same context as fileType, so use the same font/color.
-                    attributes: [.font: self.fileTypeFont, .foregroundColor: self.fileTypeTextColor]
-                )
-            } else {
-                let string = OWSLocalizedString("QUOTED_REPLY_TYPE_ATTACHMENT",
-                                               comment: "Indicates this message is a quoted reply to an attachment of unknown type.")
-                attributedText = NSAttributedString(string: string,
-                                                    attributes: [
-                                                        .font: fileTypeFont,
-                                                        .foregroundColor: fileTypeTextColor
-                                                    ])
+                        // This appears in the same context as fileType, so use the same font/color.
+                        attributes: [.font: self.fileTypeFont, .foregroundColor: self.fileTypeTextColor]
+                    ))
+                } else {
+                    let string = OWSLocalizedString("QUOTED_REPLY_TYPE_ATTACHMENT",
+                                                    comment: "Indicates this message is a quoted reply to an attachment of unknown type.")
+                    labelText = .attributedText(NSAttributedString(
+                        string: string,
+                        attributes: [
+                            .font: fileTypeFont,
+                            .foregroundColor: fileTypeTextColor
+                        ]
+                    ))
+                }
             }
 
-            return CVLabelConfig(attributedText: attributedText,
-                                 font: quotedTextFont,
-                                 textColor: quotedTextColor,
-                                 numberOfLines: isForPreview || hasQuotedThumbnail ? 1 : 2,
-                                 lineBreakMode: .byTruncatingTail,
-                                 textAlignment: textAlignment)
+            let displayConfig = HydratedMessageBody.DisplayConfiguration.quotedReply(
+                font: quotedTextFont,
+                textColor: .fixed(quotedTextColor)
+            )
+
+            return CVLabelConfig(
+                text: labelText,
+                displayConfig: displayConfig,
+                font: quotedTextFont,
+                textColor: quotedTextColor,
+                numberOfLines: isForPreview || hasQuotedThumbnail ? 1 : 2,
+                lineBreakMode: .byTruncatingTail,
+                textAlignment: textAlignment
+            )
         }
 
         var quoteContentSourceLabelConfig: CVLabelConfig {
             let text = OWSLocalizedString("QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
                                          comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender.")
-            return CVLabelConfig(text: text,
-                                 font: UIFont.dynamicTypeFootnote,
-                                 textColor: Theme.lightThemePrimaryColor,
-                                 numberOfLines: 0,
-                                 lineBreakMode: .byWordWrapping)
+            return CVLabelConfig.unstyledText(
+                text,
+                font: UIFont.dynamicTypeFootnote,
+                textColor: Theme.lightThemePrimaryColor,
+                numberOfLines: 0,
+                lineBreakMode: .byWordWrapping
+            )
         }
 
         var quoteReactionHeaderLabelConfig: CVLabelConfig {
@@ -362,15 +363,21 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 text = String(format: formatText, quotedAuthorName)
             }
 
-            return CVLabelConfig(text: text,
-                                 font: UIFont.dynamicTypeFootnote,
-                                 textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming))
+            return CVLabelConfig.unstyledText(
+                text,
+                font: UIFont.dynamicTypeFootnote,
+                textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
+            )
         }
 
         var quoteReactionLabelConfig: CVLabelConfig {
-            return CVLabelConfig(attributedText: (quotedReplyModel.reactionEmoji ?? "").styled(with: .lineHeightMultiple(0.6)),
-                                 font: UIFont.systemFont(ofSize: 28),
-                                 textColor: quotedTextColor)
+            let font = UIFont.systemFont(ofSize: 28)
+            return CVLabelConfig(
+                text: .attributedText((quotedReplyModel.reactionEmoji ?? "").styled(with: .lineHeightMultiple(0.6))),
+                displayConfig: .forUnstyledText(font: font, textColor: quotedTextColor),
+                font: font,
+                textColor: quotedTextColor
+            )
         }
 
         var fileTypeForSnippet: String? {
@@ -458,21 +465,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         self.state = state
         self.delegate = delegate
 
-        let spoilerReveal = componentDelegate.spoilerState.revealState
-        let quotedInteractionIdentifier = state.quotedInteractionIdentifier
-        spoilerReveal.observeChanges(
-            for: quotedInteractionIdentifier,
-            observer: self
-        )
-        self.stopObservingSpoilerReveal = { [weak self, weak spoilerReveal] in
-            guard let self, let spoilerReveal else { return }
-            spoilerReveal.removeObserver(for: quotedInteractionIdentifier, observer: self)
-        }
-
-        let configurator = Configurator(
-            state: state,
-            revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(interactionIdentifier: quotedInteractionIdentifier)
-        )
+        let configurator = Configurator(state: state)
         let conversationStyle = configurator.conversationStyle
         let quotedReplyModel = configurator.quotedReplyModel
 
@@ -734,10 +727,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                maxWidth: CGFloat,
                                measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
 
-        let configurator = Configurator(
-            state: state,
-            revealedSpoilerIds: Set() /* spoilers don't change measured size, ok to ignore them */
-        )
+        let configurator = Configurator(state: state)
 
         let outerStackConfig = configurator.outerStackConfig
         let hStackConfig = configurator.hStackConfig
@@ -910,20 +900,5 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         chatColorView.removeFromSuperview()
         tintView.reset()
         tintView.removeFromSuperview()
-    }
-}
-
-extension QuotedMessageView: SpoilerRevealStateObserver {
-    public func didUpdateRevealedSpoilers(_ spoilerReveal: SpoilerRevealState) {
-        guard let state else {
-            return
-        }
-        let configurator = Configurator(
-            state: state,
-            revealedSpoilerIds: spoilerReveal.revealedSpoilerIds(interactionIdentifier: state.quotedInteractionIdentifier)
-        )
-        let quotedTextLabelConfig = configurator.quotedTextLabelConfig
-        // Note: measurement doesn't change when spoiler state changes.
-        quotedTextLabelConfig.applyForRendering(label: quotedTextLabel)
     }
 }

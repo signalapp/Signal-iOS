@@ -195,7 +195,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
     }
 
     public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
-        return .init(mention: .composing, style: .composing, searchRanges: nil)
+        return .composing()
     }
 
     public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {

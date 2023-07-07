@@ -528,7 +528,16 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 XCTFail("Missing snippet.", file: file, line: line)
                 continue
             }
-            XCTAssertTrue(snippet.string.lowercased().contains(expectedSnippetContent.lowercased()), file: file, line: line)
+            let snippetString: String
+            switch snippet {
+            case .text(let string):
+                snippetString = string
+            case .attributedText(let nSAttributedString):
+                snippetString = nSAttributedString.string
+            case .messageBody(let hydratedMessageBody):
+                snippetString = hydratedMessageBody.asPlaintext()
+            }
+            XCTAssertTrue(snippetString.lowercased().contains(expectedSnippetContent.lowercased()), file: file, line: line)
         }
     }
 

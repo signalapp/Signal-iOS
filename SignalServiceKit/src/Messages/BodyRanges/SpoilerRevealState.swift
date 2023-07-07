@@ -33,10 +33,6 @@ public struct InteractionSnapshotIdentifier: Equatable, Hashable {
 
 // MARK: -
 
-public protocol SpoilerRevealStateObserver: NSObjectProtocol {
-    func didUpdateRevealedSpoilers(_ spoilerReveal: SpoilerRevealState)
-}
-
 @objc
 public class SpoilerRevealState: NSObject {
     private var revealedSpoilerIdsByMessage = [InteractionSnapshotIdentifier: Set<StyleIdType>]()
@@ -56,36 +52,6 @@ public class SpoilerRevealState: NSObject {
         var revealedIds = revealedSpoilerIdsByMessage[interactionIdentifier] ?? Set()
         revealedIds.insert(id)
         revealedSpoilerIdsByMessage[interactionIdentifier] = revealedIds
-        observers[interactionIdentifier]?.forEach {
-            $0.value?.didUpdateRevealedSpoilers(self)
-        }
-    }
-
-    private var observers = [InteractionSnapshotIdentifier: [Weak<SpoilerRevealStateObserver>]]()
-
-    public func observeChanges(
-        for interactionIdentifier: InteractionSnapshotIdentifier,
-        observer: SpoilerRevealStateObserver
-    ) {
-        var observers = observers[interactionIdentifier] ?? []
-        guard !observers.contains(where: {
-            $0.value === observer
-        }) else {
-            return
-        }
-        observers.append(Weak(value: observer))
-        self.observers[interactionIdentifier] = observers
-    }
-
-    public func removeObserver(
-        for interactionIdentifier: InteractionSnapshotIdentifier,
-        observer: SpoilerRevealStateObserver
-    ) {
-        var observers = observers[interactionIdentifier] ?? []
-        observers.removeAll(where: {
-            $0.value === observer
-        })
-        self.observers[interactionIdentifier] = observers
     }
 
     public typealias Snapshot = [InteractionSnapshotIdentifier: Set<StyleIdType>]

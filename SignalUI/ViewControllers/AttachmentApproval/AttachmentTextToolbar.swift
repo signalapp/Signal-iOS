@@ -346,7 +346,7 @@ extension AttachmentTextToolbar: BodyRangesTextViewDelegate {
     }
 
     public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
-        return .init(mention: .composingAttachment, style: .composingAttachment, searchRanges: nil)
+        return .composingAttachment()
     }
 
     public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {

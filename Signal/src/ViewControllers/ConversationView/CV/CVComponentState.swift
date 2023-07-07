@@ -102,7 +102,6 @@ public class CVComponentState: Equatable, Dependencies {
         let viewState: QuotedMessageView.State
 
         var quotedReplyModel: QuotedReplyModel { viewState.quotedReplyModel }
-        var displayableQuotedText: DisplayableText? { viewState.displayableQuotedText }
     }
     let quotedReply: QuotedReply?
 
@@ -1066,12 +1065,13 @@ fileprivate extension CVComponentState.Builder {
                 return []
             }
 
-            var caption: String?
-            if let rawCaption = attachment.caption {
-                caption = CVComponentState.displayableCaption(text: rawCaption,
-                                                              attachmentId: attachment.uniqueId,
-                                                              transaction: transaction).displayTextValue.stringValue
-            }
+            let hasCaption = attachment.caption.map {
+                return CVComponentState.displayableCaption(
+                    text: $0,
+                    attachmentId: attachment.uniqueId,
+                    transaction: transaction
+                ).fullTextValue.isEmpty.negated
+            } ?? false
 
             guard let attachmentStream = attachment as? TSAttachmentStream else {
                 var mediaSize: CGSize = .zero
@@ -1083,7 +1083,7 @@ fileprivate extension CVComponentState.Builder {
                 }
                 mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                         attachmentStream: nil,
-                                                        caption: caption,
+                                                        hasCaption: hasCaption,
                                                         mediaSize: mediaSize,
                                                         isBroken: false))
                 continue
@@ -1093,7 +1093,7 @@ fileprivate extension CVComponentState.Builder {
                 Logger.warn("Filtering invalid media.")
                 mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                         attachmentStream: nil,
-                                                        caption: caption,
+                                                        hasCaption: hasCaption,
                                                         mediaSize: .zero,
                                                         isBroken: true))
                 continue
@@ -1103,7 +1103,7 @@ fileprivate extension CVComponentState.Builder {
                 Logger.warn("Filtering media with invalid size.")
                 mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                         attachmentStream: nil,
-                                                        caption: caption,
+                                                        hasCaption: hasCaption,
                                                         mediaSize: .zero,
                                                         isBroken: true))
                 continue
@@ -1111,7 +1111,7 @@ fileprivate extension CVComponentState.Builder {
 
             mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                     attachmentStream: attachmentStream,
-                                                    caption: caption,
+                                                    hasCaption: hasCaption,
                                                     mediaSize: mediaSize,
                                                     isBroken: false))
         }
@@ -1216,17 +1216,8 @@ public extension CVComponentState {
                                     ranges: MessageBodyRanges?,
                                     interaction: TSInteraction,
                                     transaction: SDSAnyReadTransaction) -> DisplayableText {
-        let isOutgoingMessage = interaction is TSOutgoingMessage
         return DisplayableText.displayableText(
             withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
-            displayConfig: HydratedMessageBody.DisplayConfiguration(
-                mention: isOutgoingMessage ? .outgoingMessageBubble : .incomingMessageBubble,
-                style: .forMessageBubble(
-                    isIncoming: !isOutgoingMessage,
-                    revealedSpoilerIds: Set()
-                ),
-                searchRanges: nil
-            ),
             transaction: transaction)
     }
 
@@ -1253,17 +1244,8 @@ public extension CVComponentState {
             }
         }()
 
-        let isOutgoingMessage = interaction is TSOutgoingMessage
         return DisplayableText.displayableText(
             withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
-            displayConfig: HydratedMessageBody.DisplayConfiguration(
-                mention: isOutgoingMessage ? .outgoingMessageBubble : .incomingMessageBubble,
-                style: .forMessageBubble(
-                    isIncoming: !isOutgoingMessage,
-                    revealedSpoilerIds: Set()
-                ),
-                searchRanges: nil
-            ),
             transaction: transaction)
     }
 }
@@ -1281,11 +1263,6 @@ fileprivate extension CVComponentState {
     ) -> DisplayableText {
         return DisplayableText.displayableText(
             withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
-            displayConfig: HydratedMessageBody.DisplayConfiguration(
-                mention: .quotedReply,
-                style: .quotedReply(revealedSpoilerIds: revealedSpoilerIdsSnapshot),
-                searchRanges: nil
-            ),
             transaction: transaction
         )
     }
@@ -1295,14 +1272,6 @@ fileprivate extension CVComponentState {
                                    transaction: SDSAnyReadTransaction) -> DisplayableText {
         return DisplayableText.displayableText(
             withMessageBody: MessageBody(text: text, ranges: .empty),
-            displayConfig: HydratedMessageBody.DisplayConfiguration(
-                mention: .incomingMessageBubble,
-                style: .forMessageBubble(
-                    isIncoming: true,
-                    revealedSpoilerIds: Set()
-                ),
-                searchRanges: nil
-            ),
             transaction: transaction
         )
     }

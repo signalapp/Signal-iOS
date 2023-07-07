@@ -141,7 +141,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         // Configuring the text label should happen in both reuse and non-reuse
         // scenarios
         textLabel.configureForRendering(config: textLabelConfig)
-        textLabel.view.accessibilityLabel = textLabelConfig.attributedString.string
+        textLabel.view.accessibilityLabel = textLabelConfig.text.accessibilityDescription
 
         if isReusing {
             innerVStack.configureForReuse(config: innerVStackConfig,
@@ -328,7 +328,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         ]
 
         return CVTextLabel.Config(
-            attributedString: systemMessage.title,
+            text: .attributedText(systemMessage.title),
+            displayConfig: .forUnstyledText(font: Self.textLabelFont, textColor: systemMessage.titleColor),
             font: Self.textLabelFont,
             textColor: systemMessage.titleColor,
             selectionStyling: selectionStyling,
@@ -345,10 +346,12 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         } else {
             textColor = Theme.conversationButtonTextColor
         }
-        return CVLabelConfig(text: action.title,
-                             font: UIFont.dynamicTypeFootnote.semibold(),
-                             textColor: textColor,
-                             textAlignment: .center)
+        return CVLabelConfig.unstyledText(
+            action.title,
+            font: UIFont.dynamicTypeFootnote.semibold(),
+            textColor: textColor,
+            textAlignment: .center
+        )
     }
 
     private var buttonContentEdgeInsets: UIEdgeInsets {

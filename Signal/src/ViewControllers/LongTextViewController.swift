@@ -28,7 +28,6 @@ public class LongTextViewController: OWSViewController {
     private var linkItems: [CVTextLabel.Item]?
 
     var displayableText: DisplayableText? { itemViewModel.displayableBodyText }
-    var fullAttributedText: NSAttributedString { displayableText?.fullAttributedText ?? NSAttributedString() }
 
     // MARK: Initializers
 
@@ -73,25 +72,27 @@ public class LongTextViewController: OWSViewController {
         footer.tintColor = Theme.primaryIconColor
 
         if let displayableText = displayableText {
-            var mutableText = NSMutableAttributedString(attributedString: fullAttributedText)
-            mutableText.addAttributes(
-                [.font: UIFont.dynamicTypeBody, .foregroundColor: Theme.primaryTextColor],
-                range: mutableText.entireRange
-            )
+            let baseAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.dynamicTypeBody,
+                .foregroundColor: Theme.primaryTextColor
+            ]
 
-            // Mentions have a custom style on the long-text view
-            // that differs from the message, so we re-color them here.
-            let recoveredMessageBody = RecoveredHydratedMessageBody.recover(from: mutableText)
-            mutableText = recoveredMessageBody.reapplyAttributes(
-                config: HydratedMessageBody.DisplayConfiguration(
-                    mention: .longMessageView,
-                    style: .longTextView(revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
+            let mutableText: NSMutableAttributedString
+            switch displayableText.fullTextValue {
+            case .text(let text):
+                mutableText = NSMutableAttributedString(string: text, attributes: baseAttrs)
+            case .attributedText(let text):
+                mutableText = NSMutableAttributedString(attributedString: text)
+                mutableText.addAttributesToEntireString(baseAttrs)
+            case .messageBody(let messageBody):
+                let attrString = messageBody.asAttributedStringForDisplay(
+                    config: .longMessageView(revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
                         interactionIdentifier: .fromInteraction(itemViewModel.interaction))
                     ),
-                    searchRanges: nil
-                ),
-                isDarkThemeEnabled: Theme.isDarkThemeEnabled
-            )
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                )
+                mutableText = (attrString as? NSMutableAttributedString) ?? NSMutableAttributedString(attributedString: attrString)
+            }
 
             let hasPendingMessageRequest = databaseStorage.read { transaction in
                 itemViewModel.thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
@@ -103,8 +104,7 @@ public class LongTextViewController: OWSViewController {
             )
 
             let items = CVComponentBodyText.detectItems(
-                text: mutableText.string,
-                attributedString: mutableText,
+                text: displayableText,
                 hasPendingMessageRequest: hasPendingMessageRequest,
                 shouldAllowLinkification: displayableText.shouldAllowLinkification,
                 textWasTruncated: false,
@@ -114,22 +114,13 @@ public class LongTextViewController: OWSViewController {
                 interactionUniqueId: itemViewModel.interaction.uniqueId,
                 interactionIdentifier: .fromInteraction(itemViewModel.interaction)
             )
+
             CVComponentBodyText.linkifyData(
                 attributedText: mutableText,
                 linkifyStyle: .linkAttribute,
                 items: items
             )
-            messageTextView.attributedText = RecoveredHydratedMessageBody.recover(from: mutableText)
-                .reapplyAttributes(
-                    config: HydratedMessageBody.DisplayConfiguration(
-                        mention: .longMessageView,
-                        style: .longTextView(revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
-                            interactionIdentifier: .fromInteraction(itemViewModel.interaction))
-                        ),
-                        searchRanges: nil
-                    ),
-                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
-                )
+            messageTextView.attributedText = mutableText
             messageTextView.textAlignment = displayableText.fullTextNaturalAlignment
             self.linkItems = items
 
@@ -223,7 +214,19 @@ public class LongTextViewController: OWSViewController {
 
     @objc
     private func shareButtonPressed(_ sender: UIBarButtonItem) {
-        AttachmentSharing.showShareUI(for: fullAttributedText.string, sender: sender)
+        guard let displayableText else {
+            return
+        }
+        let shareText: String
+        switch displayableText.fullTextValue {
+        case .text(let text):
+            shareText = text
+        case .attributedText(let string):
+            shareText = string.string
+        case .messageBody(let messageBody):
+            shareText = messageBody.asPlaintext()
+        }
+        AttachmentSharing.showShareUI(for: shareText, sender: sender)
     }
 
     @objc

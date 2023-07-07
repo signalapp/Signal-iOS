@@ -115,13 +115,17 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
     }
 
     private var titleLabelConfig: CVLabelConfig {
-        CVLabelConfig(text: OWSLocalizedString("MESSAGES_VIEW_UNREAD_INDICATOR",
-                                              comment: "Indicator that separates read from unread messages."),
-                      font: UIFont.dynamicTypeFootnote.semibold(),
-                      textColor: Theme.primaryTextColor,
-                      numberOfLines: 0,
-                      lineBreakMode: .byTruncatingTail,
-                      textAlignment: .center)
+        CVLabelConfig.unstyledText(
+            OWSLocalizedString(
+                "MESSAGES_VIEW_UNREAD_INDICATOR",
+                comment: "Indicator that separates read from unread messages."
+            ),
+            font: UIFont.dynamicTypeFootnote.semibold(),
+            textColor: Theme.primaryTextColor,
+            numberOfLines: 0,
+            lineBreakMode: .byTruncatingTail,
+            textAlignment: .center
+        )
     }
 
     private var outerStackConfig: CVStackViewConfig {

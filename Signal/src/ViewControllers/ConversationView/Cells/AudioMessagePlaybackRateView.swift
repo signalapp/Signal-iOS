@@ -353,8 +353,8 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
             font = font.withSize(Constants.maxFontSize)
         }
         font = font.semibold()
-        return CVLabelConfig(
-            text: text,
+        return CVLabelConfig.unstyledText(
+            text,
             font: font,
             textColor: color,
             textAlignment: .right

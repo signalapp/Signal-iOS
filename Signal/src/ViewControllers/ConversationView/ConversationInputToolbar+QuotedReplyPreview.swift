@@ -10,7 +10,7 @@ protocol QuotedReplyPreviewDelegate: AnyObject {
     func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview)
 }
 
-class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate, SpoilerRevealStateObserver {
+class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate {
 
     public weak var delegate: QuotedReplyPreviewDelegate?
 
@@ -45,19 +45,7 @@ class QuotedReplyPreview: UIView, QuotedMessageSnippetViewDelegate, SpoilerRevea
 
         updateContents()
 
-        spoilerState.revealState.observeChanges(
-            for: InteractionSnapshotIdentifier(
-                timestamp: quotedReply.timestamp,
-                authorUuid: quotedReply.authorAddress.uuidString
-            ),
-            observer: self
-        )
-
         NotificationCenter.default.addObserver(self, selector: #selector(contentSizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
-    }
-
-    func didUpdateRevealedSpoilers(_ spoilerReveal: SpoilerRevealState) {
-       updateContents()
     }
 
     private let draftMarginTop: CGFloat = 6
@@ -186,8 +174,8 @@ private class QuotedMessageSnippetView: UIView {
 
     private lazy var quotedTextLabel: UILabel = {
         let attributedText: NSAttributedString
-        if let displayableQuotedText, !displayableQuotedText.displayAttributedText.isEmpty {
-            attributedText = restyleDisplayableQuotedText(
+        if let displayableQuotedText, !displayableQuotedText.displayTextValue.isEmpty {
+            attributedText = styleDisplayableQuotedText(
                 displayableQuotedText,
                 font: Layout.quotedTextFont,
                 textColor: conversationStyle.quotedReplyTextColor(),
@@ -531,56 +519,36 @@ private class QuotedMessageSnippetView: UIView {
             let messageBody = MessageBody(text: text, ranges: quotedMessage.bodyRanges ?? .empty)
             return DisplayableText.displayableText(
                 withMessageBody: messageBody,
-                displayConfig: HydratedMessageBody.DisplayConfiguration(
-                    mention: .quotedReply,
-                    style: .quotedReply(revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
-                        interactionIdentifier: InteractionSnapshotIdentifier(
-                            timestamp: quotedMessage.timestamp,
-                            authorUuid: quotedMessage.authorAddress.uuidString
-                        )
-                    )),
-                    searchRanges: nil
-                ),
                 transaction: tx
             )
         }
     }
 
-    private func restyleDisplayableQuotedText(
+    private func styleDisplayableQuotedText(
         _ displayableQuotedText: DisplayableText,
         font: UIFont,
         textColor: UIColor,
         quotedReplyModel: QuotedReplyModel,
         spoilerState: SpoilerRenderState
     ) -> NSAttributedString {
-        let mutableCopy = NSMutableAttributedString(attributedString: displayableQuotedText.displayAttributedText)
-        mutableCopy.addAttributesToEntireString([
+        let baseAttributes: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: textColor
-        ])
-        return RecoveredHydratedMessageBody
-            .recover(from: mutableCopy)
-            .reapplyAttributes(
-                config: HydratedMessageBody.DisplayConfiguration(
-                    mention: MentionDisplayConfiguration(
-                        font: font,
-                        foregroundColor: .fixed(textColor),
-                        backgroundColor: nil
-                    ),
-                    style: StyleDisplayConfiguration(
-                        baseFont: font,
-                        textColor: .fixed(textColor),
-                        revealAllIds: false,
-                        revealedIds: spoilerState.revealState.revealedSpoilerIds(
-                            interactionIdentifier: InteractionSnapshotIdentifier(
-                                timestamp: quotedReplyModel.timestamp,
-                                authorUuid: quotedReplyModel.authorAddress.uuidString
-                            )
-                        )
-                    ),
-                    searchRanges: nil
-                ),
+        ]
+        switch displayableQuotedText.displayTextValue {
+        case .text(let text):
+            return NSAttributedString(string: text, attributes: baseAttributes)
+        case .attributedText(let text):
+            let mutable = NSMutableAttributedString(attributedString: text)
+            mutable.addAttributesToEntireString(baseAttributes)
+            return mutable
+        case .messageBody(let messageBody):
+            return messageBody.asAttributedStringForDisplay(
+                config: .quotedReply(
+                    font: font,
+                    textColor: .fixed(textColor)),
                 isDarkThemeEnabled: Theme.isDarkThemeEnabled
             )
+        }
     }
 }

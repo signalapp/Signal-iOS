@@ -331,11 +331,13 @@ extension LinkPreviewViewAdapter {
         guard let text = state.title else {
             return nil
         }
-        return CVLabelConfig(text: text,
-                             font: UIFont.dynamicTypeSubheadline.semibold(),
-                             textColor: Theme.primaryTextColor,
-                             numberOfLines: LinkPreviewView.sentTitleLineCount,
-                             lineBreakMode: .byTruncatingTail)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: UIFont.dynamicTypeSubheadline.semibold(),
+            textColor: Theme.primaryTextColor,
+            numberOfLines: LinkPreviewView.sentTitleLineCount,
+            lineBreakMode: .byTruncatingTail
+        )
     }
 
     func sentDescriptionLabel(state: LinkPreviewState) -> UILabel? {
@@ -349,11 +351,13 @@ extension LinkPreviewViewAdapter {
 
     func sentDescriptionLabelConfig(state: LinkPreviewState) -> CVLabelConfig? {
         guard let text = state.previewDescription else { return nil }
-        return CVLabelConfig(text: text,
-                             font: UIFont.dynamicTypeSubheadline,
-                             textColor: Theme.primaryTextColor,
-                             numberOfLines: LinkPreviewView.sentDescriptionLineCount,
-                             lineBreakMode: .byTruncatingTail)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: UIFont.dynamicTypeSubheadline,
+            textColor: Theme.primaryTextColor,
+            numberOfLines: LinkPreviewView.sentDescriptionLineCount,
+            lineBreakMode: .byTruncatingTail
+        )
     }
 
     func sentDomainLabel(state: LinkPreviewState) -> UILabel {
@@ -372,10 +376,12 @@ extension LinkPreviewViewAdapter {
         if let date = state.date {
             labelText.append(" ⋅ \(LinkPreviewView.dateFormatter.string(from: date))")
         }
-        return CVLabelConfig(text: labelText,
-                             font: UIFont.dynamicTypeCaption1,
-                             textColor: Theme.secondaryTextAndIconColor,
-                             lineBreakMode: .byTruncatingTail)
+        return CVLabelConfig.unstyledText(
+            labelText,
+            font: UIFont.dynamicTypeCaption1,
+            textColor: Theme.secondaryTextAndIconColor,
+            lineBreakMode: .byTruncatingTail
+        )
     }
 
     func configureSentTextStack(linkPreviewView: LinkPreviewView,
@@ -474,20 +480,24 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         guard let text = state.title?.nilIfEmpty else {
             return nil
         }
-        return CVLabelConfig(text: text,
-                             font: .dynamicTypeBody,
-                             textColor: Theme.primaryTextColor,
-                             lineBreakMode: .byTruncatingTail)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: .dynamicTypeBody,
+            textColor: Theme.primaryTextColor,
+            lineBreakMode: .byTruncatingTail
+        )
     }
 
     var descriptionLabelConfig: CVLabelConfig? {
         guard let text = state.previewDescription?.nilIfEmpty else {
             return nil
         }
-        return CVLabelConfig(text: text,
-                             font: .dynamicTypeSubheadline,
-                             textColor: Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray90,
-                             lineBreakMode: .byTruncatingTail)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: .dynamicTypeSubheadline,
+            textColor: Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray90,
+            lineBreakMode: .byTruncatingTail
+        )
     }
 
     var displayDomainLabelConfig: CVLabelConfig? {
@@ -498,10 +508,12 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         if let date = state.date {
             text.append(" ⋅ \(LinkPreviewView.dateFormatter.string(from: date))")
         }
-        return CVLabelConfig(text: text,
-                             font: .dynamicTypeCaption1,
-                             textColor: Theme.secondaryTextAndIconColor,
-                             lineBreakMode: .byTruncatingTail)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: .dynamicTypeCaption1,
+            textColor: Theme.secondaryTextAndIconColor,
+            lineBreakMode: .byTruncatingTail
+        )
     }
 
     func configureForRendering(linkPreviewView: LinkPreviewView,

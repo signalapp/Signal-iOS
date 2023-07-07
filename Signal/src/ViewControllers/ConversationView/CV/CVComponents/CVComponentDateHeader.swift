@@ -166,7 +166,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                                  subviews: [ contentView ])
         }
 
-        componentView.rootView.accessibilityLabel = titleLabelConfig.stringValue
+        componentView.rootView.accessibilityLabel = titleLabelConfig.text.accessibilityDescription
         componentView.rootView.isAccessibilityElement = true
         componentView.rootView.accessibilityTraits = .header
     }
@@ -178,11 +178,14 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
     }
 
     private var titleLabelConfig: CVLabelConfig {
-        return CVLabelConfig(text: dateHeaderState.text,
-                             font: UIFont.dynamicTypeFootnote.semibold(),
-                             textColor: Theme.secondaryTextAndIconColor,
-                             lineBreakMode: .byTruncatingTail,
-                             textAlignment: .center)
+        return CVLabelConfig(
+            text: .text(dateHeaderState.text),
+            displayConfig: .forUnstyledText(font: .dynamicTypeFootnote.semibold(), textColor: Theme.secondaryTextAndIconColor),
+            font: UIFont.dynamicTypeFootnote.semibold(),
+            textColor: Theme.secondaryTextAndIconColor,
+            lineBreakMode: .byTruncatingTail,
+            textAlignment: .center
+        )
     }
 
     private var outerStackConfig: CVStackViewConfig {

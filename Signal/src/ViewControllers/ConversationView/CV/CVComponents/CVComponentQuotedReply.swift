@@ -14,9 +14,6 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
     private var quotedReplyModel: QuotedReplyModel {
         quotedReply.quotedReplyModel
     }
-    private var displayableQuotedText: DisplayableText? {
-        quotedReply.displayableQuotedText
-    }
     private let sharpCornersForQuotedMessage: OWSDirectionalRectCorner
 
     init(itemModel: CVItemModel,

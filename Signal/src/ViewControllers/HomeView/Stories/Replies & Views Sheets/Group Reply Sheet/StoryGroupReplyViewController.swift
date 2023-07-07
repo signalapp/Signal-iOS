@@ -340,7 +340,7 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
                     image: Theme.iconImage(.contextMenuCopy, isDarkThemeEnabled: true),
                     handler: { _ in
                         guard let displayableText = item.displayableText else { return }
-                        BodyRangesTextView.copyAttributedStringToPasteboard(displayableText.fullAttributedText)
+                        BodyRangesTextView.copyToPasteboard(displayableText.fullTextValue)
                     }))
             }
 

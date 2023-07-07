@@ -92,10 +92,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             unblurAvatarIconView.setTemplateImageName("tap-outline-24", tintColor: .ows_white)
             unblurAvatarSubviewInfos.append(CGSize.square(24).asManualSubviewInfo(hasFixedSize: true))
 
-            let unblurAvatarLabelConfig = CVLabelConfig(text: OWSLocalizedString("THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR",
-                                                                                comment: "Indicator that a blurred avatar can be revealed by tapping."),
-                                                        font: UIFont.dynamicTypeSubheadlineClamped,
-                                                        textColor: .ows_white)
+            let unblurAvatarLabelConfig = CVLabelConfig.unstyledText(
+                OWSLocalizedString(
+                    "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR",
+                    comment: "Indicator that a blurred avatar can be revealed by tapping."
+                ),
+                font: UIFont.dynamicTypeSubheadlineClamped,
+                textColor: .ows_white
+            )
             let maxWidth = CGFloat(avatarSizeClass.diameter) - 12
             let unblurAvatarLabelSize = CVText.measureLabel(config: unblurAvatarLabelConfig, maxWidth: maxWidth)
             unblurAvatarSubviewInfos.append(unblurAvatarLabelSize.asManualSubviewInfo)
@@ -158,7 +162,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             let groupDescriptionPreviewView = componentView.groupDescriptionPreviewView
             let config = groupDescriptionTextLabelConfig(text: groupDescriptionText)
             groupDescriptionPreviewView.apply(config: config)
-            groupDescriptionPreviewView.groupName = titleLabelConfig.stringValue
+            groupDescriptionPreviewView.groupName = titleText
             innerViews.append(UIView.spacer(withHeight: vSpacingMutualGroups))
             innerViews.append(groupDescriptionPreviewView)
         }
@@ -178,48 +182,59 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     private let vSpacingMutualGroups: CGFloat = 4
 
     private var titleLabelConfig: CVLabelConfig {
-        CVLabelConfig(text: titleText,
-                      font: UIFont.dynamicTypeTitle1.semibold(),
-                      textColor: Theme.secondaryTextAndIconColor,
-                      numberOfLines: 0,
-                      lineBreakMode: .byWordWrapping,
-                      textAlignment: .center)
+        CVLabelConfig.unstyledText(
+            titleText,
+            font: UIFont.dynamicTypeTitle1.semibold(),
+            textColor: Theme.secondaryTextAndIconColor,
+            numberOfLines: 0,
+            lineBreakMode: .byWordWrapping,
+            textAlignment: .center
+        )
     }
 
     private func bioLabelConfig(text: String) -> CVLabelConfig {
-        CVLabelConfig(text: text,
-                      font: .dynamicTypeSubheadline,
-                      textColor: Theme.secondaryTextAndIconColor,
-                      numberOfLines: 0,
-                      lineBreakMode: .byWordWrapping,
-                      textAlignment: .center)
+        CVLabelConfig.unstyledText(
+            text,
+            font: .dynamicTypeSubheadline,
+            textColor: Theme.secondaryTextAndIconColor,
+            numberOfLines: 0,
+            lineBreakMode: .byWordWrapping,
+            textAlignment: .center
+        )
     }
 
     private func detailsLabelConfig(text: String) -> CVLabelConfig {
-        CVLabelConfig(text: text,
-                      font: .dynamicTypeSubheadline,
-                      textColor: Theme.secondaryTextAndIconColor,
-                      numberOfLines: 0,
-                      lineBreakMode: .byWordWrapping,
-                      textAlignment: .center)
+        CVLabelConfig.unstyledText(
+            text,
+            font: .dynamicTypeSubheadline,
+            textColor: Theme.secondaryTextAndIconColor,
+            numberOfLines: 0,
+            lineBreakMode: .byWordWrapping,
+            textAlignment: .center
+        )
     }
 
     private func mutualGroupsLabelConfig(attributedText: NSAttributedString) -> CVLabelConfig {
-        CVLabelConfig(attributedText: attributedText,
-                      font: .dynamicTypeSubheadline,
-                      textColor: Theme.secondaryTextAndIconColor,
-                      numberOfLines: 0,
-                      lineBreakMode: .byWordWrapping,
-                      textAlignment: .center)
+        CVLabelConfig(
+            text: .attributedText(attributedText),
+            displayConfig: .forUnstyledText(font: .dynamicTypeSubheadline, textColor: Theme.secondaryTextAndIconColor),
+            font: .dynamicTypeSubheadline,
+            textColor: Theme.secondaryTextAndIconColor,
+            numberOfLines: 0,
+            lineBreakMode: .byWordWrapping,
+            textAlignment: .center
+        )
     }
 
     private func groupDescriptionTextLabelConfig(text: String) -> CVLabelConfig {
-        CVLabelConfig(text: text,
-                      font: .dynamicTypeSubheadline,
-                      textColor: Theme.secondaryTextAndIconColor,
-                      numberOfLines: 2,
-                      lineBreakMode: .byTruncatingTail,
-                      textAlignment: .center)
+        CVLabelConfig.unstyledText(
+            text,
+            font: .dynamicTypeSubheadline,
+            textColor: Theme.secondaryTextAndIconColor,
+            numberOfLines: 2,
+            lineBreakMode: .byTruncatingTail,
+            textAlignment: .center
+        )
     }
 
     private static let avatarSizeClass = ConversationAvatarView.Configuration.SizeClass.oneHundredTwelve

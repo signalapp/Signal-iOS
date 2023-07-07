@@ -8,42 +8,55 @@ import SignalServiceKit
 public enum CVTextValue: Equatable, Hashable {
     public typealias CacheKey = String
 
-    case text(text: String)
-    case attributedText(attributedText: NSAttributedString)
+    case text(String)
+    case attributedText(NSAttributedString)
+    case messageBody(HydratedMessageBody)
 
-    func apply(label: UILabel) {
+    public var isEmpty: Bool {
         switch self {
         case .text(let text):
-            label.text = text
+            return text.isEmpty
         case .attributedText(let attributedText):
-            label.attributedText = attributedText
+            return attributedText.isEmpty
+        case .messageBody(let messageBody):
+            return messageBody.isEmpty
         }
     }
 
-    func apply(textView: UITextView) {
+    public var nilIfEmpty: CVTextValue? {
+        return self.isEmpty ? nil : self
+    }
+
+    public var stringLength: Int {
         switch self {
         case .text(let text):
-            textView.text = text
+            return (text as NSString).length
         case .attributedText(let attributedText):
-            textView.attributedText = attributedText
+            return attributedText.length
+        case .messageBody(let hydratedMessageBody):
+            return hydratedMessageBody.rawTextLength
         }
     }
 
-    public var stringValue: String {
+    public var naturalTextAligment: NSTextAlignment {
+        switch self {
+        case .text(let text):
+            return text.naturalTextAlignment
+        case .attributedText(let attributedText):
+            return attributedText.string.naturalTextAlignment
+        case .messageBody(let hydratedMessageBody):
+            return hydratedMessageBody.naturalTextAlignment
+        }
+    }
+
+    public var accessibilityDescription: String {
         switch self {
         case .text(let text):
             return text
         case .attributedText(let attributedText):
             return attributedText.string
-        }
-    }
-
-    public var attributedString: NSAttributedString {
-        switch self {
-        case .text(let text):
-            return NSAttributedString(string: text)
-        case .attributedText(let attributedText):
-            return attributedText
+        case .messageBody(let hydratedMessageBody):
+            return hydratedMessageBody.accessibilityDescription
         }
     }
 
@@ -53,15 +66,19 @@ public enum CVTextValue: Equatable, Hashable {
             return "text: \(text)"
         case .attributedText(let attributedText):
             return "attributedText: \(attributedText.string)"
+        case .messageBody(let messageBody):
+            return "messageBody: \(messageBody.debugDescription)"
         }
     }
 
-    fileprivate var cacheKey: CacheKey {
+    public var cacheKey: CacheKey {
         switch self {
         case .text(let text):
             return "t\(text)"
         case .attributedText(let attributedText):
             return "a\(attributedText.description)"
+        case .messageBody(let messageBody):
+            return "m\(messageBody.cacheKey)"
         }
     }
 }
@@ -71,21 +88,25 @@ public enum CVTextValue: Equatable, Hashable {
 public struct CVLabelConfig {
     public typealias CacheKey = String
 
-    fileprivate let text: CVTextValue
+    public let text: CVTextValue
+    public let displayConfig: HydratedMessageBody.DisplayConfiguration
     public let font: UIFont
     public let textColor: UIColor
     public let numberOfLines: Int
     public let lineBreakMode: NSLineBreakMode
     public let textAlignment: NSTextAlignment?
 
-    public init(text: String,
-                font: UIFont,
-                textColor: UIColor,
-                numberOfLines: Int = 1,
-                lineBreakMode: NSLineBreakMode = .byWordWrapping,
-                textAlignment: NSTextAlignment? = nil) {
-
-        self.text = .text(text: text)
+    public init(
+        text: CVTextValue,
+        displayConfig: HydratedMessageBody.DisplayConfiguration,
+        font: UIFont,
+        textColor: UIColor,
+        numberOfLines: Int = 1,
+        lineBreakMode: NSLineBreakMode = .byWordWrapping,
+        textAlignment: NSTextAlignment? = nil
+    ) {
+        self.text = text
+        self.displayConfig = displayConfig
         self.font = font
         self.textColor = textColor
         self.numberOfLines = numberOfLines
@@ -93,19 +114,23 @@ public struct CVLabelConfig {
         self.textAlignment = textAlignment
     }
 
-    public init(attributedText: NSAttributedString,
-                font: UIFont,
-                textColor: UIColor,
-                numberOfLines: Int = 1,
-                lineBreakMode: NSLineBreakMode = .byWordWrapping,
-                textAlignment: NSTextAlignment? = nil) {
-
-        self.text = .attributedText(attributedText: attributedText)
-        self.font = font
-        self.textColor = textColor
-        self.numberOfLines = numberOfLines
-        self.lineBreakMode = lineBreakMode
-        self.textAlignment = textAlignment
+    public static func unstyledText(
+        _ text: String,
+        font: UIFont,
+        textColor: UIColor,
+        numberOfLines: Int = 1,
+        lineBreakMode: NSLineBreakMode = .byWordWrapping,
+        textAlignment: NSTextAlignment? = nil
+    ) -> Self {
+        return .init(
+            text: .text(text),
+            displayConfig: .forUnstyledText(font: font, textColor: textColor),
+            font: font,
+            textColor: textColor,
+            numberOfLines: numberOfLines,
+            lineBreakMode: lineBreakMode,
+            textAlignment: textAlignment
+        )
     }
 
     func applyForMeasurement(label: UILabel) {
@@ -117,7 +142,17 @@ public struct CVLabelConfig {
 
         // Apply text last, to protect attributed text attributes.
         // There are also perf benefits.
-        self.text.apply(label: label)
+        switch text {
+        case .text(let text):
+            label.text = text
+        case .attributedText(let attributedText):
+            label.attributedText = attributedText
+        case .messageBody(let hydratedMessageBody):
+            label.attributedText = hydratedMessageBody.asAttributedStringForDisplay(
+                config: displayConfig,
+                isDarkThemeEnabled: false /* irrelevant, measuring */
+            )
+        }
     }
 
     public func applyForRendering(label: UILabel) {
@@ -133,7 +168,17 @@ public struct CVLabelConfig {
 
         // Apply text last, to protect attributed text attributes.
         // There are also perf benefits.
-        self.text.apply(label: label)
+        switch text {
+        case .text(let text):
+            label.text = text
+        case .attributedText(let attributedText):
+            label.attributedText = attributedText
+        case .messageBody(let hydratedMessageBody):
+            label.attributedText = hydratedMessageBody.asAttributedStringForDisplay(
+                config: self.displayConfig,
+                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+            )
+        }
     }
 
     public func measure(maxWidth: CGFloat) -> CGSize {
@@ -142,14 +187,6 @@ public struct CVLabelConfig {
             owsFailDebug("size.width: \(size.width) > maxWidth: \(maxWidth)")
         }
         return size
-    }
-
-    public var stringValue: String {
-        text.stringValue
-    }
-
-    public var attributedString: NSAttributedString {
-        text.attributedString
     }
 
     public var debugDescription: String {
@@ -165,46 +202,48 @@ public struct CVLabelConfig {
 // MARK: - UITextView
 
 public struct CVTextViewConfig {
+
+    public enum LinkifyStyle {
+        case linkAttribute
+        case underlined(bodyTextColor: UIColor)
+    }
+
     public typealias CacheKey = String
 
     public let text: CVTextValue
     public let font: UIFont
     public let textColor: UIColor
     public let textAlignment: NSTextAlignment?
+    public let displayConfiguration: HydratedMessageBody.DisplayConfiguration
     public let linkTextAttributes: [NSAttributedString.Key: Any]?
+    public let linkifyStyle: LinkifyStyle
+    public let linkItems: [CVTextLabel.Item]
+    public let matchedSearchRanges: [NSRange]
     public let extraCacheKeyFactors: [String]?
 
-    public init(text: String,
-                font: UIFont,
-                textColor: UIColor,
-                textAlignment: NSTextAlignment? = nil,
-                linkTextAttributes: [NSAttributedString.Key: Any]? = nil) {
+    public init(
+        text: CVTextValue,
+        font: UIFont,
+        textColor: UIColor,
+        textAlignment: NSTextAlignment? = nil,
+        displayConfiguration: HydratedMessageBody.DisplayConfiguration,
+        linkTextAttributes: [NSAttributedString.Key: Any]? = nil,
+        linkifyStyle: LinkifyStyle,
+        linkItems: [CVTextLabel.Item],
+        matchedSearchRanges: [NSRange],
+        extraCacheKeyFactors: [String]? = nil
+    ) {
 
-        self.text = .text(text: text)
+        self.text = text
         self.font = font
         self.textColor = textColor
         self.textAlignment = textAlignment
+        self.displayConfiguration = displayConfiguration
         self.linkTextAttributes = linkTextAttributes
-        self.extraCacheKeyFactors = nil
-    }
-
-    public init(attributedText: NSAttributedString,
-                font: UIFont,
-                textColor: UIColor,
-                textAlignment: NSTextAlignment? = nil,
-                linkTextAttributes: [NSAttributedString.Key: Any]? = nil,
-                extraCacheKeyFactors: [String]? = nil) {
-
-        self.text = .attributedText(attributedText: attributedText)
-        self.font = font
-        self.textColor = textColor
-        self.textAlignment = textAlignment
-        self.linkTextAttributes = linkTextAttributes
+        self.linkifyStyle = linkifyStyle
+        self.linkItems = linkItems
+        self.matchedSearchRanges = matchedSearchRanges
         self.extraCacheKeyFactors = extraCacheKeyFactors
-    }
-
-    public var stringValue: String {
-        text.stringValue
     }
 
     public var debugDescription: String {
@@ -212,7 +251,7 @@ public struct CVTextViewConfig {
     }
 
     public var cacheKey: CacheKey {
-        // textColor and linkTextAttributes (for the attributes we set)
+        // textColor link-related attributes and search ranges (for the attributes we set)
         // don't affect measurement.
         var cacheKey = "\(text.cacheKey),\(font.fontName),\(font.pointSize),\(textAlignment?.rawValue ?? 0)"
 
@@ -248,7 +287,7 @@ public class CVText {
         }
 
         let result = measureLabelUsingLayoutManager(config: config, maxWidth: maxWidth)
-        owsAssertDebug(result.isNonEmpty || config.text.stringValue.isEmpty)
+        owsAssertDebug(result.isNonEmpty || config.text.isEmpty)
 
         if cacheMeasurements {
             labelCache.set(key: cacheKey, value: result.ceil)
@@ -259,7 +298,7 @@ public class CVText {
 
     #if TESTABLE_BUILD
     public static func measureLabelUsingView(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
-        guard !config.text.stringValue.isEmpty else {
+        guard !config.text.isEmpty else {
             return .zero
         }
         let label = UILabel()
@@ -272,7 +311,7 @@ public class CVText {
     #endif
 
     static func measureLabelUsingLayoutManager(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
-        guard !config.text.stringValue.isEmpty else {
+        guard !config.text.isEmpty else {
             return .zero
         }
         let textContainer = NSTextContainer(size: CGSize(width: maxWidth, height: .greatestFiniteMagnitude))
@@ -315,6 +354,11 @@ private extension NSTextContainer {
 
         let attributedString: NSAttributedString
         switch textValue {
+        case .messageBody(let messageBody):
+            attributedString = messageBody.asAttributedStringForDisplay(
+                config: .forMeasurement(font: font),
+                isDarkThemeEnabled: false /* doesn't matter */
+            )
         case .attributedText(let text):
             let mutableText = NSMutableAttributedString(attributedString: text)
             // The original attributed string may not have an overall font assigned.

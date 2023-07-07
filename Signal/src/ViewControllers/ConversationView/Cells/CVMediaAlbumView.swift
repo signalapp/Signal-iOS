@@ -168,10 +168,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 continue
             }
             let item = items[index]
-            guard let caption = item.caption else {
-                continue
-            }
-            if caption.isEmpty {
+            guard item.hasCaption else {
                 continue
             }
             guard let icon = UIImage(named: "media_album_caption") else {
@@ -572,7 +569,7 @@ public struct CVMediaAlbumItem: Equatable {
     // This property will only be set if the attachment is downloaded and valid.
     public let attachmentStream: TSAttachmentStream?
 
-    public let caption: String?
+    public let hasCaption: Bool
 
     // This property will be non-zero if the attachment is valid.
     //

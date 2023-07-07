@@ -38,7 +38,14 @@ class GroupDescriptionPreviewView: ManualLayoutView {
         textColor = config.textColor
         numberOfLines = config.numberOfLines
         textAlignment = config.textAlignment ?? .natural
-        descriptionText = config.stringValue
+        switch config.text {
+        case .text(let text):
+            descriptionText = text
+        case .attributedText(let text):
+            descriptionText = text.string
+        case .messageBody(let messageBody):
+            descriptionText = messageBody.asPlaintext()
+        }
     }
 
     init(shouldDeactivateConstraints: Bool = false) {

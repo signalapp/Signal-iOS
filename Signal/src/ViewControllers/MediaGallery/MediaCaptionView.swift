@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class MediaCaptionView: UIView, SpoilerRevealStateObserver {
+class MediaCaptionView: UIView {
 
     private let spoilerState: SpoilerRenderState
 
@@ -20,17 +20,9 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
                 return NSAttributedString(string: string)
             case .messageBody(let messageBody, let interactionIdentifier):
                 return messageBody.asAttributedStringForDisplay(
-                    config: HydratedMessageBody.DisplayConfiguration(
-                        mention: .mediaCaption,
-                        style: .mediaCaption(
-                            revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(interactionIdentifier: interactionIdentifier)
-                        ),
-                        searchRanges: nil
+                    config: .mediaCaption(
+                        revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(interactionIdentifier: interactionIdentifier)
                     ),
-                    baseAttributes: [
-                        .font: MentionDisplayConfiguration.mediaCaption.font,
-                        .foregroundColor: MentionDisplayConfiguration.mediaCaption.foregroundColor.forCurrentTheme
-                    ],
                     isDarkThemeEnabled: Theme.isDarkThemeEnabled
                 )
             }
@@ -65,15 +57,6 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
                 return
             }
             captionTextView.content = newValue
-
-            if oldValue?.interactionIdentifier != newValue?.interactionIdentifier {
-                oldValue?.interactionIdentifier.map {
-                    spoilerState.revealState.removeObserver(for: $0, observer: self)
-                }
-                newValue?.interactionIdentifier.map {
-                    spoilerState.revealState.observeChanges(for: $0, observer: self)
-                }
-            }
         }
     }
 
@@ -143,6 +126,7 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
                         withID: unrevealedSpoiler.id,
                         interactionIdentifier: interactionIdentifier
                     )
+                    didUpdateRevealedSpoilers(spoilerState.revealState)
                     return true
                 }
             }
@@ -160,8 +144,9 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
 
     private class func buildCaptionTextView(spoilerState: SpoilerRenderState) -> CaptionTextView {
         let textView = CaptionTextView(spoilerState: spoilerState)
-        textView.font = MentionDisplayConfiguration.mediaCaption.font
-        textView.textColor = MentionDisplayConfiguration.mediaCaption.foregroundColor.forCurrentTheme
+        let config = HydratedMessageBody.DisplayConfiguration.mediaCaption(revealedSpoilerIds: Set())
+        textView.font = config.baseFont
+        textView.textColor = config.baseTextColor.forCurrentTheme
         textView.backgroundColor = .clear
         textView.textContainerInset = Self.captionTextContainerInsets
         return textView
@@ -299,10 +284,13 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
             let attributedText = content.attributedString(spoilerState: spoilerState)
 
             // 3 lines of text.
+            let font = font ?? .dynamicTypeBodyClamped
+            let textColor = textColor ?? .white
             let collapsedTextConfig = CVTextLabel.Config(
-                attributedString: attributedText,
-                font: font ?? .dynamicTypeBodyClamped,
-                textColor: textColor ?? .white,
+                text: .attributedText(attributedText),
+                displayConfig: .forUnstyledText(font: font, textColor: textColor),
+                font: font,
+                textColor: textColor,
                 selectionStyling: [:],
                 textAlignment: textAlignment,
                 lineBreakMode: .byWordWrapping,
@@ -313,9 +301,10 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
 
             // 9 lines of text or `maxHeight`, whichever is smaller.
             let expandedTextConfig = CVTextLabel.Config(
-                attributedString: attributedText,
-                font: font ?? .dynamicTypeBodyClamped,
-                textColor: textColor ?? .white,
+                text: .attributedText(attributedText),
+                displayConfig: .forUnstyledText(font: font, textColor: textColor),
+                font: font,
+                textColor: textColor,
                 selectionStyling: [:],
                 textAlignment: textAlignment,
                 lineBreakMode: .byWordWrapping,
@@ -327,9 +316,10 @@ class MediaCaptionView: UIView, SpoilerRevealStateObserver {
 
             // Unrestricted text height is necessary so that we could enable scrolling in the text view.
             let fullTextConfig = CVTextLabel.Config(
-                attributedString: attributedText,
-                font: font ?? .dynamicTypeBodyClamped,
-                textColor: textColor ?? .white,
+                text: .attributedText(attributedText),
+                displayConfig: .forUnstyledText(font: font, textColor: textColor),
+                font: font,
+                textColor: textColor,
                 selectionStyling: [:],
                 textAlignment: textAlignment,
                 lineBreakMode: .byWordWrapping,

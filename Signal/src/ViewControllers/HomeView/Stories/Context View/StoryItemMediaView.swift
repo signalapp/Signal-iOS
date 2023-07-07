@@ -492,10 +492,6 @@ class StoryItemMediaView: UIView {
                     revealAllIds: false,
                     revealedIds: self.revealedSpoilerIds
                 ),
-                baseAttributes: [
-                    .font: captionLabel.font as Any,
-                    .foregroundColor: captionLabel.textColor as Any
-                ],
                 isDarkThemeEnabled: Theme.isDarkThemeEnabled
             )
         }()

@@ -47,18 +47,6 @@ internal struct StyleAttribute: Equatable, Hashable {
     internal let ids: [SingleStyle: StyleIdType]
     internal let style: Style
 
-    private static let key = NSAttributedString.Key("OWSStyle")
-    private static let displayConfigKey = NSAttributedString.Key("OWSStyle.displayConfig")
-
-    internal static func extractFromAttributes(
-        _ attrs: [NSAttributedString.Key: Any]
-    ) -> (StyleAttribute, StyleDisplayConfiguration?)? {
-        guard let attribute = (attrs[Self.key] as? StyleAttribute) else {
-            return nil
-        }
-        return (attribute, attrs[Self.displayConfigKey] as? StyleDisplayConfiguration)
-    }
-
     internal static func fromCollapsedStyle(_ style: CollapsedStyle) -> Self {
         return .init(ids: style.originals.mapValues(\.id), style: style.style)
     }
@@ -76,10 +64,7 @@ internal struct StyleAttribute: Equatable, Hashable {
         isDarkThemeEnabled: Bool
     ) {
         var fontTraits: UIFontDescriptor.SymbolicTraits = []
-        var attributes: [NSAttributedString.Key: Any] = [
-            Self.key: self,
-            Self.displayConfigKey: config
-        ]
+        var attributes: [NSAttributedString.Key: Any] = [:]
         if style.contains(.bold) {
             fontTraits.insert(.traitBold)
         }
@@ -124,8 +109,7 @@ internal struct StyleAttribute: Equatable, Hashable {
                 string.addAttributes(
                     [
                         .backgroundColor: searchRanges.matchingBackgroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
-                        .foregroundColor: UIColor.clear,
-                        Self.key: self
+                        .foregroundColor: UIColor.clear
                     ],
                     range: intersection
                 )

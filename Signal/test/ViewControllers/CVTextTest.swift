@@ -10,6 +10,8 @@ import XCTest
 @testable import SignalServiceKit
 @testable import SignalUI
 
+#if TESTABLE_BUILD
+
 class CVTextTest: XCTestCase {
     func testTextViewMeasurement() {
         let configs = [
@@ -136,15 +138,18 @@ class CVTextTest: XCTestCase {
     }
 
     static func bodyTextLabelConfig(textViewConfig: CVTextViewConfig) -> CVTextLabel.Config {
-        return CVTextLabel.Config(attributedString: textViewConfig.text.attributedString,
-                                  font: textViewConfig.font,
-                                  textColor: textViewConfig.textColor,
-                                  selectionStyling: [.foregroundColor: UIColor.orange],
-                                  textAlignment: textViewConfig.textAlignment ?? .natural,
-                                  lineBreakMode: .byWordWrapping,
-                                  numberOfLines: 0,
-                                  cacheKey: textViewConfig.cacheKey,
-                                  items: [])
+        return CVTextLabel.Config(
+            text: textViewConfig.text,
+            displayConfig: textViewConfig.displayConfiguration,
+            font: textViewConfig.font,
+            textColor: textViewConfig.textColor,
+            selectionStyling: [.foregroundColor: UIColor.orange],
+            textAlignment: textViewConfig.textAlignment ?? .natural,
+            lineBreakMode: .byWordWrapping,
+            numberOfLines: 0,
+            cacheKey: textViewConfig.cacheKey,
+            items: []
+        )
     }
 
     func testLabelMeasurement() {
@@ -284,10 +289,10 @@ class CVTextTest: XCTestCase {
     }
 
     func testLinkifyWithTruncation() {
-        let truncatedData = NSMutableAttributedString(string: "https://signal.org/foo https://signal.org/ba…")
-        CVComponentBodyText.linkifyData(
-            attributedText: truncatedData,
-            linkifyStyle: .linkAttribute,
+        let fullText = NSMutableAttributedString(string: "https://signal.org/foo https://signal.org/bar/baz")
+        let truncatedText = NSMutableAttributedString(string: "https://signal.org/foo https://signal.org/ba…")
+        var dataItems = CVComponentBodyText.detectItems(
+            text: DisplayableText.testOnlyInit(fullContent: .attributedText(fullText), truncatedContent: .attributedText(truncatedText)),
             hasPendingMessageRequest: false,
             shouldAllowLinkification: true,
             textWasTruncated: true,
@@ -295,9 +300,14 @@ class CVTextTest: XCTestCase {
             interactionUniqueId: UUID().uuidString,
             interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorUuid: nil)
         )
+        CVComponentBodyText.linkifyData(
+            attributedText: truncatedText,
+            linkifyStyle: .linkAttribute,
+            items: dataItems
+        )
         var values: [String] = []
         var ranges: [NSRange] = []
-        truncatedData.enumerateAttribute(.link, in: truncatedData.entireRange, options: []) { value, range, _ in
+        truncatedText.enumerateAttribute(.link, in: truncatedText.entireRange, options: []) { value, range, _ in
             if let value = value {
                 values.append(value as! String)
                 ranges.append(range)
@@ -306,10 +316,9 @@ class CVTextTest: XCTestCase {
         XCTAssertEqual(["https://signal.org/foo"], values)
         XCTAssertEqual([NSRange(location: 0, length: 22)], ranges)
 
-        truncatedData.removeAttribute(.link, range: truncatedData.entireRange)
-        CVComponentBodyText.linkifyData(
-            attributedText: truncatedData,
-            linkifyStyle: .linkAttribute,
+        truncatedText.removeAttribute(.link, range: truncatedText.entireRange)
+        dataItems = CVComponentBodyText.detectItems(
+            text: DisplayableText.testOnlyInit(fullContent: .attributedText(fullText), truncatedContent: .attributedText(truncatedText)),
             hasPendingMessageRequest: false,
             shouldAllowLinkification: true,
             textWasTruncated: false,
@@ -317,28 +326,38 @@ class CVTextTest: XCTestCase {
             interactionUniqueId: UUID().uuidString,
             interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorUuid: nil)
         )
+        CVComponentBodyText.linkifyData(
+            attributedText: fullText,
+            linkifyStyle: .linkAttribute,
+            items: dataItems
+        )
         values.removeAll()
         ranges.removeAll()
-        truncatedData.enumerateAttribute(.link, in: truncatedData.entireRange, options: []) { value, range, _ in
+        fullText.enumerateAttribute(.link, in: fullText.entireRange, options: []) { value, range, _ in
             if let value = value {
                 values.append(value as! String)
                 ranges.append(range)
             }
         }
-        XCTAssertEqual(["https://signal.org/foo", "https://signal.org/ba"], values)
-        XCTAssertEqual([NSRange(location: 0, length: 22), NSRange(location: 23, length: 21)], ranges)
+        XCTAssertEqual(["https://signal.org/foo", "https://signal.org/bar/baz"], values)
+        XCTAssertEqual([NSRange(location: 0, length: 22), NSRange(location: 23, length: 26)], ranges)
 
         // Should work on more than just URLs.
+        let fullEmail = NSMutableAttributedString(string: "moxie@example.com moxie@signal.org")
         let truncatedEmail = NSMutableAttributedString(string: "moxie@example.com moxie@signal.or…")
-        CVComponentBodyText.linkifyData(
-            attributedText: truncatedEmail,
-            linkifyStyle: .linkAttribute,
+        dataItems = CVComponentBodyText.detectItems(
+            text: DisplayableText.testOnlyInit(fullContent: .attributedText(fullEmail), truncatedContent: .attributedText(truncatedEmail)),
             hasPendingMessageRequest: false,
             shouldAllowLinkification: true,
             textWasTruncated: true,
             revealedSpoilerIds: Set(),
             interactionUniqueId: UUID().uuidString,
             interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorUuid: nil)
+        )
+        CVComponentBodyText.linkifyData(
+            attributedText: truncatedEmail,
+            linkifyStyle: .linkAttribute,
+            items: dataItems
         )
         values.removeAll()
         truncatedEmail.enumerateAttribute(.link, in: truncatedEmail.entireRange, options: []) { value, _, _ in
@@ -348,16 +367,21 @@ class CVTextTest: XCTestCase {
         }
         XCTAssertEqual(["mailto:moxie@example.com"], values)
 
+        let fullPhone = NSMutableAttributedString(string: "+16505555555 +16505555555")
         let truncatedPhone = NSMutableAttributedString(string: "+16505555555 +1650555555…")
-        CVComponentBodyText.linkifyData(
-            attributedText: truncatedPhone,
-            linkifyStyle: .linkAttribute,
+        dataItems = CVComponentBodyText.detectItems(
+            text: DisplayableText.testOnlyInit(fullContent: .attributedText(fullPhone), truncatedContent: .attributedText(truncatedPhone)),
             hasPendingMessageRequest: false,
             shouldAllowLinkification: true,
             textWasTruncated: true,
             revealedSpoilerIds: Set(),
             interactionUniqueId: UUID().uuidString,
             interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorUuid: nil)
+        )
+        CVComponentBodyText.linkifyData(
+            attributedText: truncatedPhone,
+            linkifyStyle: .linkAttribute,
+            items: dataItems
         )
         values.removeAll()
         truncatedPhone.enumerateAttribute(.link, in: truncatedPhone.entireRange, options: []) { value, _, _ in
@@ -368,3 +392,81 @@ class CVTextTest: XCTestCase {
         XCTAssertEqual(["tel:+16505555555"], values)
     }
 }
+
+extension CVLabelConfig {
+
+    fileprivate init(
+        text: String,
+        font: UIFont,
+        textColor: UIColor,
+        numberOfLines: Int = 1,
+        lineBreakMode: NSLineBreakMode = .byWordWrapping
+    ) {
+        self.init(
+            text: .text(text),
+            displayConfig: .forUnstyledText(font: font, textColor: textColor),
+            font: font,
+            textColor: textColor,
+            numberOfLines: numberOfLines,
+            lineBreakMode: lineBreakMode
+        )
+    }
+
+    fileprivate init(
+        attributedText: NSAttributedString,
+        font: UIFont,
+        textColor: UIColor,
+        numberOfLines: Int = 1,
+        lineBreakMode: NSLineBreakMode = .byWordWrapping,
+        textAlignment: NSTextAlignment? = nil
+    ) {
+        self.init(
+            text: .attributedText(attributedText),
+            displayConfig: .forUnstyledText(font: font, textColor: textColor),
+            font: font,
+            textColor: textColor,
+            numberOfLines: numberOfLines,
+            lineBreakMode: lineBreakMode,
+            textAlignment: textAlignment
+        )
+    }
+}
+
+extension CVTextViewConfig {
+
+    fileprivate init(
+        text: String,
+        font: UIFont,
+        textColor: UIColor
+    ) {
+        self.init(
+            text: .text(text),
+            font: font,
+            textColor: textColor,
+            displayConfiguration: .forUnstyledText(font: font, textColor: textColor),
+            linkifyStyle: .linkAttribute,
+            linkItems: [],
+            matchedSearchRanges: []
+        )
+    }
+
+    fileprivate init(
+        attributedText: NSAttributedString,
+        font: UIFont,
+        textColor: UIColor,
+        textAlignment: NSTextAlignment? = nil
+    ) {
+        self.init(
+            text: .attributedText(attributedText),
+            font: font,
+            textColor: textColor,
+            textAlignment: textAlignment,
+            displayConfiguration: .forUnstyledText(font: font, textColor: textColor),
+            linkifyStyle: .linkAttribute,
+            linkItems: [],
+            matchedSearchRanges: []
+        )
+    }
+}
+
+#endif

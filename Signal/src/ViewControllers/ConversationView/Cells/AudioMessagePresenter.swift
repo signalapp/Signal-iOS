@@ -149,8 +149,8 @@ class AudioMessagePresenter: AudioPresenter {
             text = OWSLocalizedString("GENERIC_ATTACHMENT_LABEL", comment: "A label for generic attachments.")
         }
 
-        return CVLabelConfig(
-            text: text,
+        return CVLabelConfig.unstyledText(
+            text,
             font: Constants.labelFont,
             textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming))
     }

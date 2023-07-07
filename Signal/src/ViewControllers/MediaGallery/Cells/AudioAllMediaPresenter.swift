@@ -123,8 +123,8 @@ class AudioAllMediaPresenter: AudioPresenter {
         lineBreakMode: NSLineBreakMode = .byWordWrapping,
         conversationStyle: ConversationStyle
     ) -> CVLabelConfig {
-        return CVLabelConfig(
-            text: text,
+        return CVLabelConfig.unstyledText(
+            text,
             font: Constants.bottomLineFont,
             textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: true),
             lineBreakMode: lineBreakMode
@@ -311,9 +311,12 @@ class AudioAllMediaPresenter: AudioPresenter {
         }
     }
 
-    private func labelConfig_forMeasurement(text: String, conversationStyle: ConversationStyle) -> CVLabelConfig {
-        return CVLabelConfig(
-            text: text,
+    private func labelConfig_forMeasurement(
+        text: String,
+        conversationStyle: ConversationStyle
+    ) -> CVLabelConfig {
+        return CVLabelConfig.unstyledText(
+            text,
             font: Constants.bottomLineFont,
             textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: true)
         )
@@ -345,8 +348,8 @@ class AudioAllMediaPresenter: AudioPresenter {
             text = NSLocalizedString("GENERIC_ATTACHMENT_LABEL", comment: "A label for generic attachments.")
         }
 
-        return CVLabelConfig(
-            text: text,
+        return CVLabelConfig.unstyledText(
+            text,
             font: Constants.filenameFont,
             textColor: conversationStyle.bubbleTextColor(isIncoming: false))
     }

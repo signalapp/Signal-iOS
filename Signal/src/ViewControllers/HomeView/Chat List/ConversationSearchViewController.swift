@@ -392,18 +392,18 @@ public class ConversationSearchViewController: UITableViewController {
                 // not conversation results. CoversationListCell will generate
                 // a snippet for conversations that reflects the latest
                 // contents.
-                if let messageSnippet = searchResult.snippet {
-                    overrideSnippet = RecoveredHydratedMessageBody.recover(from: messageSnippet)
-                        .reapplyAttributes(
-                            config: HydratedMessageBody.DisplayConfiguration(
-                                mention: .conversationListSearchResultSnippet,
-                                style: .conversationListSearchResultSnippet,
-                                searchRanges: nil
-                            ),
-                            isDarkThemeEnabled: Theme.isDarkThemeEnabled
-                        )
-                } else {
+                switch searchResult.snippet {
+                case .none:
                     owsFailDebug("message search result is missing message snippet")
+                case .text(let text):
+                    overrideSnippet = NSAttributedString(string: text)
+                case .attributedText(let attrString):
+                    overrideSnippet = attrString
+                case .messageBody(let messageBody):
+                    overrideSnippet = messageBody.asAttributedStringForDisplay(
+                        config: .conversationListSearchResultSnippet(),
+                        isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                    )
                 }
             }
             return ChatListCell.Configuration(

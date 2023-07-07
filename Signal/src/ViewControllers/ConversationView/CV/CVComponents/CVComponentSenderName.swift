@@ -71,11 +71,15 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
     }
 
     private var labelConfig: CVLabelConfig {
-        CVLabelConfig(attributedText: senderName,
-                      font: UIFont.dynamicTypeFootnote.semibold(),
-                      textColor: senderNameColor,
-                      numberOfLines: 0,
-                      lineBreakMode: .byWordWrapping)
+        let font = UIFont.dynamicTypeFootnote.semibold()
+        return CVLabelConfig(
+            text: .attributedText(senderName),
+            displayConfig: .forUnstyledText(font: font, textColor: senderNameColor),
+            font: font,
+            textColor: senderNameColor,
+            numberOfLines: 0,
+            lineBreakMode: .byWordWrapping
+        )
     }
 
     private var outerStackConfig: CVStackViewConfig {

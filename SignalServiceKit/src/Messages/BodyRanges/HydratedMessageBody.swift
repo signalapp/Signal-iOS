@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AVFAudio
 import Foundation
 
 /// The result of stripping, filtering, and hydrating mentions in a `MessageBody`.
@@ -19,6 +20,8 @@ public class HydratedMessageBody: Equatable, Hashable {
     private let unhydratedMentions: [NSRangedValue<MentionAttribute>]
     private let mentionAttributes: [NSRangedValue<MentionAttribute>]
     private let styleAttributes: [NSRangedValue<StyleAttribute>]
+
+    public var isEmpty: Bool { hydratedText.isEmpty }
 
     public static func == (lhs: HydratedMessageBody, rhs: HydratedMessageBody) -> Bool {
         return lhs.hydratedText == rhs.hydratedText
@@ -212,6 +215,8 @@ public class HydratedMessageBody: Equatable, Hashable {
     // MARK: - Displaying as NSAttributedString
 
     public struct DisplayConfiguration {
+        public let baseFont: UIFont
+        public let baseTextColor: ThemedColor
         public let mention: MentionDisplayConfiguration
         public let style: StyleDisplayConfiguration
 
@@ -234,22 +239,97 @@ public class HydratedMessageBody: Equatable, Hashable {
         public let searchRanges: SearchRanges?
 
         public init(
+            baseFont: UIFont,
+            baseTextColor: ThemedColor,
             mention: MentionDisplayConfiguration,
             style: StyleDisplayConfiguration,
             searchRanges: SearchRanges?
         ) {
+            self.baseFont = baseFont
+            self.baseTextColor = baseTextColor
             self.mention = mention
             self.style = style
             self.searchRanges = searchRanges
         }
+
+        /**
+         * Creates a new config using shared values.
+         *
+         * - parameter baseFont: Font to use for unstyled, non-mention text.
+         * - parameter baseTextColor:
+         * - parameter mentionFont: The font to use for mention text.
+         *   If nil, baseFont is used.
+         * - parameter mentionForegroundColor: The color to use for mention text.
+         *   If nil, baseTextColor is used.
+         * - parameter mentionBackgroundColor: The color to use to "highlight" mentions.
+         *   If nil, no highlight is applied to mentions.
+         * - parameter revealedSpoilerBgColor: The color to use to "highlight" revealed spoilers.
+         *   If nil, no highlight is applied to revealed spoilers.
+         * - parameter revealAllSpoilers: If true, all spoilers will be revealed and
+         *   `revealedSpoilerIds` will be ignored.
+         * - parameter revealedSpoilerIds: IDs of spoiler ranges that should be revealed.
+         *   Ignored if `revealAllSpoilers is true`.
+         * - parameter searchRanges: Ranges to highlight as search results.
+         */
+        public init(
+            baseFont: UIFont,
+            baseTextColor: ThemedColor,
+            mentionFont: UIFont? = nil,
+            mentionForegroundColor: ThemedColor? = nil,
+            mentionBackgroundColor: ThemedColor? = nil,
+            revealedSpoilerBgColor: ThemedColor? = nil,
+            revealAllSpoilers: Bool = false,
+            revealedSpoilerIds: Set<StyleIdType> = Set(),
+            searchRanges: SearchRanges? = nil
+        ) {
+            self.init(
+                baseFont: baseFont,
+                baseTextColor: baseTextColor,
+                mention: .init(
+                    font: mentionFont ?? baseFont,
+                    foregroundColor: mentionForegroundColor ?? baseTextColor,
+                    backgroundColor: mentionBackgroundColor
+                ),
+                style: .init(
+                    baseFont: baseFont,
+                    textColor: baseTextColor,
+                    revealedSpoilerBgColor: revealedSpoilerBgColor,
+                    revealAllIds: revealAllSpoilers,
+                    revealedIds: revealedSpoilerIds
+                ),
+                searchRanges: searchRanges
+            )
+        }
+
+        public var sizingCacheKey: String {
+            return "\(baseFont.fontName)\(baseFont.pointSize)\(mention.font.fontName)\(mention.font.pointSize)\(style.baseFont.fontName)\(style.baseFont.pointSize)"
+        }
     }
 
+    /// If baseFont or baseTextColor are not provided, the values in the style display configuation are used.
     public func asAttributedStringForDisplay(
         config: DisplayConfiguration,
-        baseAttributes: [NSAttributedString.Key: Any]? = nil,
+        baseFont: UIFont? = nil,
+        baseTextColor: UIColor? = nil,
+        textAlignment: NSTextAlignment? = nil,
         isDarkThemeEnabled: Bool
     ) -> NSAttributedString {
-        let string = NSMutableAttributedString(string: hydratedText, attributes: baseAttributes ?? [:])
+        let baseFont = baseFont ?? config.baseFont
+        let baseTextColor = baseTextColor ?? config.baseTextColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+
+        var baseAttributes: [NSAttributedString.Key: Any] = [
+            .font: baseFont,
+            .foregroundColor: baseTextColor
+        ]
+        if let textAlignment {
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = textAlignment
+            baseAttributes[.paragraphStyle] = paragraphStyle
+        }
+        let string = NSMutableAttributedString(
+            string: hydratedText,
+            attributes: baseAttributes
+        )
         return Self.applyAttributes(
             on: string,
             mentionAttributes: mentionAttributes,
@@ -353,16 +433,23 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     // MARK: - Forwarding
 
-    public func asMessageBodyForForwarding() -> MessageBody {
-        var unhydratedMentionsDict = [NSRange: UUID]()
+    public func asMessageBodyForForwarding(
+        preservingAllMentions: Bool = false
+    ) -> MessageBody {
+        var mentionsDict = [NSRange: UUID]()
         unhydratedMentions.forEach {
-            unhydratedMentionsDict[$0.range] = $0.value.mentionUuid
+            mentionsDict[$0.range] = $0.value.mentionUuid
+        }
+        if preservingAllMentions {
+            mentionAttributes.forEach {
+                mentionsDict[$0.range] = $0.value.mentionUuid
+            }
         }
 
         return MessageBody(
             text: hydratedText,
             ranges: MessageBodyRanges(
-                mentions: unhydratedMentionsDict,
+                mentions: mentionsDict,
                 styles: Self.flattenStylesPreservingSharedIds(styleAttributes)
             )
         )
@@ -429,6 +516,64 @@ public class HydratedMessageBody: Equatable, Hashable {
             return nil
         }
         return self
+    }
+
+    // MARK: - Truncation
+
+    /// NOTE: if there is a mention at the truncation point, we instead truncate sooner
+    /// so as to not cut off mid-mention.
+    public func truncating(
+        desiredLength: Int,
+        truncationSuffix: String
+    ) -> HydratedMessageBody {
+        var possibleOverlappingMention: NSRange?
+        for mentionAttribute in self.mentionAttributes {
+            if mentionAttribute.range.contains(desiredLength) {
+                possibleOverlappingMention = mentionAttribute.range
+                break
+            }
+            if mentionAttribute.range.location > desiredLength {
+                // mentions are ordered; can early exit if we pass it.
+                break
+            }
+        }
+
+        // There's a mention overlapping our normal truncate point, we want to truncate sooner
+        // so we don't "split" the mention.
+        var finalLength = desiredLength
+        if let possibleOverlappingMention, possibleOverlappingMention.location < desiredLength {
+            finalLength = possibleOverlappingMention.location
+        }
+
+        let mentions = self.mentionAttributes.filter({ $0.range.location < finalLength })
+        let unhydratedMentions = self.unhydratedMentions.filter { $0.range.upperBound <= finalLength }
+        let styles = self.styleAttributes.compactMap { (styleAttribute) -> NSRangedValue<StyleAttribute>? in
+            if styleAttribute.range.location > finalLength {
+                return nil
+            } else if styleAttribute.range.upperBound <= finalLength {
+                return styleAttribute
+            } else {
+                return .init(
+                    styleAttribute.value,
+                    range: NSRange(
+                        location: styleAttribute.range.location,
+                        length: finalLength - styleAttribute.range.location
+                    )
+                )
+            }
+        }
+
+        let newSelf = HydratedMessageBody(
+            hydratedText: String(hydratedText.prefix(finalLength)) + truncationSuffix,
+            unhydratedMentions: unhydratedMentions,
+            mentionAttributes: mentions,
+            styleAttributes: styles
+        )
+        // Strip. Its less efficient, but avoids code repetition to go through message body.
+        return newSelf
+            .asMessageBodyForForwarding()
+            .filterStringForDisplay()
+            .hydrating(mentionHydrator: { _ in return .preserveMention })
     }
 
     // MARK: - Tappable items
@@ -536,6 +681,69 @@ public class HydratedMessageBody: Equatable, Hashable {
         }
 
         return items
+    }
+
+    // MARK: - Regex
+
+    public func matches(for regex: NSRegularExpression) -> [NSRange] {
+        return regex.matches(
+            in: hydratedText,
+            options: [.withoutAnchoringBounds],
+            range: hydratedText.entireRange
+        ).map(\.range)
+    }
+
+    // MARK: - DisplayableText
+
+    // This misdirection is because we do not want to expose hydratedText externally;
+    // that makes it very easy to misuse this class as just a plaintext string.
+
+    public var rawTextLength: Int { (hydratedText as NSString).length }
+
+    public var accessibilityDescription: String { hydratedText }
+
+    public var debugDescription: String { hydratedText }
+
+    public var utterance: AVSpeechUtterance { AVSpeechUtterance(string: hydratedText) }
+
+    // Used for caching sizing information, so we need to cache attributes since
+    // monospace affects sizing.
+    public var cacheKey: String { hydratedText.description + styleAttributes.description }
+
+    public var naturalTextAlignment: NSTextAlignment { hydratedText.naturalTextAlignment }
+
+    public func jumbomojiCount(_ jumbomojiCounter: (String) -> UInt) -> UInt {
+        return jumbomojiCounter(hydratedText)
+    }
+
+    public func fullLengthWithNewLineScalar(_ parser: (String) -> Int) -> Int {
+        return parser(hydratedText)
+    }
+
+    public func shouldAllowLinkification(
+        linkDetector: NSDataDetector,
+        isValidLink: (String) -> Bool
+    ) -> Bool {
+        guard LinkValidator.canParseURLs(in: hydratedText) else {
+            return false
+        }
+
+        for match in linkDetector.matches(in: hydratedText, options: [], range: hydratedText.entireRange) {
+            guard match.url != nil else {
+                continue
+            }
+
+            // We extract the exact text from the `fullText` rather than use match.url.host
+            // because match.url.host actually escapes non-ascii domains into puny-code.
+            //
+            // But what we really want is to check the text which will ultimately be presented to
+            // the user.
+            let rawTextOfMatch = (hydratedText as NSString).substring(with: match.range)
+            guard isValidLink(rawTextOfMatch) else {
+                return false
+            }
+        }
+        return true
     }
 
     // MARK: - Helpers

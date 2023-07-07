@@ -287,8 +287,8 @@ class StoryInfoSheet: OWSTableSheetViewController {
         transaction: SDSAnyReadTransaction
     ) -> ContactCellAccessoryView {
         let label = CVLabel()
-        let labelConfig = CVLabelConfig(
-            text: text,
+        let labelConfig = CVLabelConfig.unstyledText(
+            text,
             font: .dynamicTypeFootnoteClamped,
             textColor: Theme.darkThemeSecondaryTextAndIconColor
         )

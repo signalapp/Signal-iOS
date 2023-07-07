@@ -735,15 +735,22 @@ public struct ForwardMessageItem {
 
         if shouldHaveText,
            let displayableBodyText = componentState.displayableBodyText,
-           !displayableBodyText.fullAttributedText.isEmpty {
+           !displayableBodyText.fullTextValue.isEmpty {
 
-            let attributedText = displayableBodyText.fullAttributedText
-            let recoveredHydratedBody = RecoveredHydratedMessageBody.recover(from: NSMutableAttributedString(attributedString: attributedText))
-            builder.messageBody = recoveredHydratedBody.toMessageBody()
+            switch displayableBodyText.fullTextValue {
+            case .text(let text):
+                builder.messageBody = MessageBody(text: text, ranges: .empty)
+            case .attributedText(let text):
+                builder.messageBody = MessageBody(text: text.string, ranges: .empty)
+            case .messageBody(let hydratedBody):
+                builder.messageBody = hydratedBody.asMessageBodyForForwarding(preservingAllMentions: true)
+            }
 
             if let linkPreview = componentState.linkPreviewModel {
-                builder.linkPreviewDraft = Self.tryToCloneLinkPreview(linkPreview: linkPreview,
-                                                                      transaction: transaction)
+                builder.linkPreviewDraft = Self.tryToCloneLinkPreview(
+                    linkPreview: linkPreview,
+                    transaction: transaction
+                )
             }
         }
 

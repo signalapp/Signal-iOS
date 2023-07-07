@@ -697,7 +697,7 @@ extension BodyRangesTextView: EditableMessageBodyDelegate {
     }
 
     public func editableMessageBodyDisplayConfig() -> HydratedMessageBody.DisplayConfiguration {
-        return mentionDelegate?.textViewDisplayConfiguration(self) ?? .init(mention: .composing, style: .composing, searchRanges: nil)
+        return mentionDelegate?.textViewDisplayConfiguration(self) ?? .composing()
     }
 
     public func isEditableMessageBodyDarkThemeEnabled() -> Bool {
@@ -764,19 +764,36 @@ extension BodyRangesTextView {
         self.selectedRange = NSRange(location: selectedRange.location, length: 0)
     }
 
-    public class func copyAttributedStringToPasteboard(_ attributedString: NSAttributedString) {
-        guard let plaintextData = attributedString.string.data(using: .utf8) else {
+    public class func copyToPasteboard(_ text: CVTextValue) {
+        let plaintext: String
+        switch text {
+        case .text(let text):
+            plaintext = text
+            UIPasteboard.general.setItems([], options: [:])
+        case .attributedText(let text):
+            plaintext = text.string
+            UIPasteboard.general.setItems([], options: [:])
+        case .messageBody(let messageBody):
+            copyToPasteboard(messageBody.asMessageBodyForForwarding())
+            return
+        }
+
+        guard let plaintextData = plaintext.data(using: .utf8) else {
             return owsFailDebug("Failed to calculate plaintextData on copy")
         }
 
-        let messageBody = RecoveredHydratedMessageBody.recover(
-            from: attributedString
-        ).toMessageBody()
+        UIPasteboard.general.addItems([["public.utf8-plain-text": plaintextData]])
+    }
 
+    private class func copyToPasteboard(_ messageBody: MessageBody) {
         if messageBody.hasRanges, let encodedMessageBody = try? NSKeyedArchiver.archivedData(withRootObject: messageBody, requiringSecureCoding: true) {
             UIPasteboard.general.setItems([[Self.pasteboardType: encodedMessageBody]], options: [.localOnly: true])
         } else {
             UIPasteboard.general.setItems([], options: [:])
+        }
+
+        guard let plaintextData = messageBody.text.data(using: .utf8) else {
+            return owsFailDebug("Failed to calculate plaintextData on copy")
         }
 
         UIPasteboard.general.addItems([["public.utf8-plain-text": plaintextData]])
@@ -785,7 +802,7 @@ extension BodyRangesTextView {
     public static var pasteboardType: String { SignalAttachment.bodyRangesPasteboardType }
 
     open override func copy(_ sender: Any?) {
-        Self.copyAttributedStringToPasteboard(editableBody.attributedString.attributedSubstring(from: selectedRange))
+        Self.copyToPasteboard(editableBody.messageBody)
     }
 
     open override func paste(_ sender: Any?) {

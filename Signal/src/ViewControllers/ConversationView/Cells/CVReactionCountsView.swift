@@ -202,10 +202,12 @@ class CVReactionCountsView: ManualStackView {
                 assert(emoji.isSingleEmoji)
 
                 // textColor doesn't matter for emoji.
-                return CVLabelConfig(text: emoji,
-                                     font: .boldSystemFont(ofSize: 14),
-                                     textColor: .black,
-                                     textAlignment: .center)
+                return CVLabelConfig.unstyledText(
+                    emoji,
+                    font: .boldSystemFont(ofSize: 14),
+                    textColor: .black,
+                    textAlignment: .center
+                )
             case .moreCount:
                 return nil
             }
@@ -231,10 +233,12 @@ class CVReactionCountsView: ManualStackView {
                 text = "+" + count.abbreviatedString
             }
 
-            return CVLabelConfig(text: text,
-                                 font: .monospacedDigitSystemFont(ofSize: 12, weight: .bold),
-                                 textColor: textColor,
-                                 textAlignment: .center)
+            return CVLabelConfig.unstyledText(
+                text,
+                font: .monospacedDigitSystemFont(ofSize: 12, weight: .bold),
+                textColor: textColor,
+                textAlignment: .center
+            )
         }
 
         func configure(pillState: PillState,

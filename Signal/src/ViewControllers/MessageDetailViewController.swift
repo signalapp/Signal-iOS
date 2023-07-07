@@ -508,9 +508,11 @@ class MessageDetailViewController: OWSTableViewController2 {
                                     transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView {
         let label = CVLabel()
         label.textAlignment = .right
-        let labelConfig = CVLabelConfig(text: text,
-                                        font: .dynamicTypeFootnoteClamped,
-                                        textColor: Theme.ternaryTextColor)
+        let labelConfig = CVLabelConfig.unstyledText(
+            text,
+            font: .dynamicTypeFootnoteClamped,
+            textColor: Theme.ternaryTextColor
+        )
         labelConfig.applyForRendering(label: label)
         let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: .greatestFiniteMagnitude)
 

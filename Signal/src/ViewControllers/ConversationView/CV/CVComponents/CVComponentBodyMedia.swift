@@ -172,9 +172,12 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                                         : OWSLocalizedString("MEDIA_GALLERY_ITEM_MIXED_COUNT_%d", tableName: "PluralAware",
                                         comment: "Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}."))
                 downloadStack.addArrangedSubview(downloadLabel)
-                let downloadLabelConfig = CVLabelConfig(text: String.localizedStringWithFormat(downloadFormat, items.count),
-                                                        font: .dynamicTypeSubheadline,
-                                                        textColor: UIColor.ows_white)
+                let downloadLabelConfig = CVLabelConfig(
+                    text: .text(String.localizedStringWithFormat(downloadFormat, items.count)),
+                    displayConfig: .forUnstyledText(font: .dynamicTypeSubheadline, textColor: .ows_white),
+                    font: .dynamicTypeSubheadline,
+                    textColor: UIColor.ows_white
+                )
                 downloadLabelConfig.applyForRendering(label: downloadLabel)
                 let downloadLabelSize = CVText.measureLabel(config: downloadLabelConfig,
                                                             maxWidth: CGFloat.greatestFiniteMagnitude)
@@ -215,9 +218,12 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     downloadSizeView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
                     downloadSizeView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 1)
 
-                    let downloadSizeLabelConfig = CVLabelConfig(text: downloadSizeText.joined(separator: " • "),
-                                                                font: .dynamicTypeCaption1,
-                                                                textColor: .ows_white)
+                    let downloadSizeLabelConfig = CVLabelConfig(
+                        text: .text(downloadSizeText.joined(separator: " • ")),
+                        displayConfig: .forUnstyledText(font: .dynamicTypeCaption1, textColor: .ows_white),
+                        font: .dynamicTypeCaption1,
+                        textColor: .ows_white
+                    )
                     let downloadSizeLabel = CVLabel()
                     downloadSizeLabelConfig.applyForRendering(label: downloadSizeLabel)
                     let downloadSizeLabelSize = CVText.measureLabel(config: downloadSizeLabelConfig,

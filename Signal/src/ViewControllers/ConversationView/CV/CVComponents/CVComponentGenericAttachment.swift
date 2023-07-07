@@ -119,10 +119,12 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         if text.isEmpty {
             text = OWSLocalizedString("GENERIC_ATTACHMENT_LABEL", comment: "A label for generic attachments.")
         }
-        return CVLabelConfig(text: text,
-                             font: UIFont.dynamicTypeBody2.semibold(),
-                             textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming),
-                             lineBreakMode: .byTruncatingMiddle)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: UIFont.dynamicTypeBody2.semibold(),
+            textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming),
+            lineBreakMode: .byTruncatingMiddle
+        )
     }
 
     private var bottomLabelConfig: CVLabelConfig {
@@ -161,10 +163,12 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             owsFailDebug("Invalid attachment")
         }
 
-        return CVLabelConfig(text: text,
-                             font: UIFont.dynamicTypeCaption1,
-                             textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming),
-                             lineBreakMode: .byTruncatingMiddle)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: UIFont.dynamicTypeCaption1,
+            textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming),
+            lineBreakMode: .byTruncatingMiddle
+        )
     }
 
     private var fileTypeLabelConfig: CVLabelConfig {
@@ -180,10 +184,12 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         }
         let text = (fileExtension as NSString).localizedUppercase
 
-        return CVLabelConfig(text: text,
-                             font: UIFont.dynamicTypeCaption1.semibold(),
-                             textColor: .ows_gray90,
-                             lineBreakMode: .byTruncatingTail)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: UIFont.dynamicTypeCaption1.semibold(),
+            textColor: .ows_gray90,
+            lineBreakMode: .byTruncatingTail
+        )
     }
 
     private func tryToBuildProgressView() -> UIView? {

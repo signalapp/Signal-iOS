@@ -123,8 +123,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     private static let unfairLock = UnfairLock()
 
     public static func detectItems(
-        text: String,
-        attributedString: NSAttributedString?,
+        text: DisplayableText,
         hasPendingMessageRequest: Bool,
         shouldAllowLinkification: Bool,
         textWasTruncated: Bool,
@@ -141,33 +140,35 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 return []
             }
 
-            if textWasTruncated {
-                owsAssertDebug(text.hasSuffix(DisplayableText.truncatedTextSuffix))
-            }
-
-            func shouldDiscardDataItem(_ dataItem: TextCheckingDataItem) -> Bool {
-                if textWasTruncated {
-                    if NSMaxRange(dataItem.range) == NSMaxRange(text.entireRange) {
-                        // This implies that the data detector *included* our "…" suffix.
-                        // We don't expect this to happen, but if it does it's certainly not intended!
-                        return true
-                    }
-                    if (text as NSString).substring(after: dataItem.range) == DisplayableText.truncatedTextSuffix {
-                        // More likely the item right before the "…" was detected.
-                        // Conservatively assume that the item was truncated.
-                        return true
-                    }
-                }
-                return false
-            }
-
             let dataDetector = buildDataDetector(shouldAllowLinkification: shouldAllowLinkification)
+
+            func detectItems(plaintext: String) -> [CVTextLabel.Item] {
+                return TextCheckingDataItem.detectedItems(in: plaintext, using: dataDetector).compactMap {
+                    if textWasTruncated {
+                        if NSMaxRange($0.range) == NSMaxRange(plaintext.entireRange) {
+                            // This implies that the data detector *included* our "…" suffix.
+                            // We don't expect this to happen, but if it does it's certainly not intended!
+                            return nil
+                        }
+                        if (plaintext as NSString).substring(after: $0.range) == DisplayableText.truncatedTextSuffix {
+                            // More likely the item right before the "…" was detected.
+                            // Conservatively assume that the item was truncated.
+                            return nil
+                        }
+                    }
+                    return .dataItem(dataItem: $0)
+                }
+            }
 
             let items: [CVTextLabel.Item]
 
-            if let attributedString = attributedString {
-                let recoveredBody = RecoveredHydratedMessageBody.recover(from: attributedString)
-                items = recoveredBody
+            switch text.textValue(isTextExpanded: !textWasTruncated) {
+            case .attributedText(let attributedText):
+                items = detectItems(plaintext: attributedText.string)
+            case .text(let text):
+                items = detectItems(plaintext: text)
+            case .messageBody(let messageBody):
+                items = messageBody
                     .tappableItems(
                         revealedSpoilerIds: revealedSpoilerIds,
                         dataDetector: dataDetector
@@ -187,19 +188,10 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                 range: mentionItem.range
                             ))
                         case .data(let dataItem):
-                            guard !shouldDiscardDataItem(dataItem) else {
-                                return nil
-                            }
+                            // TODO: omit data items ending before elipsis down in tappableItems
                             return .dataItem(dataItem: dataItem)
                         }
                     }
-            } else {
-                items = TextCheckingDataItem.detectedItems(in: text, using: dataDetector).compactMap {
-                    guard !shouldDiscardDataItem($0) else {
-                        return nil
-                    }
-                    return .dataItem(dataItem: $0)
-                }
             }
 
             return items
@@ -218,25 +210,23 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         let items: [CVTextLabel.Item]
         var shouldUseAttributedText = false
-        if let displayableText = bodyText.displayableText,
-           let textValue = bodyText.textValue(isTextExpanded: isTextExpanded) {
+        if let displayableText = bodyText.displayableText {
 
             let shouldAllowLinkification = displayableText.shouldAllowLinkification
             let textWasTruncated = !isTextExpanded && displayableText.isTextTruncated
 
-            switch textValue {
-            case .text(let text):
-                items = detectItems(
-                    text: text,
-                    attributedString: nil,
-                    hasPendingMessageRequest: hasPendingMessageRequest,
-                    shouldAllowLinkification: shouldAllowLinkification,
-                    textWasTruncated: textWasTruncated,
-                    revealedSpoilerIds: revealedSpoilerIds,
-                    interactionUniqueId: interaction.uniqueId,
-                    interactionIdentifier: .fromInteraction(interaction)
-                )
+            items = detectItems(
+                text: displayableText,
+                hasPendingMessageRequest: hasPendingMessageRequest,
+                shouldAllowLinkification: shouldAllowLinkification,
+                textWasTruncated: textWasTruncated,
+                revealedSpoilerIds: revealedSpoilerIds,
+                interactionUniqueId: interaction.uniqueId,
+                interactionIdentifier: .fromInteraction(interaction)
+            )
 
+            switch displayableText.textValue(isTextExpanded: isTextExpanded) {
+            case .text:
                 // UILabels are much cheaper than UITextViews, and we can
                 // usually use them for rendering body text.
                 //
@@ -250,18 +240,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 } else {
                     shouldUseAttributedText = !items.isEmpty
                 }
-            case .attributedText(let attributedText):
-                items = detectItems(
-                    text: attributedText.string,
-                    attributedString: attributedText,
-                    hasPendingMessageRequest: hasPendingMessageRequest,
-                    shouldAllowLinkification: shouldAllowLinkification,
-                    textWasTruncated: textWasTruncated,
-                    revealedSpoilerIds: revealedSpoilerIds,
-                    interactionUniqueId: interaction.uniqueId,
-                    interactionIdentifier: .fromInteraction(interaction)
-                )
-
+            case .attributedText, .messageBody:
                 shouldUseAttributedText = true
             }
         } else {
@@ -282,7 +261,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                     transaction: SDSAnyReadTransaction) throws -> CVComponentState.BodyText? {
 
         func build(displayableText: DisplayableText) -> CVComponentState.BodyText? {
-            guard !displayableText.fullTextValue.stringValue.isEmpty else {
+            guard !displayableText.fullTextValue.isEmpty else {
                 return nil
             }
             return .bodyText(displayableText: displayableText)
@@ -363,15 +342,18 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     public func bodyTextLabelConfig(textViewConfig: CVTextViewConfig) -> CVTextLabel.Config {
-        CVTextLabel.Config(attributedString: textViewConfig.text.attributedString,
-                           font: textViewConfig.font,
-                           textColor: textViewConfig.textColor,
-                           selectionStyling: textSelectionStyling,
-                           textAlignment: textViewConfig.textAlignment ?? .natural,
-                           lineBreakMode: .byWordWrapping,
-                           numberOfLines: 0,
-                           cacheKey: textViewConfig.cacheKey,
-                           items: bodyTextState.items)
+        CVTextLabel.Config(
+            text: textViewConfig.text,
+            displayConfig: textViewConfig.displayConfiguration,
+            font: textViewConfig.font,
+            textColor: textViewConfig.textColor,
+            selectionStyling: textSelectionStyling,
+            textAlignment: textViewConfig.textAlignment ?? .natural,
+            lineBreakMode: .byWordWrapping,
+            numberOfLines: 0,
+            cacheKey: textViewConfig.cacheKey,
+            items: bodyTextState.items
+        )
     }
 
     public func bodyTextLabelConfig(labelConfig: CVLabelConfig) -> CVTextLabel.Config {
@@ -380,25 +362,19 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let textAlignment: NSTextAlignment = labelConfig.textAlignment ?? .natural
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = textAlignment
-        let attributedText = labelConfig.attributedString.mutableCopy() as! NSMutableAttributedString
-        attributedText.addAttributes(
-            [
-                .font: labelConfig.font,
-                .foregroundColor: labelConfig.textColor,
-                .paragraphStyle: paragraphStyle
-            ],
-            range: attributedText.entireRange
-        )
 
-        return CVTextLabel.Config(attributedString: attributedText,
-                                  font: labelConfig.font,
-                                  textColor: labelConfig.textColor,
-                                  selectionStyling: textSelectionStyling,
-                                  textAlignment: textAlignment,
-                                  lineBreakMode: .byWordWrapping,
-                                  numberOfLines: 0,
-                                  cacheKey: labelConfig.cacheKey,
-                                  items: bodyTextState.items)
+        return CVTextLabel.Config(
+            text: labelConfig.text,
+            displayConfig: labelConfig.displayConfig,
+            font: labelConfig.font,
+            textColor: labelConfig.textColor,
+            selectionStyling: textSelectionStyling,
+            textAlignment: textAlignment,
+            lineBreakMode: .byWordWrapping,
+            numberOfLines: 0,
+            cacheKey: labelConfig.cacheKey,
+            items: bodyTextState.items
+        )
     }
 
     public func configureForRendering(componentView: CVComponentView,
@@ -456,31 +432,35 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let text = (isIncoming
                         ? OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted")
                         : OWSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you"))
-        return CVLabelConfig(text: text,
-                             font: textMessageFont.italic(),
-                             textColor: bodyTextColor,
-                             numberOfLines: 0,
-                             lineBreakMode: .byWordWrapping,
-                             textAlignment: .center)
+        return CVLabelConfig(
+            text: .text(text),
+            displayConfig: .forUnstyledText(font: textMessageFont.italic(), textColor: bodyTextColor),
+            font: textMessageFont.italic(),
+            textColor: bodyTextColor,
+            numberOfLines: 0,
+            lineBreakMode: .byWordWrapping,
+            textAlignment: .center
+        )
     }
 
     private var labelConfigForOversizeTextDownloading: CVLabelConfig {
         let text = OWSLocalizedString("MESSAGE_STATUS_DOWNLOADING",
                                      comment: "message status while message is downloading.")
-        return CVLabelConfig(text: text,
-                             font: textMessageFont.italic(),
-                             textColor: bodyTextColor,
-                             numberOfLines: 0,
-                             lineBreakMode: .byWordWrapping,
-                             textAlignment: .center)
+        return CVLabelConfig(
+            text: .text(text),
+            displayConfig: .forUnstyledText(font: textMessageFont.italic(), textColor: bodyTextColor),
+            font: textMessageFont.italic(),
+            textColor: bodyTextColor,
+            numberOfLines: 0,
+            lineBreakMode: .byWordWrapping,
+            textAlignment: .center
+        )
     }
 
     private typealias TextConfig = CVTextViewConfig
 
     private func textConfig(displayableText: DisplayableText) -> TextConfig {
-        let textValue = displayableText.textValue(isTextExpanded: isTextExpanded)
-        return self.textViewConfig(displayableText: displayableText,
-                                   attributedText: textValue.attributedString)
+        return self.textViewConfig(displayableText: displayableText)
     }
 
     public static func configureTextView(_ textView: UITextView,
@@ -501,46 +481,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
     }
 
-    public enum LinkifyStyle {
-        case linkAttribute
-        case underlined(bodyTextColor: UIColor)
-    }
-
-    private func linkifyData(attributedText: NSMutableAttributedString) {
-        Self.linkifyData(attributedText: attributedText,
-                         linkifyStyle: .underlined(bodyTextColor: bodyTextColor),
-                         items: bodyTextState.items)
-    }
-
     public static func linkifyData(
         attributedText: NSMutableAttributedString,
-        linkifyStyle: LinkifyStyle,
-        hasPendingMessageRequest: Bool,
-        shouldAllowLinkification: Bool,
-        textWasTruncated: Bool,
-        revealedSpoilerIds: Set<StyleIdType>,
-        interactionUniqueId: String,
-        interactionIdentifier: InteractionSnapshotIdentifier
-    ) {
-
-        let items = detectItems(
-            text: attributedText.string,
-            attributedString: attributedText,
-            hasPendingMessageRequest: hasPendingMessageRequest,
-            shouldAllowLinkification: shouldAllowLinkification,
-            textWasTruncated: textWasTruncated,
-            revealedSpoilerIds: revealedSpoilerIds,
-            interactionUniqueId: interactionUniqueId,
-            interactionIdentifier: interactionIdentifier
-        )
-        Self.linkifyData(attributedText: attributedText,
-                         linkifyStyle: linkifyStyle,
-                         items: items)
-    }
-
-    public static func linkifyData(
-        attributedText: NSMutableAttributedString,
-        linkifyStyle: LinkifyStyle,
+        linkifyStyle: CVTextViewConfig.LinkifyStyle,
         items: [CVTextLabel.Item]
     ) {
 
@@ -576,8 +519,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
     }
 
-    private func textViewConfig(displayableText: DisplayableText,
-                                attributedText attributedTextParam: NSAttributedString) -> CVTextViewConfig {
+    private func textViewConfig(displayableText: DisplayableText) -> CVTextViewConfig {
 
         // Honor dynamic type in the message bodies.
         let linkTextAttributes: [NSAttributedString.Key: Any] = [
@@ -589,19 +531,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                 ? displayableText.fullTextNaturalAlignment
                                 : displayableText.displayTextNaturalAlignment)
 
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = textAlignment
-
-        var attributedText = attributedTextParam.mutableCopy() as! NSMutableAttributedString
-        attributedText.addAttributes(
-            [
-                .font: textMessageFont,
-                .foregroundColor: bodyTextColor,
-                .paragraphStyle: paragraphStyle
-            ],
-            range: attributedText.entireRange
-        )
-        linkifyData(attributedText: attributedText)
+        let text = displayableText.textValue(isTextExpanded: isTextExpanded)
+        let linkItems = bodyTextState.items
 
         var matchedSearchRanges = [NSRange]()
         if let searchText = searchText,
@@ -610,28 +541,33 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             let pattern = NSRegularExpression.escapedPattern(for: searchableText)
             do {
                 let regex = try NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
-                for match in regex.matches(in: attributedText.string,
-                                           options: [.withoutAnchoringBounds],
-                                           range: attributedText.string.entireRange) {
-                    owsAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength)
-                    matchedSearchRanges.append(match.range)
+
+                func runRegex(_ string: String) {
+                    for match in regex.matches(in: string,
+                                               options: [.withoutAnchoringBounds],
+                                               range: string.entireRange) {
+                        owsAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength)
+                        matchedSearchRanges.append(match.range)
+                    }
+                }
+
+                switch text {
+                case .text(let text):
+                    runRegex(text)
+                case .attributedText(let attributedText):
+                    runRegex(attributedText.string)
+                case .messageBody(let messageBody):
+                    matchedSearchRanges = messageBody.matches(for: regex)
                 }
             } catch {
                 owsFailDebug("Error: \(error)")
             }
         }
 
-        let messageBody = RecoveredHydratedMessageBody.recover(from: attributedText)
-        attributedText = messageBody.reapplyAttributes(
-            config: HydratedMessageBody.DisplayConfiguration(
-                mention: isIncoming ? .incomingMessageBubble : .outgoingMessageBubble,
-                style: StyleDisplayConfiguration.forMessageBubble(
-                    isIncoming: isIncoming,
-                    revealedSpoilerIds: revealedSpoilerIds
-                ),
-                searchRanges: .matchedRanges(matchedSearchRanges)
-            ),
-            isDarkThemeEnabled: isDarkThemeEnabled
+        let displayConfiguration = HydratedMessageBody.DisplayConfiguration.messageBubble(
+            isIncoming: isIncoming,
+            revealedSpoilerIds: revealedSpoilerIds,
+            searchRanges: .matchedRanges(matchedSearchRanges)
         )
 
         var extraCacheKeyFactors = [String]()
@@ -640,12 +576,18 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
         extraCacheKeyFactors.append("items: \(!bodyTextState.items.isEmpty)")
 
-        return CVTextViewConfig(attributedText: attributedText,
-                                font: textMessageFont,
-                                textColor: bodyTextColor,
-                                textAlignment: textAlignment,
-                                linkTextAttributes: linkTextAttributes,
-                                extraCacheKeyFactors: extraCacheKeyFactors)
+        return CVTextViewConfig(
+            text: text,
+            font: textMessageFont,
+            textColor: bodyTextColor,
+            textAlignment: textAlignment,
+            displayConfiguration: displayConfiguration,
+            linkTextAttributes: linkTextAttributes,
+            linkifyStyle: .underlined(bodyTextColor: bodyTextColor),
+            linkItems: linkItems,
+            matchedSearchRanges: matchedSearchRanges,
+            extraCacheKeyFactors: extraCacheKeyFactors
+        )
     }
 
     private static let measurementKey_stackView = "CVComponentBodyText.measurementKey_stackView"
@@ -794,11 +736,11 @@ extension CVComponentBodyText: CVAccessibilityComponent {
         switch bodyText {
         case .bodyText(let displayableText):
             // NOTE: we use the full text.
-            return displayableText.fullTextValue.stringValue
+            return displayableText.fullTextValue.accessibilityDescription
         case .oversizeTextDownloading:
-            return labelConfigForOversizeTextDownloading.stringValue
+            return labelConfigForOversizeTextDownloading.text.accessibilityDescription
         case .remotelyDeleted:
-            return labelConfigForRemotelyDeleted.stringValue
+            return labelConfigForRemotelyDeleted.text.accessibilityDescription
         }
     }
 }

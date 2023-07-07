@@ -92,10 +92,12 @@ public class CVContactShareView: ManualStackView {
 
     private static func topLabelConfig(state: State) -> CVLabelConfig {
         let textColor = state.conversationStyle.bubbleTextColor(isIncoming: state.isIncoming)
-        return CVLabelConfig(text: state.contactShare.displayName,
-                             font: .dynamicTypeBody2.semibold(),
-                             textColor: textColor,
-                             lineBreakMode: .byTruncatingTail)
+        return CVLabelConfig.unstyledText(
+            state.contactShare.displayName,
+            font: .dynamicTypeBody2.semibold(),
+            textColor: textColor,
+            lineBreakMode: .byTruncatingTail
+        )
     }
 
     private static func bottomLabelConfig(state: State) -> CVLabelConfig? {
@@ -104,10 +106,12 @@ public class CVContactShareView: ManualStackView {
         }
         let text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: firstPhoneNumber)
         let textColor = state.conversationStyle.bubbleSecondaryTextColor(isIncoming: state.isIncoming)
-        return CVLabelConfig(text: text,
-                             font: .dynamicTypeCaption1,
-                             textColor: textColor,
-                             lineBreakMode: .byTruncatingTail)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: .dynamicTypeCaption1,
+            textColor: textColor,
+            lineBreakMode: .byTruncatingTail
+        )
     }
 
     private static let measurementKey_outerStack = "CVContactShareView.measurementKey_outerStack"

@@ -24,8 +24,6 @@ public struct MentionDisplayConfiguration: Equatable {
     }
 }
 
-// TODO[TextFormatting]: as part of send support changes, stop exposing
-// this class and mention prefix.
 public struct MentionAttribute: Equatable, Hashable {
 
     public static let mentionPrefix = "@"
@@ -37,18 +35,6 @@ public struct MentionAttribute: Equatable, Hashable {
     /// irrelevant to everthing outside of this class.
     internal let id: MentionIDType
     internal let mentionUuid: UUID
-
-    private static let key = NSAttributedString.Key("OWSMention")
-    private static let displayConfigKey = NSAttributedString.Key("OWSMention.displayConfig")
-
-    internal static func extractFromAttributes(
-        _ attrs: [NSAttributedString.Key: Any]
-    ) -> (MentionAttribute, MentionDisplayConfiguration?)? {
-        guard let attribute = (attrs[Self.key] as? MentionAttribute) else {
-            return nil
-        }
-        return (attribute, attrs[Self.displayConfigKey] as? MentionDisplayConfiguration)
-    }
 
     internal static func fromOriginalRange(_ range: NSRange, mentionUuid: UUID) -> Self {
         var hasher = Hasher()
@@ -69,8 +55,6 @@ public struct MentionAttribute: Equatable, Hashable {
         isDarkThemeEnabled: Bool
     ) {
         var attributes: [NSAttributedString.Key: Any] = [
-            Self.key: self,
-            Self.displayConfigKey: config,
             .font: config.font,
             .foregroundColor: config.foregroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
         ]

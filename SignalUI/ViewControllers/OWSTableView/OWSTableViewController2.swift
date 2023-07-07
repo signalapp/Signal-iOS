@@ -815,8 +815,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             let insets = headerTextContainerInsets(for: section)
             // Reuse sizing code for CVText even though we aren't using a CVText here.
             let height = CVText.measureLabel(
-                config: CVLabelConfig(
-                    text: headerTitle,
+                config: CVLabelConfig.unstyledText(
+                    headerTitle,
                     font: headerFont,
                     textColor: .black, // doesn't matter for sizing
                     numberOfLines: 0,
@@ -834,7 +834,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             // Reuse sizing code for CVText even though we aren't using a CVText here.
             let height = CVText.measureLabel(
                 config: CVLabelConfig(
-                    attributedText: headerTitle,
+                    text: .attributedText(headerTitle),
+                    displayConfig: .forMeasurement(font: headerFont),
                     font: headerFont,
                     textColor: .black, // doesn't matter for sizing
                     numberOfLines: 0,
@@ -867,8 +868,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             let insets = footerTextContainerInsets(for: section)
             // Reuse sizing code for CVText even though we aren't using a CVText here.
             let height = CVText.measureLabel(
-                config: CVLabelConfig(
-                    text: footerTitle,
+                config: CVLabelConfig.unstyledText(
+                    footerTitle,
                     font: footerFont,
                     textColor: .black, // doesn't matter for sizing
                     numberOfLines: 0,
@@ -886,7 +887,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             // Reuse sizing code for CVText even though we aren't using a CVText here.
             let height = CVText.measureLabel(
                 config: CVLabelConfig(
-                    attributedText: footerTitle,
+                    text: .attributedText(footerTitle),
+                    displayConfig: .forMeasurement(font: footerFont),
                     font: footerFont,
                     textColor: .black, // doesn't matter for sizing
                     numberOfLines: 0,

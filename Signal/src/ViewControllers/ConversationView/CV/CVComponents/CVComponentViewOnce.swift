@@ -294,11 +294,13 @@ fileprivate extension CVComponentViewOnce {
 
     var labelConfig: CVLabelConfig {
         func buildDefaultConfig(text: String) -> CVLabelConfig {
-            return CVLabelConfig(text: text,
-                                 font: UIFont.dynamicTypeSubheadline.semibold(),
-                                 textColor: textColor,
-                                 numberOfLines: 1,
-                                 lineBreakMode: .byTruncatingTail)
+            return CVLabelConfig.unstyledText(
+                text,
+                font: UIFont.dynamicTypeSubheadline.semibold(),
+                textColor: textColor,
+                numberOfLines: 1,
+                lineBreakMode: .byTruncatingTail
+            )
         }
 
         switch viewOnceState {
@@ -342,11 +344,13 @@ fileprivate extension CVComponentViewOnce {
             let text = OWSLocalizedString(
                 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT", comment: "Label for view-once messages that have invalid content.")
             // Reconfigure label for this state only.
-            return CVLabelConfig(text: text,
-                                 font: UIFont.dynamicTypeSubheadline,
-                                 textColor: Theme.secondaryTextAndIconColor,
-                                 numberOfLines: 0,
-                                 lineBreakMode: .byWordWrapping)
+            return CVLabelConfig.unstyledText(
+                text,
+                font: UIFont.dynamicTypeSubheadline,
+                textColor: Theme.secondaryTextAndIconColor,
+                numberOfLines: 0,
+                lineBreakMode: .byWordWrapping
+            )
         }
     }
 
@@ -376,6 +380,6 @@ fileprivate extension CVComponentViewOnce {
 extension CVComponentViewOnce: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         // TODO: We could include the media type (video, image, animated image).
-        labelConfig.stringValue
+        labelConfig.text.accessibilityDescription
     }
 }

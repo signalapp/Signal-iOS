@@ -67,10 +67,27 @@ public class StyleOnlyMessageBody: NSObject, Codable {
 
     public func asAttributedStringForDisplay(
         config: StyleDisplayConfiguration,
-        baseAttributes: [NSAttributedString.Key: Any]? = nil,
+        baseFont: UIFont? = nil,
+        baseTextColor: UIColor? = nil,
+        textAlignment: NSTextAlignment? = nil,
         isDarkThemeEnabled: Bool
     ) -> NSAttributedString {
-        let string = NSMutableAttributedString(string: text, attributes: baseAttributes ?? [:])
+        let baseFont = baseFont ?? config.baseFont
+        let baseTextColor = baseTextColor ?? config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+
+        var baseAttributes: [NSAttributedString.Key: Any] = [
+            .font: baseFont,
+            .foregroundColor: baseTextColor
+        ]
+        if let textAlignment {
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = textAlignment
+            baseAttributes[.paragraphStyle] = paragraphStyle
+        }
+        let string = NSMutableAttributedString(
+            string: text,
+            attributes: baseAttributes
+        )
         return HydratedMessageBody.applyAttributes(
             on: string,
             mentionAttributes: [],
@@ -78,6 +95,8 @@ public class StyleOnlyMessageBody: NSObject, Codable {
                 return .init(.fromCollapsedStyle($0.value), range: $0.range)
             },
             config: HydratedMessageBody.DisplayConfiguration(
+                baseFont: config.baseFont,
+                baseTextColor: config.textColor,
                 // Mentions are impossible on this class, so this is just a stub.
                 mention: MentionDisplayConfiguration(
                     font: config.baseFont,

@@ -295,17 +295,19 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             comment: "status meesage for edited messages"
         )
 
-        return CVLabelConfig(
-            text: text,
+        return CVLabelConfig.unstyledText(
+            text,
             font: .dynamicTypeCaption1,
             textColor: textColor
         )
     }
 
     private func timestampLabelConfig(textColor: UIColor) -> CVLabelConfig {
-        return CVLabelConfig(text: timestampText,
-                             font: .dynamicTypeCaption1,
-                             textColor: textColor)
+        return CVLabelConfig.unstyledText(
+            timestampText,
+            font: .dynamicTypeCaption1,
+            textColor: textColor
+        )
     }
 
     private var tapForMoreLabelConfig: CVLabelConfig? {
@@ -318,10 +320,12 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         }
         let text = OWSLocalizedString("CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
                                      comment: "Indicator on truncated text messages that they can be tapped to see the entire text message.")
-        return CVLabelConfig(text: text,
-                             font: UIFont.dynamicTypeSubheadlineClamped.semibold(),
-                             textColor: conversationStyle.bubbleReadMoreTextColor(message: message),
-                             textAlignment: .trailing)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: UIFont.dynamicTypeSubheadlineClamped.semibold(),
+            textColor: conversationStyle.bubbleReadMoreTextColor(message: message),
+            textAlignment: .trailing
+        )
     }
 
     private let tapForMoreHeightFactor: CGFloat = 1.25

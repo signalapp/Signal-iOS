@@ -406,7 +406,7 @@ public class ChatListCell: UITableViewCell {
             let snippetSize = self.snippetLabel.sizeThatFits(view.bounds.size)
             if DebugFlags.internalLogging,
                snippetSize.height > snippetLineHeight * 2 {
-                owsFailDebug("view: \(view.bounds.size), snippetSize: \(snippetSize), snippetLineHeight: \(snippetLineHeight), snippetLabelConfig: \(snippetLabelConfig.stringValue)")
+                owsFailDebug("view: \(view.bounds.size), snippetSize: \(snippetSize), snippetLineHeight: \(snippetLineHeight), snippetLabelConfig: \(snippetLabelConfig)")
             }
             let snippetFrame = CGRect(x: 0,
                                       y: 0,
@@ -632,12 +632,14 @@ public class ChatListCell: UITableViewCell {
         case .unreadWithCount(let unreadCount):
             text = unreadCount > 0 ? OWSFormat.formatUInt(unreadCount) : ""
         }
-        return CVLabelConfig(text: text,
-                             font: unreadFont,
-                             textColor: .ows_white,
-                             numberOfLines: 1,
-                             lineBreakMode: .byTruncatingTail,
-                             textAlignment: .center)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: unreadFont,
+            textColor: .ows_white,
+            numberOfLines: 1,
+            lineBreakMode: .byTruncatingTail,
+            textAlignment: .center
+        )
     }
 
     private static func measureUnreadBadge(unreadIndicatorLabelConfig: CVLabelConfig?) -> CLVUnreadBadgeMeasurements? {
@@ -728,15 +730,7 @@ public class ChatListCell: UITableViewCell {
                                 .foregroundColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
                                ])
             let attributedDraftText = draftText.asAttributedStringForDisplay(
-                config: HydratedMessageBody.DisplayConfiguration(
-                    mention: .conversationListSnippet(font: snippetFont, textColor: snippetColor),
-                    style: .forConversationListSnippet(baseFont: snippetFont, textColor: snippetColor),
-                    searchRanges: nil
-                ),
-                baseAttributes: [
-                    .font: snippetFont,
-                    .foregroundColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
-                ],
+                config: .conversationListSnippet(font: snippetFont, textColor: snippetColor),
                 isDarkThemeEnabled: Theme.isDarkThemeEnabled
             )
             snippetText.append(attributedDraftText)
@@ -768,15 +762,7 @@ public class ChatListCell: UITableViewCell {
             return snippetText
         case .contactSnippet(let lastMessageText):
             return lastMessageText.asAttributedStringForDisplay(
-                config: HydratedMessageBody.DisplayConfiguration(
-                    mention: .conversationListSnippet(font: snippetFont, textColor: snippetColor),
-                    style: .forConversationListSnippet(baseFont: snippetFont, textColor: snippetColor),
-                    searchRanges: nil
-                ),
-                baseAttributes: [
-                    .font: snippetFont,
-                    .foregroundColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
-                ],
+                config: .conversationListSnippet(font: snippetFont, textColor: snippetColor),
                 isDarkThemeEnabled: Theme.isDarkThemeEnabled
             )
         case .groupSnippet(let lastMessageText, let senderName):
@@ -796,15 +782,7 @@ public class ChatListCell: UITableViewCell {
                                 .font: snippetFont
                                ])
             let attributedLastMessageText = lastMessageText.asAttributedStringForDisplay(
-                config: HydratedMessageBody.DisplayConfiguration(
-                    mention: .conversationListSnippet(font: snippetFont, textColor: snippetColor),
-                    style: .forConversationListSnippet(baseFont: snippetFont, textColor: snippetColor),
-                    searchRanges: nil
-                ),
-                baseAttributes: [
-                    .font: snippetFont,
-                    .foregroundColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
-                ],
+                config: .conversationListSnippet(font: snippetFont, textColor: snippetColor),
                 isDarkThemeEnabled: Theme.isDarkThemeEnabled
             )
             snippetText.append(attributedLastMessageText)
@@ -824,10 +802,12 @@ public class ChatListCell: UITableViewCell {
         if let labelDate = configuration.overrideDate ?? thread.chatListInfo?.lastMessageDate {
             text = DateUtil.formatDateShort(labelDate)
         }
-        return CVLabelConfig(text: text,
-                             font: dateTimeFont,
-                             textColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled),
-                             textAlignment: .trailing)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: dateTimeFont,
+            textColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled),
+            textAlignment: .trailing
+        )
     }
 
     private static func nameLabelConfig(configuration: Configuration) -> CVLabelConfig {
@@ -847,10 +827,12 @@ public class ChatListCell: UITableViewCell {
                 }
             }
         }()
-        return CVLabelConfig(text: text,
-                             font: nameFont,
-                             textColor: Theme.primaryTextColor,
-                             lineBreakMode: .byTruncatingTail)
+        return CVLabelConfig.unstyledText(
+            text,
+            font: nameFont,
+            textColor: Theme.primaryTextColor,
+            lineBreakMode: .byTruncatingTail
+        )
     }
 
     private static func snippetLabelConfig(configuration: Configuration) -> CVLabelConfig {
@@ -860,11 +842,15 @@ public class ChatListCell: UITableViewCell {
             }
             return self.attributedSnippet(configuration: configuration)
         }()
-        return CVLabelConfig(attributedText: attributedText,
-                             font: snippetFont,
-                             textColor: snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled),
-                             numberOfLines: 2,
-                             lineBreakMode: .byTruncatingTail)
+        let textColor = snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+        return CVLabelConfig(
+            text: .attributedText(attributedText),
+            displayConfig: .forUnstyledText(font: snippetFont, textColor: textColor),
+            font: snippetFont,
+            textColor: textColor,
+            numberOfLines: 2,
+            lineBreakMode: .byTruncatingTail
+        )
     }
 
     // MARK: - Reuse
