@@ -17,6 +17,9 @@ enum ShareActivityUtil {
         // have that present the `UIActivityViewController`. Then, when the latter completes,
         // we dismiss the invisible one.
         //
+        // This appears to be in iOS 13 bug, and this hack can be removed once
+        // we drop iOS 13.
+        //
         // - <https://stackoverflow.com/q/56903030>
         // - <https://stackoverflow.com/q/59413850>
         // - <https://developer.apple.com/forums/thread/119482>

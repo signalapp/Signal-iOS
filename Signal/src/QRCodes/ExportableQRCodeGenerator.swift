@@ -3,7 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-/// A generator that produces QR codes suitable for export from the app.
+/// A generator producing QR codes for export from the app.
+///
+/// The QR codes are scaled up and have a black foreground over a white
+/// background.
 class ExportableQRCodeGenerator: QRCodeGenerator {
     func generateQRCode(data: Data) -> UIImage? {
         return generateQRCode(

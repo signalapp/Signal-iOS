@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
 
 public extension Usernames {
     /// Represents a Signal Dot Me link pointing to a user's username. These
@@ -66,28 +66,8 @@ public extension Usernames {
             self.username = username
         }
 
-        /// Returns an aesthetically modified string for displaying the username
-        /// link. Should not be treated as a valid URL.
-        public var asAestheticUrlString: String {
-            guard
-                var components = URLComponents(url: asUrl, resolvingAgainstBaseURL: true)
-            else {
-                owsFail("Unexpectedly failed to get components for shareable short URL string!")
-            }
-
-            components.scheme = nil
-
-            guard let urlString = components.url?.absoluteString else {
-                owsFail("Unexpectedly failed to get URL after stripping scheme!")
-            }
-
-            // After we drop the scheme there will still be a `//` at the
-            // front, per RFC 3986 - so we drop those chars manually.
-            return String(urlString.dropFirst(2))
-        }
-
         /// Returns this username link as a shareable URL.
-        public var asUrl: URL {
+        public var url: URL {
             let base64Username = {
                 guard let usernameData = username.data(using: .utf8) else {
                     owsFail("Failed to get UTF-8 data for the username!")

@@ -7333,6 +7333,15 @@
 /* A title for a view that allows you to view and interact with a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Code";
 
+/* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+
+/* Text for a tappable cell that copies the user's username link when selected. */
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+
+/* Text describing what you can do with a username link, on a sheet for sharing it. */
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "An error occurred while looking up the username. Please try again later.";
 
@@ -7383,9 +7392,6 @@
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
-
-/* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";

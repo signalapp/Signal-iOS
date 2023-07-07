@@ -1329,7 +1329,7 @@
 		D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */; };
 		D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */; };
 		D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */; };
-		D99840CE2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */; };
+		D99840CE2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840CD2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift */; };
 		D99A0F5829F1ABBB002E02E3 /* TSGroupMemberRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */; };
 		D99A0F6029F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A0F5F29F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift */; };
 		D99A0F6229F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99A0F6129F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift */; };
@@ -3916,7 +3916,7 @@
 		D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+ParsedUsername.swift"; sourceTree = "<group>"; };
 		D99840C5297A0F9500F7ED6D /* Usernames+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+API.swift"; sourceTree = "<group>"; };
 		D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+HeaderView.swift"; sourceTree = "<group>"; };
-		D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareMyUsernameSheetViewController.swift; sourceTree = "<group>"; };
+		D99840CD2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkShareSheetViewController.swift; sourceTree = "<group>"; };
 		D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupMemberRole.swift; sourceTree = "<group>"; };
 		D99A0F5F29F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateInfoMessageInserter.swift; sourceTree = "<group>"; };
 		D99A0F6129F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift"; sourceTree = "<group>"; };
@@ -7890,6 +7890,7 @@
 				D934279B2A4E43680062311B /* UsernameLinkQRCodeColor.swift */,
 				D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */,
 				D9DCFDA42A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift */,
+				D99840CD2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift */,
 			);
 			path = Links;
 			sourceTree = "<group>";
@@ -7953,7 +7954,6 @@
 			children = (
 				D9317FDA2A4CE47100075A92 /* Links */,
 				D9317FD92A4CE45500075A92 /* Selection */,
-				D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */,
 				C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */,
 			);
 			path = Usernames;
@@ -11805,7 +11805,6 @@
 				D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */,
 				886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */,
 				F915A77029CB6D4C00EB6F68 /* ShareActivityUtil.swift in Sources */,
-				D99840CE2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,
 				8841584C252F9F1C0078903D /* SignalCall.swift in Sources */,
 				8822558D26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift in Sources */,
@@ -11867,6 +11866,7 @@
 				D9317FDC2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift in Sources */,
 				D9DCFDB02A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift in Sources */,
 				D9DCFDA52A37D12100C73C0B /* UsernameLinkQRCodeViewController.swift in Sources */,
+				D99840CE2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift in Sources */,
 				D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */,
 				D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */,
 				D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */,

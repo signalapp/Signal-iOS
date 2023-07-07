@@ -15,21 +15,23 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
     private var currentColor: UsernameLinkQRCodeColor
 
     private let username: String
-    private let qrCodeImage: UIImage
+    private let qrCodeTemplateImage: UIImage
 
     private weak var colorPickerDelegate: UsernameLinkQRCodeColorPickerDelegate?
 
     init(
         currentColor: UsernameLinkQRCodeColor,
         username: String,
-        qrCodeImage: UIImage,
+        qrCodeTemplateImage: UIImage,
         delegate: UsernameLinkQRCodeColorPickerDelegate
     ) {
+        owsAssert(qrCodeTemplateImage.renderingMode == .alwaysTemplate)
+
         self.startingColor = currentColor
         self.currentColor = currentColor
 
         self.username = username
-        self.qrCodeImage = qrCodeImage
+        self.qrCodeTemplateImage = qrCodeTemplateImage
 
         self.colorPickerDelegate = delegate
 
@@ -40,8 +42,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
 
     private func buildQRCodeWrapperView() -> UIView {
         let qrCodeImageView: UIImageView = {
-            let templateImage = qrCodeImage.withRenderingMode(.alwaysTemplate)
-            let imageView = UIImageView(image: templateImage)
+            let imageView = UIImageView(image: qrCodeTemplateImage)
 
             imageView.tintColor = currentColor.foreground
             imageView.autoPinToSquareAspectRatio()
@@ -49,11 +50,11 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
             return imageView
         }()
 
-        let qrCodeBackgroundView: UIView = {
+        let qrCodePaddingView: UIView = {
             let view = UIView()
 
             view.backgroundColor = .ows_white
-            view.layer.borderColor = currentColor.border.cgColor
+            view.layer.borderColor = currentColor.paddingBorder.cgColor
             view.layer.borderWidth = 2
             view.layer.cornerRadius = 12
             view.layoutMargins = UIEdgeInsets(margin: 18)
@@ -82,14 +83,14 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
         wrapper.layer.cornerRadius = 24
         wrapper.layoutMargins = UIEdgeInsets(hMargin: 40, vMargin: 32)
 
-        wrapper.addSubview(qrCodeBackgroundView)
+        wrapper.addSubview(qrCodePaddingView)
         wrapper.addSubview(usernameLabel)
 
-        qrCodeBackgroundView.autoPinTopToSuperviewMargin()
-        qrCodeBackgroundView.autoAlignAxis(toSuperviewAxis: .vertical)
-        qrCodeBackgroundView.autoSetDimension(.width, toSize: 214)
+        qrCodePaddingView.autoPinTopToSuperviewMargin()
+        qrCodePaddingView.autoAlignAxis(toSuperviewAxis: .vertical)
+        qrCodePaddingView.autoSetDimension(.width, toSize: 214)
 
-        qrCodeBackgroundView.autoPinEdge(.bottom, to: .top, of: usernameLabel, withOffset: -16)
+        qrCodePaddingView.autoPinEdge(.bottom, to: .top, of: usernameLabel, withOffset: -16)
 
         usernameLabel.autoPinLeadingToSuperviewMargin()
         usernameLabel.autoPinTrailingToSuperviewMargin()

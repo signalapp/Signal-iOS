@@ -69,6 +69,21 @@ open class OWSButton: UIButton {
         }
     }
 
+    /// Configure the button for a potentially multiline label.
+    ///
+    /// UIButton's intrinsic content size won't respect a multiline label, and
+    /// consequently the label might grow outside the bounds of the button.
+    ///
+    /// Note that this method uses autolayout.
+    public func configureForMultilineTitle(lineBreakMode: NSLineBreakMode = .byCharWrapping) {
+        titleLabel!.numberOfLines = 0
+        titleLabel!.lineBreakMode = lineBreakMode
+
+        // Without this, the label may grow taller than the button, which won't
+        // grow its intrinsic content size to compensate for a multiline label.
+        autoPinHeight(toHeightOf: titleLabel!, relation: .greaterThanOrEqual)
+    }
+
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -124,5 +139,13 @@ open class OWSButton: UIButton {
             (dimsWhenDisabled && !isEnabled)
         )
         alpha = isDimmed ? 0.4 : 1
+    }
+}
+
+/// A button whose leading and trailing edges are round.
+open class RoundedOWSButton: OWSButton {
+    override open func layoutSubviews() {
+        super.layoutSubviews()
+        layer.cornerRadius = height / 2
     }
 }

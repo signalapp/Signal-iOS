@@ -6,7 +6,12 @@
 import SignalServiceKit
 import SignalUI
 
-/// A generator that produces a QR code for username links.
+/// A generator producing styled QR codes for username links.
+///
+/// The QR codes have a configurable foreground and background, and contain
+/// aesthetic features such as an overlaid Signal logo and rounded "pixels".
+/// They are significantly scaled up so as to appropriately render the rounded
+/// shapes.
 class UsernameLinkQRCodeGenerator: QRCodeGenerator {
     private enum Constants {
         static let imageScale: Int = 30
@@ -15,10 +20,12 @@ class UsernameLinkQRCodeGenerator: QRCodeGenerator {
         static let deadzoneLogoInset: CGFloat = 2.5
     }
 
-    private let color: UIColor
+    private let foregroundColor: UIColor
+    private let backgroundColor: UIColor
 
-    init(color: UIColor) {
-        self.color = color
+    init(foregroundColor: UIColor, backgroundColor: UIColor) {
+        self.foregroundColor = foregroundColor
+        self.backgroundColor = backgroundColor
     }
 
     func generateQRCode(data: Data) -> UIImage? {
@@ -53,7 +60,8 @@ class UsernameLinkQRCodeGenerator: QRCodeGenerator {
         let styledQRCodeContext: CGContext = .drawing(
             gridDrawing: qrCodeGridDrawing,
             scaledBy: Constants.imageScale,
-            color: color.cgColor
+            foregroundColor: foregroundColor.cgColor,
+            backgroundColor: backgroundColor.cgColor
         )
 
         // Draw a circle in the deadzone.
@@ -65,7 +73,7 @@ class UsernameLinkQRCodeGenerator: QRCodeGenerator {
 
         // Draw the logo inside the circle in the deadzone.
         let logo = UIImage(named: "signal-logo-40")!
-            .asTintedImage(color: color)!
+            .asTintedImage(color: foregroundColor)!
             .cgImage!
         let logoRect = deadzone.cgRect(
             scaledBy: CGFloat(Constants.imageScale),

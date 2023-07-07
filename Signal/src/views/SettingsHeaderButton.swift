@@ -19,11 +19,15 @@ class SettingsHeaderButton: OWSButton {
         icon: ThemeIcon,
         backgroundColor: UIColor,
         isEnabled: Bool,
-        block: @escaping () -> Void
+        block: (() -> Void)?
     ) {
         label = UILabel()
 
-        super.init(block: block)
+        if let block {
+            super.init(block: block)
+        } else {
+            super.init()
+        }
 
         dimsWhenHighlighted = true
         self.isEnabled = isEnabled

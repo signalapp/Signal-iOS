@@ -5,9 +5,9 @@
 
 import SignalUI
 
-/// A generator that produces a "basic" QR code for display.
+/// A generator producing unstyled QR codes for display in the app.
 ///
-/// Specifically, the generated QR code has a dark foreground over a transparent
+/// The QR codes are unscaled and have a dark foreground over a transparent
 /// background.
 class BasicDisplayQRCodeGenerator: QRCodeGenerator {
     func generateQRCode(data: Data) -> UIImage? {

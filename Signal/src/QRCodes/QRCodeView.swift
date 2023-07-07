@@ -75,34 +75,48 @@ class QRCodeView: UIView {
 
     // MARK: -
 
+    /// Generate and display a QR code for the given URL.
     func setQR(url: URL, generator: QRCodeGenerator = BasicDisplayQRCodeGenerator()) {
         guard let qrCodeImage = generator.generateQRCode(url: url) else {
             owsFailDebug("Failed to generate QR code image!")
             return
         }
 
-        setQR(image: qrCodeImage)
+        setQR(imageView: UIImageView(image: qrCodeImage))
     }
 
-    func setQR(image qrCodeImage: UIImage) {
+    /// Display the given QR code template image, tinted with the given color.
+    ///
+    /// - Parameter templateImage
+    /// The QR code image to display. This image should be a template image. See
+    /// ``UIImage.RenderingMode``.
+    func setQR(templateImage: UIImage, tintColor: UIColor) {
+        owsAssert(templateImage.renderingMode == .alwaysTemplate)
+
+        let imageView = UIImageView(image: templateImage)
+        imageView.tintColor = tintColor
+
+        setQR(imageView: imageView)
+    }
+
+    /// Display the given QR code image.
+    private func setQR(imageView qrCodeImageView: UIImageView) {
         qrCodeView?.removeFromSuperview()
         placeholderView.removeFromSuperview()
 
-        let qrCodeView = UIImageView(image: qrCodeImage)
-
         // Don't antialias QR Codes.
-        qrCodeView.layer.magnificationFilter = .nearest
-        qrCodeView.layer.minificationFilter = .nearest
+        qrCodeImageView.layer.magnificationFilter = .nearest
+        qrCodeImageView.layer.minificationFilter = .nearest
 
-        self.qrCodeView = qrCodeView
-
-        qrCodeWrapper.addSubview(qrCodeView)
-        qrCodeView.autoPinToSquareAspectRatio()
-        qrCodeView.autoCenterInSuperview()
+        qrCodeWrapper.addSubview(qrCodeImageView)
+        qrCodeImageView.autoPinToSquareAspectRatio()
+        qrCodeImageView.autoCenterInSuperview()
         if useCircularWrapper {
-            qrCodeView.autoMatch(.height, to: .height, of: qrCodeWrapper, withMultiplier: 0.6)
+            qrCodeImageView.autoMatch(.height, to: .height, of: qrCodeWrapper, withMultiplier: 0.6)
         } else {
-            qrCodeView.autoPinEdgesToSuperviewMargins()
+            qrCodeImageView.autoPinEdgesToSuperviewMargins()
         }
+
+        qrCodeView = qrCodeImageView
     }
 }

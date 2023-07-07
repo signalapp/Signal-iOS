@@ -24,7 +24,8 @@ extension CGContext {
         scaledBy scaleInt: Int,
         lineJoin: CGLineJoin = .round,
         lineCap: CGLineCap = .round,
-        color: CGColor
+        foregroundColor: CGColor,
+        backgroundColor: CGColor
     ) -> CGContext {
         let scaleFloat = CGFloat(scaleInt)
 
@@ -38,10 +39,13 @@ extension CGContext {
             bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
         )!
 
+        cgContext.setFillColor(backgroundColor)
+        cgContext.fill([cgContext.boundingRect])
+
         cgContext.setLineWidth(scaleFloat)
         cgContext.setLineJoin(lineJoin)
         cgContext.setLineCap(lineCap)
-        cgContext.setStrokeColor(color)
+        cgContext.setStrokeColor(foregroundColor)
 
         let segmentsCGPointPairs = drawing.segments.flatMap { segment -> [CGPoint] in
             return [
@@ -53,5 +57,9 @@ extension CGContext {
         cgContext.strokeLineSegments(between: segmentsCGPointPairs)
 
         return cgContext
+    }
+
+    private var boundingRect: CGRect {
+        return CGRect(origin: .zero, size: CGSize(width: width, height: height))
     }
 }

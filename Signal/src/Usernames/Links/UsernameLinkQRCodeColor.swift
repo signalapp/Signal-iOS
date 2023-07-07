@@ -5,6 +5,9 @@
 
 import SignalServiceKit
 
+/// Preset color options for the username link QR code.
+///
+/// Exposes a set of colors to use for various parts of the QR code rendering.
 enum UsernameLinkQRCodeColor: String, UnknownEnumCodable, CaseIterable {
     case blue
     case white
@@ -23,7 +26,7 @@ enum UsernameLinkQRCodeColor: String, UnknownEnumCodable, CaseIterable {
         case .blue:
             return UIColor(rgbHex: 0x506ECD)
         case .white:
-            return UIColor(rgbHex: 0xFFFFFF)
+            return .ows_white
         case .grey:
             return UIColor(rgbHex: 0x6A6C74)
         case .olive:
@@ -45,7 +48,7 @@ enum UsernameLinkQRCodeColor: String, UnknownEnumCodable, CaseIterable {
         case .blue:
             return UIColor(rgbHex: 0x2449C0)
         case .white:
-            return UIColor(rgbHex: 0x000000)
+            return .ows_black
         case .grey:
             return UIColor(rgbHex: 0x464852)
         case .olive:
@@ -61,8 +64,8 @@ enum UsernameLinkQRCodeColor: String, UnknownEnumCodable, CaseIterable {
         }
     }
 
-    /// Border color for the QR code.
-    var border: UIColor {
+    /// Border color for the padding around the QR code.
+    var paddingBorder: UIColor {
         switch self {
         case .white:
             return .ows_gray05

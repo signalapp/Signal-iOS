@@ -11,20 +11,6 @@ import XCTest
 class UsernamesUsernameLinkTests: XCTestCase {
     private typealias Username = String
 
-    func testAestheticUrls() {
-        let testCases: [(Username, String)] = [
-            ("myusername", "signal.me/#u/bXl1c2VybmFtZQ"),
-            ("?weird # but not disallowed/here", "signal.me/#u/P3dlaXJkICMgYnV0IG5vdCBkaXNhbGxvd2VkL2hlcmU")
-        ]
-
-        for testCase in testCases {
-            let (username, expected) = testCase
-            let actual = Usernames.UsernameLink(username: username).asAestheticUrlString
-
-            XCTAssertEqual(actual, expected)
-        }
-    }
-
     func testSignalDotMeUrl() {
         let testCases: [(Username, URL?)] = [
             ("myusername", URL(string: "https://signal.me/#u/bXl1c2VybmFtZQ")!),
@@ -33,7 +19,7 @@ class UsernamesUsernameLinkTests: XCTestCase {
 
         for testCase in testCases {
             let (username, expected) = testCase
-            let actual = Usernames.UsernameLink(username: username).asUrl
+            let actual = Usernames.UsernameLink(username: username).url
 
             XCTAssertEqual(actual, expected)
         }
@@ -73,13 +59,13 @@ class UsernamesUsernameLinkTests: XCTestCase {
     /// base64url.
     func testBase64Url() {
         let testCases: [(Username, String)] = [
-            ("aa?", "signal.me/#u/YWE_"),
-            ("aa>", "signal.me/#u/YWE-")
+            ("aa?", "https://signal.me/#u/YWE_"),
+            ("aa>", "https://signal.me/#u/YWE-")
         ]
 
         for testCase in testCases {
             let (username, expected) = testCase
-            let actual = Usernames.UsernameLink(username: username).asAestheticUrlString
+            let actual = Usernames.UsernameLink(username: username).url.absoluteString
 
             XCTAssertEqual(actual, expected)
         }
