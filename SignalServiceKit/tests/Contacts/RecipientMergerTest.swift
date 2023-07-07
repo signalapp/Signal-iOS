@@ -51,10 +51,6 @@ private class MockRecipientDataStore: RecipientDataStore {
 }
 
 private class MockRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
-    func clearMappings(phoneNumber: E164, transaction: DBWriteTransaction) {}
-
-    func clearMappings(serviceId: ServiceId, transaction: DBWriteTransaction) {}
-
     func didUpdatePhoneNumber(oldServiceIdString: String?, oldPhoneNumber: String?, newServiceIdString: String?, newPhoneNumber: E164?, transaction: DBWriteTransaction) {}
 
     func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool { false }

@@ -362,18 +362,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             }
         }
 
-        Self.updateDBTableMappings(
-            newPhoneNumber: newPhoneNumber,
-            oldPhoneNumber: oldPhoneNumber,
-            newUuid: newServiceIdString,
-            transaction: transaction.unwrapGrdbWrite
-        )
-
-        // TODO: we may need to do more here, this is just bear bones to make sure we
-        // don't hold onto stale data with the old mapping.
-
-        ModelReadCaches.shared.evacuateAllCaches()
-
         if let contactThread = AnyContactThreadFinder().contactThread(for: newAddress, transaction: transaction) {
             SDSDatabaseStorage.shared.touch(thread: contactThread, shouldReindex: true, transaction: transaction)
         }
@@ -428,144 +416,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
                 }
             }
         }
-
-        transaction.addAsyncCompletion(queue: .global()) {
-            // Evacuate caches again once the transaction completes, in case
-            // some kind of race occurred.
-            ModelReadCaches.shared.evacuateAllCaches()
-        }
-    }
-
-    private static func updateDBTableMappings(
-        newPhoneNumber: String?,
-        oldPhoneNumber: String?,
-        newUuid: String?,
-        transaction: GRDBWriteTransaction
-    ) {
-        guard newUuid != nil || newPhoneNumber != nil else {
-            owsFailDebug("Missing newUuid and newPhoneNumber.")
-            return
-        }
-
-        for dbTableMapping in DBTableMapping.all {
-            let databaseTableName = dbTableMapping.databaseTableName
-            let uuidColumn = dbTableMapping.uuidColumn
-            let phoneNumberColumn = dbTableMapping.phoneNumberColumn
-            let sql = """
-                UPDATE \(databaseTableName)
-                SET \(uuidColumn) = ?, \(phoneNumberColumn) = ?
-                WHERE (\(uuidColumn) IS ? OR \(uuidColumn) IS NULL)
-                AND (\(phoneNumberColumn) IS ? OR \(phoneNumberColumn) IS NULL)
-                AND NOT (\(uuidColumn) IS NULL AND \(phoneNumberColumn) IS NULL)
-                """
-
-            let arguments: StatementArguments = [newUuid, newPhoneNumber, newUuid, oldPhoneNumber]
-            transaction.execute(sql: sql, arguments: arguments)
-        }
-    }
-
-    // There is no instance of SignalRecipient for the new uuid,
-    // but other db tables might have mappings for the new uuid.
-    // We need to clear that out.
-    fileprivate static func clearDBMappings(forUuid uuid: UUID, transaction: SDSAnyWriteTransaction) {
-        Logger.info("uuid: \(uuid)")
-
-        let mockUuid = UUID().uuidString
-        let transaction = transaction.unwrapGrdbWrite
-
-        for dbTableMapping in DBTableMapping.all {
-            let databaseTableName = dbTableMapping.databaseTableName
-            let uuidColumn = dbTableMapping.uuidColumn
-            let phoneNumberColumn = dbTableMapping.phoneNumberColumn
-
-            // If a record has a valid phoneNumber, we can simply clear the uuid.
-            do {
-                let sql = """
-                    UPDATE \(databaseTableName)
-                    SET \(uuidColumn) = NULL
-                    WHERE \(uuidColumn) = ?
-                    AND \(phoneNumberColumn) IS NOT NULL
-                    """
-                let arguments: StatementArguments = [uuid.uuidString]
-                transaction.execute(sql: sql, arguments: arguments)
-            }
-
-            // If a record does _NOT_ have a valid phoneNumber, we apply a mock uuid.
-            let sql = """
-                UPDATE \(databaseTableName)
-                SET \(uuidColumn) = ?
-                WHERE \(uuidColumn) = ?
-                AND \(phoneNumberColumn) IS NULL
-                """
-            let arguments: StatementArguments = [mockUuid, uuid.uuidString]
-            transaction.execute(sql: sql, arguments: arguments)
-        }
-    }
-
-    // There is no instance of SignalRecipient for the new phone number,
-    // but other db tables might have mappings for the new phone number.
-    // We need to clear that out.
-    fileprivate static func clearDBMappings(forPhoneNumber phoneNumber: String, transaction: SDSAnyWriteTransaction) {
-        guard let phoneNumber = phoneNumber.nilIfEmpty else {
-            owsFailDebug("Invalid phoneNumber.")
-            return
-        }
-
-        Logger.info("phoneNumber: \(phoneNumber)")
-
-        let mockUuid = UUID().uuidString
-        let transaction = transaction.unwrapGrdbWrite
-
-        for dbTableMapping in DBTableMapping.all {
-            let databaseTableName = dbTableMapping.databaseTableName
-            let uuidColumn = dbTableMapping.uuidColumn
-            let phoneNumberColumn = dbTableMapping.phoneNumberColumn
-
-            // If a record has a valid uuid, we can simply clear the phoneNumber.
-            do {
-                let sql = """
-                    UPDATE \(databaseTableName)
-                    SET \(phoneNumberColumn) = NULL
-                    WHERE \(phoneNumberColumn) = ?
-                    AND \(uuidColumn) IS NOT NULL
-                    """
-                let arguments: StatementArguments = [phoneNumber]
-                transaction.execute(sql: sql, arguments: arguments)
-            }
-
-            // If a record does _NOT_ have a valid uuid, we clear the phoneNumber and apply a mock uuid.
-            let sql = """
-                UPDATE \(databaseTableName)
-                SET \(uuidColumn) = ?, \(phoneNumberColumn) = NULL
-                WHERE \(phoneNumberColumn) = ?
-                AND \(uuidColumn) IS NULL
-                """
-            let arguments: StatementArguments = [mockUuid, phoneNumber]
-            transaction.execute(sql: sql, arguments: arguments)
-        }
-    }
-
-    private struct DBTableMapping {
-        let databaseTableName: String
-        let uuidColumn: String
-        let phoneNumberColumn: String
-
-        static var all: [DBTableMapping] {
-            return [
-                DBTableMapping(databaseTableName: "\(OWSReaction.databaseTableName)",
-                               uuidColumn: "\(OWSReaction.columnName(.reactorUUID))",
-                               phoneNumberColumn: "\(OWSReaction.columnName(.reactorE164))"),
-                DBTableMapping(databaseTableName: "\(InteractionRecord.databaseTableName)",
-                               uuidColumn: "\(interactionColumn: .authorUUID)",
-                               phoneNumberColumn: "\(interactionColumn: .authorPhoneNumber)"),
-                DBTableMapping(databaseTableName: "pending_read_receipts",
-                               uuidColumn: "authorUuid",
-                               phoneNumberColumn: "authorPhoneNumber"),
-                DBTableMapping(databaseTableName: "pending_viewed_receipts",
-                               uuidColumn: "authorUuid",
-                               phoneNumberColumn: "authorPhoneNumber")
-            ]
-        }
     }
 
     @objc
@@ -592,14 +442,6 @@ class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
 
     init(sessionStore: SSKSessionStore) {
         self.sessionStore = sessionStore
-    }
-
-    func clearMappings(phoneNumber: E164, transaction: DBWriteTransaction) {
-        SignalRecipient.clearDBMappings(forPhoneNumber: phoneNumber.stringValue, transaction: SDSDB.shimOnlyBridge(transaction))
-    }
-
-    func clearMappings(serviceId: ServiceId, transaction: DBWriteTransaction) {
-        SignalRecipient.clearDBMappings(forUuid: serviceId.uuidValue, transaction: SDSDB.shimOnlyBridge(transaction))
     }
 
     func didUpdatePhoneNumber(

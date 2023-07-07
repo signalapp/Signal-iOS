@@ -68,8 +68,6 @@ struct MergedRecipient {
 }
 
 protocol RecipientMergerTemporaryShims {
-    func clearMappings(phoneNumber: E164, transaction: DBWriteTransaction)
-    func clearMappings(serviceId: ServiceId, transaction: DBWriteTransaction)
     func didUpdatePhoneNumber(
         oldServiceIdString: String?,
         oldPhoneNumber: String?,
@@ -124,6 +122,7 @@ class RecipientMergerImpl: RecipientMerger {
         // PNI TODO: Merge ReceiptForLinkedDevice if needed.
         [
             signalServiceAddressCache,
+            AuthorMergeObserver(),
             SignalAccountMergeObserver(),
             UserProfileMerger(userProfileStore: userProfileStore),
             ThreadMerger(
@@ -334,18 +333,6 @@ class RecipientMergerImpl: RecipientMerger {
                 // Fall through now that we've cleaned up `phoneNumberRecipient`.
             }
 
-            // We've already used `updateRecipient(_:phoneNumber:…)` (if necessary) to
-            // ensure that `phoneNumberInstance` doesn't use `phoneNumber`.
-            //
-            // However, that will only update mappings in other database tables that
-            // exactly match the address components of `phoneNumberInstance`. (?)
-            //
-            // The mappings in other tables might not exactly match the mappings in the
-            // `SignalRecipient` table. Therefore, to avoid crashes and other mapping
-            // problems, we need to ensure that no other tables have mappings that use
-            // `phoneNumber` _before_ we update `serviceIdRecipient`'s phone number.
-            temporaryShims.clearMappings(phoneNumber: phoneNumber, transaction: transaction)
-
             if let oldPhoneNumber = serviceIdRecipient.phoneNumber {
                 Logger.info("Learned serviceId \(serviceId) changed from old phoneNumber \(oldPhoneNumber) to new phoneNumber \(phoneNumber)")
             } else {
@@ -357,10 +344,6 @@ class RecipientMergerImpl: RecipientMerger {
         }
 
         if let phoneNumberRecipient {
-            // There is no SignalRecipient for the new ServiceId, but other db tables
-            // might have mappings for the new ServiceId. We need to clear that out.
-            temporaryShims.clearMappings(serviceId: serviceId, transaction: transaction)
-
             if phoneNumberRecipient.serviceIdString != nil {
                 // We can't change the ServiceId because it's non-empty. Instead, we must
                 // create a new SignalRecipient. We clear the phone number here since it
