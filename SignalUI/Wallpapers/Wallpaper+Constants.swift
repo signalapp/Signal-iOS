@@ -6,31 +6,6 @@
 import Foundation
 
 extension Wallpaper {
-
-    func asSolidColor(themeMode: ColorOrGradientThemeMode) -> UIColor? {
-        guard let setting = self.asColorOrGradientSetting else {
-            return nil
-        }
-        switch setting.asValue(themeMode: themeMode) {
-        case .transparent:
-            return nil
-        case .solidColor(let color):
-            return color
-        case .gradient:
-            return nil
-        }
-    }
-
-    func asSwatchView(shapeMode: ColorOrGradientSwatchView.ShapeMode,
-                      themeMode: ColorOrGradientThemeMode) -> ColorOrGradientSwatchView? {
-        guard let setting = self.asColorOrGradientSetting else {
-            return nil
-        }
-        return ColorOrGradientSwatchView(setting: setting,
-                                         shapeMode: shapeMode,
-                                         themeMode: themeMode)
-    }
-
     var asColorOrGradientSetting: ColorOrGradientSetting? {
         func parseAngleDegreesFromSpec(_ angleDegreesFromSpec: CGFloat) -> CGFloat {
             // In our models:

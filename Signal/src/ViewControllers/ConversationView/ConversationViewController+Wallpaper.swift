@@ -4,39 +4,34 @@
 //
 
 import SignalCoreKit
+import SignalServiceKit
 import SignalUI
 
 extension ConversationViewController {
-
-    func setupWallpaper() {
+    func setUpWallpaper() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(wallpaperDidChange),
-            name: Wallpaper.wallpaperDidChangeNotification,
+            name: WallpaperStore.wallpaperDidChangeNotification,
             object: nil
         )
-
-        updateWallpaperView()
+        updateWallpaperViewBuilder()
     }
 
     @objc
-    func wallpaperDidChange(_ notification: Notification) {
+    private func wallpaperDidChange(_ notification: Notification) {
         guard notification.object == nil || (notification.object as? String) == thread.uniqueId else { return }
-        updateWallpaperView()
-
+        updateWallpaperViewBuilder()
         updateConversationStyle()
+    }
+
+    func updateWallpaperViewBuilder() {
+        viewState.wallpaperViewBuilder = databaseStorage.read { tx in Wallpaper.viewBuilder(for: thread, tx: tx) }
+        updateWallpaperView()
     }
 
     func updateWallpaperView() {
         AssertIsOnMainThread()
-
-        guard let wallpaperView = databaseStorage.read(block: { transaction in
-            Wallpaper.view(for: self.thread, transaction: transaction)
-        }) else {
-            backgroundContainer.set(wallpaperView: nil)
-            return
-        }
-
-        backgroundContainer.set(wallpaperView: wallpaperView)
+        backgroundContainer.set(wallpaperView: viewState.wallpaperViewBuilder?.build())
     }
 }

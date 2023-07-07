@@ -14,8 +14,8 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(updateTableContents),
-            name: Wallpaper.wallpaperDidChangeNotification,
+            selector: #selector(wallpaperDidChange(notification:)),
+            name: WallpaperStore.wallpaperDidChangeNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -38,6 +38,19 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         )
     }
 
+    private var wallpaperViewBuilder: WallpaperViewBuilder?
+
+    private func updateWallpaperViewBuilder() {
+        wallpaperViewBuilder = databaseStorage.read { tx in Wallpaper.viewBuilder(for: thread, tx: tx) }
+    }
+
+    @objc
+    private func wallpaperDidChange(notification: Notification) {
+        guard notification.object == nil || (notification.object as? String) == thread?.uniqueId else { return }
+        updateWallpaperViewBuilder()
+        updateTableContents()
+    }
+
     @objc
     private func conversationChatColorSettingDidChange(_ notification: NSNotification) {
         guard let thread = self.thread else {
@@ -58,6 +71,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
         title = OWSLocalizedString("COLOR_AND_WALLPAPER_SETTINGS_TITLE", comment: "Title for the color & wallpaper settings view.")
 
+        updateWallpaperViewBuilder()
         updateTableContents()
     }
 
@@ -71,7 +85,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
             guard let self = self else { return cell }
-            let miniPreview = MiniPreviewView(thread: self.thread)
+            let miniPreview = MiniPreviewView(thread: self.thread, wallpaperViewBuilder: self.wallpaperViewBuilder)
             cell.contentView.addSubview(miniPreview)
             miniPreview.autoPinEdge(toSuperviewEdge: .left, withInset: self.cellHOuterLeftMargin)
             miniPreview.autoPinEdge(toSuperviewEdge: .right, withInset: self.cellHOuterRightMargin)
@@ -146,8 +160,10 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_wallpaper")
         ) { [weak self] in
             guard let self = self else { return }
-            let vc = SetWallpaperViewController(thread: self.thread)
-            self.navigationController?.pushViewController(vc, animated: true)
+            let viewController = self.databaseStorage.read { tx in
+                SetWallpaperViewController.load(thread: self.thread, tx: tx)
+            }
+            self.navigationController?.pushViewController(viewController, animated: true)
         })
 
         wallpaperSection.add(OWSTableItem.switch(
@@ -158,7 +174,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                 self.databaseStorage.read { Wallpaper.dimInDarkMode(for: self.thread, transaction: $0) }
             },
             isEnabled: {
-                self.databaseStorage.read { Wallpaper.exists(for: self.thread, transaction: $0) }
+                self.databaseStorage.read { Wallpaper.wallpaperForRendering(for: self.thread, transaction: $0) != nil }
             },
             target: self,
             selector: #selector(updateWallpaperDimming)
@@ -193,12 +209,9 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
     @objc
     func updateWallpaperDimming(_ sender: UISwitch) {
-        databaseStorage.asyncWrite { transaction in
-            do {
-                try Wallpaper.setDimInDarkMode(sender.isOn, for: self.thread, transaction: transaction)
-            } catch {
-                owsFailDebug("Failed to set dim in dark mode \(error)")
-            }
+        databaseStorage.asyncWrite { tx in
+            let wallpaperStore = DependenciesBridge.shared.wallpaperStore
+            wallpaperStore.setDimInDarkMode(sender.isOn, for: self.thread?.uniqueId, tx: tx.asV2Write)
         }
     }
 
@@ -247,9 +260,10 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
     func resetWallpaper() {
         let thread = self.thread
-        databaseStorage.asyncWrite { transaction in
+        databaseStorage.asyncWrite { tx in
             do {
-                try Wallpaper.clear(for: thread, transaction: transaction)
+                let wallpaperStore = DependenciesBridge.shared.wallpaperStore
+                try wallpaperStore.reset(for: thread, tx: tx.asV2Write)
             } catch {
                 owsFailDebug("Failed to clear wallpaper with error: \(error)")
                 DispatchQueue.main.async {
@@ -259,18 +273,17 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                     )
                 }
             }
-            transaction.addAsyncCompletionOnMain {
-                AssertIsOnMainThread()
-
+            tx.addAsyncCompletionOnMain {
                 self.updateTableContents()
             }
         }
     }
 
     private func resetAllWallpapers() {
-        databaseStorage.asyncWrite { transaction in
+        databaseStorage.asyncWrite { tx in
             do {
-                try Wallpaper.resetAll(transaction: transaction)
+                let wallpaperStore = DependenciesBridge.shared.wallpaperStore
+                try wallpaperStore.resetAll(tx: tx.asV2Write)
             } catch {
                 owsFailDebug("Failed to reset all wallpapers with error: \(error)")
                 DispatchQueue.main.async {
@@ -280,9 +293,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                     )
                 }
             }
-            transaction.addAsyncCompletionOnMain {
-                AssertIsOnMainThread()
-
+            tx.addAsyncCompletionOnMain {
                 self.updateTableContents()
             }
         }
@@ -366,15 +377,13 @@ private class MiniPreviewView: UIView {
     private let thread: TSThread?
     private let hasWallpaper: Bool
 
-    init(thread: TSThread?) {
+    init(thread: TSThread?, wallpaperViewBuilder: WallpaperViewBuilder?) {
         self.thread = thread
 
         let hasWallpaper: Bool
         let stackViewContainer: UIView
-        if let wallpaperView = (Self.databaseStorage.read { transaction in
-            Wallpaper.view(for: thread, transaction: transaction)
-        }) {
-            stackViewContainer = wallpaperView.asPreviewView()
+        if let wallpaperViewBuilder {
+            stackViewContainer = wallpaperViewBuilder.build().asPreviewView()
             hasWallpaper = true
         } else {
             stackViewContainer = UIView()

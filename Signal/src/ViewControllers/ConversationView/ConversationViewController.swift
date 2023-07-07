@@ -241,7 +241,7 @@ public final class ConversationViewController: OWSViewController {
         backgroundContainer.delegate = self
         self.view.addSubview(backgroundContainer)
         backgroundContainer.autoPinEdgesToSuperviewEdges()
-        setupWallpaper()
+        setUpWallpaper()
 
         self.view.addSubview(bottomBar)
         self.bottomBarBottomConstraint = bottomBar.autoPinEdge(toSuperviewEdge: .bottom)

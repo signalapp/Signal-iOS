@@ -332,10 +332,14 @@ private class WallpaperPage: UIViewController {
         let shouldDimInDarkTheme = databaseStorage.read { transaction in
             Wallpaper.dimInDarkMode(for: thread, transaction: transaction)
         }
-        guard let wallpaperView = Wallpaper.view(for: wallpaper,
-                                                 photo: photo,
-                                                 shouldDimInDarkTheme: shouldDimInDarkTheme) else {
-            return owsFailDebug("Failed to create photo wallpaper view")
+        let wallpaperView = Wallpaper.viewBuilder(
+            for: wallpaper,
+            customPhoto: { photo },
+            shouldDimInDarkTheme: shouldDimInDarkTheme
+        )?.build()
+        guard let wallpaperView else {
+            owsFailDebug("Failed to create photo wallpaper view")
+            return
         }
         self.wallpaperView = wallpaperView
 

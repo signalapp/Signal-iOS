@@ -35,8 +35,8 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(wallpaperDidChange),
-            name: Wallpaper.wallpaperDidChangeNotification,
+            selector: #selector(wallpaperDidChange(notification:)),
+            name: WallpaperStore.wallpaperDidChangeNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -61,8 +61,16 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
         )
     }
 
+    private var wallpaperViewBuilder: WallpaperViewBuilder?
+
+    private func updateWallpaperViewBuilder() {
+        wallpaperViewBuilder = databaseStorage.read { tx in Wallpaper.viewBuilder(for: thread, tx: tx) }
+    }
+
     @objc
-    private func wallpaperDidChange() {
+    private func wallpaperDidChange(notification: Notification) {
+        guard notification.object == nil || (notification.object as? String) == thread?.uniqueId else { return }
+        updateWallpaperViewBuilder()
         updateTableContents()
     }
 
@@ -115,6 +123,7 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
 
         title = OWSLocalizedString("CHAT_COLOR_SETTINGS_TITLE", comment: "Title for the chat color settings view.")
 
+        updateWallpaperViewBuilder()
         updateTableContents()
     }
 
@@ -123,10 +132,8 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
 
         let wallpaperPreviewView: UIView
         let hasWallpaper: Bool
-        if let wallpaperView = (databaseStorage.read { transaction in
-            Wallpaper.view(for: thread, transaction: transaction)
-        }) {
-            wallpaperPreviewView = wallpaperView.asPreviewView()
+        if let wallpaperViewBuilder {
+            wallpaperPreviewView = wallpaperViewBuilder.build().asPreviewView()
             hasWallpaper = true
         } else {
             wallpaperPreviewView = UIView()

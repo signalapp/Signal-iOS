@@ -234,7 +234,7 @@ extension OWSOrphanDataCleaner {
     @objc
     static func findOrphanedWallpaperPaths() -> Set<String> {
         findOrphanedPaths(
-            baseUrl: Wallpaper.wallpaperDirectory,
+            baseUrl: DependenciesBridge.shared.wallpaperStore.customPhotoDirectory,
             fetchExpectedRelativePaths: { Wallpaper.allCustomPhotoRelativePaths(tx: $0.asV2Read) }
         )
     }

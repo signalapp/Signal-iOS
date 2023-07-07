@@ -9,6 +9,7 @@ import SignalUI
 class CustomColorViewController: OWSTableViewController2 {
 
     private let thread: TSThread?
+    private var wallpaperViewBuilder: WallpaperViewBuilder?
 
     public enum ValueMode {
         case createNew
@@ -119,6 +120,8 @@ class CustomColorViewController: OWSTableViewController2 {
 
         updateNavigation()
 
+        wallpaperViewBuilder = databaseStorage.read { tx in Wallpaper.viewBuilder(for: thread, tx: tx) }
+
         updateTableContents()
     }
 
@@ -199,7 +202,7 @@ class CustomColorViewController: OWSTableViewController2 {
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        let previewView = CustomColorPreviewView(thread: self.thread, delegate: self)
+        let previewView = CustomColorPreviewView(wallpaperViewBuilder: wallpaperViewBuilder, delegate: self)
         self.previewView = previewView
 
         let previewSection = OWSTableSection()
@@ -411,10 +414,6 @@ class CustomColorViewController: OWSTableViewController2 {
                              setting: setting,
                              creationTimestamp: oldValue.creationTimestamp)
         }
-    }
-
-    fileprivate func hasWallpaper(transaction: SDSAnyReadTransaction) -> Bool {
-        nil != Wallpaper.wallpaperForRendering(for: self.thread, transaction: transaction)
     }
 
     private func showSaveUI() {
@@ -916,7 +915,6 @@ private protocol CustomColorPreviewDelegate: AnyObject {
     var gradientColor2: OWSColor { get }
 
     var currentChatColor: ChatColor { get }
-    func hasWallpaper(transaction: SDSAnyReadTransaction) -> Bool
 
     func switchToEditMode(_ value: CustomColorViewController.EditMode)
 
@@ -950,26 +948,23 @@ private class CustomColorPreviewView: UIView {
         updateKnobLayout()
     }
 
-    init(thread: TSThread?, delegate: CustomColorPreviewDelegate) {
-
-        let (mockConversationView, wallpaperPreviewView) = Self.databaseStorage.read { transaction -> (MockConversationView, UIView) in
-            let mockConversationView =
-                MockConversationView(
-                    model: CustomColorPreviewView.buildMockConversationModel(),
-                    hasWallpaper: delegate.hasWallpaper(transaction: transaction),
-                    customChatColor: delegate.currentChatColor
-                )
-
-            let wallpaperPreviewView: UIView
-            if let wallpaperView = Wallpaper.view(for: thread, transaction: transaction) {
-                wallpaperPreviewView = wallpaperView.asPreviewView()
-            } else {
-                wallpaperPreviewView = UIView()
-                wallpaperPreviewView.backgroundColor = Theme.backgroundColor
-            }
-
-            return (mockConversationView, wallpaperPreviewView)
+    init(wallpaperViewBuilder: WallpaperViewBuilder?, delegate: CustomColorPreviewDelegate) {
+        let wallpaperPreviewView: UIView
+        let hasWallpaper: Bool
+        if let wallpaperViewBuilder {
+            wallpaperPreviewView = wallpaperViewBuilder.build().asPreviewView()
+            hasWallpaper = true
+        } else {
+            wallpaperPreviewView = UIView()
+            wallpaperPreviewView.backgroundColor = Theme.backgroundColor
+            hasWallpaper = false
         }
+
+        let mockConversationView = MockConversationView(
+            model: CustomColorPreviewView.buildMockConversationModel(),
+            hasWallpaper: hasWallpaper,
+            customChatColor: delegate.currentChatColor
+        )
 
         self.mockConversationView = mockConversationView
 

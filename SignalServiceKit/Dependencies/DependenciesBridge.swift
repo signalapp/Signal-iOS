@@ -42,6 +42,7 @@ public class DependenciesBridge {
     let threadAssociatedDataStore: ThreadAssociatedDataStore
     public let threadRemover: ThreadRemover
     public let threadReplyInfoStore: ThreadReplyInfoStore
+    public let wallpaperStore: WallpaperStore
 
     public let appExpiry: AppExpiry
 
@@ -240,12 +241,15 @@ public class DependenciesBridge {
             signalService: signalService
         )
 
-        self.threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: self.keyValueStoreFactory)
-
         let groupMemberStore = GroupMemberStoreImpl()
         let interactionStore = InteractionStoreImpl()
         self.threadAssociatedDataStore = ThreadAssociatedDataStoreImpl()
+        self.threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: self.keyValueStoreFactory)
         let threadStore = ThreadStoreImpl()
+        self.wallpaperStore = WallpaperStore(
+            keyValueStoreFactory: self.keyValueStoreFactory,
+            notificationScheduler: self.schedulers.main
+        )
 
         self.groupMemberUpdater = GroupMemberUpdaterImpl(
             temporaryShims: GroupMemberUpdaterTemporaryShimsImpl(),

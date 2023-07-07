@@ -134,6 +134,7 @@ public class CVViewState: NSObject {
     public var presentationStatus: CVPresentationStatus = .notYetPresented
 
     public let backgroundContainer = CVBackgroundContainer()
+    public var wallpaperViewBuilder: WallpaperViewBuilder?
 
     weak var reactionsDetailSheet: ReactionsDetailSheet?
 

@@ -669,6 +669,7 @@
 		500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */; };
 		50086B9E29DF606E00F9C072 /* TSGroupThread+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */; };
 		50086B9F29DF60D900F9C072 /* NameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9B29DF5CB100F9C072 /* NameResolver.swift */; };
+		500AEE052A4B68E200371F05 /* WallpaperStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE042A4B68E200371F05 /* WallpaperStore.swift */; };
 		500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */; };
 		500FE490288615BA00FA090C /* CachedBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE48E2886148800FA090C /* CachedBadge.swift */; };
 		500FE4E0288A11B000FA090C /* ConversationViewController+GiftBadges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */; };
@@ -3166,6 +3167,7 @@
 		500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2OperationTest.swift; sourceTree = "<group>"; };
 		50086B9B29DF5CB100F9C072 /* NameResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameResolver.swift; sourceTree = "<group>"; };
 		50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSGroupThread+ViewModel.swift"; sourceTree = "<group>"; };
+		500AEE042A4B68E200371F05 /* WallpaperStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperStore.swift; sourceTree = "<group>"; };
 		500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+ReusableCell.swift"; sourceTree = "<group>"; };
 		500FE48E2886148800FA090C /* CachedBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedBadge.swift; sourceTree = "<group>"; };
 		500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+GiftBadges.swift"; sourceTree = "<group>"; };
@@ -6423,6 +6425,14 @@
 			path = Transitions;
 			sourceTree = "<group>";
 		};
+		500AEE032A4B68D200371F05 /* UISupport */ = {
+			isa = PBXGroup;
+			children = (
+				500AEE042A4B68E200371F05 /* WallpaperStore.swift */,
+			);
+			path = UISupport;
+			sourceTree = "<group>";
+		};
 		5011D9712A0471E8000FE8E5 /* OrphanData */ = {
 			isa = PBXGroup;
 			children = (
@@ -8499,6 +8509,7 @@
 				F9C5CB98289453B200548EEE /* Security */,
 				F9C5CA2F289453B100548EEE /* Storage */,
 				F9C5CB82289453B200548EEE /* TestUtils */,
+				500AEE032A4B68D200371F05 /* UISupport */,
 				D925F55C298C6A6000158EE4 /* Usernames */,
 				F9C5CAF8289453B200548EEE /* Util */,
 				F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */,
@@ -12645,6 +12656,7 @@
 				F9C5CE3B289453B400548EEE /* VersionedProfiles.swift in Sources */,
 				45A66116299EDF3000632EE2 /* VideoAttachmentDetection.swift in Sources */,
 				F9C5CDD5289453B400548EEE /* ViewOnceMessages.swift in Sources */,
+				500AEE052A4B68E200371F05 /* WallpaperStore.swift in Sources */,
 				F9C5CE50289453B400548EEE /* Weak.swift in Sources */,
 				F9C5CDFB289453B400548EEE /* WeakTimer.swift in Sources */,
 				500824CE292737FC005A5DC0 /* WebSocketPromise.swift in Sources */,
