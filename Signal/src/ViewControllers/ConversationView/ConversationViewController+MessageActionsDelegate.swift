@@ -18,30 +18,32 @@ extension ConversationViewController: MessageActionsDelegate {
             return owsFailDebug("Invalid interaction.")
         }
 
+        var editValidationError: EditSendValidationError?
+        var quotedReplyModel: QuotedReplyModel?
         Self.databaseStorage.read { transaction in
 
             // If edit send validation fails (timeframe expired,
             // too many edits, etc), display a message here.
-            if let editValidationError = context.editManager.validateCanSendEdit(
+            if let error = context.editManager.validateCanSendEdit(
                 targetMessageTimestamp: message.timestamp,
                 tx: transaction.asV2Read
             ) {
-                OWSActionSheets.showActionSheet(message: editValidationError.localizedDescription)
+                editValidationError = error
                 return
             }
 
             if message.quotedMessage != nil {
-                guard let quotedReply = QuotedReplyModel(
+                quotedReplyModel = QuotedReplyModel(
                     message: message,
                     transaction: transaction
-                ) else {
-                    owsFailDebug("Could not build quoted reply.")
-                    return
-                }
-
-                inputToolbar?.quotedReply = quotedReply
+                )
             }
+        }
 
+        if let editValidationError {
+            OWSActionSheets.showActionSheet(message: editValidationError.localizedDescription)
+        } else {
+            inputToolbar?.quotedReply = quotedReplyModel
             inputToolbar?.editTarget = message
             inputToolbar?.beginEditingMessage()
         }
@@ -130,6 +132,7 @@ extension ConversationViewController: MessageActionsDelegate {
             return
         }
 
+        inputToolbar.editTarget = nil
         inputToolbar.quotedReply = quotedReply
         inputToolbar.beginEditingMessage()
     }

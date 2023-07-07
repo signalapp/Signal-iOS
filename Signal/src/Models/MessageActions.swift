@@ -207,6 +207,11 @@ class MessageActions: NSObject {
             actions.append(MessageActionBuilder.forwardMessage(itemViewModel: itemViewModel, delegate: delegate))
         }
 
+        if itemViewModel.canEditMessage {
+            let editAction = MessageActionBuilder.editMessage(itemViewModel: itemViewModel, delegate: delegate)
+            actions.append(editAction)
+        }
+
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)
         actions.append(selectAction)
 
@@ -229,6 +234,11 @@ class MessageActions: NSObject {
 
         if itemViewModel.canForwardMessage {
             actions.append(MessageActionBuilder.forwardMessage(itemViewModel: itemViewModel, delegate: delegate))
+        }
+
+        if itemViewModel.canEditMessage {
+            let editAction = MessageActionBuilder.editMessage(itemViewModel: itemViewModel, delegate: delegate)
+            actions.append(editAction)
         }
 
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)
