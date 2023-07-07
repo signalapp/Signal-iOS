@@ -81,7 +81,8 @@ extension TSInteraction {
                 return true
             }
         case let message as TSMessage:
-            return !message.isGroupStoryReply
+            // skip considering this message if it's a group story reply, or a past edit revision
+            return !message.isGroupStoryReply && !EditManager.isPastEditRevision(message: message)
         default:
             return true
         }

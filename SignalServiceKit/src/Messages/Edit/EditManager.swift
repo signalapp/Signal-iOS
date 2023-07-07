@@ -376,3 +376,15 @@ public class EditManager {
         return newAttachmentIds
     }
 }
+
+public extension EditManager {
+
+    /// Check if the message is an old edit revision.
+    ///
+    /// Past edits will still technically be part of a conversation,
+    /// but they should be hidden from operations that are determining
+    /// latest messages for things like sorting conversations.
+    static func isPastEditRevision(message: TSMessage) -> Bool {
+        return message.editState == .pastRevision
+    }
+}
