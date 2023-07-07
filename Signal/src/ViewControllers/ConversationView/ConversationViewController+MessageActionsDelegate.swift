@@ -8,6 +8,36 @@ import SignalServiceKit
 import SignalUI
 
 extension ConversationViewController: MessageActionsDelegate {
+
+    func messageActionsEditItem(_ itemViewModel: CVItemViewModelImpl) {
+        populateMessageEdit(itemViewModel)
+    }
+
+    func populateMessageEdit(_ itemViewModel: CVItemViewModelImpl) {
+        guard let message = itemViewModel.interaction as? TSOutgoingMessage else {
+            return owsFailDebug("Invalid interaction.")
+        }
+
+        // TODO: validate message can still be edited.
+
+        if message.quotedMessage != nil {
+            let load = {
+                Self.databaseStorage.read { transaction in
+                    QuotedReplyModel(message: message, transaction: transaction)
+                }
+            }
+            guard let quotedReply = load() else {
+                owsFailDebug("Could not build quoted reply.")
+                return
+            }
+
+            inputToolbar?.quotedReply = quotedReply
+        }
+
+        inputToolbar?.editTarget = message
+        inputToolbar?.beginEditingMessage()
+    }
+
     func messageActionsShowDetailsForItem(_ itemViewModel: CVItemViewModelImpl) {
         showDetailView(itemViewModel)
     }

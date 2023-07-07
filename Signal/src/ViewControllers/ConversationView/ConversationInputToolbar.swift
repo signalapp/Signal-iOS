@@ -172,8 +172,8 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         return inputTextView
     }()
 
-    private lazy var attachmentButton: AttachmentButton = {
-        let button = AttachmentButton()
+    private lazy var addOrCancelButton: AddOrCancelButton = {
+        let button = AddOrCancelButton()
         button.accessibilityLabel = OWSLocalizedString(
             "ATTACHMENT_LABEL",
             comment: "Accessibility label for attaching photos"
@@ -183,7 +183,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             comment: "Accessibility hint describing what you can do with the attachment button"
         )
         button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "attachmentButton")
-        button.addTarget(self, action: #selector(attachmentButtonPressed), for: .touchUpInside)
+        button.addTarget(self, action: #selector(addOrCancelButtonPressed), for: .touchUpInside)
         button.autoSetDimensions(to: CGSize(square: LayoutMetrics.minToolbarItemHeight))
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalHigh()
@@ -220,6 +220,35 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalHigh()
         return button
+    }()
+
+    private lazy var editMessageLabelWrapper: UIView = {
+        let view = UIView.container()
+
+        let editIconView = UIImageView(image: UIImage(named: Theme.iconName(.contextMenuEdit)))
+        editIconView.contentMode = .scaleAspectFit
+        editIconView.autoSetDimension(.height, toSize: 16.0)
+        editIconView.setContentHuggingHigh()
+
+        let editLabel = UILabel()
+        editLabel.text = OWSLocalizedString(
+            "INPUT_TOOLBAR_EDIT_MESSAGE_LABEL",
+            comment: "Label at the top of the input text when editing a message"
+        )
+        editLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
+        editLabel.textColor = Theme.primaryTextColor
+
+        let stack = UIStackView(arrangedSubviews: [editIconView, editLabel])
+        stack.axis = .horizontal
+        stack.alignment = .fill
+
+        view.addSubview(stack)
+        stack.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 10, vMargin: 8))
+
+        view.setContentHuggingHorizontalLow()
+        view.setCompressionResistanceHorizontalLow()
+        view.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "editMessageWrapper")
+        return view
     }()
 
     private lazy var quotedReplyWrapper: UIView = {
@@ -322,11 +351,18 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             OWSLogger.info("")
         }
 
+        editMessageLabelWrapper.isHidden = !shouldShowEditUI
+
         quotedReplyWrapper.isHidden = quotedReply == nil
         self.quotedReply = quotedReply
 
         // Vertical stack of message component views in the center: Link Preview, Reply Quote, Text Input View.
-        let messageContentVStack = UIStackView(arrangedSubviews: [ quotedReplyWrapper, linkPreviewWrapper, inputTextView ])
+        let messageContentVStack = UIStackView(arrangedSubviews: [
+            editMessageLabelWrapper,
+            quotedReplyWrapper,
+            linkPreviewWrapper,
+            inputTextView
+        ])
         messageContentVStack.axis = .vertical
         messageContentVStack.alignment = .fill
         messageContentVStack.setContentHuggingHorizontalLow()
@@ -362,9 +398,9 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         // Horizontal Stack: Attachment button, message components, Camera|VoiceNote|Send button.
         //
         // + Attachment button: pinned to the bottom left corner.
-        mainPanelView.addSubview(attachmentButton)
-        attachmentButton.autoPinEdge(toSuperviewMargin: .left)
-        attachmentButton.autoPinEdge(toSuperviewEdge: .bottom)
+        mainPanelView.addSubview(addOrCancelButton)
+        addOrCancelButton.autoPinEdge(toSuperviewMargin: .left)
+        addOrCancelButton.autoPinEdge(toSuperviewEdge: .bottom)
 
         // Camera | Voice Message | Send: pinned to the bottom right corner.
         mainPanelView.addSubview(rightEdgeControlsView)
@@ -472,7 +508,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             voiceMemoContentView.setIsHidden(true, animated: isAnimated)
 
             // Show Send button instead of Camera and Voice Message buttons only when text input isn't empty.
-            let hasNonWhitespaceTextInput = !inputTextView.trimmedText.isEmpty
+            let hasNonWhitespaceTextInput = !inputTextView.trimmedText.isEmpty || shouldShowEditUI
             rightEdgeControlsState = hasNonWhitespaceTextInput ? .sendButton : .default
         }
 
@@ -485,17 +521,23 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         // Attachment Button
         let hideAttachmentButton = isShowingVoiceMemoUI
-        if setAttachmentButtonHidden(hideAttachmentButton, usingAnimator: animator) {
+        if setAddOrCancelButtonHidden(hideAttachmentButton, usingAnimator: animator) {
             hasLayoutChanged = true
         }
 
         // Attachment button has more complex animations and cannot be grouped with the rest.
-        let attachmentButtonAppearance: AttachmentButton.Appearance = desiredKeyboardType == .attachment ? .close : .add
-        attachmentButton.setAppearance(attachmentButtonAppearance, usingAnimator: animator)
+        let addOrCancelButtonAppearance: AddOrCancelButton.Appearance = {
+            if shouldShowEditUI {
+                return .close
+            } else {
+                return desiredKeyboardType == .attachment ? .close : .add
+            }
+        }()
+        addOrCancelButton.setAppearance(addOrCancelButtonAppearance, usingAnimator: animator)
 
         // Show / hide Sticker or Keyboard buttons inside of the text input field.
         // Either buttons are only visible if there's no any text input, including whitespace-only.
-        let hideStickerOrKeyboardButton = !inputTextView.untrimmedText.isEmpty || isShowingVoiceMemoUI || quotedReply != nil
+        let hideStickerOrKeyboardButton = shouldShowEditUI || !inputTextView.untrimmedText.isEmpty || isShowingVoiceMemoUI || quotedReply != nil
         let hideStickerButton = hideStickerOrKeyboardButton || desiredKeyboardType == .sticker
         let hideKeyboardButton = hideStickerOrKeyboardButton || !hideStickerButton
         ConversationInputToolbar.setView(stickerButton, hidden: hideStickerButton, usingAnimator: animator)
@@ -557,14 +599,14 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
                 constant: 16
             )
         } else {
-            constraint = messageContentView.leftAnchor.constraint(equalTo: attachmentButton.rightAnchor)
+            constraint = messageContentView.leftAnchor.constraint(equalTo: addOrCancelButton.rightAnchor)
         }
         addConstraint(constraint)
         messageContentViewLeftEdgeConstraint = constraint
     }
 
-    private func setAttachmentButtonHidden(_ isHidden: Bool, usingAnimator animator: UIViewPropertyAnimator?) -> Bool {
-        guard ConversationInputToolbar.setView(attachmentButton, hidden: isHidden, usingAnimator: animator) else { return false }
+    private func setAddOrCancelButtonHidden(_ isHidden: Bool, usingAnimator animator: UIViewPropertyAnimator?) -> Bool {
+        guard ConversationInputToolbar.setView(addOrCancelButton, hidden: isHidden, usingAnimator: animator) else { return false }
         updateMessageContentViewLeftEdgeConstraint(isViewHidden: isHidden)
         return true
     }
@@ -617,7 +659,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             let button = UIButton(type: .system)
             button.accessibilityLabel = MessageStrings.sendButton
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "sendButton")
-            button.setImage(UIImage(imageLiteralResourceName: "send-blue-32"), for: .normal)
+            button.setImage(UIImage(imageLiteralResourceName: "send-blue-28"), for: .normal)
             button.bounds.size = CGSize(width: 48, height: LayoutMetrics.minToolbarItemHeight)
             return button
         }()
@@ -731,15 +773,15 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         }
     }
 
-    // MARK: Attachment Button
+    // MARK: Add/Cancel Button
 
-    private class AttachmentButton: UIButton {
+    private class AddOrCancelButton: UIButton {
 
         private let roundedCornersBackground: UIView = {
             let view = UIView()
             view.backgroundColor = .init(rgbHex: 0x3B3B3B)
             view.clipsToBounds = true
-            view.layer.cornerRadius = 8
+            view.layer.cornerRadius = 14
             view.isUserInteractionEnabled = false
             return view
         }()
@@ -888,8 +930,42 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     }
 
     func clearTextMessage(animated: Bool) {
+        editTarget = nil
         setMessageBody(nil, animated: animated)
         inputTextView.undoManager?.removeAllActions()
+    }
+
+    // MARK: Edit Message
+
+    var shouldShowEditUI: Bool { editTarget != nil }
+
+    var editTarget: TSOutgoingMessage? {
+        didSet {
+            let animateChanges = window != nil
+
+            // Show the 'editing' tag
+            if let editTarget = editTarget {
+
+                let body = editTarget.body ?? ""
+                let ranges = editTarget.bodyRanges ?? .empty
+                let messageBody = MessageBody(text: body, ranges: ranges)
+                self.setMessageBody(messageBody, animated: true)
+
+                showEditMessageView(animated: animateChanges)
+            } else {
+                quotedReply = nil
+                hideEditMessageView(animated: animateChanges)
+            }
+        }
+    }
+
+    private func showEditMessageView(animated: Bool) {
+       toggleMessageComponentVisibility(hide: false, component: editMessageLabelWrapper, animated: animated)
+    }
+
+    private func hideEditMessageView(animated: Bool) {
+        owsAssertDebug(editTarget == nil)
+        toggleMessageComponentVisibility(hide: true, component: editMessageLabelWrapper, animated: animated)
     }
 
     // MARK: Quoted Reply
@@ -932,42 +1008,38 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         updateInputLinkPreview()
 
-        if animated, quotedReplyWrapper.isHidden {
-            isAnimatingHeightChange = true
-
-            UIView.animate(
-                withDuration: ConversationInputToolbar.heightChangeAnimationDuration,
-                animations: {
-                    self.quotedReplyWrapper.isHidden = false
-                },
-                completion: { _ in
-                    self.isAnimatingHeightChange = false
-                }
-            )
-        } else {
-            quotedReplyWrapper.isHidden = false
-        }
+        toggleMessageComponentVisibility(hide: false, component: quotedReplyWrapper, animated: animated)
     }
 
     private func hideQuotedReplyView(animated: Bool) {
         owsAssertDebug(quotedReply == nil)
+        toggleMessageComponentVisibility(hide: true, component: quotedReplyWrapper, animated: animated) { _ in
+            self.quotedReplyWrapper.removeAllSubviews()
+        }
+    }
 
-        if animated {
+    private func toggleMessageComponentVisibility(
+        hide: Bool,
+        component: UIView,
+        animated: Bool,
+        completion: ((Bool) -> Void)? = nil
+    ) {
+        if animated, component.isHidden != hide {
             isAnimatingHeightChange = true
 
             UIView.animate(
                 withDuration: ConversationInputToolbar.heightChangeAnimationDuration,
                 animations: {
-                    self.quotedReplyWrapper.isHidden = true
+                    component.isHidden = hide
                 },
-                completion: { _ in
+                completion: { completed in
                     self.isAnimatingHeightChange = false
-                    self.quotedReplyWrapper.removeAllSubviews()
+                    completion?(completed)
                 }
             )
         } else {
-            quotedReplyWrapper.isHidden = true
-            quotedReplyWrapper.removeAllSubviews()
+            component.isHidden = hide
+            completion?(true)
         }
     }
 
@@ -1845,7 +1917,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         UIView.setAnimationsEnabled(false)
 
         _ = inputTextView.becomeFirstResponder()
-        inputTextView.resignFirstResponder()
+        _ = inputTextView.resignFirstResponder()
 
         inputTextView.reloadMentionState()
 
@@ -1876,7 +1948,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     }
 
     func endEditingMessage() {
-        inputTextView.resignFirstResponder()
+        _ = inputTextView.resignFirstResponder()
         _ = stickerKeyboardIfLoaded?.resignFirstResponder()
         _ = attachmentKeyboardIfLoaded?.resignFirstResponder()
     }
@@ -1926,10 +1998,15 @@ extension ConversationInputToolbar {
     }
 
     @objc
-    private func attachmentButtonPressed() {
+    private func addOrCancelButtonPressed() {
         Logger.verbose("")
         ImpactHapticFeedback.impactOccurred(style: .light)
-        toggleKeyboardType(.attachment, animated: true)
+        if shouldShowEditUI {
+            editTarget = nil
+            clearTextMessage(animated: true)
+        } else {
+            toggleKeyboardType(.attachment, animated: true)
+        }
     }
 
     @objc

@@ -155,6 +155,10 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
 
 extension CVItemViewModelImpl {
 
+    var canEditMessage: Bool {
+        return FeatureFlags.editMessageSend
+    }
+
     var canCopyOrShareOrSpeakText: Bool {
         guard !isViewOnce else {
             return false

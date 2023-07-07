@@ -13,6 +13,7 @@ protocol MessageActionsDelegate: AnyObject {
     func messageActionsDeleteItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsSpeakItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsStopSpeakingItem(_ itemViewModel: CVItemViewModelImpl)
+    func messageActionsEditItem(_ itemViewModel: CVItemViewModelImpl)
 }
 
 // MARK: -
@@ -96,6 +97,18 @@ struct MessageActionBuilder {
         })
     }
 
+    static func editMessage(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
+        return MessageAction(
+            .edit,
+            accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_EDIT_MESSAGE", comment: "Action sheet edit message accessibility label"),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "edit_message"),
+            contextMenuTitle: NSLocalizedString("CONTEXT_MENU_EDIT_MESSAGE", comment: "Context menu edit button title"),
+            contextMenuAttributes: [],
+            block: { [weak delegate] (_) in
+                delegate?.messageActionsEditItem(itemViewModel)
+            })
+    }
+
     static func speakMessage(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         MessageAction(
             .speak,
@@ -150,6 +163,11 @@ class MessageActions: NSObject {
 
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)
         actions.append(selectAction)
+
+        if itemViewModel.canEditMessage {
+            let editAction = MessageActionBuilder.editMessage(itemViewModel: itemViewModel, delegate: delegate)
+            actions.append(editAction)
+        }
 
         if itemViewModel.canCopyOrShareOrSpeakText {
             // If the user started speaking a message and then turns of the "speak selection" OS setting,

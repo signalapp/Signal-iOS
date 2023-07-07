@@ -115,6 +115,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
                 let actionOrder: [MessageAction.MessageActionType] = [
                     .reply,
                     .forward,
+                    .edit,
                     .copy,
                     .share,
                     .select,

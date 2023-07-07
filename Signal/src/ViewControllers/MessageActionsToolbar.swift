@@ -23,6 +23,7 @@ public class MessageAction: NSObject {
         case select
         case speak
         case stopSpeaking
+        case edit
     }
 
     let actionType: MessageActionType
@@ -63,6 +64,8 @@ public class MessageAction: NSObject {
                 return .contextMenuSpeak
             case .stopSpeaking:
                 return .contextMenuStopSpeaking
+            case .edit:
+                return .contextMenuEdit
             }
         }()
         return Theme.iconImage(icon)

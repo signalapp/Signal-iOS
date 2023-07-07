@@ -106,7 +106,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 thread: self.thread,
                 quotedReplyModel: inputToolbar.quotedReply,
                 linkPreviewDraft: inputToolbar.linkPreviewDraft,
-                editTarget: nil,
+                editTarget: inputToolbar.editTarget,
                 persistenceCompletionHandler: {
                     AssertIsOnMainThread()
                     self.loadCoordinator.enqueueReload()
@@ -358,7 +358,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                     mediaAttachments: attachments,
                     thread: self.thread,
                     quotedReplyModel: inputToolbar.quotedReply,
-                    editTarget: nil,
+                    editTarget: inputToolbar.editTarget,
                     persistenceCompletionHandler: {
                         AssertIsOnMainThread()
                         self.loadCoordinator.enqueueReload()
