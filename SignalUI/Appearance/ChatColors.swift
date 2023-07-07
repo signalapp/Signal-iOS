@@ -87,13 +87,6 @@ public class ChatColors: Dependencies {
         SwiftSingletons.register(self)
     }
 
-    /// Stores the `ChatColorSetting` for each thread and the global scope. The
-    /// setting may be a pointer to a `CustomChatColor`.
-    ///
-    /// The keys in this store are thread unique ids _OR_ "defaultKey". The
-    /// values are either `PaletteChatColor.rawValue` or `CustomChatColor.Key`.
-    private static let chatColorSettingStore = SDSKeyValueStore(collection: "chatColorSettingStore")
-
     /// The keys in this store are `CustomChatColor.Key`. The values are
     /// `CustomChatColor`s.
     private static let customColorsStore = SDSKeyValueStore(collection: "customColorsStore.3")
@@ -132,11 +125,11 @@ public class ChatColors: Dependencies {
     }
 
     /// Returns the number of conversations that use a given value.
-    public static func usageCount(for key: CustomChatColor.Key, tx: SDSAnyReadTransaction) -> Int {
+    public static func usageCount(of colorKey: CustomChatColor.Key, tx: SDSAnyReadTransaction) -> Int {
+        let chatColorSettingStore = DependenciesBridge.shared.chatColorSettingStore
         var count: Int = 0
-        let threadUniqueIds = chatColorSettingStore.allKeys(transaction: tx)
-        for threadUniqueId in threadUniqueIds {
-            if key.rawValue == Self.chatColorSettingStore.getString(threadUniqueId, transaction: tx) {
+        for scopeKey in chatColorSettingStore.fetchAllScopeKeys(tx: tx.asV2Read) {
+            if colorKey.rawValue == chatColorSettingStore.fetchRawSetting(for: scopeKey, tx: tx.asV2Read) {
                 count += 1
             }
         }
@@ -199,8 +192,9 @@ public class ChatColors: Dependencies {
     /// screen. For example, a user may choose `.auto`, in which case you need
     /// to run additional logic to determine which color corresponds to `.auto`.
     public static func chatColorSetting(for thread: TSThread?, tx: SDSAnyReadTransaction) -> ChatColorSetting {
+        let chatColorSettingStore = DependenciesBridge.shared.chatColorSettingStore
         let persistenceKey: String = thread?.uniqueId ?? Constants.globalKey
-        guard let valueId = Self.chatColorSettingStore.getString(persistenceKey, transaction: tx) else {
+        guard let valueId = chatColorSettingStore.fetchRawSetting(for: persistenceKey, tx: tx.asV2Read) else {
             return .auto
         }
         if let paletteChatColor = PaletteChatColor(rawValue: valueId) {
@@ -220,7 +214,8 @@ public class ChatColors: Dependencies {
     public static let chatColorsDidChangeNotification = NSNotification.Name("chatColorsDidChange")
 
     public static func setChatColorSetting(_ value: ChatColorSetting, for thread: TSThread?, tx: SDSAnyWriteTransaction) {
-        Self.chatColorSettingStore.setString({ () -> String? in
+        let chatColorSettingStore = DependenciesBridge.shared.chatColorSettingStore
+        chatColorSettingStore.setRawSetting({ () -> String? in
             switch value {
             case .auto:
                 return nil
@@ -229,12 +224,12 @@ public class ChatColors: Dependencies {
             case .custom(let colorKey, _):
                 return colorKey.rawValue
             }
-        }(), key: thread?.uniqueId ?? Constants.globalKey, transaction: tx)
+        }(), for: thread?.uniqueId ?? Constants.globalKey, tx: tx.asV2Write)
         postChatColorsDidChangeNotification(for: thread, tx: tx)
     }
 
     public static func resetAllSettings(transaction tx: SDSAnyWriteTransaction) {
-        Self.chatColorSettingStore.removeAll(transaction: tx)
+        DependenciesBridge.shared.chatColorSettingStore.resetAllSettings(tx: tx.asV2Write)
         postChatColorsDidChangeNotification(for: nil, tx: tx)
     }
 

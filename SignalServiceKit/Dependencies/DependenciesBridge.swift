@@ -37,6 +37,7 @@ public class DependenciesBridge {
     public let schedulers: Schedulers
 
     public let db: DB
+    public let chatColorSettingStore: ChatColorSettingStore
     public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     public let keyValueStoreFactory: KeyValueStoreFactory
     let threadAssociatedDataStore: ThreadAssociatedDataStore
@@ -241,6 +242,7 @@ public class DependenciesBridge {
             signalService: signalService
         )
 
+        self.chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: self.keyValueStoreFactory)
         let groupMemberStore = GroupMemberStoreImpl()
         let interactionStore = InteractionStoreImpl()
         self.threadAssociatedDataStore = ThreadAssociatedDataStoreImpl()

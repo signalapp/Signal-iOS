@@ -208,7 +208,7 @@ class ChatColorViewController: OWSTableViewController2, Dependencies {
             }
         }
 
-        let usageCount = databaseStorage.read { tx in ChatColors.usageCount(for: key, tx: tx) }
+        let usageCount = databaseStorage.read { tx in ChatColors.usageCount(of: key, tx: tx) }
         guard usageCount > 0 else {
             deleteValue()
             return

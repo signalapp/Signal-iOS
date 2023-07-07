@@ -431,7 +431,7 @@ class CustomColorViewController: OWSTableViewController2 {
                 return
             }
             // Don't show a confirmation unless the color is used in multiple places.
-            usageCountToConfirm = databaseStorage.read { tx in ChatColors.usageCount(for: colorKey, tx: tx) }
+            usageCountToConfirm = databaseStorage.read { tx in ChatColors.usageCount(of: colorKey, tx: tx) }
             guard usageCountToConfirm > 1 else {
                 saveAndDismiss()
                 return
