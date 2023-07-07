@@ -689,6 +689,12 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             modifiedRange: NSRange(location: 0, length: (hydratedTextBeforeChange as NSString).length),
             selectedRangeAfterChange: NSRange(location: (body.hydratedText as NSString).length, length: 0)
         )
+        // Immediately apply any selection changes; otherwise the selected range
+        // may end up with out of range values.
+        if let selectionAfterEdits = self.selectionAfterEdits {
+            self.selectionAfterEdits = nil
+            self.editableBodyDelegate?.editableMessageBodyDidRequestNewSelectedRange(selectionAfterEdits)
+        }
     }
 
     // Constructing this is expensive and is used as input to the displayed string. Cache it.
