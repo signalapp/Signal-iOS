@@ -239,7 +239,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         }
         if let cancelButton = cancelButton {
             // Permissive hot area to make it very easy to cancel the link preview.
-            if cancelButton.containsGestureLocation(sender, hotAreaAdjustment: 20) {
+            if cancelButton.containsGestureLocation(sender, hotAreaInsets: .init(margin: -20)) {
                 self.draftDelegate?.linkPreviewDidCancel()
                 return
             }

@@ -1655,9 +1655,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             .quotedReply: .quotedReply
             // TODO: linkPreview?
         ]
+        // Recognize the correct message type when tapping next to the message itself
+        let hotArea = UIEdgeInsets(hMargin: -.greatestFiniteMagnitude, vMargin: 0)
         for (key, gestureLocation) in longPressKeys {
             if let subcomponentView = componentView.subcomponentView(key: key),
-               subcomponentView.rootView.containsGestureLocation(sender) {
+               subcomponentView.rootView.containsGestureLocation(sender, hotAreaInsets: hotArea) {
                 return CVLongPressHandler(delegate: componentDelegate,
                                           renderItem: renderItem,
                                           gestureLocation: gestureLocation)

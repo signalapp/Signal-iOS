@@ -258,14 +258,22 @@ public extension UIView {
         return superview as? T ?? superview.firstAncestor(ofType: type)
     }
 
+    /// Returns a Boolean value indicating whether a gesture is located
+    /// within the bounds of the receiver, optionally inset by a hot area.
+    /// - Parameters:
+    ///   - gestureRecognizer: The gesture to check the location of.
+    ///   - hotAreaInsets: A hot area to inset the view's bounds by when checking
+    ///   location. **Use negative inset values to increase tappable area.**
+    /// - Returns: true if `gestureRecognizer` is inside the receiver’s bounds
+    /// inset by `hotAreaInsets`; otherwise, false.
     func containsGestureLocation(_ gestureRecognizer: UIGestureRecognizer,
-                                 hotAreaAdjustment: CGFloat? = nil) -> Bool {
+                                 hotAreaInsets: UIEdgeInsets? = nil) -> Bool {
         let location = gestureRecognizer.location(in: self)
         var hotArea = bounds
-        if let hotAreaAdjustment = hotAreaAdjustment {
-            owsAssertDebug(hotAreaAdjustment > 0)
+        if let hotAreaInsets {
+            owsAssertDebug(hotAreaInsets.isNonEmpty)
             // Permissive hot area to make it easier to perform gesture.
-            hotArea = hotArea.insetBy(dx: -hotAreaAdjustment, dy: -hotAreaAdjustment)
+            hotArea = hotArea.inset(by: hotAreaInsets)
         }
         return hotArea.contains(location)
     }
