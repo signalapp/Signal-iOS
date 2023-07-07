@@ -104,12 +104,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     internal convenience init(from address: ProtocolAddress) {
-        if let uuid = UUID(uuidString: address.name) {
-            self.init(uuid: uuid)
-        } else {
-            // FIXME: What happens if this is *not* a valid phone number?
-            self.init(phoneNumber: address.name)
-        }
+        self.init(uuidString: address.name)
     }
 
     private convenience init(decodedUuid: UUID?, decodedPhoneNumber: String?) {

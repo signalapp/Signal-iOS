@@ -629,19 +629,11 @@ fileprivate extension TSThread {
 extension ProtocolAddress {
     static var localAddress: ProtocolAddress {
         get throws {
-            guard let address = SSKEnvironment.shared.tsAccountManager.localAddress else {
+            guard let aci = SSKEnvironment.shared.tsAccountManager.localUuid else {
                 throw OWSAssertionError("No address for the local account")
             }
             let deviceId = SSKEnvironment.shared.tsAccountManager.storedDeviceId
-            return try ProtocolAddress(from: address, deviceId: deviceId)
-        }
-    }
-
-    convenience init(from recipientAddress: SignalServiceAddress, deviceId: UInt32) throws {
-        if let uuid = recipientAddress.uuid {
-            try self.init(uuid: uuid, deviceId: deviceId)
-        } else {
-            try self.init(name: recipientAddress.phoneNumber!, deviceId: deviceId)
+            return try ProtocolAddress(uuid: aci, deviceId: deviceId)
         }
     }
 
