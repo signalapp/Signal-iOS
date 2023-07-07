@@ -33,13 +33,13 @@ class MockConversationView: UIView {
         }
     }
 
-    public var customChatColor: ChatColor? {
+    public var customChatColor: ColorOrGradientSetting? {
         didSet {
             update()
         }
     }
 
-    init(model: MockModel, hasWallpaper: Bool, customChatColor: ChatColor?) {
+    init(model: MockModel, hasWallpaper: Bool, customChatColor: ColorOrGradientSetting?) {
         self.model = model
         self.hasWallpaper = hasWallpaper
         self.customChatColor = customChatColor
@@ -121,8 +121,7 @@ class MockConversationView: UIView {
 
         var renderItems = [CVRenderItem]()
         databaseStorage.read { transaction in
-            let chatColor = self.customChatColor ?? ChatColors.chatColorForRendering(thread: thread,
-                                                                                     transaction: transaction)
+            let chatColor = self.customChatColor ?? ChatColors.resolvedChatColor(for: thread, tx: transaction)
             let conversationStyle = ConversationStyle(
                 type: .`default`,
                 thread: self.thread,

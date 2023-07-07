@@ -222,15 +222,13 @@ class MessageDetailViewController: OWSTableViewController2 {
         }
         let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
 
-        let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
-
         let conversationStyle = ConversationStyle(
             type: .messageDetails,
             thread: thread,
             viewWidth: view.width - (cellOuterInsets.totalWidth + (Self.cellHInnerMargin * 2)),
             hasWallpaper: false,
             isWallpaperPhoto: false,
-            chatColor: chatColor
+            chatColor: ChatColors.resolvedChatColor(for: thread, tx: transaction)
         )
 
         return CVLoader.buildStandaloneRenderItem(

@@ -163,16 +163,8 @@ public class CVLoadCoordinator: NSObject {
                                                name: OWSContactsManager.skipGroupAvatarBlurDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(conversationChatColorSettingDidChange),
-                                               name: ChatColors.conversationChatColorSettingDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(customChatColorsDidChange),
-                                               name: ChatColors.customChatColorsDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(autoChatColorsDidChange),
-                                               name: ChatColors.autoChatColorsDidChange,
+                                               selector: #selector(chatColorsDidChange),
+                                               name: ChatColors.chatColorsDidChangeNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(phoneNumberDidChange),
@@ -303,24 +295,8 @@ public class CVLoadCoordinator: NSObject {
     }
 
     @objc
-    private func conversationChatColorSettingDidChange(_ notification: NSNotification) {
-        guard let threadUniqueId = notification.userInfo?[ChatColors.conversationChatColorSettingDidChangeThreadUniqueIdKey] as? String else {
-            owsFailDebug("Missing threadUniqueId.")
-            return
-        }
-        guard threadUniqueId == thread.uniqueId else {
-            return
-        }
-        delegate?.chatColorDidChange()
-    }
-
-    @objc
-    private func customChatColorsDidChange(_ notification: NSNotification) {
-        delegate?.chatColorDidChange()
-    }
-
-    @objc
-    private func autoChatColorsDidChange(_ notification: NSNotification) {
+    private func chatColorsDidChange(_ notification: NSNotification) {
+        guard notification.object == nil || (notification.object as? String) == thread.uniqueId else { return }
         delegate?.chatColorDidChange()
     }
 

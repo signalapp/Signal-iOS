@@ -98,26 +98,27 @@ public class ConversationStyle: NSObject {
     // there is space for them to align in these directions.
     public static let messageDirectionSpacing: CGFloat = 12
 
-    // ChatColor is used for persistence, logging and comparison.
-    public let chatColor: ChatColor
+    // ColorOrGradientSetting is used for persistence, logging and comparison.
+    public let chatColorSetting: ColorOrGradientSetting
     // ColorOrGradientValue is used for rendering.
     public let chatColorValue: ColorOrGradientValue
 
-    public required init(type: `Type`,
-                         thread: TSThread,
-                         viewWidth: CGFloat,
-                         hasWallpaper: Bool,
-                         isWallpaperPhoto: Bool,
-                         chatColor: ChatColor) {
-
+    public required init(
+        type: `Type`,
+        thread: TSThread,
+        viewWidth: CGFloat,
+        hasWallpaper: Bool,
+        isWallpaperPhoto: Bool,
+        chatColor: ColorOrGradientSetting
+    ) {
         self.type = type
         self.viewWidth = viewWidth
         self.isDarkThemeEnabled = Theme.isDarkThemeEnabled
         self.primaryTextColor = Theme.primaryTextColor
         self.hasWallpaper = hasWallpaper
         self.isWallpaperPhoto = isWallpaperPhoto
-        self.chatColor = chatColor
-        self.chatColorValue = chatColor.setting.asValue
+        self.chatColorSetting = chatColor
+        self.chatColorValue = chatColor.asValue
 
         if type == .messageDetails {
             gutterLeading = 0
@@ -296,9 +297,7 @@ public class ConversationStyle: NSObject {
             fullWidthGutterTrailing == other.fullWidthGutterTrailing &&
             textInsets == other.textInsets &&
             lastTextLineAxis == other.lastTextLineAxis &&
-            // We don't need to compare chatColor or all of chatColor;
-            // it is sufficient to compare chatColor.setting.
-            chatColor.setting == other.chatColor.setting)
+            chatColorSetting == other.chatColorSetting)
     }
 
     public override var debugDescription: String {
@@ -318,7 +317,7 @@ public class ConversationStyle: NSObject {
             "fullWidthGutterTrailing: \(fullWidthGutterTrailing), " +
             "textInsets: \(textInsets), " +
             "lastTextLineAxis: \(lastTextLineAxis), " +
-            "chatColor: \(chatColor), " +
+            "chatColor: \(chatColorSetting), " +
             "]"
     }
 }

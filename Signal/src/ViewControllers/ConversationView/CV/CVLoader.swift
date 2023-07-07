@@ -263,13 +263,15 @@ public class CVLoader: NSObject {
         spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) -> CVRenderItem? {
-        let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
-        let conversationStyle = ConversationStyle(type: .`default`,
-                                                  thread: thread,
-                                                  viewWidth: containerView.width,
-                                                  hasWallpaper: false,
-                                                  isWallpaperPhoto: false,
-                                                  chatColor: chatColor)
+        let chatColor = ChatColors.resolvedChatColor(for: thread, tx: transaction)
+        let conversationStyle = ConversationStyle(
+            type: .`default`,
+            thread: thread,
+            viewWidth: containerView.width,
+            hasWallpaper: false,
+            isWallpaperPhoto: false,
+            chatColor: chatColor
+        )
         let coreState = CVCoreState(conversationStyle: conversationStyle,
                                     mediaCache: CVMediaCache())
         return CVLoader.buildStandaloneRenderItem(
@@ -353,14 +355,16 @@ public class CVLoader: NSObject {
             return nil
         }
 
-        let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
+        let chatColor = ChatColors.resolvedChatColor(for: thread, tx: transaction)
         let mockViewWidth: CGFloat = 800
-        let conversationStyle = ConversationStyle(type: .`default`,
-                                                  thread: thread,
-                                                  viewWidth: mockViewWidth,
-                                                  hasWallpaper: false,
-                                                  isWallpaperPhoto: false,
-                                                  chatColor: chatColor)
+        let conversationStyle = ConversationStyle(
+            type: .`default`,
+            thread: thread,
+            viewWidth: mockViewWidth,
+            hasWallpaper: false,
+            isWallpaperPhoto: false,
+            chatColor: chatColor
+        )
         let coreState = CVCoreState(conversationStyle: conversationStyle,
                                     mediaCache: CVMediaCache())
         let threadViewModel = ThreadViewModel(thread: thread,

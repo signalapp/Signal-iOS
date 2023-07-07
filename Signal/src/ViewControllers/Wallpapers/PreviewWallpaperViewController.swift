@@ -141,30 +141,19 @@ class PreviewWallpaperViewController: UIViewController {
 
     private var standalonePage: WallpaperPage?
     func modeDidChange() {
-        let chatColor = Self.databaseStorage.read { transaction -> ChatColor? in
-            if let thread = self.thread {
-                return ChatColors.chatColorSetting(thread: thread,
-                                                   shouldHonorDefaultSetting: true,
-                                                   transaction: transaction)
-            } else {
-                return ChatColors.defaultChatColorSetting(transaction: transaction)
-            }
-        }
-
+        let resolvedWallpaper: Wallpaper
         switch mode {
         case .photo(let selectedPhoto):
             owsAssertDebug(self.standalonePage == nil)
-            let standalonePage = WallpaperPage(wallpaper: .photo,
-                                               thread: thread,
-                                               photo: selectedPhoto)
+            resolvedWallpaper = .photo
+            let standalonePage = WallpaperPage(wallpaper: resolvedWallpaper, thread: thread, photo: selectedPhoto)
             self.standalonePage = standalonePage
             view.insertSubview(standalonePage.view, at: 0)
             addChild(standalonePage)
             standalonePage.view.autoPinEdgesToSuperviewEdges()
             blurButton.isHidden = false
-
-            mockConversationView.customChatColor = chatColor ?? Wallpaper.photo.defaultChatColor
         case .preset(let selectedWallpaper):
+            resolvedWallpaper = selectedWallpaper
             if pageViewController.view.superview == nil {
                 view.insertSubview(pageViewController.view, at: 0)
                 addChild(pageViewController)
@@ -172,15 +161,13 @@ class PreviewWallpaperViewController: UIViewController {
                 pageViewController.dataSource = self
                 pageViewController.delegate = self
             }
-
-            currentPage = WallpaperPage(wallpaper: selectedWallpaper,
-                                        thread: thread)
+            currentPage = WallpaperPage(wallpaper: selectedWallpaper, thread: thread)
             blurButton.isHidden = true
-
-            mockConversationView.customChatColor = chatColor ?? selectedWallpaper.defaultChatColor
         }
-
         mockConversationView.model = buildMockConversationModel()
+        mockConversationView.customChatColor = databaseStorage.read { tx in
+            ChatColors.resolvedChatColor(for: thread, previewWallpaper: resolvedWallpaper, tx: tx)
+        }
     }
 
     func buildMockConversationModel() -> MockConversationView.MockModel {

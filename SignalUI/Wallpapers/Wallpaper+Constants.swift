@@ -142,57 +142,35 @@ extension Wallpaper {
         }
     }
 
-    public var defaultChatColor: ChatColor {
+    public var defaultChatColor: PaletteChatColor? {
         switch self {
         // Solid
-        case .blush:
-            return ChatColors.Values.crimson
-        case .copper:
-            return ChatColors.Values.vermilion
-        case .zorba:
-            return ChatColors.Values.burlap
-        case .envy:
-            return ChatColors.Values.forest
-        case .sky:
-            return ChatColors.Values.teal
-        case .wildBlueYonder:
-            return ChatColors.Values.blue
-        case .lavender:
-            return ChatColors.Values.violet
-        case .shocking:
-            return ChatColors.Values.plum
-        case .gray:
-            return ChatColors.Values.steel
-        case .eden:
-            return ChatColors.Values.wintergreen
-        case .violet:
-            return ChatColors.Values.indigo
-        case .eggplant:
-            return ChatColors.Values.taupe
+        case .blush: return .crimson
+        case .copper: return .vermilion
+        case .zorba: return .burlap
+        case .envy: return .forest
+        case .sky: return .teal
+        case .wildBlueYonder: return .blue
+        case .lavender: return .violet
+        case .shocking: return .plum
+        case .gray: return .steel
+        case .eden: return .wintergreen
+        case .violet: return .indigo
+        case .eggplant: return .taupe
 
         // Gradient
-        case .starshipGradient:
-            return ChatColors.Values.ember
-        case .woodsmokeGradient:
-            return ChatColors.Values.midnight
-        case .coralGradient:
-            return ChatColors.Values.infrared
-        case .ceruleanGradient:
-            return ChatColors.Values.lagoon
-        case .roseGradient:
-            return ChatColors.Values.fluorescent
-        case .aquamarineGradient:
-            return ChatColors.Values.basil
-        case .tropicalGradient:
-            return ChatColors.Values.sublime
-        case .blueGradient:
-            return ChatColors.Values.sea
-        case .bisqueGradient:
-            return ChatColors.Values.tangerine
+        case .starshipGradient: return .ember
+        case .woodsmokeGradient: return .midnight
+        case .coralGradient: return .infrared
+        case .ceruleanGradient: return .lagoon
+        case .roseGradient: return .fluorescent
+        case .aquamarineGradient: return .basil
+        case .tropicalGradient: return .sublime
+        case .blueGradient: return .sea
+        case .bisqueGradient: return .tangerine
 
         // Custom
-        case .photo:
-            return ChatColors.defaultChatColor
+        case .photo: return nil
         }
     }
 }

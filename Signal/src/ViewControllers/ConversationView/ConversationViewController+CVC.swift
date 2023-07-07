@@ -589,7 +589,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             type: .initial,
             thread: thread,
             viewWidth: 0,
-            overrideChatColor: .placeholderValue,
             tx: tx
         )
     }
@@ -598,7 +597,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         type: ConversationStyle.`Type`,
         thread: TSThread,
         viewWidth: CGFloat,
-        overrideChatColor: ChatColor?,
         tx: SDSAnyReadTransaction
     ) -> ConversationStyle {
         let hasWallpaper: Bool
@@ -620,7 +618,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             viewWidth: viewWidth,
             hasWallpaper: hasWallpaper,
             isWallpaperPhoto: isWallpaperPhoto,
-            chatColor: overrideChatColor ?? ChatColors.chatColorForRendering(thread: thread, transaction: tx)
+            chatColor: ChatColors.resolvedChatColor(for: thread, tx: tx)
         )
     }
 
@@ -633,7 +631,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                     type: type,
                     thread: thread,
                     viewWidth: viewWidth,
-                    overrideChatColor: nil,
                     tx: tx
                 )
             }

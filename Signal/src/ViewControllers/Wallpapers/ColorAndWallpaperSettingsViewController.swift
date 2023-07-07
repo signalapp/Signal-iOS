@@ -20,20 +20,8 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(updateTableContents),
-            name: ChatColors.customChatColorsDidChange,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateTableContents),
-            name: ChatColors.autoChatColorsDidChange,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(conversationChatColorSettingDidChange),
-            name: ChatColors.conversationChatColorSettingDidChange,
+            selector: #selector(chatColorsDidChange),
+            name: ChatColors.chatColorsDidChangeNotification,
             object: nil
         )
     }
@@ -51,18 +39,16 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    private var chatColor: ColorOrGradientSetting!
+
+    private func updateChatColor() {
+        chatColor = databaseStorage.read { tx in ChatColors.resolvedChatColor(for: thread, tx: tx) }
+    }
+
     @objc
-    private func conversationChatColorSettingDidChange(_ notification: NSNotification) {
-        guard let thread = self.thread else {
-            return
-        }
-        guard let threadUniqueId = notification.userInfo?[ChatColors.conversationChatColorSettingDidChangeThreadUniqueIdKey] as? String else {
-            owsFailDebug("Missing threadUniqueId.")
-            return
-        }
-        guard threadUniqueId == thread.uniqueId else {
-            return
-        }
+    private func chatColorsDidChange(_ notification: NSNotification) {
+        guard notification.object == nil || (notification.object as? String) == thread?.uniqueId else { return }
+        updateChatColor()
         updateTableContents()
     }
 
@@ -72,6 +58,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         title = OWSLocalizedString("COLOR_AND_WALLPAPER_SETTINGS_TITLE", comment: "Title for the color & wallpaper settings view.")
 
         updateWallpaperViewBuilder()
+        updateChatColor()
         updateTableContents()
     }
 
@@ -85,7 +72,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
             guard let self = self else { return cell }
-            let miniPreview = MiniPreviewView(thread: self.thread, wallpaperViewBuilder: self.wallpaperViewBuilder)
+            let miniPreview = MiniPreviewView(wallpaperViewBuilder: self.wallpaperViewBuilder, chatColor: self.chatColor)
             cell.contentView.addSubview(miniPreview)
             miniPreview.autoPinEdge(toSuperviewEdge: .left, withInset: self.cellHOuterLeftMargin)
             miniPreview.autoPinEdge(toSuperviewEdge: .right, withInset: self.cellHOuterRightMargin)
@@ -100,17 +87,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             let chatColorSection = OWSTableSection()
             chatColorSection.customHeaderHeight = 14
 
-            let chatColor: ChatColor
-            if let thread = self.thread {
-                chatColor = Self.databaseStorage.read { transaction in
-                    ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
-                }
-            } else {
-                chatColor = Self.databaseStorage.read { transaction in
-                    ChatColors.defaultChatColorForRendering(transaction: transaction)
-                }
-            }
-            let defaultColorView = ColorOrGradientSwatchView(setting: chatColor.setting, shapeMode: .circle)
+            let defaultColorView = ColorOrGradientSwatchView(setting: chatColor, shapeMode: .circle)
             defaultColorView.autoSetDimensions(to: .square(16))
             defaultColorView.setContentHuggingHigh()
             defaultColorView.setCompressionResistanceHigh()
@@ -122,8 +99,10 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_chat_color")
             ) { [weak self] in
                 guard let self = self else { return }
-                let vc = ChatColorViewController(thread: self.thread)
-                self.navigationController?.pushViewController(vc, animated: true)
+                let viewController = self.databaseStorage.read { tx in
+                    ChatColorViewController.load(thread: self.thread, tx: tx)
+                }
+                self.navigationController?.pushViewController(viewController, animated: true)
             })
 
             if nil != thread {
@@ -343,43 +322,21 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
     }
 
     func resetChatColor() {
-        let thread = self.thread
-        databaseStorage.asyncWrite { transaction in
-            if let thread = thread {
-                ChatColors.setChatColorSetting(nil, thread: thread, transaction: transaction)
-            } else {
-                ChatColors.setDefaultChatColorSetting(nil, transaction: transaction)
-            }
-            transaction.addAsyncCompletionOnMain {
-                AssertIsOnMainThread()
-
-                self.updateTableContents()
-            }
-        }
+        databaseStorage.asyncWrite { [thread] tx in ChatColors.setChatColorSetting(.auto, for: thread, tx: tx) }
     }
 
     private func resetAllChatColors() {
-        databaseStorage.asyncWrite { transaction in
-            ChatColors.resetAllSettings(transaction: transaction)
-
-            transaction.addAsyncCompletionOnMain {
-                AssertIsOnMainThread()
-
-                self.updateTableContents()
-            }
-        }
+        databaseStorage.asyncWrite { tx in ChatColors.resetAllSettings(transaction: tx) }
     }
 }
 
 // MARK: -
 
 private class MiniPreviewView: UIView {
-    private let thread: TSThread?
     private let hasWallpaper: Bool
+    private let chatColor: ColorOrGradientSetting
 
-    init(thread: TSThread?, wallpaperViewBuilder: WallpaperViewBuilder?) {
-        self.thread = thread
-
+    init(wallpaperViewBuilder: WallpaperViewBuilder?, chatColor: ColorOrGradientSetting) {
         let hasWallpaper: Bool
         let stackViewContainer: UIView
         if let wallpaperViewBuilder {
@@ -391,6 +348,7 @@ private class MiniPreviewView: UIView {
             hasWallpaper = false
         }
         self.hasWallpaper = hasWallpaper
+        self.chatColor = chatColor
 
         super.init(frame: .zero)
 
@@ -460,16 +418,8 @@ private class MiniPreviewView: UIView {
     }
 
     func buildOutgoingBubble() -> UIView {
-        let chatColor: ChatColor = databaseStorage.read { transaction in
-            if let thread = self.thread {
-                return ChatColors.chatColorForRendering(thread: thread,
-                                                        transaction: transaction)
-            } else {
-                return ChatColors.defaultChatColorForRendering(transaction: transaction)
-            }
-        }
         let chatColorView = CVColorOrGradientView()
-        chatColorView.configure(value: chatColor.setting.asValue, referenceView: self)
+        chatColorView.configure(value: chatColor.asValue, referenceView: self)
 
         let bubbleView = UIView()
         bubbleView.layer.cornerRadius = 10

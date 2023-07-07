@@ -139,12 +139,6 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         message interaction: TSMessage,
         tx: SDSAnyReadTransaction
     ) -> CVRenderItem? {
-
-        let chatColor = ChatColors.chatColorForRendering(
-            thread: thread,
-            transaction: tx
-        )
-
         let cellInsets = tableViewController.cellOuterInsets
         let viewWidth = tableViewController.view.frame.inset(by: cellInsets).width
         let conversationStyle = ConversationStyle(
@@ -153,9 +147,8 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             viewWidth: viewWidth,
             hasWallpaper: false,
             isWallpaperPhoto: false,
-            chatColor: chatColor
+            chatColor: ChatColors.resolvedChatColor(for: thread, tx: tx)
         )
-
         return CVLoader.buildStandaloneRenderItem(
             interaction: interaction,
             thread: thread,
