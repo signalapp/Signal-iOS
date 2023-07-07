@@ -164,6 +164,7 @@
     "ThreadRecord.contactUUID": 9,
     "ThreadRecord.conversationColorNameObsolete": 1,
     "ThreadRecord.creationDate": 2,
+    "ThreadRecord.editTargetTimestamp": 23,
     "ThreadRecord.groupModel": 10,
     "ThreadRecord.hasDismissedOffers": 11,
     "ThreadRecord.isArchivedObsolete": 3,

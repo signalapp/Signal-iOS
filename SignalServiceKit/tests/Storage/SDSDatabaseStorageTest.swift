@@ -83,6 +83,7 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
             firstThread.update(
                 withDraft: MessageBody(text: "Some draft", ranges: .empty),
                 replyInfo: nil,
+                editTargetTimestamp: nil,
                 transaction: transaction
             )
         }

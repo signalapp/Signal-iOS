@@ -34,6 +34,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
                       uniqueId:(NSString *)uniqueId
    conversationColorNameObsolete:(NSString *)conversationColorNameObsolete
                     creationDate:(nullable NSDate *)creationDate
+             editTargetTimestamp:(nullable NSNumber *)editTargetTimestamp
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(uint64_t)lastInteractionRowId
@@ -53,6 +54,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                         uniqueId:uniqueId
      conversationColorNameObsolete:conversationColorNameObsolete
                       creationDate:creationDate
+               editTargetTimestamp:editTargetTimestamp
                 isArchivedObsolete:isArchivedObsolete
             isMarkedUnreadObsolete:isMarkedUnreadObsolete
               lastInteractionRowId:lastInteractionRowId

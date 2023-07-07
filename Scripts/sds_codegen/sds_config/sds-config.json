@@ -16,6 +16,7 @@
 		"TestModel.nsNumberValueUsingUInt64": "UInt64",
 		"SSKJobRecord.exclusiveProcessIdentifier": "Int32",
 		"TSMessage.storyTimestamp": "UInt64",
+		"TSThread.editTargetTimestamp": "UInt64",
 		"TSThread.lastSentStoryTimestamp": "UInt64",
 		"TSThread.lastViewedStoryTimestamp": "UInt64",
 		"SignalRecipient.unregisteredAtTimestamp": "UInt64",

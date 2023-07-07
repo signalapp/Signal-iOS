@@ -228,6 +228,7 @@ public class GRDBSchemaMigrator: NSObject {
         case threadReplyInfoServiceIds
         case updateEditMessageUnreadIndex
         case updateEditRecordTable
+        case threadReplyEditTarget
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2271,6 +2272,13 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.updateEditRecordTable) { tx in
             try Self.migrateEditRecordTable(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.threadReplyEditTarget) { tx in
+            try tx.database.alter(table: "model_TSThread") { table in
+                table.add(column: "editTargetTimestamp", .integer)
+            }
             return .success(())
         }
 

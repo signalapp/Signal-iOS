@@ -92,6 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
    conversationColorNameObsolete:(NSString *)conversationColorNameObsolete
                     creationDate:(nullable NSDate *)creationDate
+             editTargetTimestamp:(nullable NSNumber *)editTargetTimestamp
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(uint64_t)lastInteractionRowId
@@ -115,6 +116,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
     _conversationColorNameObsolete = conversationColorNameObsolete;
     _creationDate = creationDate;
+    _editTargetTimestamp = editTargetTimestamp;
     _isArchivedObsolete = isArchivedObsolete;
     _isMarkedUnreadObsolete = isMarkedUnreadObsolete;
     _lastInteractionRowId = lastInteractionRowId;
@@ -543,12 +545,14 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
 - (void)updateWithDraft:(nullable MessageBody *)draftMessageBody
               replyInfo:(nullable ThreadReplyInfoObjC *)replyInfo
+    editTargetTimestamp:(nullable NSNumber *)editTargetTimestamp
             transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
                                  thread.messageDraft = draftMessageBody.text;
                                  thread.messageDraftBodyRanges = draftMessageBody.ranges;
+                                 thread.editTargetTimestamp = editTargetTimestamp;
                              }];
     if (replyInfo != nil) {
         [replyInfo saveWithThreadUniqueId:self.uniqueId tx:transaction];

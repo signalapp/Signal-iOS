@@ -255,6 +255,7 @@ extension SendMessageFlow {
             return self.databaseStorage.write { transaction -> TSThread in
                 thread.update(withDraft: messageBody,
                               replyInfo: nil,
+                              editTargetTimestamp: nil,
                               transaction: transaction)
                 return thread
             }

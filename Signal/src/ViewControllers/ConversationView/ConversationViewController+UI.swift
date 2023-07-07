@@ -228,7 +228,8 @@ extension ConversationViewController {
         conversationStyle: ConversationStyle,
         messageDraft: MessageBody?,
         draftReply: ThreadReplyInfo?,
-        voiceMemoDraft: VoiceMessageInterruptedDraft?
+        voiceMemoDraft: VoiceMessageInterruptedDraft?,
+        editTarget: TSOutgoingMessage?
     ) -> ConversationInputToolbar {
         AssertIsOnMainThread()
         owsAssertDebug(hasViewWillAppearEverBegun)
@@ -246,6 +247,7 @@ extension ConversationViewController {
             mediaCache: mediaCache,
             messageDraft: messageDraft,
             quotedReply: quotedReply,
+            editTarget: editTarget,
             inputToolbarDelegate: self,
             inputTextViewDelegate: self,
             mentionDelegate: self

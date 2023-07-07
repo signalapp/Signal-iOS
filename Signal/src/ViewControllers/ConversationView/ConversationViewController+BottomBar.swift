@@ -161,10 +161,12 @@ public extension ConversationViewController {
         var messageDraft: MessageBody?
         var replyDraft: ThreadReplyInfo?
         var voiceMemoDraft: VoiceMessageInterruptedDraft?
+        var editTarget: TSOutgoingMessage?
         if let oldInputToolbar = self.inputToolbar {
             // Maintain draft continuity.
             messageDraft = oldInputToolbar.messageBodyForSending
             replyDraft = oldInputToolbar.draftReply
+            editTarget = oldInputToolbar.editTarget
             voiceMemoDraft = oldInputToolbar.voiceMemoDraft
         } else {
             Self.databaseStorage.read { transaction in
@@ -173,13 +175,17 @@ public extension ConversationViewController {
                 if messageDraft != nil || voiceMemoDraft != nil {
                     replyDraft = DependenciesBridge.shared.threadReplyInfoStore.fetch(for: self.thread.uniqueId, tx: transaction.asV2Read)
                 }
+                editTarget = self.thread.editTarget(transaction: transaction)
             }
         }
 
-        let newInputToolbar = buildInputToolbar(conversationStyle: conversationStyle,
-                                                messageDraft: messageDraft,
-                                                draftReply: replyDraft,
-                                                voiceMemoDraft: voiceMemoDraft)
+        let newInputToolbar = buildInputToolbar(
+            conversationStyle: conversationStyle,
+            messageDraft: messageDraft,
+            draftReply: replyDraft,
+            voiceMemoDraft: voiceMemoDraft,
+            editTarget: editTarget
+        )
 
         let hadFocus = self.inputToolbar?.isInputViewFirstResponder ?? false
         self.inputToolbar = newInputToolbar

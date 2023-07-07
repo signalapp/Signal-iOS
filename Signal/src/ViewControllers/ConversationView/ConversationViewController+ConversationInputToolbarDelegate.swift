@@ -138,6 +138,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             }
             thread.update(withDraft: nil,
                           replyInfo: nil,
+                          editTargetTimestamp: nil,
                           transaction: transaction)
         }
 
@@ -248,6 +249,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             let thread = self.thread
             let currentDraft = inputToolbar.messageBodyForSending
             let quotedReply = inputToolbar.quotedReply
+            let editTarget = inputToolbar.editTarget
             Self.databaseStorage.asyncWrite { transaction in
                 // Reload a fresh instance of the thread model; our models are not
                 // thread-safe, so it wouldn't be safe to update the model in an
@@ -260,6 +262,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 let didChange = Self.draftHasChanged(
                     currentDraft: currentDraft,
                     quotedReply: quotedReply,
+                    editTarget: editTarget,
                     thread: thread,
                     transaction: transaction
                 )
@@ -275,7 +278,16 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 } else {
                     replyInfo = nil
                 }
-                thread.update(withDraft: currentDraft, replyInfo: replyInfo, transaction: transaction)
+                var editTargetTimestamp: NSNumber?
+                if let timestamp = inputToolbar.editTarget?.timestamp {
+                    editTargetTimestamp = NSNumber(value: timestamp)
+                }
+                thread.update(
+                    withDraft: currentDraft,
+                    replyInfo: replyInfo,
+                    editTargetTimestamp: editTargetTimestamp,
+                    transaction: transaction
+                )
             }
         }
     }
@@ -283,6 +295,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
     private static func draftHasChanged(
         currentDraft: MessageBody?,
         quotedReply: QuotedReplyModel?,
+        editTarget: TSOutgoingMessage?,
         thread: TSThread,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
@@ -295,6 +308,13 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         let currentRanges = currentDraft?.ranges.mentions ?? [:]
         let persistedRanges = thread.messageDraftBodyRanges?.mentions ?? [:]
         if currentRanges != persistedRanges {
+            return true
+        }
+
+        if
+            let threadTimestamp = thread.editTargetTimestamp,
+            threadTimestamp.uint64Value != editTarget?.timestamp ?? 0
+        {
             return true
         }
 

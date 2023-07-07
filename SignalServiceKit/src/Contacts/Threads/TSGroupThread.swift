@@ -88,6 +88,7 @@ extension TSGroupThread {
             uniqueId: groupThreadId,
             conversationColorNameObsolete: "",
             creationDate: nil,
+            editTargetTimestamp: nil,
             isArchivedObsolete: false,
             isMarkedUnreadObsolete: false,
             lastInteractionRowId: 1,

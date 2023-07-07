@@ -40,6 +40,7 @@ CREATE
             ,"name" TEXT
             ,"addresses" BLOB
             ,"storyViewMode" INTEGER DEFAULT 0
+            ,"editTargetTimestamp" INTEGER
         )
 ;
 

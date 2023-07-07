@@ -71,6 +71,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         mediaCache: CVMediaCache,
         messageDraft: MessageBody?,
         quotedReply: QuotedReplyModel?,
+        editTarget: TSOutgoingMessage?,
         inputToolbarDelegate: ConversationInputToolbarDelegate,
         inputTextViewDelegate: ConversationInputTextViewDelegate,
         mentionDelegate: BodyRangesTextViewDelegate
@@ -78,6 +79,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         self.conversationStyle = conversationStyle
         self.spoilerState = spoilerState
         self.mediaCache = mediaCache
+        self.editTarget = editTarget
         self.inputToolbarDelegate = inputToolbarDelegate
         self.linkPreviewFetcher = LinkPreviewFetcher(
             linkPreviewManager: Self.linkPreviewManager,

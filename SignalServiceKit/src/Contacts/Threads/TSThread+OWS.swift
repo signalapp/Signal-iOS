@@ -212,6 +212,22 @@ extension TSThread {
         let ranges: MessageBodyRanges = thread.messageDraftBodyRanges ?? .empty
         return MessageBody(text: messageDraft, ranges: ranges)
     }
+
+    @objc
+    public func editTarget(transaction: SDSAnyReadTransaction) -> TSOutgoingMessage? {
+        guard
+            let editTargetTimestamp = editTargetTimestamp?.uint64Value,
+            let localAddress = tsAccountManager.localAddress
+        else {
+            return nil
+        }
+        return InteractionFinder.findMessage(
+            withTimestamp: editTargetTimestamp,
+            threadId: uniqueId,
+            author: localAddress,
+            transaction: transaction
+        ) as? TSOutgoingMessage
+    }
 }
 
 // MARK: - Drafts
