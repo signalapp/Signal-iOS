@@ -69,9 +69,8 @@ struct MergedRecipient {
 
 protocol RecipientMergerTemporaryShims {
     func didUpdatePhoneNumber(
-        oldServiceIdString: String?,
+        serviceIdString: String,
         oldPhoneNumber: String?,
-        newServiceIdString: String?,
         newPhoneNumber: E164?,
         transaction: DBWriteTransaction
     )
@@ -308,18 +307,17 @@ class RecipientMergerImpl: RecipientMerger {
         phoneNumber: E164,
         serviceIdRecipient: SignalRecipient?,
         phoneNumberRecipient: SignalRecipient?,
-        transaction: DBWriteTransaction
+        transaction tx: DBWriteTransaction
     ) -> SignalRecipient? {
         if let serviceIdRecipient {
             if let phoneNumberRecipient {
-                if phoneNumberRecipient.serviceIdString == nil && serviceIdRecipient.phoneNumber == nil {
-                    // These are the same, but not fully complete; we need to merge them.
+                guard let phoneNumberRecipientServiceId = phoneNumberRecipient.serviceIdString else {
                     return mergeRecipients(
                         serviceId: serviceId,
                         serviceIdRecipient: serviceIdRecipient,
                         phoneNumber: phoneNumber,
                         phoneNumberRecipient: phoneNumberRecipient,
-                        transaction: transaction
+                        transaction: tx
                     )
                 }
 
@@ -327,30 +325,23 @@ class RecipientMergerImpl: RecipientMerger {
                 // recipient *before* we assign the phone number to the new recipient in
                 // case there are any legacy phone number-only records in the database.
 
-                updateRecipient(phoneNumberRecipient, phoneNumber: nil, transaction: transaction)
-                dataStore.updateRecipient(phoneNumberRecipient, transaction: transaction)
+                updatePhoneNumber(for: phoneNumberRecipient, serviceId: phoneNumberRecipientServiceId, to: nil, tx: tx)
+                dataStore.updateRecipient(phoneNumberRecipient, transaction: tx)
 
                 // Fall through now that we've cleaned up `phoneNumberRecipient`.
             }
 
-            if let oldPhoneNumber = serviceIdRecipient.phoneNumber {
-                Logger.info("Learned serviceId \(serviceId) changed from old phoneNumber \(oldPhoneNumber) to new phoneNumber \(phoneNumber)")
-            } else {
-                Logger.info("Learned serviceId \(serviceId) is associated with phoneNumber \(phoneNumber)")
-            }
-
-            updateRecipient(serviceIdRecipient, phoneNumber: phoneNumber, transaction: transaction)
+            updatePhoneNumber(for: serviceIdRecipient, serviceId: serviceId.uuidValue.uuidString, to: phoneNumber, tx: tx)
             return serviceIdRecipient
         }
 
         if let phoneNumberRecipient {
-            if phoneNumberRecipient.serviceIdString != nil {
+            if let phoneNumberRecipientServiceId = phoneNumberRecipient.serviceIdString {
                 // We can't change the ServiceId because it's non-empty. Instead, we must
                 // create a new SignalRecipient. We clear the phone number here since it
                 // will belong to the new SignalRecipient.
-                Logger.info("Learned phoneNumber \(phoneNumber) transferred to serviceId \(serviceId)")
-                updateRecipient(phoneNumberRecipient, phoneNumber: nil, transaction: transaction)
-                dataStore.updateRecipient(phoneNumberRecipient, transaction: transaction)
+                updatePhoneNumber(for: phoneNumberRecipient, serviceId: phoneNumberRecipientServiceId, to: nil, tx: tx)
+                dataStore.updateRecipient(phoneNumberRecipient, transaction: tx)
                 return nil
             }
 
@@ -363,32 +354,22 @@ class RecipientMergerImpl: RecipientMerger {
         return nil
     }
 
-    private func updateRecipient(
-        _ recipient: SignalRecipient,
-        phoneNumber: E164?,
-        transaction: DBWriteTransaction
+    private func updatePhoneNumber(
+        for recipient: SignalRecipient,
+        serviceId: String,
+        to newPhoneNumber: E164?,
+        tx: DBWriteTransaction
     ) {
         let oldPhoneNumber = recipient.phoneNumber?.nilIfEmpty
-        let oldServiceIdString = recipient.serviceIdString
+        recipient.phoneNumber = newPhoneNumber?.stringValue
 
-        recipient.phoneNumber = phoneNumber?.stringValue
-
-        if recipient.phoneNumber == nil && oldServiceIdString == nil {
-            Logger.warn("Clearing out the phone number on a recipient with no serviceId; old phone number: \(String(describing: oldPhoneNumber))")
-            // Fill in a random UUID, so we can complete the change and maintain a common
-            // association for all the records and not leave them dangling. This should
-            // in general never happen.
-            recipient.serviceId = ServiceId(UUID())
-        } else {
-            Logger.info("Changing the phone number on a recipient; serviceId: \(oldServiceIdString ?? "nil"), phoneNumber: \(oldPhoneNumber ?? "nil") -> \(recipient.phoneNumber ?? "nil")")
-        }
+        Logger.info("Updating phone number; serviceId: \(serviceId), phoneNumber: \(oldPhoneNumber ?? "nil") -> \(newPhoneNumber?.stringValue ?? "nil")")
 
         temporaryShims.didUpdatePhoneNumber(
-            oldServiceIdString: oldServiceIdString,
+            serviceIdString: serviceId,
             oldPhoneNumber: oldPhoneNumber,
-            newServiceIdString: recipient.serviceIdString,
-            newPhoneNumber: phoneNumber,
-            transaction: transaction
+            newPhoneNumber: newPhoneNumber,
+            transaction: tx
         )
     }
 
@@ -399,16 +380,7 @@ class RecipientMergerImpl: RecipientMerger {
         phoneNumberRecipient: SignalRecipient,
         transaction: DBWriteTransaction
     ) -> SignalRecipient {
-        owsAssertDebug(
-            serviceIdRecipient.phoneNumber == nil
-            || serviceIdRecipient.phoneNumber == phoneNumber.stringValue
-        )
-        owsAssertDebug(
-            phoneNumberRecipient.serviceIdString == nil
-            || phoneNumberRecipient.serviceIdString == serviceId.uuidValue.uuidString
-        )
-
-        // We have separate recipients in the db for the uuid and phone number.
+        // We have separate recipients in the db for the ACI and phone number.
         // There isn't an ideal way to do this, but we need to converge on one
         // recipient and discard the other.
 

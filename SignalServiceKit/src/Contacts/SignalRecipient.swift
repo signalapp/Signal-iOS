@@ -321,22 +321,20 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     public static let notificationKeyUUID = "UUID"
 
     fileprivate static func didUpdatePhoneNumber(
-        oldServiceIdString: String?,
+        serviceIdString: String,
         oldPhoneNumber: String?,
-        newServiceIdString: String?,
         newPhoneNumber: String?,
         transaction: SDSAnyWriteTransaction
     ) {
-        let oldServiceId = ServiceId(uuidString: oldServiceIdString)
-        let newServiceId = ServiceId(uuidString: newServiceIdString)
+        let serviceId = ServiceId(uuidString: serviceIdString)
 
         let oldAddress = SignalServiceAddress(
-            uuid: oldServiceId?.uuidValue,
+            uuid: serviceId?.uuidValue,
             phoneNumber: oldPhoneNumber,
             ignoreCache: true
         )
         let newAddress = SignalServiceAddress(
-            uuid: newServiceId?.uuidValue,
+            uuid: serviceId?.uuidValue,
             phoneNumber: newPhoneNumber,
             ignoreCache: true
         )
@@ -350,12 +348,10 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         transaction.addAsyncCompletion(queue: .global()) {
             let phoneNumbers: [String] = [oldPhoneNumber, newPhoneNumber].compactMap { $0 }
             for phoneNumber in phoneNumbers {
-                var userInfo: [AnyHashable: Any] = [
+                let userInfo: [AnyHashable: Any] = [
+                    Self.notificationKeyUUID: serviceIdString,
                     Self.notificationKeyPhoneNumber: phoneNumber
                 ]
-                if let newServiceIdString {
-                    userInfo[Self.notificationKeyUUID] = newServiceIdString
-                }
                 NotificationCenter.default.postNotificationNameAsync(Self.phoneNumberDidChange,
                                                                      object: nil,
                                                                      userInfo: userInfo)
@@ -366,10 +362,10 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             SDSDatabaseStorage.shared.touch(thread: contactThread, shouldReindex: true, transaction: transaction)
         }
 
-        if let newServiceId {
+        if let serviceId {
             if !newAddress.isLocalAddress {
                 self.versionedProfiles.clearProfileKeyCredential(
-                    for: ServiceIdObjC(newServiceId),
+                    for: ServiceIdObjC(serviceId),
                     transaction: transaction
                 )
 
@@ -407,7 +403,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             }
         }
 
-        if newServiceId != nil {
+        if serviceId != nil {
             transaction.addAsyncCompletion(queue: .global()) {
                 Self.udManager.setUnidentifiedAccessMode(.unknown, address: newAddress)
 
@@ -445,16 +441,14 @@ class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
     }
 
     func didUpdatePhoneNumber(
-        oldServiceIdString: String?,
+        serviceIdString: String,
         oldPhoneNumber: String?,
-        newServiceIdString: String?,
         newPhoneNumber: E164?,
         transaction: DBWriteTransaction
     ) {
         SignalRecipient.didUpdatePhoneNumber(
-            oldServiceIdString: oldServiceIdString,
+            serviceIdString: serviceIdString,
             oldPhoneNumber: oldPhoneNumber,
-            newServiceIdString: newServiceIdString,
             newPhoneNumber: newPhoneNumber?.stringValue,
             transaction: SDSDB.shimOnlyBridge(transaction)
         )
