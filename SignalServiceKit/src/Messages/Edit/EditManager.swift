@@ -6,16 +6,65 @@
 import Foundation
 import SignalCoreKit
 
+public enum EditSendValidationError: Error {
+    case editDisabled
+    case messageTypeNotSupported
+    case messageNotFound
+    case editWindowClosed
+    case tooManyEdits(UInt)
+}
+
+extension EditSendValidationError: LocalizedError {
+    public var errorDescription: String? {
+        localizedDescription
+    }
+
+    public var localizedDescription: String {
+        switch self {
+        case .editWindowClosed:
+            return OWSLocalizedString(
+                "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR",
+                comment: "Error message to display to user when a messaeg is too old to edit"
+            )
+        case .tooManyEdits(let numEdits):
+            return String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "EDIT_MESSAGE_SEND_TOO_MANY_EDITS_ERROR",
+                    tableName: "PluralAware",
+                    comment: "Error message to display to user when edit limit reached"
+                ),
+                numEdits
+            )
+        default:
+            return OWSLocalizedString(
+                "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR",
+                comment: "Edit failed for an unexpected reason"
+            )
+        }
+    }
+}
+
 public class EditManager {
 
     internal enum Constants {
+        // RECEIVE
+
         // Edits will only be received for up to 24 hours from the
         // original message
-        static let editWindow: UInt64 = UInt64(kDayInterval * 1000)
+        static let editWindowMilliseconds: UInt64 = UInt64(kDayInterval * 1000)
 
         // Receiving more than this number of edits on the same message
         // will result in subsequent edits being dropped
         static let maxReceiveEdits: UInt = UInt(100)
+
+        // SEND
+
+        // Edits can only be sent for up to 3 hours from the
+        // original message
+        static let editSendWindowMilliseconds: UInt64 = UInt64(kHourInterval * 3 * 1000)
+
+        // Message can only be edited 10 times
+        static let maxSendEdits: UInt = UInt(10)
     }
 
     public struct Context {
@@ -120,6 +169,60 @@ public class EditManager {
         )
 
         return editedMessage
+    }
+
+    // MARK: - Edit UI Validation
+
+    public static func canShowEditMenu(interaction: TSInteraction) -> Bool {
+        return Self.validateCanShowEditMenu(interaction: interaction) == nil
+    }
+
+    private static func validateCanShowEditMenu(interaction: TSInteraction) -> EditSendValidationError? {
+        guard FeatureFlags.editMessageSend else { return .editDisabled }
+        guard let message = interaction as? TSOutgoingMessage else { return .messageTypeNotSupported }
+
+        if !Self.editMessageTypeSupported(message: message) {
+            return .messageTypeNotSupported
+        }
+
+        let (result, isOverflow) = interaction.timestamp.addingReportingOverflow(Constants.editSendWindowMilliseconds)
+        guard !isOverflow && Date.ows_millisecondTimestamp() <= result else {
+            return .editWindowClosed
+        }
+        return nil
+    }
+
+    public func validateCanSendEdit(
+        targetMessageTimestamp: UInt64,
+        tx: DBReadTransaction
+    ) -> EditSendValidationError? {
+        guard FeatureFlags.editMessageSend else { return .editDisabled }
+
+        guard let editTarget = context.dataStore.findEditTarget(
+            timestamp: targetMessageTimestamp,
+            authorAci: nil,
+            tx: tx
+        ) else {
+            owsFailDebug("Target edit message missing")
+            return .messageNotFound
+        }
+
+        guard case .outgoingMessage(let targetMessageWrapper) = editTarget else {
+            return .messageNotFound
+        }
+
+        let targetMessage = targetMessageWrapper.message
+
+        if let error = Self.validateCanShowEditMenu(interaction: targetMessage) {
+            return error
+        }
+
+        let numberOfEdits = context.dataStore.numberOfEdits(for: targetMessage, tx: tx)
+        if numberOfEdits >= Constants.maxSendEdits {
+            return .tooManyEdits(Constants.maxSendEdits)
+        }
+
+        return nil
     }
 
     // MARK: - Outgoing Edit Send
@@ -286,7 +389,7 @@ public class EditManager {
                 return false
             }
 
-            let (result, isOverflow) = originalServerTimestamp.addingReportingOverflow(Constants.editWindow)
+            let (result, isOverflow) = originalServerTimestamp.addingReportingOverflow(Constants.editWindowMilliseconds)
             guard !isOverflow && serverTimestamp <= result else {
                 Logger.warn("Message edit outside of allowed timeframe")
                 return false
@@ -313,15 +416,8 @@ public class EditManager {
             }
         }
 
-        // Skip remotely deleted
-        if targetMessage.wasRemotelyDeleted {
-            Logger.warn("Edit message group does not match target message")
-            return false
-        }
-
-        // Skip view-once
-        if targetMessage.isViewOnceMessage {
-            Logger.warn("View once edits not supported")
+        if !Self.editMessageTypeSupported(message: targetMessage) {
+            Logger.warn("Edit of message type not supported")
             return false
         }
 
@@ -337,9 +433,22 @@ public class EditManager {
             return false
         }
 
+        return true
+    }
+
+    private static func editMessageTypeSupported(message: TSMessage) -> Bool {
+        // Skip remotely deleted
+        if message.wasRemotelyDeleted {
+            return false
+        }
+
+        // Skip view-once
+        if message.isViewOnceMessage {
+            return false
+        }
+
         // Skip contact shares
-        if targetMessage.contactShare != nil {
-            Logger.warn("Contact share edits not supported")
+        if message.contactShare != nil {
             return false
         }
 

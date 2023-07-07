@@ -100,6 +100,21 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
 
+        let editValidationError: EditSendValidationError? = Self.databaseStorage.read { transaction in
+            if let editTarget = inputToolbar.editTarget {
+                return context.editManager.validateCanSendEdit(
+                    targetMessageTimestamp: editTarget.timestamp,
+                    tx: transaction.asV2Read
+                )
+            }
+            return nil
+        }
+
+        if let error = editValidationError {
+            OWSActionSheets.showActionSheet(message: error.localizedDescription)
+            return
+        }
+
         let message = Self.databaseStorage.read { transaction in
             ThreadUtil.enqueueMessage(
                 body: messageBody,

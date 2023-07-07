@@ -139,7 +139,7 @@ class EditManagerTests: SSKBaseTestSwift {
             )
         )
 
-        let expiredTS = targetMessage.receivedAtTimestamp + EditManager.Constants.editWindow + 1
+        let expiredTS = targetMessage.receivedAtTimestamp + EditManager.Constants.editWindowMilliseconds + 1
 
         db.write { tx in
             let result = editManager.processIncomingEditMessage(
