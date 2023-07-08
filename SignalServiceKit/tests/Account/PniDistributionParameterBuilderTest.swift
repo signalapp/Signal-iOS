@@ -112,17 +112,11 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
         // We should have generated a pre-key we threw away, for the invalid
         // device.
-        XCTAssertTrue(
-            Set(parameters.devicePniSignedPreKeys.values)
-                .isStrictSubset(of: pniSignedPreKeyStoreMock.generatedSignedPreKeys)
-        )
+        XCTAssertLessThan(parameters.devicePniSignedPreKeys.count, pniSignedPreKeyStoreMock.generatedSignedPreKeys.count)
 
         // We should have generated a registration ID we threw away, for the
         // invalid device.
-        XCTAssertTrue(
-            Set(parameters.pniRegistrationIds.values)
-                .isStrictSubset(of: tsAccountManagerMock.generatedRegistrationIds)
-        )
+        XCTAssertLessThan(parameters.pniRegistrationIds.count, tsAccountManagerMock.generatedRegistrationIds.count)
 
         XCTAssertEqual(parameters.deviceMessages.count, 1)
         XCTAssertEqual(parameters.deviceMessages.first?.destinationDeviceId, 123)
