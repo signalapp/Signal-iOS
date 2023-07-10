@@ -234,14 +234,15 @@ public class RemoteConfig: BaseFlags {
         getUInt32Value(forFlag: .maxNicknameLength, defaultValue: 32)
     }
 
-    public enum SVRConfiguration {
+    /// NOTE: serialized, be careful changing raw values.
+    public enum SVRConfiguration: Int {
         /// Exclusively read/write to KBS (as if SVR2 didn't exist)
-        case kbsOnly
+        case kbsOnly = 0
         /// Write to SVR2 and then KBS. Require both to succeed.
         /// Read from SVR2 first; if it has no backups, read from KBS.
-        case mirroring
+        case mirroring = 1
         /// Exclusively read/write to SVR2.
-        case svr2Only
+        case svr2Only = 2
     }
 
     public var svrConfiguration: SVRConfiguration {

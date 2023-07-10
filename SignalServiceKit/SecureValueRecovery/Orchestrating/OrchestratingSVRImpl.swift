@@ -11,6 +11,7 @@ import Foundation
 public class OrchestratingSVRImpl: SecureValueRecovery {
 
     private let db: DB
+    private let kvStore: KeyValueStore
     private let schedulers: Schedulers
 
     public init(
@@ -55,19 +56,32 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
             twoFAManager: twoFAManager
         )
         self.db = databaseStorage
+        self.kvStore = keyValueStoreFactory.keyValueStore(collection: "OrchestratingSVRImpl")
         self.schedulers = schedulers
     }
 
-    // MARK: - Delegation
-
     private let svr2: SecureValueRecovery2Impl
     private let kbs: KeyBackupServiceImpl
+
+    // MARK: - Remote Config
 
     private var remoteSVRConfig: RemoteConfig.SVRConfiguration?
 
     public func setRemoteConfiguration(_ config: RemoteConfig.SVRConfiguration) {
         self.remoteSVRConfig = config
+        db.asyncWrite { tx in
+            self.kvStore.setInt(config.rawValue, key: "svrConfig", transaction: tx)
+        }
     }
+
+    private func getStoredRemoteConfiguration(tx: DBReadTransaction) -> RemoteConfig.SVRConfiguration? {
+        guard let raw = kvStore.getInt("svrConfig", transaction: tx) else {
+            return nil
+        }
+        return .init(rawValue: raw)
+    }
+
+    // MARK: - Read/Write Strategy
 
     private enum ReadStrategy {
         case kbsOnly(SVR.AuthMethod)
@@ -186,7 +200,11 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         }
     }
 
+    // MARK: - Delegation
+
     public func warmCaches() {
+        self.remoteSVRConfig = db.read(block: self.getStoredRemoteConfiguration(tx:))
+
         var shouldWarmKBS = false
         var shouldWarmSVR2 = false
         switch remoteSVRConfig {
