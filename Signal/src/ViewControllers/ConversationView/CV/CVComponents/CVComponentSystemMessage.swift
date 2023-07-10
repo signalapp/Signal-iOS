@@ -335,7 +335,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             selectionStyling: selectionStyling,
             textAlignment: .center,
             lineBreakMode: .byWordWrapping,
-            items: systemMessage.namesInTitle.map { .referencedUser(referencedUserItem: $0) }
+            items: systemMessage.namesInTitle.map { .referencedUser(referencedUserItem: $0) },
+            linkifyStyle: .underlined(bodyTextColor: systemMessage.titleColor)
         )
     }
 

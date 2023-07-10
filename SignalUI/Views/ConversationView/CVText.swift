@@ -203,11 +203,6 @@ public struct CVLabelConfig {
 
 public struct CVTextViewConfig {
 
-    public enum LinkifyStyle {
-        case linkAttribute
-        case underlined(bodyTextColor: UIColor)
-    }
-
     public typealias CacheKey = String
 
     public let text: CVTextValue
@@ -216,7 +211,7 @@ public struct CVTextViewConfig {
     public let textAlignment: NSTextAlignment?
     public let displayConfiguration: HydratedMessageBody.DisplayConfiguration
     public let linkTextAttributes: [NSAttributedString.Key: Any]?
-    public let linkifyStyle: LinkifyStyle
+    public let linkifyStyle: CVTextLabel.LinkifyStyle
     public let linkItems: [CVTextLabel.Item]
     public let matchedSearchRanges: [NSRange]
     public let extraCacheKeyFactors: [String]?
@@ -228,7 +223,7 @@ public struct CVTextViewConfig {
         textAlignment: NSTextAlignment? = nil,
         displayConfiguration: HydratedMessageBody.DisplayConfiguration,
         linkTextAttributes: [NSAttributedString.Key: Any]? = nil,
-        linkifyStyle: LinkifyStyle,
+        linkifyStyle: CVTextLabel.LinkifyStyle,
         linkItems: [CVTextLabel.Item],
         matchedSearchRanges: [NSRange],
         extraCacheKeyFactors: [String]? = nil

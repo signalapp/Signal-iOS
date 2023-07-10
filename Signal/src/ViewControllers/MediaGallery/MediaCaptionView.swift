@@ -295,7 +295,8 @@ class MediaCaptionView: UIView {
                 textAlignment: textAlignment,
                 lineBreakMode: .byWordWrapping,
                 numberOfLines: Self.collapsedNumberOfLines,
-                items: []
+                items: [],
+                linkifyStyle: .underlined(bodyTextColor: textColor)
             )
             collapsedSize = CVTextLabel.measureSize(config: collapsedTextConfig, maxWidth: maxWidth).size
 
@@ -309,7 +310,8 @@ class MediaCaptionView: UIView {
                 textAlignment: textAlignment,
                 lineBreakMode: .byWordWrapping,
                 numberOfLines: 3 * Self.collapsedNumberOfLines,
-                items: []
+                items: [],
+                linkifyStyle: .underlined(bodyTextColor: textColor)
             )
             let expandedTextSize = CVTextLabel.measureSize(config: expandedTextConfig, maxWidth: maxWidth).size
             expandedSize = CGSize(width: expandedTextSize.width, height: min(expandedTextSize.height, Self.maxHeight))
@@ -324,7 +326,8 @@ class MediaCaptionView: UIView {
                 textAlignment: textAlignment,
                 lineBreakMode: .byWordWrapping,
                 numberOfLines: 0,
-                items: []
+                items: [],
+                linkifyStyle: .underlined(bodyTextColor: textColor)
             )
             fullSize = CVTextLabel.measureSize(config: fullTextConfig, maxWidth: maxWidth).size
         }

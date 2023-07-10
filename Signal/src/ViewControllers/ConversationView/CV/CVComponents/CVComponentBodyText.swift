@@ -352,7 +352,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             lineBreakMode: .byWordWrapping,
             numberOfLines: 0,
             cacheKey: textViewConfig.cacheKey,
-            items: bodyTextState.items
+            items: bodyTextState.items,
+            linkifyStyle: textViewConfig.linkifyStyle
         )
     }
 
@@ -373,7 +374,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             lineBreakMode: .byWordWrapping,
             numberOfLines: 0,
             cacheKey: labelConfig.cacheKey,
-            items: bodyTextState.items
+            items: bodyTextState.items,
+            linkifyStyle: linkifyStyle
         )
     }
 
@@ -481,52 +483,16 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
     }
 
-    public static func linkifyData(
-        attributedText: NSMutableAttributedString,
-        linkifyStyle: CVTextViewConfig.LinkifyStyle,
-        items: [CVTextLabel.Item]
-    ) {
-
-        // Sort so that we can detect overlap.
-        let items = items.sorted {
-            $0.range.location < $1.range.location
-        }
-
-        var lastIndex: Int = 0
-        for item in items {
-            let range = item.range
-
-            switch item {
-            case .mention, .referencedUser, .unrevealedSpoiler:
-                // Do nothing; these are already styled.
-                continue
-            case .dataItem(let dataItem):
-                guard let link = dataItem.url.absoluteString.nilIfEmpty else {
-                    owsFailDebug("Could not build data link.")
-                    continue
-                }
-
-                switch linkifyStyle {
-                case .linkAttribute:
-                    attributedText.addAttribute(.link, value: link, range: range)
-                case .underlined(let bodyTextColor):
-                    attributedText.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: range)
-                    attributedText.addAttribute(.underlineColor, value: bodyTextColor, range: range)
-                }
-
-                lastIndex = max(lastIndex, range.location + range.length)
-            }
-        }
-    }
-
-    private func textViewConfig(displayableText: DisplayableText) -> CVTextViewConfig {
-
-        // Honor dynamic type in the message bodies.
-        let linkTextAttributes: [NSAttributedString.Key: Any] = [
+    private var linkTextAttributes: [NSAttributedString.Key: Any] {
+        return [
             NSAttributedString.Key.foregroundColor: bodyTextColor,
             NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
         ]
+    }
 
+    private var linkifyStyle: CVTextLabel.LinkifyStyle { .underlined(bodyTextColor: bodyTextColor) }
+
+    private func textViewConfig(displayableText: DisplayableText) -> CVTextViewConfig {
         let textAlignment = (isTextExpanded
                                 ? displayableText.fullTextNaturalAlignment
                                 : displayableText.displayTextNaturalAlignment)
@@ -583,7 +549,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             textAlignment: textAlignment,
             displayConfiguration: displayConfiguration,
             linkTextAttributes: linkTextAttributes,
-            linkifyStyle: .underlined(bodyTextColor: bodyTextColor),
+            linkifyStyle: linkifyStyle,
             linkItems: linkItems,
             matchedSearchRanges: matchedSearchRanges,
             extraCacheKeyFactors: extraCacheKeyFactors

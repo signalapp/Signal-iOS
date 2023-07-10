@@ -148,7 +148,8 @@ class CVTextTest: XCTestCase {
             lineBreakMode: .byWordWrapping,
             numberOfLines: 0,
             cacheKey: textViewConfig.cacheKey,
-            items: []
+            items: [],
+            linkifyStyle: .underlined(bodyTextColor: textViewConfig.textColor)
         )
     }
 
@@ -300,7 +301,7 @@ class CVTextTest: XCTestCase {
             interactionUniqueId: UUID().uuidString,
             interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorUuid: nil)
         )
-        CVComponentBodyText.linkifyData(
+        CVTextLabel.linkifyData(
             attributedText: truncatedText,
             linkifyStyle: .linkAttribute,
             items: dataItems
@@ -326,7 +327,7 @@ class CVTextTest: XCTestCase {
             interactionUniqueId: UUID().uuidString,
             interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorUuid: nil)
         )
-        CVComponentBodyText.linkifyData(
+        CVTextLabel.linkifyData(
             attributedText: fullText,
             linkifyStyle: .linkAttribute,
             items: dataItems
@@ -354,7 +355,7 @@ class CVTextTest: XCTestCase {
             interactionUniqueId: UUID().uuidString,
             interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorUuid: nil)
         )
-        CVComponentBodyText.linkifyData(
+        CVTextLabel.linkifyData(
             attributedText: truncatedEmail,
             linkifyStyle: .linkAttribute,
             items: dataItems
@@ -378,7 +379,7 @@ class CVTextTest: XCTestCase {
             interactionUniqueId: UUID().uuidString,
             interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorUuid: nil)
         )
-        CVComponentBodyText.linkifyData(
+        CVTextLabel.linkifyData(
             attributedText: truncatedPhone,
             linkifyStyle: .linkAttribute,
             items: dataItems

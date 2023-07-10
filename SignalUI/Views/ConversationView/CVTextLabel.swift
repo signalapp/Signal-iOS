@@ -87,6 +87,11 @@ public class CVTextLabel: NSObject {
         }
     }
 
+    public enum LinkifyStyle {
+        case linkAttribute
+        case underlined(bodyTextColor: UIColor)
+    }
+
     // MARK: -
 
     public struct Config {
@@ -100,6 +105,7 @@ public class CVTextLabel: NSObject {
         public let numberOfLines: Int
         public let cacheKey: String
         public let items: [Item]
+        public let linkifyStyle: CVTextLabel.LinkifyStyle
 
         public init(
             text: CVTextValue,
@@ -111,7 +117,8 @@ public class CVTextLabel: NSObject {
             lineBreakMode: NSLineBreakMode,
             numberOfLines: Int = 0,
             cacheKey: String? = nil,
-            items: [Item]
+            items: [Item],
+            linkifyStyle: CVTextLabel.LinkifyStyle
         ) {
             self.text = text
             self.displayConfig = displayConfig
@@ -129,6 +136,7 @@ public class CVTextLabel: NSObject {
             }
 
             self.items = items
+            self.linkifyStyle = linkifyStyle
         }
     }
 
@@ -225,6 +233,43 @@ public class CVTextLabel: NSObject {
 
     public func animate(selectedItem: Item) {
         label.animate(selectedItem: selectedItem)
+    }
+
+    // MARK: - Linkification
+
+    public static func linkifyData(
+        attributedText: NSMutableAttributedString,
+        linkifyStyle: LinkifyStyle,
+        items: [CVTextLabel.Item]
+    ) {
+
+        // Sort so that we can detect overlap.
+        let items = items.sorted {
+            $0.range.location < $1.range.location
+        }
+
+        for item in items {
+            let range = item.range
+
+            switch item {
+            case .mention, .referencedUser, .unrevealedSpoiler:
+                // Do nothing; these are already styled.
+                continue
+            case .dataItem(let dataItem):
+                guard let link = dataItem.url.absoluteString.nilIfEmpty else {
+                    owsFailDebug("Could not build data link.")
+                    continue
+                }
+
+                switch linkifyStyle {
+                case .linkAttribute:
+                    attributedText.addAttribute(.link, value: link, range: range)
+                case .underlined(let bodyTextColor):
+                    attributedText.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: range)
+                    attributedText.addAttribute(.underlineColor, value: bodyTextColor, range: range)
+                }
+            }
+        }
     }
 
     // MARK: -
@@ -334,6 +379,12 @@ public class CVTextLabel: NSObject {
 
             // Set a default text color based on the passed in config
             attributedString.addDefaultAttributeToEntireString(.foregroundColor, value: config.textColor)
+
+            CVTextLabel.linkifyData(
+                attributedText: attributedString,
+                linkifyStyle: config.linkifyStyle,
+                items: config.items
+            )
 
             var range = NSRange(location: 0, length: 0)
             var attributes = attributedString.attributes(at: 0, effectiveRange: &range)

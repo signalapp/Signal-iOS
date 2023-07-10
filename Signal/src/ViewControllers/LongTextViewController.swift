@@ -115,7 +115,7 @@ public class LongTextViewController: OWSViewController {
                 interactionIdentifier: .fromInteraction(itemViewModel.interaction)
             )
 
-            CVComponentBodyText.linkifyData(
+            CVTextLabel.linkifyData(
                 attributedText: mutableText,
                 linkifyStyle: .linkAttribute,
                 items: items
