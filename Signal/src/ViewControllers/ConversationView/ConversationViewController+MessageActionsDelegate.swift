@@ -45,6 +45,19 @@ extension ConversationViewController: MessageActionsDelegate {
         } else {
             inputToolbar?.quotedReply = quotedReplyModel
             inputToolbar?.editTarget = message
+
+            inputToolbar?.editThumbnail = nil
+            if let imageStream = itemViewModel.bodyMediaAttachmentStreams.first(where: \.isValidImage) {
+                imageStream.thumbnailImageSmall { [weak inputToolbar = self.inputToolbar] image in
+                    // If editing already ended, don't set it
+                    guard let inputToolbar,
+                          inputToolbar.shouldShowEditUI else { return }
+                    inputToolbar.editThumbnail = image
+                } failure: {
+                    owsFailDebug("Could not load thumnail.")
+                }
+            }
+
             inputToolbar?.beginEditingMessage()
         }
     }

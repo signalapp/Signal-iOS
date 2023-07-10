@@ -224,6 +224,14 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         return button
     }()
 
+    private lazy var editMessageThumbnailView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.layer.cornerRadius = 4
+        imageView.clipsToBounds = true
+        imageView.autoSetDimensions(to: .init(square: 20))
+        return imageView
+    }()
+
     private lazy var editMessageLabelWrapper: UIView = {
         let view = UIView.container()
 
@@ -240,9 +248,10 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         editLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         editLabel.textColor = Theme.primaryTextColor
 
-        let stack = UIStackView(arrangedSubviews: [editIconView, editLabel])
+        let stack = UIStackView(arrangedSubviews: [editIconView, editLabel, editMessageThumbnailView])
         stack.axis = .horizontal
-        stack.alignment = .fill
+        stack.alignment = .center
+        stack.distribution = .fill
 
         view.addSubview(stack)
         stack.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 10, vMargin: 8))
@@ -956,9 +965,15 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
                 showEditMessageView(animated: animateChanges)
             } else {
                 quotedReply = nil
+                editThumbnail = nil
                 hideEditMessageView(animated: animateChanges)
             }
         }
+    }
+
+    var editThumbnail: UIImage? {
+        get { editMessageThumbnailView.image }
+        set { editMessageThumbnailView.image = newValue }
     }
 
     private func showEditMessageView(animated: Bool) {
