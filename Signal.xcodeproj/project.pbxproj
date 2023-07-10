@@ -788,10 +788,10 @@
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
 		6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */; };
 		662ABF3329510F8300518D90 /* OutgoingCallEventSyncMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6640639A294D1F8D00997E0B /* OutgoingCallEventSyncMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* FingerprintViewController.swift */; };
 		662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */; };
 		662AC9292A4A4A0A009E2D5F /* SpoilerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9282A4A4A0A009E2D5F /* SpoilerAnimator.swift */; };
 		662AC92B2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC92A2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift */; };
-		662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* FingerprintViewController.swift */; };
 		662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44082A1567E4001F83E2 /* svr2.pb.swift */; };
 		662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */; };
 		662C440F2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */; };
@@ -1303,6 +1303,7 @@
 		D9317FDC2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */; };
 		D934279C2A4E43680062311B /* UsernameLinkQRCodeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D934279B2A4E43680062311B /* UsernameLinkQRCodeColor.swift */; };
 		D938CD6029283402006FB16A /* Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938CD5F29283402006FB16A /* Paypal.swift */; };
+		D93CE1242A5C84F600D916B7 /* OWSSyncRequestMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */; };
 		D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */; };
 		D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
@@ -3293,10 +3294,10 @@
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
 		6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2ConcurrencyTests.swift; sourceTree = "<group>"; };
+		662AC9242A460477009E2D5F /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
 		662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderer.swift; sourceTree = "<group>"; };
 		662AC9282A4A4A0A009E2D5F /* SpoilerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimator.swift; sourceTree = "<group>"; };
 		662AC92A2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimationTestController.swift; sourceTree = "<group>"; };
-		662AC9242A460477009E2D5F /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
 		662C44082A1567E4001F83E2 /* svr2.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = svr2.pb.swift; sourceTree = "<group>"; };
 		662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Impl.swift; sourceTree = "<group>"; };
 		662C440E2A17DB8A001F83E2 /* OrchestratingSVRImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrchestratingSVRImpl.swift; sourceTree = "<group>"; };
@@ -3890,6 +3891,7 @@
 		D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeColorPickerViewController.swift; sourceTree = "<group>"; };
 		D934279B2A4E43680062311B /* UsernameLinkQRCodeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeColor.swift; sourceTree = "<group>"; };
 		D938CD5F29283402006FB16A /* Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paypal.swift; sourceTree = "<group>"; };
+		D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSyncRequestMessage.swift; sourceTree = "<group>"; };
 		D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManager.swift; sourceTree = "<group>"; };
 		D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManagerTest.swift; sourceTree = "<group>"; };
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
@@ -8695,6 +8697,7 @@
 				F9C5C8BA289453B100548EEE /* OWSSyncMessageRequestResponseMessage.m */,
 				F9C5C8CA289453B100548EEE /* OWSSyncRequestMessage.h */,
 				F9C5C8BC289453B100548EEE /* OWSSyncRequestMessage.m */,
+				D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */,
 			);
 			path = DeviceSyncing;
 			sourceTree = "<group>";
@@ -12348,6 +12351,7 @@
 				F9C5CBBB289453B300548EEE /* OWSSyncKeysMessage.m in Sources */,
 				F9C5CBAF289453B300548EEE /* OWSSyncMessageRequestResponseMessage.m in Sources */,
 				F9C5CBB1289453B300548EEE /* OWSSyncRequestMessage.m in Sources */,
+				D93CE1242A5C84F600D916B7 /* OWSSyncRequestMessage.swift in Sources */,
 				F9C5CC7A289453B300548EEE /* OWSThumbnailService.swift in Sources */,
 				F9C5CC4F289453B300548EEE /* OWSUDManager.swift in Sources */,
 				F9C5CC4C289453B300548EEE /* OWSUnknownContactBlockOfferMessage+SDS.swift in Sources */,
