@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogWarn(@"Found unexpectedly unknown request type %d - bailing.", requestType);
             return nil;
         default:
-            break;
+            requestBuilder.type = requestType;
     }
 
     NSError *error;
