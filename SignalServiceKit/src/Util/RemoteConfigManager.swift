@@ -741,7 +741,7 @@ public class ServiceRemoteConfigManager: RemoteConfigManager {
     func registrationStateDidChange() {
         AssertIsOnMainThread()
 
-        guard tsAccountManager.isRegistered else { return }
+        guard tsAccountManager.isRegistered && !tsAccountManager.isDeregistered else { return }
         Logger.info("Refreshing and immediately applying new flags due to new registration.")
         refresh().catch { error in
             Logger.error("Failed to update remote config after registration change \(error)")
