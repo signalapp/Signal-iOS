@@ -434,18 +434,10 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     }
 
     public func clearKeys(transaction: DBWriteTransaction) {
-        // Local write; auth is irrelevant
-        switch writeStrategy(for: .implicit) {
-        case .reportGenericError:
-            return
-        case .kbsOnly:
-            kbs.clearKeys(transaction: transaction)
-        case .svr2Only:
-            svr2.clearKeys(transaction: transaction)
-        case .mirroring:
-            svr2.clearKeys(transaction: transaction)
-            kbs.clearKeys(transaction: transaction)
-        }
+        // This is a special kind of local write; we want to clear
+        // all keys we have across both regardless of write strategy.
+        svr2.clearKeys(transaction: transaction)
+        kbs.clearKeys(transaction: transaction)
     }
 
     // MARK: - Master Key Encryption
