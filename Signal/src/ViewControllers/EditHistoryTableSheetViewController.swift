@@ -15,6 +15,8 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
     var parentRenderItem: CVRenderItem?
     var renderItems = [CVRenderItem]()
     let spoilerState: SpoilerRenderState
+    private let message: TSMessage
+    private let database: SDSDatabaseStorage
 
     init(
         message: TSMessage,
@@ -22,15 +24,10 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         database: SDSDatabaseStorage
     ) {
         self.spoilerState = spoilerState
+        self.message = message
+        self.database = database
 
         super.init()
-
-        do {
-            try loadEditHistory(message: message, database: database)
-            updateTableContents(shouldReload: true)
-        } catch {
-            owsFailDebug("Error reading edit history: \(error)")
-        }
     }
 
     required init() {
@@ -39,7 +36,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
     // MARK: - Table Update
 
-    private func loadEditHistory(message: TSMessage, database: SDSDatabaseStorage) throws {
+    private func loadEditHistory() throws {
         try database.read { tx in
             let edits = try EditMessageFinder.findEditHistory(
                 for: message,
@@ -81,6 +78,12 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
     }
 
     public override func updateTableContents(shouldReload: Bool = true) {
+        do {
+            try loadEditHistory()
+        } catch {
+            owsFailDebug("Error reading edit history: \(error)")
+        }
+
         let contents = OWSTableContents()
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
         guard let parentItem = parentRenderItem else { return }

@@ -110,9 +110,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         Self.valueLabelAttributedText(name: expiryLabelName, value: expiryLabelValue)
     }
 
-    private lazy var expiryLabel: UILabel = {
-        Self.buildValueLabel(name: expiryLabelName, value: expiryLabelValue)
-    }()
+    private var expiryLabel: UILabel?
 
     // MARK: Initializers
 
@@ -290,7 +288,9 @@ class MessageDetailViewController: OWSTableViewController2 {
         }
 
         if expires {
+            let expiryLabel = Self.buildValueLabel(name: expiryLabelName, value: expiryLabelValue)
             messageStack.addArrangedSubview(expiryLabel)
+            self.expiryLabel = expiryLabel
         }
 
         if hasMediaAttachment, attachments?.count == 1, let attachment = attachments?.first {
@@ -500,7 +500,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     }
 
     private func updateExpiryLabel() {
-        expiryLabel.attributedText = expiryLabelAttributedText
+        expiryLabel?.attributedText = expiryLabelAttributedText
     }
 
     private func buildAccessoryView(text: String,
