@@ -24,6 +24,7 @@ disabled_rules:
 - type_body_length
 - unneeded_synthesized_initializer
 - unused_closure_parameter
+- trailing_comma
 opt_in_rules:
 - attributes
 - comma_inheritance
