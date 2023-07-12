@@ -160,6 +160,9 @@
 /* Menu option to limit All Media view to displaying only GIFs */
 "ALL_MEDIA_FILTER_GIFS" = "GIF-bilder";
 
+/* Menu option to remove content type restriction in All Media view */
+"ALL_MEDIA_FILTER_NONE" = "All Media";
+
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "Foton";
 
@@ -844,6 +847,9 @@
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Fel";
 
+/* Alert shown when the user needs to exchange messages to see the safety number. */
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "Ogiltigt kortnummer";
 
@@ -1185,6 +1191,9 @@
 
 /* Context menu button title */
 "CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu edit button title */
+"CONTEXT_MENU_EDIT_MESSAGE" = "Edit";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Vidarebefordra";
@@ -2134,6 +2143,12 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Kopiera";
 
+/* Error message to display to user when a messaeg is too old to edit */
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+
+/* Edit failed for an unexpected reason */
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "Hej,\n\nDen senaste tiden har jag använt Signal för att hålla mina chattar på min iPhone privata. Jag vill att du installerar det också, så att vi kan vara säkra på att endast du och jag kan läsa våra meddelanden eller höra våra samtal.\n\nSignal finns tillgänglig för iPhone och för Android. Hämta denna: %1$@\n\nSignal fungerar som din befintliga meddelandeapp. Vi kan skicka bilder och videor, ringa samtal och starta gruppchattar. Det bästa är att ingen annan kan se något av det, inte ens de som gör Signal!\n\nDu kan läsa mer om Open Whisper Systems, de som ligger bakom Signal, här: %2$@";
 
@@ -2376,12 +2391,6 @@
 
 /* Title for the 'forward message(s)' view. */
 "FORWARD_MESSAGE_TITLE" = "Vidarebefordra till";
-
-/* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "Du har inga medier i denna chatt.";
-
-/* Label indicating media gallery with audio filter is empty */
-"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "Du har inga ljudfiler i den här chatten.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Hämtar nyare media…";
@@ -3316,6 +3325,9 @@
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ är på Signal!";
 
+/* Label at the top of the input text when editing a message */
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "Tangentbord";
 
@@ -3538,11 +3550,29 @@
 /* Shown in place of message input text in media editor when 'View Once' is on. */
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Visa en gång-media";
 
+/* Button to reset media filter. Displayed when filter results in no media visible. */
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Detta kommer att ta bort valda filer permanent. All meddelandetext som är associerad med dessa objekt kommer också att tas bort.";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
+
+/* Displayed in All Media (Audio) screen when there's no audio files - second line. */
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+
+/* Displayed in All Media (Audio) screen when there's no audio files - first line. */
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+
+/* Displayed in All Media screen when there's no media - first line. */
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+
+/* Displayed in All Media screen when there's no media - second line. */
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+
+/* Displayed in All Media screen when there's no media - first line. */
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Denna månad";
@@ -3582,6 +3612,9 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Mer information";
+
+/* Action sheet edit message accessibility label */
+"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Nytt e-postmeddelande";
@@ -4927,14 +4960,8 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spela media";
 
-/* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Du har inte markerat %1$@ som verifierad.";
-
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verifierad";
-
-/* Label indicating that the user is verified. Embeds  user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%1$@ är verifierad.";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Tryck för att skanna";
@@ -4962,9 +4989,6 @@
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Den skannade koden verkar inte vara ett säkerhetsnummer. Använder ni båda en uppdaterad version av Signal?";
-
-/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Om du vill verifiera säkerheten för din ände-till-ände-kryptering med %1$@, jämför siffrorna ovan med siffrorna på hens enhet.\n\nAlternativt kan du skanna koden på hens telefon eller be hen skanna din kod.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Verifiera säkerhetsnummer";
@@ -5454,6 +5478,21 @@
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Vårt säkerhetsnummer för Signal:\n%1$@";
+
+/* Header informing the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+
+/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+
+/* Informs the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+
+/* Informs the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+
+/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ditt säkerhetsnummer med %1$@ har ändrats. Du vill nog verifiera det.";
@@ -7280,7 +7319,7 @@
 "USERNAME_LINK_DESCRIPTION" = "Varje användarnamn har en unik länk som du kan dela med dina vänner för att starta en chatt med dig";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
-"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Color";
+"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Färg";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Färg";
@@ -7296,6 +7335,21 @@
 
 /* A title for a view that allows you to view and interact with a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Kod";
+
+/* A title for a view that allows you to scan a username link QR code using the camera. */
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+
+/* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+
+/* Text providing instructions on how to use the username link QR code scanning. */
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+
+/* Text for a tappable cell that copies the user's username link when selected. */
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+
+/* Text describing what you can do with a username link, on a sheet for sharing it. */
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Ett fel uppstod när användarnamnet letades upp. Försök igen senare.";
@@ -7348,9 +7402,6 @@
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Användarnamn måste innehålla minst %1$@ tecken.";
 
-/* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Kopiera eller dela en användarnamnslänk";
-
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Enhetens namn kan inte vara tomt";
 
@@ -7377,6 +7428,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Granska säkerhetsnummer";
+
+/* Instructions for verifying your safety number. Embeds {{contact's name}} */
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Den här videon kan inte spelas";

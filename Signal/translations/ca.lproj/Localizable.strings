@@ -160,6 +160,9 @@
 /* Menu option to limit All Media view to displaying only GIFs */
 "ALL_MEDIA_FILTER_GIFS" = "GIFs";
 
+/* Menu option to remove content type restriction in All Media view */
+"ALL_MEDIA_FILTER_NONE" = "All Media";
+
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "Fotos";
 
@@ -844,6 +847,9 @@
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Error";
 
+/* Alert shown when the user needs to exchange messages to see the safety number. */
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "Número de targeta no vàlid";
 
@@ -1185,6 +1191,9 @@
 
 /* Context menu button title */
 "CONTEXT_MENU_DETAILS" = "Informació";
+
+/* Context menu edit button title */
+"CONTEXT_MENU_EDIT_MESSAGE" = "Edit";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Reenvia";
@@ -2134,6 +2143,12 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Copia";
 
+/* Error message to display to user when a messaeg is too old to edit */
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+
+/* Edit failed for an unexpected reason */
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "Ep,\n\nÚltimament he estat utilitzant Signal per mantenir les meves converses d'iPhone privades. M'agradaria que també l'instal·lessis, per poder estar segurs que som els únics que llegim els missatges que ens enviem.\n\nSignal està disponible per a Android i iPhone. El pots baixar aquí: %1$@\n\nSignal funciona com la resta d'aplicacions de missatgeria instantània. Podem enviar-nos fotografies i vídeos, fer trucades i crear grups. El millor és que ningú més pot veure res d'això, ni tan sols la gent que ha creat Signal!\n\nPots obtenir més informació sobre Open Whisper Systems, la gent que ha creat Signal, aquí: %2$@";
 
@@ -2376,12 +2391,6 @@
 
 /* Title for the 'forward message(s)' view. */
 "FORWARD_MESSAGE_TITLE" = "Reenvia a";
-
-/* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "No tens arxius multimèdia en aquest xat.";
-
-/* Label indicating media gallery with audio filter is empty */
-"GALLERY_TILES_EMPTY_GALLERY_AUDIO" = "No tens cap àudio en aquest xat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Carregant arxius recents…";
@@ -3316,6 +3325,9 @@
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ és al Signal!";
 
+/* Label at the top of the input text when editing a message */
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "Teclat";
 
@@ -3538,11 +3550,29 @@
 /* Shown in place of message input text in media editor when 'View Once' is on. */
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Arxius multimèdia per veure una vegada";
 
+/* Button to reset media filter. Displayed when filter results in no media visible. */
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Aquesta acció esborrarà permanentment els fitxers seleccionats. Qualsevol missatge de text que hi estigui associat també s'esborrarà.";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
+
+/* Displayed in All Media (Audio) screen when there's no audio files - second line. */
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+
+/* Displayed in All Media (Audio) screen when there's no audio files - first line. */
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+
+/* Displayed in All Media screen when there's no media - first line. */
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+
+/* Displayed in All Media screen when there's no media - second line. */
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+
+/* Displayed in All Media screen when there's no media - first line. */
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Aquest mes";
@@ -3582,6 +3612,9 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Més informació";
+
+/* Action sheet edit message accessibility label */
+"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Missatge de correu nou";
@@ -4927,14 +4960,8 @@
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reprodueix el contingut";
 
-/* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "No heu marcat %1$@ com a verificat.";
-
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verificat";
-
-/* Label indicating that the user is verified. Embeds  user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%1$@ es troba verificat.";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Toqueu per escanejar";
@@ -4962,9 +4989,6 @@
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "El codi escanejat no sembla un número de seguretat. Teniu la versió més nova de Signal?";
-
-/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si voleu verificar la seguretat de l'encriptació de cap a cap amb %1$@, compareu els números de dalt amb els números del seu dispositiu.\n\nTambé podeu escanejar el codi del seu telèfon, o demanar-li que escanegi el vostre.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Verificació de la seguretat";
@@ -5454,6 +5478,21 @@
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Els nostres números de seguretat del Signal:\n%1$@";
+
+/* Header informing the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+
+/* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+
+/* Informs the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+
+/* Informs the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+
+/* Title for a sheet informing the user about the transition from phone number to user identifier based. */
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Els números de seguretat amb %1$@ ha canviat. Potser voleu verificar-los.";
@@ -7297,6 +7336,21 @@
 /* A title for a view that allows you to view and interact with a QR code for your username link. */
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Codi";
 
+/* A title for a view that allows you to scan a username link QR code using the camera. */
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+
+/* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+
+/* Text providing instructions on how to use the username link QR code scanning. */
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+
+/* Text for a tappable cell that copies the user's username link when selected. */
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+
+/* Text describing what you can do with a username link, on a sheet for sharing it. */
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Hi ha hagut un error en cercar el nom d'usuari. Torneu-ho a provar més tard.";
 
@@ -7348,9 +7402,6 @@
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Els noms d'usuari han de començar amb un mínim de %1$@ caràcters.";
 
-/* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copiar o compartir un enllaç de nom d'usuari";
-
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "El nom del dispositiu no pot estar buit";
 
@@ -7377,6 +7428,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Revisa els números de seguretat";
+
+/* Instructions for verifying your safety number. Embeds {{contact's name}} */
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "No es pot reproduir aquest vídeo";

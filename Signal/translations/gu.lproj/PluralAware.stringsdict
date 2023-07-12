@@ -285,6 +285,22 @@
 			<string>%1$d સભ્યોની મહત્તમ ગ્રુપ સાઇઝ થઈ ગઈ.</string>
 		</dict>
 	</dict>
+	<key>EDIT_MESSAGE_SEND_TOO_MANY_EDITS_ERROR</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Only %1$d edit can be applied to this message.</string>
+			<key>other</key>
+			<string>Only %1$d edits can be applied to this message.</string>
+		</dict>
+	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
