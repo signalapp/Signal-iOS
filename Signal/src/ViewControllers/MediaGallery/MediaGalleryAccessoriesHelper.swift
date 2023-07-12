@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
@@ -117,7 +118,7 @@ public class MediaGalleryAccessoriesHelper {
         footerBar.autoPinWidthToSuperview()
 
         updateDeleteButton()
-        updateSelectButton()
+        updateSelectionModeControls()
     }
 
     func applyTheme() {
@@ -156,16 +157,23 @@ public class MediaGalleryAccessoriesHelper {
 
     // MARK: - Batch Selection
 
+    private lazy var selectButton = UIBarButtonItem(
+        title: CommonStrings.selectButton,
+        style: .plain,
+        target: self,
+        action: #selector(didTapSelect)
+    )
+
     var isInBatchSelectMode = false {
         didSet {
-            let didChange = isInBatchSelectMode != oldValue
-            if didChange {
-                viewController?.batchSelectionModeDidChange(isInBatchSelectMode: isInBatchSelectMode)
-                updateSelectionInfoLabel()
-                updateSelectButton()
-                updateDeleteButton()
-                updateShareButton()
-            }
+            guard isInBatchSelectMode != oldValue else { return }
+
+            viewController?.batchSelectionModeDidChange(isInBatchSelectMode: isInBatchSelectMode)
+            updateFooterBarState()
+            updateSelectionInfoLabel()
+            updateSelectionModeControls()
+            updateDeleteButton()
+            updateShareButton()
         }
     }
 
@@ -179,7 +187,7 @@ public class MediaGalleryAccessoriesHelper {
         updateShareButton()
     }
 
-    private func updateSelectButton() {
+    private func updateSelectionModeControls() {
         guard let viewController else {
             return
         }
@@ -190,33 +198,19 @@ public class MediaGalleryAccessoriesHelper {
                 action: #selector(didCancelSelect)
             )
         } else {
-            viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: OWSLocalizedString(
-                    "BUTTON_SELECT",
-                    comment: "Button text to enable batch selection mode"),
-                style: .plain,
-                target: self,
-                action: #selector(didTapSelect)
-            )
+            viewController.navigationItem.rightBarButtonItem = nil // TODO: Search
         }
+
+        headerView.isHidden = isInBatchSelectMode
+
+        // Don't allow the user to leave mid-selection, so they realized they have
+        // to cancel (lose) their selection if they leave.
+        viewController.navigationItem.hidesBackButton = isInBatchSelectMode
     }
 
     @objc
     private func didTapSelect(_ sender: Any) {
-        guard let viewController else {
-            return
-        }
         isInBatchSelectMode = true
-
-        footerBarState = viewController.isFiltering ? .selectionFiltering : .selection
-
-        // Disabled until at least one item is selected.
-        deleteButton.isEnabled = false
-        shareButton.isEnabled = false
-
-        // Don't allow the user to leave mid-selection, so they realized they have
-        // to cancel (lose) their selection if they leave.
-        viewController.navigationItem.hidesBackButton = true
     }
 
     @objc
@@ -227,17 +221,7 @@ public class MediaGalleryAccessoriesHelper {
     // Call this to exit select mode, for example after completing a deletion.
     func endSelectMode() {
         isInBatchSelectMode = false
-
-        guard let viewController else {
-            return
-        }
-
-        // hide toolbar
-        updateFooterBarState()
-
-        viewController.navigationItem.hidesBackButton = false
-        viewController.didEndSelectMode()
-        updateDeleteButton()
+        viewController?.didEndSelectMode()
     }
 
     // MARK: - Filter
@@ -413,7 +397,7 @@ public class MediaGalleryAccessoriesHelper {
             }
         }
         didSet {
-            reloadFooter()
+            updateBottomToolbarControls()
         }
     }
 
@@ -432,7 +416,7 @@ public class MediaGalleryAccessoriesHelper {
         }
     }
 
-    private func reloadFooter() {
+    private func updateBottomToolbarControls() {
         guard footerBarState != .hidden else { return }
 
         let fixedSpace = { return UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil) }
@@ -444,18 +428,19 @@ public class MediaGalleryAccessoriesHelper {
             case .selection, .selectionFiltering:
                 return [ shareButton, flexibleSpace(), selectionInfoButton, flexibleSpace(), deleteButton ]
             case .regular:
-                if isGridViewAllowed {
-                    return [
-                        currentFileTypeSupportsFiltering ? filterButton : fixedSpace(),
-                        flexibleSpace(),
-                        modeButton,
-                        flexibleSpace()
-                    ]
-                } else {
-                    return currentFileTypeSupportsFiltering ? [ filterButton ] : nil
-                }
+                return [
+                    currentFileTypeSupportsFiltering ? filterButton : fixedSpace(),
+                    flexibleSpace(),
+                    isGridViewAllowed ? modeButton : fixedSpace(),
+                    flexibleSpace(),
+                    selectButton
+                ]
             case .filtering:
-                return currentFileTypeSupportsFiltering ? [ selectedFilterButton ] : nil
+                return [
+                    currentFileTypeSupportsFiltering ? selectedFilterButton : fixedSpace(),
+                    flexibleSpace(),
+                    selectButton
+                ]
             }
         }()
         footerBar.setItems(footerBarItems, animated: false)
