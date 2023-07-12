@@ -768,7 +768,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
 
         let changeInLength = (body.hydratedText as NSString).length - (hydratedTextBeforeChange as NSString).length
         super.edited(
-            body.hydratedText == hydratedTextBeforeChange ? [.editedCharacters, .editedAttributes] : .editedAttributes,
+            body.hydratedText != hydratedTextBeforeChange ? [.editedCharacters, .editedAttributes] : .editedAttributes,
             range: modifiedRange,
             changeInLength: changeInLength
         )
