@@ -321,7 +321,7 @@ public final class CallRecord: NSObject, SDSCodableModel, Decodable {
                         )
                         let threadUniqueId = thread.uniqueId
                         DispatchQueue.main.async {
-                            Self.notificationPresenter?.cancelNotificationsForMissedCalls(threadUniqueId: threadUniqueId)
+                            Self.notificationPresenter.cancelNotificationsForMissedCalls(threadUniqueId: threadUniqueId)
                         }
                     }
                 }
@@ -358,7 +358,7 @@ public final class CallRecord: NSObject, SDSCodableModel, Decodable {
             )
             let threadUniqueId = thread.uniqueId
             DispatchQueue.main.async {
-                Self.notificationPresenter?.cancelNotificationsForMissedCalls(threadUniqueId: threadUniqueId)
+                Self.notificationPresenter.cancelNotificationsForMissedCalls(threadUniqueId: threadUniqueId)
             }
             Self.createOrUpdate(
                 interaction: callInteraction,

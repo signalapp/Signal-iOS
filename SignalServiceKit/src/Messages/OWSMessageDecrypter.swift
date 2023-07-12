@@ -323,8 +323,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         guard let sourceAddress = envelope.sourceAddress, sourceAddress.isValid else {
             let threadlessMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
-            self.notificationsManager?.notifyUser(forThreadlessErrorMessage: threadlessMessage,
-                                                  transaction: transaction)
+            self.notificationsManager.notifyUser(forThreadlessErrorMessage: threadlessMessage, transaction: transaction)
             return wrappedError
         }
 
@@ -425,12 +424,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         if let errorMessage = errorMessage {
             errorMessage.anyInsert(transaction: transaction)
-            self.notificationsManager?.notifyUser(forErrorMessage: errorMessage,
-                                                  thread: contactThread,
-                                                  transaction: transaction)
-
-            self.notificationsManager?.notifyTestPopulation(
-                ofErrorMessage: "Failed decryption of envelope: \(envelope.timestamp)")
+            notificationsManager.notifyUser(forErrorMessage: errorMessage, thread: contactThread, transaction: transaction)
+            notificationsManager.notifyTestPopulation(ofErrorMessage: "Failed decryption of envelope: \(envelope.timestamp)")
         }
 
         return wrappedError
@@ -802,7 +797,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     transaction: tx
                 )
                 errorMessage.anyInsert(transaction: tx)
-                self.notificationsManager?.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)
+                self.notificationsManager.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)
             }
             if let nextExpirationDate {
                 DispatchQueue.main.async {

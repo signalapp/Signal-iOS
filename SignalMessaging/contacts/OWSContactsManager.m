@@ -225,7 +225,7 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
         case RawContactAuthorizationStatusRestricted:
         case RawContactAuthorizationStatusDenied:
             // Clear the contacts cache if access to the system contacts is revoked.
-            [self updateContacts:@[] isUserRequested:NO];
+            [self updateContacts:nil isUserRequested:NO];
         case RawContactAuthorizationStatusNotDetermined:
         case RawContactAuthorizationStatusAuthorized:
             break;

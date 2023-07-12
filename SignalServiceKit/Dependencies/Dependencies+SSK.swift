@@ -119,13 +119,11 @@ public extension NSObject {
         SSKEnvironment.shared.networkManagerRef
     }
 
-    // This singleton is configured after the environments are created.
-    final var notificationsManager: NotificationsProtocol? {
+    final var notificationsManager: NotificationsProtocol {
         SSKEnvironment.shared.notificationsManagerRef
     }
 
-    // This singleton is configured after the environments are created.
-    static var notificationsManager: NotificationsProtocol? {
+    static var notificationsManager: NotificationsProtocol {
         SSKEnvironment.shared.notificationsManagerRef
     }
 
@@ -367,11 +365,11 @@ public extension NSObject {
         .shared
     }
 
-    final var notificationPresenter: NotificationsProtocol? {
+    final var notificationPresenter: NotificationsProtocol {
         SSKEnvironment.shared.notificationsManager
     }
 
-    static var notificationPresenter: NotificationsProtocol? {
+    static var notificationPresenter: NotificationsProtocol {
         SSKEnvironment.shared.notificationsManager
     }
 

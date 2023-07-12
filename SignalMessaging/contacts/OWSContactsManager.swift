@@ -894,25 +894,28 @@ extension OWSContactsManager {
     private enum Constants {
         static let nextFullIntersectionDate = "OWSContactsManagerKeyNextFullIntersectionDate2"
         static let lastKnownContactPhoneNumbers = "OWSContactsManagerKeyLastKnownContactPhoneNumbers"
+        static let didIntersectAddressBook = "didIntersectAddressBook"
     }
 
     @objc
-    func updateContacts(_ contacts: [Contact], isUserRequested: Bool) {
-        intersectionQueue.async { self._updateContacts(contacts, isUserRequested: isUserRequested) }
+    func updateContacts(_ addressBookContacts: [Contact]?, isUserRequested: Bool) {
+        intersectionQueue.async { self._updateContacts(addressBookContacts, isUserRequested: isUserRequested) }
     }
 
-    private func _updateContacts(_ contacts: [Contact], isUserRequested: Bool) {
-        let contactsMaps = databaseStorage.write { tx in
+    private func _updateContacts(_ addressBookContacts: [Contact]?, isUserRequested: Bool) {
+        let (localNumber, contactsMaps) = databaseStorage.write { tx in
             let localNumber = tsAccountManager.localNumber(with: tx)
-            let result = ContactsMaps.build(contacts: contacts, localNumber: localNumber)
-            setContactsMaps(result, localNumber: localNumber, transaction: tx)
-            return result
+            let contactsMaps = ContactsMaps.build(contacts: addressBookContacts ?? [], localNumber: localNumber)
+            setContactsMaps(contactsMaps, localNumber: localNumber, transaction: tx)
+            return (localNumber, contactsMaps)
         }
         cnContactCache.removeAllObjects()
 
         NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerContactsDidChange, object: nil)
 
-        intersectContacts(contacts, isUserRequested: isUserRequested).done(on: DispatchQueue.global()) {
+        intersectContacts(
+            addressBookContacts, localNumber: localNumber, isUserRequested: isUserRequested
+        ).done(on: DispatchQueue.global()) {
             self.buildSignalAccountsAndUpdatePersistedState(forFetchedSystemContacts: contactsMaps.allContacts)
         }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Couldn't intersect contacts: \(error)")
@@ -928,13 +931,6 @@ extension OWSContactsManager {
     }
 
     private enum IntersectionMode {
-        /// The user requested a full intersection.
-        case userRequested
-
-        /// The user has never performed an intersection. Do a full intersection,
-        /// but don't post notifications about newly-discovered recipients.
-        case initialIntersection
-
         /// It's time for the regularly-scheduled full intersection.
         case fullIntersection
 
@@ -943,18 +939,17 @@ extension OWSContactsManager {
         case deltaIntersection(priorPhoneNumbers: Set<String>)
     }
 
-    private func fetchIntersectionMode(tx: SDSAnyReadTransaction) -> IntersectionMode {
-        let nextFullIntersectionDate = keyValueStore.getDate(Constants.nextFullIntersectionDate, transaction: tx)
-        guard let nextFullIntersectionDate else {
-            return .initialIntersection
+    private func fetchIntersectionMode(isUserRequested: Bool, tx: SDSAnyReadTransaction) -> IntersectionMode {
+        if isUserRequested {
+            return .fullIntersection
         }
-        guard nextFullIntersectionDate.isAfterNow else {
+        let nextFullIntersectionDate = keyValueStore.getDate(Constants.nextFullIntersectionDate, transaction: tx)
+        guard let nextFullIntersectionDate, nextFullIntersectionDate.isAfterNow else {
             return .fullIntersection
         }
         guard let priorPhoneNumbers = fetchPriorIntersectionPhoneNumbers(tx: tx) else {
-            // We don't know the prior phone numbers, so do an `.initialIntersection`
-            // so that we skip posting notifications for newly-discovered contacts.
-            return .initialIntersection
+            // We don't know the prior phone numbers, so do a `.fullIntersection`.
+            return .fullIntersection
         }
         return .deltaIntersection(priorPhoneNumbers: priorPhoneNumbers)
     }
@@ -967,46 +962,103 @@ extension OWSContactsManager {
         return result
     }
 
-    private func intersectContacts(_ contacts: [Contact], isUserRequested: Bool) -> Promise<Void> {
-        let (intersectionMode, oldRegisteredRecipients) = databaseStorage.read { tx in
-            let intersectionMode: IntersectionMode = isUserRequested ? .userRequested : fetchIntersectionMode(tx: tx)
-            let oldRegisteredRecipients = SignalRecipient.fetchAllRegisteredRecipients(tx: tx)
-            return (intersectionMode, oldRegisteredRecipients)
+    private func intersectContacts(
+        _ addressBookContacts: [Contact]?,
+        localNumber: String?,
+        isUserRequested: Bool
+    ) -> Promise<Void> {
+        let (intersectionMode, signalRecipientPhoneNumbers) = databaseStorage.read { tx in
+            let intersectionMode = fetchIntersectionMode(isUserRequested: isUserRequested, tx: tx)
+            let signalRecipientPhoneNumbers = SignalRecipient.fetchAllPhoneNumbers(tx: tx)
+            return (intersectionMode, signalRecipientPhoneNumbers)
         }
-        let allPhoneNumbers = intersectionPhoneNumbers(for: contacts)
-        let phoneNumbersToIntersect: Set<String> = {
-            switch intersectionMode {
-            case .userRequested, .initialIntersection, .fullIntersection:
-                return allPhoneNumbers
-            case .deltaIntersection(let priorPhoneNumbers):
-                return allPhoneNumbers.subtracting(priorPhoneNumbers)
-            }
-        }()
+        let addressBookPhoneNumbers = addressBookContacts.map { intersectionPhoneNumbers(for: $0) }
 
-        if phoneNumbersToIntersect.isEmpty {
-            Logger.info("Skipping intersection with zero phone numbers.")
-            return .value(())
+        var phoneNumbersToIntersect = Set(signalRecipientPhoneNumbers.keys)
+        if let addressBookPhoneNumbers {
+            phoneNumbersToIntersect.formUnion(addressBookPhoneNumbers)
+        }
+        if case .deltaIntersection(let priorPhoneNumbers) = intersectionMode {
+            phoneNumbersToIntersect.subtract(priorPhoneNumbers)
+        }
+        if let localNumber {
+            phoneNumbersToIntersect.remove(localNumber)
         }
 
         switch intersectionMode {
-        case .userRequested, .initialIntersection, .fullIntersection:
+        case .fullIntersection:
             Logger.info("Performing full intersection for \(phoneNumbersToIntersect.count) phone numbers.")
         case .deltaIntersection:
             Logger.info("Performing delta intersection for \(phoneNumbersToIntersect.count) phone numbers.")
         }
 
         let intersectionPromise = intersectContacts(phoneNumbersToIntersect, retryDelaySeconds: 1)
-        return intersectionPromise.done(on: intersectionQueue) { newRegisteredRecipients in
-            switch intersectionMode {
-            case .fullIntersection:
-                let newlyAddedRegisteredRecipients = newRegisteredRecipients.subtracting(oldRegisteredRecipients)
-                NewAccountDiscovery.shared.discovered(newRecipients: newlyAddedRegisteredRecipients)
-            case .userRequested, .initialIntersection, .deltaIntersection:
-                break
-            }
+        return intersectionPromise.done(on: intersectionQueue) { intersectedRecipients in
             Self.databaseStorage.write { tx in
+                self.migrateDidIntersectAddressBookIfNeeded(tx: tx)
+                self.postJoinNotificationsIfNeeded(
+                    addressBookPhoneNumbers: addressBookPhoneNumbers,
+                    phoneNumberRegistrationStatus: signalRecipientPhoneNumbers,
+                    intersectedRecipients: intersectedRecipients,
+                    tx: tx
+                )
                 self.didFinishIntersection(mode: intersectionMode, phoneNumbers: phoneNumbersToIntersect, tx: tx)
             }
+        }
+    }
+
+    private func migrateDidIntersectAddressBookIfNeeded(tx: SDSAnyWriteTransaction) {
+        // This is carefully-constructed migration code that can be deleted in the
+        // future without requiring additional cleanup logic. If we don't know
+        // whether or not the address book has ever been intersected (ie we're
+        // running this logic for the first time in a version that includes this
+        // new flag), we set the flag based on whether or not we've ever performed
+        // a full intersection (ie whether or not we've intersected the address
+        // book). (Once we delete this logic, users who haven't run it will
+        // potentially miss one round of "User Joined Signal" notifications, but
+        // that's a reasonable fallback.)
+        //
+        // TODO: Delete this migration method on/after Jan 31, 2024.
+        if keyValueStore.hasValue(forKey: Constants.didIntersectAddressBook, transaction: tx) {
+            return
+        }
+        keyValueStore.setBool(
+            keyValueStore.hasValue(forKey: Constants.nextFullIntersectionDate, transaction: tx),
+            key: Constants.didIntersectAddressBook,
+            transaction: tx
+        )
+    }
+
+    private func postJoinNotificationsIfNeeded(
+        addressBookPhoneNumbers: Set<String>?,
+        phoneNumberRegistrationStatus: [String: Bool],
+        intersectedRecipients: some Sequence<SignalRecipient>,
+        tx: SDSAnyWriteTransaction
+    ) {
+        guard let addressBookPhoneNumbers else {
+            return
+        }
+        let didIntersectAtLeastOnce = keyValueStore.getBool(Constants.didIntersectAddressBook, defaultValue: false, transaction: tx)
+        guard didIntersectAtLeastOnce else {
+            // This is the first address book intersection. Don't post notifications,
+            // but mark the flag so that we post notifications next time.
+            keyValueStore.setBool(true, key: Constants.didIntersectAddressBook, transaction: tx)
+            return
+        }
+        guard Self.preferences.shouldNotifyOfNewAccounts(transaction: tx) else {
+            return
+        }
+        for signalRecipient in intersectedRecipients {
+            guard let phoneNumber = signalRecipient.phoneNumber else {
+                continue  // Can't happen.
+            }
+            guard addressBookPhoneNumbers.contains(phoneNumber) else {
+                continue  // Not in the address book -- no notification.
+            }
+            guard phoneNumberRegistrationStatus[phoneNumber] != true else {
+                continue  // They were already registered -- no notification.
+            }
+            NewAccountDiscovery.postNotification(for: signalRecipient, tx: tx)
         }
     }
 
@@ -1016,7 +1068,7 @@ extension OWSContactsManager {
         tx: SDSAnyWriteTransaction
     ) {
         switch intersectionMode {
-        case .initialIntersection, .fullIntersection, .userRequested:
+        case .fullIntersection:
             setPriorIntersectionPhoneNumbers(phoneNumbers, tx: tx)
             let nextFullIntersectionDate = Date(timeIntervalSinceNow: RemoteConfig.cdsSyncInterval)
             keyValueStore.setDate(nextFullIntersectionDate, key: Constants.nextFullIntersectionDate, transaction: tx)
@@ -1037,9 +1089,11 @@ extension OWSContactsManager {
         _ phoneNumbers: Set<String>,
         retryDelaySeconds: TimeInterval
     ) -> Promise<Set<SignalRecipient>> {
-        owsAssertDebug(!phoneNumbers.isEmpty)
         owsAssertDebug(retryDelaySeconds > 0)
 
+        if phoneNumbers.isEmpty {
+            return .value([])
+        }
         return contactDiscoveryManager.lookUp(
             phoneNumbers: phoneNumbers,
             mode: .contactIntersection

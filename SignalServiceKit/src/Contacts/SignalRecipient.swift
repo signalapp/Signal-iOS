@@ -183,14 +183,13 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         return fetchRecipient(for: address, onlyIfRegistered: true, tx: tx) != nil
     }
 
-    @objc
-    public static func fetchAllRegisteredRecipients(tx: SDSAnyReadTransaction) -> [SignalRecipient] {
-        var result = [SignalRecipient]()
+    public static func fetchAllPhoneNumbers(tx: SDSAnyReadTransaction) -> [String: Bool] {
+        var result = [String: Bool]()
         Self.anyEnumerate(transaction: tx) { signalRecipient, _ in
-            guard signalRecipient.isRegistered else {
+            guard let phoneNumber = signalRecipient.phoneNumber else {
                 return
             }
-            result.append(signalRecipient)
+            result[phoneNumber] = signalRecipient.isRegistered
         }
         return result
     }

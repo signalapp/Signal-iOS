@@ -305,7 +305,7 @@ public extension TSAccountManager {
                 loadAccountState(with: transaction)
 
                 if newValue {
-                    notificationPresenter?.notifyUserOfDeregistration(transaction: transaction)
+                    notificationPresenter.notifyUserOfDeregistration(transaction: transaction)
                 }
             }
             postRegistrationStateDidChangeNotification()

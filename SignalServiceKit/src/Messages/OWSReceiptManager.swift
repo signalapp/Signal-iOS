@@ -533,7 +533,7 @@ public extension OWSReceiptManager {
             )
 
             // Clear notifications for all the now-marked-read messages in one batch.
-            notificationPresenter?.cancelNotifications(messageIds: [incomingMessage.uniqueId] + markedAsReadIds)
+            notificationPresenter.cancelNotifications(messageIds: [incomingMessage.uniqueId] + markedAsReadIds)
         case let outgoingMessage as TSOutgoingMessage:
             // Outgoing messages are always "read", but if we get a receipt
             // from our linked device about one that indicates that any reactions

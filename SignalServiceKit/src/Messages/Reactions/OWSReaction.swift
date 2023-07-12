@@ -64,7 +64,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         anyUpdate(transaction: transaction) { reaction in
             reaction.read = true
         }
-        notificationsManager?.cancelNotifications(reactionId: uniqueId)
+        notificationsManager.cancelNotifications(reactionId: uniqueId)
     }
 
     @objc

@@ -140,7 +140,7 @@ public extension TSMessage {
         reaction.anyRemove(transaction: tx)
         databaseStorage.touch(interaction: self, shouldReindex: false, transaction: tx)
 
-        Self.notificationsManager?.cancelNotifications(reactionId: reaction.uniqueId)
+        Self.notificationsManager.cancelNotifications(reactionId: reaction.uniqueId)
     }
 
     // MARK: - Edits
@@ -291,7 +291,7 @@ public extension TSMessage {
         try! processEdits(transaction: transaction) { record, message in
             message?.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
         }
-        Self.notificationsManager?.cancelNotifications(messageIds: [self.uniqueId])
+        Self.notificationsManager.cancelNotifications(messageIds: [self.uniqueId])
     }
 
     // MARK: - Preview text

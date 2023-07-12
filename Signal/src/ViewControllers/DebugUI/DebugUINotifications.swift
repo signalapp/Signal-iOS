@@ -52,12 +52,7 @@ class DebugUINotifications: DebugUIPage, Dependencies {
 
             OWSTableItem(title: "Notify For Threadless Error Message") { [weak self] in
                 self?.notifyUserForThreadlessErrorMessage()
-            },
-
-            OWSTableItem(title: "Notify of New Signal Users") { [weak self] in
-                self?.notifyOfNewUsers()
             }
-
         ]
 
         return OWSTableSection(title: "Notifications have delay: \(kNotificationDelay)s", items: sectionItems)
@@ -117,8 +112,6 @@ class DebugUINotifications: DebugUIPage, Dependencies {
             self.notifyForErrorMessage(thread: contactThread)
         }.then {
             self.notifyUserForThreadlessErrorMessage()
-        }.then {
-            self.notifyOfNewUsers()
         }.done {
             UIApplication.shared.endBackgroundTask(taskIdentifier)
         }
@@ -192,30 +185,6 @@ class DebugUINotifications: DebugUIPage, Dependencies {
                 self.notificationPresenter.notifyUser(forThreadlessErrorMessage: errorMessage,
                                                       transaction: transaction)
             }
-        }
-    }
-
-    @discardableResult
-    func notifyOfNewUsers() -> Guarantee<Void> {
-        return delayedNotificationDispatch {
-            let recipients: Set<SignalRecipient> = self.databaseStorage.read { transaction in
-                let allRecipients = SignalRecipient.anyFetchAll(transaction: transaction)
-                let activeRecipients = allRecipients.filter { recipient in
-                    guard recipient.isRegistered else {
-                        return false
-                    }
-
-                    guard !recipient.address.isLocalAddress else {
-                        return false
-                    }
-
-                    return true
-                }
-
-                return Set(activeRecipients)
-            }
-
-            NewAccountDiscovery.shared.discovered(newRecipients: recipients, forNewThreadsOnly: false)
         }
     }
 }
