@@ -7280,7 +7280,7 @@
 "USERNAME_LINK_DESCRIPTION" = "आपल्यासह चॅटस् सुरू करण्यासाठी आपल्या मित्रांसह आपण शेअर करू शकता अशी एक अद्वितीय लिंक प्रत्येक वापरकर्तानावासह असते";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
-"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Color";
+"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "रंग";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "रंग";

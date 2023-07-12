@@ -7280,7 +7280,7 @@
 "USERNAME_LINK_DESCRIPTION" = "Fiecare nume de utilizator are un link unic și îl poți partaja prietenilor tăi iar ei îl pot folosi ca să înceapă o conversație cu tine";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
-"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Color";
+"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Culoare";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Culoare";

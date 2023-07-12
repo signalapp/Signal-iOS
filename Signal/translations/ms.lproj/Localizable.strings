@@ -7280,7 +7280,7 @@
 "USERNAME_LINK_DESCRIPTION" = "Setiap nama pengguna mempunyai pautan unik yang anda boleh kongsikan dengan rakan untuk memulakan sembang dengan anda";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
-"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Color";
+"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Warna";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Warna";

@@ -7280,7 +7280,7 @@
 "USERNAME_LINK_DESCRIPTION" = "Svako korisničko ime ima jedinstvenu poveznicu koju možete podijeliti sa svojim prijateljima kako biste započeli zajednički razgovor";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
-"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Color";
+"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Boja";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Boja";

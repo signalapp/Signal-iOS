@@ -7280,7 +7280,7 @@
 "USERNAME_LINK_DESCRIPTION" = "প্রতিটি ব্যবহারকারীর নামের একটি বিশেষ লিঙ্ক রয়েছে যা আপনার সাথে একটি চ্যাট শুরু করতে আপনি আপনার বন্ধুদের সাথে শেয়ার করতে পারেন";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
-"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Color";
+"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "রঙ";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "রঙ";

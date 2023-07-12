@@ -7280,7 +7280,7 @@
 "USERNAME_LINK_DESCRIPTION" = "Каждому имени пользователя присвоена уникальная ссылка, которой вы можете поделиться со своими друзьями, чтобы они могли начать чат с вами";
 
 /* A title for a view that allows you to pick a color for a QR code for your username link. */
-"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Color";
+"USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR" = "Цвет";
 
 /* Title for a button to pick the color of your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Цвет";
