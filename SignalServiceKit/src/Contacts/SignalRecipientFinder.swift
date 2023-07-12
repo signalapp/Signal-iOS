@@ -42,17 +42,6 @@ extension AnySignalRecipientFinder {
             return grdbAdapter.signalRecipients(for: addresses, transaction: transaction)
         }
     }
-
-    /// Fetches and returns all registered SignalRecipients that do not have a UUID
-    /// Note: The registered device set is currently represented in an archive blob. So the schema doesn't currently
-    /// allow us to filter on registered recipients. So the underlying query fetches *all* recipients without a UUID,
-    /// then filters where devices.count > 0.
-    public func registeredRecipientsWithoutUUID(transaction: SDSAnyReadTransaction) -> [SignalRecipient] {
-        switch transaction.readTransaction {
-        case .grdbRead(let transaction):
-            return grdbAdapter.registeredRecipientsWithoutUUID(transaction: transaction)
-        }
-    }
 }
 
 @objc
@@ -93,26 +82,6 @@ class GRDBSignalRecipientFinder: NSObject {
 
         var result = [SignalRecipient]()
         SignalRecipient.anyEnumerate(transaction: tx.asAnyRead, sql: sql, arguments: []) { signalRecipient, _ in
-            result.append(signalRecipient)
-        }
-        return result
-    }
-
-    fileprivate func registeredRecipientsWithoutUUID(transaction tx: GRDBReadTransaction) -> [SignalRecipient] {
-        let sql = """
-            SELECT * FROM \(SignalRecipient.databaseTableName)
-            WHERE (
-                \(signalRecipientColumn: .serviceIdString) IS NULL OR
-                \(signalRecipientColumn: .serviceIdString) IS ''
-            ) AND (
-                \(signalRecipientColumn: .phoneNumber) IS NOT NULL
-            )
-        """
-        var result = [SignalRecipient]()
-        SignalRecipient.anyEnumerate(transaction: tx.asAnyRead, sql: sql, arguments: []) { signalRecipient, _ in
-            guard signalRecipient.isRegistered else {
-                return
-            }
             result.append(signalRecipient)
         }
         return result

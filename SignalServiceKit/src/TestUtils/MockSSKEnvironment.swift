@@ -121,7 +121,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let bulkProfileFetch = BulkProfileFetch()
         let versionedProfiles = MockVersionedProfiles()
         let earlyMessageManager = EarlyMessageManager()
-        let messagePipelineSupervisor = MessagePipelineSupervisor.createStandardSupervisor()
+        let messagePipelineSupervisor = MessagePipelineSupervisor()
         let paymentsHelper = MockPaymentsHelper()
         let paymentsCurrencies = MockPaymentsCurrencies()
         let paymentsEvents = PaymentsEventsNoop()

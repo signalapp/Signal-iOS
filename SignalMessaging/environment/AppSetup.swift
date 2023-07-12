@@ -127,7 +127,7 @@ public class AppSetup {
         let bulkProfileFetch = BulkProfileFetch()
         let versionedProfiles = VersionedProfilesImpl()
         let earlyMessageManager = EarlyMessageManager()
-        let messagePipelineSupervisor = MessagePipelineSupervisor.createStandardSupervisor()
+        let messagePipelineSupervisor = MessagePipelineSupervisor()
         let paymentsHelper = PaymentsHelperImpl()
         let paymentsCurrencies = PaymentsCurrenciesImpl()
         let spamChallengeResolver = SpamChallengeResolver()

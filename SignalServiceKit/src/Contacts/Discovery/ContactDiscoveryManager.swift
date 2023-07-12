@@ -32,10 +32,7 @@ public protocol ContactDiscoveryManager {
     /// rate limits than small requests. Even if contact intersection tries to
     /// look up 1,000 phone numbers and fails due to a rate limit, a small
     /// request for a single phone number might not fail. As a result, rate
-    /// limits apply only to the current mode and any lower-priority modes. (By
-    /// applying them to lower-priority modes, we mitigate a scenario where
-    /// UUIDBackfillTask is waiting to run and a smaller contact intersection
-    /// runs and further delays UUIDBackfillTask.)
+    /// limits apply only to the current mode and any lower-priority modes.
     ///
     /// - Parameters:
     ///   - phoneNumbers: The set of phone numbers to discover.
@@ -73,12 +70,6 @@ public enum ContactDiscoveryMode {
     /// have to tap the screen each time you call `lookUp` with this mode.
     case oneOffUserRequest
 
-    /// Used by UUIDBackfillTask.
-    ///
-    /// Notably, incoming messages are blocked until this lookup is complete, so
-    /// it's of the utmost importance.
-    case uuidBackfill
-
     /// Used to resolve recipients when sending a message.
     ///
     /// Notably, outgoing messages to specific people/chats are blocked until
@@ -90,7 +81,6 @@ public enum ContactDiscoveryMode {
 
     static let allCasesOrderedByRateLimitPriority: [ContactDiscoveryMode] = [
         .oneOffUserRequest,
-        .uuidBackfill,
         .outgoingMessage,
         .contactIntersection
     ]
@@ -319,7 +309,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
 
         private func shouldFetchAnyPhoneNumber(for request: PendingRequest) -> Bool {
             switch request.mode {
-            case .oneOffUserRequest, .uuidBackfill, .contactIntersection:
+            case .oneOffUserRequest, .contactIntersection:
                 // These always perform a fetch -- no need to consult the cache.
                 return true
             case .outgoingMessage:

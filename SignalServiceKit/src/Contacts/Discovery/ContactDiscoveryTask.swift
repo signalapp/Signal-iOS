@@ -122,10 +122,6 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             // *only* mark the addresses without any UUIDs as unregistered. Everything
             // else we ignore; we will identify their current registration status
             // either when attempting to send a message or when fetching their profile.
-            //
-            // The UUIDBackfillTask relies on this behavior in order to converge. If we
-            // don't mark undiscoverable addresses without a UUID as unregistered,
-            // we'll look them up again on the next launch.
             guard address.uuid == nil else {
                 continue
             }

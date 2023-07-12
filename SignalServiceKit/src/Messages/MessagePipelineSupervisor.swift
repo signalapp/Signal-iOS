@@ -17,26 +17,14 @@ public class MessagePipelineSupervisor: NSObject {
 
     // MARK: - Lifecycle
 
-    /// Constructs an instance of `MessagePipelineSupervisor` to be treated as a shared instance for the application.
-    /// Should not be called more than once per app launch
-    @objc
-    public static func createStandardSupervisor() -> MessagePipelineSupervisor {
-        self.init(isolated: false)
-    }
-
     /// Initializes a MessagePipelineSupervisor
     /// - Parameter isolated: If set true, the returned instance is not configured to be a singleton.
     ///   Only to be used by tests.
     @objc
-    required init(isolated: Bool = false) {
+    public override init() {
         super.init()
-        assert(!isolated || CurrentAppContext().isRunningTests,
-               "The isolated parameter may only be set in a test context")
 
-        if !isolated {
-            SwiftSingletons.register(self)
-            configureDefaultSuspensions()
-        }
+        SwiftSingletons.register(self)
     }
 
     // MARK: - Public
@@ -52,14 +40,11 @@ public class MessagePipelineSupervisor: NSObject {
     }
 
     public enum Suspension: Hashable {
-        case uuidBackfill
         case nseWakingUpApp(suspensionId: UUID, payloadString: String)
         case pendingChangeNumber
 
         fileprivate var reasonString: String {
             switch self {
-            case .uuidBackfill:
-                return "UUID Backfill"
             case .nseWakingUpApp(_, let payloadString):
                 return "Waking main app for \(payloadString)"
             case .pendingChangeNumber:
@@ -153,29 +138,6 @@ public class MessagePipelineSupervisor: NSObject {
                 stage.supervisorDidSuspendMessageProcessing?(self)
             } else {
                 stage.supervisorDidResumeMessageProcessing?(self)
-            }
-        }
-    }
-
-    private func configureDefaultSuspensions() {
-        // By default, we want to make sure we're suspending message processing until
-        // a UUID backfill task completes. Only do this if:
-        // - We're in a context that will try processing messages
-        // - We're not in a testing context. runNowOrWhenApp...Ready blocks never get invoked during tests,
-        //   and this prevents a UUIDBackfillTask from ever starting.
-        let shouldBackfillUUIDs = CurrentAppContext().shouldProcessIncomingMessages &&
-                                  !CurrentAppContext().isRunningTests
-        if shouldBackfillUUIDs {
-            let uuidBackfillSuspension = suspendMessageProcessing(for: .uuidBackfill)
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-                firstly {
-                    UUIDBackfillTask(
-                        contactDiscoveryManager: self.contactDiscoveryManager,
-                        databaseStorage: self.databaseStorage
-                    ).perform()
-                }.ensure(on: DispatchQueue.global()) {
-                    uuidBackfillSuspension.invalidate()
-                }.cauterize()
             }
         }
     }
