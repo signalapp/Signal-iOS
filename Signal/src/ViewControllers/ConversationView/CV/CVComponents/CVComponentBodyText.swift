@@ -389,18 +389,24 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
 
         let bodyTextLabelConfig = buildBodyTextLabelConfig()
-        configureForBodyTextLabel(componentView: componentView,
-                                  bodyTextLabelConfig: bodyTextLabelConfig,
-                                  cellMeasurement: cellMeasurement)
+        configureForBodyTextLabel(
+            componentView: componentView,
+            bodyTextLabelConfig: bodyTextLabelConfig,
+            cellMeasurement: cellMeasurement,
+            spoilerAnimator: componentDelegate.spoilerState.animator
+        )
     }
 
-    private func configureForBodyTextLabel(componentView: CVComponentViewBodyText,
-                                           bodyTextLabelConfig: CVTextLabel.Config,
-                                           cellMeasurement: CVCellMeasurement) {
+    private func configureForBodyTextLabel(
+        componentView: CVComponentViewBodyText,
+        bodyTextLabelConfig: CVTextLabel.Config,
+        cellMeasurement: CVCellMeasurement,
+        spoilerAnimator: SpoilerAnimator
+    ) {
         AssertIsOnMainThread()
 
         let bodyTextLabel = componentView.bodyTextLabel
-        bodyTextLabel.configureForRendering(config: bodyTextLabelConfig)
+        bodyTextLabel.configureForRendering(config: bodyTextLabelConfig, spoilerAnimator: spoilerAnimator)
 
         if bodyTextLabel.view.superview == nil {
             let stackView = componentView.stackView
@@ -683,7 +689,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             super.init()
         }
 
-        public func setIsCellVisible(_ isCellVisible: Bool) {}
+        public func setIsCellVisible(_ isCellVisible: Bool) {
+            bodyTextLabel.setIsCellVisible(isCellVisible)
+        }
 
         public func reset() {
             if !isDedicatedCellView {

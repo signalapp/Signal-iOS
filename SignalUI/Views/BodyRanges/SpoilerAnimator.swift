@@ -4,12 +4,43 @@
 //
 
 import Foundation
+import SignalServiceKit
+
+public protocol SpoilerableViewAnimator {
+
+    /// Nullable to enable holding a weak reference; it is assumed the view
+    /// is deallocated when returning nil, and observation will be stopped.
+    var spoilerableView: UIView? { get }
+    var spoilerColor: UIColor { get }
+
+    /// When the value of this key changes, the spoiler frames are recomputed.
+    /// If it is unchanged, frames are assumed to also be unchanged and are reused.
+    /// It is assumed computing frames is expensive, and computing the cache key is not.
+    var spoilerFramesCacheKey: Int { get }
+
+    func spoilerFrames() -> [CGRect]
+
+    func equals(_ other: SpoilerableViewAnimator) -> Bool
+}
+
+extension SpoilerableViewAnimator {
+
+    public func equals(_ other: SpoilerableViewAnimator) -> Bool {
+        guard let view = self.spoilerableView, let otherView = other.spoilerableView else {
+            return false
+        }
+        return view == otherView
+    }
+}
 
 public class SpoilerAnimator {
 
-    private let renderer = SpoilerRenderer()
+    private let renderer: SpoilerRenderer
 
     public init() {
+        let renderer = SpoilerRenderer()
+        self.renderer = renderer
+        self.tileImage = renderer.uiImage
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didEnterForeground),
@@ -34,64 +65,142 @@ public class SpoilerAnimator {
         NotificationCenter.default.removeObserver(self)
     }
 
-    public func addObservingView(_ view: UIView) {
-        let observer = Observer()
-        observer.view = view
-        observers.append(observer)
-        observer.didUpdateSpoilerTile(renderer.uiImage)
+    public func addViewAnimator(_ animator: SpoilerableViewAnimator) {
+        animators.append(animator)
+        redraw(animator: animator)
         startTimerIfNeeded()
     }
 
-    public func removeOvservingView(_ view: UIView) {
-        observers.removeAll(where: { $0.view == view })
-        if observers.isEmpty {
+    public func removeViewAnimator(_ animator: SpoilerableViewAnimator) {
+        removeTiles(animator: animator)
+        animators.removeAll(where: {
+            // Clear out nil view ones as well.
+            $0.equals(animator) || $0.spoilerableView == nil
+        })
+        if animators.isEmpty {
             stopTimer()
         }
     }
 
     // MARK: - Observers
 
-    private class Observer {
-        // TODO: these should refer to UILabels and UITextViews, once hooked up.
-        weak var view: UIView?
+    private var animators: [SpoilerableViewAnimator] = []
 
-        func didUpdateSpoilerTile(_ newTile: UIImage) {
-            guard let view else { return }
-            view.backgroundColor = .init(patternImage: newTile)
+    // Uniquely identifies the view.
+    fileprivate class SpoilerTileView: UIView {}
+
+    private func redraw(animator: SpoilerableViewAnimator) {
+        guard FeatureFlags.spoilerAnimations else {
+            return
+        }
+
+        guard let view = animator.spoilerableView else {
+            return
+        }
+
+        let tilingColor = UIColor(patternImage: getOrLoadTileImage(animator: animator))
+
+        let spoilerViews = view.subviews.filter { $0 is SpoilerTileView }
+        let spoilerFrames = getOrLoadSpoilerFrames(animator: animator)
+        for (i, rect) in spoilerFrames.enumerated() {
+            let spoilerView: UIView = {
+                if let existingView = spoilerViews[safe: i] {
+                    return existingView
+                } else {
+                    // UIView and not a CALayer because of scrolling;
+                    // CALayers aren't rendering properly when their parent
+                    // is scrolling.
+                    let spoilerView = SpoilerTileView()
+                    view.addSubview(spoilerView)
+                    spoilerView.layer.zPosition = .greatestFiniteMagnitude
+                    return spoilerView
+                }
+            }()
+
+            spoilerView.frame = rect
+            spoilerView.backgroundColor = tilingColor
+        }
+        // Clear any excess layers.
+        if spoilerViews.count > spoilerFrames.count {
+            for i in spoilerFrames.count..<spoilerViews.count {
+                spoilerViews[safe: i]?.removeFromSuperview()
+            }
         }
     }
 
-    private var observers: [Observer] = []
+    private func removeTiles(animator: SpoilerableViewAnimator) {
+        animator.spoilerableView?.subviews.forEach {
+            if $0 is SpoilerTileView {
+                $0.removeFromSuperview()
+            }
+        }
+    }
+
+    // MARK: - Caches
+
+    private var frameCache = [Int: [CGRect]]()
+
+    private func getOrLoadSpoilerFrames(animator: SpoilerableViewAnimator) -> [CGRect] {
+        let cacheKey = animator.spoilerFramesCacheKey
+        if let cachedFrames = frameCache[cacheKey] {
+            return cachedFrames
+        }
+        let computedFrames = animator.spoilerFrames()
+        frameCache[cacheKey] = computedFrames
+        return computedFrames
+    }
+
+    private var tileImage: UIImage {
+        didSet {
+            tintedImageCache = [:]
+        }
+    }
+    private var tintedImageCache = [UIColor: UIImage]()
+
+    private func getOrLoadTileImage(animator: SpoilerableViewAnimator) -> UIImage {
+        let color = animator.spoilerColor
+        if let cachedImage = tintedImageCache[color] {
+            return cachedImage
+        }
+        let tintedImage = tileImage.asTintedImage(color: color) ?? tileImage
+        tintedImageCache[color] = tintedImage
+        return tintedImage
+    }
 
     // MARK: - Timer
 
     private var timer: Timer?
 
-    func startTimerIfNeeded() {
-        guard timer == nil, observers.isEmpty.negated, UIAccessibility.isReduceMotionEnabled.negated else {
+    private func startTimerIfNeeded() {
+        guard FeatureFlags.spoilerAnimations else {
+            return
+        }
+        guard timer == nil, animators.isEmpty.negated, UIAccessibility.isReduceMotionEnabled.negated else {
             return
         }
         renderer.resetLastDrawDate()
-        timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true, block: { [weak self] _ in
+        let timer = Timer(timeInterval: 0.05, repeats: true, block: { [weak self] _ in
             self?.tick()
         })
+        RunLoop.main.add(timer, forMode: .common)
+        self.timer = timer
     }
 
-    func stopTimer() {
+    private func stopTimer() {
         timer?.invalidate()
         timer = nil
     }
 
     private func tick() {
-        let newImage = renderer.render()
-        observers = observers.compactMap { observer in
-            guard observer.view != nil else {
+        self.tileImage = renderer.render()
+        animators = animators.compactMap { animator in
+            guard animator.spoilerableView != nil else {
                 return nil
             }
-            observer.didUpdateSpoilerTile(newImage)
-            return observer
+            self.redraw(animator: animator)
+            return animator
         }
-        if observers.isEmpty {
+        if animators.isEmpty {
             stopTimer()
         }
     }

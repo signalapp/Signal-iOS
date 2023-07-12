@@ -74,16 +74,58 @@ public extension NSTextContainer {
         let characterIndex = layoutManager.characterIndexForGlyph(at: glyphIndex)
         return characterIndex
     }
+
+    func boundingRects(
+        ofCharacterRanges ranges: [NSRange],
+        textStorage: NSTextStorage,
+        layoutManager: NSLayoutManager
+    ) -> [CGRect] {
+        return ranges.flatMap { (range: NSRange) -> [CGRect] in
+            guard textStorage.length >= range.upperBound else {
+                return []
+            }
+
+            let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
+            var perLineGlyphRanges = [NSRange]()
+            layoutManager.enumerateLineFragments(forGlyphRange: glyphRange, using: { _, _, _, entireLineGlyphRange, _ in
+                guard
+                    let perLineGlyphRange = entireLineGlyphRange.intersection(glyphRange),
+                    perLineGlyphRange.location >= 0,
+                    perLineGlyphRange.length > 0
+                else {
+                    return
+                }
+                perLineGlyphRanges.append(perLineGlyphRange)
+            })
+            return perLineGlyphRanges.map { perLineGlyphRange in
+                return layoutManager.boundingRect(forGlyphRange: perLineGlyphRange, in: self)
+            }
+        }
+    }
 }
 
 // MARK: -
 
 extension UILabel {
 
+    public func characterIndex(of location: CGPoint) -> Int? {
+        guard let (textContainer, textStorage, layoutManager) = makeMatchingTextContainer() else {
+            return nil
+        }
+        return textContainer.characterIndex(of: location, textStorage: textStorage, layoutManager: layoutManager)
+    }
+
+    func boundingRects(ofCharacterRanges ranges: [NSRange]) -> [CGRect] {
+        guard let (textContainer, textStorage, layoutManager) = makeMatchingTextContainer() else {
+            return []
+        }
+        return textContainer.boundingRects(ofCharacterRanges: ranges, textStorage: textStorage, layoutManager: layoutManager)
+    }
+
     // This is somewhat inconsistent; labels with text alignments and who knows what
     // other attributes applied may not do a great job at identifying the index.
     // Eventually this should be removed in favor of using UITextView everywhere.
-    public func characterIndex(of location: CGPoint) -> Int? {
+    private func makeMatchingTextContainer() -> (NSTextContainer, NSTextStorage, NSLayoutManager)? {
         let attrString: NSAttributedString
         if let attributedText {
             attrString = attributedText
@@ -102,7 +144,7 @@ extension UILabel {
         textContainer.lineBreakMode = self.lineBreakMode
         layoutManager.addTextContainer(textContainer)
 
-        return textContainer.characterIndex(of: location, textStorage: textStorage, layoutManager: layoutManager)
+        return (textContainer, textStorage, layoutManager)
     }
 }
 

@@ -31,6 +31,11 @@ public struct StyleDisplayConfiguration: Equatable {
         self.revealAllIds = revealAllIds
         self.revealedIds = revealedIds
     }
+
+    public func hashForSpoilerFrames(into hasher: inout Hasher) {
+        hasher.combine(revealAllIds)
+        hasher.combine(revealedIds)
+    }
 }
 
 internal struct StyleAttribute: Equatable, Hashable {
@@ -74,22 +79,28 @@ internal struct StyleAttribute: Equatable, Hashable {
         if style.contains(.monospace) {
             fontTraits.insert(.traitMonoSpace)
         }
-        if style.contains(.strikethrough) {
-            attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
-            attributes[.strikethroughColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
-        }
 
-        var isSpoilerRevealed = false
+        var isSpoilerRevealed: Bool?
         if style.contains(.spoiler), let spoilerId = self.ids[.spoiler] {
             isSpoilerRevealed = config.revealAllIds || config.revealedIds.contains(spoilerId)
-            if !isSpoilerRevealed {
+            if !isSpoilerRevealed! {
                 attributes[.foregroundColor] = UIColor.clear
-                attributes[.backgroundColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+                if FeatureFlags.spoilerAnimations {
+                    attributes[.backgroundColor] = UIColor.clear
+                } else {
+                    attributes[.backgroundColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+                }
             } else if let revealedSpoilerBgColor = config.revealedSpoilerBgColor {
                 attributes[.foregroundColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
                 attributes[.backgroundColor] = revealedSpoilerBgColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
             }
         }
+
+        if style.contains(.strikethrough) && (isSpoilerRevealed ?? true) {
+            attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
+            attributes[.strikethroughColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+        }
+
         if !fontTraits.isEmpty {
             attributes[.font] = config.baseFont.withTraits(fontTraits)
         }
@@ -97,7 +108,7 @@ internal struct StyleAttribute: Equatable, Hashable {
 
         // if we had a spoiler range, apply and search ranges to override
         // spoiler attributes we applied above.
-        if style.contains(.spoiler), !isSpoilerRevealed, let searchRanges {
+        if style.contains(.spoiler), !(isSpoilerRevealed ?? false), let searchRanges {
             for searchMatchRange in searchRanges.matchedRanges {
                 guard
                     let intersection = searchMatchRange.intersection(range),

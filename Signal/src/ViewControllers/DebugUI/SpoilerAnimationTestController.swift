@@ -20,12 +20,24 @@ public class SpoilerAnimationTestController: UIViewController {
         let rowHeight: CGFloat = 40
         var totalHeight: CGFloat = 0
         while totalHeight < UIScreen.main.bounds.height {
-            let view = UIImageView()
+            let view = TestSpoilerableView()
             view.tintColor = .white
             view.frame = CGRect(x: 0, y: totalHeight, width: UIScreen.main.bounds.width, height: rowHeight)
             totalHeight += rowHeight
             self.view.addSubview(view)
-            animator.addObservingView(view)
+            animator.addViewAnimator(view)
+        }
+    }
+
+    class TestSpoilerableView: UIView, SpoilerableViewAnimator {
+        var spoilerableView: UIView? { self }
+
+        var spoilerColor: UIColor { tintColor }
+
+        var spoilerFramesCacheKey: Int { 0 }
+
+        func spoilerFrames() -> [CGRect] {
+            return [bounds]
         }
     }
 }

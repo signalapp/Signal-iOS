@@ -22,6 +22,7 @@ public class LongTextViewController: OWSViewController {
     let threadViewModel: ThreadViewModel
     let spoilerState: SpoilerRenderState
 
+    var messageTextViewSpoilerAnimator: SpoilerableTextViewAnimator?
     var messageTextView: UITextView!
     let footer = UIToolbar.clear()
 
@@ -71,6 +72,17 @@ public class LongTextViewController: OWSViewController {
         messageTextView.textColor = Theme.primaryTextColor
         footer.tintColor = Theme.primaryIconColor
 
+        if let messageTextViewSpoilerAnimator {
+            spoilerState.animator.removeViewAnimator(messageTextViewSpoilerAnimator)
+            self.messageTextViewSpoilerAnimator = nil
+        }
+
+        let displayConfig = HydratedMessageBody.DisplayConfiguration.longMessageView(
+            revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
+                interactionIdentifier: .fromInteraction(itemViewModel.interaction)
+            )
+        )
+
         if let displayableText = displayableText {
             let baseAttrs: [NSAttributedString.Key: Any] = [
                 .font: UIFont.dynamicTypeBody,
@@ -86,12 +98,15 @@ public class LongTextViewController: OWSViewController {
                 mutableText.addAttributesToEntireString(baseAttrs)
             case .messageBody(let messageBody):
                 let attrString = messageBody.asAttributedStringForDisplay(
-                    config: .longMessageView(revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
-                        interactionIdentifier: .fromInteraction(itemViewModel.interaction))
-                    ),
+                    config: displayConfig,
                     isDarkThemeEnabled: Theme.isDarkThemeEnabled
                 )
                 mutableText = (attrString as? NSMutableAttributedString) ?? NSMutableAttributedString(attributedString: attrString)
+
+                let messageTextViewSpoilerAnimator = SpoilerableTextViewAnimator(textView: messageTextView, spoilerConfig: displayConfig.style)
+                messageTextViewSpoilerAnimator.messageBody = messageBody
+                spoilerState.animator.addViewAnimator(messageTextViewSpoilerAnimator)
+                self.messageTextViewSpoilerAnimator = messageTextViewSpoilerAnimator
             }
 
             let hasPendingMessageRequest = databaseStorage.read { transaction in
@@ -108,9 +123,7 @@ public class LongTextViewController: OWSViewController {
                 hasPendingMessageRequest: hasPendingMessageRequest,
                 shouldAllowLinkification: displayableText.shouldAllowLinkification,
                 textWasTruncated: false,
-                revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
-                    interactionIdentifier: .fromInteraction(itemViewModel.interaction)
-                ),
+                revealedSpoilerIds: displayConfig.style.revealedIds,
                 interactionUniqueId: itemViewModel.interaction.uniqueId,
                 interactionIdentifier: .fromInteraction(itemViewModel.interaction)
             )

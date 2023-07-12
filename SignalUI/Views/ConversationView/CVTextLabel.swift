@@ -153,9 +153,14 @@ public class CVTextLabel: NSObject {
         super.init()
     }
 
-    public func configureForRendering(config: Config) {
+    public func configureForRendering(config: Config, spoilerAnimator: SpoilerAnimator) {
         AssertIsOnMainThread()
         label.config = config
+        label.spoilerAnimator = spoilerAnimator
+    }
+
+    public func setIsCellVisible(_ isCellVisible: Bool) {
+        label.setIsCellVisible(isCellVisible)
     }
 
     public func reset() {
@@ -283,6 +288,17 @@ public class CVTextLabel: NSObject {
             }
         }
 
+        fileprivate var spoilerAnimator: SpoilerAnimator? {
+            didSet {
+                if spoilerAnimator == nil, let oldValue, self.isAnimatingSpoilers {
+                    self.isAnimatingSpoilers = false
+                    oldValue.removeViewAnimator(self)
+                } else {
+                    updateSpoilerAnimationState()
+                }
+            }
+        }
+
         private lazy var textStorage = NSTextStorage()
         private lazy var layoutManager = NSLayoutManager()
         private lazy var textContainer = NSTextContainer()
@@ -309,11 +325,19 @@ public class CVTextLabel: NSObject {
             super.init(coder: aDecoder)
         }
 
+        private var isCellVisible = false
+
+        fileprivate func setIsCellVisible(_ isCellVisible: Bool) {
+            self.isCellVisible = isCellVisible
+            updateSpoilerAnimationState()
+        }
+
         fileprivate func reset() {
             AssertIsOnMainThread()
 
             animationTimer?.invalidate()
             animationTimer = nil
+            updateSpoilerAnimationState()
         }
 
         private func apply(config: Config?) {
@@ -355,6 +379,8 @@ public class CVTextLabel: NSObject {
             let attributedString = Self.formatAttributedString(config: config)
             textStorage.setAttributedString(attributedString)
             setNeedsDisplay()
+
+            updateSpoilerAnimationState()
         }
 
         fileprivate static func formatAttributedString(config: Config) -> NSMutableAttributedString {
@@ -453,6 +479,34 @@ public class CVTextLabel: NSObject {
             }
         }
 
+        // MARK: Spoiler
+
+        private var isAnimatingSpoilers = false
+
+        private func updateSpoilerAnimationState() {
+            let wantsToAnimate: Bool
+            if isCellVisible, let config {
+                switch config.text {
+                case .text, .attributedText:
+                    wantsToAnimate = false
+                case .messageBody(let body):
+                    wantsToAnimate = body.hasSpoilerRangesToAnimate
+                }
+            } else {
+                wantsToAnimate = false
+            }
+
+            guard isAnimatingSpoilers != wantsToAnimate, let spoilerAnimator else {
+                return
+            }
+            if wantsToAnimate {
+                spoilerAnimator.addViewAnimator(self)
+            } else {
+                spoilerAnimator.removeViewAnimator(self)
+            }
+            self.isAnimatingSpoilers = wantsToAnimate
+        }
+
         // MARK: - Gestures
 
         public func itemForGesture(sender: UIGestureRecognizer) -> Item? {
@@ -473,6 +527,63 @@ public class CVTextLabel: NSObject {
 
             deactivateAllConstraints()
         }
+    }
+}
+
+// MARK: -
+
+extension CVTextLabel.Label: SpoilerableViewAnimator {
+
+    var spoilerableView: UIView? {
+        return self
+    }
+
+    var spoilerColor: UIColor {
+        return config?.displayConfig.style.textColor.forCurrentTheme ?? UIColor.clear
+    }
+
+    func spoilerFrames() -> [CGRect] {
+        guard let config else { return [] }
+        switch config.text {
+        case .text, .attributedText:
+            return []
+        case .messageBody(let messageBody):
+            return Self.spoilerFrames(
+                messageBody: messageBody,
+                spoilerConfig: config.displayConfig.style,
+                textContainer: textContainer,
+                textStorage: textStorage,
+                layoutManager: layoutManager,
+                bounds: self.bounds.size
+            )
+        }
+    }
+
+    var spoilerFramesCacheKey: Int {
+        var hasher = Hasher()
+        hasher.combine(config?.text)
+        config?.displayConfig.style.hashForSpoilerFrames(into: &hasher)
+        hasher.combine(bounds.width)
+        hasher.combine(bounds.height)
+        return hasher.finalize()
+    }
+
+    // Every input here should be represented in the cache key above.
+    private static func spoilerFrames(
+        messageBody: HydratedMessageBody,
+        spoilerConfig: StyleDisplayConfiguration,
+        textContainer: NSTextContainer,
+        textStorage: NSTextStorage,
+        layoutManager: NSLayoutManager,
+        bounds: CGSize
+    ) -> [CGRect] {
+        let spoilerRanges = messageBody.spoilerRangesForAnimation(config: spoilerConfig)
+        let frames = textContainer.boundingRects(
+            ofCharacterRanges: spoilerRanges,
+            textStorage: textStorage,
+            layoutManager: layoutManager
+        )
+        return frames
     }
 }
 

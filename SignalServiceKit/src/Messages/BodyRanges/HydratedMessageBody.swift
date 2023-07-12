@@ -576,6 +576,46 @@ public class HydratedMessageBody: Equatable, Hashable {
             .hydrating(mentionHydrator: { _ in return .preserveMention })
     }
 
+    // MARK: - Spoiler Ranges
+
+    public var hasSpoilerRangesToAnimate: Bool {
+        return styleAttributes.contains(where: { $0.value.style.contains(style: .spoiler) })
+    }
+
+    public func spoilerRangesForAnimation(
+        config: StyleDisplayConfiguration
+    ) -> [NSRange] {
+        // We want to collapse adjacent ranges because they should
+        // all animate together even if they are distinct ranges
+        // for the purposes of revealing. Otherwise we'd get
+        // abrupt boundaries.
+        var finalRanges = [NSRange]()
+        var ongoingRange: NSRange?
+        for styleAttribute in styleAttributes {
+            guard
+                styleAttribute.value.style.contains(style: .spoiler),
+                let spoilerId = styleAttribute.value.ids[.spoiler],
+                !(config.revealAllIds || config.revealedIds.contains(spoilerId))
+            else {
+                continue
+            }
+            guard let currentRange = ongoingRange else {
+                ongoingRange = styleAttribute.range
+                continue
+            }
+            if currentRange.upperBound >= styleAttribute.range.location {
+                ongoingRange = currentRange.union(styleAttribute.range)
+            } else {
+                finalRanges.append(currentRange)
+                ongoingRange = styleAttribute.range
+            }
+        }
+        if let ongoingRange {
+            finalRanges.append(ongoingRange)
+        }
+        return finalRanges
+    }
+
     // MARK: - Tappable items
 
     public enum TappableItem {
