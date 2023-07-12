@@ -1,1 +1,2 @@
-• Vi har opdateret ikonerne i appen for at forbedre læsbarheden, især hvis du lever i mørket i Mørk tilstand. De tidligere ikoner har blot taget mørket til sig. De nye ikoner er født og skabt i mørket.
+• If you've experienced bugs around chat color settings that made you want to use colorful language, we swear they're probably fixed.
+• And you'll also see the "Share" option if you long-press on the Blank Space within a message bubble that contains Taylor Swift lyrics (or any other text).

@@ -1,1 +1,2 @@
-• Hemos actualizado los iconos dentro de la app para mejorar su legibilidad, sobre todo para aquellos que viven en la oscuridad del Modo oscuro. Los iconos anteriores solo adoptaron la oscuridad. Los iconos nuevos han nacido en ella, moldeados por ella.
+• If you've experienced bugs around chat color settings that made you want to use colorful language, we swear they're probably fixed.
+• And you'll also see the "Share" option if you long-press on the Blank Space within a message bubble that contains Taylor Swift lyrics (or any other text).

@@ -1,1 +1,2 @@
-• Ми оновили значки в застосунку, щоб їх було краще видно, особливо у темному режимі. Ми бачимо, що багатьох із вас цікавить темрява, тож тепер вона буде ще виразнішою.
+• If you've experienced bugs around chat color settings that made you want to use colorful language, we swear they're probably fixed.
+• And you'll also see the "Share" option if you long-press on the Blank Space within a message bubble that contains Taylor Swift lyrics (or any other text).

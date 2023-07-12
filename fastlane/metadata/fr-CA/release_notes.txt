@@ -1,1 +1,2 @@
-• Nous avons mis à jour les icônes de l’appli pour améliorer leur lisibilité (pratique pour ceux qui vivent dans l’ombre et préfèrent utiliser leur téléphone en mode sombre). Les anciennes icônes n’ont fait qu’adopter la pénombre. Ces nouvelles icônes sont nées dedans, elles ont été façonnées par elle !
+• If you've experienced bugs around chat color settings that made you want to use colorful language, we swear they're probably fixed.
+• And you'll also see the "Share" option if you long-press on the Blank Space within a message bubble that contains Taylor Swift lyrics (or any other text).

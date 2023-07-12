@@ -1,1 +1,2 @@
-• Hem actualitzat les icones de dins de l'app per millorar la seva llegibilitat, sobretot per aquells que prefereixen el costat fosc de la força. Les icones anteriors s'han passat al costat fosc. Les noves icones sempre n'han format part.
+• If you've experienced bugs around chat color settings that made you want to use colorful language, we swear they're probably fixed.
+• And you'll also see the "Share" option if you long-press on the Blank Space within a message bubble that contains Taylor Swift lyrics (or any other text).

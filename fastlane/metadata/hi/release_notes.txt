@@ -1,1 +1,2 @@
-• हमने स्पष्टता को बेहतर बनाने में मदद के लिए ऐप के भीतर आइकन को अपडेट किया है। यदि आपको डार्क मोड पसंद है, तो आप इस अंतर को महसूस कर पाएंगे। पिछले आइकन डार्क मोड के इतने अनुकूल नहीं थे। ये नए आइकन बिल्कुल अलग हैं।
+• If you've experienced bugs around chat color settings that made you want to use colorful language, we swear they're probably fixed.
+• And you'll also see the "Share" option if you long-press on the Blank Space within a message bubble that contains Taylor Swift lyrics (or any other text).

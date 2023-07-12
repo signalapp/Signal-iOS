@@ -1,1 +1,2 @@
-• Am actualizat pictogramele din aplicație pentru a ajuta la îmbunătățirea lizibilității, mai ales în cazul Modului întunecat. Pictogramele anterioare doar încercau să facă față. Noile pictograme sunt 100% pricepute la întuneric.
+• If you've experienced bugs around chat color settings that made you want to use colorful language, we swear they're probably fixed.
+• And you'll also see the "Share" option if you long-press on the Blank Space within a message bubble that contains Taylor Swift lyrics (or any other text).

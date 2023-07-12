@@ -1,1 +1,2 @@
-• Мы обновили значки в приложении, чтобы улучшить читаемость, особенно если вы живёте во тьме Тёмного режима. Предыдущие значки просто приняли тьму. Эти новые значки были рождены в ней, созданы ею.
+• If you've experienced bugs around chat color settings that made you want to use colorful language, we swear they're probably fixed.
+• And you'll also see the "Share" option if you long-press on the Blank Space within a message bubble that contains Taylor Swift lyrics (or any other text).
