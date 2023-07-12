@@ -1,8 +1,9 @@
 {
   "images" : [
     {
-      "filename" : "filter-circle.pdf",
-      "idiom" : "universal"
+      "filename" : "list-bullet.pdf",
+      "idiom" : "universal",
+      "language-direction" : "left-to-right"
     }
   ],
   "info" : {

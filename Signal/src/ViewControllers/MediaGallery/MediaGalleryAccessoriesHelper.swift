@@ -22,7 +22,7 @@ fileprivate extension AllMediaFileType {
 
 protocol MediaGalleryPrimaryViewController: UIViewController {
     var scrollView: UIScrollView { get }
-    var mediaGalleryFilterMenuActions: [MediaGalleryAccessoriesHelper.MenuAction] { get }
+    var mediaGalleryFilterMenuItems: [MediaGalleryAccessoriesHelper.MenuItem] { get }
     var isFiltering: Bool { get }
     var isEmpty: Bool { get }
     var hasSelection: Bool { get }
@@ -40,7 +40,7 @@ public class MediaGalleryAccessoriesHelper {
     private var footerBarBottomConstraint: NSLayoutConstraint?
     weak var viewController: MediaGalleryPrimaryViewController?
 
-    private enum Mode {
+    private enum Layout {
         case list
         case grid
 
@@ -60,19 +60,19 @@ public class MediaGalleryAccessoriesHelper {
         }
     }
 
-    private var savedModes = [AllMediaFileType: Mode]()
-    private var _mode = Mode.grid
-    private var mode: Mode {
+    private var lastUsedLayoutMap = [AllMediaFileType: Layout]()
+    private var _layout = Layout.grid
+    private var layout: Layout {
         get {
-            _mode
+            _layout
         }
         set {
-            guard newValue != _mode else { return }
-            _mode = newValue
-            updateModeButton()
+            guard newValue != _layout else { return }
+            _layout = newValue
+            updateBottomToolbarControls()
             guard let viewController else { return }
 
-            switch mode {
+            switch layout {
             case .list:
                 viewController.set(fileType: viewController.fileType, isGridLayout: false)
             case .grid:
@@ -130,19 +130,19 @@ public class MediaGalleryAccessoriesHelper {
 
     @objc
     private func contentSizeCategoryDidChange(_ notification: Notification) {
-        updateModeButton()
+        updateFilterButton()
     }
 
-    // MARK: - Menu Actions
+    // MARK: - Menu
 
-    struct MenuAction {
+    struct MenuItem {
         var title: String
         var icon: UIImage?
+        var isChecked = false
         var handler: () -> Void
-        var checked = false
 
         private var state: UIMenuElement.State {
-            return checked ? .on : .off
+            return isChecked ? .on : .off
         }
 
         var uiAction: UIAction {
@@ -226,142 +226,160 @@ public class MediaGalleryAccessoriesHelper {
 
     // MARK: - Filter
 
-    private lazy var filterMenuActions: [MenuAction] = {
-        viewController?.mediaGalleryFilterMenuActions ?? []
-    }()
+    private func filterMenuItemsAndCurrentValue() -> (title: NSAttributedString, items: [MenuItem]) {
+        guard let items = viewController?.mediaGalleryFilterMenuItems, !items.isEmpty else {
+            return ( NSAttributedString(string: ""), [] )
+        }
+        let currentTitle = items.first(where: { $0.isChecked })?.title ?? ""
+        return (
+            NSAttributedString(string: currentTitle, attributes: [ .font: UIFont.dynamicTypeHeadlineClamped ] ),
+            items
+        )
+    }
 
     private lazy var filterButton: UIBarButtonItem = {
-        if #available(iOS 14, *) {
-            return modernFilterButton()
-        }
-        return legacyFilterButton()
-    }()
-
-    private lazy var selectedFilterButton: UIBarButtonItem = {
-        return UIBarButtonItem(image: selectedAllMediaFilterIcon,
-                               style: .plain,
-                               target: self,
-                               action: #selector(disableFiltering))
-    }()
-
-    private lazy var allMediaFilterIcon = UIImage(imageLiteralResourceName: "filter-circle")
-    private lazy var selectedAllMediaFilterIcon = UIImage(imageLiteralResourceName: "filter-circle-fill")
-
-    private func legacyFilterButton() -> UIBarButtonItem {
-        return UIBarButtonItem(image: allMediaFilterIcon,
-                               style: .plain,
-                               target: self,
-                               action: #selector(showFilterMenu))
-    }
-
-    @available(iOS, deprecated: 14.0)
-    @objc
-    private func showFilterMenu(_ sender: Any) {
-        let menu = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        for action in filterMenuActions.map({ $0.uiAlertAction}) {
-            menu.addAction(action)
-        }
-        viewController?.present(menu, animated: true, completion: nil)
-    }
-
-    @objc
-    private func disableFiltering(_ sender: Any) {
-        viewController?.disableFiltering()
-        updateFooterBarState()
-    }
-
-    @available(iOS 14, *)
-    private func modernFilterButton() -> UIBarButtonItem {
-        let menu = UIMenu(title: "", children: filterMenuActions.map { $0.uiAction })
-        return UIBarButtonItem(image: allMediaFilterIcon, menu: menu)
-    }
-
-    // MARK: - List/Grid
-
-    private lazy var listMenuAction = MenuAction(
-        title: Mode.list.titleString,
-        icon: UIImage(named: "list-bullet-light"),
-        handler: { [weak self] in
-            self?.mode = .list
-        }
-    )
-
-    private lazy var gridMenuAction = MenuAction(
-        title: Mode.grid.titleString,
-        icon: UIImage(named: "grid-square-light"),
-        handler: { [weak self] in
-            self?.mode = .grid
-        }
-    )
-
-    private var modeMenuActions: [MenuAction] {
-        return [
-            listMenuAction,
-            gridMenuAction
-        ]
-    }
-
-    private var currentModeButtonTitle: NSAttributedString {
-        return NSAttributedString(string: mode.titleString, attributes: [ .font: UIFont.dynamicTypeHeadlineClamped ])
-    }
-
-    private func createModeMenu() -> UIMenu {
-        var options = UIMenu.Options()
-        if #available(iOS 15, *) {
-            options = .singleSelection
-        }
-        listMenuAction.checked = mode == .list
-        gridMenuAction.checked = mode == .grid
-        return UIMenu(title: "",
-                      options: options,
-                      children: modeMenuActions.map { $0.uiAction })
-    }
-
-    private lazy var modeButton: UIBarButtonItem = {
         let chevronImage = UIImage(imageLiteralResourceName: "chevron-down-compact-bold")
         let button: UIButton
+
+        let (buttonTitle, menuItems) = filterMenuItemsAndCurrentValue()
 
         if #available(iOS 15, *) {
             var configuration = UIButton.Configuration.plain()
             configuration.imagePlacement = .trailing
             configuration.image = chevronImage
             configuration.imagePadding = 4
-            configuration.attributedTitle = AttributedString(currentModeButtonTitle)
+            configuration.attributedTitle = AttributedString(buttonTitle)
 
             button = UIButton(configuration: configuration, primaryAction: nil)
-            button.menu = createModeMenu()
+            button.menu = menuItems.menu(with: .singleSelection)
             button.showsMenuAsPrimaryAction = true
         } else {
             button = UIButton(type: .system)
-            button.setAttributedTitle(currentModeButtonTitle, for: .normal)
+            button.setAttributedTitle(buttonTitle, for: .normal)
             button.titleLabel?.adjustsFontForContentSizeCategory = true
             button.setImage(chevronImage, for: .normal)
             button.setPaddingBetweenImageAndText(to: 4, isRightToLeft: !CurrentAppContext().isRTL)
             button.semanticContentAttribute = CurrentAppContext().isRTL ? .forceLeftToRight : .forceRightToLeft
             if #available(iOS 14, *) {
-                button.menu = createModeMenu()
+                button.menu = menuItems.menu()
                 button.showsMenuAsPrimaryAction = true
             } else {
-                button.addTarget(self, action: #selector(showModeMenu(_:)), for: .touchUpInside)
+                button.addTarget(self, action: #selector(showFilterMenu), for: .touchUpInside)
             }
         }
         return UIBarButtonItem(customView: button)
     }()
 
-    private func updateModeButton() {
-        if let button = modeButton.customView as? UIButton {
-            button.setAttributedTitle(currentModeButtonTitle, for: .normal)
+    @available(iOS, deprecated: 14.0)
+    @objc
+    private func showFilterMenu(_ sender: Any) {
+        guard let viewController else { return }
+
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        for action in filterMenuItemsAndCurrentValue().items.map({ $0.uiAlertAction}) {
+            actionSheet.addAction(action)
+        }
+        actionSheet.addAction(UIAlertAction(title: CommonStrings.cancelButton, style: .cancel))
+        viewController.present(actionSheet, animated: true, completion: nil)
+    }
+
+    @objc
+    private func disableFiltering(_ sender: Any) {
+        viewController?.disableFiltering()
+    }
+
+    func updateFilterButton() {
+        if let button = filterButton.customView as? UIButton {
+            let (buttonTitle, menuItems) = filterMenuItemsAndCurrentValue()
+            button.setAttributedTitle(buttonTitle, for: .normal)
+            if #available(iOS 14, *) {
+                button.menu = menuItems.menu()
+            }
             button.sizeToFit()
         }
     }
 
-    @objc
-    private func showModeMenu(_ sender: Any) {
-        let menu = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        for action in modeMenuActions.map({ $0.uiAlertAction}) {
-            menu.addAction(action)
+    // MARK: - List/Grid
+
+    private func listMenuItem(isChecked: Bool) -> MenuItem {
+        return MenuItem(
+            title: Layout.list.titleString,
+            icon: UIImage(named: "list-bullet-light"),
+            isChecked: isChecked,
+            handler: { [weak self] in
+                self?.layout = .list
+            }
+        )
+    }
+
+    private func gridMenuItem(isChecked: Bool) -> MenuItem {
+        return MenuItem(
+            title: Layout.grid.titleString,
+            icon: UIImage(named: "grid-square-light"),
+            isChecked: isChecked,
+            handler: { [weak self] in
+                self?.layout = .grid
+            }
+        )
+    }
+
+    private func createLayoutPickerMenu(checkedLayout: Layout) -> UIMenu {
+        var options = UIMenu.Options()
+        if #available(iOS 15, *) {
+            options = .singleSelection
         }
-        viewController?.present(menu, animated: true, completion: nil)
+        let menuItems = [
+            gridMenuItem(isChecked: checkedLayout == .grid),
+            listMenuItem(isChecked: checkedLayout == .list)
+        ]
+        return menuItems.menu(with: options)
+    }
+
+    private lazy var listViewButton: UIBarButtonItem = {
+        guard #available(iOS 14, *) else {
+            return UIBarButtonItem(
+                image: UIImage(imageLiteralResourceName: "list-bullet"),
+                style: .plain,
+                target: self,
+                action: #selector(presentLayoutPicker)
+            )
+        }
+        return UIBarButtonItem(
+            title: nil,
+            image: UIImage(imageLiteralResourceName: "list-bullet"),
+            primaryAction: nil,
+            menu: createLayoutPickerMenu(checkedLayout: .list)
+        )
+    }()
+
+    private lazy var gridViewButton: UIBarButtonItem = {
+        guard #available(iOS 14, *) else {
+            return UIBarButtonItem(
+                image: UIImage(imageLiteralResourceName: "grid-square"),
+                style: .plain,
+                target: self,
+                action: #selector(presentLayoutPicker)
+            )
+        }
+        return UIBarButtonItem(
+            title: nil,
+            image: UIImage(imageLiteralResourceName: "grid-square"),
+            primaryAction: nil,
+            menu: createLayoutPickerMenu(checkedLayout: .grid)
+        )
+    }()
+
+    @objc
+    @available(iOS, deprecated: 14.0)
+    private func presentLayoutPicker(_ sender: Any) {
+        guard let viewController else { return }
+
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        for action in [ gridMenuItem(isChecked: false), listMenuItem(isChecked: false) ] {
+            actionSheet.addAction(action.uiAlertAction)
+        }
+        actionSheet.addAction(UIAlertAction(title: CommonStrings.cancelButton, style: .cancel))
+        viewController.present(actionSheet, animated: true, completion: nil)
     }
 
     // MARK: - Footer
@@ -372,17 +390,11 @@ public class MediaGalleryAccessoriesHelper {
         // No footer bar.
         case hidden
 
-        // Filter and other features when not in selection mode.
+        // Regular mode, no multi-selection possible.
         case regular
 
-        // Highlighted filter button shown, indicating highlighting is active.
-        case filtering
-
-        // In selection mode but not filtering.
+        // User can select one or more items.
         case selection
-
-        // In selection mode and filtering.
-        case selectionFiltering
     }
 
     // You should assign to this when you begin filtering.
@@ -402,10 +414,14 @@ public class MediaGalleryAccessoriesHelper {
     }
 
     private var isGridViewAllowed: Bool {
+        guard FeatureFlags.isPrerelease else { return false }
+
         return fileType.supportsGridView
     }
 
     private var currentFileTypeSupportsFiltering: Bool {
+        guard FeatureFlags.isPrerelease else { return false }
+
         switch AllMediaFileType(rawValue: headerView.selectedSegmentIndex) {
         case .audio:
             return false
@@ -425,19 +441,22 @@ public class MediaGalleryAccessoriesHelper {
             switch footerBarState {
             case .hidden:
                 return nil
-            case .selection, .selectionFiltering:
+            case .selection:
                 return [ shareButton, flexibleSpace(), selectionInfoButton, flexibleSpace(), deleteButton ]
             case .regular:
+                let firstItem: UIBarButtonItem
+                if isGridViewAllowed {
+                    firstItem = layout == .list ? listViewButton : gridViewButton
+                } else {
+                    firstItem = fixedSpace()
+                }
+                if currentFileTypeSupportsFiltering {
+                    updateFilterButton()
+                }
                 return [
+                    firstItem,
+                    flexibleSpace(),
                     currentFileTypeSupportsFiltering ? filterButton : fixedSpace(),
-                    flexibleSpace(),
-                    isGridViewAllowed ? modeButton : fixedSpace(),
-                    flexibleSpace(),
-                    selectButton
-                ]
-            case .filtering:
-                return [
-                    currentFileTypeSupportsFiltering ? selectedFilterButton : fixedSpace(),
                     flexibleSpace(),
                     selectButton
                 ]
@@ -452,19 +471,9 @@ public class MediaGalleryAccessoriesHelper {
 
         footerBarState = {
             if isInBatchSelectMode {
-                if viewController.isFiltering {
-                    return .selectionFiltering
-                }
                 return .selection
             }
-            if viewController.isFiltering {
-                return .filtering
-            }
             if viewController.isEmpty {
-                return .hidden
-            }
-            let allowed = FeatureFlags.isPrerelease
-            guard allowed else {
                 return .hidden
             }
             return .regular
@@ -616,17 +625,17 @@ public class MediaGalleryAccessoriesHelper {
     private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         if let fileType = AllMediaFileType(rawValue: sender.selectedSegmentIndex) {
             if let previousFileType = viewController?.fileType {
-                savedModes[previousFileType] = mode
+                lastUsedLayoutMap[previousFileType] = layout
             }
             if fileType.supportsGridView {
                 // Return to the previous mode
-                _mode = savedModes[fileType, default: .grid]
-            } else if mode == .grid {
+                _layout = lastUsedLayoutMap[fileType, default: .grid]
+            } else if layout == .grid {
                 // This file type requires a switch to list mode
-                _mode = .list
+                _layout = .list
             }
-            updateModeButton()
-            viewController?.set(fileType: fileType, isGridLayout: mode == .grid)
+            updateBottomToolbarControls()
+            viewController?.set(fileType: fileType, isGridLayout: layout == .grid)
         }
     }
 }
@@ -641,5 +650,11 @@ extension AllMediaFileType {
         case .audio:
             return false
         }
+    }
+}
+
+private extension Array where Element == MediaGalleryAccessoriesHelper.MenuItem {
+    func menu(with options: UIMenu.Options = []) -> UIMenu {
+        return UIMenu(title: "", options: options, children: reversed().map({ $0.uiAction }))
     }
 }

@@ -197,11 +197,13 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
 
     private func filter(_ mediaType: MediaGallery.MediaType) {
         let maybeDate = oldestVisibleIndexPath.map { mediaGallery.galleryDates[mediaGallerySection($0.section)] }
-        let indexPathToScrollTo = mediaGallery.setAllowedMediaType(mediaType,
-                                                                   loadUntil: maybeDate ?? GalleryDate(date: Date.distantPast),
-                                                                   batchSize: kLoadBatchSize,
-                                                                   firstVisibleIndexPath: oldestVisibleIndexPath.map { mediaGalleryIndexPath($0) })
-        accessoriesHelper.footerBarState = .filtering
+        let indexPathToScrollTo = mediaGallery.setAllowedMediaType(
+            mediaType,
+            loadUntil: maybeDate ?? GalleryDate(date: Date.distantPast),
+            batchSize: kLoadBatchSize,
+            firstVisibleIndexPath: oldestVisibleIndexPath.map { mediaGalleryIndexPath($0) }
+        )
+
         if let indexPath = indexPathToScrollTo {
             // Scroll to approximately where you were before.
             collectionView.scrollToItem(at: self.indexPath(indexPath),
@@ -210,6 +212,8 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
         }
         eagerLoadingDidComplete = false
         eagerlyLoadMoreIfPossible()
+
+        accessoriesHelper.updateFooterBarState()
     }
 
     // MARK: View Lifecycle Overrides
@@ -1456,7 +1460,7 @@ private class MediaGalleryEmptyContentView: UICollectionReusableView {
 
 extension MediaTileViewController: MediaGalleryPrimaryViewController {
 
-    typealias MenuAction = MediaGalleryAccessoriesHelper.MenuAction
+    typealias MenuItem = MediaGalleryAccessoriesHelper.MenuItem
 
     var scrollView: UIScrollView { return collectionView }
 
@@ -1487,35 +1491,52 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
         return (items.count, totalSize)
     }
 
-    var mediaGalleryFilterMenuActions: [MediaGalleryAccessoriesHelper.MenuAction] {
+    var mediaGalleryFilterMenuItems: [MediaGalleryAccessoriesHelper.MenuItem] {
         return [
-            MenuAction(
+            MenuItem(
+                title:
+                    OWSLocalizedString(
+                        "ALL_MEDIA_FILTER_NONE",
+                        comment: "Menu option to remove content type restriction in All Media view"
+                    ),
+                isChecked: mediaGallery.allowedMediaType == MediaGalleryFinder.MediaType.defaultMediaType(for: fileType),
+                handler: { [weak self] in
+                    self?.disableFiltering()
+                }
+            ),
+            MenuItem(
                 title:
                     OWSLocalizedString(
                         "ALL_MEDIA_FILTER_PHOTOS",
-                        comment: "Menu option to limit All Media view to displaying only photos"),
-                icon: UIImage(named: "all-media-filter-photos"),
+                        comment: "Menu option to limit All Media view to displaying only photos"
+                    ),
+                isChecked: mediaGallery.allowedMediaType == .photos,
                 handler: { [weak self] in
                     self?.filter(.photos)
-                }),
-            MenuAction(
+                }
+            ),
+            MenuItem(
                 title:
                     OWSLocalizedString(
                         "ALL_MEDIA_FILTER_VIDEOS",
-                        comment: "Menu option to limit All Media view to displaying only videos"),
-                icon: UIImage(named: "all-media-filter-videos"),
+                        comment: "Menu option to limit All Media view to displaying only videos"
+                    ),
+                isChecked: mediaGallery.allowedMediaType == .videos,
                 handler: { [weak self] in
                     self?.filter(.videos)
-                }),
-            MenuAction(
+                }
+            ),
+            MenuItem(
                 title:
                     OWSLocalizedString(
                         "ALL_MEDIA_FILTER_GIFS",
-                        comment: "Menu option to limit All Media view to displaying only GIFs"),
-                icon: UIImage(named: "all-media-filter-gifs"),
+                        comment: "Menu option to limit All Media view to displaying only GIFs"
+                    ),
+                isChecked: mediaGallery.allowedMediaType == .gifs,
                 handler: { [weak self] in
                     self?.filter(.gifs)
-                })
+                }
+            )
         ]
     }
 
@@ -1530,7 +1551,8 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
             MediaGalleryFinder.MediaType.defaultMediaType(for: fileType),
             loadUntil: date ?? GalleryDate(date: .distantFuture),
             batchSize: kLoadBatchSize,
-            firstVisibleIndexPath: oldestVisibleIndexPath.map { mediaGalleryIndexPath($0) })
+            firstVisibleIndexPath: oldestVisibleIndexPath.map { mediaGalleryIndexPath($0) }
+        )
 
         if date == nil {
             if mediaGallery.galleryDates.isEmpty {
@@ -1547,6 +1569,8 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
                                         at: .top,
                                         animated: false)
         }
+
+        accessoriesHelper.updateFooterBarState()
     }
 
     func batchSelectionModeDidChange(isInBatchSelectMode: Bool) {
