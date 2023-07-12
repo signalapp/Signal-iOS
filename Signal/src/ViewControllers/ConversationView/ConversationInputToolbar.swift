@@ -964,7 +964,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
                 showEditMessageView(animated: animateChanges)
             } else {
-                quotedReply = nil
                 editThumbnail = nil
                 hideEditMessageView(animated: animateChanges)
             }
@@ -2020,6 +2019,7 @@ extension ConversationInputToolbar {
         ImpactHapticFeedback.impactOccurred(style: .light)
         if shouldShowEditUI {
             editTarget = nil
+            quotedReply = nil
             clearTextMessage(animated: true)
         } else {
             toggleKeyboardType(.attachment, animated: true)
