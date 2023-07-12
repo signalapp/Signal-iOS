@@ -75,7 +75,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
         // Table View
         addChild(tableViewController)
-        signalContactsStackView.addArrangedSubview(tableView)
+        signalContactsStackView.addArrangedSubview(tableViewController.view)
 
         // "No Signal Contacts"
         noSignalContactsView.isHidden = !isNoContactsModeActive
