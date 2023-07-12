@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSNotificationName const OWSContactsManagerSignalAccountsDidChangeNotification;
 extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
+@class AnyLRUCache;
 @class AnyPromise;
 @class AuthedAccount;
 @class OWSContactsManagerSwiftValues;
@@ -56,6 +57,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
 @property (nonatomic, readonly) BOOL shouldSortByGivenName;
 
 @property (nonatomic, readonly) OWSContactsManagerSwiftValues *swiftValues;
+@property (nonatomic, readonly) AnyLRUCache *cnContactCache;
 
 #pragma mark - Accessors
 

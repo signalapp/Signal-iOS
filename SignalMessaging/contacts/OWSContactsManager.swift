@@ -890,38 +890,170 @@ extension OWSContactsManager {
 
 // MARK: - Intersection
 
-@objc
 extension OWSContactsManager {
-    func intersectContacts(
-        _ phoneNumbers: Set<String>,
-        retryDelaySeconds: TimeInterval,
-        success: @escaping (Set<SignalRecipient>) -> Void,
-        failure: @escaping (Error) -> Void
+    private enum Constants {
+        static let nextFullIntersectionDate = "OWSContactsManagerKeyNextFullIntersectionDate2"
+        static let lastKnownContactPhoneNumbers = "OWSContactsManagerKeyLastKnownContactPhoneNumbers"
+    }
+
+    @objc
+    func updateContacts(_ contacts: [Contact], isUserRequested: Bool) {
+        intersectionQueue.async { self._updateContacts(contacts, isUserRequested: isUserRequested) }
+    }
+
+    private func _updateContacts(_ contacts: [Contact], isUserRequested: Bool) {
+        let contactsMaps = databaseStorage.write { tx in
+            let localNumber = tsAccountManager.localNumber(with: tx)
+            let result = ContactsMaps.build(contacts: contacts, localNumber: localNumber)
+            setContactsMaps(result, localNumber: localNumber, transaction: tx)
+            return result
+        }
+        cnContactCache.removeAllObjects()
+
+        NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerContactsDidChange, object: nil)
+
+        intersectContacts(contacts, isUserRequested: isUserRequested).done(on: DispatchQueue.global()) {
+            self.buildSignalAccountsAndUpdatePersistedState(forFetchedSystemContacts: contactsMaps.allContacts)
+        }.catch(on: DispatchQueue.global()) { error in
+            owsFailDebug("Couldn't intersect contacts: \(error)")
+        }
+    }
+
+    private func fetchPriorIntersectionPhoneNumbers(tx: SDSAnyReadTransaction) -> Set<String>? {
+        keyValueStore.getObject(forKey: Constants.lastKnownContactPhoneNumbers, transaction: tx) as? Set<String>
+    }
+
+    private func setPriorIntersectionPhoneNumbers(_ phoneNumbers: Set<String>, tx: SDSAnyWriteTransaction) {
+        keyValueStore.setObject(phoneNumbers, key: Constants.lastKnownContactPhoneNumbers, transaction: tx)
+    }
+
+    private enum IntersectionMode {
+        /// The user requested a full intersection.
+        case userRequested
+
+        /// The user has never performed an intersection. Do a full intersection,
+        /// but don't post notifications about newly-discovered recipients.
+        case initialIntersection
+
+        /// It's time for the regularly-scheduled full intersection.
+        case fullIntersection
+
+        /// It's not time for the regularly-scheduled full intersection. Only check
+        /// new phone numbers.
+        case deltaIntersection(priorPhoneNumbers: Set<String>)
+    }
+
+    private func fetchIntersectionMode(tx: SDSAnyReadTransaction) -> IntersectionMode {
+        let nextFullIntersectionDate = keyValueStore.getDate(Constants.nextFullIntersectionDate, transaction: tx)
+        guard let nextFullIntersectionDate else {
+            return .initialIntersection
+        }
+        guard nextFullIntersectionDate.isAfterNow else {
+            return .fullIntersection
+        }
+        guard let priorPhoneNumbers = fetchPriorIntersectionPhoneNumbers(tx: tx) else {
+            // We don't know the prior phone numbers, so do an `.initialIntersection`
+            // so that we skip posting notifications for newly-discovered contacts.
+            return .initialIntersection
+        }
+        return .deltaIntersection(priorPhoneNumbers: priorPhoneNumbers)
+    }
+
+    private func intersectionPhoneNumbers(for contacts: [Contact]) -> Set<String> {
+        var result = Set<String>()
+        for contact in contacts {
+            result.formUnion(contact.e164sForIntersection)
+        }
+        return result
+    }
+
+    private func intersectContacts(_ contacts: [Contact], isUserRequested: Bool) -> Promise<Void> {
+        let (intersectionMode, oldRegisteredRecipients) = databaseStorage.read { tx in
+            let intersectionMode: IntersectionMode = isUserRequested ? .userRequested : fetchIntersectionMode(tx: tx)
+            let oldRegisteredRecipients = SignalRecipient.fetchAllRegisteredRecipients(tx: tx)
+            return (intersectionMode, oldRegisteredRecipients)
+        }
+        let allPhoneNumbers = intersectionPhoneNumbers(for: contacts)
+        let phoneNumbersToIntersect: Set<String> = {
+            switch intersectionMode {
+            case .userRequested, .initialIntersection, .fullIntersection:
+                return allPhoneNumbers
+            case .deltaIntersection(let priorPhoneNumbers):
+                return allPhoneNumbers.subtracting(priorPhoneNumbers)
+            }
+        }()
+
+        if phoneNumbersToIntersect.isEmpty {
+            Logger.info("Skipping intersection with zero phone numbers.")
+            return .value(())
+        }
+
+        switch intersectionMode {
+        case .userRequested, .initialIntersection, .fullIntersection:
+            Logger.info("Performing full intersection for \(phoneNumbersToIntersect.count) phone numbers.")
+        case .deltaIntersection:
+            Logger.info("Performing delta intersection for \(phoneNumbersToIntersect.count) phone numbers.")
+        }
+
+        let intersectionPromise = intersectContacts(phoneNumbersToIntersect, retryDelaySeconds: 1)
+        return intersectionPromise.done(on: intersectionQueue) { newRegisteredRecipients in
+            switch intersectionMode {
+            case .fullIntersection:
+                let newlyAddedRegisteredRecipients = newRegisteredRecipients.subtracting(oldRegisteredRecipients)
+                NewAccountDiscovery.shared.discovered(newRecipients: newlyAddedRegisteredRecipients)
+            case .userRequested, .initialIntersection, .deltaIntersection:
+                break
+            }
+            Self.databaseStorage.write { tx in
+                self.didFinishIntersection(mode: intersectionMode, phoneNumbers: phoneNumbersToIntersect, tx: tx)
+            }
+        }
+    }
+
+    private func didFinishIntersection(
+        mode intersectionMode: IntersectionMode,
+        phoneNumbers: Set<String>,
+        tx: SDSAnyWriteTransaction
     ) {
+        switch intersectionMode {
+        case .initialIntersection, .fullIntersection, .userRequested:
+            setPriorIntersectionPhoneNumbers(phoneNumbers, tx: tx)
+            let nextFullIntersectionDate = Date(timeIntervalSinceNow: RemoteConfig.cdsSyncInterval)
+            keyValueStore.setDate(nextFullIntersectionDate, key: Constants.nextFullIntersectionDate, transaction: tx)
+
+        case .deltaIntersection:
+            // If a user has a "flaky" address book (perhaps it's a network-linked
+            // directory that goes in and out of existence), we could get thrashing
+            // between what the last known set is, causing us to re-intersect contacts
+            // many times within the debounce interval. So while we're doing
+            // incremental intersections, we *accumulate*, rather than replace, the set
+            // of recently intersected contacts.
+            let priorPhoneNumbers = fetchPriorIntersectionPhoneNumbers(tx: tx) ?? []
+            setPriorIntersectionPhoneNumbers(priorPhoneNumbers.union(phoneNumbers), tx: tx)
+        }
+    }
+
+    private func intersectContacts(
+        _ phoneNumbers: Set<String>,
+        retryDelaySeconds: TimeInterval
+    ) -> Promise<Set<SignalRecipient>> {
         owsAssertDebug(!phoneNumbers.isEmpty)
         owsAssertDebug(retryDelaySeconds > 0)
 
-        firstly {
-            contactDiscoveryManager.lookUp(
-                phoneNumbers: phoneNumbers,
-                mode: .contactIntersection
-            )
-        }.done(on: DispatchQueue.global()) { signalRecipients in
-            Logger.info("Successfully intersected contacts.")
-            success(signalRecipients)
-        }.`catch`(on: DispatchQueue.global()) { error in
+        return contactDiscoveryManager.lookUp(
+            phoneNumbers: phoneNumbers,
+            mode: .contactIntersection
+        ).recover(on: DispatchQueue.global()) { (error) -> Promise<Set<SignalRecipient>> in
             var retryAfter: TimeInterval = retryDelaySeconds
 
             if let cdsError = error as? ContactDiscoveryError {
                 guard cdsError.code != ContactDiscoveryError.Kind.rateLimit.rawValue else {
                     Logger.error("Contact intersection hit rate limit with error: \(error)")
-                    failure(error)
-                    return
+                    return Promise(error: error)
                 }
                 guard cdsError.retrySuggested else {
                     Logger.error("Contact intersection error suggests not to retry. Aborting without rescheduling.")
-                    failure(error)
-                    return
+                    return Promise(error: error)
                 }
                 if let retryAfterDate = cdsError.retryAfterDate {
                     retryAfter = max(retryAfter, retryAfterDate.timeIntervalSinceNow)
@@ -930,8 +1062,8 @@ extension OWSContactsManager {
 
             // TODO: Abort if another contact intersection succeeds in the meantime.
             Logger.warn("Contact intersection failed with error: \(error). Rescheduling.")
-            DispatchQueue.global().asyncAfter(deadline: .now() + retryAfter) {
-                self.intersectContacts(phoneNumbers, retryDelaySeconds: retryDelaySeconds * 2, success: success, failure: failure)
+            return Guarantee.after(seconds: retryAfter).then(on: DispatchQueue.global()) {
+                self.intersectContacts(phoneNumbers, retryDelaySeconds: retryDelaySeconds * 2)
             }
         }
     }

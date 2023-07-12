@@ -4,6 +4,8 @@
 //
 
 import Foundation
+import SignalCoreKit
+import SignalServiceKit
 
 @objc(OWSNewAccountDiscovery)
 public class NewAccountDiscovery: NSObject {

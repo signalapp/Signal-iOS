@@ -21,16 +21,12 @@ NSNotificationName const OWSContactsManagerContactsDidChangeNotification
 = @"OWSContactsManagerContactsDidChangeNotification";
 
 NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
-NSString *const OWSContactsManagerKeyLastKnownContactPhoneNumbers
-= @"OWSContactsManagerKeyLastKnownContactPhoneNumbers";
-NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsManagerKeyNextFullIntersectionDate2";
 
 @interface OWSContactsManager () <SystemContactsFetcherDelegate>
 
 @property (nonatomic) BOOL isContactsUpdateInFlight;
 
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
-@property (nonatomic, readonly) AnyLRUCache *cnContactCache;
 @property (atomic) BOOL isSetup;
 
 @end
@@ -215,7 +211,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         OWSFailDebug(@"Syncing contacts isn't available on linked devices.");
         return;
     }
-    [self updateWithContacts:contacts isUserRequested:isUserRequested];
+    [self updateContacts:contacts isUserRequested:isUserRequested];
 }
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemContactsFetcher
@@ -229,209 +225,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         case RawContactAuthorizationStatusRestricted:
         case RawContactAuthorizationStatusDenied:
             // Clear the contacts cache if access to the system contacts is revoked.
-            [self updateWithContacts:@[] isUserRequested:NO];
+            [self updateContacts:@[] isUserRequested:NO];
         case RawContactAuthorizationStatusNotDetermined:
         case RawContactAuthorizationStatusAuthorized:
             break;
     }
-}
-
-#pragma mark - Intersection
-
-- (NSSet<NSString *> *)phoneNumbersForIntersectionWithContacts:(NSArray<Contact *> *)contacts
-{
-    OWSAssertDebug(contacts);
-    
-    NSMutableSet<NSString *> *phoneNumbers = [NSMutableSet set];
-    
-    for (Contact *contact in contacts) {
-        [phoneNumbers addObjectsFromArray:contact.e164sForIntersection];
-    }
-    return [phoneNumbers copy];
-}
-
-- (void)intersectContacts:(NSArray<Contact *> *)contacts
-          isUserRequested:(BOOL)isUserRequested
-               completion:(void (^)(NSError *_Nullable error))completion
-{
-    OWSAssertDebug(contacts);
-    OWSAssertDebug(completion);
-    
-    dispatch_async(self.intersectionQueue, ^{
-        __block BOOL isFullIntersection = YES;
-        __block BOOL isRegularlyScheduledRun = NO;
-        __block NSSet<NSString *> *allContactPhoneNumbers;
-        __block NSSet<NSString *> *phoneNumbersForIntersection;
-        __block NSSet<SignalRecipient *> *existingRegisteredRecipients;
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            // Contact updates initiated by the user should always do a full intersection.
-            if (!isUserRequested) {
-                NSDate *_Nullable nextFullIntersectionDate =
-                [self.keyValueStore getDate:OWSContactsManagerKeyNextFullIntersectionDate transaction:transaction];
-                if (nextFullIntersectionDate && [nextFullIntersectionDate isAfterNow]) {
-                    isFullIntersection = NO;
-                } else {
-                    isRegularlyScheduledRun = YES;
-                }
-            }
-
-            existingRegisteredRecipients =
-                [NSSet setWithArray:[SignalRecipient fetchAllRegisteredRecipientsWithTx:transaction]];
-            allContactPhoneNumbers = [self phoneNumbersForIntersectionWithContacts:contacts];
-            phoneNumbersForIntersection = allContactPhoneNumbers;
-            
-            if (!isFullIntersection) {
-                // Do a "delta" intersection instead of a "full" intersection:
-                // only intersect new contacts which were not in the last successful
-                // "full" intersection.
-                NSSet<NSString *> *_Nullable lastKnownContactPhoneNumbers =
-                [self.keyValueStore getObjectForKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                                        transaction:transaction];
-                if (lastKnownContactPhoneNumbers) {
-                    // Do a "delta" sync which only intersects phone numbers not included
-                    // in the last full intersection.
-                    NSMutableSet<NSString *> *newPhoneNumbers = [allContactPhoneNumbers mutableCopy];
-                    [newPhoneNumbers minusSet:lastKnownContactPhoneNumbers];
-                    phoneNumbersForIntersection = newPhoneNumbers;
-                } else {
-                    // Without a list of "last known" contact phone numbers, we'll have to do a full intersection.
-                    isFullIntersection = YES;
-                }
-            }
-        } file:__FILE__ function:__FUNCTION__ line:__LINE__];
-        OWSAssertDebug(phoneNumbersForIntersection);
-        
-        if (phoneNumbersForIntersection.count < 1) {
-            OWSLogInfo(@"Skipping intersection; no contacts to intersect.");
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                completion(nil);
-            });
-            return;
-        } else if (isFullIntersection) {
-            OWSLogInfo(@"Doing full intersection with %zu contacts.", phoneNumbersForIntersection.count);
-        } else {
-            OWSLogInfo(@"Doing delta intersection with %zu contacts.", phoneNumbersForIntersection.count);
-        }
-        
-        [self intersectContacts:phoneNumbersForIntersection
-              retryDelaySeconds:1.0
-                        success:^(NSSet<SignalRecipient *> *registeredRecipients) {
-            if (isRegularlyScheduledRun) {
-                NSMutableSet<SignalRecipient *> *newSignalRecipients = [registeredRecipients mutableCopy];
-                [newSignalRecipients minusSet:existingRegisteredRecipients];
-                
-                if (newSignalRecipients.count == 0) {
-                    OWSLogInfo(@"No new recipients.");
-                } else {
-                    __block NSSet<NSString *> *_Nullable lastKnownContactPhoneNumbers;
-                    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                        lastKnownContactPhoneNumbers =
-                        [self.keyValueStore getObjectForKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                                                transaction:transaction];
-                    }];
-                    
-                    if (lastKnownContactPhoneNumbers != nil && lastKnownContactPhoneNumbers.count > 0) {
-                        [OWSNewAccountDiscovery.shared discoveredNewRecipients:newSignalRecipients];
-                    } else {
-                        OWSLogInfo(@"skipping new recipient notification for first successful contact sync.");
-                    }
-                }
-            }
-            
-            [self markIntersectionAsComplete:allContactPhoneNumbers isFullIntersection:isFullIntersection];
-            
-            completion(nil);
-        }
-                        failure:^(NSError *error) {
-            completion(error);
-        }];
-    });
-}
-
-- (void)markIntersectionAsComplete:(NSSet<NSString *> *)phoneNumbersForIntersection
-                isFullIntersection:(BOOL)isFullIntersection
-{
-    OWSAssertDebug(phoneNumbersForIntersection.count > 0);
-    
-    dispatch_async(self.intersectionQueue, ^{
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            if (isFullIntersection) {
-                // replace last known numbers
-                [self.keyValueStore setObject:phoneNumbersForIntersection
-                                          key:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                                  transaction:transaction];
-                
-                const NSUInteger contactCount = phoneNumbersForIntersection.count;
-                
-                NSDate *nextFullIntersectionDate = [NSDate dateWithTimeIntervalSinceNow:RemoteConfig.cdsSyncInterval];
-                OWSLogDebug(@"contactCount: %lu, currentDate: %@, nextFullIntersectionDate: %@",
-                            (unsigned long)contactCount,
-                            [NSDate new],
-                            nextFullIntersectionDate);
-                
-                [self.keyValueStore setDate:nextFullIntersectionDate
-                                        key:OWSContactsManagerKeyNextFullIntersectionDate
-                                transaction:transaction];
-            } else {
-                NSSet<NSString *> *_Nullable lastKnownContactPhoneNumbers =
-                [self.keyValueStore getObjectForKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                                        transaction:transaction];
-                
-                // If a user has a "flaky" address book, perhaps a network linked directory that
-                // goes in and out of existence, we could get thrashing between what the last
-                // known set is, causing us to re-intersect contacts many times within the debounce
-                // interval. So while we're doing incremental intersections, we *accumulate*,
-                // rather than replace the set of recently intersected contacts.
-                if ([lastKnownContactPhoneNumbers isKindOfClass:NSSet.class]) {
-                    NSSet<NSString *> *_Nullable accumulatedSet =
-                    [lastKnownContactPhoneNumbers setByAddingObjectsFromSet:phoneNumbersForIntersection];
-                    
-                    // replace last known numbers
-                    [self.keyValueStore setObject:accumulatedSet
-                                              key:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                                      transaction:transaction];
-                } else {
-                    // replace last known numbers
-                    [self.keyValueStore setObject:phoneNumbersForIntersection
-                                              key:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                                      transaction:transaction];
-                }
-            }
-        });
-    });
-}
-
-- (void)updateWithContacts:(NSArray<Contact *> *)contacts isUserRequested:(BOOL)isUserRequested
-{
-    dispatch_async(self.intersectionQueue, ^{
-        __block ContactsMaps *contactsMaps;
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            NSString *_Nullable localNumber = [self.tsAccountManager localNumberWithTransaction:transaction];
-            contactsMaps = [ContactsMaps buildWithContacts:contacts localNumber:localNumber];
-            [self setContactsMaps:contactsMaps localNumber:localNumber transaction:transaction];
-        });
-        
-        if (SSKDebugFlags.internalLogging) {
-            OWSLogInfo(@"Updating contacts: %lu, phoneNumberToContactMap: %lu",
-                       (unsigned long)contactsMaps.uniqueIdToContactMap.count,
-                       (unsigned long)contactsMaps.phoneNumberToContactMap.count);
-        }
-        
-        [self.cnContactCache removeAllObjects];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSContactsManagerContactsDidChangeNotification
-                                                                 object:nil];
-        
-        [self intersectContacts:contactsMaps.allContacts
-                isUserRequested:isUserRequested
-                     completion:^(NSError *_Nullable error) {
-            if (error != nil) {
-                OWSFailDebug(@"Error: %@", error);
-                return;
-            }
-            [self buildSignalAccountsAndUpdatePersistedStateForFetchedSystemContacts:contactsMaps.allContacts];
-        }];
-    });
 }
 
 - (nullable NSPersonNameComponents *)cachedContactNameComponentsForAddress:(SignalServiceAddress *)address
