@@ -301,7 +301,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     // MARK: Reset button
 
     private func buildResetButtonView() -> UIView {
-        let button = RoundedOWSButton(block: {
+        let button = OWSRoundedButton(block: {
             // TODO: Implement button
         })
 

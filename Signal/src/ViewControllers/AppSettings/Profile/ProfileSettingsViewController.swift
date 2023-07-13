@@ -28,6 +28,14 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     private var shouldShowUsernameLinkTooltip: Bool = false
     private var currentUsernameLinkTooltip: UsernameLinkTooltipView?
 
+    weak private var usernameSelectionDelegate: UsernameSelectionDelegate?
+
+    init(usernameSelectionDelegate: UsernameSelectionDelegate? = nil) {
+        self.usernameSelectionDelegate = usernameSelectionDelegate
+
+        super.init()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -148,7 +156,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                         self.willDisplayUsernameLinkCell(cell: cell)
                     },
                     actionBlock: { [weak self] in
-                        guard let self else { return  }
+                        guard let self else { return }
 
                         self.selectedUsernameLinkCell(username: username)
                     }
@@ -696,10 +704,12 @@ extension ProfileSettingsViewController: BadgeConfigurationDelegate {
 }
 
 extension ProfileSettingsViewController: UsernameSelectionDelegate {
+    /// Update ourselves, and also tell our delegate.
     func usernameDidChange(to newValue: String?) {
         username = newValue
-
         updateTableContents()
+
+        usernameSelectionDelegate?.usernameDidChange(to: newValue)
     }
 }
 

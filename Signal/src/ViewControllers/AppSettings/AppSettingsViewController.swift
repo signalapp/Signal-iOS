@@ -12,8 +12,21 @@ class AppSettingsViewController: OWSTableViewController2 {
         OWSNavigationController(rootViewController: AppSettingsViewController())
     }
 
+    private var localUsername: String?
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        localUsername = databaseStorage.read { tx in
+            guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
+                return nil
+            }
+
+            return DependenciesBridge.shared.usernameLookupManager.fetchUsername(
+                forAci: localAci,
+                transaction: tx.asV2Read
+            )
+        }
 
         title = OWSLocalizedString("SETTINGS_NAV_BAR_TITLE", comment: "Title for settings activity")
         navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
@@ -107,16 +120,19 @@ class AppSettingsViewController: OWSTableViewController2 {
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        let profileSection = OWSTableSection()
-        profileSection.add(.init(customCellBlock: { [weak self] in
-            guard let self = self else { return UITableViewCell() }
-            return self.profileCell()
-        },
-            actionBlock: { [weak self] in
-                let vc = ProfileSettingsViewController()
-                self?.navigationController?.pushViewController(vc, animated: true)
-            }
-        ))
+        let profileSection = OWSTableSection(items: [
+            OWSTableItem(
+                customCellBlock: { [weak self] in
+                    guard let self = self else { return UITableViewCell() }
+                    return self.profileCell()
+                },
+                actionBlock: { [weak self] in
+                    guard let self else { return }
+                    let vc = ProfileSettingsViewController(usernameSelectionDelegate: self)
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            )
+        ])
         contents.add(profileSection)
 
         let section1 = OWSTableSection()
@@ -350,7 +366,12 @@ class AppSettingsViewController: OWSTableViewController2 {
 
     private func profileCell() -> UITableViewCell {
         let cell = OWSTableItem.newCell()
-        cell.accessoryType = .disclosureIndicator
+
+        if let usernameLinkButton = profileCellUsernameLinkButton() {
+            cell.accessoryView = usernameLinkButton
+        } else {
+            cell.accessoryType = .disclosureIndicator
+        }
 
         let hStackView = UIStackView()
         hStackView.axis = .horizontal
@@ -428,6 +449,37 @@ class AppSettingsViewController: OWSTableViewController2 {
         return cell
     }
 
+    /// If we have a username, produces a button that takes the user to their
+    /// username link QR code.
+    ///
+    /// Note that this button does not use autolayout, so as to play nice with
+    /// ``UITableViewCell``'s accessory view.
+    private func profileCellUsernameLinkButton() -> UIButton? {
+        guard let localUsername else {
+            return nil
+        }
+
+        let usernameLinkButton = OWSRoundedButton { [weak self] in
+            guard let self else { return }
+
+            let usernameLinkController = UsernameLinkQRCodeContentController(
+                db: DependenciesBridge.shared.db,
+                kvStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
+                usernameLink: Usernames.UsernameLink(username: localUsername),
+                scanDelegate: self
+            )
+
+            let navController = OWSNavigationController(rootViewController: usernameLinkController)
+            self.present(navController, animated: true)
+        }
+
+        usernameLinkButton.backgroundColor = .ows_gray05
+        usernameLinkButton.setImage(Theme.iconImage(.qrCode), for: .normal)
+        usernameLinkButton.bounds = CGRect(origin: .zero, size: .square(36))
+
+        return usernameLinkButton
+    }
+
     private func didTapDonate() {
         let vc: UIViewController
         if DonationSettingsViewController.hasAnythingToShowWithSneakyTransaction() {
@@ -452,5 +504,25 @@ class AppSettingsViewController: OWSTableViewController2 {
         }
 
         navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+extension AppSettingsViewController: UsernameSelectionDelegate {
+    func usernameDidChange(to newValue: String?) {
+        localUsername = newValue
+        updateTableContents()
+    }
+}
+
+extension AppSettingsViewController: UsernameLinkScanDelegate {
+    func usernameLinkScanned(_ usernameLink: Usernames.UsernameLink) {
+        guard presentedViewController != nil else {
+            owsFailDebug("Username link was scanned, but there's no presented view?")
+            return
+        }
+
+        dismiss(animated: true) {
+            UsernameLinkOpener(link: usernameLink).open(fromViewController: self)
+        }
     }
 }

@@ -143,7 +143,7 @@ open class OWSButton: UIButton {
 }
 
 /// A button whose leading and trailing edges are round.
-open class RoundedOWSButton: OWSButton {
+open class OWSRoundedButton: OWSButton {
     override open func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = height / 2
