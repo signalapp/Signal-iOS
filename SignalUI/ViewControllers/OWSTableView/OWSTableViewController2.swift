@@ -378,6 +378,17 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         return cell
     }
 
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let item = self.item(for: indexPath) else {
+            owsFailDebug("Missing item: \(indexPath)")
+            return
+        }
+
+        if let willDisplayBlock = item.willDisplayBlock {
+            willDisplayBlock(cell)
+        }
+    }
+
     private func configureCellBackground(_ cell: UITableViewCell, indexPath: IndexPath) {
         guard let section = contents.sections[safe: indexPath.section] else {
             owsFailDebug("Missing section: \(indexPath.section)")
@@ -442,71 +453,124 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         cell.contentView.layoutMargins = contentMargins
     }
 
+    /// Returns the frame representing the shape of a cell's visible pill, in
+    /// the given view.
+    public func cellPillFrame(view: UIView) -> CGRect {
+        var pillFrame = view.bounds.inset(by: self.cellOuterInsets)
+
+        pillFrame.x += view.safeAreaInsets.left
+        pillFrame.size.width -= view.safeAreaInsets.left + view.safeAreaInsets.right
+
+        return pillFrame
+    }
+
+    /// Configures the given layer to draw the background pill for a cell, in
+    /// the given view.
+    private func configureCellPillLayer(
+        pillLayer: CAShapeLayer,
+        view: UIView,
+        isFirstInSection: Bool,
+        isLastInSection: Bool,
+        backgroundColor: UIColor
+    ) {
+        pillLayer.frame = view.bounds
+        pillLayer.fillColor = backgroundColor.cgColor
+
+        let pillFrame = cellPillFrame(view: view)
+
+        if
+            pillFrame.width > 0,
+            pillFrame.height > 0
+        {
+            var roundingCorners: UIRectCorner = []
+
+            if isFirstInSection {
+                roundingCorners.formUnion(.topLeft)
+                roundingCorners.formUnion(.topRight)
+            }
+
+            if isLastInSection {
+                roundingCorners.formUnion(.bottomLeft)
+                roundingCorners.formUnion(.bottomRight)
+            }
+
+            pillLayer.path = UIBezierPath(
+                roundedRect: pillFrame,
+                byRoundingCorners: roundingCorners,
+                cornerRadii: .square(OWSTableViewController2.cellRounding)
+            ).cgPath
+        } else {
+            pillLayer.path = nil
+        }
+    }
+
+    private func configureCellSeparatorLayer(
+        separatorLayer: CAShapeLayer,
+        view: UIView,
+        sectionSeparatorInsetLeading: CGFloat?,
+        sectionSeparatorInsetTrailing: CGFloat?,
+        separatorColor: UIColor
+    ) {
+        separatorLayer.frame = view.bounds
+        separatorLayer.fillColor = separatorColor.cgColor
+
+        var separatorFrame = cellPillFrame(view: view)
+        let separatorThickness: CGFloat = .hairlineWidth
+
+        separatorFrame.y = separatorFrame.height - separatorThickness
+        separatorFrame.size.height = separatorThickness
+
+        let separatorInsetLeading = sectionSeparatorInsetLeading ?? self.defaultSeparatorInsetLeading
+        let separatorInsetTrailing = sectionSeparatorInsetTrailing ?? self.defaultSeparatorInsetTrailing
+
+        separatorFrame.x += separatorInsetLeading
+        separatorFrame.size.width -= (separatorInsetLeading + separatorInsetTrailing)
+        separatorLayer.path = UIBezierPath(rect: separatorFrame).cgPath
+    }
+
     private func buildCellBackgroundView(
         indexPath: IndexPath,
         section: OWSTableSection,
         backgroundColor: UIColor
     ) -> UIView {
-
         let isFirstInSection = indexPath.row == 0
         let isLastInSection = indexPath.row == tableView(tableView, numberOfRowsInSection: indexPath.section) - 1
 
-        let sectionSeparatorInsetLeading = section.separatorInsetLeading
-        let sectionSeparatorInsetTrailing = section.separatorInsetTrailing
-
         let pillLayer = CAShapeLayer()
         var separatorLayer: CAShapeLayer?
+
         let backgroundView = OWSLayerView(frame: .zero) { [weak self] view in
             guard let self = self else { return }
-            var pillFrame = view.bounds.inset(by: self.cellOuterInsets)
 
-            pillFrame.x += view.safeAreaInsets.left
-            pillFrame.size.width -= view.safeAreaInsets.left + view.safeAreaInsets.right
-            pillLayer.frame = view.bounds
-            if pillFrame.width > 0,
-               pillFrame.height > 0 {
-                var roundingCorners: UIRectCorner = []
-                if isFirstInSection {
-                    roundingCorners.formUnion(.topLeft)
-                    roundingCorners.formUnion(.topRight)
-                }
-                if isLastInSection {
-                    roundingCorners.formUnion(.bottomLeft)
-                    roundingCorners.formUnion(.bottomRight)
-                }
-                let cornerRadii: CGSize = .square(OWSTableViewController2.cellRounding)
-                pillLayer.path = UIBezierPath(roundedRect: pillFrame,
-                                              byRoundingCorners: roundingCorners,
-                                              cornerRadii: cornerRadii).cgPath
-            } else {
-                pillLayer.path = nil
-            }
+            self.configureCellPillLayer(
+                pillLayer: pillLayer,
+                view: view,
+                isFirstInSection: isFirstInSection,
+                isLastInSection: isLastInSection,
+                backgroundColor: backgroundColor
+            )
 
-            if let separatorLayer = separatorLayer {
-                separatorLayer.frame = view.bounds
-                var separatorFrame = pillFrame
-                let separatorThickness: CGFloat = .hairlineWidth
-                separatorFrame.y = pillFrame.height - separatorThickness
-                separatorFrame.size.height = separatorThickness
-
-                let separatorInsetLeading = sectionSeparatorInsetLeading ?? self.defaultSeparatorInsetLeading
-                let separatorInsetTrailing = sectionSeparatorInsetTrailing ?? self.defaultSeparatorInsetTrailing
-
-                separatorFrame.x += separatorInsetLeading
-                separatorFrame.size.width -= (separatorInsetLeading + separatorInsetTrailing)
-                separatorLayer.path = UIBezierPath(rect: separatorFrame).cgPath
+            if let separatorLayer {
+                self.configureCellSeparatorLayer(
+                    separatorLayer: separatorLayer,
+                    view: view,
+                    sectionSeparatorInsetLeading: section.separatorInsetLeading,
+                    sectionSeparatorInsetTrailing: section.separatorInsetTrailing,
+                    separatorColor: self.separatorColor
+                )
             }
         }
 
-        pillLayer.fillColor = backgroundColor.cgColor
         backgroundView.layer.addSublayer(pillLayer)
 
-        if section.hasSeparators,
-           !isLastInSection {
+        if
+            section.hasSeparators,
+            !isLastInSection
+        {
             let separator = CAShapeLayer()
-            separator.fillColor = separatorColor.cgColor
-            backgroundView.layer.addSublayer(separator)
             separatorLayer = separator
+
+            backgroundView.layer.addSublayer(separator)
         }
 
         return backgroundView
@@ -517,41 +581,23 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         section: OWSTableSection,
         backgroundColor: UIColor
     ) -> UIView {
-
+        let pillLayer = CAShapeLayer()
         let isFirstInSection = indexPath.row == 0
         let isLastInSection = indexPath.row == tableView(tableView, numberOfRowsInSection: indexPath.section) - 1
 
-        let pillLayer = CAShapeLayer()
         let backgroundView = OWSLayerView(frame: .zero) { [weak self] view in
             guard let self = self else { return }
-            var pillFrame = view.bounds.inset(by: self.cellOuterInsets)
 
-            pillFrame.x += view.safeAreaInsets.left
-            pillFrame.size.width -= view.safeAreaInsets.left + view.safeAreaInsets.right
-            pillLayer.frame = view.bounds
-            if pillFrame.width > 0,
-               pillFrame.height > 0 {
-                var roundingCorners: UIRectCorner = []
-                if isFirstInSection {
-                    roundingCorners.formUnion(.topLeft)
-                    roundingCorners.formUnion(.topRight)
-                }
-                if isLastInSection {
-                    roundingCorners.formUnion(.bottomLeft)
-                    roundingCorners.formUnion(.bottomRight)
-                }
-                let cornerRadii: CGSize = .square(OWSTableViewController2.cellRounding)
-                pillLayer.path = UIBezierPath(roundedRect: pillFrame,
-                                              byRoundingCorners: roundingCorners,
-                                              cornerRadii: cornerRadii).cgPath
-            } else {
-                pillLayer.path = nil
-            }
+            self.configureCellPillLayer(
+                pillLayer: pillLayer,
+                view: view,
+                isFirstInSection: isFirstInSection,
+                isLastInSection: isLastInSection,
+                backgroundColor: backgroundColor
+            )
         }
 
-        pillLayer.fillColor = backgroundColor.cgColor
         backgroundView.layer.addSublayer(pillLayer)
-
         return backgroundView
     }
 
@@ -1075,46 +1121,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         updateNavbarStyling()
-    }
-
-    // MARK: - Editing
-
-    public func tableView(_ tableView: UITableView,
-                          editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        guard let item = self.item(for: indexPath) else {
-            owsFailDebug("Missing item: \(indexPath)")
-            return .none
-        }
-        return (item.deleteAction != nil
-                    ? .delete
-                    : .none)
-    }
-
-    public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        guard let item = self.item(for: indexPath) else {
-            owsFailDebug("Missing item: \(indexPath)")
-            return false
-        }
-        return item.deleteAction != nil
-    }
-
-    public func tableView(_ tableView: UITableView,
-                          titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
-        guard let item = self.item(for: indexPath) else {
-            owsFailDebug("Missing item: \(indexPath)")
-            return nil
-        }
-        return item.deleteAction?.title
-    }
-
-    public func tableView(_ tableView: UITableView,
-                          commit editingStyle: UITableViewCell.EditingStyle,
-                          forRowAt indexPath: IndexPath) {
-        guard let item = self.item(for: indexPath) else {
-            owsFailDebug("Missing item: \(indexPath)")
-            return
-        }
-        item.deleteAction?.block()
     }
 
     open override var isEditing: Bool {

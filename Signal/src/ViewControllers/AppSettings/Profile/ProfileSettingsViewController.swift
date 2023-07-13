@@ -25,6 +25,9 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     private var allBadges: [OWSUserProfileBadgeInfo] = []
     private var displayBadgesOnProfile: Bool = false
 
+    private var shouldShowUsernameLinkTooltip: Bool = false
+    private var currentUsernameLinkTooltip: UsernameLinkTooltipView?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -50,10 +53,11 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             }
 
             self.localAci = localAci
-            username = context.usernameLookupManager.fetchUsername(
-                forAci: localAci,
-                transaction: tx.asV2Read
-            )
+
+            username = context.usernameLookupManager
+                .fetchUsername(forAci: localAci, transaction: tx.asV2Read)
+            shouldShowUsernameLinkTooltip = context.usernameEducationManager
+                .shouldShowUsernameLinkTooltip(tx: tx.asV2Read)
         }
 
         updateTableContents()
@@ -76,6 +80,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     }
 
     func updateTableContents() {
+        hideUsernameLinkTooltip(permanently: false)
+
         let contents = OWSTableContents()
 
         let avatarSection = OWSTableSection(items: [
@@ -116,26 +122,39 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         ))
 
         if FeatureFlags.usernames, let localAci {
-            let usernameTableItem: OWSTableItem
-
             if let username {
                 // No action block required, as the cell will handle taps itself
                 // by presenting a context menu.
-
-                usernameTableItem = OWSTableItem(
+                mainSection.add(OWSTableItem(
                     customCellBlock: { [weak self] in
                         guard let self else { return UITableViewCell() }
 
-                        let cell = self.buildUsernameContextMenuCell(
+                        return self.buildUsernameContextMenuCell(
                             username: username,
                             localAci: localAci
                         )
-
-                        return cell
                     }
-                )
+                ))
+
+                mainSection.add(OWSTableItem(
+                    customCellBlock: { [weak self] in
+                        guard let self else { return UITableViewCell() }
+
+                        return self.buildUsernameLinkCell()
+                    },
+                    willDisplayBlock: { [weak self] cell in
+                        guard let self else { return }
+
+                        self.willDisplayUsernameLinkCell(cell: cell)
+                    },
+                    actionBlock: { [weak self] in
+                        guard let self else { return  }
+
+                        self.selectedUsernameLinkCell(username: username)
+                    }
+                ))
             } else {
-                usernameTableItem = OWSTableItem(
+                mainSection.add(OWSTableItem(
                     customCellBlock: { [weak self] in
                         guard let self else { return UITableViewCell() }
 
@@ -146,10 +165,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
                         self.presentUsernameSelection(localAci: localAci)
                     }
-                )
+                ))
             }
-
-            mainSection.add(usernameTableItem)
         }
 
         mainSection.add(.disclosureItem(
@@ -210,6 +227,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Username
 
+    // MARK: Username cell
+
     private func buildUsernamePlaceholderCell() -> UITableViewCell {
         return OWSTableItem.buildCell(
             icon: .profileUsername,
@@ -238,19 +257,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             }
         )
 
-        let viewQRCodeAction = ContextMenuAction(
-            title: OWSLocalizedString(
-                "PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION",
-                comment: "Title for a menu action allowing users to view their username link QR code."
-            ),
-            image: Theme.iconImage(.qrCode),
-            handler: { [weak self] _ in
-                guard let self else { return }
-
-                self.presentUsernameLinkQRCode(username: username)
-            }
-        )
-
         let deleteUsernameAction = ContextMenuAction(
             title: CommonStrings.deleteButton,
             image: Theme.iconImage(.contextMenuDelete),
@@ -265,7 +271,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let contextMenuButton = ContextMenuButton(
             contextMenu: ContextMenu([
                 editUsernameAction,
-                viewQRCodeAction,
                 deleteUsernameAction
             ]),
             preferredContextMenuPosition: ContextMenuButton.ContextMenuPosition(
@@ -309,20 +314,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         )
 
         usernameSelectionCoordinator.present(fromViewController: self)
-    }
-
-    private func presentUsernameLinkQRCode(username: String) {
-        let usernameLinkContentController = UsernameLinkQRCodeContentController(
-            db: DependenciesBridge.shared.db,
-            kvStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
-            usernameLink: Usernames.UsernameLink(username: username),
-            scanDelegate: self
-        )
-
-        presentFormSheet(
-            OWSNavigationController(rootViewController: usernameLinkContentController),
-            animated: true
-        )
     }
 
     private func offerToDeleteUsername(localAci: ServiceId) {
@@ -377,10 +368,75 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         }
     }
 
+    // MARK: Username Link cell
+
+    private func buildUsernameLinkCell() -> UITableViewCell {
+        return OWSTableItem.buildCell(
+            icon: .qrCode,
+            itemName: OWSLocalizedString(
+                "PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE",
+                comment: "Title for a table cell that lets the user manage their username link and QR code."
+            ),
+            accessoryType: .disclosureIndicator
+        )
+    }
+
+    private func willDisplayUsernameLinkCell(cell: UITableViewCell) {
+        hideUsernameLinkTooltip(permanently: false)
+
+        if shouldShowUsernameLinkTooltip {
+            currentUsernameLinkTooltip = UsernameLinkTooltipView(
+                fromView: view,
+                referenceView: cell,
+                hSpacing: cellPillFrame(view: cell).x + 16,
+                onDismiss: { [weak self] in
+                    self?.hideUsernameLinkTooltip(permanently: true)
+                }
+            )
+        }
+    }
+
+    private func selectedUsernameLinkCell(username: String) {
+        presentFormSheet(
+            OWSNavigationController(
+                rootViewController: UsernameLinkQRCodeContentController(
+                    db: DependenciesBridge.shared.db,
+                    kvStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
+                    usernameLink: Usernames.UsernameLink(username: username),
+                    scanDelegate: self
+                )
+            ),
+            animated: true
+        ) {
+            self.hideUsernameLinkTooltip(permanently: true)
+        }
+    }
+
+    private func hideUsernameLinkTooltip(permanently: Bool) {
+        if let currentUsernameLinkTooltip {
+            currentUsernameLinkTooltip.removeFromSuperview()
+            self.currentUsernameLinkTooltip = nil
+        }
+
+        if permanently {
+            shouldShowUsernameLinkTooltip = false
+
+            databaseStorage.write { tx in
+                context.usernameEducationManager
+                    .setShouldShowUsernameLinkTooltip(false, tx: tx.asV2Write)
+            }
+        }
+    }
+
     // MARK: - Event Handling
 
     override func themeDidChange() {
         super.themeDidChange()
+        updateTableContents()
+    }
+
+    override func contentSizeCategoryDidChange() {
+        super.contentSizeCategoryDidChange()
         updateTableContents()
     }
 

@@ -7,18 +7,6 @@ import Foundation
 import SignalMessaging
 import UIKit
 
-public class OWSTableItemEditAction {
-
-    public var title: String
-
-    public var block: () -> Void
-
-    public init(title: String, block: @escaping () -> Void) {
-        self.title = title
-        self.block = block
-    }
-}
-
 public class OWSTableItem {
 
     public weak var tableViewController: UIViewController?
@@ -28,10 +16,11 @@ public class OWSTableItem {
     private var customCellBlock: (() -> UITableViewCell)?
     private var dequeueCellBlock: ((UITableView) -> UITableViewCell)?
 
+    public private(set) var willDisplayBlock: ((UITableViewCell) -> Void)?
+
     public var customRowHeight: CGFloat?
 
     public private(set) var actionBlock: (() -> Void)?
-    public var deleteAction: OWSTableItemEditAction?
 
     // MARK: -
 
@@ -46,10 +35,12 @@ public class OWSTableItem {
 
     public convenience init(
         customCellBlock: @escaping () -> UITableViewCell,
+        willDisplayBlock: ((UITableViewCell) -> Void)? = nil,
         actionBlock: (() -> Void)? = nil
     ) {
         self.init(title: nil, actionBlock: actionBlock)
         self.customCellBlock = customCellBlock
+        self.willDisplayBlock = willDisplayBlock
     }
 
     public convenience init(

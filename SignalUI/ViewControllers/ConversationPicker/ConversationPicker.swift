@@ -829,7 +829,9 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    public override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
+
         guard let conversation = conversation(for: indexPath) else {
             return
         }

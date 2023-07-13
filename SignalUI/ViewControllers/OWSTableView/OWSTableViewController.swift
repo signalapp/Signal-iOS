@@ -322,30 +322,6 @@ extension OWSTableViewController: UITableViewDataSource, UITableViewDelegate {
             tableView.isEditing = isEditing
         }
     }
-
-    public func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        let item = itemForIndexPath(indexPath)
-        if item.deleteAction != nil {
-            return .delete
-        }
-        return .none
-    }
-
-    public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        let item = itemForIndexPath(indexPath)
-        return item.deleteAction != nil
-    }
-
-    public func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
-        let item = itemForIndexPath(indexPath)
-        return item.deleteAction?.title
-    }
-
-    public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        let item = itemForIndexPath(indexPath)
-        guard editingStyle == .delete, let deleteAction = item.deleteAction else { return }
-        deleteAction.block()
-    }
 }
 
 extension OWSTableViewController: UIScrollViewDelegate {

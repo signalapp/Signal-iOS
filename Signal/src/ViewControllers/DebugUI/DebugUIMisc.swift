@@ -165,6 +165,10 @@ class DebugUIMisc: DebugUIPage, Dependencies {
                 DebugUIMisc.enableUsernameEducation()
             }),
 
+            OWSTableItem(title: "Enable username link tooltip", actionBlock: {
+                DebugUIMisc.enableUsernameLinkTooltip()
+            }),
+
             OWSTableItem(title: "Delete all persisted ExperienceUpgrade records", actionBlock: {
                 DebugUIMisc.removeAllRecordedExperienceUpgrades()
             }),
@@ -462,10 +466,19 @@ class DebugUIMisc: DebugUIPage, Dependencies {
     }
 
     private static func enableUsernameEducation() {
-        databaseStorage.write { transaction in
+        databaseStorage.write { tx in
             DependenciesBridge.shared.usernameEducationManager.setShouldShowUsernameEducation(
                 true,
-                transaction: transaction.asV2Write
+                tx: tx.asV2Write
+            )
+        }
+    }
+
+    private static func enableUsernameLinkTooltip() {
+        databaseStorage.write { tx in
+            DependenciesBridge.shared.usernameEducationManager.setShouldShowUsernameLinkTooltip(
+                true,
+                tx: tx.asV2Write
             )
         }
     }

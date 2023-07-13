@@ -36,8 +36,8 @@ class UsernameSelectionCoordinator {
     }
 
     func present(fromViewController: UIViewController) {
-        let shouldShowUsernameEducation: Bool = context.databaseStorage.read { transaction in
-            context.usernameEducationManager.shouldShowUsernameEducation(transaction: transaction.asV2Read)
+        let shouldShowUsernameEducation: Bool = context.databaseStorage.read { tx in
+            context.usernameEducationManager.shouldShowUsernameEducation(tx: tx.asV2Read)
         }
 
         if shouldShowUsernameEducation {
@@ -54,10 +54,10 @@ class UsernameSelectionCoordinator {
             // Intentional strong self capture
             guard let fromViewController else { return }
 
-            self.context.databaseStorage.write { transaction in
+            self.context.databaseStorage.write { tx in
                 self.context.usernameEducationManager.setShouldShowUsernameEducation(
                     false,
-                    transaction: transaction.asV2Write
+                    tx: tx.asV2Write
                 )
             }
 

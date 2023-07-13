@@ -1131,7 +1131,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         builder.setStoriesDisabled(!StoryManager.areStoriesEnabled(transaction: transaction))
 
         builder.setCompletedUsernameOnboarding(
-            !usernameEducationManager.shouldShowUsernameEducation(transaction: transaction.asV2Read)
+            !usernameEducationManager.shouldShowUsernameEducation(tx: transaction.asV2Read)
         )
 
         return builder.buildInfallibly()
@@ -1411,11 +1411,11 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             StoryManager.setAreStoriesEnabled(!record.storiesDisabled, shouldUpdateStorageService: false, transaction: transaction)
         }
 
-        let hasCompletedUsernameOnboarding = !usernameEducationManager.shouldShowUsernameEducation(transaction: transaction.asV2Read)
+        let hasCompletedUsernameOnboarding = !usernameEducationManager.shouldShowUsernameEducation(tx: transaction.asV2Read)
         if !hasCompletedUsernameOnboarding && record.completedUsernameOnboarding {
             usernameEducationManager.setShouldShowUsernameEducation(
                 false,
-                transaction: transaction.asV2Write
+                tx: transaction.asV2Write
             )
         }
 
