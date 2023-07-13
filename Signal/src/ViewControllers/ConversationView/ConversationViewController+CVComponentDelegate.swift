@@ -188,6 +188,7 @@ extension ConversationViewController: CVComponentDelegate {
             spoilerState: viewState.spoilerState,
             database: databaseStorage
         )
+        sheet.delegate = self
         self.present(sheet, animated: true)
     }
 

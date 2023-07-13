@@ -6,16 +6,22 @@
 import SignalServiceKit
 import SignalUI
 
+protocol MessageEditHistoryViewDelegate: AnyObject {
+    func editHistoryMessageWasDeleted()
+}
+
 class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
     internal enum Constants {
         static let cellSpacing: CGFloat = 12.0
     }
 
+    weak var delegate: MessageEditHistoryViewDelegate?
+
     var parentRenderItem: CVRenderItem?
     var renderItems = [CVRenderItem]()
     let spoilerState: SpoilerRenderState
-    private let message: TSMessage
+    private var message: TSMessage
     private let database: SDSDatabaseStorage
 
     init(
@@ -26,8 +32,9 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         self.spoilerState = spoilerState
         self.message = message
         self.database = database
-
         super.init()
+
+        database.appendDatabaseChangeDelegate(self)
     }
 
     required init() {
@@ -37,7 +44,12 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
     // MARK: - Table Update
 
     private func loadEditHistory() throws {
-        try database.read { tx in
+        let messageStillExists = try database.read { tx in
+            guard let newMessage = TSInteraction.anyFetch(uniqueId: message.uniqueId, transaction: tx) as? TSMessage else {
+                return false
+            }
+            message = newMessage
+
             let edits = try EditMessageFinder.findEditHistory(
                 for: message,
                 transaction: tx
@@ -48,7 +60,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
                 transaction: tx
             ) else {
                 owsFailDebug("Missing thread.")
-                return
+                return false
             }
 
             let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(
@@ -74,6 +86,12 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
                 }
             }
             self.renderItems = renderItems
+
+            return true
+        }
+
+        if !messageStillExists {
+            delegate?.editHistoryMessageWasDeleted()
         }
     }
 
@@ -160,6 +178,32 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             spoilerState: self.spoilerState,
             transaction: tx
         )
+    }
+}
+
+// MARK: - DatabaseChangeDelegate
+
+extension EditHistoryTableSheetViewController: DatabaseChangeDelegate {
+    func databaseChangesDidUpdate(databaseChanges: SignalServiceKit.DatabaseChanges) {
+        AssertIsOnMainThread()
+
+        guard databaseChanges.didUpdate(interaction: self.message) else {
+            return
+        }
+
+        updateTableContents()
+    }
+
+    func databaseChangesDidUpdateExternally() {
+        AssertIsOnMainThread()
+
+        updateTableContents()
+    }
+
+    func databaseChangesDidReset() {
+        AssertIsOnMainThread()
+
+        updateTableContents()
     }
 }
 

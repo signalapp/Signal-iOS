@@ -459,6 +459,14 @@ extension ConversationViewController: MessageDetailViewDelegate {
     }
 }
 
+// MARK: - MessageEditHistoryViewDelegate
+
+extension ConversationViewController: MessageEditHistoryViewDelegate {
+    func editHistoryMessageWasDeleted() {
+        self.dismiss(animated: true)
+    }
+}
+
 // MARK: -
 
 extension ConversationViewController: LongTextViewDelegate {

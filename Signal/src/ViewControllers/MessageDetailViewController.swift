@@ -8,7 +8,7 @@ import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
-protocol MessageDetailViewDelegate: AnyObject {
+protocol MessageDetailViewDelegate: MessageEditHistoryViewDelegate {
     func detailViewMessageWasDeleted(_ messageDetailViewController: MessageDetailViewController)
 }
 
@@ -389,6 +389,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                     spoilerState: self.spoilerState,
                     database: self.databaseStorage
                 )
+                sheet.delegate = self.detailDelegate
                 self.present(sheet, animated: true)
             }
         ))
