@@ -32,12 +32,10 @@ public class SpoilerAnimationTestController: UIViewController {
     class TestSpoilerableView: UIView, SpoilerableViewAnimator {
         var spoilerableView: UIView? { self }
 
-        var spoilerColor: UIColor { tintColor }
-
         var spoilerFramesCacheKey: Int { 0 }
 
-        func spoilerFrames() -> [CGRect] {
-            return [bounds]
+        func spoilerFrames() -> [SpoilerFrame] {
+            return [.init(frame: bounds, color: .fixed(tintColor))]
         }
     }
 }

@@ -10,17 +10,17 @@ public class SpoilerRenderer {
     // Should these vary by device? Or drop when getting a memory warning?
     private static let tileWidth: CGFloat = 100
     private static let xOverlayPercent: CGFloat = 0.10
-    private static let tileHeight: CGFloat = 20
+    private static let tileHeight: CGFloat = 40
     private static let yOverlayPercent: CGFloat = 0.25
-    private static let particlesPerUnit: CGFloat = 0.02
-    private static let particleRadiusPixels: CGFloat = 1
+    private static let particlesPerUnit: CGFloat = 0.06
+    private static let particleRadiusPoints: CGFloat = 1
 
     private static let particleCount = Int(tileWidth * tileHeight * particlesPerUnit)
 
     private lazy var particles: [Particle] =
-        .random(alpha: 1, count: Self.particleCount)
-        + .random(alpha: 0.8, count: Self.particleCount)
-        + .random(alpha: 0.6, count: Self.particleCount)
+        .random(alpha: 0.9, count: Self.particleCount)
+        + .random(alpha: 0.7, count: Self.particleCount)
+        + .random(alpha: 0.5, count: Self.particleCount)
 
     private var lastDrawDate = Date()
 
@@ -65,9 +65,6 @@ public class SpoilerRenderer {
             return
         }
 
-        let particleHeight = Self.particleRadiusPixels * UIScreen.main.scale
-        let particleWidth = particleHeight * height / width
-
         var lastAlpha: CGFloat = -1
         for i in 0..<particles.count {
             var particle = particles[i]
@@ -94,8 +91,8 @@ public class SpoilerRenderer {
             context.fillEllipse(in: CGRect(
                 x: (newX) * width,
                 y: (newY) * height,
-                width: particleWidth,
-                height: particleHeight
+                width: Self.particleRadiusPoints,
+                height: Self.particleRadiusPoints
             ))
         }
     }
@@ -118,9 +115,9 @@ public class SpoilerRenderer {
             return .init(
                 x: .random(in: -SpoilerRenderer.xOverlayPercent...(1 + SpoilerRenderer.xOverlayPercent)),
                 y: .random(in: -SpoilerRenderer.yOverlayPercent...(1 + SpoilerRenderer.yOverlayPercent)),
-                xVel: .random(in: -0.2...0.2),
+                xVel: .random(in: -0.1...0.1),
                 // Y is faster than X because absolute height is smaller.
-                yVel: .random(in: -1...1),
+                yVel: .random(in: -0.5...0.5),
                 timeRemaining: .random(in: 1...2),
                 alpha: alpha
             )
@@ -129,9 +126,9 @@ public class SpoilerRenderer {
         mutating func respawn() {
             x = .random(in: -SpoilerRenderer.xOverlayPercent...(1 + SpoilerRenderer.xOverlayPercent))
             y = .random(in: -SpoilerRenderer.yOverlayPercent...(1 + SpoilerRenderer.yOverlayPercent))
-            xVel = .random(in: -0.2...0.2)
+            xVel = .random(in: -0.1...0.1)
             // Y is faster than X because absolute height is smaller.
-            yVel = .random(in: -1...1)
+            yVel = .random(in: -0.5...0.5)
             timeRemaining = .random(in: 1...2)
         }
     }

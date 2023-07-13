@@ -22,7 +22,6 @@ public class LongTextViewController: OWSViewController {
     let threadViewModel: ThreadViewModel
     let spoilerState: SpoilerRenderState
 
-    var messageTextViewSpoilerAnimator: SpoilerableTextViewAnimator?
     var messageTextView: UITextView!
     let footer = UIToolbar.clear()
 
@@ -72,16 +71,15 @@ public class LongTextViewController: OWSViewController {
         messageTextView.textColor = Theme.primaryTextColor
         footer.tintColor = Theme.primaryIconColor
 
-        if let messageTextViewSpoilerAnimator {
-            spoilerState.animator.removeViewAnimator(messageTextViewSpoilerAnimator)
-            self.messageTextViewSpoilerAnimator = nil
-        }
-
         let displayConfig = HydratedMessageBody.DisplayConfiguration.longMessageView(
             revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
                 interactionIdentifier: .fromInteraction(itemViewModel.interaction)
             )
         )
+
+        messageTextViewSpoilerConfig.animator = self.spoilerState.animator
+        messageTextViewSpoilerConfig.text = displayableText?.fullTextValue
+        messageTextViewSpoilerConfig.displayConfig = displayConfig
 
         if let displayableText = displayableText {
             let baseAttrs: [NSAttributedString.Key: Any] = [
@@ -102,11 +100,6 @@ public class LongTextViewController: OWSViewController {
                     isDarkThemeEnabled: Theme.isDarkThemeEnabled
                 )
                 mutableText = (attrString as? NSMutableAttributedString) ?? NSMutableAttributedString(attributedString: attrString)
-
-                let messageTextViewSpoilerAnimator = SpoilerableTextViewAnimator(textView: messageTextView, spoilerConfig: displayConfig.style)
-                messageTextViewSpoilerAnimator.messageBody = messageBody
-                spoilerState.animator.addViewAnimator(messageTextViewSpoilerAnimator)
-                self.messageTextViewSpoilerAnimator = messageTextViewSpoilerAnimator
             }
 
             let hasPendingMessageRequest = databaseStorage.read { transaction in
@@ -222,6 +215,20 @@ public class LongTextViewController: OWSViewController {
 
         loadContent()
     }
+
+    // MARK: - Spoiler Animation
+
+    private lazy var messageTextViewSpoilerConfig = SpoilerableTextConfig.Builder(isViewVisible: true) {
+        didSet {
+            messageTextViewSpoilerAnimator.updateAnimationState(messageTextViewSpoilerConfig)
+        }
+    }
+
+    private lazy var messageTextViewSpoilerAnimator: SpoilerableTextViewAnimator = {
+        let animator = SpoilerableTextViewAnimator(textView: messageTextView)
+        animator.updateAnimationState(messageTextViewSpoilerConfig)
+        return animator
+    }()
 
     // MARK: - Actions
 

@@ -6,19 +6,28 @@
 import Foundation
 import SignalServiceKit
 
+public struct SpoilerFrame {
+    public let frame: CGRect
+    public let color: ThemedColor
+
+    public init(frame: CGRect, color: ThemedColor) {
+        self.frame = frame
+        self.color = color
+    }
+}
+
 public protocol SpoilerableViewAnimator {
 
     /// Nullable to enable holding a weak reference; it is assumed the view
     /// is deallocated when returning nil, and observation will be stopped.
     var spoilerableView: UIView? { get }
-    var spoilerColor: UIColor { get }
 
     /// When the value of this key changes, the spoiler frames are recomputed.
     /// If it is unchanged, frames are assumed to also be unchanged and are reused.
     /// It is assumed computing frames is expensive, and computing the cache key is not.
     var spoilerFramesCacheKey: Int { get }
 
-    func spoilerFrames() -> [CGRect]
+    func spoilerFrames() -> [SpoilerFrame]
 
     func equals(_ other: SpoilerableViewAnimator) -> Bool
 }
@@ -98,11 +107,9 @@ public class SpoilerAnimator {
             return
         }
 
-        let tilingColor = UIColor(patternImage: getOrLoadTileImage(animator: animator))
-
         let spoilerViews = view.subviews.filter { $0 is SpoilerTileView }
         let spoilerFrames = getOrLoadSpoilerFrames(animator: animator)
-        for (i, rect) in spoilerFrames.enumerated() {
+        for (i, spoilerFrame) in spoilerFrames.enumerated() {
             let spoilerView: UIView = {
                 if let existingView = spoilerViews[safe: i] {
                     return existingView
@@ -117,8 +124,8 @@ public class SpoilerAnimator {
                 }
             }()
 
-            spoilerView.frame = rect
-            spoilerView.backgroundColor = tilingColor
+            spoilerView.frame = spoilerFrame.frame
+            spoilerView.backgroundColor = getOrLoadTilingColor(color: spoilerFrame.color.forCurrentTheme)
         }
         // Clear any excess layers.
         if spoilerViews.count > spoilerFrames.count {
@@ -138,9 +145,9 @@ public class SpoilerAnimator {
 
     // MARK: - Caches
 
-    private var frameCache = [Int: [CGRect]]()
+    private var frameCache = [Int: [SpoilerFrame]]()
 
-    private func getOrLoadSpoilerFrames(animator: SpoilerableViewAnimator) -> [CGRect] {
+    private func getOrLoadSpoilerFrames(animator: SpoilerableViewAnimator) -> [SpoilerFrame] {
         let cacheKey = animator.spoilerFramesCacheKey
         if let cachedFrames = frameCache[cacheKey] {
             return cachedFrames
@@ -152,19 +159,19 @@ public class SpoilerAnimator {
 
     private var tileImage: UIImage {
         didSet {
-            tintedImageCache = [:]
+            tintedTileColorCache = [:]
         }
     }
-    private var tintedImageCache = [UIColor: UIImage]()
+    private var tintedTileColorCache = [UIColor: UIColor]()
 
-    private func getOrLoadTileImage(animator: SpoilerableViewAnimator) -> UIImage {
-        let color = animator.spoilerColor
-        if let cachedImage = tintedImageCache[color] {
+    private func getOrLoadTilingColor(color: UIColor) -> UIColor {
+        if let cachedImage = tintedTileColorCache[color] {
             return cachedImage
         }
         let tintedImage = tileImage.asTintedImage(color: color) ?? tileImage
-        tintedImageCache[color] = tintedImage
-        return tintedImage
+        let tileColor = UIColor(patternImage: tintedImage)
+        tintedTileColorCache[color] = tileColor
+        return tileColor
     }
 
     // MARK: - Timer

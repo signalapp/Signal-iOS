@@ -7,28 +7,68 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
-public class SpoilerableTextViewAnimator: SpoilerableViewAnimator {
+public class SpoilerableTextViewAnimator {
 
     private weak var textView: UITextView?
-    public var messageBody: HydratedMessageBody?
-    public var spoilerConfig: StyleDisplayConfiguration
+    private var text: CVTextValue?
+    private var displayConfig: HydratedMessageBody.DisplayConfiguration?
 
-    public init(textView: UITextView, spoilerConfig: StyleDisplayConfiguration) {
+    public init(textView: UITextView) {
         self.textView = textView
-        self.spoilerConfig = spoilerConfig
     }
+
+    private var isAnimating = false
+
+    public func updateAnimationState(_ configBuilder: SpoilerableTextConfig.Builder) {
+        guard let config = configBuilder.build() else {
+            return
+        }
+        updateAnimationState(config)
+    }
+
+    public func updateAnimationState(_ config: SpoilerableTextConfig) {
+        self.text = config.text
+        self.displayConfig = config.displayConfig
+
+        let wantsToAnimate: Bool
+        if config.isViewVisible, let text = config.text {
+            switch text {
+            case .text, .attributedText:
+                wantsToAnimate = false
+            case .messageBody(let body):
+                wantsToAnimate = body.hasSpoilerRangesToAnimate
+            }
+        } else {
+            wantsToAnimate = false
+        }
+
+        guard wantsToAnimate != isAnimating else {
+            return
+        }
+        if wantsToAnimate {
+            config.animator.addViewAnimator(self)
+            self.isAnimating = true
+        } else {
+            // We are stopping animations.
+            config.animator.removeViewAnimator(self)
+            self.isAnimating = false
+        }
+    }
+}
+
+// MARK: - SpoilerableViewAnimator
+
+extension SpoilerableTextViewAnimator: SpoilerableViewAnimator {
 
     public var spoilerableView: UIView? { textView }
 
-    public var spoilerColor: UIColor { spoilerConfig.textColor.forCurrentTheme }
-
-    public func spoilerFrames() -> [CGRect] {
-        guard let messageBody, let textView else {
+    public func spoilerFrames() -> [SpoilerFrame] {
+        guard let text, let textView, let displayConfig else {
             return []
         }
         return Self.spoilerFrames(
-            messageBody: messageBody,
-            spoilerConfig: spoilerConfig,
+            text: text,
+            displayConfig: displayConfig,
             textContainer: textView.textContainer,
             textStorage: textView.textStorage,
             layoutManager: textView.layoutManager,
@@ -39,8 +79,8 @@ public class SpoilerableTextViewAnimator: SpoilerableViewAnimator {
 
     public var spoilerFramesCacheKey: Int {
         var hasher = Hasher()
-        hasher.combine(messageBody)
-        spoilerConfig.hashForSpoilerFrames(into: &hasher)
+        hasher.combine(text)
+        displayConfig?.hashForSpoilerFrames(into: &hasher)
         hasher.combine(textView?.textContainerInset.top)
         hasher.combine(textView?.textContainerInset.left)
         hasher.combine(textView?.bounds.width)
@@ -50,25 +90,27 @@ public class SpoilerableTextViewAnimator: SpoilerableViewAnimator {
 
     // Every input here should be represented in the cache key above.
     private static func spoilerFrames(
-        messageBody: HydratedMessageBody,
-        spoilerConfig: StyleDisplayConfiguration,
+        text: CVTextValue,
+        displayConfig: HydratedMessageBody.DisplayConfiguration,
         textContainer: NSTextContainer,
         textStorage: NSTextStorage,
         layoutManager: NSLayoutManager,
         textContainerInsets: UIEdgeInsets,
         textContainerBounds: CGSize
-    ) -> [CGRect] {
-        let spoilerRanges = messageBody.spoilerRangesForAnimation(config: spoilerConfig)
-        var frames = textContainer.boundingRects(
-            ofCharacterRanges: spoilerRanges,
-            textStorage: textStorage,
-            layoutManager: layoutManager
-        )
-        if textContainerInsets.isNonEmpty {
-            frames = frames.map { frame in
-                return frame.offsetBy(dx: textContainerInsets.left, dy: textContainerInsets.top)
-            }
+    ) -> [SpoilerFrame] {
+        switch text {
+        case .text, .attributedText:
+            return []
+        case .messageBody(let messageBody):
+            let spoilerRanges = messageBody.spoilerRangesForAnimation(config: displayConfig)
+            var frames = textContainer.boundingRects(
+                ofCharacterRanges: spoilerRanges,
+                textStorage: textStorage,
+                layoutManager: layoutManager,
+                textContainerInsets: textContainerInsets,
+                transform: SpoilerFrame.init(frame:color:)
+            )
+            return frames
         }
-        return frames
     }
 }

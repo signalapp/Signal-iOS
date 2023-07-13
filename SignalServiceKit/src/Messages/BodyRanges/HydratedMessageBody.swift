@@ -234,6 +234,11 @@ public class HydratedMessageBody: Equatable, Hashable {
                 self.matchingForegroundColor = matchingForegroundColor
                 self.matchedRanges = matchedRanges
             }
+
+            public func hashForSpoilerFrames(into hasher: inout Hasher) {
+                hasher.combine(matchingBackgroundColor)
+                hasher.combine(matchedRanges)
+            }
         }
 
         public let searchRanges: SearchRanges?
@@ -299,6 +304,11 @@ public class HydratedMessageBody: Equatable, Hashable {
                 ),
                 searchRanges: searchRanges
             )
+        }
+
+        public func hashForSpoilerFrames(into hasher: inout Hasher) {
+            searchRanges?.hashForSpoilerFrames(into: &hasher)
+            style.hashForSpoilerFrames(into: &hasher)
         }
 
         public var sizingCacheKey: String {
@@ -589,9 +599,11 @@ public class HydratedMessageBody: Equatable, Hashable {
         return styleAttributes.contains(where: { $0.value.style.contains(style: .spoiler) })
     }
 
+    /// Returns spoiler ranges with the color that should be applied to the spoiler animation for that range.
+    /// Takes into account search ranges (hence the differing colors).
     public func spoilerRangesForAnimation(
-        config: StyleDisplayConfiguration
-    ) -> [NSRange] {
+        config: DisplayConfiguration
+    ) -> [NSRangedValue<ThemedColor>] {
         // We want to collapse adjacent ranges because they should
         // all animate together even if they are distinct ranges
         // for the purposes of revealing. Otherwise we'd get
@@ -602,7 +614,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             guard
                 styleAttribute.value.style.contains(style: .spoiler),
                 let spoilerId = styleAttribute.value.ids[.spoiler],
-                !(config.revealAllIds || config.revealedIds.contains(spoilerId))
+                !(config.style.revealAllIds || config.style.revealedIds.contains(spoilerId))
             else {
                 continue
             }
@@ -620,7 +632,49 @@ public class HydratedMessageBody: Equatable, Hashable {
         if let ongoingRange {
             finalRanges.append(ongoingRange)
         }
-        return finalRanges
+
+        guard let searchConfig = config.searchRanges, !searchConfig.matchedRanges.isEmpty else {
+            return finalRanges.map({ .init(config.style.textColor, range: $0)})
+        }
+
+        var coloredRanges = [NSRangedValue<ThemedColor>]()
+        for spoilerRange in finalRanges {
+            var remainingSpoilerRange = spoilerRange
+            searchRangeLoop: for searchRange in searchConfig.matchedRanges {
+                if let intersection = remainingSpoilerRange.intersection(searchRange), intersection.length > 0 {
+                    // First add any part of the spoiler range before the search range.
+                    if remainingSpoilerRange.location < intersection.location {
+                        coloredRanges.append(.init(
+                            config.style.textColor,
+                            range: NSRange(
+                                location: remainingSpoilerRange.location,
+                                length: intersection.location - remainingSpoilerRange.location
+                            )
+                        ))
+                    }
+                    // The overlapping part gets the search config's color.
+                    coloredRanges.append(
+                        .init(searchConfig.matchingBackgroundColor, range: intersection)
+                    )
+                    if spoilerRange.upperBound <= intersection.upperBound {
+                        break searchRangeLoop
+                    } else {
+                        remainingSpoilerRange = NSRange(
+                            location: intersection.upperBound,
+                            length: remainingSpoilerRange.upperBound - intersection.upperBound
+                        )
+                    }
+                } else if searchRange.location >= remainingSpoilerRange.upperBound {
+                    break searchRangeLoop
+                } else {
+                    continue
+                }
+            }
+            if remainingSpoilerRange.length > 0 {
+                coloredRanges.append(.init(config.style.textColor, range: remainingSpoilerRange))
+            }
+        }
+        return coloredRanges
     }
 
     // MARK: - Tappable items

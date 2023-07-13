@@ -488,7 +488,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let quotedTextLabelConfig = configurator.quotedTextLabelConfig
         quotedTextLabelConfig.applyForRendering(label: quotedTextLabel)
         quotedTextSpoilerConfigBuilder.text = quotedTextLabelConfig.text
-        quotedTextSpoilerConfigBuilder.spoilerConfig = quotedTextLabelConfig.displayConfig.style
+        quotedTextSpoilerConfigBuilder.displayConfig = quotedTextLabelConfig.displayConfig
         quotedTextSpoilerConfigBuilder.animator = componentDelegate.spoilerState.animator
         innerVStackSubviews.append(quotedTextLabel)
 

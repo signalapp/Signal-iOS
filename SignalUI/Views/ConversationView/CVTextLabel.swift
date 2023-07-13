@@ -538,11 +538,7 @@ extension CVTextLabel.Label: SpoilerableViewAnimator {
         return self
     }
 
-    var spoilerColor: UIColor {
-        return config?.displayConfig.style.textColor.forCurrentTheme ?? UIColor.clear
-    }
-
-    func spoilerFrames() -> [CGRect] {
+    func spoilerFrames() -> [SpoilerFrame] {
         guard let config else { return [] }
         switch config.text {
         case .text, .attributedText:
@@ -550,7 +546,7 @@ extension CVTextLabel.Label: SpoilerableViewAnimator {
         case .messageBody(let messageBody):
             return Self.spoilerFrames(
                 messageBody: messageBody,
-                spoilerConfig: config.displayConfig.style,
+                displayConfig: config.displayConfig,
                 textContainer: textContainer,
                 textStorage: textStorage,
                 layoutManager: layoutManager,
@@ -562,7 +558,7 @@ extension CVTextLabel.Label: SpoilerableViewAnimator {
     var spoilerFramesCacheKey: Int {
         var hasher = Hasher()
         hasher.combine(config?.text)
-        config?.displayConfig.style.hashForSpoilerFrames(into: &hasher)
+        config?.displayConfig.hashForSpoilerFrames(into: &hasher)
         hasher.combine(bounds.width)
         hasher.combine(bounds.height)
         return hasher.finalize()
@@ -571,19 +567,19 @@ extension CVTextLabel.Label: SpoilerableViewAnimator {
     // Every input here should be represented in the cache key above.
     private static func spoilerFrames(
         messageBody: HydratedMessageBody,
-        spoilerConfig: StyleDisplayConfiguration,
+        displayConfig: HydratedMessageBody.DisplayConfiguration,
         textContainer: NSTextContainer,
         textStorage: NSTextStorage,
         layoutManager: NSLayoutManager,
         bounds: CGSize
-    ) -> [CGRect] {
-        let spoilerRanges = messageBody.spoilerRangesForAnimation(config: spoilerConfig)
-        let frames = textContainer.boundingRects(
+    ) -> [SpoilerFrame] {
+        let spoilerRanges = messageBody.spoilerRangesForAnimation(config: displayConfig)
+        return textContainer.boundingRects(
             ofCharacterRanges: spoilerRanges,
             textStorage: textStorage,
-            layoutManager: layoutManager
+            layoutManager: layoutManager,
+            transform: SpoilerFrame.init(frame:color:)
         )
-        return frames
     }
 }
 

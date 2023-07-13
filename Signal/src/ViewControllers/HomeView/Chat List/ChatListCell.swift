@@ -349,7 +349,7 @@ public class ChatListCell: UITableViewCell {
 
         snippetLabelConfig.applyForRendering(label: snippetLabel)
         spoilerConfigBuilder.text = snippetLabelConfig.text
-        spoilerConfigBuilder.spoilerConfig = snippetLabelConfig.displayConfig.style
+        spoilerConfigBuilder.displayConfig = snippetLabelConfig.displayConfig
         spoilerConfigBuilder.animator = spoilerAnimator
 
         owsAssertDebug(avatarView == nil, "ChatListCell.configure without prior reset called")

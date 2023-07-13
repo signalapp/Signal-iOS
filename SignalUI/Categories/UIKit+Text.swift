@@ -80,7 +80,23 @@ public extension NSTextContainer {
         textStorage: NSTextStorage,
         layoutManager: NSLayoutManager
     ) -> [CGRect] {
-        return ranges.flatMap { (range: NSRange) -> [CGRect] in
+        return boundingRects(
+            ofCharacterRanges: ranges.lazy.map({ return NSRangedValue<Void>.init((), range: $0)}),
+            textStorage: textStorage,
+            layoutManager: layoutManager,
+            transform: { rect, _ in return rect }
+        )
+    }
+
+    func boundingRects<T, R>(
+        ofCharacterRanges ranges: [NSRangedValue<T>],
+        textStorage: NSTextStorage,
+        layoutManager: NSLayoutManager,
+        textContainerInsets: UIEdgeInsets = .zero,
+        transform: (CGRect, T) -> R
+    ) -> [R] {
+        return ranges.flatMap { (rangedValue: NSRangedValue<T>) -> [R] in
+            let range = rangedValue.range
             guard textStorage.length >= range.upperBound else {
                 return []
             }
@@ -98,7 +114,11 @@ public extension NSTextContainer {
                 perLineGlyphRanges.append(perLineGlyphRange)
             })
             return perLineGlyphRanges.map { perLineGlyphRange in
-                return layoutManager.boundingRect(forGlyphRange: perLineGlyphRange, in: self)
+                let rect = layoutManager.boundingRect(forGlyphRange: perLineGlyphRange, in: self).offsetBy(
+                    dx: textContainerInsets.leading,
+                    dy: textContainerInsets.top
+                )
+                return transform(rect, rangedValue.value)
             }
         }
     }
@@ -120,6 +140,16 @@ extension UILabel {
             return []
         }
         return textContainer.boundingRects(ofCharacterRanges: ranges, textStorage: textStorage, layoutManager: layoutManager)
+    }
+
+    func boundingRects<T, R>(
+        ofCharacterRanges ranges: [NSRangedValue<T>],
+        transform: (CGRect, T) -> R
+    ) -> [R] {
+        guard let (textContainer, textStorage, layoutManager) = makeMatchingTextContainer() else {
+            return []
+        }
+        return textContainer.boundingRects(ofCharacterRanges: ranges, textStorage: textStorage, layoutManager: layoutManager, transform: transform)
     }
 
     // This is somewhat inconsistent; labels with text alignments and who knows what

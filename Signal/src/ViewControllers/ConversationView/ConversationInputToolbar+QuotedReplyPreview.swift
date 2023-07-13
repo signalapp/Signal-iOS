@@ -199,7 +199,7 @@ private class QuotedMessageSnippetView: UIView {
             self.quotedTextLabelSpoilerAnimator = animator
             var spoilerConfig = SpoilerableTextConfig.Builder(isViewVisible: true)
             spoilerConfig.text = displayableQuotedText.displayTextValue
-            spoilerConfig.spoilerConfig = config.style
+            spoilerConfig.displayConfig = config
             spoilerConfig.animator = self.spoilerState.animator
             if let config = spoilerConfig.build() {
                 animator.updateAnimationState(config)

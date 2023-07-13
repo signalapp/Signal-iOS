@@ -33,6 +33,7 @@ public struct StyleDisplayConfiguration: Equatable {
     }
 
     public func hashForSpoilerFrames(into hasher: inout Hasher) {
+        hasher.combine(textColor)
         hasher.combine(revealAllIds)
         hasher.combine(revealedIds)
     }
@@ -117,9 +118,15 @@ internal struct StyleAttribute: Equatable, Hashable {
                 else {
                     continue
                 }
+                let backgroundColor: UIColor
+                if FeatureFlags.spoilerAnimations {
+                    backgroundColor = .clear
+                } else {
+                    backgroundColor = searchRanges.matchingBackgroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+                }
                 string.addAttributes(
                     [
-                        .backgroundColor: searchRanges.matchingBackgroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
+                        .backgroundColor: backgroundColor,
                         .foregroundColor: UIColor.clear
                     ],
                     range: intersection

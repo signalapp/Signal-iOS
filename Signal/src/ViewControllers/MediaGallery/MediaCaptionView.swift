@@ -14,20 +14,6 @@ class MediaCaptionView: UIView {
         case attachmentStreamCaption(String)
         case messageBody(HydratedMessageBody, InteractionSnapshotIdentifier)
 
-        func attributedString(spoilerState: SpoilerRenderState) -> NSAttributedString {
-            switch self {
-            case .attachmentStreamCaption(let string):
-                return NSAttributedString(string: string)
-            case .messageBody(let messageBody, let interactionIdentifier):
-                return messageBody.asAttributedStringForDisplay(
-                    config: .mediaCaption(
-                        revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(interactionIdentifier: interactionIdentifier)
-                    ),
-                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
-                )
-            }
-        }
-
         var nilIfEmpty: Content? {
             switch self {
             case .attachmentStreamCaption(let string):
@@ -156,6 +142,9 @@ class MediaCaptionView: UIView {
     private class CaptionTextView: UITextView, NSLayoutManagerDelegate {
 
         init(spoilerState: SpoilerRenderState) {
+            var spoilerConfig = SpoilerableTextConfig.Builder(isViewVisible: true)
+            spoilerConfig.animator = spoilerState.animator
+            self.spoilerConfig = spoilerConfig
             self.spoilerState = spoilerState
             super.init(frame: .zero, textContainer: nil)
 
@@ -171,16 +160,61 @@ class MediaCaptionView: UIView {
 
         private let spoilerState: SpoilerRenderState
 
+        private var spoilerConfig: SpoilerableTextConfig.Builder {
+            didSet {
+                spoilerAnimator.updateAnimationState(spoilerConfig)
+            }
+        }
+
+        private lazy var spoilerAnimator = SpoilerableTextViewAnimator(textView: self)
+
         public var content: MediaCaptionView.Content? {
             didSet {
-                super.attributedText = content?.attributedString(spoilerState: spoilerState)
+                recomputeContents()
                 invalidateCachedSizes()
             }
         }
 
         public func didUpdateRevealedSpoilers() {
             // No need to recompute cached sizes; spoilers have no effect on size.
-            super.attributedText = content?.attributedString(spoilerState: spoilerState)
+            recomputeContents()
+        }
+
+        @discardableResult
+        private func recomputeContents(doUpdate: Bool = true) -> NSAttributedString? {
+            switch content?.nilIfEmpty {
+            case .none:
+                if doUpdate {
+                    super.attributedText = nil
+                    spoilerConfig.text = nil
+                    spoilerConfig.displayConfig = nil
+                }
+                return nil
+            case .attachmentStreamCaption(let string):
+                let attrString = NSAttributedString(string: string)
+                if doUpdate {
+                    super.attributedText = attrString
+                    spoilerConfig.text = nil
+                    spoilerConfig.displayConfig = nil
+                }
+                return attrString
+            case .messageBody(let body, let interactionIdentifier):
+                let displayConfig = HydratedMessageBody.DisplayConfiguration.mediaCaption(
+                    revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
+                        interactionIdentifier: interactionIdentifier
+                    )
+                )
+                let attrString = body.asAttributedStringForDisplay(
+                    config: displayConfig,
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                )
+                if doUpdate {
+                    super.attributedText = attrString
+                    spoilerConfig.text = .messageBody(body)
+                    spoilerConfig.displayConfig = displayConfig
+                }
+                return attrString
+            }
         }
 
         @available(*, unavailable)
@@ -272,7 +306,7 @@ class MediaCaptionView: UIView {
 
         private func calculateSizesIfNecessary() {
             guard !collapsedSize.isNonEmpty else { return }
-            guard let content = content?.nilIfEmpty else { return }
+            guard let attributedText = recomputeContents(doUpdate: false) else { return }
 
             let maxWidth: CGFloat
             if frame.width > 0 {
@@ -280,8 +314,6 @@ class MediaCaptionView: UIView {
             } else {
                 maxWidth = .greatestFiniteMagnitude
             }
-
-            let attributedText = content.attributedString(spoilerState: spoilerState)
 
             // 3 lines of text.
             let font = font ?? .dynamicTypeBodyClamped
