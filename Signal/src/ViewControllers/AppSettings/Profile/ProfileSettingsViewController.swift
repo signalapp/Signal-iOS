@@ -396,7 +396,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             currentUsernameLinkTooltip = UsernameLinkTooltipView(
                 fromView: view,
                 referenceView: cell,
-                hSpacing: cellPillFrame(view: cell).x + 16,
+                hInsetFromReferenceView: cellPillFrame(view: cell).x + 16,
                 onDismiss: { [weak self] in
                     self?.hideUsernameLinkTooltip(permanently: true)
                 }

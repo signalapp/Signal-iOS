@@ -28,7 +28,7 @@ extension Bitmaps {
         }
     }
 
-    struct Rect: Equatable {
+    class Rect {
         let origin: Point
         let width: Int
         let height: Int
@@ -37,21 +37,6 @@ extension Bitmaps {
             self.origin = Point(x: x, y: y)
             self.width = width
             self.height = height
-        }
-
-        /// Whether the rect contains the given point. Points along the leading
-        /// edges are contained, but not those along the trailing edges.
-        func contains(_ point: Point) -> Bool {
-            if
-                point.x >= origin.x,
-                point.x < (origin.x + width),
-                point.y >= origin.y,
-                point.y < (origin.y + height)
-            {
-                return true
-            }
-
-            return false
         }
 
         /// Returns the ``CGRect`` with corners at the centers of the "pixels"
@@ -70,6 +55,19 @@ extension Bitmaps {
                 width: CGFloat(width - 1) * scale - inset * scale * 2,
                 height: CGFloat(height - 1) * scale - inset * scale * 2
             )
+        }
+
+        /// Whether the circle inscribed in this rect contains the given point.
+        func inscribedCircleContains(_ point: Point) -> Bool {
+            let pointForMath = point.cgPoint(scaledBy: 1)
+            let rectForMath = cgRect(scaledBy: 1, insetBy: 0)
+
+            let distanceFromCenter = rectForMath.center.distance(pointForMath)
+
+            let minDimension = min(rectForMath.width, rectForMath.height)
+            let inscribedCircleRadius = minDimension / 2
+
+            return distanceFromCenter <= inscribedCircleRadius
         }
     }
 }

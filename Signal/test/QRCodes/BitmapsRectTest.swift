@@ -10,22 +10,45 @@ class BitmapsRectTest: XCTestCase {
     private typealias Rect = Bitmaps.Rect
     private typealias Point = Bitmaps.Point
 
-    func testRectContains() {
-        let testCases: [(Rect, Point, Bool)] = [
-            (Rect(x: 0, y: 0, width: 10, height: 10), Point(x: 0, y: 0), true),
-            (Rect(x: 0, y: 0, width: 10, height: 10), Point(x: 1, y: 1), true),
-            (Rect(x: 0, y: 0, width: 10, height: 10), Point(x: 0, y: 10), false),
-            (Rect(x: 0, y: 0, width: 10, height: 10), Point(x: 10, y: 0), false),
-            (Rect(x: 0, y: 0, width: 0, height: 0), Point(x: 0, y: 0), false),
-            (Rect(x: 0, y: 0, width: 10, height: 0), Point(x: 0, y: 0), false),
-            (Rect(x: 0, y: 0, width: 0, height: 10), Point(x: 0, y: 0), false),
-            (Rect(x: 0, y: 0, width: 10, height: 10), Point(x: 40, y: 40), false)
+    func testSquareRectCirclePointContains() {
+        let size = 11
+        let rect = Bitmaps.Rect(x: 0, y: 0, width: size, height: size)
+
+        let testCases: [(Point, Bool)] = [
+            (Point(x: 0, y: 0), false),
+            (Point(x: 5, y: 0), true),
+            (Point(x: 0, y: 5), true),
+            (Point(x: 1, y: 1), false),
+            (Point(x: 2, y: 1), true),
+            (Point(x: 1, y: 2), true)
         ]
 
-        for (rect, point, outcome) in testCases {
+        for (point, outcome) in testCases {
             XCTAssertEqual(
-                rect.contains(point),
+                rect.inscribedCircleContains(point),
                 outcome
+            )
+        }
+    }
+
+    func testNonSquareRectCirclePointContains() {
+        let rect = Bitmaps.Rect(x: 0, y: 0, width: 99, height: 5)
+
+        let testCases: [(Point, Bool)] = [
+            (Point(x: 49, y: 2), true),
+            (Point(x: 48, y: 2), true),
+            (Point(x: 47, y: 2), true),
+            (Point(x: 46, y: 2), false),
+            (Point(x: 49, y: 1), true),
+            (Point(x: 48, y: 1), true),
+            (Point(x: 47, y: 1), false),
+        ]
+
+        for (point, outcome) in testCases {
+            XCTAssertEqual(
+                rect.inscribedCircleContains(point),
+                outcome,
+                "\(point)"
             )
         }
     }

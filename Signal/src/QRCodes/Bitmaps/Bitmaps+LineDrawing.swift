@@ -77,7 +77,8 @@ extension Bitmaps.Image {
     ///   in the inclusive range `{X,Y}:{X,Y+N}` are visible.
     ///
     /// - Parameter deadzone
-    /// A region that should be left clear.
+    /// A region that should be left clear, defined by the circle inscribed in
+    /// the given rect.
     func gridDrawingByMergingAdjacentPixels(
         deadzone: Bitmaps.Rect
     ) -> Bitmaps.GridDrawing {
@@ -88,7 +89,7 @@ extension Bitmaps.Image {
                 dimension: .horizontal,
                 dimensionIteration: 0...width,
                 currentPointBlock: { i in Point(x: i, y: row) },
-                pointInDeadzoneBlock: { p in deadzone.contains(p) }
+                pointInDeadzoneBlock: { p in deadzone.inscribedCircleContains(p) }
             ))
         }
 
@@ -97,7 +98,7 @@ extension Bitmaps.Image {
                 dimension: .vertical,
                 dimensionIteration: 0...height,
                 currentPointBlock: { i in Point(x: column, y: i) },
-                pointInDeadzoneBlock: { p in deadzone.contains(p) }
+                pointInDeadzoneBlock: { p in deadzone.inscribedCircleContains(p) }
             ))
         }
 

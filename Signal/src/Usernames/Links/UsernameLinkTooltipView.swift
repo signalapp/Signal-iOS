@@ -8,16 +8,16 @@ import SignalUI
 
 class UsernameLinkTooltipView: TooltipView {
 
-    private let hSpacing: CGFloat
+    private let hInsetFromReferenceView: CGFloat
     private let onDismiss: () -> Void
 
     init(
         fromView: UIView,
         referenceView: UIView,
-        hSpacing: CGFloat,
+        hInsetFromReferenceView: CGFloat,
         onDismiss: @escaping () -> Void
     ) {
-        self.hSpacing = hSpacing
+        self.hInsetFromReferenceView = hInsetFromReferenceView
         self.onDismiss = onDismiss
 
         super.init(
@@ -125,7 +125,7 @@ class UsernameLinkTooltipView: TooltipView {
     }
 
     override var bubbleHSpacing: CGFloat {
-        hSpacing
+        hInsetFromReferenceView
     }
 
     override var bubbleColor: UIColor {

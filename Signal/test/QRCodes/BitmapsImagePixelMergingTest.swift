@@ -25,7 +25,7 @@ private struct TestCase {
     let deadzone: Bitmaps.Rect
     let gridDrawing: Bitmaps.GridDrawing
 
-    static let all: [TestCase] = [.one, .two, .three]
+    static let all: [TestCase] = [.one, .two, .three, .four]
 
     /// 3x4, all filled in, no dead zone.
     static let one: TestCase = TestCase(
@@ -52,7 +52,7 @@ private struct TestCase {
             .xxx, .xxx, .xxx, .xxx, .xxx, .xxx,
             .xxx, .xxx, .xxx, .xxx, .xxx, .ooo
         ]),
-        deadzone: Bitmaps.Rect(x: 2, y: 2, width: 2, height: 2),
+        deadzone: Bitmaps.Rect(x: 1, y: 1, width: 4, height: 4),
         gridDrawing: Bitmaps.GridDrawing(width: 6, height: 6, segments: [
             .horizontal(x: 0, y: 0, length: 6),
             .horizontal(x: 0, y: 1, length: 4),
@@ -75,7 +75,18 @@ private struct TestCase {
         ])
     )
 
-    /// 7x7, fully filled in, with a central deadzone.
+    /// 7x7, fully filled in, with a small central deadzone.
+    ///
+    /// Desired result:
+    ///
+    ///  .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx,
+    ///  .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx,
+    ///  .xxx, .xxx, .xxx, .ooo, .xxx, .xxx, .xxx,
+    ///  .xxx, .xxx, .ooo, .ooo, .ooo, .xxx, .xxx,
+    ///  .xxx, .xxx, .xxx, .ooo, .xxx, .xxx, .xxx,
+    ///  .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx,
+    ///  .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx
+    ///
     static let three: TestCase = TestCase(
         image: Bitmaps.Image(width: 7, height: 7, bytes: [
             .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx,
@@ -90,23 +101,74 @@ private struct TestCase {
         gridDrawing: Bitmaps.GridDrawing(width: 7, height: 7, segments: [
             .horizontal(x: 0, y: 0, length: 7),
             .horizontal(x: 0, y: 1, length: 7),
-            .horizontal(x: 0, y: 2, length: 2),
-            .horizontal(x: 5, y: 2, length: 2),
+            .horizontal(x: 0, y: 2, length: 3),
+            .horizontal(x: 4, y: 2, length: 3),
             .horizontal(x: 0, y: 3, length: 2),
             .horizontal(x: 5, y: 3, length: 2),
-            .horizontal(x: 0, y: 4, length: 2),
-            .horizontal(x: 5, y: 4, length: 2),
+            .horizontal(x: 0, y: 4, length: 3),
+            .horizontal(x: 4, y: 4, length: 3),
             .horizontal(x: 0, y: 5, length: 7),
             .horizontal(x: 0, y: 6, length: 7),
             .vertical(x: 0, y: 0, length: 7),
             .vertical(x: 1, y: 0, length: 7),
-            .vertical(x: 2, y: 0, length: 2),
-            .vertical(x: 2, y: 5, length: 2),
+            .vertical(x: 2, y: 0, length: 3),
+            .vertical(x: 2, y: 4, length: 3),
             .vertical(x: 3, y: 0, length: 2),
             .vertical(x: 3, y: 5, length: 2),
+            .vertical(x: 4, y: 0, length: 3),
+            .vertical(x: 4, y: 4, length: 3),
+            .vertical(x: 5, y: 0, length: 7),
+            .vertical(x: 6, y: 0, length: 7)
+        ])
+    )
+
+    /// 7x7, fully filled in, with a large central deadzone.
+    ///
+    /// Desired result:
+    ///
+    ///  .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx,
+    ///  .xxx, .xxx, .xxx, .ooo, .xxx, .xxx, .xxx,
+    ///  .xxx, .xxx, .ooo, .ooo, .ooo, .xxx, .xxx,
+    ///  .xxx, .ooo, .ooo, .ooo, .ooo, .ooo, .xxx,
+    ///  .xxx, .xxx, .ooo, .ooo, .ooo, .xxx, .xxx,
+    ///  .xxx, .xxx, .xxx, .ooo, .xxx, .xxx, .xxx,
+    ///  .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx
+    ///
+    static let four: TestCase = TestCase(
+        image: Bitmaps.Image(width: 7, height: 7, bytes: [
+            .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx,
+            .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx,
+            .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx,
+            .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx,
+            .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx,
+            .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx,
+            .xxx, .xxx, .xxx, .xxx, .xxx, .xxx, .xxx
+        ]),
+        deadzone: Bitmaps.Rect(x: 1, y: 1, width: 5, height: 5),
+        gridDrawing: Bitmaps.GridDrawing(width: 7, height: 7, segments: [
+            .horizontal(x: 0, y: 0, length: 7),
+            .horizontal(x: 0, y: 1, length: 3),
+            .horizontal(x: 4, y: 1, length: 3),
+            .horizontal(x: 0, y: 2, length: 2),
+            .horizontal(x: 5, y: 2, length: 2),
+            .horizontal(x: 0, y: 3, length: 1),
+            .horizontal(x: 6, y: 3, length: 1),
+            .horizontal(x: 0, y: 4, length: 2),
+            .horizontal(x: 5, y: 4, length: 2),
+            .horizontal(x: 0, y: 5, length: 3),
+            .horizontal(x: 4, y: 5, length: 3),
+            .horizontal(x: 0, y: 6, length: 7),
+            .vertical(x: 0, y: 0, length: 7),
+            .vertical(x: 1, y: 0, length: 3),
+            .vertical(x: 1, y: 4, length: 3),
+            .vertical(x: 2, y: 0, length: 2),
+            .vertical(x: 2, y: 5, length: 2),
+            .vertical(x: 3, y: 0, length: 1),
+            .vertical(x: 3, y: 6, length: 1),
             .vertical(x: 4, y: 0, length: 2),
             .vertical(x: 4, y: 5, length: 2),
-            .vertical(x: 5, y: 0, length: 7),
+            .vertical(x: 5, y: 0, length: 3),
+            .vertical(x: 5, y: 4, length: 3),
             .vertical(x: 6, y: 0, length: 7)
         ])
     )
