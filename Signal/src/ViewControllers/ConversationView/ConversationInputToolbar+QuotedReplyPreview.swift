@@ -143,6 +143,12 @@ private class QuotedMessageSnippetView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    deinit {
+        if let quotedTextLabelSpoilerAnimator {
+            spoilerState.animator.removeViewAnimator(quotedTextLabelSpoilerAnimator)
+        }
+    }
+
     // MARK: Layout
 
     private lazy var quotedAuthorLabel: UILabel = {
@@ -172,16 +178,34 @@ private class QuotedMessageSnippetView: UIView {
         return label
     }()
 
+    private var quotedTextLabelSpoilerAnimator: SpoilerableLabelAnimator?
+
     private lazy var quotedTextLabel: UILabel = {
+        let label = UILabel()
+
         let attributedText: NSAttributedString
         if let displayableQuotedText, !displayableQuotedText.displayTextValue.isEmpty {
+            let config = HydratedMessageBody.DisplayConfiguration.quotedReply(
+                font: Layout.quotedTextFont,
+                textColor: .fixed(conversationStyle.quotedReplyTextColor())
+            )
             attributedText = styleDisplayableQuotedText(
                 displayableQuotedText,
-                font: Layout.quotedTextFont,
-                textColor: conversationStyle.quotedReplyTextColor(),
+                config: config,
                 quotedReplyModel: quotedMessage,
                 spoilerState: spoilerState
             )
+            let animator = SpoilerableLabelAnimator(label: label)
+            self.quotedTextLabelSpoilerAnimator = animator
+            var spoilerConfig = SpoilerableTextConfig.Builder(isViewVisible: true)
+            spoilerConfig.text = displayableQuotedText.displayTextValue
+            spoilerConfig.spoilerConfig = config.style
+            spoilerConfig.animator = self.spoilerState.animator
+            if let config = spoilerConfig.build() {
+                animator.updateAnimationState(config)
+            } else {
+                owsFailDebug("Unable to build spoiler animator")
+            }
         } else if let fileTypeForSnippet {
             attributedText = NSAttributedString(
                 string: fileTypeForSnippet,
@@ -221,8 +245,6 @@ private class QuotedMessageSnippetView: UIView {
                 ]
             )
         }
-
-        let label = UILabel()
         label.numberOfLines = 1
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = displayableQuotedText?.displayTextNaturalAlignment ?? .natural
@@ -526,14 +548,13 @@ private class QuotedMessageSnippetView: UIView {
 
     private func styleDisplayableQuotedText(
         _ displayableQuotedText: DisplayableText,
-        font: UIFont,
-        textColor: UIColor,
+        config: HydratedMessageBody.DisplayConfiguration,
         quotedReplyModel: QuotedReplyModel,
         spoilerState: SpoilerRenderState
     ) -> NSAttributedString {
         let baseAttributes: [NSAttributedString.Key: Any] = [
-            .font: font,
-            .foregroundColor: textColor
+            .font: config.baseFont,
+            .foregroundColor: config.baseTextColor
         ]
         switch displayableQuotedText.displayTextValue {
         case .text(let text):
@@ -544,9 +565,7 @@ private class QuotedMessageSnippetView: UIView {
             return mutable
         case .messageBody(let messageBody):
             return messageBody.asAttributedStringForDisplay(
-                config: .quotedReply(
-                    font: font,
-                    textColor: .fixed(textColor)),
+                config: config,
                 isDarkThemeEnabled: Theme.isDarkThemeEnabled
             )
         }

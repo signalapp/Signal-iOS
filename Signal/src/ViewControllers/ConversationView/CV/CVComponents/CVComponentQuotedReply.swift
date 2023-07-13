@@ -97,7 +97,9 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
             quotedMessageView
         }
 
-        public func setIsCellVisible(_ isCellVisible: Bool) {}
+        public func setIsCellVisible(_ isCellVisible: Bool) {
+            quotedMessageView.setIsCellVisible(isCellVisible)
+        }
 
         public func reset() {
             quotedMessageView.reset()

@@ -32,7 +32,7 @@ public class ChatListCell: UITableViewCell {
     public var isCellVisible = false {
         didSet {
             updateTypingIndicatorState()
-            updateSpoilerAnimationState()
+            spoilerConfigBuilder.isViewVisible = isCellVisible
         }
     }
 
@@ -326,7 +326,6 @@ public class ChatListCell: UITableViewCell {
         self.contentView.preservesSuperviewLayoutMargins = false
 
         self.cellContentToken = cellContentToken
-        self.spoilerAnimator = spoilerAnimator
 
         let shouldShowMuteIndicator = cellContentToken.shouldShowMuteIndicator
 
@@ -349,7 +348,9 @@ public class ChatListCell: UITableViewCell {
         let snippetLineHeight = measurements.snippetLineHeight
 
         snippetLabelConfig.applyForRendering(label: snippetLabel)
-        updateSpoilerAnimationState()
+        spoilerConfigBuilder.text = snippetLabelConfig.text
+        spoilerConfigBuilder.spoilerConfig = snippetLabelConfig.displayConfig.style
+        spoilerConfigBuilder.animator = spoilerAnimator
 
         owsAssertDebug(avatarView == nil, "ChatListCell.configure without prior reset called")
         avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .noteToSelf, useAutolayout: true)
@@ -899,48 +900,24 @@ public class ChatListCell: UITableViewCell {
 
         cellContentToken = nil
         typingIndicatorView.resetForReuse()
-        updateSpoilerAnimationState()
+        spoilerConfigBuilder.text = nil
 
         NotificationCenter.default.removeObserver(self)
     }
 
     // MARK: - Spoiler animation
 
-    private var spoilerAnimator: SpoilerAnimator?
-    private var snippetLabelSpoilerAnimator: SpoilerableLabelAnimator?
-
-    private func updateSpoilerAnimationState() {
-        let wantsToAnimate: Bool
-        var messageBody: HydratedMessageBody?
-        if isCellVisible, let snippetConfig = self.cellContentToken?.configs.snippetLabelConfig {
-            switch snippetConfig.text {
-            case .text, .attributedText:
-                wantsToAnimate = false
-            case .messageBody(let body):
-                wantsToAnimate = body.hasSpoilerRangesToAnimate
-                messageBody = body
-                snippetLabelSpoilerAnimator?.messageBody = body
-                snippetLabelSpoilerAnimator?.spoilerConfig = snippetConfig.displayConfig.style
-            }
-        } else {
-            wantsToAnimate = false
-        }
-
-        let isAnimating = snippetLabelSpoilerAnimator != nil
-        guard wantsToAnimate != isAnimating, let spoilerAnimator else {
-            return
-        }
-        if let snippetLabelSpoilerAnimator {
-            // We are stopping animations.
-            spoilerAnimator.removeViewAnimator(snippetLabelSpoilerAnimator)
-            self.snippetLabelSpoilerAnimator = nil
-        } else if let spoilerConfig = self.cellContentToken?.configs.snippetLabelConfig.displayConfig.style {
-            let snippetLabelSpoilerAnimator = SpoilerableLabelAnimator(label: snippetLabel, spoilerConfig: spoilerConfig)
-            snippetLabelSpoilerAnimator.messageBody = messageBody
-            spoilerAnimator.addViewAnimator(snippetLabelSpoilerAnimator)
-            self.snippetLabelSpoilerAnimator = snippetLabelSpoilerAnimator
+    private lazy var spoilerConfigBuilder = SpoilerableTextConfig.Builder(isViewVisible: isCellVisible) {
+        didSet {
+            snippetLabelSpoilerAnimator.updateAnimationState(spoilerConfigBuilder)
         }
     }
+
+    private lazy var snippetLabelSpoilerAnimator: SpoilerableLabelAnimator = {
+        let animator = SpoilerableLabelAnimator(label: snippetLabel)
+        animator.updateAnimationState(spoilerConfigBuilder)
+        return animator
+    }()
 
     // MARK: - Name
 

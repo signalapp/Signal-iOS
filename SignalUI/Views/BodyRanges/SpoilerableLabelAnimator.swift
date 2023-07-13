@@ -7,27 +7,121 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
-public class SpoilerableLabelAnimator: SpoilerableViewAnimator {
+public struct SpoilerableTextConfig {
+    public let text: CVTextValue?
+    public let spoilerConfig: StyleDisplayConfiguration
+    public let animator: SpoilerAnimator
+    public let isViewVisible: Bool
+
+    public struct Builder {
+        public var text: CVTextValue??
+        public var spoilerConfig: StyleDisplayConfiguration?
+        public var animator: SpoilerAnimator?
+        public var isViewVisible: Bool
+
+        public init(isViewVisible: Bool) {
+            self.isViewVisible = isViewVisible
+            text = .none
+            spoilerConfig = nil
+            animator = nil
+        }
+
+        public func build() -> SpoilerableTextConfig? {
+            let unwrappedText: CVTextValue?
+            switch text {
+            case .none:
+                return nil
+            case .some(let wrapped):
+                unwrappedText = wrapped
+            }
+            guard let spoilerConfig, let animator else {
+                return nil
+            }
+            return .init(
+                text: unwrappedText,
+                spoilerConfig: spoilerConfig,
+                animator: animator,
+                isViewVisible: isViewVisible
+            )
+        }
+    }
+
+    private init(
+        text: CVTextValue?,
+        spoilerConfig: StyleDisplayConfiguration,
+        animator: SpoilerAnimator,
+        isViewVisible: Bool
+    ) {
+        self.text = text
+        self.spoilerConfig = spoilerConfig
+        self.animator = animator
+        self.isViewVisible = isViewVisible
+    }
+}
+
+public class SpoilerableLabelAnimator {
 
     private weak var label: UILabel?
-    public var messageBody: HydratedMessageBody?
-    public var spoilerConfig: StyleDisplayConfiguration
+    private var text: CVTextValue?
+    private var spoilerConfig: StyleDisplayConfiguration?
 
-    public init(label: UILabel, spoilerConfig: StyleDisplayConfiguration) {
+    public init(label: UILabel) {
         self.label = label
-        self.spoilerConfig = spoilerConfig
     }
+
+    private var isAnimating = false
+
+    public func updateAnimationState(_ configBuilder: SpoilerableTextConfig.Builder) {
+        guard let config = configBuilder.build() else {
+            return
+        }
+        updateAnimationState(config)
+    }
+
+    public func updateAnimationState(_ config: SpoilerableTextConfig) {
+        self.text = config.text
+        self.spoilerConfig = config.spoilerConfig
+
+        let wantsToAnimate: Bool
+        if config.isViewVisible, let text = config.text {
+            switch text {
+            case .text, .attributedText:
+                wantsToAnimate = false
+            case .messageBody(let body):
+                wantsToAnimate = body.hasSpoilerRangesToAnimate
+            }
+        } else {
+            wantsToAnimate = false
+        }
+
+        guard wantsToAnimate != isAnimating else {
+            return
+        }
+        if wantsToAnimate {
+            config.animator.addViewAnimator(self)
+            self.isAnimating = true
+        } else {
+            // We are stopping animations.
+            config.animator.removeViewAnimator(self)
+            self.isAnimating = false
+        }
+    }
+}
+
+// MARK: - SpoilerableViewAnimator
+
+extension SpoilerableLabelAnimator: SpoilerableViewAnimator {
 
     public var spoilerableView: UIView? { label }
 
-    public var spoilerColor: UIColor { spoilerConfig.textColor.forCurrentTheme }
+    public var spoilerColor: UIColor { spoilerConfig?.textColor.forCurrentTheme ?? .clear }
 
     public func spoilerFrames() -> [CGRect] {
-        guard let messageBody, let label else {
+        guard let text, let label, let spoilerConfig else {
             return []
         }
         return Self.spoilerFrames(
-            messageBody: messageBody,
+            text: text,
             spoilerConfig: spoilerConfig,
             label: label,
             labelBounds: label.bounds.size
@@ -36,8 +130,8 @@ public class SpoilerableLabelAnimator: SpoilerableViewAnimator {
 
     public var spoilerFramesCacheKey: Int {
         var hasher = Hasher()
-        hasher.combine(messageBody)
-        spoilerConfig.hashForSpoilerFrames(into: &hasher)
+        hasher.combine(text)
+        spoilerConfig?.hashForSpoilerFrames(into: &hasher)
         hasher.combine(label?.bounds.width)
         hasher.combine(label?.bounds.height)
         return hasher.finalize()
@@ -45,13 +139,18 @@ public class SpoilerableLabelAnimator: SpoilerableViewAnimator {
 
     // Every input here should be represented in the cache key above.
     private static func spoilerFrames(
-        messageBody: HydratedMessageBody,
+        text: CVTextValue,
         spoilerConfig: StyleDisplayConfiguration,
         label: UILabel,
         labelBounds: CGSize
     ) -> [CGRect] {
-        let spoilerRanges = messageBody.spoilerRangesForAnimation(config: spoilerConfig)
-        let frames = label.boundingRects(ofCharacterRanges: spoilerRanges)
-        return frames
+        switch text {
+        case .text, .attributedText:
+            return []
+        case .messageBody(let messageBody):
+            let spoilerRanges = messageBody.spoilerRangesForAnimation(config: spoilerConfig)
+            let frames = label.boundingRects(ofCharacterRanges: spoilerRanges)
+            return frames
+        }
     }
 }

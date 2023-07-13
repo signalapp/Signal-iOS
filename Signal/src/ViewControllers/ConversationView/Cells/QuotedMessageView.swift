@@ -487,6 +487,9 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         let quotedTextLabelConfig = configurator.quotedTextLabelConfig
         quotedTextLabelConfig.applyForRendering(label: quotedTextLabel)
+        quotedTextSpoilerConfigBuilder.text = quotedTextLabelConfig.text
+        quotedTextSpoilerConfigBuilder.spoilerConfig = quotedTextLabelConfig.displayConfig.style
+        quotedTextSpoilerConfigBuilder.animator = componentDelegate.spoilerState.animator
         innerVStackSubviews.append(quotedTextLabel)
 
         innerVStack.configure(config: configurator.innerVStackConfig,
@@ -715,6 +718,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                        subviews: outerStackViews)
     }
 
+    public func setIsCellVisible(_ isCellVisible: Bool) {
+        quotedTextSpoilerConfigBuilder.isViewVisible = isCellVisible
+    }
+
     // MARK: - Measurement
 
     private static let measurementKey_outerStack = "QuotedMessageView.measurementKey_outerStack"
@@ -844,6 +851,20 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                                             maxWidth: maxWidth)
         return outerStackMeasurement.measuredSize
     }
+
+    // MARK: - Spoiler Animations
+
+    private lazy var quotedTextSpoilerConfigBuilder = SpoilerableTextConfig.Builder(isViewVisible: false) {
+        didSet {
+            quotedTextLabelSpoilerAnimator.updateAnimationState(quotedTextSpoilerConfigBuilder)
+        }
+    }
+
+    private lazy var quotedTextLabelSpoilerAnimator: SpoilerableLabelAnimator = {
+        let animator = SpoilerableLabelAnimator(label: quotedTextLabel)
+        animator.updateAnimationState(quotedTextSpoilerConfigBuilder)
+        return animator
+    }()
 
     // MARK: -
 
