@@ -502,12 +502,19 @@ public class HydratedMessageBody: Equatable, Hashable {
     // MARK: - Adding prefix
 
     public func addingPrefix(_ prefix: String) -> HydratedMessageBody {
-        let offset = (prefix as NSString).length
+        return addingStyledPrefix(.init(plaintext: prefix))
+    }
+
+    public func addingStyledPrefix(_ prefix: StyleOnlyMessageBody) -> HydratedMessageBody {
+        let offset = (prefix.text as NSString).length
+        let prefixStyles: [NSRangedValue<StyleAttribute>] = prefix.collapsedStyles.map {
+            return .init(.fromCollapsedStyle($0.value), range: $0.range)
+        }
         return HydratedMessageBody(
-            hydratedText: prefix + hydratedText,
+            hydratedText: prefix.text + hydratedText,
             unhydratedMentions: unhydratedMentions.map { $0.offset(by: offset) },
             mentionAttributes: mentionAttributes.map { $0.offset(by: offset) },
-            styleAttributes: styleAttributes.map { $0.offset(by: offset) }
+            styleAttributes: prefixStyles + styleAttributes.map { $0.offset(by: offset) }
         )
     }
 

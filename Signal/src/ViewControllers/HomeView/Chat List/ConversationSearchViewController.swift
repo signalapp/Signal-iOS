@@ -26,6 +26,8 @@ public class ConversationSearchViewController: UITableViewController {
     private var lastReloadDate: Date?
     private let cellContentCache = LRUCache<String, CLVCellContentToken>(maxSize: 256)
 
+    private lazy var spoilerAnimator = SpoilerAnimator()
+
     public var searchText = "" {
         didSet {
             AssertIsOnMainThread()
@@ -224,6 +226,32 @@ public class ConversationSearchViewController: UITableViewController {
         }
     }
 
+    public override func tableView(
+        _ tableView: UITableView,
+        willDisplay cell: UITableViewCell,
+        forRowAt indexPath: IndexPath
+    ) {
+        AssertIsOnMainThread()
+
+        guard let cell = cell as? ChatListCell else {
+            return
+        }
+        cell.isCellVisible = true
+    }
+
+    public override func tableView(
+        _ tableView: UITableView,
+        didEndDisplaying cell: UITableViewCell,
+        forRowAt indexPath: IndexPath
+    ) {
+        AssertIsOnMainThread()
+
+        guard let cell = cell as? ChatListCell else {
+            return
+        }
+        cell.isCellVisible = false
+    }
+
     // MARK: UITableViewDataSource
 
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -272,7 +300,7 @@ public class ConversationSearchViewController: UITableViewController {
 
         // If we have an existing CLVCellContentToken, use it.
         // Cell measurement/arrangement is expensive.
-        let cacheKey = "\(configuration.thread.threadRecord.uniqueId).\(configuration.overrideSnippet?.hash ?? 0)"
+        let cacheKey = "\(configuration.thread.threadRecord.uniqueId).\(configuration.overrideSnippet?.text.hashValue ?? 0)"
         if useCache {
             if let cellContentToken = cellContentCache.get(key: cacheKey) {
                 return cellContentToken
@@ -330,7 +358,7 @@ public class ConversationSearchViewController: UITableViewController {
                 return UITableViewCell()
             }
             let cellContentToken = cellContentToken(forConfiguration: configuration)
-            cell.configure(cellContentToken: cellContentToken)
+            cell.configure(cellContentToken: cellContentToken, spoilerAnimator: spoilerAnimator)
             return cell
         }
     }
@@ -364,11 +392,17 @@ public class ConversationSearchViewController: UITableViewController {
                 owsFailDebug("searchResult was unexpectedly nil")
                 return nil
             }
+            let overrideSnippet: ChatListCell.Configuration.OverrideSnippet?
+            if let snippet = searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle) {
+                overrideSnippet = .init(text: .attributedText(snippet), config: .conversationListSearchResultSnippet())
+            } else {
+                overrideSnippet = nil
+            }
             return ChatListCell.Configuration(
                 thread: searchResult.thread,
                 lastReloadDate: lastReloadDate,
                 isBlocked: isBlocked(thread: searchResult.thread),
-                overrideSnippet: searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle),
+                overrideSnippet: overrideSnippet,
                 overrideDate: nil
             )
         case .contacts:
@@ -379,7 +413,6 @@ public class ConversationSearchViewController: UITableViewController {
                 owsFailDebug("searchResult was unexpectedly nil")
                 return nil
             }
-            var overrideSnippet = NSAttributedString()
             var overrideDate: Date?
             if searchResult.messageId != nil {
                 if let messageDate = searchResult.messageDate {
@@ -387,24 +420,12 @@ public class ConversationSearchViewController: UITableViewController {
                 } else {
                     owsFailDebug("message search result is missing message timestamp")
                 }
-
-                // Note that we only use the snippet for message results,
-                // not conversation results. CoversationListCell will generate
-                // a snippet for conversations that reflects the latest
-                // contents.
-                switch searchResult.snippet {
-                case .none:
-                    owsFailDebug("message search result is missing message snippet")
-                case .text(let text):
-                    overrideSnippet = NSAttributedString(string: text)
-                case .attributedText(let attrString):
-                    overrideSnippet = attrString
-                case .messageBody(let messageBody):
-                    overrideSnippet = messageBody.asAttributedStringForDisplay(
-                        config: .conversationListSearchResultSnippet(),
-                        isDarkThemeEnabled: Theme.isDarkThemeEnabled
-                    )
-                }
+            }
+            let overrideSnippet: ChatListCell.Configuration.OverrideSnippet?
+            if let snippet = searchResult.snippet {
+                overrideSnippet = .init(text: snippet, config: .conversationListSearchResultSnippet())
+            } else {
+                overrideSnippet = nil
             }
             return ChatListCell.Configuration(
                 thread: searchResult.thread,

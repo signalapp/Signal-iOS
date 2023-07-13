@@ -32,6 +32,14 @@ public class StyleOnlyMessageBody: NSObject, Codable {
         self.init(text: text, collapsedStyles: bodyRanges.collapsedStyles)
     }
 
+    public convenience init(text: String, style: MessageBodyRanges.SingleStyle) {
+        let protoBuilder = SSKProtoBodyRange.builder()
+        protoBuilder.setStart(0)
+        protoBuilder.setLength(UInt32((text as NSString).length))
+        protoBuilder.setStyle(style.asProtoStyle)
+        self.init(text: text, protos: [protoBuilder.buildInfallibly()])
+    }
+
     public convenience init(plaintext: String) {
         self.init(text: plaintext, collapsedStyles: [])
     }

@@ -470,9 +470,11 @@ extension CLVTableDataSource: UITableViewDelegate {
         }
     }
 
-    public func tableView(_ tableView: UITableView,
-                          willDisplay cell: UITableViewCell,
-                          forRowAt indexPath: IndexPath) {
+    public func tableView(
+        _ tableView: UITableView,
+        willDisplay cell: UITableViewCell,
+        forRowAt indexPath: IndexPath
+    ) {
         AssertIsOnMainThread()
 
         guard let cell = cell as? ChatListCell else {
@@ -483,9 +485,11 @@ extension CLVTableDataSource: UITableViewDelegate {
         preloadCellsIfNecessary()
     }
 
-    public func tableView(_ tableView: UITableView,
-                          didEndDisplaying cell: UITableViewCell,
-                          forRowAt indexPath: IndexPath) {
+    public func tableView(
+        _ tableView: UITableView,
+        didEndDisplaying cell: UITableViewCell,
+        forRowAt indexPath: IndexPath
+    ) {
         AssertIsOnMainThread()
 
         guard let cell = cell as? ChatListCell else {
@@ -612,7 +616,7 @@ extension CLVTableDataSource: UITableViewDataSource {
         let configuration = cellConfigurationAndContentToken.configuration
         let contentToken = cellConfigurationAndContentToken.contentToken
 
-        cell.configure(cellContentToken: contentToken)
+        cell.configure(cellContentToken: contentToken, spoilerAnimator: viewState.spoilerAnimator)
         let thread = configuration.thread.threadRecord
         let cellName: String = {
             if let groupThread = thread as? TSGroupThread {
@@ -788,7 +792,7 @@ extension CLVTableDataSource {
         let cellWasVisible = homeCell.isCellVisible
         homeCell.reset()
         // reduces flicker effects for already visible cells
-        homeCell.configure(cellContentToken: configToken, asyncAvatarLoadingAllowed: false)
+        homeCell.configure(cellContentToken: configToken, spoilerAnimator: viewState.spoilerAnimator, asyncAvatarLoadingAllowed: false)
         homeCell.isCellVisible = cellWasVisible
         return true
     }
