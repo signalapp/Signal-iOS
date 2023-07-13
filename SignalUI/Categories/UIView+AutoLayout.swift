@@ -3,9 +3,22 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import PureLayout
 import SignalServiceKit
 
 public extension UIView {
+
+    // MARK: Superview edges
+
+    @discardableResult
+    func autoPinEdge(toSuperviewEdge edge: ALEdge, relation: NSLayoutConstraint.Relation) -> NSLayoutConstraint {
+        return autoPinEdge(toSuperviewEdge: edge, withInset: 0, relation: relation)
+    }
+
+    @discardableResult
+    func autoPinEdges(toSuperviewEdgesExcludingEdge edge: ALEdge) -> [NSLayoutConstraint] {
+        return autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: edge)
+    }
 
     // MARK: Horizontal edges to superview margins
 

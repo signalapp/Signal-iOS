@@ -108,7 +108,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             view.layer.borderWidth = 2
             view.layer.borderColor = qrCodeColor.paddingBorder.cgColor
             view.layer.cornerRadius = 12
-            view.layoutMargins = UIEdgeInsets(margin: 10)
+            view.layoutMargins = UIEdgeInsets(margin: 16)
 
             if let qrCodeImage {
                 view.setQR(

@@ -114,7 +114,7 @@ class QRCodeView: UIView {
         if useCircularWrapper {
             qrCodeImageView.autoMatch(.height, to: .height, of: qrCodeWrapper, withMultiplier: 0.6)
         } else {
-            qrCodeImageView.autoPinEdgesToSuperviewMargins()
+            qrCodeImageView.autoPinEdgesToSuperviewEdges()
         }
 
         qrCodeView = qrCodeImageView

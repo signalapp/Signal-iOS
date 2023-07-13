@@ -40,12 +40,15 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
 
     // MARK: - Table contents
 
-    private func buildQRCodeWrapperView() -> UIView {
+    /// Build a view containing the QR code, username, and colored background.
+    ///
+    /// This view has a fixed width, built around the fixed-width QR code.
+    private func buildQRCodeView() -> UIView {
         let qrCodeImageView: UIImageView = {
             let imageView = UIImageView(image: qrCodeTemplateImage)
 
             imageView.tintColor = currentColor.foreground
-            imageView.autoPinToSquareAspectRatio()
+            imageView.autoSetDimensions(to: .square(184))
 
             return imageView
         }()
@@ -57,7 +60,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
             view.layer.borderColor = currentColor.paddingBorder.cgColor
             view.layer.borderWidth = 2
             view.layer.cornerRadius = 12
-            view.layoutMargins = UIEdgeInsets(margin: 18)
+            view.layoutMargins = UIEdgeInsets(margin: 16)
 
             view.addSubview(qrCodeImageView)
             qrCodeImageView.autoPinEdgesToSuperviewMargins()
@@ -78,25 +81,21 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
             return label
         }()
 
-        let wrapper = UIView()
-        wrapper.backgroundColor = currentColor.background
-        wrapper.layer.cornerRadius = 24
-        wrapper.layoutMargins = UIEdgeInsets(hMargin: 40, vMargin: 32)
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = currentColor.background
+        backgroundView.layer.cornerRadius = 24
+        backgroundView.layoutMargins = UIEdgeInsets(hMargin: 40, vMargin: 32)
 
-        wrapper.addSubview(qrCodePaddingView)
-        wrapper.addSubview(usernameLabel)
+        backgroundView.addSubview(qrCodePaddingView)
+        backgroundView.addSubview(usernameLabel)
 
-        qrCodePaddingView.autoPinTopToSuperviewMargin()
-        qrCodePaddingView.autoAlignAxis(toSuperviewAxis: .vertical)
-        qrCodePaddingView.autoSetDimension(.width, toSize: 214)
+        qrCodePaddingView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
 
         qrCodePaddingView.autoPinEdge(.bottom, to: .top, of: usernameLabel, withOffset: -16)
 
-        usernameLabel.autoPinLeadingToSuperviewMargin()
-        usernameLabel.autoPinTrailingToSuperviewMargin()
-        usernameLabel.autoPinBottomToSuperviewMargin()
+        usernameLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
 
-        return wrapper
+        return backgroundView
     }
 
     private func buildColorOptionsView() -> UIView {
@@ -127,23 +126,16 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
             return stack
         }
 
-        let view = UIView()
-
         let topStack = stack(colors: [.blue, .white, .grey, .olive])
         let bottomStack = stack(colors: [.green, .orange, .pink, .purple])
 
+        let view = UIView()
         view.addSubview(topStack)
         view.addSubview(bottomStack)
 
-        topStack.autoPinTopToSuperviewMargin()
-        topStack.autoPinLeadingToSuperviewMargin()
-        topStack.autoPinTrailingToSuperviewMargin()
-
+        topStack.autoPinEdges(toSuperviewEdgesExcludingEdge: .bottom)
         topStack.autoPinEdge(.bottom, to: .top, of: bottomStack, withOffset: -26)
-
-        bottomStack.autoPinLeadingToSuperviewMargin()
-        bottomStack.autoPinTrailingToSuperviewMargin()
-        bottomStack.autoPinBottomToSuperviewMargin()
+        bottomStack.autoPinEdges(toSuperviewEdgesExcludingEdge: .top)
 
         return view
     }
@@ -177,7 +169,20 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
         let section = OWSTableSection(items: [
             .itemWrappingView(
                 viewBlock: { [weak self] in
-                    self?.buildQRCodeWrapperView()
+                    guard let self else { return nil }
+
+                    let qrCodeView = self.buildQRCodeView()
+
+                    // The QR code view has a fixed width, so wrap it in a view
+                    // that can stretch.
+                    let wrapper = UIView()
+                    wrapper.addSubview(qrCodeView)
+
+                    qrCodeView.autoPinEdge(toSuperviewEdge: .top)
+                    qrCodeView.autoPinEdge(toSuperviewEdge: .bottom)
+                    qrCodeView.autoHCenterInSuperview()
+
+                    return wrapper
                 },
                 margins: UIEdgeInsets(top: 20, leading: 32, bottom: 24, trailing: 32)
             ),
@@ -185,7 +190,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
                 viewBlock: { [weak self] in
                     self?.buildColorOptionsView()
                 },
-                margins: UIEdgeInsets(top: 24, leading: 20, bottom: 16, trailing: 20)
+                margins: UIEdgeInsets(top: 24, leading: 36, bottom: 16, trailing: 36)
             )
         ])
 
