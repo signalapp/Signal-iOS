@@ -30,7 +30,7 @@ extension ConversationViewController: BodyRangesTextViewDelegate {
     }
 
     public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
-        return .composing()
+        return .composing(textViewColor: textView.textColor)
     }
 
     public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {

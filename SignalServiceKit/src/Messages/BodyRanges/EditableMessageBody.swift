@@ -172,7 +172,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                 string,
                 attributes: [
                     .font: config.mention.font,
-                    .foregroundColor: config.mention.foregroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+                    .foregroundColor: config.baseTextColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
                 ]
             )
             super.edited(.editedCharacters, range: range, changeInLength: changeInLength)

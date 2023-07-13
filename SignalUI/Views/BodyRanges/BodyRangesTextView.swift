@@ -20,7 +20,7 @@ public protocol BodyRangesTextViewDelegate: UITextViewDelegate {
     func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle
 }
 
-open class BodyRangesTextView: OWSTextView {
+open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
 
     public weak var mentionDelegate: BodyRangesTextViewDelegate? {
         didSet { updateMentionState() }
@@ -154,6 +154,12 @@ open class BodyRangesTextView: OWSTextView {
         }
         set {
             // Ignore setters; this is illegal
+        }
+    }
+
+    public override var textColor: UIColor? {
+        didSet {
+            editableBody.didUpdateTheming()
         }
     }
 
@@ -670,11 +676,8 @@ open class BodyRangesTextView: OWSTextView {
         newTextContainerInset.bottom = newTextContainerInset.top - 1
         textContainerInset = newTextContainerInset
     }
-}
 
-// MARK: - EditableMessageBodyDelegate
-
-extension BodyRangesTextView: EditableMessageBodyDelegate {
+    // MARK: - EditableMessageBodyDelegate
 
     public func editableMessageBodyDidRequestNewSelectedRange(_ newSelectedRange: NSRange) {
         self.selectedRange = newSelectedRange
@@ -697,7 +700,7 @@ extension BodyRangesTextView: EditableMessageBodyDelegate {
     }
 
     public func editableMessageBodyDisplayConfig() -> HydratedMessageBody.DisplayConfiguration {
-        return mentionDelegate?.textViewDisplayConfiguration(self) ?? .composing()
+        return mentionDelegate?.textViewDisplayConfiguration(self) ?? .composing(textViewColor: self.textColor)
     }
 
     public func isEditableMessageBodyDarkThemeEnabled() -> Bool {

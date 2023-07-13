@@ -41,10 +41,18 @@ public extension HydratedMessageBody.DisplayConfiguration {
         )
     }
 
-    static func composing() -> Self {
+    static func composing(
+        textViewColor: UIColor?
+    ) -> Self {
+        let baseTextColor: ThemedColor
+        if let textViewColor {
+            baseTextColor = .fixed(textViewColor)
+        } else {
+            baseTextColor = ConversationStyle.bubbleTextColorIncomingThemed
+        }
         return .init(
             baseFont: .defaultBaseFont,
-            baseTextColor: ConversationStyle.bubbleTextColorIncomingThemed,
+            baseTextColor: baseTextColor,
             mentionBackgroundColor: .incomingMessageBubbleMentionBg,
             revealedSpoilerBgColor: .incomingMessageBubbleMentionBg,
             revealAllSpoilers: true
