@@ -367,24 +367,36 @@ class AppSettingsViewController: OWSTableViewController2 {
     private func profileCell() -> UITableViewCell {
         let cell = OWSTableItem.newCell()
 
+        let avatarImageView = profileCellAvatarImageView()
+        let infoStack = profileCellProfileInfoStack()
+
+        cell.contentView.addSubview(avatarImageView)
+        cell.contentView.addSubview(infoStack)
+
+        avatarImageView.autoPinLeadingToSuperviewMargin()
+        avatarImageView.autoPinHeightToSuperviewMargins(relation: .lessThanOrEqual)
+        avatarImageView.autoVCenterInSuperview()
+
+        avatarImageView.autoPinTrailing(toLeadingEdgeOf: infoStack, offset: 12)
+
+        infoStack.autoPinHeightToSuperviewMargins(relation: .lessThanOrEqual)
+        infoStack.autoVCenterInSuperview()
+        infoStack.autoPinTrailingToSuperviewMargin()
+
         if let usernameLinkButton = profileCellUsernameLinkButton() {
             cell.accessoryView = usernameLinkButton
         } else {
             cell.accessoryType = .disclosureIndicator
         }
 
-        let hStackView = UIStackView()
-        hStackView.axis = .horizontal
-        hStackView.spacing = 12
+        return cell
+    }
 
-        cell.contentView.addSubview(hStackView)
-        hStackView.autoPinEdgesToSuperviewMargins()
-
-        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
-
+    private func profileCellAvatarImageView() -> UIView {
         let avatarImageView = ConversationAvatarView(
             sizeClass: .sixtyFour,
-            localUserDisplayMode: .asUser)
+            localUserDisplayMode: .asUser
+        )
 
         if let localAddress = tsAccountManager.localAddress {
             avatarImageView.updateWithSneakyTransactionIfNecessary { config in
@@ -392,15 +404,19 @@ class AppSettingsViewController: OWSTableViewController2 {
             }
         }
 
-        hStackView.addArrangedSubview(avatarImageView)
+        return avatarImageView
+    }
 
-        let vStackView = UIStackView()
-        vStackView.axis = .vertical
-        vStackView.spacing = 0
-        hStackView.addArrangedSubview(vStackView)
+    /// A view presenting quick info about the user's profile.
+    private func profileCellProfileInfoStack() -> UIView {
+        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
+
+        let profileInfoStack = UIStackView()
+        profileInfoStack.axis = .vertical
+        profileInfoStack.spacing = 0
 
         let nameLabel = UILabel()
-        vStackView.addArrangedSubview(nameLabel)
+        profileInfoStack.addArrangedSubview(nameLabel)
         nameLabel.font = UIFont.dynamicTypeTitle2Clamped.medium()
         if let fullName = snapshot.fullName, !fullName.isEmpty {
             nameLabel.text = fullName
@@ -426,7 +442,7 @@ class AppSettingsViewController: OWSTableViewController2 {
             containerView.addSubview(label)
             label.autoPinEdgesToSuperviewMargins()
 
-            vStackView.addArrangedSubview(containerView)
+            profileInfoStack.addArrangedSubview(containerView)
         }
 
         addSubtitleLabel(text: OWSUserProfile.bioForDisplay(bio: snapshot.bio, bioEmoji: snapshot.bioEmoji))
@@ -440,13 +456,7 @@ class AppSettingsViewController: OWSTableViewController2 {
             owsFailDebug("Missing local number")
         }
 
-        let topSpacer = UIView.vStretchingSpacer()
-        let bottomSpacer = UIView.vStretchingSpacer()
-        vStackView.insertArrangedSubview(topSpacer, at: 0)
-        vStackView.addArrangedSubview(bottomSpacer)
-        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
-
-        return cell
+        return profileInfoStack
     }
 
     /// If we have a username, produces a button that takes the user to their
