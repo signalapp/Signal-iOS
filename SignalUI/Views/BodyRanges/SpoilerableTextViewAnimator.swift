@@ -79,8 +79,10 @@ extension SpoilerableTextViewAnimator: SpoilerableViewAnimator {
 
     public var spoilerFramesCacheKey: Int {
         var hasher = Hasher()
+        hasher.combine("SpoilerableTextViewAnimator")
         hasher.combine(text)
         displayConfig?.hashForSpoilerFrames(into: &hasher)
+        // Order matters. 100x10 is not the same hash value as 10x100.
         hasher.combine(textView?.textContainerInset.top)
         hasher.combine(textView?.textContainerInset.left)
         hasher.combine(textView?.bounds.width)
@@ -103,14 +105,13 @@ extension SpoilerableTextViewAnimator: SpoilerableViewAnimator {
             return []
         case .messageBody(let messageBody):
             let spoilerRanges = messageBody.spoilerRangesForAnimation(config: displayConfig)
-            var frames = textContainer.boundingRects(
+            return textContainer.boundingRects(
                 ofCharacterRanges: spoilerRanges,
                 textStorage: textStorage,
                 layoutManager: layoutManager,
                 textContainerInsets: textContainerInsets,
                 transform: SpoilerFrame.init(frame:color:)
             )
-            return frames
         }
     }
 }

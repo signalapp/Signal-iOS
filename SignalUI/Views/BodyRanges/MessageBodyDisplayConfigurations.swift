@@ -86,12 +86,14 @@ public extension HydratedMessageBody.DisplayConfiguration {
         )
     }
 
-    // TODO: Support revealing spoilers
-    static func groupStoryReply() -> Self {
+    static func groupStoryReply(
+        revealedSpoilerIds: Set<StyleIdType>
+    ) -> Self {
         return .init(
             baseFont: .defaultBaseFont,
             baseTextColor: .groupStoryReplyText,
-            mentionBackgroundColor: .groupStoryReplyMentionBg
+            mentionBackgroundColor: .groupStoryReplyMentionBg,
+            revealedSpoilerIds: revealedSpoilerIds
         )
     }
 

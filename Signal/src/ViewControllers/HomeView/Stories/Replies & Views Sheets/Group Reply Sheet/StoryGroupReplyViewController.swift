@@ -16,6 +16,8 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
 
     private(set) lazy var tableView = UITableView()
 
+    private lazy var spoilerState = SpoilerRenderState()
+
     let bottomBar = UIView()
     private(set) lazy var inputToolbar = StoryReplyInputToolbar()
     private lazy var bottomBarBottomConstraint = bottomBar.autoPinEdge(toSuperviewEdge: .bottom)
@@ -156,6 +158,20 @@ extension StoryGroupReplyViewController: UITableViewDelegate {
         )
         self.present(promptBuilder.build(for: message), animated: true)
     }
+
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? StoryGroupReplyCell else {
+            return
+        }
+        cell.setIsCellVisible(true)
+    }
+
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? StoryGroupReplyCell else {
+            return
+        }
+        cell.setIsCellVisible(false)
+    }
 }
 
 extension StoryGroupReplyViewController: UITableViewDataSource {
@@ -166,7 +182,7 @@ extension StoryGroupReplyViewController: UITableViewDataSource {
         }
 
         let cell = tableView.dequeueReusableCell(withIdentifier: item.cellType.rawValue, for: indexPath) as! StoryGroupReplyCell
-        cell.configure(with: item)
+        cell.configure(with: item, spoilerState: spoilerState)
 
         return cell
     }

@@ -128,8 +128,10 @@ extension SpoilerableLabelAnimator: SpoilerableViewAnimator {
 
     public var spoilerFramesCacheKey: Int {
         var hasher = Hasher()
+        hasher.combine("SpoilerableLabelAnimator")
         hasher.combine(text)
         displayConfig?.hashForSpoilerFrames(into: &hasher)
+        // Order matters. 100x10 is not the same hash value as 10x100.
         hasher.combine(label?.bounds.width)
         hasher.combine(label?.bounds.height)
         return hasher.finalize()

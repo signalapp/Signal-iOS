@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import BonMot
 import SignalMessaging
 import SignalUI
 
@@ -248,13 +249,24 @@ class StoryGroupReplyCell: UITableViewCell {
 
         contentView.addSubview(hStack)
         hStack.autoPinEdgesToSuperviewEdges()
+
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with item: StoryGroupReplyViewItem) {
+    func setIsCellVisible(_ isVisible: Bool) {
+        messageSpoilerConfigBuilder.isViewVisible = isVisible
+    }
+
+    private var item: StoryGroupReplyViewItem?
+    private var spoilerState: SpoilerRenderState?
+
+    func configure(with item: StoryGroupReplyViewItem, spoilerState: SpoilerRenderState) {
+        self.item = item
+        self.spoilerState = spoilerState
         if cellType.hasAuthor {
             authorNameLabel.textColor = item.authorColor
             authorNameLabel.text = item.authorDisplayName
@@ -270,51 +282,43 @@ class StoryGroupReplyCell: UITableViewCell {
             reactionLabel.text = item.reactionEmoji
         }
 
-        configureBodyAndFooter(for: item)
+        configureBodyAndFooter(for: item, spoilerState: spoilerState)
     }
 
-    func configureBodyAndFooter(for item: StoryGroupReplyViewItem) {
-        guard let messageText: NSAttributedString = {
+    func configureBodyAndFooter(for item: StoryGroupReplyViewItem, spoilerState: SpoilerRenderState) {
+        messageSpoilerConfigBuilder.animator = spoilerState.animator
+
+        let messageText: CVTextValue? = {
             if item.wasRemotelyDeleted {
-                return OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted").styled(
+                return .attributedText(OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted").styled(
                     with: .font(UIFont.dynamicTypeBodyClamped.italic()),
                     .color(.ows_gray05)
-                )
+                ))
             } else if cellType.isReaction {
-                return OWSLocalizedString("STORY_REPLY_REACTION", comment: "Text indicating a story has been reacted to").styled(
+                return .attributedText(OWSLocalizedString("STORY_REPLY_REACTION", comment: "Text indicating a story has been reacted to").styled(
                     with: .font(.dynamicTypeBodyClamped),
                     .color(.ows_gray05),
                     .alignment(.natural)
-                )
+                ))
             } else if let displayableText = item.displayableText {
-                let paragraphStyle = NSMutableParagraphStyle()
-                paragraphStyle.alignment = displayableText.displayTextNaturalAlignment
-                let baseAttrs: [NSAttributedString.Key: Any] = [
-                    .font: UIFont.dynamicTypeBodyClamped,
-                    .foregroundColor: UIColor.ows_gray05,
-                    .paragraphStyle: paragraphStyle
-                ]
-                switch displayableText.displayTextValue {
-                case .text(let text):
-                    return NSAttributedString(string: text, attributes: baseAttrs)
-                case .attributedText(let text):
-                    let text = NSMutableAttributedString(attributedString: text)
-                    text.addAttributesToEntireString(baseAttrs)
-                    return text
-                case .messageBody(let messageBody):
-                    return messageBody.asAttributedStringForDisplay(
-                        config: .groupStoryReply(),
-                        textAlignment: displayableText.displayTextNaturalAlignment,
-                        isDarkThemeEnabled: Theme.isDarkThemeEnabled
-                    )
-                }
+                return displayableText.displayTextValue
             } else {
                 return nil
             }
-        }() else { return }
+        }()
+
+        let displayConfig = HydratedMessageBody.DisplayConfiguration.groupStoryReply(
+            revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(interactionIdentifier: item.interactionIdentifier)
+        )
+        messageSpoilerConfigBuilder.displayConfig = displayConfig
+        messageSpoilerConfigBuilder.text = messageText
+
+        guard let messageText else {
+            return
+        }
 
         guard cellType.hasFooter else {
-            messageLabel.attributedText = messageText
+            messageLabel.attributedText = messageAttributedText(messageText, displayConfig: displayConfig)
             return
         }
 
@@ -358,7 +362,10 @@ class StoryGroupReplyCell: UITableViewCell {
         ])
 
         // Render footer inline if possible
-        let messageMeasurement = measure(messageText, maxWidth: maxMessageWidth)
+        let messageMeasurement = measure(
+            messageAttributedText(messageText, displayConfig: displayConfig),
+            maxWidth: maxMessageWidth
+        )
         let footerMeasurement = measure(footerText, maxWidth: maxMessageWidth)
 
         let lastLineFreeSpace = maxMessageWidth - footerSpacer - messageMeasurement.lastLineRect.width
@@ -391,14 +398,17 @@ class StoryGroupReplyCell: UITableViewCell {
 
             let finalMessageLabelWidth = possibleMessageBubbleWidths.max()!
 
-            messageLabel.attributedText = .composed(of: [
+            messageLabel.attributedText = messageAttributedText(
                 messageText,
-                "\n",
-                footerText.styled(
-                    with: .paragraphSpacingBefore(-footerMeasurement.rect.height),
-                    .firstLineHeadIndent(finalMessageLabelWidth - footerMeasurement.rect.width)
-                )
-            ])
+                displayConfig: displayConfig,
+                suffixes: [
+                    "\n",
+                    footerText.styled(
+                        with: .paragraphSpacingBefore(-footerMeasurement.rect.height),
+                        .firstLineHeadIndent(finalMessageLabelWidth - footerMeasurement.rect.width)
+                    )
+                ]
+            )
         } else {
             var possibleMessageBubbleWidths = [
                 messageMeasurement.rect.width,
@@ -411,16 +421,59 @@ class StoryGroupReplyCell: UITableViewCell {
 
             let finalMessageLabelWidth = possibleMessageBubbleWidths.max()!
 
-            messageLabel.attributedText = .composed(of: [
+            messageLabel.attributedText = messageAttributedText(
                 messageText,
-                "\n",
-                footerText.styled(
-                    with: textDirectionMatchesAppDirection
-                    ? .firstLineHeadIndent(finalMessageLabelWidth - footerMeasurement.rect.width)
-                    : .alignment(.trailing)
-                )
-            ])
+                displayConfig: displayConfig,
+                suffixes: [
+                    "\n",
+                    footerText.styled(
+                        with: textDirectionMatchesAppDirection
+                        ? .firstLineHeadIndent(finalMessageLabelWidth - footerMeasurement.rect.width)
+                        : .alignment(.trailing)
+                    )
+                ]
+            )
         }
+    }
+
+    // It is important this _only_ allow suffixes. We use the original CVTextValue for placement
+    // of spoiler and link taps and such; if it gets modified or given a prefix, that will
+    // ruin that placement. Suffixes are ok since they don't affect the preceding text.
+    // TODO: test RTL
+    private func messageAttributedText(
+        _ textValue: CVTextValue,
+        displayConfig: HydratedMessageBody.DisplayConfiguration,
+        suffixes: [BonMot.Composable] = []
+    ) -> NSAttributedString {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = textValue.naturalTextAligment
+        let baseFont = UIFont.dynamicTypeBodyClamped
+        let baseTextColor = UIColor.ows_gray05
+        let baseAttrs: [NSAttributedString.Key: Any] = [
+            .font: baseFont,
+            .foregroundColor: baseTextColor,
+            .paragraphStyle: paragraphStyle
+        ]
+
+        let attributedText: NSAttributedString = {
+            switch textValue {
+            case .text(let string):
+                return NSAttributedString(string: string, attributes: baseAttrs)
+            case .attributedText(let text):
+                let text = NSMutableAttributedString(attributedString: text)
+                text.addAttributesToEntireString(baseAttrs)
+                return text
+            case .messageBody(let hydratedMessageBody):
+                return hydratedMessageBody.asAttributedStringForDisplay(
+                    config: displayConfig,
+                    baseFont: baseFont,
+                    baseTextColor: baseTextColor,
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                )
+            }
+        }()
+
+        return .composed(of: [attributedText] + suffixes)
     }
 
     private func measure(_ attributedString: NSAttributedString, maxWidth: CGFloat) -> (rect: CGRect, lastLineRect: CGRect) {
@@ -476,6 +529,70 @@ class StoryGroupReplyCell: UITableViewCell {
             wideCornerRadius: cellType.cornerRadius
         ).cgPath
     }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        spoilerState = nil
+        item = nil
+        messageSpoilerConfigBuilder.text = nil
+        messageSpoilerConfigBuilder.displayConfig = nil
+    }
+
+    @objc
+    func handleTap(_ recognizer: UITapGestureRecognizer) {
+        let labelLocation = recognizer.location(in: messageLabel)
+        guard
+            let item,
+            let spoilerState,
+            messageLabel.bounds.contains(labelLocation),
+            let tapIndex = messageLabel.characterIndex(of: labelLocation)
+        else {
+            return
+        }
+        guard let messageText: CVTextValue = item.displayableText?.displayTextValue else {
+            return
+        }
+
+        switch messageText {
+        case .text, .attributedText:
+            return
+        case .messageBody(let body):
+            let revealedSpoilerIds = spoilerState.revealState.revealedSpoilerIds(
+                interactionIdentifier: item.interactionIdentifier
+            )
+            for tappableItem in body.tappableItems(revealedSpoilerIds: revealedSpoilerIds, dataDetector: nil) {
+                switch tappableItem {
+                case .data, .mention:
+                    continue
+                case .unrevealedSpoiler(let unrevealedSpoiler):
+                    if unrevealedSpoiler.range.contains(tapIndex) {
+                        spoilerState.revealState.setSpoilerRevealed(
+                            withID: unrevealedSpoiler.id,
+                            interactionIdentifier: item.interactionIdentifier
+                        )
+                        // Re-configure. This is ok because revealing the spoiler
+                        // doesn't change the sizing.
+                        configure(with: item, spoilerState: spoilerState)
+                        return
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Spoiler Animation
+
+    private lazy var messageSpoilerConfigBuilder = SpoilerableTextConfig.Builder(isViewVisible: false) {
+        didSet {
+            messageLabelSpoilerAnimator.updateAnimationState(messageSpoilerConfigBuilder)
+        }
+    }
+
+    private lazy var messageLabelSpoilerAnimator: SpoilerableLabelAnimator = {
+        let animator = SpoilerableLabelAnimator(label: messageLabel)
+        animator.updateAnimationState(messageSpoilerConfigBuilder)
+        return animator
+    }()
 }
 
 private class SendingSpinner: UIImageView {
