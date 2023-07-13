@@ -37,6 +37,9 @@ class WidePhotoCell: MediaTileListModeCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        contentView.backgroundColor = UIColor(dynamicProvider: { _ in Theme.tableCell2PresentedBackgroundColor })
+
         setupViews()
     }
 
@@ -58,7 +61,7 @@ class WidePhotoCell: MediaTileListModeCell {
         contentView.addSubview(hStack)
         hStack.autoPinHeightToSuperview(withMargin: 8)
         hStack.autoPinTrailingToSuperviewMargin()
-        let constraintWithSelectionButton = hStack.leadingAnchor.constraint(equalTo: selectionButton.trailingAnchor, constant: 16)
+        let constraintWithSelectionButton = hStack.leadingAnchor.constraint(equalTo: selectionButton.trailingAnchor, constant: 11)
         let constraintWithoutSelectionButton = hStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16)
 
         separator.autoPinEdge(.leading, to: .leading, of: vStack)

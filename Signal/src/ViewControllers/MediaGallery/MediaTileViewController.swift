@@ -888,23 +888,25 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     }
 
     private func recalculateListLayoutMetrics() {
-        let hInset = OWSTableViewController2.defaultHOuterMargin
-        let desiredHeight = {
-            switch fileType {
-            case .photoVideo:
-                return WidePhotoCell.cellHeight()
-            case .audio:
-                return AudioCell.desiredHeight
-            }
-        }()
+        let horizontalSectionInset: CGFloat
+        let cellHeight: CGFloat
+
+        switch fileType {
+        case .photoVideo:
+            horizontalSectionInset = OWSTableViewController2.defaultHOuterMargin
+            cellHeight = WidePhotoCell.cellHeight()
+        case .audio:
+            horizontalSectionInset = 0
+            cellHeight = AudioCell.desiredHeight
+        }
 
         let newItemSize = CGSize(
-            width: floor(view.safeAreaLayoutGuide.layoutFrame.size.width) - hInset * 2,
-            height: desiredHeight
+            width: floor(view.safeAreaLayoutGuide.layoutFrame.size.width) - horizontalSectionInset * 2,
+            height: cellHeight
         )
-        if newItemSize != currentCollectionViewLayout.itemSize || hInset != currentCollectionViewLayout.sectionInset.left {
+        if newItemSize != currentCollectionViewLayout.itemSize || horizontalSectionInset != currentCollectionViewLayout.sectionInset.left {
             currentCollectionViewLayout.itemSize = newItemSize
-            currentCollectionViewLayout.sectionInset = UIEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset)
+            currentCollectionViewLayout.sectionInset = UIEdgeInsets(hMargin: horizontalSectionInset, vMargin: 0)
         }
     }
 

@@ -43,7 +43,7 @@ protocol AudioPresenter {
     func thumbColor(isIncoming: Bool) -> UIColor
 
     // Color for waveform left of thumb.
-    func playedColor(isIncoming: Bool ) -> UIColor
+    func playedColor(isIncoming: Bool) -> UIColor
 
     // Color for waveform right of thumb.
     func unplayedColor(isIncoming: Bool) -> UIColor
@@ -55,8 +55,7 @@ protocol AudioPresenter {
     func configureForRendering(conversationStyle: ConversationStyle)
 
     // Views to show beneath the play/pause button and waveform.
-    func bottomSubviewGenerators(
-        conversationStyle: ConversationStyle) -> [SubviewGenerator]
+    func bottomSubviewGenerators(conversationStyle: ConversationStyle) -> [SubviewGenerator]
 
     // Label that shows the duration remaining.
     var playbackTimeLabel: CVLabel { get }
@@ -82,7 +81,8 @@ protocol AudioPresenter {
 }
 
 extension AudioPresenter {
-    func playbackTimeLabelConfig_forMeasurement(
+
+    static func playbackTimeLabelConfig_forMeasurement(
         audioAttachment: AudioAttachment,
         isIncoming: Bool,
         conversationStyle: ConversationStyle,
@@ -91,14 +91,14 @@ extension AudioPresenter {
         // playbackTimeLabel uses a monospace font, so we measure the
         // worst-case width using the full duration of the audio.
         let text = OWSFormat.localizedDurationString(from: audioAttachment.durationSeconds)
-        let fullDurationConfig = self.playbackTimeLabelConfig(
+        let fullDurationConfig = playbackTimeLabelConfig(
             text: text,
             isIncoming: isIncoming,
             conversationStyle: conversationStyle
         )
         // Never let it get shorter than "0:00" duration.
         let minimumWidthText = OWSFormat.localizedDurationString(from: 0)
-        let minimumWidthConfig = self.playbackTimeLabelConfig(
+        let minimumWidthConfig = playbackTimeLabelConfig(
             text: minimumWidthText,
             isIncoming: isIncoming,
             conversationStyle: conversationStyle
@@ -110,20 +110,11 @@ extension AudioPresenter {
         }
     }
 
-    func playbackTimeLabelConfig(text: String,
-                                 isIncoming: Bool,
-                                 conversationStyle: ConversationStyle) -> CVLabelConfig {
+    static func playbackTimeLabelConfig(text: String = " ", isIncoming: Bool, conversationStyle: ConversationStyle) -> CVLabelConfig {
         return CVLabelConfig.unstyledText(
             text,
             font: UIFont.dynamicTypeCaption1Clamped,
             textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
         )
-    }
-
-    func playbackTimeLabelConfig_render(isIncoming: Bool,
-                                        conversationStyle: ConversationStyle) -> CVLabelConfig {
-        playbackTimeLabelConfig(text: " ",
-                                isIncoming: isIncoming,
-                                conversationStyle: conversationStyle)
     }
 }

@@ -23,6 +23,7 @@ class AudioAllMediaPresenter: AudioPresenter {
     }
 
     let name = "AudioAllMedia"
+    // Required by the AudioPresenter protocol, should not be used.
     let isIncoming = false
 
     let sender: String
@@ -46,14 +47,14 @@ class AudioAllMediaPresenter: AudioPresenter {
         return Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray20
     }
     func thumbColor(isIncoming: Bool) -> UIColor {
-        return playedColor(isIncoming: isIncoming)
+        return playedColor(isIncoming: true)
     }
     func playPauseContainerBackgroundColor(isIncoming: Bool) -> UIColor {
         return Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
     }
 
     func playPauseAnimationColor(isIncoming: Bool) -> ColorValueProvider {
-        let color = playedColor(isIncoming: isIncoming)
+        let color = playedColor(isIncoming: true)
         return ColorValueProvider(color.lottieColorValue)
     }
 
@@ -70,8 +71,7 @@ class AudioAllMediaPresenter: AudioPresenter {
         sender: String,
         audioAttachment: AudioAttachment,
         threadUniqueId: String,
-        playbackRate: AudioPlaybackRate,
-        isIncoming: Bool
+        playbackRate: AudioPlaybackRate
     ) {
         self.threadUniqueId = threadUniqueId
         self.sender = sender
@@ -83,14 +83,12 @@ class AudioAllMediaPresenter: AudioPresenter {
             threadUniqueId: threadUniqueId,
             audioAttachment: audioAttachment,
             playbackRate: playbackRate,
-            isIncoming: isIncoming
+            isIncoming: true
         )
     }
 
     func configureForRendering(conversationStyle: ConversationStyle) {
-        let playbackTimeLabelConfig = playbackTimeLabelConfig_render(
-            isIncoming: isIncoming,
-            conversationStyle: conversationStyle)
+        let playbackTimeLabelConfig = Self.playbackTimeLabelConfig(isIncoming: true, conversationStyle: conversationStyle)
         playbackTimeLabelConfig.applyForRendering(label: playbackTimeLabel)
         playbackTimeLabel.setContentHuggingHigh()
 
@@ -215,8 +213,19 @@ class AudioAllMediaPresenter: AudioPresenter {
                 id: "transparentSpacer1",
                 view: { _ in UIView.transparentSpacer() },
                 subviewInfo: { _ in
-                    CGSize(width: Constants.bottomInnerStackSpacing,
-                           height: 0).asManualSubviewInfo(hasFixedSize: true)
+                    CGSize(width: Constants.bottomInnerStackSpacing, height: 0).asManualSubviewInfo(hasFixedSize: true)
+                },
+                shouldAddSubview: false),
+            ViewWithSizingInfo(
+                id: "playbackRateView",
+                view: { $0.playbackRateView },
+                subviewInfo: { $0.playbackRateSize.asManualSubviewInfo(hasFixedSize: true) },
+                shouldAddSubview: true),
+            ViewWithSizingInfo(
+                id: "transparentSpacer2",
+                view: { _ in UIView.transparentSpacer() },
+                subviewInfo: { _ in
+                    CGSize(width: Constants.bottomInnerStackSpacing, height: 0).asManualSubviewInfo(hasFixedSize: true)
                 },
                 shouldAddSubview: false),
             ViewWithSizingInfo(
@@ -225,19 +234,12 @@ class AudioAllMediaPresenter: AudioPresenter {
                 subviewInfo: { $0.playbackTimeLabelSize.asManualSubviewInfo(hasFixedSize: true) },
                 shouldAddSubview: true),
             ViewWithSizingInfo(
-                id: "transparentSpacer2",
+                id: "transparentSpacer3",
                 view: { _ in UIView.transparentSpacer() },
                 subviewInfo: { _ in
-                    CGSize(
-                        width: Constants.bottomInnerStackSpacing,
-                        height: 0).asManualSubviewInfo(hasFixedSize: true)
+                    CGSize(width: 4, height: 0).asManualSubviewInfo(hasFixedSize: true)
                 },
                 shouldAddSubview: false),
-            ViewWithSizingInfo(
-                id: "playbackRateView",
-                view: { $0.playbackRateView },
-                subviewInfo: { $0.playbackRateSize.asManualSubviewInfo(hasFixedSize: true) },
-                shouldAddSubview: true),
             ViewWithSizingInfo(
                 id: "playedDotContainer",
                 view: { $0.playedDotContainer },
@@ -248,9 +250,9 @@ class AudioAllMediaPresenter: AudioPresenter {
 
     func bottomSubviewGenerators(conversationStyle: ConversationStyle) -> [SubviewGenerator] {
         let makeSubviewConfig = { [unowned self] (maxWidth: CGFloat) -> SubviewConfig in
-            let playbackTimeLabelConfig = playbackTimeLabelConfig_forMeasurement(
+            let playbackTimeLabelConfig = Self.playbackTimeLabelConfig_forMeasurement(
                 audioAttachment: audioAttachment,
-                isIncoming: isIncoming,
+                isIncoming: true,
                 conversationStyle: conversationStyle,
                 maxWidth: maxWidth
             )
@@ -357,7 +359,6 @@ class AudioAllMediaPresenter: AudioPresenter {
     func audioWaveform(attachmentStream: TSAttachmentStream?) -> AudioWaveform? {
         return attachmentStream?.highPriorityAudioWaveform()
     }
-
 }
 
 class AllMediaAudioMessagePlaybackRateView: AudioMessagePlaybackRateView {

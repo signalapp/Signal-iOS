@@ -69,9 +69,7 @@ class AudioMessagePresenter: AudioPresenter {
     }
 
     func configureForRendering(conversationStyle: ConversationStyle) {
-        let playbackTimeLabelConfig = playbackTimeLabelConfig_render(
-            isIncoming: isIncoming,
-            conversationStyle: conversationStyle)
+        let playbackTimeLabelConfig = Self.playbackTimeLabelConfig(isIncoming: isIncoming, conversationStyle: conversationStyle)
         playbackTimeLabelConfig.applyForRendering(label: playbackTimeLabel)
         playbackTimeLabel.setContentHuggingHigh()
     }
@@ -85,7 +83,7 @@ class AudioMessagePresenter: AudioPresenter {
         let makeSubviewConfig = { [unowned self] (maxWidth: CGFloat) -> SubviewConfig in
             let dotSize = CGSize(square: 6)
 
-            let playbackTimeLabelConfig = playbackTimeLabelConfig_forMeasurement(
+            let playbackTimeLabelConfig = Self.playbackTimeLabelConfig_forMeasurement(
                 audioAttachment: audioAttachment,
                 isIncoming: isIncoming,
                 conversationStyle: conversationStyle,

@@ -54,8 +54,6 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
         self.constraintWithSelectionButton = constraintWithSelectionButton
         self.constraintWithoutSelectionButton = constraintWithoutSelectionButton
 
-        contentView.backgroundColor = UIColor(dynamicProvider: { _ in Theme.tableCell2PresentedBackgroundColor })
-
         selectedMaskView.backgroundColor = UIColor(dynamicProvider: { _ in
             Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
         })

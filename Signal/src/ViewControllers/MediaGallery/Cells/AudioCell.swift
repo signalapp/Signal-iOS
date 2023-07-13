@@ -27,7 +27,7 @@ class AudioCell: MediaTileListModeCell {
     }
 
     // TODO(george): Add support for dynamic size.
-    class var desiredHeight: CGFloat { 86.0 }
+    class var desiredHeight: CGFloat { 88 }
 
     private lazy var tapGestureRecognizer: UITapGestureRecognizer = {
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
@@ -47,7 +47,10 @@ class AudioCell: MediaTileListModeCell {
 
     private let audioMessageContainerView: UIView = {
         let view = UIView.container()
+        view.backgroundColor = UIColor(dynamicProvider: { _ in Theme.tableCell2PresentedBackgroundColor })
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 10
+        view.layer.masksToBounds = true
         return view
     }()
 
@@ -106,8 +109,7 @@ class AudioCell: MediaTileListModeCell {
             sender: audioItem.metadata.abbreviatedSender,
             audioAttachment: audioAttachment,
             threadUniqueId: audioItem.thread.uniqueId,
-            playbackRate: AudioPlaybackRate(rawValue: itemModel.itemViewState.audioPlaybackRate),
-            isIncoming: audioItem.interaction is TSIncomingMessage
+            playbackRate: AudioPlaybackRate(rawValue: itemModel.itemViewState.audioPlaybackRate)
         )
         let view = AudioMessageView(
             presentation: presentation,
@@ -121,10 +123,9 @@ class AudioCell: MediaTileListModeCell {
             view.setViewed(!outgoingMessage.viewedRecipientAddresses().isEmpty, animated: false)
         }
 
-        let maxWidth = contentView.bounds.width - leadingMargin - trailingMargin
         let measurementBuilder = CVCellMeasurement.Builder()
         measurementBuilder.cellSize = AudioMessageView.measure(
-            maxWidth: maxWidth,
+            maxWidth: contentView.bounds.width, // actual max width doesn't matter because there's no multiline text
             sender: audioItem.metadata.abbreviatedSender,
             conversationStyle: conversationStyle,
             measurementBuilder: measurementBuilder,
@@ -133,7 +134,7 @@ class AudioCell: MediaTileListModeCell {
         let cellMeasurement = measurementBuilder.build()
         view.configureForRendering(cellMeasurement: cellMeasurement, conversationStyle: conversationStyle)
         audioMessageContainerView.addSubview(view)
-        view.autoPinEdgesToSuperviewEdges()
+        view.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 10))
 
         self.itemModel = itemModel
         self.audioMessageView = view
@@ -147,9 +148,6 @@ class AudioCell: MediaTileListModeCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    private let leadingMargin: CGFloat = 16
-    private let trailingMargin: CGFloat = 14
 
     static func sizeForItem(_ item: MediaGalleryCellItem, defaultSize: CGSize) -> CGSize {
         switch item {
@@ -167,20 +165,19 @@ class AudioCell: MediaTileListModeCell {
 
     private func setupViews() {
         contentView.addSubview(audioMessageContainerView)
-        contentView.layer.cornerRadius = 10.0
         NSLayoutConstraint.activate([
-            audioMessageContainerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
-            audioMessageContainerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
-            audioMessageContainerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -trailingMargin)
+            audioMessageContainerView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            audioMessageContainerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            audioMessageContainerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -OWSTableViewController2.defaultHOuterMargin)
         ])
 
         let constraintWithSelectionButton = audioMessageContainerView.leadingAnchor.constraint(
             equalTo: selectionButton.trailingAnchor,
-            constant: 13
+            constant: 12
         )
         let constraintWithoutSelectionButton = audioMessageContainerView.leadingAnchor.constraint(
             equalTo: contentView.leadingAnchor,
-            constant: leadingMargin
+            constant: OWSTableViewController2.defaultHOuterMargin
         )
 
         addGestureRecognizer(tapGestureRecognizer)
