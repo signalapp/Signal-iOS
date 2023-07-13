@@ -452,6 +452,10 @@ public class EditManager {
             return false
         }
 
+        if message.messageSticker != nil {
+            return false
+        }
+
         return true
     }
 
