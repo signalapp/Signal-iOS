@@ -1081,11 +1081,16 @@ private extension GroupV2UpdatesImpl {
         }
         for action in changeActionsProto.promotePendingMembers {
             do {
-                guard let presentationData = action.presentation else {
-                    throw OWSAssertionError("Missing presentation.")
+                let uuidCiphertext: UuidCiphertext
+                if let userId = action.userID {
+                    uuidCiphertext = try UuidCiphertext(contents: [UInt8](userId))
+                } else if let presentationData = action.presentation {
+                    let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
+                    uuidCiphertext = try presentation.getUuidCiphertext()
+                } else {
+                    throw OWSAssertionError("Missing userId.")
                 }
-                let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
-                let uuidCiphertext = try presentation.getUuidCiphertext()
+
                 let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
                 if uuid == localUuid {
                     return true
