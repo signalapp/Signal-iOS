@@ -39,7 +39,10 @@ public protocol SSKWebSocket: AnyObject {
     var state: SSKWebSocketState { get }
 
     func connect()
-    func disconnect()
+    /// Disconnect with a provided closure code.
+    /// If no code is provided, no code will be sent (equivalent to 1005 "noStatusReceived").
+    /// For a normal closure, use `URLSessionWebSocketTask.CloseCode.normalClosure`
+    func disconnect(code: URLSessionWebSocketTask.CloseCode?)
 
     func write(data: Data)
 
@@ -328,7 +331,7 @@ public class SSKWebSocketNative: SSKWebSocket {
         }
     }
 
-    public func disconnect() {
+    public func disconnect(code: URLSessionWebSocketTask.CloseCode?) {
         var taskToCancel: URLSessionWebSocketTask?
         lock.withLock {
             // The user requested a cancellation, so don't report an error
@@ -336,7 +339,11 @@ public class SSKWebSocketNative: SSKWebSocket {
             taskToCancel = webSocketTask
             webSocketTask = nil
         }
-        taskToCancel?.cancel()
+        if let code {
+            taskToCancel?.cancel(with: code, reason: nil)
+        } else {
+            taskToCancel?.cancel()
+        }
     }
 
     public func write(data: Data) {

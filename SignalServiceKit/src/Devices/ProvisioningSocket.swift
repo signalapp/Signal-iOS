@@ -39,10 +39,10 @@ public class ProvisioningSocket {
         return socket.state
     }
 
-    public func disconnect() {
+    public func disconnect(code: URLSessionWebSocketTask.CloseCode?) {
         heartBeatTimer?.invalidate()
         heartBeatTimer = nil
-        socket.disconnect()
+        socket.disconnect(code: code)
     }
 
     var heartBeatTimer: Timer?

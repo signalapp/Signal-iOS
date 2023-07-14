@@ -41,8 +41,8 @@ final class WebSocketPromise: SSKWebSocketDelegate {
         webSocket.connect()
     }
 
-    func disconnect() {
-        webSocket.disconnect()
+    func disconnect(code: URLSessionWebSocketTask.CloseCode?) {
+        webSocket.disconnect(code: code)
     }
 
     // MARK: - Sending

@@ -1277,14 +1277,14 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             // which if nothing is happening we can close the connection.
             self.scheduler.asyncAfter(deadline: .now() + 0.1) { [weak self] in
                 if self?.requestQueue.isEmpty == true, self?.isMakingRequest != true {
-                    self?.disconnect(SVR.SVRError.assertion)
+                    self?.disconnect(nil)
                 }
             }
         }
 
         private enum ConnectionState {
             case connected
-            case disconnected(Error)
+            case disconnected(Error?)
 
             var isDisconnected: Bool {
                 switch self {
@@ -1296,12 +1296,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         private var connectionState = ConnectionState.connected
 
-        private func disconnect(_ error: Error) {
+        private func disconnect(_ error: Error?) {
             guard !connectionState.isDisconnected else {
                 return
             }
             connectionState = .disconnected(error)
-            connection.disconnect()
+            connection.disconnect(code: error == nil ? .normalClosure : nil)
             onDisconnect()
         }
 

@@ -41,7 +41,7 @@ public class SgxWebsocketConnection<Configurator: SgxWebsocketConfigurator> {
     }
 
     // Subclasses must implement.
-    func disconnect() {
+    func disconnect(code: URLSessionWebSocketTask.CloseCode?) {
         fatalError("Concrete subclass must implement")
     }
 }
@@ -106,7 +106,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
             )
         }.recover(on: scheduler) { error -> Promise<SgxWebsocketConnection<Configurator>> in
             Logger.warn("\(type(of: configurator).loggingName): Disconnecting socket after failed handshake: \(error)")
-            webSocket.disconnect()
+            webSocket.disconnect(code: .invalidFramePayloadData)
             throw error
         }
     }
@@ -171,8 +171,8 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         return Data(try client.establishedRecv(encryptedResponse))
     }
 
-    public override func disconnect() {
-        webSocket.disconnect()
+    public override func disconnect(code: URLSessionWebSocketTask.CloseCode?) {
+        webSocket.disconnect(code: code)
     }
 }
 
@@ -214,7 +214,7 @@ public class MockSgxWebsocketConnection<Configurator: SgxWebsocketConfigurator>:
 
     public var onDisconnect: (() -> Void)?
 
-    public override func disconnect() {
+    public override func disconnect(code: URLSessionWebSocketTask.CloseCode?) {
         onDisconnect?()
     }
 }

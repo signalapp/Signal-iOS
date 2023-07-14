@@ -1320,7 +1320,7 @@ private class WebSocketConnection {
     func reset() {
         unfairLock.withLock {
             webSocket.delegate = nil
-            webSocket.disconnect()
+            webSocket.disconnect(code: nil)
         }
 
         heartbeatTimer?.invalidate()

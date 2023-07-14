@@ -160,7 +160,7 @@ final class ContactDiscoveryV2Operation {
                 // We disconnect if there's an error. This might be a connection error, but
                 // it also might be a locally-thrown error, and in that case, we need to
                 // disconnect from the server. (The server disconnects in the happy path.)
-                connection.disconnect()
+                connection.disconnect(code: nil)
                 throw error
             }
         }.recover(on: queue) { error -> Promise<[DiscoveryResult]> in

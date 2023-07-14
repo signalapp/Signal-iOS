@@ -254,7 +254,7 @@ extension Deprecated_ProvisioningController: ProvisioningSocketDelegate {
 
     public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveEnvelope envelope: ProvisioningProtoProvisionEnvelope) {
         // After receiving the provisioning message, there's nothing else to retrieve from the provisioning socket
-        provisioningSocket.disconnect()
+        provisioningSocket.disconnect(code: .normalClosure)
 
         owsAssertDebug(!provisionEnvelopePromise.isSealed)
         return provisionEnvelopeFuture.resolve(envelope)
