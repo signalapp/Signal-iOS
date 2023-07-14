@@ -6745,6 +6745,9 @@
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
 
+/* The subtitle when this story has no replies */
+"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "No replies yet";
 
@@ -6888,6 +6891,9 @@
 
 /* Button for replying to a group story with no existing replies. */
 "STORY_REPLY_TO_GROUP_BUTTON" = "Reply to Group";
+
+/* placeholder text for replying to a group story */
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent. Check your connection and try again";

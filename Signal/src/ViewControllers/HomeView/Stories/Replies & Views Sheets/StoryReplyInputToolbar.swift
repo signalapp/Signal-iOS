@@ -26,6 +26,7 @@ protocol StoryReplyInputToolbarDelegate: AnyObject {
 class StoryReplyInputToolbar: UIView {
 
     weak var delegate: StoryReplyInputToolbarDelegate?
+    let isGroupStory: Bool
     let quotedReplyModel: QuotedReplyModel?
 
     var messageBodyForSending: MessageBody? {
@@ -54,7 +55,11 @@ class StoryReplyInputToolbar: UIView {
 
     // MARK: - Initializers
 
-    init(quotedReplyModel: QuotedReplyModel? = nil) {
+    init(
+        isGroupStory: Bool,
+        quotedReplyModel: QuotedReplyModel? = nil
+    ) {
+        self.isGroupStory = isGroupStory
         self.quotedReplyModel = quotedReplyModel
         super.init(frame: CGRect.zero)
 
@@ -171,10 +176,20 @@ class StoryReplyInputToolbar: UIView {
     private lazy var placeholderTextView: UITextView = {
         let placeholderTextView = buildTextView()
 
-        let placeholderText = OWSLocalizedString(
-            "STORY_REPLY_TEXT_FIELD_PLACEHOLDER",
-            comment: "placeholder text for replying to a story"
-        )
+        let placeholderText = {
+            if isGroupStory {
+                return OWSLocalizedString(
+                    "STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER",
+                    comment: "placeholder text for replying to a group story"
+                )
+            } else {
+                return OWSLocalizedString(
+                    "STORY_REPLY_TEXT_FIELD_PLACEHOLDER",
+                    comment: "placeholder text for replying to a story"
+                )
+            }
+        }()
+
         placeholderTextView.setMessageBody(.init(text: placeholderText, ranges: .empty), txProvider: databaseStorage.readTxProvider)
         placeholderTextView.isEditable = false
         placeholderTextView.textContainer.maximumNumberOfLines = 1

@@ -19,7 +19,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
     private lazy var spoilerState = SpoilerRenderState()
 
     let bottomBar = UIView()
-    private(set) lazy var inputToolbar = StoryReplyInputToolbar()
+    private(set) lazy var inputToolbar = StoryReplyInputToolbar(isGroupStory: true)
     private lazy var bottomBarBottomConstraint = bottomBar.autoPinEdge(toSuperviewEdge: .bottom)
     private lazy var contextMenu = ContextMenuInteraction(delegate: self)
 
@@ -39,10 +39,18 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
 
     private lazy var emptyStateView: UIView = {
         let label = UILabel()
-        label.font = .dynamicTypeBody
         label.textColor = .ows_gray45
         label.textAlignment = .center
-        label.text = OWSLocalizedString("STORIES_NO_REPLIES_YET", comment: "Indicates that this story has no replies yet")
+        label.numberOfLines = 2
+        label.attributedText = NSAttributedString(
+            string: OWSLocalizedString("STORIES_NO_REPLIES_YET", comment: "Indicates that this story has no replies yet"),
+            attributes: [NSAttributedString.Key.font: UIFont.dynamicTypeHeadline]
+        ).stringByAppendingString(
+            "\n"
+        ).stringByAppendingString(
+            OWSLocalizedString("STORIES_NO_REPLIES_SUBTITLE", comment: "The subtitle when this story has no replies"),
+            attributes: [NSAttributedString.Key.font: UIFont.dynamicTypeSubheadline]
+        )
         label.isHidden = true
         label.isUserInteractionEnabled = false
         return label

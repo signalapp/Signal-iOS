@@ -106,7 +106,7 @@ class StoryViewsViewController: OWSViewController {
         label.textAlignment = .center
 
         if StoryManager.areViewReceiptsEnabled {
-            label.font = .dynamicTypeBody
+            label.font = .dynamicTypeHeadline
             label.textColor = .ows_gray45
             label.text = OWSLocalizedString(
                 "STORIES_NO_VIEWS_YET",

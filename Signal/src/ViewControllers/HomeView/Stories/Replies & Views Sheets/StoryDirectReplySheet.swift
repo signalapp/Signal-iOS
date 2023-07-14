@@ -15,7 +15,7 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
         let quotedReplyModel = databaseStorage.read {
             QuotedReplyModel(storyMessage: storyMessage, transaction: $0)
         }
-        let toolbar = StoryReplyInputToolbar(quotedReplyModel: quotedReplyModel)
+        let toolbar = StoryReplyInputToolbar(isGroupStory: false, quotedReplyModel: quotedReplyModel)
         toolbar.delegate = self
         return toolbar
     }()
