@@ -235,10 +235,11 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private lazy var editMessageLabelWrapper: UIView = {
         let view = UIView.container()
 
-        let editIconView = UIImageView(image: UIImage(named: Theme.iconName(.contextMenuEdit)))
+        let editIconView = UIImageView(image: Theme.iconImage(.contextMenuEdit))
         editIconView.contentMode = .scaleAspectFit
         editIconView.autoSetDimension(.height, toSize: 16.0)
         editIconView.setContentHuggingHigh()
+        editIconView.tintColor = Theme.primaryTextColor
 
         let editLabel = UILabel()
         editLabel.text = OWSLocalizedString(
