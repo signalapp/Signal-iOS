@@ -46,8 +46,8 @@ extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
             collectionView?.insertSections(IndexSet(integer: localSection(numberOfSectionsAfter)))
             accessoriesHelper.updateFooterBarState()
         } else if numberOfSectionsBefore > 0 && numberOfSectionsAfter == 0 {
-            // Remove "load newer" section from the end.
-            collectionView?.deleteSections(IndexSet(integer: 2))
+            // Remove "load earlier" section at the beginning.
+            collectionView?.deleteSections(IndexSet(integer: 0))
             accessoriesHelper.updateFooterBarState()
         }
     }
@@ -1085,7 +1085,11 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
     }
 
     func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery) {
-        // If you receive a new attachment for an earlier month, MediaGallerySections resets itself and throws out a bunch of data. It resets hasFetched{Oldest,MostRecent} to false. This causes "Loading older…" and "Loading newer…" to become visible, even if there are no older or newer months in the db. Those only get updated on scroll. If the collection view's content size is less than its visible size then scrolling is impossible and they are stuck forever. Load sections until we either have everything or there's enough room for the user to scroll.
+        // If you receive a new attachment for an earlier month, MediaGallerySections resets itself and throws out a bunch of data.
+        // It resets hasFetched{Oldest,MostRecent} to false. This causes "Loading older…" and "Loading newer…" to become visible,
+        // even if there are no older or newer months in the db. Those only get updated on scroll.
+        // If the collection view's content size is less than its visible size then scrolling is impossible and they are stuck forever.
+        // Load sections until we either have everything or there's enough room for the user to scroll.
         while collectionView.contentSize.height < collectionView.visibleSize.height && (!mediaGallery.hasFetchedOldest || !mediaGallery.hasFetchedMostRecent) {
             if !mediaGallery.hasFetchedOldest {
                 _ = mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize)
