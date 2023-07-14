@@ -26,8 +26,61 @@ class AudioCell: MediaTileListModeCell {
         }
     }
 
-    // TODO(george): Add support for dynamic size.
-    class var desiredHeight: CGFloat { 88 }
+    class var defaultCellHeight: CGFloat { 88 }
+
+    private static let contentInset = UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 10)
+
+    private static var cellHeightsWithTopLabel: [UIContentSizeCategory: CGFloat] = [:]
+
+    private static var cellHeightsWithoutTopLabel: [UIContentSizeCategory: CGFloat] = [:]
+
+    class func cellHeight(for item: MediaGalleryCellItem, maxWidth: CGFloat) -> CGFloat {
+        guard case let .audio(audioItem) = item else {
+            owsFailDebug("Unexpected item type")
+            return defaultCellHeight
+        }
+
+        let currentContentSizeCategory = UITraitCollection.current.preferredContentSizeCategory
+        let displaysTopLabel = AudioAllMediaPresenter.hasAttachmentLabel(attachment: audioItem.attachmentStream)
+
+        if let cellHeight: CGFloat = {
+            if displaysTopLabel {
+                return cellHeightsWithTopLabel[currentContentSizeCategory]
+            } else {
+                return cellHeightsWithoutTopLabel[currentContentSizeCategory]
+            }
+        }() {
+            return cellHeight
+        }
+
+        guard let audioAttachment = AudioAttachment(
+            attachment: audioItem.attachmentStream,
+            owningMessage: audioItem.message,
+            metadata: audioItem.metadata
+        ) else {
+            return defaultCellHeight
+        }
+        let presenter = AudioAllMediaPresenter(
+            sender: "",
+            audioAttachment: audioAttachment,
+            threadUniqueId: audioItem.thread.uniqueId,
+            playbackRate: .normal
+        )
+        let audioMessageViewSize = AudioMessageView.measure(
+            maxWidth: maxWidth,
+            measurementBuilder: CVCellMeasurement.Builder(),
+            presentation: presenter
+        )
+
+        let cellHeight = audioMessageViewSize.height + AudioCell.contentInset.totalHeight
+        if displaysTopLabel {
+            cellHeightsWithTopLabel[currentContentSizeCategory] = cellHeight
+        } else {
+            cellHeightsWithoutTopLabel[currentContentSizeCategory] = cellHeight
+        }
+
+        return cellHeight
+    }
 
     private lazy var tapGestureRecognizer: UITapGestureRecognizer = {
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
@@ -126,15 +179,13 @@ class AudioCell: MediaTileListModeCell {
         let measurementBuilder = CVCellMeasurement.Builder()
         measurementBuilder.cellSize = AudioMessageView.measure(
             maxWidth: contentView.bounds.width, // actual max width doesn't matter because there's no multiline text
-            sender: audioItem.metadata.abbreviatedSender,
-            conversationStyle: conversationStyle,
             measurementBuilder: measurementBuilder,
             presentation: presentation
         )
         let cellMeasurement = measurementBuilder.build()
         view.configureForRendering(cellMeasurement: cellMeasurement, conversationStyle: conversationStyle)
         audioMessageContainerView.addSubview(view)
-        view.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 10))
+        view.autoPinEdgesToSuperviewEdges(with: AudioCell.contentInset)
 
         self.itemModel = itemModel
         self.audioMessageView = view
@@ -147,20 +198,6 @@ class AudioCell: MediaTileListModeCell {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    static func sizeForItem(_ item: MediaGalleryCellItem, defaultSize: CGSize) -> CGSize {
-        switch item {
-        case .photoVideo:
-            return defaultSize
-        case .audio(let audioItem):
-            if AudioAllMediaPresenter.hasAttachmentLabel(attachment: audioItem.attachmentStream) {
-                var result = defaultSize
-                result.height += 17
-                return result
-            }
-            return defaultSize
-        }
     }
 
     private func setupViews() {

@@ -49,8 +49,8 @@ class AudioMessagePresenter: AudioPresenter {
 
     func unplayedColor(isIncoming: Bool) -> UIColor {
         return isIncoming ? (Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray25) : .ows_whiteAlpha40
-
     }
+
     func thumbColor(isIncoming: Bool) -> UIColor {
         return playedColor(isIncoming: isIncoming)
     }
@@ -74,7 +74,7 @@ class AudioMessagePresenter: AudioPresenter {
         playbackTimeLabel.setContentHuggingHigh()
     }
 
-    func bottomSubviewGenerators(conversationStyle: ConversationStyle) -> [SubviewGenerator] {
+    func bottomSubviewGenerators(conversationStyle: ConversationStyle?) -> [SubviewGenerator] {
         struct SubviewConfig {
             var playbackTimeLabelMeasurementInfo: ManualStackSubviewInfo
             var playedDotContainerMeasurementInfo: ManualStackSubviewInfo
@@ -85,8 +85,6 @@ class AudioMessagePresenter: AudioPresenter {
 
             let playbackTimeLabelConfig = Self.playbackTimeLabelConfig_forMeasurement(
                 audioAttachment: audioAttachment,
-                isIncoming: isIncoming,
-                conversationStyle: conversationStyle,
                 maxWidth: maxWidth
             )
             let playbackTimeLabelSize = CVText.measureLabel(config: playbackTimeLabelConfig, maxWidth: maxWidth)
@@ -131,9 +129,8 @@ class AudioMessagePresenter: AudioPresenter {
                 viewGenerator: { UIView.transparentSpacer() })
         ]
     }
-    func topLabelConfig(audioAttachment: AudioAttachment,
-                        isIncoming: Bool,
-                        conversationStyle: ConversationStyle) -> CVLabelConfig? {
+
+    func topLabelConfig(audioAttachment: AudioAttachment, isIncoming: Bool, conversationStyle: ConversationStyle?) -> CVLabelConfig? {
 
         let attachment = audioAttachment.attachment
         guard !attachment.isVoiceMessage else {
@@ -150,7 +147,8 @@ class AudioMessagePresenter: AudioPresenter {
         return CVLabelConfig.unstyledText(
             text,
             font: Constants.labelFont,
-            textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming))
+            textColor: conversationStyle?.bubbleTextColor(isIncoming: isIncoming) ?? .label
+        )
     }
 
     func audioWaveform(attachmentStream: TSAttachmentStream?) -> AudioWaveform? {

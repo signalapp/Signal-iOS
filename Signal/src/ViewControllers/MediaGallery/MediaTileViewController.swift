@@ -897,7 +897,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             cellHeight = WidePhotoCell.cellHeight()
         case .audio:
             horizontalSectionInset = 0
-            cellHeight = AudioCell.desiredHeight
+            cellHeight = AudioCell.defaultCellHeight
         }
 
         let newItemSize = CGSize(
@@ -980,10 +980,13 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             case .photoVideo:
                 return currentCollectionViewLayout.itemSize
             case .audio:
+                let defaultCellSize = currentCollectionViewLayout.itemSize
                 if let galleryItem = galleryItem(at: indexPath, loadAsync: true) {
-                    return AudioCell.sizeForItem(cellItem(for: galleryItem), defaultSize: currentCollectionViewLayout.itemSize)
+                    let cellItem = cellItem(for: galleryItem)
+                    let cellHeight = AudioCell.cellHeight(for: cellItem, maxWidth: defaultCellSize.width)
+                    return CGSize(width: defaultCellSize.width, height: cellHeight)
                 }
-                return currentCollectionViewLayout.itemSize
+                return defaultCellSize
             }
         }
     }

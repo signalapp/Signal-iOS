@@ -9,8 +9,8 @@ import SignalUI
 
 class AudioAllMediaPresenter: AudioPresenter {
     private enum Constants {
-        static let filenameFont: UIFont = .dynamicTypeCaption1
-        static let bottomLineFont: UIFont = .dynamicTypeFootnoteClamped
+        static var filenameFont: UIFont { .dynamicTypeSubheadlineClamped }
+        static var bottomLineFont: UIFont { .dynamicTypeFootnoteClamped }
 
         static var bottomInnerStackSpacing: CGFloat {
             switch UIApplication.shared.preferredContentSizeCategory {
@@ -248,31 +248,19 @@ class AudioAllMediaPresenter: AudioPresenter {
         ]
     }()
 
-    func bottomSubviewGenerators(conversationStyle: ConversationStyle) -> [SubviewGenerator] {
+    func bottomSubviewGenerators(conversationStyle: ConversationStyle?) -> [SubviewGenerator] {
         let makeSubviewConfig = { [unowned self] (maxWidth: CGFloat) -> SubviewConfig in
             let playbackTimeLabelConfig = Self.playbackTimeLabelConfig_forMeasurement(
                 audioAttachment: audioAttachment,
-                isIncoming: true,
-                conversationStyle: conversationStyle,
                 maxWidth: maxWidth
             )
             let playbackTimeLabelSize = CVText.measureLabel(config: playbackTimeLabelConfig, maxWidth: maxWidth)
 
-            let senderLabelConfig = labelConfig_forMeasurement(
-                text: sender,
-                conversationStyle: conversationStyle)
-            let sizeLabelConfig = labelConfig_forMeasurement(
-                text: audioAttachment.sizeString,
-                conversationStyle: conversationStyle)
-            let dateLabelConfig = labelConfig_forMeasurement(
-                text: audioAttachment.dateString,
-                conversationStyle: conversationStyle)
-            let dot1Config = labelConfig_forMeasurement(
-                text: AudioAllMediaPresenter.middleDot,
-                conversationStyle: conversationStyle)
-            let dot2Config = labelConfig_forMeasurement(
-                text: AudioAllMediaPresenter.middleDot,
-                conversationStyle: conversationStyle)
+            let senderLabelConfig = labelConfig_forMeasurement(text: sender)
+            let sizeLabelConfig = labelConfig_forMeasurement(text: audioAttachment.sizeString)
+            let dateLabelConfig = labelConfig_forMeasurement(text: audioAttachment.dateString)
+            let dot1Config = labelConfig_forMeasurement(text: AudioAllMediaPresenter.middleDot)
+            let dot2Config = labelConfig_forMeasurement(text: AudioAllMediaPresenter.middleDot)
 
             var senderSize = CVText.measureLabel(config: senderLabelConfig, maxWidth: maxWidth)
             senderSize.width = min(senderSize.width, round(maxWidth * 0.33))
@@ -313,15 +301,8 @@ class AudioAllMediaPresenter: AudioPresenter {
         }
     }
 
-    private func labelConfig_forMeasurement(
-        text: String,
-        conversationStyle: ConversationStyle
-    ) -> CVLabelConfig {
-        return CVLabelConfig.unstyledText(
-            text,
-            font: Constants.bottomLineFont,
-            textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: true)
-        )
+    private func labelConfig_forMeasurement(text: String) -> CVLabelConfig {
+        return CVLabelConfig.unstyledText(text, font: Constants.bottomLineFont, textColor: .label)
     }
 
     static func hasAttachmentLabel(attachment: TSAttachment) -> Bool {
@@ -332,11 +313,7 @@ class AudioAllMediaPresenter: AudioPresenter {
         return Self.hasAttachmentLabel(attachment: attachment)
     }
 
-    func topLabelConfig(
-        audioAttachment: AudioAttachment,
-        isIncoming: Bool,
-        conversationStyle: ConversationStyle
-    ) -> CVLabelConfig? {
+    func topLabelConfig(audioAttachment: AudioAttachment, isIncoming: Bool, conversationStyle: ConversationStyle?) -> CVLabelConfig? {
 
         let attachment = audioAttachment.attachment
         guard hasAttachmentLabel(attachment: attachment) else {
@@ -353,7 +330,8 @@ class AudioAllMediaPresenter: AudioPresenter {
         return CVLabelConfig.unstyledText(
             text,
             font: Constants.filenameFont,
-            textColor: conversationStyle.bubbleTextColor(isIncoming: false))
+            textColor: conversationStyle?.bubbleTextColor(isIncoming: false) ?? .label
+        )
     }
 
     func audioWaveform(attachmentStream: TSAttachmentStream?) -> AudioWaveform? {

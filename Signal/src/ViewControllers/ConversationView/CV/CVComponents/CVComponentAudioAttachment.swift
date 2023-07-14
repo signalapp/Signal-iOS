@@ -123,8 +123,6 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             playbackRate: AudioPlaybackRate(rawValue: itemModel.itemViewState.audioPlaybackRate))
         let audioSize = AudioMessageView.measure(
             maxWidth: maxWidth,
-            sender: "",
-            conversationStyle: conversationStyle,
             measurementBuilder: measurementBuilder,
             presentation: presentation).ceil
         let audioInfo = audioSize.asManualSubviewInfo

@@ -78,16 +78,14 @@ class AudioMessageView: ManualStackView {
 
     // MARK: - Rendering
 
-    public func configureForRendering(
-        cellMeasurement: CVCellMeasurement,
-        conversationStyle: ConversationStyle
-    ) {
-
+    public func configureForRendering(cellMeasurement: CVCellMeasurement, conversationStyle: ConversationStyle) {
         var outerSubviews = [UIView]()
 
-        if let topLabelConfig = presentation.topLabelConfig(audioAttachment: presentation.audioAttachment,
-                                                            isIncoming: isIncoming,
-                                                            conversationStyle: conversationStyle) {
+        if let topLabelConfig = presentation.topLabelConfig(
+            audioAttachment: presentation.audioAttachment,
+            isIncoming: isIncoming,
+            conversationStyle: conversationStyle
+        ) {
             let topLabel = CVLabel()
             topLabelConfig.applyForRendering(label: topLabel)
             outerSubviews.append(topLabel)
@@ -137,8 +135,7 @@ class AudioMessageView: ManualStackView {
                 keypath: fillColorKeypath
             )
             playedDotAnimation.setValueProvider(
-                presentation.playedDotAnimationColor(conversationStyle: conversationStyle,
-                                                     isIncoming: isIncoming),
+                presentation.playedDotAnimationColor(conversationStyle: conversationStyle, isIncoming: isIncoming),
                 keypath: fillColorKeypath
             )
 
@@ -149,10 +146,12 @@ class AudioMessageView: ManualStackView {
 
             leftView = playPauseContainer
         } else if let attachmentPointer = presentation.audioAttachment.attachmentPointer {
-            leftView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                diameter: Constants.animationSize,
-                                                isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
-                                                mediaCache: mediaCache)
+            leftView = CVAttachmentProgressView(
+                direction: .download(attachmentPointer: attachmentPointer),
+                diameter: Constants.animationSize,
+                isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
+                mediaCache: mediaCache
+            )
         } else {
             owsFailDebug("Unexpected state.")
             leftView = UIView.transparentContainer()
@@ -160,15 +159,17 @@ class AudioMessageView: ManualStackView {
 
         let topInnerStack = ManualStackView(name: "playerStack")
         topInnerStack.semanticContentAttribute = .playback
-        topInnerStack.configure(config: Self.topInnerStackConfig,
-                             cellMeasurement: cellMeasurement,
-                             measurementKey: Self.measurementKey_topInnerStack,
-                             subviews: [
-                                leftView,
-                                .transparentSpacer(),
-                                waveformContainer,
-                                .transparentSpacer()
-                             ])
+        topInnerStack.configure(
+            config: Self.topInnerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_topInnerStack,
+            subviews: [
+                leftView,
+                .transparentSpacer(),
+                waveformContainer,
+                .transparentSpacer()
+            ]
+        )
         outerSubviews.append(topInnerStack)
 
         let generators = presentation.bottomSubviewGenerators(conversationStyle: conversationStyle)
@@ -182,10 +183,12 @@ class AudioMessageView: ManualStackView {
         )
         outerSubviews.append(bottomInnerStack)
 
-        self.configure(config: Self.outerStackConfig,
-                       cellMeasurement: cellMeasurement,
-                       measurementKey: Self.measurementKey_outerStack,
-                       subviews: outerSubviews)
+        self.configure(
+            config: Self.outerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_outerStack,
+            subviews: outerSubviews
+        )
 
         updateContents(animated: false)
 
@@ -200,17 +203,17 @@ class AudioMessageView: ManualStackView {
 
     public static func measure(
         maxWidth: CGFloat,
-        sender: String,
-        conversationStyle: ConversationStyle,
         measurementBuilder: CVCellMeasurement.Builder,
         presentation: AudioPresenter
     ) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
         var outerSubviewInfos = [ManualStackSubviewInfo]()
-        if let topLabelConfig = presentation.topLabelConfig(audioAttachment: presentation.audioAttachment,
-                                                            isIncoming: presentation.isIncoming,
-                                                            conversationStyle: conversationStyle) {
+        if let topLabelConfig = presentation.topLabelConfig(
+            audioAttachment: presentation.audioAttachment,
+            isIncoming: presentation.isIncoming,
+            conversationStyle: nil
+        ) {
             let topLabelSize = CGSize(width: 0, height: topLabelConfig.font.lineHeight)
             outerSubviewInfos.append(topLabelSize.asManualSubviewInfo)
         }
@@ -230,7 +233,8 @@ class AudioMessageView: ManualStackView {
             config: topInnerStackConfig,
             measurementBuilder: measurementBuilder,
             measurementKey: Self.measurementKey_topInnerStack,
-            subviewInfos: topInnerSubviewInfos)
+            subviewInfos: topInnerSubviewInfos
+        )
         let topInnerStackSize = topInnerStackMeasurement.measuredSize
         outerSubviewInfos.append(topInnerStackSize.ceil.asManualSubviewInfo)
 
@@ -238,16 +242,18 @@ class AudioMessageView: ManualStackView {
             config: bottomInnerStackConfig(presentation: presentation),
             measurementBuilder: measurementBuilder,
             measurementKey: Self.measurementKey_bottomInnerStack,
-            subviewInfos: presentation.bottomSubviewGenerators(conversationStyle: conversationStyle).map { $0.measurementInfo(maxWidth) }
+            subviewInfos: presentation.bottomSubviewGenerators(conversationStyle: nil).map { $0.measurementInfo(maxWidth) }
         )
         let bottomInnerStackSize = bottomInnerStackMeasurement.measuredSize
         outerSubviewInfos.append(bottomInnerStackSize.ceil.asManualSubviewInfo)
 
-        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_outerStack,
-                                                            subviewInfos: outerSubviewInfos,
-                                                            maxWidth: maxWidth)
+        let outerStackMeasurement = ManualStackView.measure(
+            config: outerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_outerStack,
+            subviewInfos: outerSubviewInfos,
+            maxWidth: maxWidth
+        )
         return outerStackMeasurement.measuredSize
     }
 
@@ -276,11 +282,12 @@ class AudioMessageView: ManualStackView {
 
     // MARK: - Tapping
 
-    public func handleTap(
-        sender: UITapGestureRecognizer,
-        itemModel: CVItemModel
-    ) -> Bool {
-        return presentation.playbackRateView.handleTap(sender: sender, itemModel: itemModel, audioMessageViewDelegate: audioMessageViewDelegate)
+    public func handleTap(sender: UITapGestureRecognizer, itemModel: CVItemModel) -> Bool {
+        presentation.playbackRateView.handleTap(
+            sender: sender,
+            itemModel: itemModel,
+            audioMessageViewDelegate: audioMessageViewDelegate
+        )
     }
 
     // MARK: - Scrubbing

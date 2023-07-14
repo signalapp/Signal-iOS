@@ -55,7 +55,7 @@ protocol AudioPresenter {
     func configureForRendering(conversationStyle: ConversationStyle)
 
     // Views to show beneath the play/pause button and waveform.
-    func bottomSubviewGenerators(conversationStyle: ConversationStyle) -> [SubviewGenerator]
+    func bottomSubviewGenerators(conversationStyle: ConversationStyle?) -> [SubviewGenerator]
 
     // Label that shows the duration remaining.
     var playbackTimeLabel: CVLabel { get }
@@ -71,10 +71,7 @@ protocol AudioPresenter {
 
     // If you want to show a label at the top of the view, return its configuration here.
     // For example, you could choose to show a filename when one exists.
-    func topLabelConfig(
-        audioAttachment: AudioAttachment,
-        isIncoming: Bool,
-        conversationStyle: ConversationStyle) -> CVLabelConfig?
+    func topLabelConfig(audioAttachment: AudioAttachment, isIncoming: Bool, conversationStyle: ConversationStyle?) -> CVLabelConfig?
 
     // The sampled waveform used to display the visual preview of the audio message.
     func audioWaveform(attachmentStream: TSAttachmentStream?) -> AudioWaveform?
@@ -82,27 +79,14 @@ protocol AudioPresenter {
 
 extension AudioPresenter {
 
-    static func playbackTimeLabelConfig_forMeasurement(
-        audioAttachment: AudioAttachment,
-        isIncoming: Bool,
-        conversationStyle: ConversationStyle,
-        maxWidth: CGFloat
-    ) -> CVLabelConfig {
+    static func playbackTimeLabelConfig_forMeasurement(audioAttachment: AudioAttachment, maxWidth: CGFloat) -> CVLabelConfig {
         // playbackTimeLabel uses a monospace font, so we measure the
         // worst-case width using the full duration of the audio.
         let text = OWSFormat.localizedDurationString(from: audioAttachment.durationSeconds)
-        let fullDurationConfig = playbackTimeLabelConfig(
-            text: text,
-            isIncoming: isIncoming,
-            conversationStyle: conversationStyle
-        )
+        let fullDurationConfig = playbackTimeLabelConfig(text: text)
         // Never let it get shorter than "0:00" duration.
         let minimumWidthText = OWSFormat.localizedDurationString(from: 0)
-        let minimumWidthConfig = playbackTimeLabelConfig(
-            text: minimumWidthText,
-            isIncoming: isIncoming,
-            conversationStyle: conversationStyle
-        )
+        let minimumWidthConfig = playbackTimeLabelConfig(text: minimumWidthText)
         if minimumWidthConfig.measure(maxWidth: maxWidth).width > fullDurationConfig.measure(maxWidth: maxWidth).width {
             return minimumWidthConfig
         } else {
@@ -110,11 +94,15 @@ extension AudioPresenter {
         }
     }
 
-    static func playbackTimeLabelConfig(text: String = " ", isIncoming: Bool, conversationStyle: ConversationStyle) -> CVLabelConfig {
+    static func playbackTimeLabelConfig(
+        text: String = " ",
+        isIncoming: Bool = true,
+        conversationStyle: ConversationStyle? = nil
+    ) -> CVLabelConfig {
         return CVLabelConfig.unstyledText(
             text,
             font: UIFont.dynamicTypeCaption1Clamped,
-            textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
+            textColor: conversationStyle?.bubbleSecondaryTextColor(isIncoming: isIncoming) ?? .label
         )
     }
 }
