@@ -554,7 +554,7 @@ private class QuotedMessageSnippetView: UIView {
     ) -> NSAttributedString {
         let baseAttributes: [NSAttributedString.Key: Any] = [
             .font: config.baseFont,
-            .foregroundColor: config.baseTextColor
+            .foregroundColor: config.baseTextColor.forCurrentTheme
         ]
         switch displayableQuotedText.displayTextValue {
         case .text(let text):
