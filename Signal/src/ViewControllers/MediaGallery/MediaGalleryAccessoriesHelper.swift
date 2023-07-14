@@ -414,14 +414,10 @@ public class MediaGalleryAccessoriesHelper {
     }
 
     private var isGridViewAllowed: Bool {
-        guard FeatureFlags.isPrerelease else { return false }
-
         return fileType.supportsGridView
     }
 
     private var currentFileTypeSupportsFiltering: Bool {
-        guard FeatureFlags.isPrerelease else { return false }
-
         switch AllMediaFileType(rawValue: headerView.selectedSegmentIndex) {
         case .audio:
             return false
