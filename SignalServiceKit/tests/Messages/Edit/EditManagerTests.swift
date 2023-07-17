@@ -31,6 +31,7 @@ class EditManagerTests: SSKBaseTestSwift {
             .init(
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
+                keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewShim: LinkPreviewMock()
             )
         )
@@ -74,6 +75,7 @@ class EditManagerTests: SSKBaseTestSwift {
             .init(
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
+                keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewShim: LinkPreviewMock()
             )
         )
@@ -105,6 +107,7 @@ class EditManagerTests: SSKBaseTestSwift {
             .init(
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
+                keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewShim: LinkPreviewMock()
             )
         )
@@ -135,6 +138,7 @@ class EditManagerTests: SSKBaseTestSwift {
             .init(
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
+                keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewShim: LinkPreviewMock()
             )
         )
@@ -169,6 +173,7 @@ class EditManagerTests: SSKBaseTestSwift {
             .init(
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
+                keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 linkPreviewShim: LinkPreviewMock()
             )
         )

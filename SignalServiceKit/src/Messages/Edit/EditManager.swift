@@ -65,28 +65,38 @@ public class EditManager {
 
         // Message can only be edited 10 times
         static let maxSendEdits: UInt = UInt(10)
+
+        // EDUCATION
+
+        static let collectionName: String = "EditManager"
+        static let shouldShowEditSendBetaWarning: String = "shouldShowEditSendBetaWarning"
     }
 
     public struct Context {
         let dataStore: EditManager.Shims.DataStore
         let groupsShim: EditManager.Shims.Groups
+        let keyValueStoreFactory: KeyValueStoreFactory
         let linkPreviewShim: EditManager.Shims.LinkPreview
 
         public init(
             dataStore: EditManager.Shims.DataStore,
             groupsShim: EditManager.Shims.Groups,
+            keyValueStoreFactory: KeyValueStoreFactory,
             linkPreviewShim: EditManager.Shims.LinkPreview
         ) {
             self.dataStore = dataStore
             self.groupsShim = groupsShim
+            self.keyValueStoreFactory = keyValueStoreFactory
             self.linkPreviewShim = linkPreviewShim
         }
     }
 
     private let context: Context
+    private let keyValueStore: KeyValueStore
 
     public init(context: Context) {
         self.context = context
+        self.keyValueStore = context.keyValueStoreFactory.keyValueStore(collection: Constants.collectionName)
     }
 
     // MARK: - Incoming Edit Processing
@@ -223,6 +233,22 @@ public class EditManager {
         }
 
         return nil
+    }
+
+    public func shouldShowEditSendBetaConfirmation(tx: DBReadTransaction) -> Bool {
+        return keyValueStore.getBool(
+            Constants.shouldShowEditSendBetaWarning,
+            defaultValue: true,
+            transaction: tx
+        )
+    }
+
+    public func setShouldShowEditSendBetaConfirmation(_ shouldShow: Bool, tx: DBWriteTransaction) {
+        keyValueStore.setBool(
+            shouldShow,
+            key: Constants.shouldShowEditSendBetaWarning,
+            transaction: tx
+        )
     }
 
     // MARK: - Outgoing Edit Send

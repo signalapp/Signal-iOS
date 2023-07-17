@@ -185,6 +185,7 @@ public class DependenciesBridge {
             context: .init(
                 dataStore: EditManager.Wrappers.DataStore(),
                 groupsShim: EditManager.Wrappers.Groups(groupsV2: groupsV2),
+                keyValueStoreFactory: keyValueStoreFactory,
                 linkPreviewShim: EditManager.Wrappers.LinkPreview()
             )
         )

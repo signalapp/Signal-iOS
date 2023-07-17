@@ -175,6 +175,10 @@ class DebugUIMisc: DebugUIPage, Dependencies {
 
             OWSTableItem(title: "Test spoiler animations", actionBlock: {
                 DebugUIMisc.showSpoilerAnimationTestController()
+            }),
+
+            OWSTableItem(title: "Enable edit send beta prompt", actionBlock: {
+                DebugUIMisc.enableEditBetaPromptMessage()
             })
         ]
         return OWSTableSection(title: name, items: items)
@@ -497,6 +501,15 @@ class DebugUIMisc: DebugUIPage, Dependencies {
     private static func showSpoilerAnimationTestController() {
         let viewController = SpoilerAnimationTestController()
         UIApplication.shared.frontmostViewController!.present(viewController, animated: true)
+    }
+
+    private static func enableEditBetaPromptMessage() {
+        databaseStorage.write { tx in
+            DependenciesBridge.shared.editManager.setShouldShowEditSendBetaConfirmation(
+                true,
+                tx: tx.asV2Write
+            )
+        }
     }
 }
 

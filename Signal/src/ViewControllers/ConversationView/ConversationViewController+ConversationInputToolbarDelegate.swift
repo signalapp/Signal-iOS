@@ -100,6 +100,35 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
 
+        if inputToolbar.editTarget != nil {
+            let shouldShowBetaAlert = Self.databaseStorage.read { transaction in
+                context.editManager.shouldShowEditSendBetaConfirmation(tx: transaction.asV2Read)
+            }
+
+            if shouldShowBetaAlert {
+                OWSActionSheets.showConfirmationAlert(
+                    title: OWSLocalizedString(
+                        "EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE",
+                        comment: "Edit Send Beta prompt title"
+                    ),
+                    message: OWSLocalizedString(
+                        "EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY",
+                        comment: "Edit Send Beta prompt body"
+                    ),
+                    proceedTitle: OWSLocalizedString(
+                        "EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM",
+                        comment: "Label to confirm sending an edit"
+                    )
+                ) { _ in
+                    Self.databaseStorage.write { transaction in
+                        self.context.editManager.setShouldShowEditSendBetaConfirmation(false, tx: transaction.asV2Write)
+                    }
+                    self.tryToSendTextMessage(messageBody, updateKeyboardState: false)
+                }
+                return
+            }
+        }
+
         let editValidationError: EditSendValidationError? = Self.databaseStorage.read { transaction in
             if let editTarget = inputToolbar.editTarget {
                 return context.editManager.validateCanSendEdit(
