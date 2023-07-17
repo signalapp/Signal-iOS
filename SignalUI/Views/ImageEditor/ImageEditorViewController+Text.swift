@@ -294,6 +294,11 @@ extension ImageEditorViewController: UITextViewDelegate {
             self.textViewContainer.alpha = 0
         }
     }
+    
+    func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
+        finishTextEditing(applyEdits: true)
+        return true
+    }
 }
 
 // MARK: - ImageEditorViewDelegate
