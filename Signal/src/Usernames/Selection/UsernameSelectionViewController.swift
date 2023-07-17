@@ -463,25 +463,32 @@ private extension UsernameSelectionViewController {
             }
         }()
 
-        var animatedLayoutBlock: ((UITextView) -> Void)?
+        var layoutBlock: ((UITextView) -> Void)?
 
         if let errorText {
             usernameErrorTextView.text = errorText
 
             if usernameErrorTextViewZeroHeightConstraint.isActive {
                 usernameErrorTextViewZeroHeightConstraint.isActive = false
-                animatedLayoutBlock = { $0.layer.opacity = 1 }
+                layoutBlock = { $0.layer.opacity = 1 }
             }
         } else if !usernameErrorTextViewZeroHeightConstraint.isActive {
             usernameErrorTextViewZeroHeightConstraint.isActive = true
-            animatedLayoutBlock = { $0.layer.opacity = 0 }
+            layoutBlock = { $0.layer.opacity = 0 }
         }
 
-        if let animatedLayoutBlock {
+        guard let layoutBlock else {
+            return
+        }
+
+        if UIAccessibility.isReduceMotionEnabled {
+            layoutBlock(self.usernameErrorTextView)
+            self.view.layoutIfNeeded()
+        } else {
             let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 1, springResponse: 0.3)
 
             animator.addAnimations {
-                animatedLayoutBlock(self.usernameErrorTextView)
+                layoutBlock(self.usernameErrorTextView)
                 self.view.layoutIfNeeded()
             }
 

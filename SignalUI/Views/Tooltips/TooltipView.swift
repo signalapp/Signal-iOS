@@ -91,6 +91,10 @@ open class TooltipView: UIView {
         owsFail("Implemented by subclasses!")
     }
 
+    /// Whether or not to add a blur effect to the bubble.
+    ///
+    /// Note that this is ignored if
+    /// ``UIAccessibility.isReduceTransparencyEnabled`` is `true`.
     open var bubbleBlur: Bool {
         false
     }
@@ -184,7 +188,7 @@ open class TooltipView: UIView {
         outlineView.autoPinEdgesToSuperviewEdges()
         contentView.autoPinEdgesToSuperviewEdges()
 
-        if bubbleBlur {
+        if bubbleBlur, !UIAccessibility.isReduceTransparencyEnabled {
             let blurEffect = UIBlurEffect(style: .regular)
             let blurEffectView = UIVisualEffectView(effect: blurEffect)
             let vibrancyEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: blurEffect, style: .label))

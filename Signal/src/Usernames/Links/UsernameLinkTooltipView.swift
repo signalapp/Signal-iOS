@@ -129,7 +129,11 @@ class UsernameLinkTooltipView: TooltipView {
     }
 
     override var bubbleColor: UIColor {
-        Theme.isDarkThemeEnabled ? .ows_blackAlpha80 : .ows_whiteAlpha80
+        if UIAccessibility.isReduceTransparencyEnabled {
+            return Theme.isDarkThemeEnabled ? .ows_black : .ows_white
+        }
+
+        return Theme.isDarkThemeEnabled ? .ows_blackAlpha80 : .ows_whiteAlpha80
     }
 
     override var bubbleBlur: Bool {

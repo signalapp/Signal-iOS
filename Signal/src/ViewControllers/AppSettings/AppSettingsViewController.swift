@@ -483,8 +483,14 @@ class AppSettingsViewController: OWSTableViewController2 {
             self.present(navController, animated: true)
         }
 
-        usernameLinkButton.backgroundColor = .ows_gray05
-        usernameLinkButton.setImage(Theme.iconImage(.qrCode), for: .normal)
+        if Theme.isDarkThemeEnabled {
+            usernameLinkButton.backgroundColor = .ows_gray65
+            usernameLinkButton.setTemplateImage(Theme.iconImage(.qrCode), tintColor: .ows_gray15)
+        } else {
+            usernameLinkButton.backgroundColor = .ows_gray05
+            usernameLinkButton.setImage(Theme.iconImage(.qrCode), for: .normal)
+        }
+
         usernameLinkButton.bounds = CGRect(origin: .zero, size: .square(36))
 
         return usernameLinkButton
