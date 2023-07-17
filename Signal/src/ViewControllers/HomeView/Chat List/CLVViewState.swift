@@ -20,7 +20,7 @@ public class CLVViewState {
     let cellContentCache = LRUCache<String, CLVCellContentToken>(maxSize: 256)
     public var conversationCellHeightCache: CGFloat?
 
-    public var spoilerAnimator = SpoilerAnimator()
+    public var spoilerAnimationManager = SpoilerAnimationManager()
 
     // MARK: - Views
 

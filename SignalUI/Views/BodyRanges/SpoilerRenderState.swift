@@ -9,10 +9,10 @@ import SignalServiceKit
 /// Container for stateful objects needed to render spoilers.
 public class SpoilerRenderState {
     public let revealState: SpoilerRevealState
-    public let animator: SpoilerAnimator
+    public let animationManager: SpoilerAnimationManager
 
     public init() {
         self.revealState = SpoilerRevealState()
-        self.animator = SpoilerAnimator()
+        self.animationManager = SpoilerAnimationManager()
     }
 }

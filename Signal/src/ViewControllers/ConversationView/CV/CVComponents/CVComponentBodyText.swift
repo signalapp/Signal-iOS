@@ -393,7 +393,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             componentView: componentView,
             bodyTextLabelConfig: bodyTextLabelConfig,
             cellMeasurement: cellMeasurement,
-            spoilerAnimator: componentDelegate.spoilerState.animator
+            spoilerAnimationManager: componentDelegate.spoilerState.animationManager
         )
     }
 
@@ -401,12 +401,12 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         componentView: CVComponentViewBodyText,
         bodyTextLabelConfig: CVTextLabel.Config,
         cellMeasurement: CVCellMeasurement,
-        spoilerAnimator: SpoilerAnimator
+        spoilerAnimationManager: SpoilerAnimationManager
     ) {
         AssertIsOnMainThread()
 
         let bodyTextLabel = componentView.bodyTextLabel
-        bodyTextLabel.configureForRendering(config: bodyTextLabelConfig, spoilerAnimator: spoilerAnimator)
+        bodyTextLabel.configureForRendering(config: bodyTextLabelConfig, spoilerAnimationManager: spoilerAnimationManager)
 
         if bodyTextLabel.view.superview == nil {
             let stackView = componentView.stackView

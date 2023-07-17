@@ -153,10 +153,10 @@ public class CVTextLabel: NSObject {
         super.init()
     }
 
-    public func configureForRendering(config: Config, spoilerAnimator: SpoilerAnimator) {
+    public func configureForRendering(config: Config, spoilerAnimationManager: SpoilerAnimationManager) {
         AssertIsOnMainThread()
         label.config = config
-        label.spoilerAnimator = spoilerAnimator
+        label.spoilerAnimationManager = spoilerAnimationManager
     }
 
     public func setIsCellVisible(_ isCellVisible: Bool) {
@@ -288,9 +288,9 @@ public class CVTextLabel: NSObject {
             }
         }
 
-        fileprivate var spoilerAnimator: SpoilerAnimator? {
+        fileprivate var spoilerAnimationManager: SpoilerAnimationManager? {
             didSet {
-                if spoilerAnimator == nil, let oldValue, self.isAnimatingSpoilers {
+                if spoilerAnimationManager == nil, let oldValue, self.isAnimatingSpoilers {
                     self.isAnimatingSpoilers = false
                     oldValue.removeViewAnimator(self)
                 } else {
@@ -435,7 +435,13 @@ public class CVTextLabel: NSObject {
                 return
             }
 
-            textStorage.addAttributes(config.selectionStyling, range: selectedItem.range)
+            switch selectedItem {
+            case .mention, .referencedUser, .dataItem:
+                textStorage.addAttributes(config.selectionStyling, range: selectedItem.range)
+            case .unrevealedSpoiler:
+                // Don't apply anything for spoilers.
+                return
+            }
 
             setNeedsDisplay()
         }
@@ -496,13 +502,13 @@ public class CVTextLabel: NSObject {
                 wantsToAnimate = false
             }
 
-            guard isAnimatingSpoilers != wantsToAnimate, let spoilerAnimator else {
+            guard isAnimatingSpoilers != wantsToAnimate, let spoilerAnimationManager else {
                 return
             }
             if wantsToAnimate {
-                spoilerAnimator.addViewAnimator(self)
+                spoilerAnimationManager.addViewAnimator(self)
             } else {
-                spoilerAnimator.removeViewAnimator(self)
+                spoilerAnimationManager.removeViewAnimator(self)
             }
             self.isAnimatingSpoilers = wantsToAnimate
         }
@@ -578,9 +584,16 @@ extension CVTextLabel.Label: SpoilerableViewAnimator {
         let spoilerRanges = messageBody.spoilerRangesForAnimation(config: displayConfig)
         return textContainer.boundingRects(
             ofCharacterRanges: spoilerRanges,
+            rangeMap: \.range,
             textStorage: textStorage,
             layoutManager: layoutManager,
-            transform: SpoilerFrame.init(frame:color:)
+            transform: { rect, spoilerRange in
+                return .init(
+                    frame: rect,
+                    color: spoilerRange.color,
+                    style: spoilerRange.isSearchResult ? .highlight : .standard
+                )
+            }
         )
     }
 }

@@ -479,7 +479,7 @@ class StoryItemMediaView: UIView {
             self.spoilerState = spoilerState
             self.spoilerConfig = .init(isViewVisible: false)
             super.init(frame: .zero)
-            spoilerConfig.animator = spoilerState.animator
+            spoilerConfig.animationManager = spoilerState.animationManager
 
             super.textColor = Theme.darkThemePrimaryColor
 

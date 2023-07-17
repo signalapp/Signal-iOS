@@ -790,7 +790,7 @@
 		662ABF3329510F8300518D90 /* OutgoingCallEventSyncMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6640639A294D1F8D00997E0B /* OutgoingCallEventSyncMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* FingerprintViewController.swift */; };
 		662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */; };
-		662AC9292A4A4A0A009E2D5F /* SpoilerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9282A4A4A0A009E2D5F /* SpoilerAnimator.swift */; };
+		662AC9292A4A4A0A009E2D5F /* SpoilerAnimationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */; };
 		662AC92B2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC92A2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift */; };
 		662C44092A1567E4001F83E2 /* svr2.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C44082A1567E4001F83E2 /* svr2.pb.swift */; };
 		662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */; };
@@ -3297,7 +3297,7 @@
 		6618D5EE2A20065F0059BA93 /* SVR2ConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2ConcurrencyTests.swift; sourceTree = "<group>"; };
 		662AC9242A460477009E2D5F /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
 		662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderer.swift; sourceTree = "<group>"; };
-		662AC9282A4A4A0A009E2D5F /* SpoilerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimator.swift; sourceTree = "<group>"; };
+		662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimationManager.swift; sourceTree = "<group>"; };
 		662AC92A2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerAnimationTestController.swift; sourceTree = "<group>"; };
 		662C44082A1567E4001F83E2 /* svr2.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = svr2.pb.swift; sourceTree = "<group>"; };
 		662C440A2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery2Impl.swift; sourceTree = "<group>"; };
@@ -5832,7 +5832,7 @@
 				66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */,
 				66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */,
 				66CDE5C32A58928000B7C607 /* SpoilerableTextViewAnimator.swift */,
-				662AC9282A4A4A0A009E2D5F /* SpoilerAnimator.swift */,
+				662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */,
 				662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */,
 				663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */,
 			);
@@ -11064,7 +11064,7 @@
 				3402AA4F271D9DCD0084CBAE /* SpamCaptchaViewController.swift in Sources */,
 				66AEFCA42A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift in Sources */,
 				66CDE5C42A58928000B7C607 /* SpoilerableTextViewAnimator.swift in Sources */,
-				662AC9292A4A4A0A009E2D5F /* SpoilerAnimator.swift in Sources */,
+				662AC9292A4A4A0A009E2D5F /* SpoilerAnimationManager.swift in Sources */,
 				662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */,
 				663BA3182A4B8595004B9A43 /* SpoilerRenderState.swift in Sources */,
 				3402AA47271D9DCD0084CBAE /* StickerHorizontalListView.swift in Sources */,

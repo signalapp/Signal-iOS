@@ -7,6 +7,9 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
+/// Animates spoilers on a UITextView or UITextView subclass.
+/// Users must hold a reference to the animator alongside the UITextView,
+/// and configure it with a SpoilerableTextConfig to begin animation.
 public class SpoilerableTextViewAnimator {
 
     private weak var textView: UITextView?
@@ -46,11 +49,11 @@ public class SpoilerableTextViewAnimator {
             return
         }
         if wantsToAnimate {
-            config.animator.addViewAnimator(self)
+            config.animationManager.addViewAnimator(self)
             self.isAnimating = true
         } else {
             // We are stopping animations.
-            config.animator.removeViewAnimator(self)
+            config.animationManager.removeViewAnimator(self)
             self.isAnimating = false
         }
     }
@@ -107,10 +110,17 @@ extension SpoilerableTextViewAnimator: SpoilerableViewAnimator {
             let spoilerRanges = messageBody.spoilerRangesForAnimation(config: displayConfig)
             return textContainer.boundingRects(
                 ofCharacterRanges: spoilerRanges,
+                rangeMap: \.range,
                 textStorage: textStorage,
                 layoutManager: layoutManager,
                 textContainerInsets: textContainerInsets,
-                transform: SpoilerFrame.init(frame:color:)
+                transform: { rect, spoilerRange in
+                    return .init(
+                        frame: rect,
+                        color: spoilerRange.color,
+                        style: spoilerRange.isSearchResult ? .highlight : .standard
+                    )
+                }
             )
         }
     }

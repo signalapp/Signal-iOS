@@ -5,59 +5,72 @@
 
 import Foundation
 
+/// Produces the actual particle effects used to tile spoilered regions.
+/// Does not on its own animate or apply any spoiler animations; `SpoilerAnimationManager`
+/// handles that. Instead this class just produces one tile, one frame at a time, and spits them
+/// out as pattern image UIColors.
 public class SpoilerRenderer {
 
-    // Should these vary by device? Or drop when getting a memory warning?
+    /// Should these vary by device? Or drop when getting a memory warning?
+    /// Performance is sensitive to these values. Tweak them if it becomes an issue.
     private static let tileWidth: CGFloat = 100
     private static let xOverlayPercent: CGFloat = 0.10
     private static let tileHeight: CGFloat = 40
     private static let yOverlayPercent: CGFloat = 0.25
     private static let particlesPerUnit: CGFloat = 0.06
-    private static let particleRadiusPoints: CGFloat = 1
 
     private static let particleCount = Int(tileWidth * tileHeight * particlesPerUnit)
 
-    private lazy var particles: [Particle] =
-        .random(alpha: 0.9, count: Self.particleCount)
-        + .random(alpha: 0.7, count: Self.particleCount)
-        + .random(alpha: 0.5, count: Self.particleCount)
+    // Must be three layers in sync with the spec below.
+    private lazy var particleLayers: [[Particle]] = [
+        .random(count: Self.particleCount),
+        .random(count: Self.particleCount),
+        .random(count: Self.particleCount)
+    ]
 
-    private var lastDrawDate = Date()
+    public struct Spec: Equatable, Hashable {
+        // Must be three alpha values, for the three particle layers.
+        // constructors for this spec are private for this reason.
+        fileprivate let particleAlphas: [CGFloat]
+        fileprivate let particleRadiusPoints: CGFloat
+        fileprivate let color: UIColor
 
-    // Drawing to a UIImage and tiling is reasonably efficient,
-    // but there may be further efficiency gains with some other method.
-    public var uiImage: UIImage!
+        public static func standard(color: UIColor) -> Self {
+            return .init(particleAlphas: [0.9, 0.7, 0.5], particleRadiusPoints: 1, color: color)
+        }
 
-    public init() {
-        _ = self.render()
+        public static func highlight(color: UIColor) -> Self {
+            return .init(particleAlphas: [0.95, 0.9, 0.85], particleRadiusPoints: 2, color: color)
+        }
     }
 
-    public func render() -> UIImage {
+    /// Drawing each UIImage is expensive. Cache the values we produce on each tick, by spec used to produce it.
+    private var tileColors = [Spec: UIColor]()
+
+    public init() {}
+
+    public func getOrRenderTilingColor(_ spec: Spec) -> UIColor {
+        return tileColors[spec] ?? render(spec)
+    }
+
+    private func render(_ spec: Spec) -> UIColor {
         UIGraphicsBeginImageContextWithOptions(CGSize(width: Self.tileWidth, height: Self.tileHeight), false, 0.0)
         guard let context = UIGraphicsGetCurrentContext() else {
-            return UIImage()
+            return UIColor.clear
         }
-        let now = Date()
-        let timeDelta = now.timeIntervalSince(lastDrawDate)
-        lastDrawDate = now
-        render(particles: &particles, into: context, timeDelta: timeDelta)
+        Self.render(particleLayers: particleLayers, into: context, spec: spec)
         let image = UIGraphicsGetImageFromCurrentImageContext()?.withRenderingMode(.alwaysTemplate) ?? UIImage()
         UIGraphicsEndImageContext()
-        self.uiImage = image
-        return image
+        let tileColor = UIColor(patternImage: image)
+        self.tileColors[spec] = tileColor
+        return tileColor
     }
 
-    public func resetLastDrawDate() {
-        self.lastDrawDate = Date()
-    }
-
-    private func render(
-        particles: inout [Particle],
+    private static func render(
+        particleLayers: [[Particle]],
         into context: CGContext,
-        timeDelta: TimeInterval
+        spec: Spec
     ) {
-        let timeDeltaF = CGFloat(timeDelta)
-
         let width = CGFloat(context.width) / UIScreen.main.scale
         let height = CGFloat(context.height) / UIScreen.main.scale
 
@@ -65,35 +78,55 @@ public class SpoilerRenderer {
             return
         }
 
-        var lastAlpha: CGFloat = -1
-        for i in 0..<particles.count {
-            var particle = particles[i]
-            defer {
-                particles[i] = particle
+        for (layerIndex, layer) in particleLayers.enumerated() {
+            let alpha = spec.particleAlphas[layerIndex]
+            context.setFillColor(spec.color.withAlphaComponent(alpha).cgColor)
+            for particle in layer {
+                // Draw the particle.
+                context.fillEllipse(in: CGRect(
+                    x: (particle.x) * width,
+                    y: (particle.y) * height,
+                    width: spec.particleRadiusPoints,
+                    height: spec.particleRadiusPoints
+                ))
             }
-            let newX = particle.x + (timeDeltaF * particle.xVel)
-            let newY = particle.y + (timeDeltaF * particle.yVel)
-            let outOfBoundsX = newX < -Self.xOverlayPercent || newX > 1 + Self.xOverlayPercent
-            let outOfBoundsY = newY < -Self.yOverlayPercent || newY > 1 + Self.yOverlayPercent
-            particle.timeRemaining -= timeDelta
-            if particle.timeRemaining < 0 || outOfBoundsX || outOfBoundsY {
-                particle.respawn()
-            } else {
-                particle.x = newX
-                particle.y = newY
+        }
+    }
+
+    private var lastTickDate = Date()
+
+    public func resetLastTickDate() {
+        self.lastTickDate = Date()
+    }
+
+    public func tick() {
+        // Wipe the cache.
+        tileColors = [:]
+
+        let now = Date()
+        let timeDelta = now.timeIntervalSince(lastTickDate)
+        lastTickDate = now
+
+        let timeDeltaF = CGFloat(timeDelta)
+
+        for layerIndex in 0..<particleLayers.count {
+            for particleIndex in 0..<particleLayers[layerIndex].count {
+                var particle = particleLayers[layerIndex][particleIndex]
+                defer {
+                    particleLayers[layerIndex][particleIndex] = particle
+                }
+                let newX = particle.x + (timeDeltaF * particle.xVel)
+                let newY = particle.y + (timeDeltaF * particle.yVel)
+                let outOfBoundsX = newX < -Self.xOverlayPercent || newX > 1 + Self.xOverlayPercent
+                let outOfBoundsY = newY < -Self.yOverlayPercent || newY > 1 + Self.yOverlayPercent
+                particle.timeRemaining -= timeDelta
+                if particle.timeRemaining < 0 || outOfBoundsX || outOfBoundsY {
+                    particle.respawn()
+                } else {
+                    particle.x = newX
+                    particle.y = newY
+                }
             }
-            if particle.alpha != lastAlpha {
-                // Tinting happens separately, only alpha matters.
-                context.setFillColor(gray: 1, alpha: particle.alpha)
-                lastAlpha = particle.alpha
-            }
-            // Draw the particle.
-            context.fillEllipse(in: CGRect(
-                x: (newX) * width,
-                y: (newY) * height,
-                width: Self.particleRadiusPoints,
-                height: Self.particleRadiusPoints
-            ))
         }
     }
 
@@ -109,17 +142,14 @@ public class SpoilerRenderer {
         // Time until the particle disappears.
         var timeRemaining: TimeInterval
 
-        let alpha: CGFloat
-
-        static func random(alpha: CGFloat) -> Particle {
+        static func random() -> Particle {
             return .init(
                 x: .random(in: -SpoilerRenderer.xOverlayPercent...(1 + SpoilerRenderer.xOverlayPercent)),
                 y: .random(in: -SpoilerRenderer.yOverlayPercent...(1 + SpoilerRenderer.yOverlayPercent)),
                 xVel: .random(in: -0.1...0.1),
                 // Y is faster than X because absolute height is smaller.
                 yVel: .random(in: -0.5...0.5),
-                timeRemaining: .random(in: 1...2),
-                alpha: alpha
+                timeRemaining: .random(in: 1...2)
             )
         }
 
@@ -136,7 +166,7 @@ public class SpoilerRenderer {
 
 extension Array where Element == SpoilerRenderer.Particle {
 
-    static func random(alpha: CGFloat, count: Int) -> Self {
-        return (0..<count).map { _ in .random(alpha: alpha) }
+    static func random(count: Int) -> Self {
+        return (0..<count).map { _ in .random() }
     }
 }

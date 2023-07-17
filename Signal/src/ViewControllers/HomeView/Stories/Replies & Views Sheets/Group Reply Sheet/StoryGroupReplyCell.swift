@@ -286,7 +286,7 @@ class StoryGroupReplyCell: UITableViewCell {
     }
 
     func configureBodyAndFooter(for item: StoryGroupReplyViewItem, spoilerState: SpoilerRenderState) {
-        messageSpoilerConfigBuilder.animator = spoilerState.animator
+        messageSpoilerConfigBuilder.animationManager = spoilerState.animationManager
 
         let messageText: CVTextValue? = {
             if item.wasRemotelyDeleted {

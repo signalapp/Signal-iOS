@@ -26,7 +26,7 @@ public class ConversationSearchViewController: UITableViewController {
     private var lastReloadDate: Date?
     private let cellContentCache = LRUCache<String, CLVCellContentToken>(maxSize: 256)
 
-    private lazy var spoilerAnimator = SpoilerAnimator()
+    private lazy var spoilerAnimationManager = SpoilerAnimationManager()
 
     public var searchText = "" {
         didSet {
@@ -358,7 +358,7 @@ public class ConversationSearchViewController: UITableViewController {
                 return UITableViewCell()
             }
             let cellContentToken = cellContentToken(forConfiguration: configuration)
-            cell.configure(cellContentToken: cellContentToken, spoilerAnimator: spoilerAnimator)
+            cell.configure(cellContentToken: cellContentToken, spoilerAnimationManager: spoilerAnimationManager)
             return cell
         }
     }

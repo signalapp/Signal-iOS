@@ -143,7 +143,7 @@ class MediaCaptionView: UIView {
 
         init(spoilerState: SpoilerRenderState) {
             var spoilerConfig = SpoilerableTextConfig.Builder(isViewVisible: true)
-            spoilerConfig.animator = spoilerState.animator
+            spoilerConfig.animationManager = spoilerState.animationManager
             self.spoilerConfig = spoilerConfig
             self.spoilerState = spoilerState
             super.init(frame: .zero, textContainer: nil)

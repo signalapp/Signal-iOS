@@ -140,7 +140,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         // Configuring the text label should happen in both reuse and non-reuse
         // scenarios
-        textLabel.configureForRendering(config: textLabelConfig, spoilerAnimator: componentDelegate.spoilerState.animator)
+        textLabel.configureForRendering(config: textLabelConfig, spoilerAnimationManager: componentDelegate.spoilerState.animationManager)
         textLabel.view.accessibilityLabel = textLabelConfig.text.accessibilityDescription
 
         if isReusing {

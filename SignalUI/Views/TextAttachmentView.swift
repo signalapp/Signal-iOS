@@ -347,7 +347,7 @@ open class TextAttachmentView: UIView {
             textLabel.textAlignment = textAlignment
             textLabelSpoilerConfig.displayConfig = displayConfig
             textLabelSpoilerConfig.text = .messageBody(hydratedBody)
-            textLabelSpoilerConfig.animator = spoilerState?.animator
+            textLabelSpoilerConfig.animationManager = spoilerState?.animationManager
         }
 
         if let textBackgroundColor = textBackgroundColor {

@@ -10,7 +10,7 @@ import SignalUI
 
 public class SpoilerAnimationTestController: UIViewController {
 
-    private let animator = SpoilerAnimator()
+    private let spoilerAnimationManager = SpoilerAnimationManager()
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +25,7 @@ public class SpoilerAnimationTestController: UIViewController {
             view.frame = CGRect(x: 0, y: totalHeight, width: UIScreen.main.bounds.width, height: rowHeight)
             totalHeight += rowHeight
             self.view.addSubview(view)
-            animator.addViewAnimator(view)
+            spoilerAnimationManager.addViewAnimator(view)
         }
     }
 
@@ -35,7 +35,7 @@ public class SpoilerAnimationTestController: UIViewController {
         var spoilerFramesCacheKey: Int { 0 }
 
         func spoilerFrames() -> [SpoilerFrame] {
-            return [.init(frame: bounds, color: .fixed(tintColor))]
+            return [.init(frame: bounds, color: .fixed(tintColor), style: .standard)]
         }
     }
 }

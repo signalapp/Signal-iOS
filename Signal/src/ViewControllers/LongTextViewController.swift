@@ -77,7 +77,7 @@ public class LongTextViewController: OWSViewController {
             )
         )
 
-        messageTextViewSpoilerConfig.animator = self.spoilerState.animator
+        messageTextViewSpoilerConfig.animationManager = self.spoilerState.animationManager
         messageTextViewSpoilerConfig.text = displayableText?.fullTextValue
         messageTextViewSpoilerConfig.displayConfig = displayConfig
 

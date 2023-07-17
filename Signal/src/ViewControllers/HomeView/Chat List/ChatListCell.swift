@@ -316,7 +316,7 @@ public class ChatListCell: UITableViewCell {
 
     func configure(
         cellContentToken: CLVCellContentToken,
-        spoilerAnimator: SpoilerAnimator,
+        spoilerAnimationManager: SpoilerAnimationManager,
         asyncAvatarLoadingAllowed: Bool = true
     ) {
         AssertIsOnMainThread()
@@ -350,7 +350,7 @@ public class ChatListCell: UITableViewCell {
         snippetLabelConfig.applyForRendering(label: snippetLabel)
         spoilerConfigBuilder.text = snippetLabelConfig.text
         spoilerConfigBuilder.displayConfig = snippetLabelConfig.displayConfig
-        spoilerConfigBuilder.animator = spoilerAnimator
+        spoilerConfigBuilder.animationManager = spoilerAnimationManager
 
         owsAssertDebug(avatarView == nil, "ChatListCell.configure without prior reset called")
         avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .noteToSelf, useAutolayout: true)

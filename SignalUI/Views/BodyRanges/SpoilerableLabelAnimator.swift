@@ -7,23 +7,35 @@ import Foundation
 import SignalServiceKit
 import UIKit
 
+/// Defines values needed to apply spoilers to a UITextView or UILabel.
+///
+/// This API acknowledges that these will be shown inside table view cells which
+/// may not receieve all necessary inputs together at once. The animationManager might
+/// be set in the initializer or via initial view setup, but the text value will only be provided
+/// at cell configuration time. Instead of requiring each user to keep its own state for each
+/// required input, the config contains all inputs and can be constructed piece by piece.
+///
+/// The other side of this coin is callers must remember to set ALL fields eventually, or spoiler animation
+/// will not start. There will be no warning or error for missing inputs; it just won't animate.
 public struct SpoilerableTextConfig {
     public let text: CVTextValue?
     public let displayConfig: HydratedMessageBody.DisplayConfiguration
-    public let animator: SpoilerAnimator
+    public let animationManager: SpoilerAnimationManager
     public let isViewVisible: Bool
 
+    /// Use a builder to construct a config piece by piece, and only get a config via `build()`
+    /// once every piece is assembled.
     public struct Builder {
         public var text: CVTextValue??
         public var displayConfig: HydratedMessageBody.DisplayConfiguration?
-        public var animator: SpoilerAnimator?
+        public var animationManager: SpoilerAnimationManager?
         public var isViewVisible: Bool
 
         public init(isViewVisible: Bool) {
             self.isViewVisible = isViewVisible
             text = .none
             displayConfig = nil
-            animator = nil
+            animationManager = nil
         }
 
         public func build() -> SpoilerableTextConfig? {
@@ -34,13 +46,13 @@ public struct SpoilerableTextConfig {
             case .some(let wrapped):
                 unwrappedText = wrapped
             }
-            guard let displayConfig, let animator else {
+            guard let displayConfig, let animationManager else {
                 return nil
             }
             return .init(
                 text: unwrappedText,
                 displayConfig: displayConfig,
-                animator: animator,
+                animationManager: animationManager,
                 isViewVisible: isViewVisible
             )
         }
@@ -49,16 +61,24 @@ public struct SpoilerableTextConfig {
     private init(
         text: CVTextValue?,
         displayConfig: HydratedMessageBody.DisplayConfiguration,
-        animator: SpoilerAnimator,
+        animationManager: SpoilerAnimationManager,
         isViewVisible: Bool
     ) {
         self.text = text
         self.displayConfig = displayConfig
-        self.animator = animator
+        self.animationManager = animationManager
         self.isViewVisible = isViewVisible
     }
 }
 
+/// Animates spoilers on a UILabel or UILabel subclass.
+/// Users must hold a reference to the animator alongside the UILabel,
+/// and configure it with a SpoilerableTextConfig to begin animation.
+///
+/// NOTE: UILabel does not expose everything needed to determine the position of
+/// characters within its bounds. This is done via an approximation; see `UILabel.boundingRects`,
+/// but this may break if unusual configuration is applied to the label, or if a subclass overrides
+/// rendering in an unanticipated way.
 public class SpoilerableLabelAnimator {
 
     private weak var label: UILabel?
@@ -98,11 +118,11 @@ public class SpoilerableLabelAnimator {
             return
         }
         if wantsToAnimate {
-            config.animator.addViewAnimator(self)
+            config.animationManager.addViewAnimator(self)
             self.isAnimating = true
         } else {
             // We are stopping animations.
-            config.animator.removeViewAnimator(self)
+            config.animationManager.removeViewAnimator(self)
             self.isAnimating = false
         }
     }
@@ -151,7 +171,14 @@ extension SpoilerableLabelAnimator: SpoilerableViewAnimator {
             let spoilerRanges = messageBody.spoilerRangesForAnimation(config: displayConfig)
             return label.boundingRects(
                 ofCharacterRanges: spoilerRanges,
-                transform: SpoilerFrame.init(frame:color:)
+                rangeMap: \.range,
+                transform: { rect, spoilerRange in
+                    return .init(
+                        frame: rect,
+                        color: spoilerRange.color,
+                        style: spoilerRange.isSearchResult ? .highlight : .standard
+                    )
+                }
             )
         }
     }

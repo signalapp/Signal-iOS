@@ -616,7 +616,7 @@ extension CLVTableDataSource: UITableViewDataSource {
         let configuration = cellConfigurationAndContentToken.configuration
         let contentToken = cellConfigurationAndContentToken.contentToken
 
-        cell.configure(cellContentToken: contentToken, spoilerAnimator: viewState.spoilerAnimator)
+        cell.configure(cellContentToken: contentToken, spoilerAnimationManager: viewState.spoilerAnimationManager)
         let thread = configuration.thread.threadRecord
         let cellName: String = {
             if let groupThread = thread as? TSGroupThread {
@@ -792,7 +792,7 @@ extension CLVTableDataSource {
         let cellWasVisible = homeCell.isCellVisible
         homeCell.reset()
         // reduces flicker effects for already visible cells
-        homeCell.configure(cellContentToken: configToken, spoilerAnimator: viewState.spoilerAnimator, asyncAvatarLoadingAllowed: false)
+        homeCell.configure(cellContentToken: configToken, spoilerAnimationManager: viewState.spoilerAnimationManager, asyncAvatarLoadingAllowed: false)
         homeCell.isCellVisible = cellWasVisible
         return true
     }

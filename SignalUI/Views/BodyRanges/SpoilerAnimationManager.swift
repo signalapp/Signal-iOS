@@ -6,16 +6,34 @@
 import Foundation
 import SignalServiceKit
 
+/// A single rectangle in which to render spoilers.
 public struct SpoilerFrame {
+
+    public enum Style {
+        /// Fade effect, small particles
+        case standard
+        /// More solid, larger particles.
+        case highlight
+    }
+
     public let frame: CGRect
     public let color: ThemedColor
+    public let style: Style
 
-    public init(frame: CGRect, color: ThemedColor) {
+    public init(frame: CGRect, color: ThemedColor, style: Style) {
         self.frame = frame
         self.color = color
+        self.style = style
     }
 }
 
+/// Conform to this to provide spoiler information (the view to apply spoilers to,
+/// the frames of the spoilers, etc) to a `SpoilerableViewAnimator`.
+///
+/// The UIView itself can conform to `SpoilerableViewAnimator`, but this is
+/// not necessarily the case. This flexibility allows using any UIView class for
+/// spoiler application, and defining a separate animator, without having to subclass
+/// the UIView class in question.
 public protocol SpoilerableViewAnimator {
 
     /// Nullable to enable holding a weak reference; it is assumed the view
@@ -42,14 +60,18 @@ extension SpoilerableViewAnimator {
     }
 }
 
-public class SpoilerAnimator {
+/// Manages the animations of spoilers on views provided by `SpoilerableViewAnimator`.
+/// As long as there is a spoiler to render, ticks time to re-render spoiler particles produced by
+/// `SpoilerRenderer`.
+/// Stops consuming resources if there are no spoilers to render.
+///
+/// Sharing an animation manager as much as possible is recommended. This reduces resources by
+/// reusing the same rendered spoiler tiles across all views on the same animation manager.
+public class SpoilerAnimationManager {
 
-    private let renderer: SpoilerRenderer
+    private let renderer = SpoilerRenderer()
 
     public init() {
-        let renderer = SpoilerRenderer()
-        self.renderer = renderer
-        self.tileImage = renderer.uiImage
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didEnterForeground),
@@ -125,7 +147,14 @@ public class SpoilerAnimator {
             }()
 
             spoilerView.frame = spoilerFrame.frame
-            spoilerView.backgroundColor = getOrLoadTilingColor(color: spoilerFrame.color.forCurrentTheme)
+            let spec: SpoilerRenderer.Spec
+            switch spoilerFrame.style {
+            case .standard:
+                spec = .standard(color: spoilerFrame.color.forCurrentTheme)
+            case .highlight:
+                spec = .highlight(color: spoilerFrame.color.forCurrentTheme)
+            }
+            spoilerView.backgroundColor = self.renderer.getOrRenderTilingColor(spec)
         }
         // Clear any excess layers.
         if spoilerViews.count > spoilerFrames.count {
@@ -145,6 +174,11 @@ public class SpoilerAnimator {
 
     // MARK: - Caches
 
+    // Computing frames is expensive. Doing it for every tick of animation, for
+    // every bit of text shown on screen, adds up.
+    // To avoid this, we cache the last computed frame, and rely on animators
+    // to provide a cache key (which should be cheap to compute) to determine
+    // when we should discard the cache and recompute frames.
     private var frameCache = [Int: [SpoilerFrame]]()
 
     private func getOrLoadSpoilerFrames(animator: SpoilerableViewAnimator) -> [SpoilerFrame] {
@@ -157,24 +191,9 @@ public class SpoilerAnimator {
         return computedFrames
     }
 
-    private var tileImage: UIImage {
-        didSet {
-            tintedTileColorCache = [:]
-        }
-    }
-    private var tintedTileColorCache = [UIColor: UIColor]()
-
-    private func getOrLoadTilingColor(color: UIColor) -> UIColor {
-        if let cachedImage = tintedTileColorCache[color] {
-            return cachedImage
-        }
-        let tintedImage = tileImage.asTintedImage(color: color) ?? tileImage
-        let tileColor = UIColor(patternImage: tintedImage)
-        tintedTileColorCache[color] = tileColor
-        return tileColor
-    }
-
     // MARK: - Timer
+
+    private static let tickInterval: TimeInterval = 0.05
 
     private var timer: Timer?
 
@@ -185,8 +204,8 @@ public class SpoilerAnimator {
         guard timer == nil, animators.isEmpty.negated, UIAccessibility.isReduceMotionEnabled.negated else {
             return
         }
-        renderer.resetLastDrawDate()
-        let timer = Timer(timeInterval: 0.05, repeats: true, block: { [weak self] _ in
+        renderer.resetLastTickDate()
+        let timer = Timer(timeInterval: Self.tickInterval, repeats: true, block: { [weak self] _ in
             self?.tick()
         })
         RunLoop.main.add(timer, forMode: .common)
@@ -199,7 +218,7 @@ public class SpoilerAnimator {
     }
 
     private func tick() {
-        self.tileImage = renderer.render()
+        renderer.tick()
         animators = animators.compactMap { animator in
             guard animator.spoilerableView != nil else {
                 return nil

@@ -599,11 +599,15 @@ public class HydratedMessageBody: Equatable, Hashable {
         return styleAttributes.contains(where: { $0.value.style.contains(style: .spoiler) })
     }
 
-    /// Returns spoiler ranges with the color that should be applied to the spoiler animation for that range.
-    /// Takes into account search ranges (hence the differing colors).
+    public struct AnimatableSpoilerRange {
+        public let range: NSRange
+        public let color: ThemedColor
+        public let isSearchResult: Bool
+    }
+
     public func spoilerRangesForAnimation(
         config: DisplayConfiguration
-    ) -> [NSRangedValue<ThemedColor>] {
+    ) -> [AnimatableSpoilerRange] {
         // We want to collapse adjacent ranges because they should
         // all animate together even if they are distinct ranges
         // for the purposes of revealing. Otherwise we'd get
@@ -634,10 +638,10 @@ public class HydratedMessageBody: Equatable, Hashable {
         }
 
         guard let searchConfig = config.searchRanges, !searchConfig.matchedRanges.isEmpty else {
-            return finalRanges.map({ .init(config.style.textColor, range: $0)})
+            return finalRanges.map { .init(range: $0, color: config.style.textColor, isSearchResult: false) }
         }
 
-        var coloredRanges = [NSRangedValue<ThemedColor>]()
+        var coloredRanges = [AnimatableSpoilerRange]()
         for spoilerRange in finalRanges {
             var remainingSpoilerRange = spoilerRange
             searchRangeLoop: for searchRange in searchConfig.matchedRanges {
@@ -645,16 +649,17 @@ public class HydratedMessageBody: Equatable, Hashable {
                     // First add any part of the spoiler range before the search range.
                     if remainingSpoilerRange.location < intersection.location {
                         coloredRanges.append(.init(
-                            config.style.textColor,
                             range: NSRange(
                                 location: remainingSpoilerRange.location,
                                 length: intersection.location - remainingSpoilerRange.location
-                            )
+                            ),
+                            color: config.style.textColor,
+                            isSearchResult: false
                         ))
                     }
                     // The overlapping part gets the search config's color.
                     coloredRanges.append(
-                        .init(searchConfig.matchingBackgroundColor, range: intersection)
+                        .init(range: intersection, color: searchConfig.matchingBackgroundColor, isSearchResult: true)
                     )
                     if spoilerRange.upperBound <= intersection.upperBound {
                         break searchRangeLoop
@@ -671,7 +676,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                 }
             }
             if remainingSpoilerRange.length > 0 {
-                coloredRanges.append(.init(config.style.textColor, range: remainingSpoilerRange))
+                coloredRanges.append(.init(range: remainingSpoilerRange, color: config.style.textColor, isSearchResult: false))
             }
         }
         return coloredRanges
@@ -814,6 +819,10 @@ public class HydratedMessageBody: Equatable, Hashable {
     public var naturalTextAlignment: NSTextAlignment { hydratedText.naturalTextAlignment }
 
     public func jumbomojiCount(_ jumbomojiCounter: (String) -> UInt) -> UInt {
+        if hasSpoilerRangesToAnimate {
+            // Never jumbomoji anything with a spoiler in it.
+            return 0
+        }
         return jumbomojiCounter(hydratedText)
     }
 

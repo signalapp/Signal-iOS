@@ -145,7 +145,7 @@ private class QuotedMessageSnippetView: UIView {
 
     deinit {
         if let quotedTextLabelSpoilerAnimator {
-            spoilerState.animator.removeViewAnimator(quotedTextLabelSpoilerAnimator)
+            spoilerState.animationManager.removeViewAnimator(quotedTextLabelSpoilerAnimator)
         }
     }
 
@@ -200,7 +200,7 @@ private class QuotedMessageSnippetView: UIView {
             var spoilerConfig = SpoilerableTextConfig.Builder(isViewVisible: true)
             spoilerConfig.text = displayableQuotedText.displayTextValue
             spoilerConfig.displayConfig = config
-            spoilerConfig.animator = self.spoilerState.animator
+            spoilerConfig.animationManager = self.spoilerState.animationManager
             if let config = spoilerConfig.build() {
                 animator.updateAnimationState(config)
             } else {
