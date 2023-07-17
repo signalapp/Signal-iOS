@@ -155,6 +155,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     }
 
     private func replaceCharacters(in range: NSRange, with string: String, selectedRange: NSRange, txProvider: ReadTxProvider) {
+        let string = string.removingPlaceholders()
         let hydratedTextBeforeChange = body.hydratedText
         let changeInLength = (string as NSString).length - range.length
         var modifiedRange = range
@@ -224,7 +225,9 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             preserveStyleInReplacement: false
         )
 
-        body.hydratedText = (body.hydratedText as NSString).replacingCharacters(in: range, with: string)
+        body.hydratedText = (body.hydratedText as NSString)
+            .replacingCharacters(in: range, with: string)
+            .removingPlaceholders()
 
         regenerateDisplayString(
             hydratedTextBeforeChange: hydratedTextBeforeChange,
@@ -284,7 +287,10 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
 
         // Add a space after the inserted mention
         let suffix = insertSpaceAfter ? " " : ""
-        body.hydratedText = (body.hydratedText as NSString).replacingCharacters(in: range, with: hydratedMention + suffix)
+        body.hydratedText = (body.hydratedText as NSString).replacingCharacters(
+            in: range,
+            with: hydratedMention + suffix
+        ).removingPlaceholders()
         // Any space isn't included in the mention's range.
         let mentionRange = NSRange(location: range.location, length: (hydratedMention as NSString).length)
         body.mentions[mentionRange] = mentionUuid
@@ -855,5 +861,11 @@ extension SDSDatabaseStorage {
 
     public var readTxProvider: EditableMessageBodyTextStorage.ReadTxProvider {
         return { block in self.read(block: { block($0.asV2Read) }) }
+    }
+}
+
+extension String {
+    fileprivate func removingPlaceholders() -> String {
+        return (self as NSString).replacingOccurrences(of: "\u{fffc}", with: "")
     }
 }
