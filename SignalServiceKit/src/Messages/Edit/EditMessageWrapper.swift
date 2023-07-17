@@ -46,6 +46,14 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
         updateBlock: ((TSIncomingMessageBuilder) -> Void)?
     ) -> TSIncomingMessage {
 
+        let editState: TSEditState = {
+            if isLatestRevision {
+                return message.wasRead ? .latestRevisionRead : .latestRevisionUnread
+            } else {
+                return .pastRevision
+            }
+        }()
+
         let builder = TSIncomingMessageBuilder(
             thread: thread,
             timestamp: message.timestamp,
@@ -54,14 +62,14 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             messageBody: message.body,
             bodyRanges: message.bodyRanges,
             attachmentIds: message.attachmentIds,
-            editState: isLatestRevision ? .latestRevision : .pastRevision,
+            editState: editState,
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireStartedAt: message.expireStartedAt,
             quotedMessage: message.quotedMessage,
             contactShare: message.contactShare,
             linkPreview: message.linkPreview,
             messageSticker: message.messageSticker,
-            read: !isLatestRevision,
+            read: isLatestRevision ? message.wasRead : true,
             serverTimestamp: message.serverTimestamp,
             serverDeliveryTimestamp: message.serverDeliveryTimestamp,
             serverGuid: message.serverGuid,
@@ -99,7 +107,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             messageBody: message.body,
             bodyRanges: message.bodyRanges,
             attachmentIds: message.attachmentIds,
-            editState: isLatestRevision ? .latestRevision : .pastRevision,
+            editState: isLatestRevision ? .latestRevisionRead : .pastRevision,
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireStartedAt: message.expireStartedAt,
             isVoiceMessage: message.isVoiceMessage,

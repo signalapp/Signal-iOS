@@ -229,6 +229,9 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     [self anyUpdateIncomingMessageWithTransaction:transaction
                                             block:^(TSIncomingMessage *message) {
                                                 message.read = YES;
+                                                if (self.editState == TSEditState_LatestRevisionUnread) {
+                                                    message.editState = TSEditState_LatestRevisionRead;
+                                                }
                                             }];
 
     // readTimestamp may be earlier than now, so backdate the expiration if necessary.

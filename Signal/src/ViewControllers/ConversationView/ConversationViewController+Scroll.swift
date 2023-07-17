@@ -296,7 +296,7 @@ extension ConversationViewController {
 
             let targetUniqueId: String
             switch quotedMessage.editState {
-            case .latestRevision, .none:
+            case .latestRevisionRead, .latestRevisionUnread, .none:
                 targetUniqueId = quotedMessage.uniqueId
             case .pastRevision:
                 // If this is an older edit revision, find the current

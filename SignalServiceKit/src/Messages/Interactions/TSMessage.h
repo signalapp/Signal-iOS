@@ -25,16 +25,62 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSMessageBuilder;
 @class TSQuotedMessage;
 
+/// TSEditState captures the information about
+/// how a particular message relates to an overall collection
+/// of edits for a message.
+///
+/// - None: The message hasn't been edited
+///
+/// - PastRevision: This is a record of a prior version of the message, containing the
+///   contents of the message at that version.  Used for constructing the history of the edit
+///
+/// - LatestRevision(Read | Unread): The current version of the edited message. This state (in either Read or Unread) is
+///   set on the original message row when an edit is first applied to preserve the original `sortId`.
+///
+///   The Read/Unread distinction is necessary here to help distingush between the two states driven off of
+///   of the 'read' column: sending of read receipts & unread count.   Prior to edit message, these behaviors
+///   were consistent and could use the single 'read' column on the message - an unread message would
+///   would mark the message as needing to send a read receipt when viewed, and increase the unread
+///   count in the UI.
+///
+///   Now they split; if you get a message, read it, and then get an edit, the edit is unread for the former
+///   purpose (we need to send a separate read receipt for it, distinct from the read receipt of the original
+///   unedited message), but is read for the latter (it should not increment the unread badge count or
+///   change the new messages ui).
+///
+///   This requires ensuring the following behavior:
+///
+///     1. To preserve standard read receipt logic, the `TSMessage.read` property
+///       needs to be consistent with other messages and set the original (or latestRevision) row
+///       to `false` for new incoming edits.  This will allow the conversation view to use  existing
+///       logic to find the unread messages before the latest viewed sortId and send read receipts
+///       for all these messages.
+///
+///     2. However, resetting the `read` state to `false` in step (1) needs to ensure the following remain
+///       true in the UI
+///         a. If the message was unread prior to the edit arriving, it should be unread now.
+///         b. If the message was marked read prior to the edit arriving, the message shouldn't affect the
+///           unread count or the new message banner.
+///
+///     This requires overloading `TSEditState` with some  knowledge of the
+///     read state of the message before the edit to allow `InteractionFinder` to
+///     properly filter the unread edits that are marked as unread.
+///
 typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 
     // An unedited message.
     TSEditState_None,
 
     // The current revision of an edited message
-    TSEditState_LatestRevision,
+    // that was edited in an previously read state
+    TSEditState_LatestRevisionRead,
 
     // A prior revision of an edited message
-    TSEditState_PastRevision
+    TSEditState_PastRevision,
+
+    // The current revision of an edited message
+    // that was unread prior to the edit.
+    TSEditState_LatestRevisionUnread
 };
 
 @interface TSMessage : TSInteraction <NSObject>
@@ -57,7 +103,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 @property (nonatomic, readonly, nullable) OWSGiftBadge *giftBadge;
 
-@property (nonatomic, readonly) TSEditState editState;
+@property (nonatomic) TSEditState editState;
 
 @property (nonatomic, readonly) BOOL isViewOnceMessage;
 @property (nonatomic, readonly) BOOL isViewOnceComplete;

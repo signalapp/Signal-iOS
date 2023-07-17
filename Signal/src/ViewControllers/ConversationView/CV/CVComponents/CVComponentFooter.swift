@@ -271,7 +271,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
             if !message.wasRemotelyDeleted {
                 switch message.editState {
-                case .latestRevision, .pastRevision:
+                case .latestRevisionRead, .latestRevisionUnread, .pastRevision:
                     wasEdited = true
                 case .none:
                     wasEdited = false

@@ -8,7 +8,8 @@ import GRDB
 import SignalCoreKit
 
 public enum EditMessageQueryMode {
-    case includeLatestVersion
+    case includeAllEdits
+    case excludeReadEdits
     case excludeAllEdits
 }
 
@@ -533,7 +534,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(sqlClauseForAllUnreadInteractions(excludeAllEdits: true))
+            AND \(sqlClauseForAllUnreadInteractions(excludeReadEdits: true))
             ORDER BY \(interactionColumn: .id)
         """
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [threadUniqueId], transaction: transaction)
@@ -594,7 +595,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     // MARK: - Unread
 
     private func sqlClauseForAllUnreadInteractions(
-        excludeAllEdits: Bool = false
+        excludeReadEdits: Bool = false
     ) -> String {
         let recordTypes: [SDSRecordType] = [
             .disappearingConfigurationUpdateInfoMessage,
@@ -611,18 +612,21 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         ]
 
         let recordTypesSql = recordTypes.map { "\($0.rawValue)" }.joined(separator: ",")
+        let editQueryMode: EditMessageQueryMode = excludeReadEdits ? .excludeReadEdits : .includeAllEdits
 
         return """
         (
             \(interactionColumn: .read) IS 0
             \(GRDBInteractionFinder.filterStoryRepliesClause())
-            \(GRDBInteractionFinder.filterEditHistoryClause(excludeAll: excludeAllEdits))
+            \(GRDBInteractionFinder.filterEditHistoryClause(mode: editQueryMode))
             AND \(interactionColumn: .recordType) IN (\(recordTypesSql))
         )
         """
     }
 
-    private static func sqlClauseForUnreadInteractionCounts(interactionsAlias: String? = nil) -> String {
+    private static func sqlClauseForUnreadInteractionCounts(
+        interactionsAlias: String? = nil
+    ) -> String {
         let columnPrefix: String
         if let interactionsAlias = interactionsAlias {
             columnPrefix = interactionsAlias + "."
@@ -633,7 +637,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         return """
         \(columnPrefix)\(interactionColumn: .read) IS 0
         \(GRDBInteractionFinder.filterStoryRepliesClause(interactionsAlias: interactionsAlias))
-        \(GRDBInteractionFinder.filterEditHistoryClause(excludeAll: true, interactionsAlias: interactionsAlias))
+        \(GRDBInteractionFinder.filterEditHistoryClause(mode: .excludeReadEdits, interactionsAlias: interactionsAlias))
         AND (
             \(columnPrefix)\(interactionColumn: .recordType) IN (\(SDSRecordType.incomingMessage.rawValue), \(SDSRecordType.call.rawValue))
             OR (
@@ -1193,7 +1197,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     fileprivate static func filterEditHistoryClause(
-        excludeAll: Bool = false,
+        mode: EditMessageQueryMode = .includeAllEdits,
         interactionsAlias: String? = nil
     ) -> String {
         let columnPrefix: String
@@ -1203,12 +1207,14 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             columnPrefix = ""
         }
 
-        if excludeAll {
-            return "AND \(columnPrefix)\(interactionColumn: .editState) IS \(TSEditState.none.rawValue)"
-        } else {
+        switch mode {
+        case .includeAllEdits:
             return "AND \(columnPrefix)\(interactionColumn: .editState) IS NOT \(TSEditState.pastRevision.rawValue)"
+        case .excludeReadEdits:
+            return "AND ( \(columnPrefix)\(interactionColumn: .editState) IN (\(TSEditState.none.rawValue), \(TSEditState.latestRevisionUnread.rawValue)))"
+        case .excludeAllEdits:
+            return "AND \(columnPrefix)\(interactionColumn: .editState) IS \(TSEditState.none.rawValue)"
         }
-
     }
 
     func enumerateInteractionIds(transaction: GRDBReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {
