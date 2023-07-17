@@ -165,7 +165,7 @@ public extension Theme {
             return UIImage()
         }
 
-        return image.withRenderingMode(.alwaysTemplate)
+        return image
     }
 
     class func iconName(_ icon: ThemeIcon) -> String {
