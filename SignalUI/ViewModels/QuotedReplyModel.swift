@@ -37,13 +37,13 @@ public class QuotedReplyModel: NSObject {
     public let sourceFilename: String?
 
     public let thumbnailImage: UIImage?
-    public let thumbnailViewFactory: (() -> UIView?)?
+    public let thumbnailViewFactory: ((SpoilerRenderState) -> UIView?)?
 
     public convenience init?(storyMessage: StoryMessage, reactionEmoji: String? = nil, transaction: SDSAnyReadTransaction) {
         let thumbnailImage = storyMessage.thumbnailImage(transaction: transaction)
-        let thumbnailViewFactory: (() -> UIView?)?
+        let thumbnailViewFactory: ((SpoilerRenderState) -> UIView?)?
         if thumbnailImage == nil {
-            thumbnailViewFactory = { return storyMessage.thumbnailView() }
+            thumbnailViewFactory = { return storyMessage.thumbnailView(spoilerState: $0) }
         } else {
             thumbnailViewFactory = nil
         }
@@ -415,7 +415,7 @@ public class QuotedReplyModel: NSObject {
         body: String? = nil,
         bodyRanges: MessageBodyRanges? = nil,
         thumbnailImage: UIImage? = nil,
-        thumbnailViewFactory: (() -> UIView?)? = nil,
+        thumbnailViewFactory: ((SpoilerRenderState) -> UIView?)? = nil,
         contentType: String? = nil,
         sourceFilename: String? = nil,
         attachmentStream: TSAttachmentStream? = nil,

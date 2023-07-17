@@ -16,10 +16,10 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
 
     private(set) lazy var tableView = UITableView()
 
-    private lazy var spoilerState = SpoilerRenderState()
+    private let spoilerState: SpoilerRenderState
 
     let bottomBar = UIView()
-    private(set) lazy var inputToolbar = StoryReplyInputToolbar(isGroupStory: true)
+    private(set) lazy var inputToolbar = StoryReplyInputToolbar(isGroupStory: true, spoilerState: spoilerState)
     private lazy var bottomBarBottomConstraint = bottomBar.autoPinEdge(toSuperviewEdge: .bottom)
     private lazy var contextMenu = ContextMenuInteraction(delegate: self)
 
@@ -62,8 +62,9 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
     var reactionPickerBackdrop: UIView?
     var reactionPicker: MessageReactionPicker?
 
-    init(storyMessage: StoryMessage) {
+    init(storyMessage: StoryMessage, spoilerState: SpoilerRenderState) {
         self.storyMessage = storyMessage
+        self.spoilerState = spoilerState
 
         super.init()
 

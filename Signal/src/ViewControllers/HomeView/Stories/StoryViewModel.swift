@@ -20,6 +20,7 @@ struct StoryViewModel: Dependencies {
     let latestMessageAttachment: StoryThumbnailView.Attachment
     let hasReplies: Bool
     let latestMessageName: String
+    let latestMessageIdentifier: InteractionSnapshotIdentifier
     let latestMessageTimestamp: UInt64
     let latestMessageViewedTimestamp: UInt64?
     let latestMessageSendingState: TSOutgoingMessageState
@@ -54,6 +55,7 @@ struct StoryViewModel: Dependencies {
         )
         latestMessageAvatarDataSource = try StoryUtil.contextAvatarDataSource(for: latestMessage, transaction: transaction)
         latestMessageAttachment = .from(latestMessage.attachment, transaction: transaction)
+        latestMessageIdentifier = .fromStoryMessage(latestMessage)
         latestMessageTimestamp = latestMessage.timestamp
         latestMessageViewedTimestamp = latestMessage.localUserViewedTimestamp
         latestMessageSendingState = latestMessage.sendingState

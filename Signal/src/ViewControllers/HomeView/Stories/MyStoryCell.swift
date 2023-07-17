@@ -77,10 +77,12 @@ class MyStoryCell: UITableViewCell {
 
     private var attachmentThumbnailDividerView: UIView?
 
+    private var latestMessageRevealedSpoilerIds: Set<StyleIdType>?
     private var latestMessageAttachment: StoryThumbnailView.Attachment?
+    private var secondLatestMessageRevealedSpoilerIds: Set<StyleIdType>?
     private var secondLatestMessageAttachment: StoryThumbnailView.Attachment?
 
-    func configure(with model: MyStoryViewModel, addStoryAction: @escaping () -> Void) {
+    func configure(with model: MyStoryViewModel, spoilerState: SpoilerRenderState, addStoryAction: @escaping () -> Void) {
         configureSubtitle(with: model)
 
         self.backgroundColor = .clear
@@ -100,25 +102,47 @@ class MyStoryCell: UITableViewCell {
             config.usePlaceholderImages()
         }
 
+        let latestMessageRevealedSpoilerIds: Set<StyleIdType> = model.latestMessageIdentifier.map(
+            spoilerState.revealState.revealedSpoilerIds(interactionIdentifier:)
+        ) ?? Set()
+        let secondLatestMessageRevealedSpoilerIds: Set<StyleIdType> = model.secondLatestMessageIdentifier.map(
+            spoilerState.revealState.revealedSpoilerIds(interactionIdentifier:)
+        ) ?? Set()
+
         if self.latestMessageAttachment != model.latestMessageAttachment ||
-            self.secondLatestMessageAttachment != model.secondLatestMessageAttachment {
+            self.secondLatestMessageAttachment != model.secondLatestMessageAttachment ||
+            self.latestMessageRevealedSpoilerIds != latestMessageRevealedSpoilerIds ||
+            self.secondLatestMessageRevealedSpoilerIds != secondLatestMessageRevealedSpoilerIds {
             self.latestMessageAttachment = model.latestMessageAttachment
             self.secondLatestMessageAttachment = model.secondLatestMessageAttachment
+            self.latestMessageRevealedSpoilerIds = latestMessageRevealedSpoilerIds
+            self.secondLatestMessageRevealedSpoilerIds = secondLatestMessageRevealedSpoilerIds
 
             attachmentThumbnail.removeAllSubviews()
             attachmentThumbnailDividerView = nil
 
-            if let latestMessageAttachment = model.latestMessageAttachment {
+            if let latestMessageAttachment = model.latestMessageAttachment, let latestMessageIdentifier = model.latestMessageIdentifier {
                 attachmentThumbnail.isHiddenInStackView = false
 
-                let latestThumbnailView = StoryThumbnailView(attachment: latestMessageAttachment)
+                let latestThumbnailView = StoryThumbnailView(
+                    attachment: latestMessageAttachment,
+                    interactionIdentifier: latestMessageIdentifier,
+                    spoilerState: spoilerState
+                )
                 attachmentThumbnail.addSubview(latestThumbnailView)
                 latestThumbnailView.autoPinHeightToSuperview()
                 latestThumbnailView.autoSetDimensions(to: CGSize(width: 56, height: 84))
                 latestThumbnailView.autoPinEdge(toSuperviewEdge: .trailing)
 
-                if let secondLatestMessageAttachment = model.secondLatestMessageAttachment {
-                    let secondLatestThumbnailView = StoryThumbnailView(attachment: secondLatestMessageAttachment)
+                if
+                    let secondLatestMessageAttachment = model.secondLatestMessageAttachment,
+                    let secondLatestMessageIdentifier = model.secondLatestMessageIdentifier
+                {
+                    let secondLatestThumbnailView = StoryThumbnailView(
+                        attachment: secondLatestMessageAttachment,
+                        interactionIdentifier: secondLatestMessageIdentifier,
+                        spoilerState: spoilerState
+                    )
                     secondLatestThumbnailView.layer.cornerRadius = 6
                     secondLatestThumbnailView.transform = .init(rotationAngle: (CurrentAppContext().isRTL ? 1 : -1) * 0.18168878)
                     attachmentThumbnail.insertSubview(secondLatestThumbnailView, belowSubview: latestThumbnailView)

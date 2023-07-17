@@ -26,7 +26,7 @@ class StoryThumbnailView: UIView {
         }
     }
 
-    init(attachment: Attachment) {
+    init(attachment: Attachment, interactionIdentifier: InteractionSnapshotIdentifier, spoilerState: SpoilerRenderState) {
         super.init(frame: .zero)
 
         layer.cornerRadius = 12
@@ -52,7 +52,11 @@ class StoryThumbnailView: UIView {
                 owsFailDebug("Unexpected attachment type \(type(of: attachment))")
             }
         case .text(let attachment):
-            let textThumbnailView = TextAttachmentView(attachment: attachment).asThumbnailView()
+            let textThumbnailView = TextAttachmentView(
+                attachment: attachment,
+                interactionIdentifier: interactionIdentifier,
+                spoilerState: spoilerState
+            ).asThumbnailView()
             addSubview(textThumbnailView)
             textThumbnailView.autoPinEdgesToSuperviewEdges()
         case .missing:

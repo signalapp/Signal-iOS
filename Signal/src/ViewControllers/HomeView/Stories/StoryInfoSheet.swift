@@ -12,11 +12,14 @@ class StoryInfoSheet: OWSTableSheetViewController {
     let context: StoryContext
     var dismissHandler: (() -> Void)?
 
+    private let spoilerState: SpoilerRenderState
+
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
 
-    init(storyMessage: StoryMessage, context: StoryContext) {
+    init(storyMessage: StoryMessage, context: StoryContext, spoilerState: SpoilerRenderState) {
         self.storyMessage = storyMessage
         self.context = context
+        self.spoilerState = spoilerState
         super.init()
 
         databaseStorage.appendDatabaseChangeDelegate(self)
@@ -277,7 +280,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
             return cell
         }, actionBlock: { [weak self] in
             guard let self = self else { return }
-            let actionSheet = MemberActionSheet(address: address, groupViewHelper: nil)
+            let actionSheet = MemberActionSheet(address: address, groupViewHelper: nil, spoilerState: self.spoilerState)
             actionSheet.present(from: self)
         })
     }

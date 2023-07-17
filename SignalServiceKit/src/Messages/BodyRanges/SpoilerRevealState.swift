@@ -29,6 +29,11 @@ public struct InteractionSnapshotIdentifier: Equatable, Hashable {
     public static func fromInteraction(_ interaction: TSInteraction) -> Self {
         return .init(timestamp: interaction.timestamp, authorUuid: (interaction as? TSIncomingMessage)?.authorUUID)
     }
+
+    // Not strictly an interaction, but can contain spoilers.
+    public static func fromStoryMessage(_ storyMessage: StoryMessage) -> Self {
+        return  .init(timestamp: storyMessage.timestamp, authorUuid: storyMessage.authorUuid.uuidString)
+    }
 }
 
 // MARK: -

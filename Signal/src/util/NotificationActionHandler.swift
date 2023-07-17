@@ -5,6 +5,7 @@
 
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 public class NotificationActionHandler: Dependencies {
 
@@ -223,7 +224,13 @@ public class NotificationActionHandler: Dependencies {
             }
         }
 
-        let vc = StoryPageViewController(context: storyMessage.context, loadMessage: storyMessage, action: .presentReplies)
+        let vc = StoryPageViewController(
+            context: storyMessage.context,
+            // Fresh state when coming in from a notification; no need to share.
+            spoilerState: SpoilerRenderState(),
+            loadMessage: storyMessage,
+            action: .presentReplies
+        )
         frontmostViewController.present(vc, animated: true)
     }
 

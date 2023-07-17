@@ -294,7 +294,11 @@ public class LongTextViewController: OWSViewController {
                     }
 
                     let address = SignalServiceAddress(uuid: mentionItem.mentionUUID)
-                    let actionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper)
+                    let actionSheet = MemberActionSheet(
+                        address: address,
+                        groupViewHelper: groupViewHelper,
+                        spoilerState: spoilerState
+                    )
                     actionSheet.present(from: self)
                     return
                 case .unrevealedSpoiler(let unrevealedSpoiler):

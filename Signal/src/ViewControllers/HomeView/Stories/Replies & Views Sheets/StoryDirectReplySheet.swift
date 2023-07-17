@@ -15,7 +15,7 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
         let quotedReplyModel = databaseStorage.read {
             QuotedReplyModel(storyMessage: storyMessage, transaction: $0)
         }
-        let toolbar = StoryReplyInputToolbar(isGroupStory: false, quotedReplyModel: quotedReplyModel)
+        let toolbar = StoryReplyInputToolbar(isGroupStory: false, quotedReplyModel: quotedReplyModel, spoilerState: spoilerState)
         toolbar.delegate = self
         return toolbar
     }()
@@ -27,8 +27,11 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
 
     let backdropView: UIView? = UIView()
 
-    init(storyMessage: StoryMessage) {
+    let spoilerState: SpoilerRenderState
+
+    init(storyMessage: StoryMessage, spoilerState: SpoilerRenderState) {
         self.storyMessage = storyMessage
+        self.spoilerState = spoilerState
         super.init()
         modalPresentationStyle = .custom
     }

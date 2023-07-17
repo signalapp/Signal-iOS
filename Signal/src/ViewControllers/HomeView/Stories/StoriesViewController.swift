@@ -42,11 +42,14 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         return label
     }()
 
-    private lazy var dataSource = StoryListDataSource(delegate: self)
+    private lazy var dataSource = StoryListDataSource(delegate: self, spoilerState: spoilerState)
 
     private lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self, delegate: self)
 
-    override init() {
+    private let spoilerState: SpoilerRenderState
+
+    public init(spoilerState: SpoilerRenderState) {
+        self.spoilerState = spoilerState
         super.init()
         // Want to start loading right away to prevent cases where things aren't loaded
         // when you tab over into the stories list.
@@ -213,18 +216,18 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
             case .myStory:
                 guard let cell = self.tableView.cellForRow(at: indexPath) as? MyStoryCell else { continue }
                 guard let model = dataSource.myStory else { continue }
-                cell.configure(with: model) { [weak self] in self?.showCameraView() }
+                cell.configure(with: model, spoilerState: spoilerState) { [weak self] in self?.showCameraView() }
             case .visibleStories:
                 guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
                 guard let model = self.model(for: indexPath) else { continue }
-                cell.configure(with: model)
+                cell.configure(with: model, spoilerState: spoilerState)
             case .hiddenStories:
                 let cell = self.tableView.cellForRow(at: indexPath)
                 if
                     let storyCell = cell as? StoryCell,
                     let model = self.model(for: indexPath)
                 {
-                    storyCell.configure(with: model)
+                    storyCell.configure(with: model, spoilerState: spoilerState)
                 } else if
                     let headerCell = cell as? HiddenStoryHeaderCell
                 {
@@ -438,7 +441,7 @@ extension StoriesViewController: UITableViewDelegate {
             if dataSource.myStory?.messages.isEmpty == true {
                 showCameraView()
             } else {
-                navigationController?.pushViewController(MyStoriesViewController(), animated: true)
+                navigationController?.pushViewController(MyStoriesViewController(spoilerState: spoilerState), animated: true)
             }
         case .hiddenStories:
             if indexPath.row == 0, dataSource.shouldDisplayHiddenStoriesHeader {
@@ -486,6 +489,7 @@ extension StoriesViewController: UITableViewDelegate {
 
             let vc = StoryPageViewController(
                 context: model.context,
+                spoilerState: spoilerState,
                 viewableContexts: viewableContexts,
                 hiddenStoryFilter: startedFromHidden
             )
@@ -541,12 +545,14 @@ extension StoriesViewController: UITableViewDelegate {
         }
 
         return .init(identifier: indexPath as NSCopying, previewProvider: nil, actionProvider: { [weak self] _ in
-            let actions = self?.contextMenuGenerator.nativeContextMenuActions(
+            guard let self else { return .init(children: []) }
+            let actions = self.contextMenuGenerator.nativeContextMenuActions(
                 for: model,
+                spoilerState: self.spoilerState,
                 sourceView: { [weak self] in
                     return self?.tableView.cellForRow(at: indexPath)
                 }
-            ) ?? []
+            )
             return .init(children: actions)
         })
     }
@@ -597,7 +603,7 @@ extension StoriesViewController: UITableViewDataSource {
                 owsFailDebug("Missing my story model")
                 return cell
             }
-            cell.configure(with: myStoryModel) { [weak self] in self?.showCameraView() }
+            cell.configure(with: myStoryModel, spoilerState: spoilerState) { [weak self] in self?.showCameraView() }
             return cell
         case .hiddenStories:
             if indexPath.row == 0 && dataSource.shouldDisplayHiddenStoriesHeader {
@@ -616,7 +622,7 @@ extension StoriesViewController: UITableViewDataSource {
                 owsFailDebug("Missing model for story")
                 return cell
             }
-            cell.configure(with: model)
+            cell.configure(with: model, spoilerState: spoilerState)
             return cell
         case .none:
             owsFailDebug("Unexpected section \(indexPath.section)")

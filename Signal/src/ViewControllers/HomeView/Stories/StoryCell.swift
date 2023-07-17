@@ -67,8 +67,9 @@ class StoryCell: UITableViewCell {
     }
 
     private var attachment: StoryThumbnailView.Attachment?
+    private var revealedSpoilerIds: Set<StyleIdType>?
 
-    func configure(with model: StoryViewModel) {
+    func configure(with model: StoryViewModel, spoilerState: SpoilerRenderState) {
         configureSubtitle(with: model)
 
         switch model.context {
@@ -102,11 +103,17 @@ class StoryCell: UITableViewCell {
         }
 
         attachmentThumbnail.backgroundColor = Theme.washColor
-        if self.attachment != model.latestMessageAttachment {
+        let revealedSpoilerIds = spoilerState.revealState.revealedSpoilerIds(interactionIdentifier: model.latestMessageIdentifier)
+        if self.attachment != model.latestMessageAttachment || self.revealedSpoilerIds != revealedSpoilerIds {
             self.attachment = model.latestMessageAttachment
+            self.revealedSpoilerIds = revealedSpoilerIds
             attachmentThumbnail.removeAllSubviews()
 
-            let storyThumbnailView = StoryThumbnailView(attachment: model.latestMessageAttachment)
+            let storyThumbnailView = StoryThumbnailView(
+                attachment: model.latestMessageAttachment,
+                interactionIdentifier: model.latestMessageIdentifier,
+                spoilerState: spoilerState
+            )
             attachmentThumbnail.addSubview(storyThumbnailView)
             storyThumbnailView.autoPinEdgesToSuperviewEdges()
         }

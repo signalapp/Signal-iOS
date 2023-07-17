@@ -13,13 +13,30 @@ open class TextAttachmentView: UIView {
 
     public let contentLayoutGuide = UILayoutGuide()
 
-    convenience public init(attachment: TextAttachment) {
+    // Only set in viewing contexts; spoilers can't be added when editing.
+    private let interactionIdentifier: InteractionSnapshotIdentifier?
+    private let spoilerState: SpoilerRenderState?
+
+    private var revealedSpoilerIds: Set<StyleIdType> {
+        guard let spoilerState, let interactionIdentifier else {
+            return Set()
+        }
+        return spoilerState.revealState.revealedSpoilerIds(interactionIdentifier: interactionIdentifier)
+    }
+
+    convenience public init(
+        attachment: TextAttachment,
+        interactionIdentifier: InteractionSnapshotIdentifier,
+        spoilerState: SpoilerRenderState
+    ) {
         self.init(
             textContent: attachment.textContent,
             textForegroundColor: attachment.textForegroundColor,
             textBackgroundColor: attachment.textBackgroundColor,
             background: attachment.background,
-            linkPreview: attachment.preview
+            linkPreview: attachment.preview,
+            interactionIdentifier: interactionIdentifier,
+            spoilerState: spoilerState
         )
     }
 
@@ -30,25 +47,54 @@ open class TextAttachmentView: UIView {
             textBackgroundColor: attachment.textBackgroundColor,
             background: attachment.background,
             linkPreview: nil,
-            linkPreviewDraft: attachment.linkPreviewDraft
+            linkPreviewDraft: attachment.linkPreviewDraft,
+            interactionIdentifier: nil,
+            spoilerState: nil
         )
     }
 
     public init(
-        textContent: TextAttachment.TextContent,
+        text: String,
+        style: TextAttachment.TextStyle,
         textForegroundColor: UIColor?,
         textBackgroundColor: UIColor?,
         background: TextAttachment.Background,
         linkPreview: OWSLinkPreview?,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil
     ) {
+        self.textContent = .styled(body: text, style: style)
+        self.textForegroundColor = textForegroundColor ?? Theme.darkThemePrimaryColor
+        self.textBackgroundColor = textBackgroundColor
+        self.background = background
+        self.interactionIdentifier = nil
+        self.spoilerState = nil
+
+        super.init(frame: .zero)
+        performSetup(linkPreview: linkPreview, linkPreviewDraft: linkPreviewDraft)
+    }
+
+    private init(
+        textContent: TextAttachment.TextContent,
+        textForegroundColor: UIColor?,
+        textBackgroundColor: UIColor?,
+        background: TextAttachment.Background,
+        linkPreview: OWSLinkPreview?,
+        linkPreviewDraft: OWSLinkPreviewDraft? = nil,
+        interactionIdentifier: InteractionSnapshotIdentifier?,
+        spoilerState: SpoilerRenderState?
+    ) {
         self.textContent = textContent
         self.textForegroundColor = textForegroundColor ?? Theme.darkThemePrimaryColor
         self.textBackgroundColor = textBackgroundColor
         self.background = background
+        self.interactionIdentifier = interactionIdentifier
+        self.spoilerState = spoilerState
 
         super.init(frame: .zero)
+        performSetup(linkPreview: linkPreview, linkPreviewDraft: linkPreviewDraft)
+    }
 
+    private func performSetup(linkPreview: OWSLinkPreview?, linkPreviewDraft: OWSLinkPreviewDraft?) {
         clipsToBounds = true
 
         addLayoutGuide(contentLayoutGuide)
@@ -175,7 +221,7 @@ open class TextAttachmentView: UIView {
         var textAreaHeight: CGFloat = 0
 
         // Position text and/or link preview.
-        if let textLabel = textLabel, textContentSize.height > 0 {
+        if hasNonEmptyTextContent, textContentSize.height > 0 {
             textLabel.bounds.size = textContentSize
 
             let cappedTextContentHeight = min(textContentSize.height, maxTextAreaHeight - 2 * LayoutConstants.textBackgroundVMargin)
@@ -206,7 +252,7 @@ open class TextAttachmentView: UIView {
     }
 
     open func calculateTextContentSize() -> CGSize {
-        guard let textLabel = textLabel else {
+        guard hasNonEmptyTextContent else {
             return .zero
         }
 
@@ -227,8 +273,13 @@ open class TextAttachmentView: UIView {
         didSet { updateTextAttributes() }
     }
 
-    private var revealedSpoilerIds = Set<StyleIdType>() {
-        didSet { updateTextAttributes() }
+    public var hasNonEmptyTextContent: Bool {
+        switch textContent {
+        case .empty:
+            return false
+        case .styled, .styledRanges:
+            return true
+        }
     }
 
     private var tappableItems: [HydratedMessageBody.TappableItem]?
@@ -256,58 +307,47 @@ open class TextAttachmentView: UIView {
     public func updateTextAttributes() {
         defer { updateVisibilityOfComponents(animated: false) }
 
-        func loadTextLabel() -> UILabel {
-            if let existingLabel = self.textLabel {
-                return existingLabel
-            } else {
-                let textLabel = UILabel()
-                textLabel.adjustsFontSizeToFitWidth = true
-                textLabel.allowsDefaultTighteningForTruncation = true
-                textLabel.lineBreakMode = .byWordWrapping
-                textLabel.minimumScaleFactor = 0.2
-                textLabel.numberOfLines = 0
-                addSubview(textLabel)
-                self.textLabel = textLabel
-                return textLabel
-            }
-        }
-
-        let textLabel: UILabel
         switch textContent {
         case .empty:
             tappableItems = nil
+            textLabelSpoilerConfig.text = nil
             return
         case .styled(let text, let textStyle):
-            textLabel = loadTextLabel()
+            if textLabel.superview == nil { addSubview(textLabel) }
             let (fontPointSize, textAlignment) = sizeAndAlignment(forText: text)
             textLabel.text = transformedText(text, for: textStyle)
             textLabel.textAlignment = textAlignment
             textLabel.font = .font(for: textStyle, withPointSize: fontPointSize)
             textLabel.textColor = textForegroundColor
             tappableItems = nil
+            textLabelSpoilerConfig.text = nil
         case .styledRanges(let body):
-            textLabel = loadTextLabel()
+            if textLabel.superview == nil { addSubview(textLabel) }
             let (fontPointSize, textAlignment) = sizeAndAlignment(forText: body.text)
             let font = UIFont.font(for: .regular, withPointSize: fontPointSize)
 
-            self.tappableItems = body.asHydratedMessageBody().tappableItems(
-                revealedSpoilerIds: revealedSpoilerIds,
+            let displayConfig = HydratedMessageBody.DisplayConfiguration.textStory(
+                font: font,
+                textColor: textForegroundColor,
+                revealedSpoilerIds: self.revealedSpoilerIds
+            )
+            let hydratedBody = body.asHydratedMessageBody()
+            self.tappableItems = hydratedBody.tappableItems(
+                revealedSpoilerIds: displayConfig.style.revealedIds,
                 dataDetector: nil
             )
 
             let attrText = body.asAttributedStringForDisplay(
-                config: StyleDisplayConfiguration(
-                    baseFont: font,
-                    textColor: .fixed(textForegroundColor),
-                    revealAllIds: false,
-                    revealedIds: self.revealedSpoilerIds
-                ),
+                config: displayConfig.style,
                 isDarkThemeEnabled: Theme.isDarkThemeEnabled
             )
             textLabel.font = font
+            textLabel.textColor = textForegroundColor
             textLabel.attributedText = attrText
             textLabel.textAlignment = textAlignment
-            textLabel.textColor = textForegroundColor
+            textLabelSpoilerConfig.displayConfig = displayConfig
+            textLabelSpoilerConfig.text = .messageBody(hydratedBody)
+            textLabelSpoilerConfig.animator = spoilerState?.animator
         }
 
         if let textBackgroundColor = textBackgroundColor {
@@ -335,15 +375,32 @@ open class TextAttachmentView: UIView {
         let isEditing = isEditing
         switch textContent {
         case .styledRanges, .styled:
-            textLabel?.setIsHidden(isEditing, animated: animated)
+            textLabel.setIsHidden(isEditing, animated: animated)
             textBackgroundView?.setIsHidden(isEditing || textBackgroundColor == nil, animated: animated)
+            textLabelSpoilerConfig.isViewVisible = !isEditing
         case .empty:
-            textLabel?.setIsHidden(true, animated: animated)
+            textLabel.setIsHidden(true, animated: animated)
             textBackgroundView?.setIsHidden(true, animated: animated)
+            textLabelSpoilerConfig.isViewVisible = false
         }
     }
 
-    public private(set) var textLabel: UILabel?
+    private lazy var textLabel: UILabel = {
+        let textLabel = UILabel()
+        textLabel.adjustsFontSizeToFitWidth = true
+        textLabel.allowsDefaultTighteningForTruncation = true
+        textLabel.lineBreakMode = .byWordWrapping
+        textLabel.minimumScaleFactor = 0.2
+        textLabel.numberOfLines = 0
+        return textLabel
+    }()
+
+    private lazy var textLabelSpoilerConfig = SpoilerableTextConfig.Builder(isViewVisible: false) {
+        didSet {
+            textLabelSpoilerAnimator.updateAnimationState(textLabelSpoilerConfig)
+        }
+    }
+    private lazy var textLabelSpoilerAnimator = SpoilerableLabelAnimator(label: textLabel)
 
     public private(set) var textBackgroundView: UIView?
 
@@ -471,7 +528,9 @@ open class TextAttachmentView: UIView {
         // indexing, once we do custom spoiler animations.
         let labelLocation = gesture.location(in: textLabel)
         if
-            let textLabel,
+            hasNonEmptyTextContent,
+            let spoilerState,
+            let interactionIdentifier,
             textLabel.bounds.contains(labelLocation),
             let tapIndex = textLabel.characterIndex(of: labelLocation)
         {
@@ -488,7 +547,11 @@ open class TextAttachmentView: UIView {
                     $0.range.contains(tapIndex)
                 })
             if let spoilerItem {
-                revealedSpoilerIds.insert(spoilerItem.id)
+                spoilerState.revealState.setSpoilerRevealed(
+                    withID: spoilerItem.id,
+                    interactionIdentifier: interactionIdentifier
+                )
+                updateTextAttributes()
                 return true
             }
         }

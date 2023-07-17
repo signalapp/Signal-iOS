@@ -14,11 +14,17 @@ class MemberActionSheet: OWSTableSheetViewController {
     var thread: TSThread { threadViewModel.threadRecord }
     var threadViewModel: ThreadViewModel
     let address: SignalServiceAddress
+    let spoilerState: SpoilerRenderState
 
-    init(address: SignalServiceAddress, groupViewHelper: GroupViewHelper?) {
+    init(
+        address: SignalServiceAddress,
+        groupViewHelper: GroupViewHelper?,
+        spoilerState: SpoilerRenderState
+    ) {
         self.threadViewModel = Self.fetchThreadViewModel(address: address)
         self.groupViewHelper = groupViewHelper
         self.address = address
+        self.spoilerState = spoilerState
 
         super.init()
 
@@ -270,7 +276,7 @@ extension MemberActionSheet: ConversationHeaderDelegate {
 
     func presentStoryViewController() {
         dismiss(animated: true) {
-            let vc = StoryPageViewController(context: self.thread.storyContext)
+            let vc = StoryPageViewController(context: self.thread.storyContext, spoilerState: self.spoilerState)
             self.fromViewController?.present(vc, animated: true)
         }
     }

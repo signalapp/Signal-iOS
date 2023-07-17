@@ -17,10 +17,16 @@ class StoryPageViewController: UIPageViewController {
 
     // MARK: - State
 
+    private let spoilerState: SpoilerRenderState
+
     var currentContext: StoryContext {
         get { currentContextViewController.context }
         set {
-            setViewControllers([StoryContextViewController(context: newValue, delegate: self)], direction: .forward, animated: false)
+            setViewControllers(
+                [StoryContextViewController(context: newValue, spoilerState: spoilerState, delegate: self)],
+                direction: .forward,
+                animated: false
+            )
         }
     }
     let onlyRenderMyStories: Bool
@@ -57,12 +63,14 @@ class StoryPageViewController: UIPageViewController {
 
     required init(
         context: StoryContext,
+        spoilerState: SpoilerRenderState,
         viewableContexts: [StoryContext]? = nil,
         hiddenStoryFilter: Bool? = nil, /* If true only hidden stories, if false only unhidden. */
         loadMessage: StoryMessage? = nil,
         action: StoryContextViewController.Action = .none,
         onlyRenderMyStories: Bool = false
     ) {
+        self.spoilerState = spoilerState
         self.onlyRenderMyStories = onlyRenderMyStories
         self.viewableContexts = viewableContexts ?? [context]
         self.hiddenStoryFilter = hiddenStoryFilter
@@ -340,12 +348,12 @@ extension StoryPageViewController: UIPageViewControllerDelegate {
 extension StoryPageViewController: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let contextBefore = previousStoryContext else { return nil }
-        return StoryContextViewController(context: contextBefore, delegate: self)
+        return StoryContextViewController(context: contextBefore, spoilerState: spoilerState, delegate: self)
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard let contextAfter = nextStoryContext else { return nil }
-        return StoryContextViewController(context: contextAfter, delegate: self)
+        return StoryContextViewController(context: contextAfter, spoilerState: spoilerState, delegate: self)
     }
 }
 
@@ -387,7 +395,12 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
             dismiss(animated: true)
             return
         }
-        let newControllers = [StoryContextViewController(context: nextContext, loadPositionIfRead: loadPositionIfRead, delegate: self)]
+        let newControllers = [StoryContextViewController(
+            context: nextContext,
+            loadPositionIfRead: loadPositionIfRead,
+            spoilerState: spoilerState,
+            delegate: self
+        )]
         self.willTransition(to: newControllers, fromDrag: false)
         setViewControllers(
             newControllers,
@@ -406,7 +419,12 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
             storyContextViewController.resetForPresentation()
             return
         }
-        let newControllers = [StoryContextViewController(context: previousContext, loadPositionIfRead: loadPositionIfRead, delegate: self)]
+        let newControllers = [StoryContextViewController(
+            context: previousContext,
+            loadPositionIfRead: loadPositionIfRead,
+            spoilerState: spoilerState,
+            delegate: self
+        )]
         self.willTransition(to: newControllers, fromDrag: false)
         setViewControllers(
             newControllers,
@@ -592,7 +610,11 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
                 blurHashImageView.autoPinEdgesToSuperviewEdges()
             }
         case .text(let attachment):
-            storyView = TextAttachmentView(attachment: attachment).asThumbnailView()
+            storyView = TextAttachmentView(
+                attachment: attachment,
+                interactionIdentifier: .fromStoryMessage(presentingMessage),
+                spoilerState: spoilerState
+            ).asThumbnailView()
         }
 
         storyView.clipsToBounds = true

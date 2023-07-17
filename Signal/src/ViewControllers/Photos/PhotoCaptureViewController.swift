@@ -1392,7 +1392,8 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     init(text: String) {
         super.init(
-            textContent: .styled(body: text, style: .regular),
+            text: text,
+            style: .regular,
             textForegroundColor: .white,
             textBackgroundColor: nil,
             background: TextStoryComposerView.defaultBackground,

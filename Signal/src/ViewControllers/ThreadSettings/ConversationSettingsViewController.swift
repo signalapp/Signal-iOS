@@ -350,7 +350,11 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             owsFailDebug("Invalid address.")
             return
         }
-        let memberActionSheet = MemberActionSheet(address: memberAddress, groupViewHelper: groupViewHelper)
+        let memberActionSheet = MemberActionSheet(
+            address: memberAddress,
+            groupViewHelper: groupViewHelper,
+            spoilerState: spoilerState
+        )
         memberActionSheet.present(from: self)
     }
 
@@ -388,7 +392,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     // MARK: - Actions
 
     func presentStoryViewController() {
-        let vc = StoryPageViewController(context: thread.storyContext)
+        let vc = StoryPageViewController(context: thread.storyContext, spoilerState: spoilerState)
         present(vc, animated: true)
     }
 
@@ -502,8 +506,11 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             owsFailDebug("Invalid thread.")
             return nil
         }
-        let groupMemberRequestsAndInvitesViewController = GroupMemberRequestsAndInvitesViewController(groupThread: groupThread,
-                                                                                                      groupViewHelper: groupViewHelper)
+        let groupMemberRequestsAndInvitesViewController = GroupMemberRequestsAndInvitesViewController(
+            groupThread: groupThread,
+            groupViewHelper: groupViewHelper,
+            spoilerState: spoilerState
+        )
         groupMemberRequestsAndInvitesViewController.groupMemberRequestsAndInvitesViewControllerDelegate = self
         return groupMemberRequestsAndInvitesViewController
     }

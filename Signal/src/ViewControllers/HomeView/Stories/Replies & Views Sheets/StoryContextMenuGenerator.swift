@@ -55,6 +55,7 @@ class StoryContextMenuGenerator: Dependencies {
 
     public func contextMenuActions(
         for model: StoryViewModel,
+        spoilerState: SpoilerRenderState,
         sourceView: @escaping () -> UIView?
     ) -> [ContextMenuAction] {
         return Self.databaseStorage.read {
@@ -63,6 +64,7 @@ class StoryContextMenuGenerator: Dependencies {
                 for: model.latestMessage,
                 in: thread,
                 attachment: model.latestMessageAttachment,
+                spoilerState: spoilerState,
                 sourceView: sourceView,
                 transaction: $0
             )
@@ -73,6 +75,7 @@ class StoryContextMenuGenerator: Dependencies {
         for message: StoryMessage,
         in thread: TSThread?,
         attachment: StoryThumbnailView.Attachment,
+        spoilerState: SpoilerRenderState,
         sourceView: @escaping () -> UIView?,
         hideSaveAction: Bool = false,
         onlyRenderMyStories: Bool = false,
@@ -81,8 +84,13 @@ class StoryContextMenuGenerator: Dependencies {
         return [
             deleteAction(for: message, in: thread),
             hideAction(for: message, transaction: transaction),
-            infoAction(for: message, in: thread, onlyRenderMyStories: onlyRenderMyStories),
-            hideSaveAction ? nil : saveAction(message: message, attachment: attachment),
+            infoAction(
+                for: message,
+                in: thread,
+                onlyRenderMyStories: onlyRenderMyStories,
+                spoilerState: spoilerState
+            ),
+            hideSaveAction ? nil : saveAction(message: message, attachment: attachment, spoilerState: spoilerState),
             forwardAction(message: message),
             shareAction(message: message, attachment: attachment, sourceView: sourceView),
             goToChatAction(thread: thread)
@@ -91,6 +99,7 @@ class StoryContextMenuGenerator: Dependencies {
 
     public func nativeContextMenuActions(
         for model: StoryViewModel,
+        spoilerState: SpoilerRenderState,
         sourceView: @escaping () -> UIView?
     ) -> [UIAction] {
         return Self.databaseStorage.read {
@@ -99,6 +108,7 @@ class StoryContextMenuGenerator: Dependencies {
                 for: model.latestMessage,
                 in: thread,
                 attachment: model.latestMessageAttachment,
+                spoilerState: spoilerState,
                 sourceView: sourceView,
                 transaction: $0
             )
@@ -109,6 +119,7 @@ class StoryContextMenuGenerator: Dependencies {
         for message: StoryMessage,
         in thread: TSThread?,
         attachment: StoryThumbnailView.Attachment,
+        spoilerState: SpoilerRenderState,
         sourceView: @escaping () -> UIView?,
         hideSaveAction: Bool = false,
         onlyRenderMyStories: Bool = false,
@@ -117,8 +128,8 @@ class StoryContextMenuGenerator: Dependencies {
         return [
             deleteAction(for: message, in: thread),
             hideAction(for: message, transaction: transaction),
-            infoAction(for: message, in: thread, onlyRenderMyStories: onlyRenderMyStories),
-            hideSaveAction ? nil : saveAction(message: message, attachment: attachment),
+            infoAction(for: message, in: thread, onlyRenderMyStories: onlyRenderMyStories, spoilerState: spoilerState),
+            hideSaveAction ? nil : saveAction(message: message, attachment: attachment, spoilerState: spoilerState),
             forwardAction(message: message),
             shareAction(message: message, attachment: attachment, sourceView: sourceView),
             goToChatAction(thread: thread)
@@ -374,7 +385,8 @@ extension StoryContextMenuGenerator {
     private func infoAction(
         for message: StoryMessage,
         in thread: TSThread?,
-        onlyRenderMyStories: Bool
+        onlyRenderMyStories: Bool,
+        spoilerState: SpoilerRenderState
     ) -> GenericContextAction? {
         guard let thread = thread else { return nil }
 
@@ -385,7 +397,12 @@ extension StoryContextMenuGenerator {
             ),
             icon: .contextMenuInfo,
             handler: { [weak self] completion in
-                self?.presentInfoSheet(message, in: thread, onlyRenderMyStories: onlyRenderMyStories)
+                self?.presentInfoSheet(
+                    message,
+                    in: thread,
+                    onlyRenderMyStories: onlyRenderMyStories,
+                    spoilerState: spoilerState
+                )
                 completion(true)
             }
         )
@@ -394,17 +411,24 @@ extension StoryContextMenuGenerator {
     private func presentInfoSheet(
         _ message: StoryMessage,
         in thread: TSThread,
-        onlyRenderMyStories: Bool
+        onlyRenderMyStories: Bool,
+        spoilerState: SpoilerRenderState
     ) {
         if presentingController is StoryContextViewController {
             isDisplayingFollowup = true
-            let vc = StoryInfoSheet(storyMessage: message, context: thread.storyContext)
+            let vc = StoryInfoSheet(storyMessage: message, context: thread.storyContext, spoilerState: spoilerState)
             vc.dismissHandler = { [weak self] in
                 self?.isDisplayingFollowup = false
             }
             presentingController?.present(vc, animated: true)
         } else {
-            let vc = StoryPageViewController(context: thread.storyContext, loadMessage: message, action: .presentInfo, onlyRenderMyStories: onlyRenderMyStories)
+            let vc = StoryPageViewController(
+                context: thread.storyContext,
+                spoilerState: spoilerState,
+                loadMessage: message,
+                action: .presentInfo,
+                onlyRenderMyStories: onlyRenderMyStories
+            )
             presentingController?.present(vc, animated: true)
         }
     }
@@ -532,7 +556,8 @@ extension StoryContextMenuGenerator {
 
     private func saveAction(
         message: StoryMessage,
-        attachment: StoryThumbnailView.Attachment
+        attachment: StoryThumbnailView.Attachment,
+        spoilerState: SpoilerRenderState
     ) -> GenericContextAction? {
         guard
             message.authorAddress.isLocalAddress
@@ -550,7 +575,7 @@ extension StoryContextMenuGenerator {
             ),
             icon: .contextMenuSave,
             handler: { completion in
-                attachment.save()
+                attachment.save(interactionIdentifier: .fromStoryMessage(message), spoilerState: spoilerState)
                 completion(true)
             }
         )
@@ -570,7 +595,7 @@ extension StoryThumbnailView.Attachment {
         }
     }
 
-    func save() {
+    func save(interactionIdentifier: InteractionSnapshotIdentifier, spoilerState: SpoilerRenderState) {
         guard let vc = CurrentAppContext().frontmostViewController() else {
             return owsFailDebug("Missing frontmost view controller")
         }
@@ -617,7 +642,11 @@ extension StoryThumbnailView.Attachment {
                 })
             }
         case .text(let attachment):
-            let view = TextAttachmentView(attachment: attachment)
+            let view = TextAttachmentView(
+                attachment: attachment,
+                interactionIdentifier: interactionIdentifier,
+                spoilerState: spoilerState
+            )
             view.frame.size = CGSize(width: 375, height: 666)
             view.layoutIfNeeded()
             let image = view.renderAsImage()

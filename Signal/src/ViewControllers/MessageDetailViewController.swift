@@ -494,7 +494,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             },
             actionBlock: { [weak self] in
                 guard let self = self else { return }
-                let actionSheet = MemberActionSheet(address: address, groupViewHelper: nil)
+            let actionSheet = MemberActionSheet(address: address, groupViewHelper: nil, spoilerState: self.spoilerState)
                 actionSheet.present(from: self)
             }
         )

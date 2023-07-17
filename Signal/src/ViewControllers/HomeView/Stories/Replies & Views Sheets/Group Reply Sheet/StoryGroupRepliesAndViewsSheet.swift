@@ -41,8 +41,8 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
     }
     var focusedTab: Tab = .views
 
-    init(storyMessage: StoryMessage, context: StoryContext) {
-        self.groupReplyViewController = StoryGroupReplyViewController(storyMessage: storyMessage)
+    init(storyMessage: StoryMessage, context: StoryContext, spoilerState: SpoilerRenderState) {
+        self.groupReplyViewController = StoryGroupReplyViewController(storyMessage: storyMessage, spoilerState: spoilerState)
         self.viewsViewController = StoryViewsViewController(storyMessage: storyMessage, context: context)
 
         super.init()

@@ -11,7 +11,7 @@ import UIKit
 // TODO: We could theoretically replace this with QuotedMessageView, but that's very
 // deeply tied into the CV rendering system and not easy to use outside of that context.
 class StoryReplyPreviewView: UIView {
-    init(quotedReplyModel: QuotedReplyModel) {
+    init(quotedReplyModel: QuotedReplyModel, spoilerState: SpoilerRenderState) {
         super.init(frame: .zero)
 
         backgroundColor = .ows_gray60
@@ -84,7 +84,7 @@ class StoryReplyPreviewView: UIView {
             imageView.contentMode = .scaleAspectFill
             imageView.image = thumbnailImage
             trailingView = imageView
-        } else if let thumbnailView = quotedReplyModel.thumbnailViewFactory?() {
+        } else if let thumbnailView = quotedReplyModel.thumbnailViewFactory?(spoilerState) {
             trailingView = thumbnailView
         } else {
             owsFailDebug("Missing trailingView for quote")

@@ -9,6 +9,7 @@ import SignalServiceKit
 struct MyStoryViewModel: Dependencies {
     let messages: [StoryMessage]
 
+    let latestMessageIdentifier: InteractionSnapshotIdentifier?
     let latestMessageAttachment: StoryThumbnailView.Attachment?
     let latestMessageTimestamp: UInt64?
     let sendingCount: UInt64
@@ -20,6 +21,7 @@ struct MyStoryViewModel: Dependencies {
     }
     let failureState: FailureState
 
+    let secondLatestMessageIdentifier: InteractionSnapshotIdentifier?
     let secondLatestMessageAttachment: StoryThumbnailView.Attachment?
 
     init(messages: [StoryMessage], transaction: SDSAnyReadTransaction) {
@@ -37,16 +39,20 @@ struct MyStoryViewModel: Dependencies {
         }
 
         if let latestMessage = sortedFilteredMessages.last {
+            latestMessageIdentifier = .fromStoryMessage(latestMessage)
             latestMessageAttachment = .from(latestMessage.attachment, transaction: transaction)
             latestMessageTimestamp = latestMessage.timestamp
         } else {
+            latestMessageIdentifier = nil
             latestMessageAttachment = nil
             latestMessageTimestamp = nil
         }
 
         if let secondLatestMessage = sortedFilteredMessages.dropLast().last {
+            secondLatestMessageIdentifier = .fromStoryMessage(secondLatestMessage)
             secondLatestMessageAttachment = .from(secondLatestMessage.attachment, transaction: transaction)
         } else {
+            secondLatestMessageIdentifier = nil
             secondLatestMessageAttachment = nil
         }
     }

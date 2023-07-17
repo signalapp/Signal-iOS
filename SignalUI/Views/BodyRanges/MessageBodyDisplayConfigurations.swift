@@ -141,6 +141,29 @@ public extension HydratedMessageBody.DisplayConfiguration {
             revealedSpoilerIds: revealedSpoilerIds
         )
     }
+
+    static func storyCaption(
+        font: UIFont,
+        revealedSpoilerIds: Set<StyleIdType>
+    ) -> Self {
+        return .init(
+            baseFont: font,
+            baseTextColor: .fixed(Theme.darkThemePrimaryColor),
+            revealedSpoilerIds: revealedSpoilerIds
+        )
+    }
+
+    static func textStory(
+        font: UIFont,
+        textColor: UIColor,
+        revealedSpoilerIds: Set<StyleIdType>
+    ) -> Self {
+        return .init(
+            baseFont: font,
+            baseTextColor: .fixed(textColor),
+            revealedSpoilerIds: revealedSpoilerIds
+        )
+    }
 }
 
 extension ThemedColor {

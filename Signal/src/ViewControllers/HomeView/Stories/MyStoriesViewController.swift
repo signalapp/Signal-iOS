@@ -30,7 +30,10 @@ class MyStoriesViewController: OWSViewController {
 
     private lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self)
 
-    override init() {
+    private let spoilerState: SpoilerRenderState
+
+    public init(spoilerState: SpoilerRenderState) {
+        self.spoilerState = spoilerState
         super.init()
         hidesBottomBarWhenPushed = true
         databaseStorage.appendDatabaseChangeDelegate(self)
@@ -149,6 +152,7 @@ extension MyStoriesViewController: UITableViewDelegate {
 
         let vc = StoryPageViewController(
             context: thread.storyContext,
+            spoilerState: spoilerState,
             viewableContexts: items.orderedKeys.compactMap { items[$0]?.first?.thread.storyContext },
             loadMessage: item.message,
             onlyRenderMyStories: true
@@ -194,6 +198,7 @@ extension MyStoriesViewController: UITableViewDelegate {
                 for: item.message,
                 in: item.thread,
                 attachment: item.attachment,
+                spoilerState: spoilerState,
                 sourceView: { [weak self] in
                     // refetch the cell in case it changes out from underneath us.
                     return self?.tableView(tableView, cellForRowAt: indexPath)
@@ -224,7 +229,7 @@ extension MyStoriesViewController: UITableViewDataSource {
         }
 
         let cell = tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath) as! SentStoryCell
-        cell.configure(with: item, contextMenuButtonDelegate: self, indexPath: indexPath)
+        cell.configure(with: item, spoilerState: spoilerState, contextMenuButtonDelegate: self, indexPath: indexPath)
         return cell
     }
 
@@ -283,6 +288,7 @@ extension MyStoriesViewController: ContextMenuButtonDelegate {
                 for: item.message,
                 in: item.thread,
                 attachment: item.attachment,
+                spoilerState: spoilerState,
                 sourceView: { [weak self] in
                     // refetch the cell in case it changes out from underneath us.
                     return self?.tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath)
@@ -419,12 +425,17 @@ class SentStoryCell: UITableViewCell {
 
     fileprivate func configure(
         with item: OutgoingStoryItem,
+        spoilerState: SpoilerRenderState,
         contextMenuButtonDelegate: ContextMenuButtonDelegate,
         indexPath: IndexPath
     ) {
         if self.attachment != item.attachment {
             self.attachment = item.attachment
-            let thumbnailView = StoryThumbnailView(attachment: item.attachment)
+            let thumbnailView = StoryThumbnailView(
+                attachment: item.attachment,
+                interactionIdentifier: .fromStoryMessage(item.message),
+                spoilerState: spoilerState
+            )
             attachmentThumbnail.removeAllSubviews()
             attachmentThumbnail.addSubview(thumbnailView)
             thumbnailView.autoPinEdgesToSuperviewEdges()
@@ -470,7 +481,10 @@ class SentStoryCell: UITableViewCell {
 
         if item.attachment.isSaveable {
             saveButton.isHiddenInStackView = false
-            saveButton.block = { item.attachment.save() }
+            saveButton.block = { item.attachment.save(
+                interactionIdentifier: .fromStoryMessage(item.message),
+                spoilerState: spoilerState
+            ) }
         } else {
             saveButton.isHiddenInStackView = true
             saveButton.block = {}

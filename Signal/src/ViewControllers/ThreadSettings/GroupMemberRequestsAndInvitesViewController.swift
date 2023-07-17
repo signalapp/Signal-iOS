@@ -23,6 +23,8 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
     private let groupViewHelper: GroupViewHelper
 
+    private let spoilerState: SpoilerRenderState
+
     private enum Mode: Int, CaseIterable {
         case memberRequests = 0
         case pendingInvites = 1
@@ -30,10 +32,11 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
     private let segmentedControl = UISegmentedControl()
 
-    required init(groupThread: TSGroupThread, groupViewHelper: GroupViewHelper) {
+    required init(groupThread: TSGroupThread, groupViewHelper: GroupViewHelper, spoilerState: SpoilerRenderState) {
         self.oldGroupThread = groupThread
         self.groupModel = groupThread.groupModel
         self.groupViewHelper = groupViewHelper
+        self.spoilerState = spoilerState
 
         super.init()
     }
@@ -431,7 +434,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     }
 
     private func showMemberActionSheet(for address: SignalServiceAddress) {
-        let memberActionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper)
+        let memberActionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper, spoilerState: spoilerState)
         memberActionSheet.present(from: self)
     }
 

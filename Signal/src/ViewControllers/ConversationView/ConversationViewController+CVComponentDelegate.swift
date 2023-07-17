@@ -277,7 +277,11 @@ extension ConversationViewController: CVComponentDelegate {
                 context = .authorUuid(quotedStory.authorUuid)
             }
 
-            let vc = StoryPageViewController(context: context, loadMessage: quotedStory)
+            let vc = StoryPageViewController(
+                context: context,
+                spoilerState: spoilerState,
+                loadMessage: quotedStory
+            )
             presentFullScreen(vc, animated: true)
         } else {
             scrollToQuotedMessage(quotedReply, isAnimated: true)

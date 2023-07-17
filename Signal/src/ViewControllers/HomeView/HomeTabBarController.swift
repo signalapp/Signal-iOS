@@ -22,7 +22,8 @@ class HomeTabBarController: UITabBarController {
         selectedImage: UIImage(named: "tab-chats")
     )
 
-    lazy var storiesViewController = StoriesViewController()
+    // No need to share spoiler render state across the whole app.
+    lazy var storiesViewController = StoriesViewController(spoilerState: SpoilerRenderState())
     lazy var storiesNavController = OWSNavigationController(rootViewController: storiesViewController)
     lazy var storiesTabBarItem = UITabBarItem(
         title: OWSLocalizedString("STORIES_TITLE", comment: "Title for the stories view."),

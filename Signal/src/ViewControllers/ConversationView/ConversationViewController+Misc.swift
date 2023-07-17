@@ -245,7 +245,7 @@ public extension ConversationViewController {
             groupViewHelper!.delegate = self
         }
 
-        let actionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper)
+        let actionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper, spoilerState: spoilerState)
         actionSheet.present(from: self)
     }
 }

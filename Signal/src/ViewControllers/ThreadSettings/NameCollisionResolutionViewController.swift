@@ -226,7 +226,8 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
                 guard let self = self else { return }
                 MemberActionSheet(
                     address: model.address,
-                    groupViewHelper: self.groupViewHelper
+                    groupViewHelper: self.groupViewHelper,
+                    spoilerState: SpoilerRenderState() // no need to share
                 ).present(from: self)
             }
             )

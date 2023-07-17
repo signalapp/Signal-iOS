@@ -6,6 +6,7 @@
 import Foundation
 import GRDB
 import SignalServiceKit
+import SignalUI
 
 protocol StoryListDataSourceDelegate: AnyObject {
 
@@ -27,8 +28,11 @@ class StoryListDataSource: NSObject, Dependencies {
 
     private weak var delegate: StoryListDataSourceDelegate?
 
-    init(delegate: StoryListDataSourceDelegate) {
+    private let spoilerState: SpoilerRenderState
+
+    init(delegate: StoryListDataSourceDelegate, spoilerState: SpoilerRenderState) {
         self.delegate = delegate
+        self.spoilerState = spoilerState
         super.init()
     }
 
@@ -682,7 +686,7 @@ class StoryListDataSource: NSObject, Dependencies {
                     guard let model = models[safe: newIndex] else {
                         return owsFailDebug("Missing model for story")
                     }
-                    visibleCell.configure(with: model)
+                    visibleCell.configure(with: model, spoilerState: spoilerState)
                 } else {
                     tableView.reloadRows(at: [path], with: .none)
                 }

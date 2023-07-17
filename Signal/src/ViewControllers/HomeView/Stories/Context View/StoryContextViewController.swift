@@ -32,6 +32,8 @@ class StoryContextViewController: OWSViewController {
 
     weak var delegate: StoryContextViewControllerDelegate?
 
+    private let spoilerState: SpoilerRenderState
+
     private lazy var playbackProgressView = StoryPlaybackProgressView()
 
     private var items = [StoryItem]()
@@ -48,6 +50,9 @@ class StoryContextViewController: OWSViewController {
             {
                 pauseCurrentMediaItem(hideChrome: pauseAndHideChromeWhenMediaViewIsCreated)
             }
+
+            oldValue?.setIsViewVisible(false)
+            currentItemMediaView?.setIsViewVisible(true)
         }
     }
 
@@ -76,8 +81,14 @@ class StoryContextViewController: OWSViewController {
 
     private(set) lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self, delegate: self)
 
-    required init(context: StoryContext, loadPositionIfRead: LoadPosition = .default, delegate: StoryContextViewControllerDelegate) {
+    required init(
+        context: StoryContext,
+        loadPositionIfRead: LoadPosition = .default,
+        spoilerState: SpoilerRenderState,
+        delegate: StoryContextViewControllerDelegate
+    ) {
         self.context = context
+        self.spoilerState = spoilerState
         self.loadPositionIfRead = loadPositionIfRead
         super.init()
         self.delegate = delegate
@@ -94,7 +105,7 @@ class StoryContextViewController: OWSViewController {
         if let currentItemMediaView = currentItemMediaView {
             pauseAndHideChromeWhenMediaViewIsCreated = nil
             // Restart playback for the current item
-            currentItemMediaView.reset()
+            currentItemMediaView.resetPlayback()
             updateProgressState()
         } else {
             // If a specific message was specified to load to, present that first.
@@ -349,7 +360,7 @@ class StoryContextViewController: OWSViewController {
     private func currentItemWasUpdated(messageDidChange: Bool) {
         if let currentItem = currentItem {
             if currentItemMediaView == nil {
-                let itemView = StoryItemMediaView(item: currentItem, delegate: self)
+                let itemView = StoryItemMediaView(item: currentItem, spoilerState: spoilerState, delegate: self)
                 self.currentItemMediaView = itemView
                 mediaViewContainer.addSubview(itemView)
                 itemView.autoPinEdgesToSuperviewEdges()
@@ -869,13 +880,20 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
         case .groupId:
             switch currentItem.message.direction {
             case .outgoing:
-                let groupRepliesAndViewsVC = StoryGroupRepliesAndViewsSheet(storyMessage: currentItem.message, context: context)
+                let groupRepliesAndViewsVC = StoryGroupRepliesAndViewsSheet(
+                    storyMessage: currentItem.message,
+                    context: context,
+                    spoilerState: spoilerState
+                )
                 groupRepliesAndViewsVC.dismissHandler = { [weak self] in self?.play() }
                 groupRepliesAndViewsVC.focusedTab = currentItem.numberOfReplies > 0 ? .replies : .views
                 self.pause()
                 self.present(groupRepliesAndViewsVC, animated: true)
             case .incoming:
-                let groupReplyVC = StoryGroupReplySheet(storyMessage: currentItem.message)
+                let groupReplyVC = StoryGroupReplySheet(
+                    storyMessage: currentItem.message,
+                    spoilerState: spoilerState
+                )
                 groupReplyVC.dismissHandler = { [weak self] in self?.play() }
                 self.pause()
                 self.present(groupReplyVC, animated: true)
@@ -885,7 +903,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
                 !currentItem.message.authorAddress.isSystemStoryAddress,
                 "Should be impossible to reply to system stories"
             )
-            let directReplyVC = StoryDirectReplySheet(storyMessage: currentItem.message)
+            let directReplyVC = StoryDirectReplySheet(storyMessage: currentItem.message, spoilerState: spoilerState)
             directReplyVC.dismissHandler = { [weak self] in self?.play() }
             self.pause()
             self.present(directReplyVC, animated: true)
@@ -902,7 +920,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
     func presentInfoSheet() {
         guard let currentItem = currentItem else { return }
 
-        let vc = StoryInfoSheet(storyMessage: currentItem.message, context: context)
+        let vc = StoryInfoSheet(storyMessage: currentItem.message, context: context, spoilerState: spoilerState)
         vc.dismissHandler = { [weak self] in self?.play() }
         pause()
         present(vc, animated: true)
@@ -1036,6 +1054,7 @@ extension StoryContextViewController: StoryItemMediaViewDelegate {
                         for: item.message,
                         in: self.context.thread(transaction: $0),
                         attachment: attachment,
+                        spoilerState: self.spoilerState,
                         sourceView: { return contextMenuButton },
                         transaction: $0
                     ))

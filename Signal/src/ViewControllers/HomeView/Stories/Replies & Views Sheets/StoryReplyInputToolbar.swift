@@ -29,6 +29,8 @@ class StoryReplyInputToolbar: UIView {
     let isGroupStory: Bool
     let quotedReplyModel: QuotedReplyModel?
 
+    let spoilerState: SpoilerRenderState
+
     var messageBodyForSending: MessageBody? {
         textView.messageBodyForSending
     }
@@ -57,10 +59,12 @@ class StoryReplyInputToolbar: UIView {
 
     init(
         isGroupStory: Bool,
-        quotedReplyModel: QuotedReplyModel? = nil
+        quotedReplyModel: QuotedReplyModel? = nil,
+        spoilerState: SpoilerRenderState
     ) {
         self.isGroupStory = isGroupStory
         self.quotedReplyModel = quotedReplyModel
+        self.spoilerState = spoilerState
         super.init(frame: CGRect.zero)
 
         // When presenting or dismissing the keyboard, there may be a slight
@@ -213,7 +217,10 @@ class StoryReplyInputToolbar: UIView {
         textContainer.addArrangedSubview(bubbleView)
 
         if let quotedReplyModel = quotedReplyModel {
-            let previewView = StoryReplyPreviewView(quotedReplyModel: quotedReplyModel)
+            let previewView = StoryReplyPreviewView(
+                quotedReplyModel: quotedReplyModel,
+                spoilerState: spoilerState
+            )
             let previewViewContainer = UIView()
             previewViewContainer.addSubview(previewView)
             previewView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 8, leading: 8, bottom: 2, trailing: 8))

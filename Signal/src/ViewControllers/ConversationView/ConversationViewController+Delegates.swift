@@ -246,7 +246,10 @@ extension ConversationViewController: ConversationHeaderViewDelegate {
         AssertIsOnMainThread()
 
         if conversationHeaderView.avatarView.configuration.hasStoriesToDisplay {
-            let vc = StoryPageViewController(context: thread.storyContext)
+            let vc = StoryPageViewController(
+                context: thread.storyContext,
+                spoilerState: spoilerState
+            )
             present(vc, animated: true)
         } else {
             showConversationSettings()

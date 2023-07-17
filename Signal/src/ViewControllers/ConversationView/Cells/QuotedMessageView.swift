@@ -501,7 +501,9 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let thumbnailView: UIView? = {
             guard configurator.hasQuotedThumbnail else { return nil }
 
-            if let thumbnailView = configurator.quotedReplyModel.thumbnailViewFactory?() { return thumbnailView }
+            if let thumbnailView = configurator.quotedReplyModel.thumbnailViewFactory?(
+                componentDelegate.spoilerState
+            ) { return thumbnailView }
 
             let quotedImageView = self.quotedImageView
             // Use trilinear filters for better scaling quality at

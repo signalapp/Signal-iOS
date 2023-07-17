@@ -18,6 +18,8 @@ public class StyleOnlyMessageBody: NSObject, Codable {
         return text.isEmpty
     }
 
+    public var length: Int { (text as NSString).length }
+
     public var hasStyles: Bool {
         return collapsedStyles.isEmpty.negated
     }
@@ -133,6 +135,13 @@ public class StyleOnlyMessageBody: NSObject, Codable {
 
     public func stripAndDropLast(_ count: Int) -> StyleOnlyMessageBody {
         stripAndPerformDrop(String.dropLast, count)
+    }
+
+    public func addingSuffix(_ suffix: StyleOnlyMessageBody) -> StyleOnlyMessageBody {
+        let suffixOffset = self.length
+        return .init(text: self.text + suffix.text, collapsedStyles: collapsedStyles + suffix.collapsedStyles.map {
+            return NSRangedValue($0.value, range: NSRange(location: $0.range.location + suffixOffset, length: $0.range.length))
+        })
     }
 
     private func stripAndPerformDrop(

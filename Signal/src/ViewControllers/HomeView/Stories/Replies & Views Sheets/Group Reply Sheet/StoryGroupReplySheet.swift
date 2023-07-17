@@ -18,8 +18,8 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
     var storyMessage: StoryMessage { groupReplyViewController.storyMessage }
     var threadUniqueId: String? { groupReplyViewController.thread?.uniqueId }
 
-    init(storyMessage: StoryMessage) {
-        self.groupReplyViewController = StoryGroupReplyViewController(storyMessage: storyMessage)
+    init(storyMessage: StoryMessage, spoilerState: SpoilerRenderState) {
+        self.groupReplyViewController = StoryGroupReplyViewController(storyMessage: storyMessage, spoilerState: spoilerState)
 
         super.init()
 
