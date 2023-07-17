@@ -131,7 +131,7 @@ public class FeatureFlags: BaseFlags {
 
     public static let editMessageSend = build.includes(.internal)
 
-    public static let spoilerAnimations = build.includes(.dev)
+    public static let spoilerAnimations = build.includes(.internal)
 }
 
 // MARK: -
