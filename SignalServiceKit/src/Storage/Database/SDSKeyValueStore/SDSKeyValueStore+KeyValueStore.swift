@@ -183,12 +183,12 @@ extension SDSKeyValueStore: KeyValueStore {
         return removeAll(transaction: sdsTx)
     }
 
-    public func enumerateKeysAndObjects(transaction: DBReadTransaction, block: @escaping (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func enumerateKeysAndObjects(transaction: DBReadTransaction, block: (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void) {
         let sdsTx = SDSDB.shimOnlyBridge(transaction)
         return enumerateKeysAndObjects(transaction: sdsTx, block: block)
     }
 
-    public func enumerateKeys(transaction: DBReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func enumerateKeys(transaction: DBReadTransaction, block: (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         let sdsTx = SDSDB.shimOnlyBridge(transaction)
         return enumerateKeys(transaction: sdsTx, block: block)
     }

@@ -360,7 +360,7 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
-    public func enumerateKeysAndObjects(transaction: SDSAnyReadTransaction, block: @escaping (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func enumerateKeysAndObjects(transaction: SDSAnyReadTransaction, block: (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             var stop: ObjCBool = false
@@ -381,7 +381,7 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
-    public func enumerateKeys(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func enumerateKeys(transaction: SDSAnyReadTransaction, block: (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             var stop: ObjCBool = false

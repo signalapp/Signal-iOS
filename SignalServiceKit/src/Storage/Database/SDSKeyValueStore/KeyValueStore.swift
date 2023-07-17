@@ -122,9 +122,9 @@ public protocol KeyValueStore {
 
     func removeAll(transaction: DBWriteTransaction)
 
-    func enumerateKeysAndObjects(transaction: DBReadTransaction, block: @escaping (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void)
+    func enumerateKeysAndObjects(transaction: DBReadTransaction, block: (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void)
 
-    func enumerateKeys(transaction: DBReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void)
+    func enumerateKeys(transaction: DBReadTransaction, block: (String, UnsafeMutablePointer<ObjCBool>) -> Void)
 
     func allValues(transaction: DBReadTransaction) -> [Any]
 

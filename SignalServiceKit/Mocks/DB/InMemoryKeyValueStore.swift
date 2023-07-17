@@ -190,7 +190,7 @@ public class InMemoryKeyValueStore: KeyValueStore {
         dict = [:]
     }
 
-    public func enumerateKeysAndObjects(transaction: SignalServiceKit.DBReadTransaction, block: @escaping (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func enumerateKeysAndObjects(transaction: SignalServiceKit.DBReadTransaction, block: (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void) {
         for key in dict.keys {
             var bool: ObjCBool = .init(booleanLiteral: false)
             block(key, dict[key]!, &bool)
@@ -200,7 +200,7 @@ public class InMemoryKeyValueStore: KeyValueStore {
         }
     }
 
-    public func enumerateKeys(transaction: SignalServiceKit.DBReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func enumerateKeys(transaction: SignalServiceKit.DBReadTransaction, block: (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         enumerateKeysAndObjects(transaction: transaction, block: { key, _, stop in
             block(key, stop)
         })
