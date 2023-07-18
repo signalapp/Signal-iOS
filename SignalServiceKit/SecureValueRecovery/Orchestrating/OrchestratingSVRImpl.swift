@@ -491,21 +491,17 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
-        switch writeStrategy(for: .chatServerAuth(authedAccount)) {
-        case .reportGenericError:
-            return
-        case .kbsOnly:
-            kbs.storeSyncedStorageServiceKey(data: data, authedAccount: authedAccount, transaction: transaction)
-        case .svr2Only:
-            svr2.storeSyncedStorageServiceKey(data: data, authedAccount: authedAccount, transaction: transaction)
-        case .mirroring:
-            // NOTE: this will trigger multiple storage service syncs.
-            // However, those happen asynchronously, and StorageService code
-            // should dedupe the requests. So this should be fine in the
-            // short term while we use both SVRs in parallel.
-            kbs.storeSyncedStorageServiceKey(data: data, authedAccount: authedAccount, transaction: transaction)
-            svr2.storeSyncedStorageServiceKey(data: data, authedAccount: authedAccount, transaction: transaction)
-        }
+        // This is a special kind of local write; it only writes to local state
+        // and in fact doesn't affect svr1/2 at all since it only happens on linked
+        // devices which never theselves talk to svr.
+        // Ok to ignore write strategy and always write to both.
+
+        // NOTE: this will trigger multiple storage service syncs.
+        // However, those happen asynchronously, and StorageService code
+        // should dedupe the requests. So this should be fine in the
+        // short term while we use both SVRs in parallel.
+        kbs.storeSyncedStorageServiceKey(data: data, authedAccount: authedAccount, transaction: transaction)
+        svr2.storeSyncedStorageServiceKey(data: data, authedAccount: authedAccount, transaction: transaction)
     }
 
     // MARK: - Value Derivation
