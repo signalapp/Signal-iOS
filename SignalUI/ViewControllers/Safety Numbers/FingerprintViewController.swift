@@ -53,7 +53,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             recipientIdentity: recipientIdentity
         )
         let navigationController = OWSNavigationController(rootViewController: fingerprintViewController)
-        viewController.presentFormSheet(navigationController, animated: true)
+        viewController.present(navigationController, animated: true)
     }
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle {
@@ -401,13 +401,23 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             shareButton.autoPinEdge(.trailing, to: .trailing, of: self, withOffset: -16)
 
             qrCodeView.autoPinEdge(.top, to: .bottom, of: shareButton, withOffset: 8)
-            qrCodeView.autoPinEdge(.leading, to: .leading, of: self, withOffset: .scaleFromIPhone5To7Plus(44, 64))
-            qrCodeView.autoPinEdge(.trailing, to: .trailing, of: self, withOffset: -.scaleFromIPhone5To7Plus(44, 64))
+            // Set a minimum horizontal margin
+            qrCodeView.autoPinEdge(.leading, to: .leading, of: self, withOffset: .scaleFromIPhone5To7Plus(44, 64), relation: .greaterThanOrEqual)
+            qrCodeView.autoPinEdge(.trailing, to: .trailing, of: self, withOffset: -.scaleFromIPhone5To7Plus(44, 64), relation: .lessThanOrEqual)
+            qrCodeView.autoHCenterInSuperview()
 
             safetyNumberLabel.autoPinEdge(.top, to: .bottom, of: qrCodeView, withOffset: 30)
-            safetyNumberLabel.autoPinEdge(.leading, to: .leading, of: self, withOffset: .scaleFromIPhone5To7Plus(20, 35))
-            safetyNumberLabel.autoPinEdge(.trailing, to: .trailing, of: self, withOffset: -.scaleFromIPhone5To7Plus(20, 35))
+            safetyNumberLabel.autoPinEdge(.leading, to: .leading, of: self, withOffset: .scaleFromIPhone5To7Plus(20, 35), relation: .greaterThanOrEqual)
+            safetyNumberLabel.autoPinEdge(.trailing, to: .trailing, of: self, withOffset: -.scaleFromIPhone5To7Plus(20, 35), relation: .lessThanOrEqual)
             safetyNumberLabel.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: -.scaleFromIPhone5To7Plus(27, 47))
+            safetyNumberLabel.autoHCenterInSuperview()
+
+            // Cap QR code width to the width of the safety number
+            // Prevents it from being too large on iPad
+            let qrCodeWidthConstraint = qrCodeView.widthAnchor.constraint(equalTo: safetyNumberLabel.widthAnchor)
+            qrCodeWidthConstraint.priority = .defaultHigh
+            qrCodeWidthConstraint.autoInstall()
+            safetyNumberLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         }
 
         required init?(coder: NSCoder) {
@@ -477,6 +487,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             label.adjustsFontSizeToFitWidth = true
             label.isUserInteractionEnabled = true
             label.accessibilityIdentifier = "FingerprintViewController.fingerprintLabel"
+            label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapSafetyNumber)))
             return label
         }()
 
@@ -488,6 +499,11 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         @objc
         func didTapShare() {
             controller?.shareFingerprint(from: shareButton)
+        }
+
+        @objc
+        func didTapSafetyNumber() {
+            controller?.shareFingerprint(from: safetyNumberLabel)
         }
 
         enum Constants {
@@ -535,6 +551,10 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         let stackView = UIStackView()
         public override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
         public override var sheetBackgroundColor: UIColor { Theme.tableView2PresentedBackgroundColor }
+
+        override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+            return .portrait
+        }
 
         private weak var parentVc: FingerprintViewController?
 
@@ -639,22 +659,20 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             stackView.setCustomSpacing(20, after: lastParagraphLabel)
 
             stackView.addArrangedSubview(animationView)
-            stackView.setCustomSpacing(24, after: animationView)
-            animationView.autoPinWidth(toWidthOf: self.view, offset: -48)
+            stackView.setCustomSpacing(18, after: animationView)
             animationView.autoMatch(.height, to: .width, of: animationView, withMultiplier: 172/346)
 
-            let learnMoreLabel = UILabel()
-            learnMoreLabel.text = OWSLocalizedString(
+            let learnMoreTitle = OWSLocalizedString(
                 "SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT",
                 comment: "Button text for a sheet informing the user about the transition from phone number to user identifier based."
             )
-            learnMoreLabel.textAlignment = .center
-            learnMoreLabel.font = .dynamicTypeBody
-            learnMoreLabel.textColor = Theme.isDarkThemeEnabled ? .ows_accentBlueDark : .link
-            learnMoreLabel.isUserInteractionEnabled = true
-            learnMoreLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapLearnMore)))
-            stackView.addArrangedSubview(learnMoreLabel)
-            stackView.setCustomSpacing(30, after: learnMoreLabel)
+            let learnMoreButton = UIButton(type: .system)
+            learnMoreButton.setTitle(learnMoreTitle, for: .normal)
+            learnMoreButton.titleLabel?.font = .dynamicTypeBody
+            learnMoreButton.setTitleColor(Theme.isDarkThemeEnabled ? .ows_accentBlueDark : .link, for: .normal)
+            learnMoreButton.addTarget(self, action: #selector(didTapLearnMore), for: .touchUpInside)
+            stackView.addArrangedSubview(learnMoreButton)
+            stackView.setCustomSpacing(24, after: learnMoreButton)
 
             let continueButton = OWSButton(
                 title: OWSLocalizedString(
@@ -666,6 +684,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             }
             continueButton.layer.cornerRadius = 16
             continueButton.backgroundColor = .ows_accentBlue
+            continueButton.dimsWhenHighlighted = true
             continueButton.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
             continueButton.autoSetDimension(.height, toSize: 50, relation: .greaterThanOrEqual)
             stackView.addArrangedSubview(continueButton)
