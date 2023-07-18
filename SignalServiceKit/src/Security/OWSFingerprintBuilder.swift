@@ -83,20 +83,30 @@ public class OWSFingerprintBuilder {
                     theirIdentityKey: theirIdentityKey,
                     myIdentityKey: myIdentityKey,
                     theirName: theirName
-                ),
-                let e164Fingerprint = self.e164Fingerprint(
-                    theirSignalAddress: theirSignalAddress,
-                    theirIdentityKey: theirIdentityKey,
-                    myIdentityKey: myIdentityKey,
-                    theirName: theirName
                 )
             else {
-                owsFailDebug("Unable to build fingerprints")
+                owsFailDebug("Unable to build aci fingerprint")
+                return nil
+            }
+            let e164Fingerprint = self.e164Fingerprint(
+                theirSignalAddress: theirSignalAddress,
+                theirIdentityKey: theirIdentityKey,
+                myIdentityKey: myIdentityKey,
+                theirName: theirName
+            )
+            if RemoteConfig.defaultToAciSafetyNumber {
+                // If we default to ACI safety number and don't have the e164,
+                // that's fine. Just show the aci one.
+                return .init(fingerprints: [e164Fingerprint, aciFingerprint].compacted(), defaultIndex: e164Fingerprint == nil ? 0 : 1)
+            }
+            // Otherwise, we want to default to the e164 one so we _require_ it.
+            guard let e164Fingerprint else {
+                owsFailDebug("Unable to build e164 fingerprint")
                 return nil
             }
             return .init(
                 fingerprints: [e164Fingerprint, aciFingerprint],
-                defaultIndex: RemoteConfig.defaultToAciSafetyNumber ? 1 : 0
+                defaultIndex: 0
             )
         }
     }
