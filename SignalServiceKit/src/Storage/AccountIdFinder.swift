@@ -33,6 +33,13 @@ public class OWSAccountIdFinder: NSObject {
         forAddress address: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
     ) -> AccountId {
+        return ensureRecipient(forAddress: address, transaction: transaction).uniqueId
+    }
+
+    public class func ensureRecipient(
+        forAddress address: SignalServiceAddress,
+        transaction: SDSAnyWriteTransaction
+    ) -> SignalRecipient {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         let recipient: SignalRecipient
         if let serviceId = address.serviceId {
@@ -50,7 +57,7 @@ public class OWSAccountIdFinder: NSObject {
             recipient = SignalRecipient(serviceId: nil, phoneNumber: nil)
             recipient.anyInsert(transaction: transaction)
         }
-        return recipient.uniqueId
+        return recipient
     }
 
     @objc
