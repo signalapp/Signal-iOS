@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIFs";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "All Media";
+"ALL_MEDIA_FILTER_NONE" = "બધા મીડિયા";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "ફોટા";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "ભૂલ";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "તમે આ વ્યક્તિ સાથે મેસેજની આપ-લે કર્યા પછી તેની સાથે એક સેફ્ટી નંબર બનાવવામાં આવશે.";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "અમાન્ય કાર્ડ નંબર";
@@ -1193,7 +1193,7 @@
 "CONTEXT_MENU_DETAILS" = "માહિતી";
 
 /* Context menu edit button title */
-"CONTEXT_MENU_EDIT_MESSAGE" = "Edit";
+"CONTEXT_MENU_EDIT_MESSAGE" = "ફેરફાર કરો";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "ફોરવર્ડ";
@@ -2144,10 +2144,10 @@
 "EDIT_ITEM_COPY_ACTION" = "કૉપિ";
 
 /* Error message to display to user when a messaeg is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "તમે આ મેસેજ મોકલ્યો હોય ત્યારથી માત્ર 3 કલાકની અંદર જ ફેરફારો લાગુ કરી શકાય છે.";
 
 /* Edit failed for an unexpected reason */
-"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "મેસેજમાં ફેરફાર કરી શકાતો નથી.";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "હેલો\n\nતાજેતરમાં હું મારા iPhone પર ચેટને ખાનગી રાખવા માટે Signalનો ઉપયોગ કરું છું. હું ઇચ્છું છું કે તમે પણ તેને ઇન્સ્ટોલ કરો, તેથી આપણે ખાતરી રાખી શકીએ કે માત્ર તમે અને હું જ આપણા મેસેજ વાંચી કે આપણા કૉલ સાંભળી શકીએ છીએ.\n\nSignal iPhones અને Android માટે ઉપલબ્ધ છે. તેને અહીં મેળવો: %1$@\n\nSignal તમારી હાલની મેસેજિંગ ઍપની જેમ કામ કરે છે. આપણે ઇમેજ અને વીડિયો મોકલી શકીએ છીએ, કૉલ કરી શકીએ છીએ અને ગ્રૂપ ચેટ શરૂ કરી શકીએ છીએ. સૌથી સારી વાત એ છે કે, તેમાનું કંઈ જ બીજું કોઈ જોઈ શકતું નથી, Signal બનાવનારા લોકો પણ નહીં!\n\nતમે ઓપન વ્હિસ્પર સિસ્ટમ વિશે વધુ વાંચી શકો છો, કે જે લોકો Signal બનાવે છે, અહીં: %2$@";
@@ -3326,7 +3326,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ Signal પર છે!";
 
 /* Label at the top of the input text when editing a message */
-"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "મેસેજમાં ફેરફાર કરો";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "કીબોર્ડ";
@@ -3551,7 +3551,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "એકવાર જોઈ શકાય તેવા મીડિયા";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "ફિલ્ટર દૂર કરો";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "આનાથી પસંદ કરેલી ફાઇલો કાયમ માટે ડિલીટ થઈ જશે. આ આઇટમ સાથે સંકળાયેલ કોઈ પણ મેસેજ ટેક્સ્ટ પણ ડિલીટ થઈ જશે.";
@@ -3560,19 +3560,19 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "વૉઇસ મેસેજ અને ઓડિયો ફાઇલો જે તમે મોકલો છો અને મેળવો છો તે અહીં દેખાશે";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "કોઈ ઓડિયો નથી";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "કોઈ મીડિયા નથી";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "તમે મોકલો છો અને મેળવો છો તે ફોટા, વીડિયો અને GIF અહીં દેખાશે";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "કોઈ મીડિયા નથી";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "આ મહિને";
@@ -3614,7 +3614,7 @@
 "MESSAGE_ACTION_DETAILS" = "વધુ માહિતી";
 
 /* Action sheet edit message accessibility label */
-"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
+"MESSAGE_ACTION_EDIT_MESSAGE" = "મેસેજમાં ફેરફાર કરો";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "નવો ઇમેઇલ મેસેજ";
@@ -5480,19 +5480,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "અમારો Signal સલામતી નંબર:\n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "સેફ્ટી નંબર અપડેટ કરવામાં આવી રહ્યાં છે.";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "મદદ જોઈએ છે?";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Signal પર આવનારા ગોપનીયતા ફીચરને સક્ષમ કરવા માટે ફેરફારના સમયગાળા દરમિયાન સેફ્ટી નંબરો અપડેટ કરવામાં આવી રહ્યાં છે.";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "સેફ્ટી નંબરોની ચકાસણી કરવા માટે, તમારા સંપર્કના ડિવાઇસ સાથે કલર કાર્ડને મેચ કરો. જો આ મેચ ન થતાં હોય, તો સ્વાઇપ કરો અને સેફ્ટી નંબરોની બીજી જોડી અજમાવી જુઓ. ફક્ત એક જ જોડી મેચ કરવાની જરૂર છે.";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "સેફ્ટી નંબરોમાં ફેરફારો";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%1$@ સાથેનો તમારો સલામતી નંબર બદલાયો છે. તમે તેને ચકાસી શકો છો.";
@@ -7337,19 +7337,19 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "કોડ";
 
 /* A title for a view that allows you to scan a username link QR code using the camera. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "સ્કેન કરો";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "યુઝરનેમ કૉપિ કર્યું";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "તમારા સંપર્કના ડિવાઇસ પર QR કોડ સ્કેન કરો.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
-"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "લિંક કૉપિ કરો";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "આ લિંક ધરાવતી કોઈ પણ વ્યક્તિ તમારું યુઝરનેમ જોઈ શકે છે અને તમારી સાથે ચેટ શરૂ કરી શકે છે. તમને ભરોસો હોય તેવા લોકો સાથે જ તેને શેર કરો.";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "વપરાશકર્તા નામ શોધતી વખતે ભૂલ આવી. પછીથી ફરી પ્રયત્ન કરો.";
@@ -7430,7 +7430,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "સલામતી નંબરોની સમીક્ષા કરો";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "%1$@ સાથે તમારા એન્ડ-ટૂ-એન્ડ એન્ક્રિપ્શનની સુરક્ષાની ખાતરી કરવા માટે, ઉપર દર્શાવેલ કલર કાર્ડને તેમના ડિવાઇસ સાથે મેચ કરો અને નંબરની સાથે સરખાવો. જો આ મેચ ન થતાં હોય, તો સ્વાઇપ કરો અને સેફ્ટી નંબરોની બીજી જોડી અજમાવી જુઓ. ફક્ત એક જ જોડી મેચ કરવાની જરૂર છે.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "આ વિડિયો ચલાવી શકાતો નથી";

@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "קבצי GIF";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "All Media";
+"ALL_MEDIA_FILTER_NONE" = "כל המדיה";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "תמונות";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "שגיאה";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "מספר בטיחות ייווצר עם אדם זה אחרי שתחליפו ביניכם הודעות.";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "מספר כרטיס לא תקין";
@@ -1193,7 +1193,7 @@
 "CONTEXT_MENU_DETAILS" = "מידע";
 
 /* Context menu edit button title */
-"CONTEXT_MENU_EDIT_MESSAGE" = "Edit";
+"CONTEXT_MENU_EDIT_MESSAGE" = "עריכה";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "העבר הלאה";
@@ -2144,10 +2144,10 @@
 "EDIT_ITEM_COPY_ACTION" = "העתק";
 
 /* Error message to display to user when a messaeg is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "ניתן לערוך רק עד 3 שעות מזמן שליחת ההודעה.";
 
 /* Edit failed for an unexpected reason */
-"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "לא ניתן לערוך את ההודעה.";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "היי,\n\nלאחרונה השתמשתי ב–Signal כדי לשמור על הצ׳אטים ב־iPhone שלי פרטיים. זה יהיה מעולה אם גם לך תהיה את האפליקציה, כדי שנוכל לדעת בוודאות שרק לנו יש גישה להודעות ולשיחות הקוליות שלנו.\n\nSignal זמינה עבור iPhone ו–Android. אפשר להוריד אותה כאן: %1$@\n\nSignal עובדת כמו אפליקציית ההודעות הקיימת שלך. אפשר לשלוח תמונות וסרטונים, לבצע שיחות ולהתחיל צ׳אטים קבוצתיים. החלק הכי טוב הוא שאף אחד לא יכול לראות שום דבר מזה, אפילו לא האנשים שיוצרים את Signal!\n\nאפשר לקרוא עוד על Open Whisper Systems, האנשים שיוצרים את Signal, כאן: %2$@";
@@ -3326,7 +3326,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ נמצא ב־Signal!";
 
 /* Label at the top of the input text when editing a message */
-"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "עריכת הודעה";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "מקלדת";
@@ -3551,7 +3551,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "מדיה לצפייה חד פעמית";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "ניקוי מסנן";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "זה ימחק לצמיתות את הקבצים שנבחרו. גם מלל הודעה שמשויך לפריטים אלו יימחק.";
@@ -3560,19 +3560,19 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "הודעות קוליות וקבצי שמע ששלחת וקיבלת יופיעו כאן";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "אין שמע";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "אין מדיה";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "תמונות, סרטונים וגיפים ששלחת וקיבלת יופיעו כאן";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "אין מדיה";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "החודש";
@@ -3614,7 +3614,7 @@
 "MESSAGE_ACTION_DETAILS" = "עוד מידע";
 
 /* Action sheet edit message accessibility label */
-"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
+"MESSAGE_ACTION_EDIT_MESSAGE" = "עריכת הודעה";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "הודעת דוא״ל חדשה";
@@ -5480,19 +5480,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "מספר ביטחון Signal שלנו:\n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "מספרי בטיחות מתעדכנים.";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "רוצה עזרה?";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "אנחנו מעדכנים את מספרי הבטיחות במהלך תקופת מעבר כדי לאפשר פיצ׳רים עתידיים של פרטיות ב–Signal.";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "כדי לאמת מספרי בטיחות, יש להתאים את כרטיסיית הצבע שלמעלה עם המכשיר של איש הקשר. אם הם לא תואמים, אפשר להחליק ולנסות זוג אחר של מספרי בטיחות. רק זוג אחד צריך להתאים.";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "שינויים במספרי בטיחות";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "מספר הביטחון שלך עם %1$@ השתנה. מומלץ לוודא אותו.";
@@ -7337,19 +7337,19 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "קוד";
 
 /* A title for a view that allows you to scan a username link QR code using the camera. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "סריקה";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "שם משתמש הועתק";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "אפשר לסרוק את קוד ה–QR במכשיר של איש הקשר שלך.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
-"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "העתקת קישור";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "כל מי שיש לו את הלינק הזה יוכל לראות את שם המשתמש שלך ולהתחיל איתך צ׳אט. חשוב לשתף רק עם אנשים שבוטחים בהם.";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "התרחשה שגיאה בעת חיפוש שם המשתמש. יש לנסות שוב מאוחר יותר.";
@@ -7430,7 +7430,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "סקור מספרי ביטחון";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "כדי לאמת את האבטחה מקצה לקצה שלך עם %1$@, יש להתאים את כרטיסיית הצבע שלמעלה עם המכשיר שלו או שלה ולהשוות את המספרים. אם הם לא תואמים, אפשר להחליק ולנסות זוג אחר של מספרי בטיחות. רק זוג אחד צריך להתאים.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "לא ניתן לנגן את הסרטון הזה";

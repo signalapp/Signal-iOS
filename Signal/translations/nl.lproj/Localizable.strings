@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIFs";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "All Media";
+"ALL_MEDIA_FILTER_NONE" = "Alle media";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "Afbeeldingen";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Fout";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Er wordt een veiligheidsnummer aangemaakt met deze persoon nadat je berichten hebt uitgewisseld.";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "Ongeldig kaartnummer";
@@ -1193,7 +1193,7 @@
 "CONTEXT_MENU_DETAILS" = "Info";
 
 /* Context menu edit button title */
-"CONTEXT_MENU_EDIT_MESSAGE" = "Edit";
+"CONTEXT_MENU_EDIT_MESSAGE" = "Bewerken";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Doorsturen";
@@ -2144,10 +2144,10 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopiëren";
 
 /* Error message to display to user when a messaeg is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Dit bericht kan je alleen binnen 3 uur na verzending bewerken.";
 
 /* Edit failed for an unexpected reason */
-"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Bericht kan niet worden bewerkt.";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "Hoi, \n\n tegenwoordig gebruik ik Signal om de chats op mijn iPhone privé te houden. Ik zou het fijn vinden als jij het ook installeert, zodat we erop kunnen vertrouwen dat alleen jij en ik onze berichten kunnen lezen of onze oproepen kunnen horen. \n\n Signal is beschikbaar voor iPhones en Android. Download het hier: %1$@\n\nSignal werkt net als je bestaande berichten-app. We kunnen foto's en video's versturen, bellen en groepschats starten. Het beste is dat niemand anders er iets van kan zien, zelfs niet de mensen die Signal maken! \n\n Je kunt hier meer lezen over Open Whisper Systems, de mensen die Signal ontwikkelen: %2$@";
@@ -3326,7 +3326,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ is bereikbaar via Signal.";
 
 /* Label at the top of the input text when editing a message */
-"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Bericht bewerken";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "Toetsenbord";
@@ -3551,7 +3551,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Eenmaligeweergave-media";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Filter verwijderen";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "De gekozen bestanden worden hiermee permanent verwijderd. Tekst bij de items wordt ook verwijderd.";
@@ -3560,19 +3560,19 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Audioberichten en bestanden die je verstuurt en ontvangt worden hier weergegeven";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "Geen audio";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "Geen media";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Foto's, video's en GIF's die je verstuurt en ontvangt, worden hier weergegeven";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "Geen media";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Deze maand";
@@ -3614,7 +3614,7 @@
 "MESSAGE_ACTION_DETAILS" = "Meer informatie";
 
 /* Action sheet edit message accessibility label */
-"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
+"MESSAGE_ACTION_EDIT_MESSAGE" = "Bericht bewerken";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Nieuw e-mailbericht";
@@ -5480,19 +5480,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Ons Signal-veiligheidsnummer:\n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Veiligheidsnummers worden bijgewerkt.";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Hulp nodig?";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Veiligheidsnummers worden gedurende een overgangsperiode bijgewerkt als voorbereiding op toekomstige privacyfuncties in Signal.";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "Om veiligheidsnummers te verifiëren, vergelijk de kleurkaart met die op het apparaat van je contactpersoon. Als deze niet overeenkomen, swipe je en probeer je het andere paar veiligheidsnummers. Er hoeft maar één paar te matchen.";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Veranderingen in veiligheidsnummers";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Je veiligheidsnummer met %1$@ is veranderd. Het wordt aanbevolen het nieuwe veiligheidsnummer te verifiëren.";
@@ -7337,19 +7337,19 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Code";
 
 /* A title for a view that allows you to scan a username link QR code using the camera. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scannen";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Gebruikersnaam gekopieerd";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan de QR-code op het apparaat van je contact.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
-"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Link kopiëren";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "Iedereen met deze link kan jouw gebruikersnaam zien en een gesprek met je starten. Deel deze alleen met mensen die je vertrouwt.";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Er is iets fout gegaan bij het opzoeken van de gebruikersnaam. Probeer het later opnieuw.";
@@ -7430,7 +7430,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Veiligheidsnummers nakijken";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Om end-to-end-versleuteling met %1$@ te verifiëren, moet je bovenstaande kleurenkaart vergelijken met de nummers op de kaart van je contact. Als deze niet overeenkomen, swipe je en probeer je het andere paar veiligheidsnummers. Er hoeft maar één paar te matchen.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Deze video kan niet worden afgespeeld";

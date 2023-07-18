@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "All Media";
+"ALL_MEDIA_FILTER_NONE" = "สื่อทั้งหมด";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "รูปภาพ";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "ข้อผิดพลาด";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "ระบบจะสร้างหมายเลขความปลอดภัยสำหรับผู้ติดต่อหลังจากที่คุณส่งหรือรับข้อความจากคนคนนี้";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "หมายเลขบัตรไม่ถูกต้อง";
@@ -1193,7 +1193,7 @@
 "CONTEXT_MENU_DETAILS" = "ข้อมูล";
 
 /* Context menu edit button title */
-"CONTEXT_MENU_EDIT_MESSAGE" = "Edit";
+"CONTEXT_MENU_EDIT_MESSAGE" = "แก้ไข";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "ส่งต่อ";
@@ -2144,10 +2144,10 @@
 "EDIT_ITEM_COPY_ACTION" = "คัดลอก";
 
 /* Error message to display to user when a messaeg is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "สามารถแก้ไขข้อความนี้ได้ภายใน 3 ชั่วโมงนับจากเวลาที่คุณส่ง";
 
 /* Edit failed for an unexpected reason */
-"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "ไม่สามารถแก้ไขข้อความได้";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "สวัสดี!\n\nหลังจากที่ฉันได้เริ่มใช้ Signal เพื่อรักษาความเป็นส่วนตัวของแชทบน iPhone ฉันอยากแนะนำให้คุณติดตั้งแอปนี้เช่นกัน เพื่อให้มั่นใจได้ว่ามีแค่เราสองคนเท่านั้นที่สามารถอ่านข้อความหรือได้ยินเสียงพูดคุยของเรา\n\nSignal ใช้งานได้ทั้งบน iPhone และ Android ดาวน์โหลดเลยที่นี่: %1$@\n\nSignal ทำงานเหมือนแอปส่งข้อความที่คุณใช้อยู่ เราสามารถส่งรูปและวิดีโอ โทรออก และเริ่มแชทกลุ่ม แต่ที่มากไปกว่านั้นก็คือจะไม่มีใครเห็นข้อมูลเหล่านี้ แม้แต่ทีมงานที่สร้าง Signal ก็ตาม!\n\nอ่านเพิ่มเติมเกี่ยวกับ Open Whisper Systems และผู้สร้าง Signal ได้ที่นี่: %2$@";
@@ -3326,7 +3326,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ อยู่บน Signal!";
 
 /* Label at the top of the input text when editing a message */
-"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "แก้ไขข้อความ";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "แป้นพิมพ์";
@@ -3551,7 +3551,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "สื่อที่ดูได้ครั้งเดียว";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "ล้างตัวกรอง";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "การดำเนินการนี้จะลบไฟล์ที่เลือกไว้อย่างถาวร ข้อความที่เกี่ยวข้องกับรายการเหล่านี้จะถูกลบด้วย";
@@ -3560,19 +3560,19 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "ข้อความเสียงและไฟล์เสียงที่คุณส่งและได้รับจะปรากฏในหน้านี้";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "ไม่มีไฟล์เสียง";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "ไม่มีสื่อ";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "รูปภาพ วิดีโอ และ GIF ที่คุณส่งและได้รับจะปรากฏในหน้านี้";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "ไม่มีสื่อ";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "เดือนนี้";
@@ -3614,7 +3614,7 @@
 "MESSAGE_ACTION_DETAILS" = "ข้อมูลเพิ่มเติม";
 
 /* Action sheet edit message accessibility label */
-"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
+"MESSAGE_ACTION_EDIT_MESSAGE" = "แก้ไขข้อความ";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "ข้อความอีเมลใหม่";
@@ -5480,19 +5480,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "หมายเลขความปลอดภัย Signal ของเรา:\n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "กำลังอัปเดตหมายเลขความปลอดภัย";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "ต้องการความช่วยเหลือใช่หรือไม่";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "กำลังอัปเดตหมายเลขความปลอดภัยเพื่อให้พร้อมรองรับการใช้งานฟีเจอร์ด้านความเป็นส่วนตัวใหม่ๆ ของ Signal";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "เพื่อยืนยันหมายเลขความปลอดภัย ให้ตรวจสอบแถบสีบนอุปกรณ์ของคุณกับแถบสีบนอุปกรณ์ของผู้ติดต่อว่าตรงกันหรือไม่ หากข้อมูลไม่ตรงกัน ให้ปัดหน้าจอ แล้วลองจับคู่หมายเลขความปลอดภัยใหม่ การตรวจสอบหมายเลขความปลอดภัยให้ตรงกันได้หนึ่งคู่นั้นเพียงพอแล้ว";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "การเปลี่ยนแปลงเกี่ยวกับหมายเลขความปลอดภัย";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "หมายเลขความปลอดภัยของคุณกับ %1$@ ได้เปลี่ยนไป คุณอาจต้องการตรวจยืนยันอีกครั้ง";
@@ -7337,19 +7337,19 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "โค้ด";
 
 /* A title for a view that allows you to scan a username link QR code using the camera. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "สแกน";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "คัดลอกชื่อผู้ใช้แล้ว";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "สแกนคิวอาร์โค้ดบนอุปกรณ์ของผู้ติดต่อของคุณ";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
-"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "คัดลอกลิงก์";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "ทุกคนที่มีลิงก์นี้จะสามารถมองเห็นชื่อผู้ใช้ของคุณและเริ่มแชทกับคุณได้ เราขอแนะนำให้แชร์ลิงก์นี้กับคนที่คุณไว้วางใจเท่านั้น";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "เกิดข้อผิดพลาดขณะค้นหาชื่อผู้ใช้ โปรดลองอีกครั้งในภายหลัง";
@@ -7430,7 +7430,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "ตรวจสอบหมายเลขความปลอดภัย";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "เพื่อยืนยันว่าการติดต่อสื่อสารกับ %1$@ ถูกเข้ารหัสตั้งแต่ต้นทางถึงปลายทาง ให้ตรวจสอบแถบสีด้านบนนี้กับแถบสีบนอุปกรณ์ของคนคนนั้น พร้อมเปรียบเทียบหมายเลขที่แสดงว่าตรงกันหรือไม่ หากข้อมูลไม่ตรงกัน ให้ปัดหน้าจอ แล้วลองจับคู่หมายเลขความปลอดภัยใหม่ การตรวจสอบหมายเลขความปลอดภัยให้ตรงกันได้หนึ่งคู่นั้นเพียงพอแล้ว";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "ไม่สามารถเล่นวิดีโอนี้ได้";

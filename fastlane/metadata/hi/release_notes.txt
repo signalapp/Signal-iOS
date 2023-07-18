@@ -1,2 +1,2 @@
-• If you've experienced bugs around chat color settings that made you want to use colorful language, we swear they're probably fixed.
-• And you'll also see the "Share" option if you long-press on the Blank Space within a message bubble that contains Taylor Swift lyrics (or any other text).
+• यदि आपने चैट कलर सेटिंग में बग का अनुभव किया है, जो आपको रंगीन भाषा इस्तेमाल करने के लिए मजबूर करता है, तो हम विश्वास दिलाते हैं कि संभवतः हमने इस समस्या को दूर कर दिया है।
+• और यदि आप किशोर कुमार के गीत (या कोई अन्य टेक्स्ट) वाले बबल संदेश के अंदर दिए ब्लैक स्पेस पर देर तक दबाते हैं तो आपको "शेयर" विकल्प भी दिखाई देगा।

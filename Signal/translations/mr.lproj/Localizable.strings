@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIFs";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "All Media";
+"ALL_MEDIA_FILTER_NONE" = "सर्व मिडिया";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "फोटोज";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "त्रुटी";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "आपण जेव्हा या व्यक्तीसह संदेशांची देवाणघेवाण कराल तेव्हा त्यांच्यासह सुरक्षितता क्रमांक तयार केले जातील.";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "अवैध कार्ड क्रमांक";
@@ -1193,7 +1193,7 @@
 "CONTEXT_MENU_DETAILS" = "माहिती";
 
 /* Context menu edit button title */
-"CONTEXT_MENU_EDIT_MESSAGE" = "Edit";
+"CONTEXT_MENU_EDIT_MESSAGE" = "संपादन";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "फॉर्वर्ड करा";
@@ -2144,10 +2144,10 @@
 "EDIT_ITEM_COPY_ACTION" = "कॉपी करा";
 
 /* Error message to display to user when a messaeg is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "आपण हा संदेश पाठवल्यापासून फक्त 3 तासांच्या आत संपादन करणे लागू केले जाऊ शकते.";
 
 /* Edit failed for an unexpected reason */
-"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "संदेश संपादित केले जाऊ शकणार नाहीत.";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "नमस्कार,\n\nसध्या मी माझ्या iPhone वरील चॅट खाजगी ठेवण्यासाठी Signal वापरत आहे. आपणही याला इन्स्टॉल करावे असे मला वाटते की , जेणेकरून आपले संदेश फक्त आपण वाचतो आहोत किंवा आपले कॉल फक्त आपण ऐकतो आहोत याची आपल्याला खात्री असेल.\n\nSignal iPhone आणि Android करिता उपलब्ध आहे. ते येथे मिळवा: %1$@\n\nSignal आपल्या विद्यमान संदेशन ॲप सारखे कार्य करते. आपण चित्रे आणि व्हिडिओ पाठवू शकतो, कॉल करू शकतो, आणि गट चॅट चालू करू शकतो. आणि सर्वोत्कृष्ट भाग हा की, कुणीही हे बघू शकत नाही, जे लोक Signal बनवतात ते सुद्धा नाही!\n\nआपण Open Whisper Systems, जे लोक Signal बनवतात त्यांच्याबद्दल अधिक वाचू शकता, येथे: %2$@";
@@ -2480,7 +2480,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "गट सदस्यता \"%1$@\" द्वारा बदलली जाऊ शकते.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "फक्त अॅडमिन हा पर्याय बदलू शकतात.";
+"GROUP_ADMIN_ONLY_WARNING" = "फक्त ऍडमिन हा पर्याय बदलू शकतात.";
 
 /* Message body for alert explaining that a group call participant is blocked */
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "आपल्याला त्यांचे ऑडिओ किंवा व्हिडिओ प्राप्त होणार नाहीत आणि त्यांना तुमचे प्राप्त होणार नाहीत.";
@@ -2690,22 +2690,22 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ ने गट लिंक बंद केली.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "अॅडमिन मान्यता चालू असलेली गट लिंक चालू केली गेली होती.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "ऍडमिन मान्यता चालू असलेली गट लिंक चालू केली गेली होती.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "अॅडमिन मान्यता चालू असलेली गट लिंक आपण चालू केली आहे.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "ऍडमिन मान्यता चालू असलेली गट लिंक आपण चालू केली आहे.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ने अॅडमिन मान्यता चालू असलेली गट लिंक आपण चालू केली आहे.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ने ऍडमिन मान्यता चालू असलेली गट लिंक आपण चालू केली आहे.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "अॅडमिन मान्यता बंद असलेली गट लिंक चालू केली गेली होती.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "ऍडमिन मान्यता बंद असलेली गट लिंक चालू केली गेली होती.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "अॅडमिन मान्यता बंद असलेली गट लिंक आपण चालू केली आहे.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "ऍडमिन मान्यता बंद असलेली गट लिंक आपण चालू केली आहे.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ने अॅडमिन मान्यता बंद असलेली गट लिंक आपण चालू केली आहे.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ने ऍडमिन मान्यता बंद असलेली गट लिंक आपण चालू केली आहे.";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = " गट लिंक रीसेट केली गेली होती.";
@@ -2717,22 +2717,22 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%1$@ ने गट लिंक रीसेट केली.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "गट लिंकसाठी अॅडमिन मान्यता बंद केली गेली होती.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "गट लिंकसाठी ऍडमिन मान्यता बंद केली गेली होती.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "आपण गट लिंकसाठी अॅडमिन मान्यता बंद केली आहे.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "आपण गट लिंकसाठी ऍडमिन मान्यता बंद केली आहे.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ने गट लिंकसाठी अॅडमिन मान्यता बंद केली आहे.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ने गट लिंकसाठी ऍडमिन मान्यता बंद केली आहे.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "गट लिंकसाठी अॅडमिन मान्यता चालू केली गेली होती.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "गट लिंकसाठी ऍडमिन मान्यता चालू केली गेली होती.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "आपण गट लिंकसाठी अॅडमिन मान्यता चालू केली आहे.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "आपण गट लिंकसाठी ऍडमिन मान्यता चालू केली आहे.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ने गट लिंकसाठी अॅडमिन मान्यता चालू केली आहे.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ने गट लिंकसाठी ऍडमिन मान्यता चालू केली आहे.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "आपल्याद्वारा %1$@ गटात स्वयंचलितपणे जोडला जाऊ शकत नाही. त्यांना सामील होण्यास निमंत्रण दिले आहे, आणि ते स्वीकारे पर्यंत कुठलेही संदेश पाहू शकणार नाहीत.";
@@ -2795,7 +2795,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "या गटात सामील होण्यासाठी या डिव्हाईसवर Signal अद्यतनित करा.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "नवीन सदस्यांनी गट लिंक द्वारा सामील होण्यासाठी अॅडमिनने स्वीकार करणे आवश्यक आहे.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "नवीन सदस्यांनी गट लिंक द्वारा सामील होण्यासाठी ऍडमिन स्वीकार करणे आवश्यक आहे.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "नवीन सदस्य स्वीकारा";
@@ -2816,7 +2816,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "गट लिंक वरून आपल्या मित्रांना गटात आमंत्रित करा";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "ज्या व्यक्ती हा कोड स्कॅन करतील त्यांना आपल्या गटात सामील होता येईल. आपली ती सेटिंग सुरू असल्यास अॅडमिन यांना तरीही नवीन सदस्यांना स्वीकार करावे लागेल.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "ज्या व्यक्ती हा कोड स्कॅन करतील त्यांना आपल्या गटात सामील होता येईल. आपली ती सेटिंग सुरू असल्यास ऍडमिन यांना तरीही नवीन सदस्यांना स्वीकार करावे लागेल.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "कोड शेअर करा";
@@ -2834,7 +2834,7 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "गट लिंक";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "नवीन सदस्यांनी गट लिंक द्वारा सामील होण्यासाठी अॅडमिनने स्वीकार करणे आवश्यक आहे.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "नवीन सदस्यांनी गट लिंक द्वारा सामील होण्यासाठी ऍडमिन स्वीकार करणे आवश्यक आहे.";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "रीसेट करा";
@@ -3326,7 +3326,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ Signal वर आहे!";
 
 /* Label at the top of the input text when editing a message */
-"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "संदेश संपादित करा";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "कीबोर्ड";
@@ -3437,7 +3437,7 @@
 "LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "हा एक वारसा गट आहे, आणि त्याला यापुढे सपोर्ट केला जाणार नाही. हे संभाषण पुढे सुरू ठेवण्यासाठी, एक नवीन गट तयार करा. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "नवीन गटांमध्ये @उल्लेख आणि गट अॅडमिन सारखे वैशिष्ट्ये आहेत, आणि भविष्यात आम्ही अधिक वैशिष्ट्यांना समर्थन देऊ.\n\nसर्व संदेश इतिहास आणि मिडिया श्रेणीसुधारणेपूर्वी ठेवण्यात आले आहेत.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "नवीन गटांमध्ये @उल्लेख आणि गट ऍडमिन सारखे वैशिष्ट्ये आहेत, आणि भविष्यात आम्ही अधिक वैशिष्ट्यांना समर्थन देऊ.\n\n";
 
 /* Title for a sheet explaining details about 'New Groups'. */
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "नवीन गट काय आहेत?";
@@ -3551,7 +3551,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "एकदा मिडिया पहा";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "फिल्टर साफ करा";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "हे निवडलेल्या फाईलस् कायमस्वरूपी हटवेल. या आयटम्सशी संबंधित कोणताही संदेश मजकूर देखील हटवला जाईल.";
@@ -3560,19 +3560,19 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "आपण जे ध्वनी संदेश आणि ऑडिओ फाईल पाठवाल आणि प्राप्त कराल त्या या ठिकाणी दृश्यमान होतील";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "ऑडिओ नाही";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "कुठलीही मिडिया नाही";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "आपण जे फोटो, व्हिडिओ आणि GIF पाठवाल किंवा प्राप्त कराल ते येथे दृश्यमान होतील";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "कुठलीही मिडिया नाही";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "हा महिना";
@@ -3614,7 +3614,7 @@
 "MESSAGE_ACTION_DETAILS" = "अधिक माहिती";
 
 /* Action sheet edit message accessibility label */
-"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
+"MESSAGE_ACTION_EDIT_MESSAGE" = "संदेश संपादित करा";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "नवीन ईमेल संदेश";
@@ -3851,7 +3851,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "या गटात सामील होण्याची आपली विनंती रद्द करा?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "आपली सामील होण्याची विनंती गट अॅडमिनकडे पाठविली गेली आहे. जेव्हा ते कारवाई करतात तेव्हा आपल्याला सूचित केले जाईल.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "आपली सामील होण्याची विनंती गट ऍडमिनकडे पाठविली गेली आहे. जेव्हा ते कारवाई करतात तेव्हा आपल्याला सूचित केले जाईल.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "पोहोचवले";
@@ -5480,19 +5480,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "आमचा Signal सुरक्षितता नंबर:\n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "सुरक्षितता क्रमांक हे अद्यतनित करण्यात आले आहेत.";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "मदत हवी आहे?";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Signal मधील येऊ घातलेली गोपनीयता वैशिष्ट्ये सक्षम करण्यासाठी सुरक्षितता क्रमांक हे संक्रमण कालावधीदरम्यान अद्यतनित केले जाणार आहेत.";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "सुरक्षितता क्रमांकांची पडताळणी करण्यासाठी, आपल्या संपर्क डिव्हाइस सह रंग कार्ड जुळवा. ते जर जुळत नसतील तर, स्वाइप करा आणि सुरक्षितता क्रमांकांची इतर जोडी वापरून पहा. फक्त एक जोडी जुळवण्याची गरज आहे.";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "सुरक्षितता क्रमांकामधील बदल";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "आपला %1$@ सोबतचा सुरक्षितता नंबर बदलला आहे. आपण त्यास सत्यापित करण्यास इच्छुक असू शकता.";
@@ -7337,19 +7337,19 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "कोड";
 
 /* A title for a view that allows you to scan a username link QR code using the camera. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "स्कॅन करा";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "वापरकर्तानाव कॉपी केले";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "आपल्या संपर्काच्या डिव्हाईसवर QR कोड स्कॅन करा.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
-"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "लिंक कॉपी करा";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "या लिंकसह असलेले कोणीही आपले वापरकर्ता नाव पाहू शकेल आणि आपणासह चॅट करणे सुरू करेल. आपण ज्यांच्यावर विश्वास ठेवता फक्त त्याच्यासह शेअर करा.";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "वापरकर्तानाव शोधताना एक त्रुटी आढळली. कृपया नंतर पुन्हा प्रयत्न करा.";
@@ -7430,7 +7430,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "सुरक्षितता नंबरचे पुनरावलोकन करा";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "%1$@ सह एंड-टू-एंड एन्क्रिप्शनची पडताळणी करण्यासाठी, वरील रंग कार्ड त्यांच्या डिव्हाइससह जुळवा आणि क्रमांकाची तुलना करा. ते जर जुळत नसतील तर, स्वाइप करा आणि सुरक्षितता क्रमांकांची इतर जोडी वापरून पहा. फक्त एक जोडी जुळवण्याची गरज आहे.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "हा व्हिडिओ प्ले केला जाऊ शकत नाही";

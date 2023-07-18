@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "الصور المتحركة";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "All Media";
+"ALL_MEDIA_FILTER_NONE" = "جميع الوسائط";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "الصور";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "خطأ";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "سيتم إنشاء رقم أمان مع هذا الشخص بعد تبادل الرسائل معه.";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "رقم البطاقة غير صحيح";
@@ -1193,7 +1193,7 @@
 "CONTEXT_MENU_DETAILS" = "معلومات";
 
 /* Context menu edit button title */
-"CONTEXT_MENU_EDIT_MESSAGE" = "Edit";
+"CONTEXT_MENU_EDIT_MESSAGE" = "تعديل";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "إعادة التوجيه";
@@ -2144,10 +2144,10 @@
 "EDIT_ITEM_COPY_ACTION" = "نسخ";
 
 /* Error message to display to user when a messaeg is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "لا يُمكن إحداث التعديلات إلا في غضون 3 ساعات من وقت إرسال هذه الرسالة.";
 
 /* Edit failed for an unexpected reason */
-"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "لا يُمكن تعديل الرسالة.";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "مرحباً,\n\nمؤخرًا، أصبحتُ أستخدِم سيجنال عَلى الـiPhone الخاصّ بي لِجعل دردشاتي خُصُوصيَّة. أودُ لو تُثبِّته أنتَ كَذَلِك، حَتّى يَتَسنى لَنا التَّأكُّد أنَنا الوَحيدان اللَّذان يُمكِنُهُما قِراءة رَسائلنا أو سَماع مُكالماتنا.\n\nسيجنال مُتاحٌ على الآيفون والأندرويد. احصل عَليه مِن هُنا: %1$@\n\nيَعملُ سيجنال مِثل تَطبيق تَراسُلَك الحالي. نَستَطيع إرسال الصُوَر والمَقاطِع المَرئية، إجراء مُكالمات، وبدء دردشة جَماعية. أفضلُ شيء فيه هو أنَّ لا أحد آخَر قادِر على رُؤية أي شَيء مِن ذَلك، بِما في ذَلك مُصَمِّمو سيجنال عَينَهُم\n\nتَستطيعُ قِراءة المَزيد عَن Open Whisper Systems، مُصمّمو سيجنال، هُنا: %2$@";
@@ -3326,7 +3326,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "إنَّ %1$@ مُتواجدٌ على سيجنال!";
 
 /* Label at the top of the input text when editing a message */
-"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "تعديل الرسالة";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "لوحة المفاتيح";
@@ -3551,7 +3551,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "وسائط للمُشاهدة مرة واحدة";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "مَحوُ الفلترة";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "سيقوم هذا بحذف الملفات المُختارة بشكل نهائي؟ سيتم حذف أي نص رسالة مقترنة بهذه العناصر أيضًا.";
@@ -3560,19 +3560,19 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "سَتظهر الرسائل الصوتية والملفات الصوتية التي تُرسلها وتستقبلها هنا";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "لا يوجد صوت";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "لا توجد وسائط";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "ستظهر الصور والفيديوهات والصور المتحركة التي تُرسلها وتستقبلها هنا";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "لا توجد وسائط";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "هذا الشهر";
@@ -3614,7 +3614,7 @@
 "MESSAGE_ACTION_DETAILS" = "المزيد من المعلومات";
 
 /* Action sheet edit message accessibility label */
-"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
+"MESSAGE_ACTION_EDIT_MESSAGE" = "تعديل الرسالة";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "رسالة إلكترونية جديدة";
@@ -5480,19 +5480,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان سيجنال الخاص بنا:\n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "جارٍ تحديث أرقام الأمان.";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "بحاجة إلى مساعدة؟";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "يتم تحديث أرقام الأمان على مدى فترة انتقالية لتفعيل ميزات الخصوصية القادمة في سيجنال-Signal.";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "للتحقّق من أرقام الأمان، يُرجى مطابقة لون البطاقة مع جهاز جهة اتصالك. إذا فشل تطابقهما، يُرجى السحب لتجربة زوج آخر من أرقام الأمان. نحتاج إلى تطابق زوج واحد فقط.";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "التغييرات التي ستطرأ على أرقام الأمان";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "تغير رقم أمانك مع %1$@. قد ترغب بالتحقق منه.";
@@ -7337,19 +7337,19 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "الرمز";
 
 /* A title for a view that allows you to scan a username link QR code using the camera. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "امسح ضوئيًا";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "تم نسخ اسم المستخدم";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "امسح رمز الاستجابة السريعة المعروض على جهاز جهة اتصالك.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
-"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "نسخ الرابط";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "يُمكن لأي شخص يتوفر على هذا الرابط رؤية اسم المستخدم الخاص بك وبدء محادثة جديدة معك. شاركه مع من تثق فقط.";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "حدث خطأ أثناء البحث عن اسم المُستخدم. يُرجى إعادة المُحاولة في وقت لاحق.";
@@ -7430,7 +7430,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "مُراجعة أرقام الأمان";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "للتحقّق من أمان تعميتك من الطرف للطرف مع %1$@، يُرجى مطابقة لون البطاقة أعلاه مع جهازه ومقارنة الأرقام. إذا فشل تطابقهما، يُرجى السحب لتجربة زوج آخر من أرقام الأمان. ستحتاج إلى تطابق زوج واحد فقط.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "تعذّر تشغيل هذا الفيديو";

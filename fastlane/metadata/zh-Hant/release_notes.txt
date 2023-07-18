@@ -1,2 +1,2 @@
-• If you've experienced bugs around chat color settings that made you want to use colorful language, we swear they're probably fixed.
-• And you'll also see the "Share" option if you long-press on the Blank Space within a message bubble that contains Taylor Swift lyrics (or any other text).
+• 我們修復了聊天顏色設定的一些錯誤。
+• 現在，當你長按訊息時，「分享」選項就會出現。

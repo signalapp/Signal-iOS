@@ -404,15 +404,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Only %1$d edit can be applied to this message.</string>
+			<string>Ní féidir ach %1$d eagarthóireacht amháin a dhéanamh ar an teachtaireacht seo.</string>
 			<key>two</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>Ní féidir ach %1$d eagarthóireacht a dhéanamh ar an teachtaireacht seo.</string>
 			<key>few</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>Ní féidir ach %1$d eagarthóireacht a dhéanamh ar an teachtaireacht seo.</string>
 			<key>many</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>Ní féidir ach %1$d n-eagarthóireacht a dhéanamh ar an teachtaireacht seo.</string>
 			<key>other</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>Ní féidir ach %1$d eagarthóireacht a dhéanamh ar an teachtaireacht seo.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>

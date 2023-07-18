@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIFanna";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "All Media";
+"ALL_MEDIA_FILTER_NONE" = "Gach Meáin";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "Grianghraif";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Earráid";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Cruthófar uimhir sábháilteachta leis an duine sin tar éis duit teachtaireachtaí a sheoladh idir a chéile.";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "Uimhir chárta neamhbhailí";
@@ -1193,7 +1193,7 @@
 "CONTEXT_MENU_DETAILS" = "Eolas";
 
 /* Context menu edit button title */
-"CONTEXT_MENU_EDIT_MESSAGE" = "Edit";
+"CONTEXT_MENU_EDIT_MESSAGE" = "Cuir in Eagar";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Cuir ar aghaidh";
@@ -2144,10 +2144,10 @@
 "EDIT_ITEM_COPY_ACTION" = "Cóipeáil";
 
 /* Error message to display to user when a messaeg is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Ní féidir eagarthóireacht a chur i bhfeidhm ach amháin laistigh de 3 uair an chloig ón uair a sheol tú an teachtaireacht seo.";
 
 /* Edit failed for an unexpected reason */
-"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Ní féidir an teachtaireacht a chur in eagar.";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "Haigh,\n\nThosaigh mé ag úsáid Signal le déanaí le comhráite ar m'iPhone a choinneáil príobháideach. Ba mhaith liom go ndéanfá é a shuiteáil freisin, ionas go mbeidh muinín againn maidir le léamh ár dteachtaireachtaí nó éisteacht lenár nglaonna.\n\nTá Signal ar fáil le haghaidh iPhone agus Android. Gheobhaidh tú anseo é: %1$@\n\nOibríonn Signal mar a oibríonn an aip curtha teachtaireachtaí atá agat cheana. Is féidir linn pictiúir agus físeáin a sheoladh, glaonna a chur agus tosú ar ghrúpchomhráite. An chuid is fearr, ní féidir le héinne aon cheann de na rudaí sin a fheiceáil, fiú na daoine a dhéanann Signal!\n\nTá tuilleadh faisnéise faoi Open Whisper Systems, déantóirí Signal, le fáil anseo: %2$@";
@@ -3326,7 +3326,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "Úsáideann %1$@ Signal!";
 
 /* Label at the top of the input text when editing a message */
-"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Cuir teachtaireacht in eagar";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "An méarchlár";
@@ -3551,7 +3551,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Meáin Amhairc Aonuaire";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Glan an scagaire";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Scriosfar na comhaid roghnaithe go buan leis sin. Scriosfar aon téacs teachtaireachta a bhaineann leis na míreanna sin freisin.";
@@ -3560,19 +3560,19 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Taispeánfar anseo Teachtaireachtaí Gutha agus Comhaid Fuaime a sheolann tú agus a fhaigheann tú";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "Níl aon Fhuaim ann";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "Níl aon Mheáin ann";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Taispeánfar anseo Grianghraif, Físeáin agus GIFanna a sheolann tú agus a fhaigheann tú";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "Níl aon Mheáin ann";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "An Mhí Seo";
@@ -3614,7 +3614,7 @@
 "MESSAGE_ACTION_DETAILS" = "Tuilleadh Eolais";
 
 /* Action sheet edit message accessibility label */
-"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
+"MESSAGE_ACTION_EDIT_MESSAGE" = "Cuir Teachtaireacht in Eagar";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
@@ -5480,19 +5480,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Ár nUimhir Shábháilteachta Signal:\n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Tá uimhreacha sábháilteachta á nuashonrú.";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Cabhair uait?";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Tá uimhreacha sábháilteachta á nuashonrú thar thréimhse aistrithe le gnéithe príobháideachais atá ar na bacáin a chumasú in Signal.";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "Chun uimhreacha sábháilteachta a fhíorú, meaitseáil an cárta datha le gléas do theagmhálaí. Mura dtéann siad le chéile, svaidhpeáil agus bain triail as an bpéire uimhreacha sábháilteachta eile. Ní gá ach péire amháin a mheaitseáil.";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Athruithe ar Uimhreacha Sábháilteachta";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Athraíodh d'uimhir shábháilteachta le %1$@. Ba chóir duit í a dheimhniú.";
@@ -7340,16 +7340,16 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Ainm úsáideora cóipeáilte";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan an Cód QR ar ghléas do theagmhálaí.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
-"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Cóipeáil an Nasc";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "Aon duine a bhfuil an nasc sin acu, beidh siad in ann féachaint ar d'ainm úsáideora agus tús a chur le comhrá leat. Ná comhroinn é ach le daoine a bhfuil muinín agat iontu.";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Tharla earráid agus an t-ainm úsáideora á lorg. Triail arís ar ball.";
@@ -7430,7 +7430,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Déan Athbhreithniú ar Uimhreacha Sábháilteachta";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Chun criptiú ó cheann ceann le %1$@ a fhíorú, meaitseáil an cárta datha thuas leis an ngléas aige/aici agus cuir na huimhreacha i gcomparáid lena chéile. Mura dtéann siad le chéile, svaidhpeáil agus bain triail as an bpéire uimhreacha sábháilteachta eile. Ní gá ach péire amháin a mheaitseáil.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Ní féidir an físeán seo a sheinm";
