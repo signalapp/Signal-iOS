@@ -9,7 +9,7 @@ import SignalServiceKit
 /// A single rectangle in which to render spoilers.
 public struct SpoilerFrame {
 
-    public enum Style {
+    public enum Style: Int {
         /// Fade effect, small particles
         case standard
         /// More solid, larger particles.
@@ -103,7 +103,7 @@ public class SpoilerAnimationManager {
     }
 
     public func removeViewAnimator(_ animator: SpoilerableViewAnimator) {
-        removeTiles(animator: animator)
+        animator.spoilerableView.map(SpoilerRenderer.removeSpoilerLayers(from:))
         animators.removeAll(where: {
             // Clear out nil view ones as well.
             $0.equals(animator) || $0.spoilerableView == nil
@@ -117,9 +117,6 @@ public class SpoilerAnimationManager {
 
     private var animators: [SpoilerableViewAnimator] = []
 
-    // Uniquely identifies the view.
-    fileprivate class SpoilerTileView: UIView {}
-
     private func redraw(animator: SpoilerableViewAnimator) {
         guard FeatureFlags.spoilerAnimations else {
             return
@@ -129,47 +126,8 @@ public class SpoilerAnimationManager {
             return
         }
 
-        let spoilerViews = view.subviews.filter { $0 is SpoilerTileView }
-        let spoilerFrames = getOrLoadSpoilerFrames(animator: animator)
-        for (i, spoilerFrame) in spoilerFrames.enumerated() {
-            let spoilerView: UIView = {
-                if let existingView = spoilerViews[safe: i] {
-                    return existingView
-                } else {
-                    // UIView and not a CALayer because of scrolling;
-                    // CALayers aren't rendering properly when their parent
-                    // is scrolling.
-                    let spoilerView = SpoilerTileView()
-                    view.addSubview(spoilerView)
-                    spoilerView.layer.zPosition = .greatestFiniteMagnitude
-                    return spoilerView
-                }
-            }()
-
-            spoilerView.frame = spoilerFrame.frame
-            let spec: SpoilerRenderer.Spec
-            switch spoilerFrame.style {
-            case .standard:
-                spec = .standard(color: spoilerFrame.color.forCurrentTheme)
-            case .highlight:
-                spec = .highlight(color: spoilerFrame.color.forCurrentTheme)
-            }
-            spoilerView.backgroundColor = self.renderer.getOrRenderTilingColor(spec)
-        }
-        // Clear any excess layers.
-        if spoilerViews.count > spoilerFrames.count {
-            for i in spoilerFrames.count..<spoilerViews.count {
-                spoilerViews[safe: i]?.removeFromSuperview()
-            }
-        }
-    }
-
-    private func removeTiles(animator: SpoilerableViewAnimator) {
-        animator.spoilerableView?.subviews.forEach {
-            if $0 is SpoilerTileView {
-                $0.removeFromSuperview()
-            }
-        }
+        let specs = getOrLoadSpoilerSpecs(animator: animator)
+        renderer.render(specs, onto: view)
     }
 
     // MARK: - Caches
@@ -179,16 +137,32 @@ public class SpoilerAnimationManager {
     // To avoid this, we cache the last computed frame, and rely on animators
     // to provide a cache key (which should be cheap to compute) to determine
     // when we should discard the cache and recompute frames.
-    private var frameCache = [Int: [SpoilerFrame]]()
+    private var specCache = [Int: [SpoilerRenderer.Spec]]()
 
-    private func getOrLoadSpoilerFrames(animator: SpoilerableViewAnimator) -> [SpoilerFrame] {
+    private func getOrLoadSpoilerSpecs(animator: SpoilerableViewAnimator) -> [SpoilerRenderer.Spec] {
         let cacheKey = animator.spoilerFramesCacheKey
-        if let cachedFrames = frameCache[cacheKey] {
+        if let cachedFrames = specCache[cacheKey] {
             return cachedFrames
         }
         let computedFrames = animator.spoilerFrames()
-        frameCache[cacheKey] = computedFrames
-        return computedFrames
+        var specs = [ThemedColor: [SpoilerFrame.Style: SpoilerRenderer.Spec]]()
+        for frame in computedFrames {
+            let color = frame.color
+            let style = frame.style
+            var spec: SpoilerRenderer.Spec = specs[color]?[style] ?? {
+                switch style {
+                case .standard: return .init(frames: [], config: .standard(color: color))
+                case .highlight: return .init(frames: [], config: .highlight(color: color))
+                }
+            }()
+            spec.frames.append(frame.frame)
+            var colorSpecs = specs[color] ?? [:]
+            colorSpecs[style] = spec
+            specs[color] = colorSpecs
+        }
+        let finalSpecs: [SpoilerRenderer.Spec] = specs.values.flatMap(\.values)
+        specCache[cacheKey] = finalSpecs
+        return finalSpecs
     }
 
     // MARK: - Timer

@@ -57,13 +57,53 @@ public class SpoilerableTextViewAnimator {
             self.isAnimating = false
         }
     }
+
+    /// UITextView does not like having a custom sublayer attached.
+    /// Instead, we create a custom subview and add spoiler layers to it.
+    /// But this means we have to manage its size; we do so by observing the
+    /// text view's content size and sizing the view appropriately.
+    /// Autolayout to the UITextView's bounds doesn't work for sizing
+    /// to the full content size of the text view.
+
+    private class AnimationContainerView: UIView {}
+
+    private var textViewContentSizeObservation: NSKeyValueObservation?
+    private weak var _animationContainerView: AnimationContainerView? {
+        didSet {
+            if _animationContainerView == nil {
+                textViewContentSizeObservation = nil
+            }
+        }
+    }
+
+    fileprivate var animationContainerView: UIView? {
+        if let _animationContainerView {
+            return _animationContainerView
+        }
+        guard let textView else {
+            return nil
+        }
+        let view = AnimationContainerView()
+        textView.addSubview(view)
+        _animationContainerView = view
+
+        textViewContentSizeObservation = textView.observe(\.contentSize, changeHandler: { [weak self] textView, _ in
+            guard let self else { return }
+            // This gives us the correct size; textView.contentSize does not (even though
+            // that's what we observe)
+            let size = textView.sizeThatFits(textView.frame.size)
+            self._animationContainerView?.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        })
+
+        return view
+    }
 }
 
 // MARK: - SpoilerableViewAnimator
 
 extension SpoilerableTextViewAnimator: SpoilerableViewAnimator {
 
-    public var spoilerableView: UIView? { textView }
+    public var spoilerableView: UIView? { animationContainerView }
 
     public func spoilerFrames() -> [SpoilerFrame] {
         guard let text, let textView, let displayConfig else {
