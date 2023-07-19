@@ -127,7 +127,15 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     @objc
     public func didReceiveVanillaPushToken(_ tokenData: Data) {
         guard let vanillaTokenFuture = self.vanillaTokenFuture else {
-            owsFailDebug("promise completion in \(#function) unexpectedly nil")
+            Logger.warn("System volunteered a push token even though we didn't request one. Syncing.")
+            SyncPushTokensJob(mode: .normal)
+                .run()
+                .done {
+                    Logger.info("Done syncing push tokens after system volunteered one.")
+                }
+                .catch { _ in
+                    Logger.error("Failed to sync push tokens after system volunteered one.")
+                }
             return
         }
 
