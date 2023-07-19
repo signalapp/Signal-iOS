@@ -1,2 +1,2 @@
-• If you've experienced bugs around chat color settings that made you want to use colorful language, we swear they're probably fixed.
-• And you'll also see the "Share" option if you long-press on the Blank Space within a message bubble that contains Taylor Swift lyrics (or any other text).
+• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Új (és opcionális) Lista módot adtunk az „Összes médiafájl” nézethez. Ha úgy döntesz, hogy elhagyod a rácsnézetet, mostantól több információt láthatsz egyszerre, beleértve a fájlneveket, fájlméreteket, dátumokat stb.

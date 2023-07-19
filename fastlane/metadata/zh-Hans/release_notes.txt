@@ -1,2 +1,2 @@
-• If you've experienced bugs around chat color settings that made you want to use colorful language, we swear they're probably fixed.
-• And you'll also see the "Share" option if you long-press on the Blank Space within a message bubble that contains Taylor Swift lyrics (or any other text).
+• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• 我们在“所有媒体”视图中新增了（可选的）列表模式。如果您将网格模式切换为列表模式，您可以轻松浏览更多信息，包括文件名、文件大小和日期等等。
