@@ -211,7 +211,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func didTapBrokenVideo() {
         let toastText = OWSLocalizedString("VIDEO_BROKEN",
-                                          comment: "Toast alert text shown when tapping on a video that cannot be played.")
+                                           comment: "Toast alert text shown when tapping on a video that cannot be played.")
         presentToastCVC(toastText)
     }
 
@@ -431,6 +431,14 @@ extension ConversationViewController: CVComponentDelegate {
         // Ensure keyboard isn't hiding the "safety numbers changed" interaction when we
         // return from FingerprintViewController.
         dismissKeyBoard()
+
+        var address = address
+        // Reload the address from disk if missing info so we don't rely on any cache.
+        if address.serviceId == nil || address.e164 == nil {
+            databaseStorage.read { tx in
+                address = SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: tx)?.address ?? address
+            }
+        }
 
         FingerprintViewController.present(from: self, address: address)
     }

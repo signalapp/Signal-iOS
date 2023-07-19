@@ -89,9 +89,14 @@ public class OWSNavigationBar: UINavigationBar {
     // MARK: Background Color
 
     internal var navbarBackgroundColorOverride: UIColor?
+    internal var navbarTintColorOverride: UIColor?
 
     private var navbarBackgroundColor: UIColor {
         return navbarBackgroundColorOverride ?? Theme.navbarBackgroundColor
+    }
+
+    private var navbarTintColor: UIColor {
+        return navbarTintColorOverride ?? Theme.primaryTextColor
     }
 
     // MARK: Appearance
@@ -109,7 +114,8 @@ public class OWSNavigationBar: UINavigationBar {
 
         let appearance = OWSNavigationBarAppearance.appearance(
             for: style ?? .blur,
-            navbarBackgroundColor: navbarBackgroundColor
+            navbarBackgroundColor: navbarBackgroundColor,
+            tintColor: navbarTintColor
         )
 
         guard appearance != self.appearance else {
@@ -248,10 +254,14 @@ internal struct OWSNavigationBarAppearance: Equatable {
 
     var titleTextColor: UIColor?
 
-    static func appearance(for style: OWSNavigationBarStyle, navbarBackgroundColor: UIColor) -> Self {
+    static func appearance(
+        for style: OWSNavigationBarStyle,
+        navbarBackgroundColor: UIColor,
+        tintColor: UIColor
+    ) -> Self {
         var appearance = OWSNavigationBarAppearance()
         appearance.barStyle = Theme.barStyle
-        appearance.tintColor = Theme.primaryTextColor
+        appearance.tintColor = tintColor
         if UIAccessibility.isReduceTransparencyEnabled {
             appearance.backgroundStyle = .image(navbarBackgroundColor)
         } else {

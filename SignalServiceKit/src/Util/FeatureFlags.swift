@@ -121,10 +121,6 @@ public class FeatureFlags: BaseFlags {
 
     public static let textFormattingSend = build.includes(.internal)
 
-    /// If true, aci safety numbers will be displayed alongside e164 safety numbers,
-    /// with `RemoteConfig.defaultToAciSafetyNumber` determining which is shown first.
-    public static let aciSafetyNumbers = build.includes(.internal)
-
     /// If true, _only_ aci safety numbers will be displayed, and e164 safety numbers will not
     /// be displayed.
     public static let onlyAciSafetyNumbers = false

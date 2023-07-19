@@ -37,19 +37,15 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
     }
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle {
-        if FeatureFlags.aciSafetyNumbers {
-            return .solid
-        } else {
-            return .blur
-        }
+        return .solid
     }
 
     public var navbarBackgroundColorOverride: UIColor? {
-        if FeatureFlags.aciSafetyNumbers {
-            return .ows_gray10
-        } else {
-            return nil
-        }
+        return .ows_gray10
+    }
+
+    public var navbarTintColorOverride: UIColor? {
+        return Theme.lightThemePrimaryColor
     }
 
     override func viewDidLoad() {
@@ -64,11 +60,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
         addChild(qrCodeScanViewController)
 
         let footerView = UIView()
-        if FeatureFlags.aciSafetyNumbers {
-            footerView.backgroundColor = .ows_gray10
-        } else {
-            footerView.backgroundColor = .ows_gray75
-        }
+        footerView.backgroundColor = .ows_gray10
         view.addSubview(footerView)
         footerView.autoPinWidthToSuperview()
         footerView.autoPinEdge(.top, to: .bottom, of: qrCodeScanViewController.view)
@@ -80,11 +72,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
             comment: "label presented once scanning (camera) view is visible."
         )
         cameraInstructionLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(14, 18))
-        if FeatureFlags.aciSafetyNumbers {
-            cameraInstructionLabel.textColor = .ows_gray60
-        } else {
-            cameraInstructionLabel.textColor = .white
-        }
+        cameraInstructionLabel.textColor = .ows_gray60
         cameraInstructionLabel.textAlignment = .center
         cameraInstructionLabel.numberOfLines = 0
         cameraInstructionLabel.lineBreakMode = .byWordWrapping
@@ -131,15 +119,23 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
         }
 
         // Check all of them, if any succeed its success.
+        var localizedErrorDescriptionToShow: String?
         for (i, fingerprint) in fingerprints.enumerated() {
             switch fingerprint.matchesLogicalFingerprintsData(combinedFingerprintData) {
             case .match:
                 showSuccess()
                 return
             case .noMatch(let localizedErrorDescription):
+                // Prefer no match errors to version erorrs, if we end
+                // up displaying an error.
+                localizedErrorDescriptionToShow = localizedErrorDescription
+                fallthrough
+            case
+                    .weHaveOldVersion(let localizedErrorDescription),
+                    .theyHaveOldVersion(let localizedErrorDescription):
                 if i == fingerprints.count - 1 {
                     // We reached the end, show the error for the last one.
-                    showFailure(localizedErrorDescription: localizedErrorDescription)
+                    showFailure(localizedErrorDescription: localizedErrorDescriptionToShow ?? localizedErrorDescription)
                 }
             }
         }
@@ -177,14 +173,22 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
                     address: recipientAddress,
                     isUserInitiatedChange: true
                 )
-                viewController.dismiss(animated: true)
+                if let navigationController = viewController.navigationController {
+                    navigationController.popViewController(animated: true, completion: nil)
+                } else {
+                    viewController.dismiss(animated: true)
+                }
             }
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.dismissButton,
             style: .cancel,
             handler: { _ in
-                viewController.dismiss(animated: true)
+                if let navigationController = viewController.navigationController {
+                    navigationController.popViewController(animated: true, completion: nil)
+                } else {
+                    viewController.dismiss(animated: true)
+                }
             }
         ))
 

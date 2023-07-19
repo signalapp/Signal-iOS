@@ -26,6 +26,10 @@ public protocol OWSNavigationChildController: AnyObject {
     /// Defaults to nil (default color for style)
     var navbarBackgroundColorOverride: UIColor? { get }
 
+    /// A tint color to use for the navbar in certain styles.
+    /// Defaults to nil (default color for style)
+    var navbarTintColorOverride: UIColor? { get }
+
     /// Whether the navigation bar should show or hide when this view controller appears.
     /// Defaults to false.
     var prefersNavigationBarHidden: Bool { get }
@@ -40,6 +44,8 @@ extension OWSNavigationChildController {
     public var preferredNavigationBarStyle: OWSNavigationBarStyle { .blur }
 
     public var navbarBackgroundColorOverride: UIColor? { nil }
+
+    public var navbarTintColorOverride: UIColor? { nil }
 
     public var prefersNavigationBarHidden: Bool { false }
 }
@@ -157,6 +163,7 @@ open class OWSNavigationController: OWSNavigationControllerBase {
             // Only update visible attributes if we aren't hiding; if its hidden anyway
             // they won't matter and seeing them blink then hide is weird.
             owsNavigationBar.navbarBackgroundColorOverride = navChildController?.navbarBackgroundColorOverride
+            owsNavigationBar.navbarTintColorOverride = navChildController?.navbarTintColorOverride
             owsNavigationBar.setStyle(navChildController?.preferredNavigationBarStyle ?? .blur, animated: animated)
         }
 

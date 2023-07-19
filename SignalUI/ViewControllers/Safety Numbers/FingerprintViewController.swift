@@ -692,9 +692,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
         @objc
         func didTapLearnMore() {
-            self.dismiss(animated: true) { [weak self] in
-                self?.parentVc?.didTapLearnMore()
-            }
+            FingerprintViewController.showLearnMoreUrl(from: self)
         }
     }
 

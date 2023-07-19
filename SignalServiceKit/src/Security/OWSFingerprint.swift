@@ -63,6 +63,8 @@ public class OWSFingerprint {
 
     public enum MatchResult {
         case match
+        case theyHaveOldVersion(localizedErrorDescription: String)
+        case weHaveOldVersion(localizedErrorDescription: String)
         case noMatch(localizedErrorDescription: String)
     }
 
@@ -81,13 +83,13 @@ public class OWSFingerprint {
         if logicalFingerprints.version < self.scannableFingerprintVersion {
             Logger.warn("Verification failed. They're running an old version.")
             let description = OWSLocalizedString("PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION", comment: "alert body")
-            return .noMatch(localizedErrorDescription: description)
+            return .theyHaveOldVersion(localizedErrorDescription: description)
         }
 
         if logicalFingerprints.version > self.scannableFingerprintVersion {
             Logger.warn("Verification failed. We're running an old version.")
             let description = OWSLocalizedString("PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION", comment: "alert body")
-            return .noMatch(localizedErrorDescription: description)
+            return .weHaveOldVersion(localizedErrorDescription: description)
         }
 
         // Their local is *our* remote.

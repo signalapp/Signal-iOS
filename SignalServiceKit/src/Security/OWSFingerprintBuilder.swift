@@ -63,18 +63,6 @@ public class OWSFingerprintBuilder {
                 return nil
             }
             return .init(fingerprints: [aciFingerprint], defaultIndex: 0)
-        } else if !FeatureFlags.aciSafetyNumbers {
-            // ACI safety number disabled; just do e164
-            guard let e164Fingerprint = self.e164Fingerprint(
-                theirSignalAddress: theirSignalAddress,
-                theirIdentityKey: theirIdentityKey,
-                myIdentityKey: myIdentityKey,
-                theirName: theirName
-            ) else {
-                owsFailDebug("Unable to build e164 fingerprint")
-                return nil
-            }
-            return .init(fingerprints: [e164Fingerprint], defaultIndex: 0)
         } else {
             // Need both.
             guard
