@@ -368,13 +368,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Only %1$d edit can be applied to this message.</string>
+			<string>Na tuto zprávu lze použít pouze %1$d úpravu.</string>
 			<key>few</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>Na tuto zprávu lze použít pouze %1$d úpravy.</string>
 			<key>many</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>Na tuto zprávu lze použít pouze %1$d úprav.</string>
 			<key>other</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>Na tuto zprávu lze použít pouze %1$d úprav.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>

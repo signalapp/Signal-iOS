@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "All Media";
+"ALL_MEDIA_FILTER_NONE" = "সকল মিডিয়া";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "ছবি";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "ত্রুটি";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "আপনি এই ব্যক্তির সাথে মেসেজ বিনিময় করার পরে একটি নিরাপত্তা নম্বর তৈরি করা হবে।";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "কার্ড নম্বর অকার্যকর";
@@ -1193,7 +1193,7 @@
 "CONTEXT_MENU_DETAILS" = "তথ্য";
 
 /* Context menu edit button title */
-"CONTEXT_MENU_EDIT_MESSAGE" = "Edit";
+"CONTEXT_MENU_EDIT_MESSAGE" = "এডিট করুন";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "ফরওয়ার্ড";
@@ -2143,11 +2143,20 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "অনুলিপি";
 
+/* Edit Send Beta prompt body */
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+
+/* Label to confirm sending an edit */
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+
+/* Edit Send Beta prompt title */
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+
 /* Error message to display to user when a messaeg is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "এই মেসেজটি পাঠানোর পর শুধুমাত্র পরবর্তী 3 ঘন্টার মধ্যে এটি এডিট করা যাবে।";
 
 /* Edit failed for an unexpected reason */
-"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "হাই,\n\nআমার iPhone-এর চ্যাট গোপন রাখতে সম্প্রতি আমি Signal ব্যবহার করছি। আমি চাই আপনিও এটি ইনস্টল করুন, যাতে আমরা নিশ্চিত হতে পারি যে শুধু আপনি ও আমি আমাদের ম্যাসেজ পড়তে পারি এবং আমাদের কথা শুনতে পারি।\n\niPhones ও Android ফোন উভয় ধরনের জন্যই Signal পাওয়া যাচ্ছে। এটি এখান থেকে সংগ্রহ করুন: %1$@\n\nSignal আপনার বিদ্যমান ম্যাসেজিং অ্যাপের মতোই কাজ করে। আমরা ছবি ও ভিডিও পাঠাতে পারি, কল করতে পারি এবং গ্রুপ চ্যাট শুরু করতে পারি। এর সেরা দিকটি হচ্ছে অন্য কেউ এসবের কিছুই দেখতে পারবে না, এমনকি Signal যারা তৈরি করেছেন তারাও না!\n\nআপনি Signal তৈরিতে নিয়োজিত ব্যক্তিদের Open Whisper Systems সম্পর্কে আরো পড়তে পারেন, এখানে: %2$@";
@@ -3326,7 +3335,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ Signal এ যোগ দিয়েছে!";
 
 /* Label at the top of the input text when editing a message */
-"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "মেসেজ এডিট করুন";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "কীবোর্ড";
@@ -3551,7 +3560,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "একবার-দেখার উপযোগী মিডিয়া";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "ফিল্টার খালি করুন";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "এটি নির্বাচিত ফাইলগুলো চিরতরে মুছে ফেলবে। এই আইটেমগুলোর সাথে সম্পৃক্ত কোনো মেসেজ টেক্সটও মুছে ফেলা হবে।";
@@ -3560,19 +3569,19 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "আপনি যেসব ভয়েস মেসেজ এবং অডিও ফাইল পাঠান ও গ্রহণ করেন, সেগুলো এখানে দেখা যাবে।";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "কোনো অডিও নেই";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "কোনো মিডিয়া নেই";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "আপনি যেসব ছবি, ভিডিও ও GIF পাঠান ও গ্রহণ করেন, সেগুলো এখানে দেখা যাবে";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "কোনো মিডিয়া নেই";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "এই মাস";
@@ -3614,7 +3623,7 @@
 "MESSAGE_ACTION_DETAILS" = "আরও তথ্য";
 
 /* Action sheet edit message accessibility label */
-"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
+"MESSAGE_ACTION_EDIT_MESSAGE" = "মেসেজ এডিট করুন";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "নতুন ইমেইল মেসেজ";
@@ -3860,7 +3869,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "ডাউনলোড করা হচ্ছে";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "এডিট করা হয়েছে";
+"MESSAGE_STATUS_EDITED" = "Edited";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "পাঠাতে ব্যর্থ";
@@ -5065,11 +5074,11 @@
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "ব্যবহারকারীর নাম এডিট করুন";
 
+/* Title for a table cell that lets the user manage their username link and QR code. */
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "ইউজারনেম";
-
-/* Title for a menu action allowing users to view their username link QR code. */
-"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "QR কোড দেখুন";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "আপনার নামের শেষাংশটি অনেক দীর্ঘ।";
@@ -5480,19 +5489,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "আমাদের Signal নিরাপত্তা নাম্বার:\n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "নিরাপত্তা নম্বরগুলো আপডেট করা হচ্ছে।";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "সাহায্য প্রয়োজন?";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Signal-এ আসন্ন গোপনীয়তা ফিচারগুলোকে সচল করার জন্য পরিবর্তনের সময় নিরাপত্তা নম্বরগুলো আপডেট করা হচ্ছে।";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "নিরাপত্তা নম্বর যাচাই করতে, আপনার কন্টাক্টের ডিভাইসের সাথে থাকা রঙিন কার্ডটি মিলিয়ে দেখুন। এগুলো যদি না মিলে তবে সোয়াইপ করুন এবং অন্য এক জোড়া নিরাপত্তা নম্বর ব্যবহার করে দেখুন। শুধুমাত্র একটি জোড়া মিলতে হবে।";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "নিরাপত্তা নম্বর পরিবর্তন করুন";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%1$@ এর  সাথে আপনার নিরাপত্তা নাম্বার পরিবর্তিত হয়েছে। আপনি হয়ত এটি যাচাই করতে ইচ্ছুক।";
@@ -6745,6 +6754,9 @@
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "এই মুহূর্তে দেখানোর জন্য কোনো আপডেট নেই।";
 
+/* The subtitle when this story has no replies */
+"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "এখন পর্যন্ত কোন রিপ্লাই নেই";
 
@@ -6888,6 +6900,9 @@
 
 /* Button for replying to a group story with no existing replies. */
 "STORY_REPLY_TO_GROUP_BUTTON" = "গ্ৰুপে উত্তর দিন";
+
+/* placeholder text for replying to a group story */
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "এই স্টোরিটি পাঠানো যায়নি। আপনার সংযোগ ঠিক আছে কি না দেখুন এবং আবার চেষ্টা করুন";
@@ -7337,19 +7352,25 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "কোড";
 
 /* A title for a view that allows you to scan a username link QR code using the camera. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "স্ক্যান করুন";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "ব্যবহারকারীর নাম কপি করা হয়েছে";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "আপনার কন্টাক্টের ডিভাইসে দেখানো QR কোডটি স্ক্যান করুন।";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
-"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "লিংক কপি করুন";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "এই লিঙ্কটি রয়েছে এমন যে কেউ আপনার ব্যবহারকারীর নাম দেখতে পারবেন এবং আপনার সাথে চ্যাটিং শুরু করতে পারবেন। শুধুমাত্র আপনি আস্থা রাখতে পারেন এমন ব্যক্তিদের সাথে এটি শেযার করুন।";
+
+/* Subtitle for a tooltip describing ways to share your username. */
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+
+/* Title for a tooltip describing ways to share your username. */
+"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "ইউজার নেমটি খুঁজতে গিয়ে একটি ত্রুটি ঘটেছে। পরে আবার চেষ্টা করুন|";
@@ -7430,7 +7451,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "সুরক্ষা নাম্বার পর্যালোচনা করুন";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "%1$@-এর সাথে এন্ড-টু-এন্ড এনক্রিপশন যাচাই করতে, তার ডিভাইসের উপরে থাকা রঙিন কার্ডটি মিলিয়ে দেখুন এবং নম্বরগুলো তুলনা করুন। এগুলো যদি না মিলে তবে সোয়াইপ করুন এবং অন্য এক জোড়া নিরাপত্তা নম্বর ব্যবহার করে দেখুন। শুধুমাত্র একটি জোড়া মিলতে হবে।";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "এই ভিডিওটি চালানো যায়নি";

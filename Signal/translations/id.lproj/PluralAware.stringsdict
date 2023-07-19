@@ -260,7 +260,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>Hanya %1$d editan yang bisa diterapkan pada pesan ini.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>

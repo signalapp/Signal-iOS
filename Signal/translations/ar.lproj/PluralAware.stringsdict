@@ -440,17 +440,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>يمكن تطبيق %1$d تعديل فقط على هذه الرسالة.</string>
 			<key>one</key>
-			<string>Only %1$d edit can be applied to this message.</string>
+			<string>يمكن تطبيق %1$d تعديل فقط على هذه الرسالة.</string>
 			<key>two</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>يمكن تطبيق %1$d تعديلين فقط على هذه الرسالة.</string>
 			<key>few</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>يمكن تطبيق %1$d تعديلات فقط على هذه الرسالة.</string>
 			<key>many</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>يمكن تطبيق %1$d تعديلًا فقط على هذه الرسالة.</string>
 			<key>other</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>يمكن تطبيق %1$d تعديل فقط على هذه الرسالة.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>

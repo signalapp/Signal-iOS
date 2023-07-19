@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "گیف‌ها";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "All Media";
+"ALL_MEDIA_FILTER_NONE" = "تمام رسانه‌ها";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "تصاویر";
@@ -647,7 +647,7 @@
 "BUTTON_START" = "شروع";
 
 /* Label for the 'submit' button. */
-"BUTTON_SUBMIT" = "ثبت";
+"BUTTON_SUBMIT" = "ارسال";
 
 /* Label for the 'unmute' button. */
 "BUTTON_UNMUTE" = "صدادار";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "خطا";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "بعد از اینکه با این فرد پیامی رد و بدل کنید، یک شماره ایمنی برای او ایجاد خواهد شد.";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "شماره کارت نامعتبر است";
@@ -1160,19 +1160,19 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "دوباره تلاش کنید";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "لاگ های اشکال زدایی شما به ما کمک خواهند کرد تا مشکل خود را سریع‌تر حل کنید. ارسال logs اختیاری است.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "گزارش‌های اشکال‌زدایی شما به ما کمک خواهد کرد تا مشکل‌تان را سریع‌تر حل کنیم. ارسال این گزارش‌ها اختیاری است.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "ارسال تاریخچه گزارش خرابی؟";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "ارسال تاریخچه گزارش اشکال‌زدایی؟";
 
 /* Placeholder telling user they must select a filter. */
 "CONTACT_SUPPORT_SELECT_A_FILTER" = "انتخاب دلیل";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "ارسال با تاریخچه گزارش خرابی";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "ارسال با گزارش اشکال‌زدایی";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "ارسال بدون تاریخچه گزارش خرابی";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "ارسال بدون گزارش اشکال‌زدایی";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "باز کردن در Maps";
@@ -1193,7 +1193,7 @@
 "CONTEXT_MENU_DETAILS" = "اطلاعات";
 
 /* Context menu edit button title */
-"CONTEXT_MENU_EDIT_MESSAGE" = "Edit";
+"CONTEXT_MENU_EDIT_MESSAGE" = "ویرایش";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "بازارسال";
@@ -1553,7 +1553,7 @@
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "فضای ذخیره سازی بیشتری مورد نیاز است";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "سابقه پیام شما بازیابی نشد. پس از نصب مجدد می توانید به استفاده از سیگنال ادامه دهید. یک گزارش عیب‌یابی ارسال کنید تا بهتر بفهمیم چه مشکلی رخ داده است.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "سابقه پیام شما بازیابی نشد. پس از نصب مجدد می توانید به استفاده از سیگنال ادامه دهید. یک گزارش اشکال‌زدایی ارسال کنید تا بهتر بفهمیم چه مشکلی رخ داده است.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "بازنشانی سیگنال";
@@ -1568,7 +1568,7 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "بازنشانی سیگنال";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "ارسال گزارش رفع عیب";
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "ارسال گزارش اشکال‌زدایی";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "داده‌ها بازیابی نشد";
@@ -2143,11 +2143,20 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "کپی";
 
+/* Edit Send Beta prompt body */
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+
+/* Label to confirm sending an edit */
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+
+/* Edit Send Beta prompt title */
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+
 /* Error message to display to user when a messaeg is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "ویرایش‌ها فقط تا ۳ ساعت بعد از ارسال این پیام قابل اعمال هستند.";
 
 /* Edit failed for an unexpected reason */
-"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "سلام،\n\nتازگی‌ها از سیگنال می‌کنم تا گفتگوهایم را در آیفونم خصوصی نگه دارم. دوست دارم شما هم این برنامه را نصب کنید تا خیالمان راحت باشد که فقط من و شما می‌تونیم پیام‌هایمان رو بخوانیم یا گفتگوهای تلفنی‌مان را بشنویم.\n\nسیگنال در آیفون و اندروید در دسترس است. از این‌جا دریافتش کنید: %1$@\n\nسیگنال مثل برنامهٔ پیام‌رسان فعلی شما کار می‌کند. می‌توانیم عکس و ویدئو بفرستیم، تماس بگیریم، و گفتگوها‌ی گروهی شروع کنیم. بهترین ویژگی‌اش این است که هیچکس دیگری نمی‌تواند این‌ها را ببیند یا شنود کند، حتی سازندگان خود سیگنال\n\nمی‌توانید در این‌جا دربارۀ شرکت سازندۀ سیگنال، یعنی Open Whisper Systems، بیشتر بخوانید: %2$@";
@@ -2369,13 +2378,13 @@
 "FINISH_GROUP_CREATION_LABEL" = "اتمام ساخت گروه";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "ارسال مخاطب";
+"FORWARD_CONTACT" = "بازارسال مخاطب";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "ارسال پیام";
+"FORWARD_MESSAGE" = "بازارسال پیام";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "پیام‌های بازارسال شده حالا بلافاصله ارسال می‌شوند.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "پیام‌های بازارسال‌شده حالا بلافاصله ارسال می‌شوند.";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "بازارسال‌های سریع‌تر";
@@ -3326,7 +3335,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ عضو سیگنال شده است!";
 
 /* Label at the top of the input text when editing a message */
-"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "ویرایش پیام";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "صفحه‌کلید";
@@ -3551,7 +3560,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "رسانه با قابلیت یک‌بار مشاهده";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "برداشتن فیلتر";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "این موجب پاک شدن دائمی فایل‌های انتخاب‌شده می‌شود. هر پیام متنی مرتبط با این موارد هم پاک خواهد شد.";
@@ -3560,19 +3569,19 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "پیام‌های صوتی و فایل‌های صوتی که ارسال و دریافت می‌کنید اینجا ظاهر خواهند شد";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "هیچ فایل صوتی وجود ندارد";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "رسانه‌ای موجود نیست";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "عکس‌ها، ویدیوها و GIFهایی که ارسال و دریافت می‌کنید اینجا ظاهر خواهند شد";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "رسانه‌ای موجود نیست";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "این ماه";
@@ -3614,7 +3623,7 @@
 "MESSAGE_ACTION_DETAILS" = "اطلاعات بیشتر";
 
 /* Action sheet edit message accessibility label */
-"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
+"MESSAGE_ACTION_EDIT_MESSAGE" = "ویرایش پیام";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "یک پیام ایمیلی جدید";
@@ -3623,7 +3632,7 @@
 "MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "ایمیل پیکربندی نشده است.";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "ارسال این پیام";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "بازارسال این پیام";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "بازارسال پیام‌های انتخاب شده";
@@ -3860,7 +3869,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "در حال بارگیری";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "ویرایش‌شده";
+"MESSAGE_STATUS_EDITED" = "Edited";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "ارسال ناموفق بود.";
@@ -5065,11 +5074,11 @@
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "ویرایش نام کاربری";
 
+/* Title for a table cell that lets the user manage their username link and QR code. */
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "نام کاربری";
-
-/* Title for a menu action allowing users to view their username link QR code. */
-"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "مشاهدۀ کد QR";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "نام خانوادگی شما بیش‌از‌حد طولانی است.";
@@ -5123,7 +5132,7 @@
 "PUSH_MANAGER_REPLY" = "پاسخ";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "اعلانات آنی با موفقیت فعال شد.";
+"PUSH_REGISTER_SUCCESS" = "اعلان‌های فوری با موفقیت فعال شد.";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
@@ -5258,7 +5267,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "شما چندین بار امتحان کردید. لطفا قبل از امتحان مجدد، یک دقیقه صبر کنید.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "خطا در فعال‌سازی مجدد اعلانات آنی.";
+"REGISTRATION_BODY" = "خطا در فعال‌سازی مجدد اعلان‌های فوری.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "به‌روزرسانی";
@@ -5393,7 +5402,7 @@
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "خطا در تأیید";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "این شماره، با کدی که به شما فرستاده‌ای مطابقت ندارد. لطفا دوباره بررسی کنید.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "این شماره، با کدی که به شما فرستاده‌ایم مطابقت ندارد. دوباره بررسی می‌کنید؟";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "پین قفل ثبت نام نادرست.";
@@ -5435,7 +5444,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "انتخاب مدیر جدید";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "درخواست ثبت‌نام مجدد برای اعلان‌های ارسالی";
+"REREGISTER_FOR_PUSH" = "ثبت‌نام مجدد برای اعلان‌های فوری";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
 "REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "%1$@ تلاش باقیمانده دارید. اگر فرصت‌هایتان تمام شد، می‌توانید پین جدید ایجاد کنید. می‌توانید ثبت‌نام کنید و از حساب کاربری خود استفاده کنید، اما برخی تنظیمات ذخیره‌شده مانند اطلاعات نمایه‌تان را از دست می‌دهید.";
@@ -5480,19 +5489,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "کد امنیتی ما:\n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "شماره‌های ایمنی در حال به‌روزرسانی هستند.";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "به راهنمایی نیاز دارید؟";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "برای فعال کردن قابلیت‌های حریم شخصی آتی در سیگنال، شماره‌های ایمنی در حال به‌روزرسانی در طول یک دوران گذار هستند.";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "برای تأیید شماره‌های ایمنی، کارت رنگی را با دستگاه مخاطب خود تطبیق دهید. اگر مطابقت نداشتند، روی صفحه بکشید و جفت دیگری از شماره‌های ایمنی را امتحان کنید. فقط کافی است یک جفت شماره مطابقت داشته باشند.";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "تغییرات شماره‌های ایمنی";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "کلید هویت‌سنجی شما با %1$@ تغییر یافته. دوباره تأیید کنید.";
@@ -6745,6 +6754,9 @@
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "در حال حاضر هیچ به‌روزرسانی برای نمایش وجود ندارد.";
 
+/* The subtitle when this story has no replies */
+"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "هنوز پاسخی داده نشده است";
 
@@ -6888,6 +6900,9 @@
 
 /* Button for replying to a group story with no existing replies. */
 "STORY_REPLY_TO_GROUP_BUTTON" = "پاسخ به گروه";
+
+/* placeholder text for replying to a group story */
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "استوری ارسال نشد. اتصال خود را بررسی نموده و دوباره سعی کنید.";
@@ -7337,19 +7352,25 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "کد";
 
 /* A title for a view that allows you to scan a username link QR code using the camera. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "اسکن";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "نام کاربری کپی شد";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "کد QR را از دستگاه مخاطب خود اسکن کنید.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
-"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "کپی کردن لینک";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "هر کسی که این لینک را داشته باشند می‌تواند نام کاربری شما را مشاهده کند و گفتگویی را با شما آغاز کند. آن را فقط با کسانی به اشتراک بگذارید که به آن‌ها اعتماد دارید.";
+
+/* Subtitle for a tooltip describing ways to share your username. */
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+
+/* Title for a tooltip describing ways to share your username. */
+"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "خطایی هنگام جستجوی نام کاربری رخ داد. لطفاً بعداً دوباره امتحان کنید.";
@@ -7430,7 +7451,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "بازبینی شماره‌های امنیتی";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "برای تأیید امنیت رمزگذاری سرتاسری خود با %1$@، کارت رنگی بالا را با دستگاه او تطبیق دهید و اعداد را مقایسه کنید. اگر رنگ و عددها مطابقت نداشتند، روی صفحه بکشید و جفت دیگری از شماره‌های ایمنی را امتحان کنید. فقط کافی است یک جفت شماره مطابقت داشته باشند.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "این ویدیو قابل پخش نیست";

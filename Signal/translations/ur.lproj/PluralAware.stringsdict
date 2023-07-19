@@ -296,9 +296,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Only %1$d edit can be applied to this message.</string>
+			<string>اس میسج پر صرف %1$d ترمیم کا اطلاق کیا جا سکتا ہے۔</string>
 			<key>other</key>
-			<string>Only %1$d edits can be applied to this message.</string>
+			<string>اس میسج پر صرف %1$d ترامیم کا اطلاق کیا جا سکتا ہے۔</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>

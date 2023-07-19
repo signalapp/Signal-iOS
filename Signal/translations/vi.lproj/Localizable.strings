@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "Ảnh GIF";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "All Media";
+"ALL_MEDIA_FILTER_NONE" = "Tất cả tệp đa phương tiện";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "Ảnh";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Lỗi";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Một mã số an toàn sẽ được tạo với người này sau khi hai bạn nhắn tin.";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "Số thẻ không hợp lệ";
@@ -1193,7 +1193,7 @@
 "CONTEXT_MENU_DETAILS" = "Thông tin";
 
 /* Context menu edit button title */
-"CONTEXT_MENU_EDIT_MESSAGE" = "Edit";
+"CONTEXT_MENU_EDIT_MESSAGE" = "Sửa";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Chuyển tiếp";
@@ -2143,11 +2143,20 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Sao chép";
 
+/* Edit Send Beta prompt body */
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+
+/* Label to confirm sending an edit */
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+
+/* Edit Send Beta prompt title */
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+
 /* Error message to display to user when a messaeg is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Các chỉnh sửa chỉ có thể được thực hiện trong vòng 3 giờ kể từ lúc bạn gửi tin nhắn này.";
 
 /* Edit failed for an unexpected reason */
-"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "Xin chào,\n\nGần đây mình sử dụng Signal để các tin nhắn trên iPhone của mình được riêng tư. Bạn cũng cài ứng dụng này luôn nhé, để mình tự tin rằng chỉ có hai bên đọc tin nhắn và nghe cuộc gọi.\n\nSignal có trên iPhone và Android. Tải ở đây: %1$@\n\nSignal hoạt động giống như ứng dụng nhắn tin hiện tại của bạn. Hai ta có thể gửi ảnh và video, gọi, và bắt đầu tin nhắn nhóm. Điều thú vị nhất là không ai có thể đọc được bất kỳ thông tin nào, cả người tạo ra Signal cũng không!\n\nBạn có thể đọc thêm về Open Whisper Systems, những người tạo ra Signal, ở đây: %2$@";
@@ -3326,7 +3335,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ đang sử dụng Signal!";
 
 /* Label at the top of the input text when editing a message */
-"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Chỉnh sửa tin nhắn";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "Bàn phím";
@@ -3551,7 +3560,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Đa phương tiện Xem Một Lần";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Bỏ lọc";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Thao tác này sẽ xóa vĩnh viễn tệp đã chọn. Các tin nhắn có liên kết với những mục này cũng sẽ bị xóa.";
@@ -3560,19 +3569,19 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Tin nhắn Thoại và Tệp Âm thanh bạn gửi và nhận sẽ hiển thị ở đây";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "Không có tệp Âm thanh";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "Không có đa phương tiện";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Ảnh, Video và hình GIF bạn gửi và nhận sẽ hiển thị ở đây";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "Không có đa phương tiện";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Tháng này";
@@ -3614,7 +3623,7 @@
 "MESSAGE_ACTION_DETAILS" = "Thông tin khác";
 
 /* Action sheet edit message accessibility label */
-"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
+"MESSAGE_ACTION_EDIT_MESSAGE" = "Chỉnh sửa Tin nhắn";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Tin nhắn Email Mới";
@@ -3860,7 +3869,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Đang tải xuống";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "đã chỉnh sửa";
+"MESSAGE_STATUS_EDITED" = "Edited";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Không gửi được.";
@@ -5065,11 +5074,11 @@
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Sửa tên người dùng";
 
+/* Title for a table cell that lets the user manage their username link and QR code. */
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Tên người dùng";
-
-/* Title for a menu action allowing users to view their username link QR code. */
-"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "Xem Mã QR";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Tên họ của bạn quá dài.";
@@ -5480,19 +5489,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Số An toàn Signal của chúng tôi:\n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Các mã số an toàn đang được cập nhật.";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Cần hỗ trợ?";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Các mã số an toàn đang được cập nhật qua một giai đoạn chuyển giao để hỗ trợ các tính năng quyền riêng tư sắp ra mắt trong Signal.";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "Để xác minh các mã số an toàn, hãy khớp thẻ màu này với thiết bị của liên hệ của bạn. Nếu các mã số này không khớp, vuốt và thử các cặp mã số an toàn khác. Chỉ cần một cặp khớp nhau.";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Các thay đổi đối với Mã số an toàn";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Số an toàn của bạn với %1$@ đã thay đổi. Bạn nên xác minh lại.";
@@ -6745,6 +6754,9 @@
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "Không có cập nhật để hiển thị.";
 
+/* The subtitle when this story has no replies */
+"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Chưa có phản hồi";
 
@@ -6888,6 +6900,9 @@
 
 /* Button for replying to a group story with no existing replies. */
 "STORY_REPLY_TO_GROUP_BUTTON" = "Trả lời cho Nhóm";
+
+/* placeholder text for replying to a group story */
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Không thể gửi story này. Kiểm tra kết nối của bạn và thử lại.";
@@ -7337,19 +7352,25 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Mã";
 
 /* A title for a view that allows you to scan a username link QR code using the camera. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Quét";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Đã sao chép tên người dùng";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Quét Mã QR trên thiết bị của người liên hệ của bạn.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
-"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Sao chép Đường dẫn";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "Bất kỳ ai có đường dẫn này có thể xem tên người dùng của bạn và bắt đầu trò chuyện với bạn. Chỉ chia sẻ đường dẫn với người bạn tin tưởng.";
+
+/* Subtitle for a tooltip describing ways to share your username. */
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+
+/* Title for a tooltip describing ways to share your username. */
+"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Đã xảy ra lỗi khi tìm tên người dùng. Hãy thử lại sau.";
@@ -7430,7 +7451,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Kiểm tra lại các Số An toàn";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Để xác minh bảo mật đầu cuối với %1$@, hãy khớp thẻ màu này với thiết bị của liên hệ của bạn. Nếu các mã số này không khớp, vuốt và thử các cặp mã số an toàn khác. Chỉ cần một cặp khớp nhau.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Không thể phát video";

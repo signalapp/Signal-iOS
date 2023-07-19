@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "All Media";
+"ALL_MEDIA_FILTER_NONE" = "Semua Media";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "Foto";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Gagal";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "A safety number will be created with this person after you exchange messages with them.";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "Nomor keamanan akan dibuat dengan orang ini setelah Anda bertukar pesan dengannya.";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "Nomor kartu tidak valid";
@@ -2143,11 +2143,20 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Salin";
 
+/* Edit Send Beta prompt body */
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+
+/* Label to confirm sending an edit */
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+
+/* Edit Send Beta prompt title */
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+
 /* Error message to display to user when a messaeg is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Pengeditan hanya dapat diterapkan dalam rentang waktu 3 jam sejak Anda mengirimkan pesan ini.";
 
 /* Edit failed for an unexpected reason */
-"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "Message cannot be edited.";
+"EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "Hai,\n\nBelakangan ini saya menggunakan Signal untuk memastikan obrolan di iPhone saya tetap privat. Saya ingin Anda menginstalnya juga, agar kita bisa yakin tidak ada orang lain yang bisa melihat pesan atau mendengarkan panggilan kita.\n\nSignal tersedia untuk iPhone dan Android. Dapatkan di sini:%1$@\n\nSignal bekerja layaknya aplikasi perpesanan yang saat ini Anda gunakan. Kita bisa mengirim gambar dan video, melakukan panggilan, dan memulai obrolan grup. Yang terpenting, tidak ada orang lain yang bisa melihatnya, termasuk pengembang Signal sekalipun!\n\nAnda dapat membaca lebih lanjut tentang Open Whisper Systems, pengembang Signal, di sini: %2$@";
@@ -3326,7 +3335,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ ada di Signal!";
 
 /* Label at the top of the input text when editing a message */
-"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit message";
+"INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Edit pesan";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
 "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "Papan ketik";
@@ -3551,7 +3560,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Media Sekali Lihat";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Clear Filter";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Hapus Filter";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
 "MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Ini akan menghapus file terpilih secara permanen. Semua pesan yang berkaitan dengan item ini juga akan dihapus.";
@@ -3560,19 +3569,19 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Voice Messages and Audio Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Pesan Suara dan File Audio yang Anda kirim dan terima akan muncul di sini";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
-"MEDIA_GALLERY_NO_AUDIO_TITLE" = "No Audio";
+"MEDIA_GALLERY_NO_AUDIO_TITLE" = "Tidak Ada Audio";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_FILTER_RESULTS" = "No Media";
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "Tidak Ada Media";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Photos, Videos, and GIFs that you send and receive will appear here";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Foto, Video, dan GIF yang Anda kirim dan terima akan muncul di sini";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_MEDIA_TITLE" = "No Media";
+"MEDIA_GALLERY_NO_MEDIA_TITLE" = "Tidak Ada Media";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Bulan Ini";
@@ -3614,7 +3623,7 @@
 "MESSAGE_ACTION_DETAILS" = "Info lebih lanjut";
 
 /* Action sheet edit message accessibility label */
-"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Message";
+"MESSAGE_ACTION_EDIT_MESSAGE" = "Edit Pesan";
 
 /* Label for button to compose a new email. */
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Pesan Surel Baru";
@@ -3860,7 +3869,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Mengunduh";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "diedit";
+"MESSAGE_STATUS_EDITED" = "Edited";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Gagal mengirim";
@@ -5065,11 +5074,11 @@
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Edit nama pengguna";
 
+/* Title for a table cell that lets the user manage their username link and QR code. */
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nama Pengguna";
-
-/* Title for a menu action allowing users to view their username link QR code. */
-"PROFILE_SETTINGS_USERNAME_VIEW_QR_CODE_ACTION" = "Lihat Kode QR";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Nama belakang Anda terlalu panjang.";
@@ -5480,19 +5489,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Nomor aman Signal kami \n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Safety numbers are being updated.";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "Nomor keamanan sedang diperbarui.";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Need help?";
+"SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "Butuh bantuan?";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Safety numbers are being updated over a transition period to enable upcoming privacy features in Signal.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "Nomor keamanan sedang diperbarui selama periode transisi agar dapat mengaktifkan fitur privasi yang akan datang di Signal.";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "To verify safety numbers, match the color card with your contact’s device. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "Untuk memverifikasi nomor keamanan, cocokkan kartu warna dengan perangkat milik kontak Anda. Jika ini tidak cocok, usap dan coba pasangan nomor keamanan lain. Hanya satu pasang yang harus cocok.";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Changes to Safety Numbers";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "Perubahan pada Nomor Keamanan";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Nomor keamanan Anda dengan %1$@ telah berubah. Anda mungkin mau memverifikasi.";
@@ -6745,6 +6754,9 @@
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "Tidak ada pembaruan untuk ditampilkan saat ini.";
 
+/* The subtitle when this story has no replies */
+"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Belum ada balasan";
 
@@ -6888,6 +6900,9 @@
 
 /* Button for replying to a group story with no existing replies. */
 "STORY_REPLY_TO_GROUP_BUTTON" = "Balas ke Grup";
+
+/* placeholder text for replying to a group story */
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Cerita ini tidak dapat dikirim. Periksa koneksi Anda dan coba lagi";
@@ -7337,19 +7352,25 @@
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "Kode";
 
 /* A title for a view that allows you to scan a username link QR code using the camera. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Scan";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "Pindai";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Username copied";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "Nama pengguna disalin";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Scan the QR Code on your contact’s device.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "Pindai kode QR di perangkat milik kontak Anda.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
-"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Copy Link";
+"USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Salin Tautan";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "Anyone with this link can view your username and start a chat with you. Only share it with people you trust.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "Siapa pun yang punya tautan ini bisa melihat nama pengguna Anda dan memulai obrolan dengan Anda. Hanya bagikan dengan orang yang Anda percaya.";
+
+/* Subtitle for a tooltip describing ways to share your username. */
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+
+/* Title for a tooltip describing ways to share your username. */
+"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Terjadi kesalahan saat mencari nama pengguna. Silakan coba lagi nanti.";
@@ -7430,7 +7451,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Tinjau nomer keamanan";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "To verify end-to-end encryption with %1$@, match the color card above with their device and compare the numbers. If these don’t match, swipe and try the other pair of safety numbers. Only one pair needs to match.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Untuk memverifikasi enkripsi end-to-end dengan %1$@, cocokkan kartu warna di atas dengan perangkat mereka dan bandingkan angkanya. Jika ini tidak cocok, usap dan coba pasangan nomor keamanan lain. Hanya satu pasang yang harus cocok.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Video ini tidak bisa diputar";
