@@ -129,7 +129,7 @@ public class FeatureFlags: BaseFlags {
     /// be displayed.
     public static let onlyAciSafetyNumbers = false
 
-    public static let editMessageSend = build.includes(.internal)
+    public static let editMessageSend = build.includes(.beta)
 
     public static let spoilerAnimations = build.includes(.internal)
 }
