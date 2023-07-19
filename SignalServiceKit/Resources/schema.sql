@@ -1455,3 +1455,13 @@ CREATE
         ON "EditRecord"("pastRevisionId"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "HiddenRecipient" (
+            "recipientId" INTEGER PRIMARY KEY NOT NULL
+            ,FOREIGN KEY ("recipientId") REFERENCES "model_SignalRecipient"("id")
+                ON DELETE
+                    CASCADE
+        )
+;

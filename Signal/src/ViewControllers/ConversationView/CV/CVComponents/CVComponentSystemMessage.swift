@@ -777,6 +777,8 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.profile16)
             case .phoneNumberChange:
                 return Theme.iconImage(.phone16)
+            case .contactHidden:
+                return Theme.iconImage(.info16)
             }
         } else if let call = interaction as? TSCall {
             switch call.offerType {
@@ -1251,7 +1253,8 @@ extension CVComponentSystemMessage {
         case .typeDisappearingMessagesUpdate,
              .verificationStateChange,
              .userJoinedSignal,
-             .syncedThread:
+             .syncedThread,
+             .contactHidden:
             return nil
         case .profileUpdate:
             guard let profileChangeAddress = infoMessage.profileChangeAddress else {

@@ -193,7 +193,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             OWSDevice.self,
             SignalAccount.self,
             EditRecord.self,
-            SignalRecipient.self
+            SignalRecipient.self,
+            HiddenRecipient.self
         ]
     }
 

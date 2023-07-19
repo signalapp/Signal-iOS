@@ -225,6 +225,16 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         // If this is a group thread and we're not a member, never show the message request.
         if isGroupThread, !isLocalUserInGroup { return false }
 
+        if
+            FeatureFlags.recipientHiding,
+            let thread = thread as? TSContactThread,
+            DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(thread.contactAddress, tx: transaction.asAnyRead)
+        {
+            // If the user hides a contact and said contact subsequently sends an incoming
+            // message, we display the message request UI.
+            return GRDBInteractionFinder(threadUniqueId: thread.uniqueId).mostRecentInteraction(transaction: transaction)?.interactionType == .incomingMessage
+        }
+
         // If the thread is already whitelisted, do nothing. The user has already
         // accepted the request for this thread.
         guard !Self.profileManager.isThread(

@@ -128,6 +128,10 @@ public class FeatureFlags: BaseFlags {
     public static let editMessageSend = build.includes(.beta)
 
     public static let spoilerAnimations = build.includes(.internal)
+
+    /// If true, we will enable recipient hiding, which is like a lighter form of blocking.
+    @objc
+    public static let recipientHiding = false
 }
 
 // MARK: -

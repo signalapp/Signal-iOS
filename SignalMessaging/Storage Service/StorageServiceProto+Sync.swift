@@ -176,6 +176,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let tsAccountManager: TSAccountManager
     private let usernameLookupManager: UsernameLookupManager
     private let recipientMerger: RecipientMerger
+    private let recipientHidingManager: RecipientHidingManager
 
     init(
         localIdentifiers: LocalIdentifiers,
@@ -187,7 +188,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         profileManager: OWSProfileManager,
         tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager,
-        recipientMerger: RecipientMerger
+        recipientMerger: RecipientMerger,
+        recipientHidingManager: RecipientHidingManager
     ) {
         self.localIdentifiers = localIdentifiers
         self.authedAccount = authedAccount
@@ -199,6 +201,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         self.tsAccountManager = tsAccountManager
         self.usernameLookupManager = usernameLookupManager
         self.recipientMerger = recipientMerger
+        self.recipientHidingManager = recipientHidingManager
     }
 
     func unknownFields(for record: StorageServiceProtoContactRecord) -> UnknownStorage? { record.unknownFields }

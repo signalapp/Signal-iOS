@@ -41,6 +41,8 @@ protocol GroupMemberViewDelegate: AnyObject {
 //
 // * Picking members for a new group.
 // * Add new members to an existing group.
+//
+// Note: Blocked and hidden recipients will be omitted from this view controller.
 public class BaseGroupMemberViewController: BaseMemberViewController {
 
     // This delegate is the subclass.

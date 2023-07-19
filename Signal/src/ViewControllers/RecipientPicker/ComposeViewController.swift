@@ -129,6 +129,11 @@ extension ComposeViewController: RecipientPickerDelegate {
             #if DEBUG
             let isBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
             owsAssert(!isBlocked, "It should be impossible to see a blocked connection in this view")
+
+            if FeatureFlags.recipientHiding {
+                let isHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: transaction)
+                owsAssert(!isHidden, "It should be impossible to see a hidden recipient in this view")
+            }
             #endif
             return nil
         case .group(let thread):

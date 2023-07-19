@@ -229,6 +229,7 @@ public class GRDBSchemaMigrator: NSObject {
         case updateEditMessageUnreadIndex
         case updateEditRecordTable
         case threadReplyEditTarget
+        case addHiddenRecipientsTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2742,6 +2743,21 @@ public class GRDBSchemaMigrator: NSObject {
                 } catch {
                     owsFail("Error: \(error)")
                 }
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addHiddenRecipientsTable) { transaction in
+            try transaction.database.create(table: HiddenRecipient.databaseTableName) { table in
+                table.column(HiddenRecipient.CodingKeys.recipientId.stringValue, .integer)
+                    .primaryKey()
+                    .notNull()
+                table.foreignKey(
+                    ["recipientId"],
+                    references: "model_SignalRecipient",
+                    columns: ["id"],
+                    onDelete: .cascade
+                )
             }
             return .success(())
         }

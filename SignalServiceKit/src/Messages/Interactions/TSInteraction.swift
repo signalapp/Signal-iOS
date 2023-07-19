@@ -70,7 +70,8 @@ extension TSInteraction {
             switch infoMessage.messageType {
             case .verificationStateChange,
                  .profileUpdate,
-                 .phoneNumberChange:
+                 .phoneNumberChange,
+                 .contactHidden:
                 return false
             case .typeGroupUpdate:
                 guard let updates = infoMessage.groupUpdateItems(transaction: transaction) else {

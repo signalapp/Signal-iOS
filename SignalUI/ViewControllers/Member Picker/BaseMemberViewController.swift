@@ -293,13 +293,15 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             return
         }
 
-        let (isPreExistingMember, isBlocked) = databaseStorage.read { readTx -> (Bool, Bool) in
+        let (isPreExistingMember, isExcluded) = databaseStorage.read { readTx -> (Bool, Bool) in
             let isPreexisting = memberViewDelegate.memberViewIsPreExistingMember(
                 recipient,
                 transaction: readTx)
             let isBlocked = blockingManager.isAddressBlocked(address, transaction: readTx)
+            let isHidden = FeatureFlags.recipientHiding && DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: readTx)
+            let isExcluded = isBlocked || isHidden
 
-            return (isPreexisting, isBlocked)
+            return (isPreexisting, isExcluded)
         }
 
         guard !isPreExistingMember else {
@@ -322,7 +324,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
 
         if isCurrentMember {
             removeRecipient(recipient)
-        } else if isBlocked && !memberViewDelegate.memberViewShouldAllowBlockedSelection() {
+        } else if isExcluded && !memberViewDelegate.memberViewShouldAllowBlockedSelection() {
             BlockListUIUtils.showUnblockAddressActionSheet(address,
                                                            from: self) { isStillBlocked in
                 if !isStillBlocked {

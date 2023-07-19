@@ -741,7 +741,11 @@ extension RecipientPickerViewController {
     private func lazyFilteredSignalAccounts() -> LazyFilterSequence<[SignalAccount]> {
         let allSignalAccounts = contactsViewHelper.signalAccounts(includingLocalUser: !shouldHideLocalRecipient)
         lazy var blockedAddresses = databaseStorage.read { blockingManager.blockedAddresses(transaction: $0) }
-        return allSignalAccounts.lazy.filter { !blockedAddresses.contains($0.recipientAddress) }
+        lazy var hiddenAddresses = FeatureFlags.recipientHiding ? databaseStorage.read { DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: $0) } : Set()
+        return allSignalAccounts.lazy.filter {
+            !blockedAddresses.contains($0.recipientAddress) && !hiddenAddresses.contains($0.recipientAddress)
+
+        }
     }
 
     /// Checks if we should show the dedicated "no contacts" view.
@@ -976,19 +980,24 @@ extension RecipientPickerViewController {
 
         var sections = [OWSTableSection]()
 
-        // Contacts, with blocked contacts removed.
+        // Contacts, with blocked contacts and hidden recipients removed.
         var matchedAccountPhoneNumbers = Set<String>()
         var contactsSectionItems = [OWSTableItem]()
-        let addressesToSkip = databaseStorage.read { transaction in return self.blockingManager.blockedAddresses(transaction: transaction) }
-        for recipientAddress in searchResults.signalAccounts.map({ $0.recipientAddress }) {
-            guard !addressesToSkip.contains(recipientAddress) else { continue }
+        databaseStorage.read { tx in
+            let blockedAddresses = self.blockingManager.blockedAddresses(transaction: tx)
+            let hiddenAddresses = FeatureFlags.recipientHiding ? DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: tx) : Set<SignalServiceAddress>()
+            let addressesToSkip = blockedAddresses.union(hiddenAddresses)
+            for recipientAddress in searchResults.signalAccounts.map({ $0.recipientAddress }) {
+                guard !addressesToSkip.contains(recipientAddress) else { continue }
 
-            if let phoneNumber = recipientAddress.phoneNumber {
-                matchedAccountPhoneNumbers.insert(phoneNumber)
+                if let phoneNumber = recipientAddress.phoneNumber {
+                    matchedAccountPhoneNumbers.insert(phoneNumber)
+                }
+
+                contactsSectionItems.append(item(forRecipient: PickedRecipient.for(address: recipientAddress)))
             }
-
-            contactsSectionItems.append(item(forRecipient: PickedRecipient.for(address: recipientAddress)))
         }
+
         if !contactsSectionItems.isEmpty {
             sections.append(OWSTableSection(
                 title: OWSLocalizedString(

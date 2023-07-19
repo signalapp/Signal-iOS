@@ -217,7 +217,9 @@ extension ConversationViewController {
         }
 
         let actionSheet = ActionSheetController(title: e164)
-        let isBlocked = databaseStorage.read { blockingManager.isAddressBlocked(address, transaction: $0) }
+        let isBlocked = databaseStorage.read {
+            blockingManager.isAddressBlocked(address, transaction: $0)
+        }
 
         if isBlocked {
             actionSheet.addAction(

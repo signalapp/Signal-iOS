@@ -327,8 +327,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return wrappedError
         }
 
-        guard !blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) else {
-            Logger.info("Ignoring decryption error for blocked user \(sourceAddress) \(wrappedError).")
+        if
+            blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) ||
+            (FeatureFlags.recipientHiding && DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(sourceAddress, tx: transaction))
+        {
+            Logger.info("Ignoring decryption error for blocked or hidden user \(sourceAddress) \(wrappedError).")
             return wrappedError
         }
 

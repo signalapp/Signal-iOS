@@ -28,7 +28,8 @@ typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageUserJoinedSignal,
     TSInfoMessageSyncedThread,
     TSInfoMessageProfileUpdate,
-    TSInfoMessagePhoneNumberChange
+    TSInfoMessagePhoneNumberChange,
+    TSInfoMessageContactHidden
 };
 
 typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;

@@ -51,6 +51,11 @@ public class StoryManager: NSObject {
             return
         }
 
+        if FeatureFlags.recipientHiding && DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(author, tx: transaction) {
+            Logger.warn("Dropping story message with timestamp \(timestamp) from hidden author \(author)")
+            return
+        }
+
         if let masterKey = storyMessage.group?.masterKey {
             let contextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
 

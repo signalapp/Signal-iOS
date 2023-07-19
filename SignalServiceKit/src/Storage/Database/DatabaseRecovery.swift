@@ -433,6 +433,7 @@ public extension DatabaseRecovery {
             KnownStickerPack.table.tableName,
             ProfileBadge.databaseTableName,
             StickerPack.table.tableName,
+            HiddenRecipient.databaseTableName,
             // Not essential.
             StoryContextAssociatedData.databaseTableName,
             ExperienceUpgrade.databaseTableName,

@@ -44,6 +44,8 @@ public class AppSetup {
         owsAssert(OWSFileSystem.ensureDirectoryExists(temporaryDirectory))
         owsAssert(OWSFileSystem.protectFileOrFolder(atPath: temporaryDirectory, fileProtectionType: .completeUntilFirstUserAuthentication))
 
+        let recipientHidingManager = RecipientHidingManagerImpl()
+
         // MARK: DependenciesBridge
 
         let accountServiceClient = AccountServiceClient()
@@ -57,7 +59,7 @@ public class AppSetup {
         let networkManager = NetworkManager()
         let ows2FAManager = OWS2FAManager()
         let pniSignalProtocolStore = SignalProtocolStore(for: .pni)
-        let profileManager = OWSProfileManager(databaseStorage: databaseStorage)
+        let profileManager = OWSProfileManager(databaseStorage: databaseStorage, recipientHidingManager: recipientHidingManager)
         let signalService = OWSSignalService()
         let signalServiceAddressCache = SignalServiceAddressCache()
         let storageServiceManager = StorageServiceManagerImpl.shared
@@ -80,6 +82,7 @@ public class AppSetup {
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniSignalProtocolStore,
             profileManager: profileManager,
+            recipientHidingManager: recipientHidingManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
@@ -116,7 +119,7 @@ public class AppSetup {
         let socketManager = SocketManager(appExpiry: appExpiry, db: DependenciesBridge.shared.db)
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
         let receiptManager = OWSReceiptManager()
-        let outgoingReceiptManager = OWSOutgoingReceiptManager()
+        let outgoingReceiptManager = OWSOutgoingReceiptManager(recipientHidingManager: recipientHidingManager)
         let reachabilityManager = SSKReachabilityManagerImpl()
         let typingIndicators = TypingIndicatorsImpl()
         let attachmentDownloads = OWSAttachmentDownloads()

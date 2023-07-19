@@ -270,20 +270,21 @@ extension ConversationViewController: MessageRequestDelegate {
         GroupManager.leaveGroupOrDeclineInviteAsyncWithUI(groupThread: groupThread, fromViewController: self, success: completion)
     }
 
-    func messageRequestViewDidTapAccept(mode: MessageRequestMode) {
-        messageRequestViewDidTapAccept(mode: mode, unblockThread: false)
-    }
-
-    func messageRequestViewDidTapAccept(mode: MessageRequestMode, unblockThread: Bool) {
+    func messageRequestViewDidTapAccept(mode: MessageRequestMode, unblockThread: Bool, unhideRecipient: Bool) {
         AssertIsOnMainThread()
 
         let thread = self.thread
         let completion = {
-            SDSDatabaseStorage.shared.asyncWrite { transaction in
+            SDSDatabaseStorage.shared.asyncWrite { [weak self] transaction in
+                guard let self else { return }
                 if unblockThread {
                     self.blockingManager.removeBlockedThread(thread, wasLocallyInitiated: true, transaction: transaction)
-                } else {
-                    // If this is an accept, not an unblock, we should send a
+                }
+                if FeatureFlags.recipientHiding, unhideRecipient, let thread = thread as? TSContactThread {
+                    DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(thread.contactAddress, wasLocallyInitiated: true, tx: transaction)
+                }
+                if !unblockThread {
+                    // If this is an accept (which also unhides a hidden recipient), not an unblock, we should send a
                     // sync messages telling our other devices that we accepted.
                     self.syncManager.sendMessageRequestResponseSyncMessage(
                         thread: thread,
@@ -348,7 +349,7 @@ extension ConversationViewController: MessageRequestDelegate {
             proceedTitle: OWSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON",
                                             comment: "Button label for the 'unblock' button")
         ) { _ in
-            self.messageRequestViewDidTapAccept(mode: mode, unblockThread: true)
+            self.messageRequestViewDidTapAccept(mode: mode, unblockThread: true, unhideRecipient: false)
         }
     }
 

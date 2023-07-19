@@ -10,7 +10,7 @@ import SignalUI
 protocol MessageRequestDelegate: AnyObject {
     func messageRequestViewDidTapBlock(mode: MessageRequestMode)
     func messageRequestViewDidTapDelete()
-    func messageRequestViewDidTapAccept(mode: MessageRequestMode)
+    func messageRequestViewDidTapAccept(mode: MessageRequestMode, unblockThread: Bool, unhideRecipient: Bool)
     func messageRequestViewDidTapUnblock(mode: MessageRequestMode)
     func messageRequestViewDidTapLearnMore()
 }
@@ -30,6 +30,7 @@ public struct MessageRequestType: Equatable {
     let isGroupV2Thread: Bool
     let isThreadBlocked: Bool
     let hasSentMessages: Bool
+    let isThreadFromHiddenRecipient: Bool
 }
 
 // MARK: -
@@ -51,6 +52,9 @@ class MessageRequestView: UIStackView {
     }
     private var hasSentMessages: Bool {
         messageRequestType.hasSentMessages
+    }
+    private var isThreadFromHiddenRecipient: Bool {
+        messageRequestType.isThreadFromHiddenRecipient
     }
 
     weak var delegate: MessageRequestDelegate?
@@ -107,11 +111,18 @@ class MessageRequestView: UIStackView {
         let isGroupV1Thread = thread.isGroupV1Thread
         let isGroupV2Thread = thread.isGroupV2Thread
         let isThreadBlocked = blockingManager.isThreadBlocked(thread, transaction: transaction)
+        var isThreadFromHiddenRecipient = false
+        if let thread = thread as? TSContactThread, FeatureFlags.recipientHiding {
+            isThreadFromHiddenRecipient = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(thread.contactAddress, tx: transaction)
+        }
         let hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
-        return MessageRequestType(isGroupV1Thread: isGroupV1Thread,
-                                  isGroupV2Thread: isGroupV2Thread,
-                                  isThreadBlocked: isThreadBlocked,
-                                  hasSentMessages: hasSentMessages)
+        return MessageRequestType(
+            isGroupV1Thread: isGroupV1Thread,
+            isGroupV2Thread: isGroupV2Thread,
+            isThreadBlocked: isThreadBlocked,
+            hasSentMessages: hasSentMessages,
+            isThreadFromHiddenRecipient: isThreadFromHiddenRecipient
+        )
     }
 
     required init(coder: NSCoder) {
@@ -183,6 +194,9 @@ class MessageRequestView: UIStackView {
                     "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT",
                     comment: "A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}."
                 )
+            } else if FeatureFlags.recipientHiding && isThreadFromHiddenRecipient {
+                formatString = OWSLocalizedString("MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT", comment: "A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}.")
+
             } else if hasSentMessages {
                 formatString = OWSLocalizedString(
                     "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT",
@@ -232,6 +246,24 @@ class MessageRequestView: UIStackView {
                               titleColor: Theme.accentBlueColor) { [weak self] in
                                 self?.delegate?.messageRequestViewDidTapUnblock(mode: mode)
                 }]
+        } else if FeatureFlags.recipientHiding && isThreadFromHiddenRecipient {
+            buttons = [
+                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
+                                                       comment: "A button used to block a user on an incoming message request."),
+                              titleColor: .ows_accentRed) { [weak self] in
+                                self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
+                },
+                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
+                                                       comment: "incoming message request button text which deletes a conversation"),
+                              titleColor: .ows_accentRed) { [weak self] in
+                                self?.delegate?.messageRequestViewDidTapDelete()
+                },
+                prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
+                                                       comment: "A button used to accept a user on an incoming message request."),
+                              titleColor: Theme.accentBlueColor) { [weak self] in
+                                  self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: true)
+                }
+            ]
         } else if hasSentMessages {
             buttons = [
                 prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
@@ -250,7 +282,7 @@ class MessageRequestView: UIStackView {
                     // This is the same action as accepting the message request, but displays
                     // with slightly different visuals if the user has already been messaging
                     // this user in the past but didn't share their profile.
-                    self?.delegate?.messageRequestViewDidTapAccept(mode: mode)
+                    self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
                 }]
         } else {
             buttons = [
@@ -267,7 +299,7 @@ class MessageRequestView: UIStackView {
                 prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
                                                        comment: "A button used to accept a user on an incoming message request."),
                               titleColor: Theme.accentBlueColor) { [weak self] in
-                                self?.delegate?.messageRequestViewDidTapAccept(mode: mode)
+                                self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
                 }]
         }
 
@@ -307,7 +339,7 @@ class MessageRequestView: UIStackView {
             prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
                                                    comment: "A button used to accept a user on an incoming message request."),
                           titleColor: Theme.accentBlueColor) { [weak self] in
-                            self?.delegate?.messageRequestViewDidTapAccept(mode: mode)
+                            self?.delegate?.messageRequestViewDidTapAccept(mode: mode, unblockThread: false, unhideRecipient: false)
             }]
         return prepareButtonStack(buttons)
     }

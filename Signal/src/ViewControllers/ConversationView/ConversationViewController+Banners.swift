@@ -627,8 +627,9 @@ extension ConversationViewController {
         }
 
         let blockedMembers = databaseStorage.read { readTx in
-            groupThread.groupModel.groupMembers
-                .filter { blockingManager.isAddressBlocked($0, transaction: readTx) }
+            groupThread.groupModel.groupMembers.filter {
+                blockingManager.isAddressBlocked($0, transaction: readTx)
+            }
         }
         return blockedMembers.count
     }

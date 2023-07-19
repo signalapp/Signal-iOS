@@ -1116,26 +1116,40 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
 
+    private var mostRecentInteractionSqlAndArgs: (String, StatementArguments) {
+        return (
+            """
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            \(Self.filterStoryRepliesClause())
+            \(Self.filterEditHistoryClause())
+            AND \(interactionColumn: .errorType) IS NOT ?
+            AND \(interactionColumn: .messageType) IS NOT ?
+            AND \(interactionColumn: .messageType) IS NOT ?
+            ORDER BY \(interactionColumn: .id) DESC
+            """,
+            [
+                threadUniqueId,
+                TSErrorMessageType.nonBlockingIdentityChange.rawValue,
+                TSInfoMessageType.verificationStateChange.rawValue,
+                TSInfoMessageType.profileUpdate.rawValue
+            ]
+        )
+    }
+
+    func mostRecentInteraction(transaction: GRDBReadTransaction) -> TSInteraction? {
+        let (sql, args) = mostRecentInteractionSqlAndArgs
+        let firstInteractionSql = sql + " LIMIT 1"
+        return TSInteraction.grdbFetchOne(
+            sql: firstInteractionSql,
+            arguments: args,
+            transaction: transaction
+        )
+    }
+
     func mostRecentInteractionForInbox(transaction: GRDBReadTransaction) -> TSInteraction? {
-        let interactionsSql = """
-                SELECT *
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                \(Self.filterStoryRepliesClause())
-                \(Self.filterEditHistoryClause())
-                AND \(interactionColumn: .errorType) IS NOT ?
-                AND \(interactionColumn: .messageType) IS NOT ?
-                AND \(interactionColumn: .messageType) IS NOT ?
-                ORDER BY \(interactionColumn: .id) DESC
-                """
-        let firstInteractionSql = interactionsSql + " LIMIT 1"
-        let arguments: StatementArguments = [threadUniqueId,
-                                             TSErrorMessageType.nonBlockingIdentityChange.rawValue,
-                                             TSInfoMessageType.verificationStateChange.rawValue,
-                                             TSInfoMessageType.profileUpdate.rawValue]
-        guard let firstInteraction = TSInteraction.grdbFetchOne(sql: firstInteractionSql,
-                                                                arguments: arguments,
-                                                                transaction: transaction) else {
+        guard let firstInteraction = mostRecentInteraction(transaction: transaction) else {
             return nil
         }
 
@@ -1148,9 +1162,12 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             return firstInteraction
         }
         do {
-            let cursor = TSInteraction.grdbFetchCursor(sql: interactionsSql,
-                                                       arguments: arguments,
-                                                       transaction: transaction)
+            let (sql, args) = mostRecentInteractionSqlAndArgs
+            let cursor = TSInteraction.grdbFetchCursor(
+                sql: sql,
+                arguments: args,
+                transaction: transaction
+            )
             while let interaction = try cursor.next() {
                 if interaction.shouldAppearInInbox(transaction: anyTransaction) {
                     return interaction

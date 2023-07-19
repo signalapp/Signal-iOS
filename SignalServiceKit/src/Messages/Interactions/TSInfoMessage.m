@@ -304,6 +304,12 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                 @"Indicates that another user has changed their phone number. Embeds: {{ the user's name}}".);
             return [NSString stringWithFormat:format, userName];
         }
+        case TSInfoMessageContactHidden:
+            /// This does not control whether to show the info message in the chat
+            /// preview. To control that, see ``TSInteraction.shouldAppearInInbox``.
+            return OWSLocalizedString(@"INFO_MESSAGE_CONTACT_REMOVED",
+                @"Indicates that the recipient has been removed from the current user's contacts and that messaging "
+                @"them will re-add them.");
     }
 
     OWSFailDebug(@"Unknown info message type");
@@ -329,6 +335,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageSyncedThread:
         case TSInfoMessageProfileUpdate:
         case TSInfoMessagePhoneNumberChange:
+        case TSInfoMessageContactHidden:
             return NO;
         case TSInfoMessageUserJoinedSignal:
             // In the conversation list, we want conversations with an unread "new user" notification to

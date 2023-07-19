@@ -41,6 +41,8 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
 @property (nonatomic, readonly) SDSKeyValueStore *metadataStore;
 
+@property (nonatomic, readonly) id<RecipientHidingManager> recipientHidingManager;
+
 @end
 
 #pragma mark -
@@ -83,6 +85,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 @synthesize localUserProfile = _localUserProfile;
 
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage
+                 recipientHidingManager:(id<RecipientHidingManager>)recipientHidingManager
 {
     self = [super init];
 
@@ -95,6 +98,8 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
     _profileAvatarDataLoadCounter = [[AtomicUInt alloc] init:0];
     _profileAvatarImageLoadCounter = [[AtomicUInt alloc] init:0];
+
+    _recipientHidingManager = recipientHidingManager;
 
     _whitelistedPhoneNumbersStore =
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_UserWhitelistCollection"];
@@ -767,7 +772,9 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     for (SignalServiceAddress *address in addresses) {
 
         // If the address is blocked, we don't want to include it
-        if ([self.blockingManager isAddressBlocked:address transaction:transaction]) {
+        if ([self.blockingManager isAddressBlocked:address transaction:transaction]
+            || (SSKFeatureFlags.recipientHiding &&
+                [self.recipientHidingManager isHiddenAddress:address tx:transaction])) {
             continue;
         }
 
@@ -925,7 +932,8 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 {
     OWSAssertDebug(address.isValid);
 
-    if ([self.blockingManager isAddressBlocked:address transaction:transaction]) {
+    if ([self.blockingManager isAddressBlocked:address transaction:transaction]
+        || (SSKFeatureFlags.recipientHiding && [self.recipientHidingManager isHiddenAddress:address tx:transaction])) {
         return NO;
     }
 

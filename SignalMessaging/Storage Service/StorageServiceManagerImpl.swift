@@ -1488,7 +1488,8 @@ class StorageServiceOperation: OWSOperation {
                 profileManager: profileManagerImpl,
                 tsAccountManager: tsAccountManager,
                 usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
-                recipientMerger: DependenciesBridge.shared.recipientMerger
+                recipientMerger: DependenciesBridge.shared.recipientMerger,
+                recipientHidingManager: DependenciesBridge.shared.recipientHidingManager
             ),
             changeState: \.accountIdChangeMap,
             storageIdentifier: \.accountIdToIdentifierMap,

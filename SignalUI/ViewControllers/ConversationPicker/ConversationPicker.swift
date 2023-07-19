@@ -327,7 +327,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     return
                 }
 
-                let isThreadBlocked = self.blockingManager.isThreadBlocked(thread, transaction: transaction)
+                let isThreadBlocked = self.blockingManager.isThreadBlocked(
+                    thread,
+                    transaction: transaction
+                )
                 if isThreadBlocked {
                     return
                 }

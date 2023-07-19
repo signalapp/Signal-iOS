@@ -189,9 +189,15 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         if let groupId = groupId, blockingManager.isGroupIdBlocked(groupId, transaction: transaction) {
             Logger.warn("Ignoring StoryMessage in blocked group.")
             return nil
-        } else if blockingManager.isAddressBlocked(author, transaction: transaction) {
-            Logger.warn("Ignoring StoryMessage from blocked author.")
-            return nil
+        } else {
+            if blockingManager.isAddressBlocked(author, transaction: transaction) {
+                Logger.warn("Ignoring StoryMessage from blocked author.")
+                return nil
+            }
+            if FeatureFlags.recipientHiding && DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(author, tx: transaction) {
+                Logger.warn("Ignoring StoryMessage from hidden author.")
+                return nil
+            }
         }
 
         let manifest = StoryManifest.incoming(receivedState: .init(

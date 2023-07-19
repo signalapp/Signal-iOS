@@ -65,6 +65,8 @@ public class DependenciesBridge {
     public let recipientFetcher: RecipientFetcher
     public let recipientMerger: RecipientMerger
 
+    public let recipientHidingManager: RecipientHidingManager
+
     public let registrationSessionManager: RegistrationSessionManager
 
     public let usernameLookupManager: UsernameLookupManager
@@ -90,6 +92,7 @@ public class DependenciesBridge {
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
         profileManager: ProfileManagerProtocol,
+        recipientHidingManager: RecipientHidingManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
@@ -113,6 +116,7 @@ public class DependenciesBridge {
             ows2FAManager: ows2FAManager,
             pniProtocolStore: pniProtocolStore,
             profileManager: profileManager,
+            recipientHidingManager: recipientHidingManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
@@ -141,6 +145,7 @@ public class DependenciesBridge {
         ows2FAManager: OWS2FAManager,
         pniProtocolStore: SignalProtocolStore,
         profileManager: ProfileManagerProtocol,
+        recipientHidingManager: RecipientHidingManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
@@ -303,6 +308,8 @@ public class DependenciesBridge {
             dataStore: recipientStore,
             storageServiceManager: storageServiceManager
         )
+
+        self.recipientHidingManager = recipientHidingManager
 
         self.usernameLookupManager = UsernameLookupManagerImpl()
         self.usernameEducationManager = UsernameEducationManagerImpl(keyValueStoreFactory: keyValueStoreFactory)

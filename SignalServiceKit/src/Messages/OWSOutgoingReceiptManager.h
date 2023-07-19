@@ -5,6 +5,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol RecipientHidingManager;
+
 @class PendingTasks;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
@@ -22,7 +24,11 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 + (SDSKeyValueStore *)deliveryReceiptStore;
 + (SDSKeyValueStore *)readReceiptStore;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithRecipientHidingManager:(id<RecipientHidingManager>)recipientHidingManager
+    NS_DESIGNATED_INITIALIZER;
 
 // TODO: Make this private.
 @property (nonatomic, readonly) PendingTasks *pendingTasks;

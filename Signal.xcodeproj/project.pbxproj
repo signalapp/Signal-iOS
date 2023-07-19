@@ -1408,6 +1408,7 @@
 		D9FC835029F71CC300878BC8 /* GroupUpdateInfoMessageInserter+PrecomputedUpdateType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FC834F29F71CC300878BC8 /* GroupUpdateInfoMessageInserter+PrecomputedUpdateType.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */; };
+		E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */; };
 		E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */; };
@@ -4001,6 +4002,7 @@
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		DF728B4B438716EAF95CEC18 /* Pods-Signal.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.app store release.xcconfig"; sourceTree = "<group>"; };
 		E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountTest.swift; sourceTree = "<group>"; };
+		E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientHidingManager.swift; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E27EBB962FA58BAC64DD64A3 /* Pods-SignalUITests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.app store release.xcconfig"; sourceTree = "<group>"; };
 		E434E65F6E6E989A106307BA /* Pods-SignalTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.profiling.xcconfig"; sourceTree = "<group>"; };
@@ -8669,6 +8671,7 @@
 				F9C5C99E289453B100548EEE /* OWSUnknownProtocolVersionMessage.m */,
 				F9C5C96D289453B100548EEE /* PreKeyBundle+jsonDict.h */,
 				F9C5C8D6289453B100548EEE /* PreKeyBundle+jsonDict.m */,
+				E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */,
 				F9C5C96E289453B100548EEE /* TSCall+SDS.swift */,
 				F9C5C8D3289453B100548EEE /* TSCall.h */,
 				F9C5C96F289453B100548EEE /* TSCall.m */,
@@ -12428,6 +12431,7 @@
 				D9AE0AD32918715E0063488B /* ReceiptCredentialRedemptionJobRecord.swift in Sources */,
 				506695E529C29C2F00B6D8D0 /* RecipientDataStore.swift in Sources */,
 				50AA3EC329F1C4B900EC50A3 /* RecipientFetcher.swift in Sources */,
+				E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */,
 				506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */,
 				F9C5CE18289453B400548EEE /* Refinery.swift in Sources */,
 				F9C5CCAD289453B300548EEE /* RefreshPreKeysOperation.swift in Sources */,

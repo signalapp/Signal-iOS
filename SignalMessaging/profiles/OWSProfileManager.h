@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 extern const NSUInteger kOWSProfileManager_MaxAvatarDiameterPixels;
 extern NSString *const kNSNotificationKey_UserProfileWriter;
 
+@protocol RecipientHidingManager;
+
 @class MessageSender;
 @class OWSAES256Key;
 @class OWSUserProfile;
@@ -53,7 +55,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage
+                 recipientHidingManager:(id<RecipientHidingManager>)recipientHidingManager NS_DESIGNATED_INITIALIZER;
 
 #pragma mark - Local Profile
 

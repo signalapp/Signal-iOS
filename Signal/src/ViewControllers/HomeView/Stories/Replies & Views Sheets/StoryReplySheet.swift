@@ -38,6 +38,12 @@ extension StoryReplySheet {
             return
         }
 
+        // Note: Because we drop all incoming and existing stories from hidden recipients, we do not
+        // specially handle the hidden recipient case here. It is possible we could encounter an edge
+        // case, such as if a contact is being hidden on another device while we're replying to their
+        // story on this device. If this happens, we accept that the hide will be undone if the
+        // ordering is hide -> reply.
+
         guard !SafetyNumberConfirmationSheet.presentIfNecessary(
             addresses: thread.recipientAddressesWithSneakyTransaction,
             confirmationText: SafetyNumberStrings.confirmSendButton,

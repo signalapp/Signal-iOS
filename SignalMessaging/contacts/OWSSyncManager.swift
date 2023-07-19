@@ -131,6 +131,15 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         switch syncMessage.type {
         case .accept:
             blockingManager.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
+            if let thread = thread as? TSContactThread, FeatureFlags.recipientHiding {
+                /// When we accept a message request on a linked device,
+                /// we unhide the message sender. We will eventually also
+                /// learn about the unhide via a StorageService contact sync,
+                /// since the linked device should mark unhidden in
+                /// StorageService. But it doesn't hurt to get ahead of the
+                /// game and unhide here.
+                DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(thread.contactAddress, wasLocallyInitiated: false, tx: transaction)
+            }
             profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
         case .delete:
             thread.softDelete(with: transaction)
