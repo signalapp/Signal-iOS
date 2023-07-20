@@ -42,6 +42,11 @@ public class SpoilerRenderer {
         }
     }
 
+    public var particleSpeedMultiplier: CGFloat = 1
+
+    /// Disabled alpha values on particle colors, reducing performance costs.
+    public var disableAlpha: Bool = false
+
     private static func particleCount(particlesPerUnit: CGFloat) -> Int {
         return Int(tileWidth * tileHeight * particlesPerUnit)
     }
@@ -204,25 +209,30 @@ public class SpoilerRenderer {
     private var patternCache = [Config: Pattern]()
 
     private func getOrMakePattern(config: Config) -> Pattern? {
-        return Self.getOrMakePattern(particleSets: particleSets, config: config, cache: &patternCache)
+        return Self.getOrMakePattern(
+            particleSets: particleSets,
+            config: config,
+            cache: &patternCache,
+            disableAlpha: disableAlpha
+        )
     }
 
     private static func getOrMakePattern(
         particleSets: [[Particle]],
         config: Config,
-        cache: inout [Config: Pattern]
+        cache: inout [Config: Pattern],
+        disableAlpha: Bool
     ) -> Pattern? {
         if let cachedValue = cache[config] {
             return cachedValue
         }
 
         let patternSpecs = PatternSpecs(specs: (0..<particleSets.count).map { setIndex in
+            let alpha = disableAlpha ? 1 : config.alpha(forSetIndex: setIndex)
             return PatternSpec(
                 particles: particleSets[setIndex],
                 radius: config.particleRadiusPoints,
-                color: config.color.forCurrentTheme.withAlphaComponent(
-                    config.alpha(forSetIndex: setIndex)
-                ).cgColor
+                color: config.color.forCurrentTheme.withAlphaComponent(alpha).cgColor
             )
         })
 
@@ -318,11 +328,11 @@ public class SpoilerRenderer {
                 defer {
                     particleSets[setIndex][particleIndex] = particle
                 }
-                let newX = particle.x + (timeDeltaF * particle.xVel)
-                let newY = particle.y + (timeDeltaF * particle.yVel)
+                let newX = particle.x + (timeDeltaF * particle.xVel * particleSpeedMultiplier)
+                let newY = particle.y + (timeDeltaF * particle.yVel * particleSpeedMultiplier)
                 let outOfBoundsX = newX < -Self.xOverlayPercent || newX > 1 + Self.xOverlayPercent
                 let outOfBoundsY = newY < -Self.yOverlayPercent || newY > 1 + Self.yOverlayPercent
-                particle.timeRemaining -= timeDelta
+                particle.timeRemaining -= timeDelta * particleSpeedMultiplier
                 if particle.timeRemaining < 0 || outOfBoundsX || outOfBoundsY {
                     if currentParticleCount > desiredParticlesInSet {
                         currentParticleCount -= 1

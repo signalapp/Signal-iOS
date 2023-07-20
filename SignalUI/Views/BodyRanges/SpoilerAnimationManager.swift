@@ -180,13 +180,17 @@ public class SpoilerAnimationManager {
     private static let surfaceAreaThreshold: SurfaceArea = 200 * 200
 
     private static let highFramerate: Double = 20 // fps
-    private static let lowFramerate: Double = 15 // fps
+    private static let lowFramerate: Double = 10 // fps
 
     private static let highDensityNumParticleSets = 3
     private static let lowDensityNumParticleSets = 2
 
     private static let highDensityParticlesPerUnit = 0.04
-    private static let lowDensityParticlesPerUnit = 0.02
+    private static let lowDensityParticlesPerUnit = 0.002
+
+    /// Lower particle speed makes lower framerate less noticeable
+    private static var highFidelityParticleSpeedMultiplier: CGFloat = 1
+    private static var lowFidelityParticleSpeedMultiplier: CGFloat = 0.5
 
     private var isHighFidelity = true
 
@@ -242,9 +246,13 @@ public class SpoilerAnimationManager {
             if shouldBeHighFidelity {
                 renderer.particlesPerUnit = Self.highDensityParticlesPerUnit
                 renderer.numParticleSets = Self.highDensityNumParticleSets
+                renderer.particleSpeedMultiplier = Self.highFidelityParticleSpeedMultiplier
+                renderer.disableAlpha = false
             } else {
                 renderer.particlesPerUnit = Self.lowDensityParticlesPerUnit
                 renderer.numParticleSets = Self.lowDensityNumParticleSets
+                renderer.particleSpeedMultiplier = Self.lowFidelityParticleSpeedMultiplier
+                renderer.disableAlpha = true
             }
             startTimerIfNeeded()
         }
