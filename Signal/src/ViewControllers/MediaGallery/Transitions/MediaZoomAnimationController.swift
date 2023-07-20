@@ -164,6 +164,8 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
                 maskLayer.frame = clippingView.layer.bounds.inset(by: clippingAreaInsets)
                 maskLayer.backgroundColor = UIColor.black.cgColor
                 clippingView.layer.mask = maskLayer
+            } else {
+                clippingView.layer.mask = nil
             }
         }
         animator.addCompletion { _ in
