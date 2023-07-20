@@ -201,7 +201,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                 destinationMediaViewShape = fromMediaContext.mediaViewShape
             }
 
-            if let clippingAreaInsets = toMediaContext?.clippingAreaInsets, clippingAreaInsets.isNonEmpty {
+            if !transitionContext.transitionWasCancelled, let clippingAreaInsets = toMediaContext?.clippingAreaInsets, clippingAreaInsets.isNonEmpty {
                 let maskLayer = CALayer()
                 maskLayer.frame = clippingView.layer.bounds.inset(by: clippingAreaInsets)
                 maskLayer.backgroundColor = UIColor.black.cgColor
