@@ -562,7 +562,14 @@ public class HydratedMessageBody: Equatable, Hashable {
             finalLength = possibleOverlappingMention.location
         }
 
-        let mentions = self.mentionAttributes.filter({ $0.range.location < finalLength })
+        var mentionHydrationStrings = [UUID: String]()
+        let mentions = self.mentionAttributes.filter({
+            guard $0.range.location < finalLength else {
+                return false
+            }
+            mentionHydrationStrings[$0.value.mentionUuid] = String(hydratedText.substring(withRange: $0.range))
+            return true
+        })
         let unhydratedMentions = self.unhydratedMentions.filter { $0.range.upperBound <= finalLength }
         let styles = self.styleAttributes.compactMap { (styleAttribute) -> NSRangedValue<StyleAttribute>? in
             if styleAttribute.range.location > finalLength {
@@ -588,9 +595,14 @@ public class HydratedMessageBody: Equatable, Hashable {
         )
         // Strip. Its less efficient, but avoids code repetition to go through message body.
         return newSelf
-            .asMessageBodyForForwarding()
+            .asMessageBodyForForwarding(preservingAllMentions: true)
             .filterStringForDisplay()
-            .hydrating(mentionHydrator: { _ in return .preserveMention })
+            .hydrating(mentionHydrator: { mentionUuid in
+                guard let string = mentionHydrationStrings[mentionUuid] else {
+                    return .preserveMention
+                }
+                return .hydrate(string)
+            })
     }
 
     // MARK: - Spoiler Ranges
