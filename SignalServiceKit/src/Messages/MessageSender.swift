@@ -914,8 +914,20 @@ extension MessageSender {
     }
 
     private func handleMessageSentLocally(_ message: TSOutgoingMessage) -> Promise<Void> {
-        if message.shouldBeSaved {
-            databaseStorage.write { tx in
+        databaseStorage.write { tx in
+            if
+                FeatureFlags.recipientHiding,
+                let thread = message.thread(tx: tx) as? TSContactThread,
+                let localAddress = tsAccountManager.localAddress(with: tx),
+                !localAddress.isEqualToAddress(thread.contactAddress)
+            {
+                DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
+                    thread.contactAddress,
+                    wasLocallyInitiated: true,
+                    tx: tx
+                )
+            }
+            if message.shouldBeSaved {
                 let latestInteraction = TSInteraction.anyFetch(uniqueId: message.uniqueId, transaction: tx)
                 guard let latestMessage = latestInteraction as? TSOutgoingMessage else {
                     Logger.warn("Could not update expiration for deleted message.")

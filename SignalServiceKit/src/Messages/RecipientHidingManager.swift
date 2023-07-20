@@ -239,9 +239,8 @@ private extension RecipientHidingManager {
     /// `HiddenRecipient` entry. This method does not get hit in
     /// that case.
     func didSetAsUnhidden(address: SignalServiceAddress, tx: SDSAnyWriteTransaction) {
-        /// TODO recipientHiding:
-        /// - Update hidden field to false, whitelisted to true in StorageService ContactRecord.
-        /// - Set messageRequestResponseType to Accept (locally)
+        SSKEnvironment.shared.profileManagerRef.addUser(toProfileWhitelist: address, userProfileWriter: .storageService, transaction: tx)
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [address])
     }
 }
 
