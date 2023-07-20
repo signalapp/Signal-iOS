@@ -763,6 +763,7 @@ extension MediaPageViewController: MediaPresentationContextProvider {
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        guard !shouldHideToolbars else { return nil }
         guard let snapshotView = view.snapshotView(afterScreenUpdates: true) else { return nil }
 
         // Apply masking to only show top and bottom panels.
