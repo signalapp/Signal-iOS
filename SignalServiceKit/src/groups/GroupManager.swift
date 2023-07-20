@@ -287,14 +287,16 @@ public class GroupManager: NSObject {
             }
         }.then(on: DispatchQueue.global()) { (groupModel: TSGroupModelV2) -> Promise<TSGroupThread> in
             let thread = databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
-                return self.insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: groupModel,
-                                                                            disappearingMessageToken: disappearingMessageToken,
-                                                                            groupUpdateSourceAddress: localAddress,
-                                                                            shouldAttributeAuthor: true,
-                                                                            transaction: transaction)
+                let thread = self.insertGroupThreadInDatabaseAndCreateInfoMessage(
+                    groupModel: groupModel,
+                    disappearingMessageToken: disappearingMessageToken,
+                    groupUpdateSourceAddress: localAddress,
+                    shouldAttributeAuthor: true,
+                    transaction: transaction
+                )
+                self.profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
+                return thread
             }
-
-            self.profileManager.addThread(toProfileWhitelist: thread)
 
             if shouldSendMessage {
                 return firstly {

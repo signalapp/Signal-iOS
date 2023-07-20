@@ -158,21 +158,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.threadWhitelist containsObject:thread.uniqueId];
 }
 
-- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
-{
-    [self.recipientWhitelist addObject:address];
-}
-
 - (void)addUserToProfileWhitelist:(nonnull SignalServiceAddress *)address
                 userProfileWriter:(UserProfileWriter)userProfileWriter
                       transaction:(nonnull SDSAnyWriteTransaction *)transaction
 {
     [self.recipientWhitelist addObject:address];
-}
-
-- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
-{
-    [self.recipientWhitelist addObjectsFromArray:addresses];
 }
 
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
@@ -199,11 +189,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.threadWhitelist containsObject:groupId.hexadecimalString];
 }
 
-- (void)addGroupIdToProfileWhitelist:(NSData *)groupId
-{
-    [self.threadWhitelist addObject:groupId.hexadecimalString];
-}
-
 - (void)addGroupIdToProfileWhitelist:(nonnull NSData *)groupId
                    userProfileWriter:(UserProfileWriter)userProfileWriter
                          transaction:(nonnull SDSAnyWriteTransaction *)transaction
@@ -223,25 +208,18 @@ NS_ASSUME_NONNULL_BEGIN
     [self.threadWhitelist removeObject:groupId.hexadecimalString];
 }
 
-- (void)addThreadToProfileWhitelist:(TSThread *)thread
-{
-    if (thread.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        [self addGroupIdToProfileWhitelist:groupThread.groupModel.groupId];
-    } else {
-        TSContactThread *contactThread = (TSContactThread *)thread;
-        [self addUserToProfileWhitelist:contactThread.contactAddress];
-    }
-}
-
 - (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        [self addGroupIdToProfileWhitelist:groupThread.groupModel.groupId];
+        [self addGroupIdToProfileWhitelist:groupThread.groupModel.groupId
+                         userProfileWriter:UserProfileWriter_LocalUser
+                               transaction:transaction];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        [self addUserToProfileWhitelist:contactThread.contactAddress];
+        [self addUserToProfileWhitelist:contactThread.contactAddress
+                      userProfileWriter:UserProfileWriter_LocalUser
+                            transaction:transaction];
     }
 }
 

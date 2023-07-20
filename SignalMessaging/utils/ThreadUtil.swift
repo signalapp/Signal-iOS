@@ -219,7 +219,7 @@ extension ThreadUtil {
             databaseStorage.write { tx in setUniversalTimer(for: thread, tx: tx) }
         }
         if shouldAddToProfileWhitelist {
-            profileManager.addThread(toProfileWhitelist: thread)
+            databaseStorage.write { tx in profileManager.addThread(toProfileWhitelist: thread, transaction: tx) }
         }
         return shouldAddToProfileWhitelist
     }

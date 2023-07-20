@@ -904,9 +904,13 @@ NS_ASSUME_NONNULL_BEGIN
             SignalServiceAddress *destination = syncMessage.sent.destinationAddress;
             if (dataMessage && destination.isValid && dataMessage.hasProfileKey) {
                 if (groupId != nil) {
-                    [self.profileManager addGroupIdToProfileWhitelist:groupId];
+                    [self.profileManager addGroupIdToProfileWhitelist:groupId
+                                                    userProfileWriter:UserProfileWriter_LocalUser
+                                                          transaction:transaction];
                 } else {
-                    [self.profileManager addUserToProfileWhitelist:destination];
+                    [self.profileManager addUserToProfileWhitelist:destination
+                                                 userProfileWriter:UserProfileWriter_LocalUser
+                                                       transaction:transaction];
                 }
             }
 

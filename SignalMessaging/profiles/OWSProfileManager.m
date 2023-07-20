@@ -658,37 +658,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 }
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(address.isValid);
-
-    [self addUsersToProfileWhitelist:@[ address ]];
-}
-
-// TODO: We could add a userProfileWriter parameter.
-- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
-{
-    OWSAssertDebug(addresses);
-
-    // Try to avoid opening a write transaction.
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
-        [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
-            NSSet<SignalServiceAddress *> *addressesToAdd = [self addressesNotBlockedOrInWhitelist:addresses
-                                                                                       transaction:readTransaction];
-
-            if (addressesToAdd.count < 1) {
-                return;
-            }
-
-            DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
-                [self addConfirmedUnwhitelistedAddresses:addressesToAdd
-                                       userProfileWriter:UserProfileWriter_LocalUser
-                                             transaction:writeTransaction];
-            });
-        }];
-    });
-}
-
-- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
                 userProfileWriter:(UserProfileWriter)userProfileWriter
                       transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -948,27 +917,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return result;
 }
 
-// TODO: We could add a userProfileWriter parameter.
-- (void)addGroupIdToProfileWhitelist:(NSData *)groupId
-{
-    OWSAssertDebug(groupId.length > 0);
-
-    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
-
-    // Try to avoid opening a write transaction.
-    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
-        if ([self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:readTransaction]) {
-            // Do nothing.
-            return;
-        }
-        DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
-            [self addConfirmedUnwhitelistedGroupId:groupId
-                                 userProfileWriter:UserProfileWriter_LocalUser
-                                       transaction:writeTransaction];
-        });
-    }];
-}
-
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId
                    userProfileWriter:(UserProfileWriter)userProfileWriter
                          transaction:(SDSAnyWriteTransaction *)transaction
@@ -1093,20 +1041,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
         [self.storageServiceManagerObjc recordPendingUpdatesWithGroupModel:groupThread.groupModel];
     }];
-}
-
-- (void)addThreadToProfileWhitelist:(TSThread *)thread
-{
-    OWSAssertDebug(thread);
-
-    if (thread.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        NSData *groupId = groupThread.groupModel.groupId;
-        [self addGroupIdToProfileWhitelist:groupId];
-    } else {
-        TSContactThread *contactThread = (TSContactThread *)thread;
-        [self addUserToProfileWhitelist:contactThread.contactAddress];
-    }
 }
 
 // TODO: We could add a userProfileWriter parameter.
