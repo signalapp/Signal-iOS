@@ -205,12 +205,16 @@ public class TestScheduler: Scheduler {
         advanceIfRunning()
     }
 
-    public func sync(_ work: @escaping () -> Void) {
+    public func sync(_ work: () -> Void) {
         work()
     }
 
-    public func sync<T>(_ work: @escaping () -> T) -> T {
+    public func sync<T>(_ work: () -> T) -> T {
         return work()
+    }
+
+    public func sync<T>(_ work: () throws -> T) rethrows -> T {
+        return try work()
     }
 
     public func asyncAfter(deadline: DispatchTime, _ work: @escaping () -> Void) {

@@ -47,9 +47,15 @@ private class MockWriteTransaction: DBWriteTransaction {
 /// just blindly pass the ones created by this class around.
 public class MockDB: DB {
 
-    private let queue = DispatchQueue(label: "mockDB")
+    private let queue: Scheduler
 
-    public init() {}
+    public convenience init() {
+        self.init(schedulers: DispatchQueueSchedulers())
+    }
+
+    public init(schedulers: Schedulers) {
+        self.queue = schedulers.queue(label: "mockDB")
+    }
 
     private var openTransaction: DBReadTransaction?
 

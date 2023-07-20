@@ -419,7 +419,7 @@ class SVR2ConcurrencyTests: XCTestCase {
 
     class AlwaysAsyncScheduler: Scheduler {
 
-        private let queue: DispatchQueue
+        private let queue: Scheduler
 
         init(_ queue: DispatchQueue) {
             self.queue = queue
@@ -431,13 +431,19 @@ class SVR2ConcurrencyTests: XCTestCase {
             }
         }
 
-        func sync(_ work: @escaping () -> Void) {
+        func sync(_ work: () -> Void) {
             queue.sync {
                 work()
             }
         }
 
-        func sync<T>(_ work: @escaping () -> T) -> T {
+        func sync<T>(_ work: () throws -> T) rethrows -> T {
+            try queue.sync {
+                try work()
+            }
+        }
+
+        func sync<T>(_ work: () -> T) -> T {
             queue.sync {
                 work()
             }
