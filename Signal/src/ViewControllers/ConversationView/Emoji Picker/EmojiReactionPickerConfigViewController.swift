@@ -9,7 +9,7 @@ import SignalUI
 public class EmojiReactionPickerConfigViewController: UIViewController {
 
     private lazy var reactionPicker: MessageReactionPicker = {
-       return MessageReactionPicker(selectedEmoji: nil, delegate: nil, configureMode: true)
+        return MessageReactionPicker(selectedEmoji: nil, delegate: nil, style: .configure)
     }()
 
     private lazy var instructionLabel: UILabel = {

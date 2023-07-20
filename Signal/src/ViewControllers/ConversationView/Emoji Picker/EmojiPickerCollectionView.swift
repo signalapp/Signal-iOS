@@ -26,6 +26,18 @@ class EmojiPickerCollectionView: UICollectionView {
     private static let keyValueStore = SDSKeyValueStore(collection: "EmojiPickerCollectionView")
     private static let recentEmojiKey = "recentEmoji"
 
+    /// Reads the stored recent emoji and removes duplicates using `removingNonNormalizedDuplicates`.
+    static func getRecentEmoji(tx: SDSAnyReadTransaction) -> [EmojiWithSkinTones] {
+        let recentEmojiStrings = keyValueStore.getObject(
+            forKey: EmojiPickerCollectionView.recentEmojiKey,
+            transaction: tx
+        ) as? [String] ?? []
+
+        return recentEmojiStrings
+            .compactMap(EmojiWithSkinTones.init(rawValue:))
+            .removingNonNormalizedDuplicates()
+    }
+
     weak var pickerDelegate: EmojiPickerCollectionViewDelegate?
 
     // The emoji already applied to the message
@@ -79,26 +91,7 @@ class EmojiPickerCollectionView: UICollectionView {
                 messageReacts = []
             }
 
-            let rawRecentEmoji = EmojiPickerCollectionView.keyValueStore.getObject(
-                forKey: EmojiPickerCollectionView.recentEmojiKey,
-                transaction: transaction
-            ) as? [String] ?? []
-
-            var recentEmoji = rawRecentEmoji.compactMap { EmojiWithSkinTones(rawValue: $0) }
-
-            // Some emoji have two different code points but identical appearances. Let's remove them!
-            // If we normalize to a different emoji than the one currently in our array, we want to drop
-            // the non-normalized variant if the normalized variant already exists. Otherwise, map to the
-            // normalized variant.
-            for (idx, emoji) in recentEmoji.enumerated().reversed() {
-                if !emoji.isNormalized {
-                    if recentEmoji.contains(emoji.normalized) {
-                        recentEmoji.remove(at: idx)
-                    } else {
-                        recentEmoji[idx] = emoji.normalized
-                    }
-                }
-            }
+            let recentEmoji = EmojiPickerCollectionView.getRecentEmoji(tx: transaction)
 
             let allSendableEmojiByCategory = Emoji.allSendableEmojiByCategoryWithPreferredSkinTones(
                 transaction: transaction
@@ -741,19 +734,4 @@ private class EmojiSearchIndex: NSObject {
 
         return index
     }
-}
-
-fileprivate extension EmojiWithSkinTones {
-
-    var normalized: EmojiWithSkinTones {
-        switch (baseEmoji, skinTones) {
-        case (let base, nil) where base.normalized != base:
-            return EmojiWithSkinTones(baseEmoji: base.normalized)
-        default:
-            return self
-        }
-    }
-
-    var isNormalized: Bool { self == normalized }
-
 }

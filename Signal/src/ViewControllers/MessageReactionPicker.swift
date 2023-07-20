@@ -13,6 +13,19 @@ protocol MessageReactionPickerDelegate: AnyObject {
 }
 
 class MessageReactionPicker: UIStackView {
+    /// A style for a message reaction picker.
+    enum Style {
+        /// An overlay context menu for selecting a saved or default reaction
+        case contextMenu
+        /// Editor for the saved reactions
+        case configure
+        /// A horizontally-scrolling picker with both saved/default and recent reactions
+        case inline
+
+        var isConfigure: Bool { self == .configure }
+        var isInline: Bool { self == .inline }
+    }
+
     static let anyEmojiName = "any"
     weak var delegate: MessageReactionPickerDelegate?
 
@@ -21,14 +34,23 @@ class MessageReactionPicker: UIStackView {
     let pickerPadding: CGFloat = 6
     var reactionHeight: CGFloat { return pickerDiameter - (pickerPadding * 2) }
     var selectedBackgroundHeight: CGFloat { return pickerDiameter - 4 }
-    let configureMode: Bool
 
+    private let emojiStackView: UIStackView = UIStackView()
     private var buttonForEmoji = [(emoji: String, button: OWSFlatButton)]()
     private var selectedEmoji: EmojiWithSkinTones?
     private var backgroundView: UIView?
-    init(selectedEmoji: String?, delegate: MessageReactionPickerDelegate?, configureMode: Bool = false, forceDarkTheme: Bool = false) {
-        self.configureMode = configureMode
 
+    /// The individual emoji buttons and the Any button from `buttonForEmoji`
+    private var buttons: [OWSFlatButton] {
+        return buttonForEmoji.map(\.button)
+    }
+
+    init(
+        selectedEmoji: String?,
+        delegate: MessageReactionPickerDelegate?,
+        style: Style = .contextMenu,
+        forceDarkTheme: Bool = false
+    ) {
         if let selectedEmoji = selectedEmoji {
             self.selectedEmoji = EmojiWithSkinTones(rawValue: selectedEmoji)
             owsAssertDebug(self.selectedEmoji != nil)
@@ -39,29 +61,37 @@ class MessageReactionPicker: UIStackView {
 
         super.init(frame: .zero)
 
-        backgroundView = addBackgroundView(
-            withBackgroundColor: forceDarkTheme ? .ows_gray75 : Theme.actionSheetBackgroundColor,
-            cornerRadius: pickerDiameter / 2
-        )
-        backgroundView?.layer.shadowColor = UIColor.ows_black.cgColor
-        backgroundView?.layer.shadowRadius = 4
-        backgroundView?.layer.shadowOpacity = 0.05
-        backgroundView?.layer.shadowOffset = .zero
+        if !style.isInline {
+            backgroundView = addBackgroundView(
+                withBackgroundColor: forceDarkTheme ? .ows_gray75 : Theme.actionSheetBackgroundColor,
+                cornerRadius: pickerDiameter / 2
+            )
+            backgroundView?.layer.shadowColor = UIColor.ows_black.cgColor
+            backgroundView?.layer.shadowRadius = 4
+            backgroundView?.layer.shadowOpacity = 0.05
+            backgroundView?.layer.shadowOffset = .zero
 
-        let shadowView = UIView()
-        shadowView.backgroundColor = forceDarkTheme ? .ows_gray75 : Theme.actionSheetBackgroundColor
-        shadowView.layer.cornerRadius = pickerDiameter / 2
-        shadowView.layer.shadowColor = UIColor.ows_black.cgColor
-        shadowView.layer.shadowRadius = 12
-        shadowView.layer.shadowOpacity = 0.3
-        shadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
-        backgroundView?.addSubview(shadowView)
-        shadowView.autoPinEdgesToSuperviewEdges()
+            let shadowView = UIView()
+            shadowView.backgroundColor = forceDarkTheme ? .ows_gray75 : Theme.actionSheetBackgroundColor
+            shadowView.layer.cornerRadius = pickerDiameter / 2
+            shadowView.layer.shadowColor = UIColor.ows_black.cgColor
+            shadowView.layer.shadowRadius = 12
+            shadowView.layer.shadowOpacity = 0.3
+            shadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
+            backgroundView?.addSubview(shadowView)
+            shadowView.autoPinEdgesToSuperviewEdges()
+        }
 
         autoSetDimension(.height, toSize: pickerDiameter)
 
         isLayoutMarginsRelativeArrangement = true
-        layoutMargins = UIEdgeInsets(top: pickerPadding, leading: pickerPadding, bottom: pickerPadding, trailing: pickerPadding)
+        // Inline picker's scroll view should go to the edge
+        layoutMargins = .init(
+            top: pickerPadding,
+            leading: style.isInline ? 0 : pickerPadding,
+            bottom: pickerPadding,
+            trailing: style.isInline ? 4 : pickerPadding
+        )
 
         var emojiSet: [EmojiWithSkinTones] = SDSDatabaseStorage.shared.read { transaction in
             let customSetStrings = ReactionManager.customEmojiSet(transaction: transaction) ?? []
@@ -71,7 +101,7 @@ class MessageReactionPicker: UIStackView {
             // This could happen if another platform supports an emoji that we don't yet (say, because there's a newer
             // version of Unicode), or if a bug results in a string that's not valid at all, or fewer entries than the
             // default.
-            return ReactionManager.defaultEmojiSet.enumerated().map { (i, defaultEmoji) -> EmojiWithSkinTones in
+            let savedReactions = ReactionManager.defaultEmojiSet.enumerated().map { (i, defaultEmoji) -> EmojiWithSkinTones in
                 // Treat "out-of-bounds index" and "in-bounds but not valid" the same way.
                 if let customReaction = customSet[safe: i] ?? nil {
                     return customReaction
@@ -79,11 +109,24 @@ class MessageReactionPicker: UIStackView {
                     return EmojiWithSkinTones(rawValue: defaultEmoji)!
                 }
             }
+
+            var recentReactions = [EmojiWithSkinTones]()
+
+            // Add recent emoji to inline picker
+            if style.isInline {
+                let savedReactionSet = Set(savedReactions)
+
+                recentReactions = EmojiPickerCollectionView
+                    .getRecentEmoji(tx: transaction)
+                    .filter { !savedReactionSet.contains($0) }
+            }
+
+            return savedReactions + recentReactions
         }
 
-        var addAnyButton = !self.configureMode
+        var addAnyButton = !style.isConfigure
 
-        if !self.configureMode, let selectedEmoji = self.selectedEmoji {
+        if !style.isConfigure, let selectedEmoji = self.selectedEmoji {
             // If the local user reacted with any of the default emoji set,
             // we should show it in the normal place in the picker bar.
             // NOTE: This used to match independent of skin tone, but we decided to drop that behavior.
@@ -93,6 +136,18 @@ class MessageReactionPicker: UIStackView {
                 emojiSet.append(selectedEmoji)
                 addAnyButton = false
             }
+        }
+
+        switch style {
+        case .contextMenu, .configure:
+            self.addArrangedSubview(emojiStackView)
+        case .inline:
+            let scrollView = FadingHScrollView()
+            scrollView.showsHorizontalScrollIndicator = false
+            scrollView.addSubview(emojiStackView)
+            scrollView.contentInset = .init(top: 0, leading: OWSTableViewController2.defaultHOuterMargin, bottom: 0, trailing: 0)
+            emojiStackView.autoPinEdgesToSuperviewEdges()
+            self.addArrangedSubview(scrollView)
         }
 
         for (index, emoji) in emojiSet.enumerated() {
@@ -106,7 +161,7 @@ class MessageReactionPicker: UIStackView {
                 }
             }
             buttonForEmoji.append((emoji.rawValue, button))
-            addArrangedSubview(button)
+            emojiStackView.addArrangedSubview(button)
 
             // Add a circle behind the currently selected emoji
             if self.selectedEmoji == emoji {
@@ -129,7 +184,7 @@ class MessageReactionPicker: UIStackView {
                 self?.delegate?.didSelectAnyEmoji()
             }
             buttonForEmoji.append((MessageReactionPicker.anyEmojiName, button))
-            addArrangedSubview(button)
+            self.addArrangedSubview(button)
         }
     }
 
@@ -142,8 +197,8 @@ class MessageReactionPicker: UIStackView {
 
     public func currentEmojiSet() -> [String] {
         var emojiSet: [String] = []
-        for view in arrangedSubviews {
-            if let button = view as? OWSFlatButton, let emoji = button.button.title(for: .normal) {
+        for button in buttons {
+            if let emoji = button.button.title(for: .normal) {
                 emojiSet.append(emoji)
             }
         }
@@ -153,16 +208,14 @@ class MessageReactionPicker: UIStackView {
     public func startReplaceAnimation(focusedEmoji: String, inPosition position: Int) {
         var buttonToWiggle: OWSFlatButton?
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
-            for (index, view) in self.arrangedSubviews.enumerated() {
-                if let button = view as? OWSFlatButton {
-                    // Shrink and fade
-                    if index != position {
-                        button.alpha = 0.3
-                        button.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-                    } else { // Expand and wiggle
-                        button.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-                        buttonToWiggle = button
-                    }
+            for (index, button) in self.buttons.enumerated() {
+                // Shrink and fade
+                if index != position {
+                    button.alpha = 0.3
+                    button.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+                } else { // Expand and wiggle
+                    button.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+                    buttonToWiggle = button
                 }
             }
         } completion: { finished in
@@ -181,22 +234,22 @@ class MessageReactionPicker: UIStackView {
 
     public func endReplaceAnimation() {
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
-            for view in self.arrangedSubviews {
-                if let button = view as? OWSFlatButton {
-                    button.alpha = 1
-                    button.transform = CGAffineTransform.identity
-                    button.layer.removeAnimation(forKey: "wiggle")
-                }
+            for button in self.buttons {
+                button.alpha = 1
+                button.transform = CGAffineTransform.identity
+                button.layer.removeAnimation(forKey: "wiggle")
             }
         } completion: { _ in }
     }
 
     func playPresentationAnimation(duration: TimeInterval) {
-        backgroundView?.alpha = 0
-        UIView.animate(withDuration: duration) { self.backgroundView?.alpha = 1 }
+        if let backgroundView {
+            backgroundView.alpha = 0
+            UIView.animate(withDuration: duration) { backgroundView.alpha = 1 }
+        }
 
         var delay: TimeInterval = 0
-        for view in arrangedSubviews {
+        for view in self.buttons {
             view.alpha = 0
             view.transform = CGAffineTransform(translationX: 0, y: 24)
             UIView.animate(withDuration: duration, delay: delay, options: .curveEaseIn, animations: {
@@ -269,5 +322,31 @@ class MessageReactionPicker: UIStackView {
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    private class FadingHScrollView: UIScrollView {
+        var fadeLocation: CGFloat = 31/32
+        private lazy var gradient: GradientView = {
+            let view = GradientView(colors: [.black, .clear], locations: [fadeLocation, 1])
+            // Blur is at top by default. Rotate to right edge on LTR, left edge on RTL
+            view.setAngle(CurrentAppContext().isRTL ? 270 : 90)
+            self.mask = view
+            return view
+        }()
+
+        private var isFirstLayout = true
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            gradient.frame = self.bounds
+
+            // Scroll to the right end on RTL languages
+            guard isFirstLayout else { return }
+            isFirstLayout = false
+
+            if CurrentAppContext().isRTL {
+                let offset = max(0, contentSize.width - bounds.width + contentInset.leading)
+                self.contentOffset = CGPoint(x: offset, y: 0)
+            }
+        }
     }
 }

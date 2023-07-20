@@ -74,3 +74,52 @@ extension String {
         EmojiWithSkinTones(rawValue: self) != nil
     }
 }
+
+// MARK: - Normalization
+
+extension EmojiWithSkinTones {
+
+    var normalized: EmojiWithSkinTones {
+        switch (baseEmoji, skinTones) {
+        case (let base, nil) where base.normalized != base:
+            return EmojiWithSkinTones(baseEmoji: base.normalized)
+        default:
+            return self
+        }
+    }
+
+    var isNormalized: Bool { self == normalized }
+
+}
+
+extension Array where Element == EmojiWithSkinTones {
+    /// Removes non-normalized emoji when normalized variants are present.
+    ///
+    /// Some emoji have two different code points but identical appearances. Let's remove them!
+    /// If we normalize to a different emoji than the one currently in our array, we want to drop
+    /// the non-normalized variant if the normalized variant already exists. Otherwise, map to the
+    /// normalized variant.
+    mutating func removeNonNormalizedDuplicates() {
+        for (idx, emoji) in self.enumerated().reversed() {
+            if !emoji.isNormalized {
+                if self.contains(emoji.normalized) {
+                    self.remove(at: idx)
+                } else {
+                    self[idx] = emoji.normalized
+                }
+            }
+        }
+    }
+
+    /// Returns a new array removing non-normalized emoji when normalized variants are present.
+    ///
+    /// Some emoji have two different code points but identical appearances. Let's remove them!
+    /// If we normalize to a different emoji than the one currently in our array, we want to drop
+    /// the non-normalized variant if the normalized variant already exists. Otherwise, map to the
+    /// normalized variant.
+    func removingNonNormalizedDuplicates() -> Self {
+        var newArray = self
+        newArray.removeNonNormalizedDuplicates()
+        return newArray
+    }
+}
