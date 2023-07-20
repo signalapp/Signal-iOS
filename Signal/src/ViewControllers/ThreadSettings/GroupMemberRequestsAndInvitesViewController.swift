@@ -160,9 +160,9 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         cell.configure(configuration: configuration, transaction: transaction)
                     }
                     return cell
-                    }) { [weak self] in
-                                                self?.showMemberActionSheet(for: address)
-                })
+                }, actionBlock: { [weak self] in
+                    self?.showMemberActionSheet(for: address)
+                }))
             }
         } else {
             section.add(OWSTableItem.softCenterLabel(
@@ -514,9 +514,8 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
 
         let actionTitle = OWSLocalizedString("PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON",
                                             comment: "Title of 'accept member request to join group' button.")
-        actionSheet.addAction(ActionSheetAction(title: actionTitle,
-                                                style: .destructive) { _ in
-                                                    self.acceptOrDenyMemberRequests(address: address, shouldAccept: true)
+        actionSheet.addAction(ActionSheetAction(title: actionTitle) { _ in
+            self.acceptOrDenyMemberRequests(address: address, shouldAccept: true)
         })
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -533,9 +532,8 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
 
         let actionTitle = OWSLocalizedString("PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON",
                                             comment: "Title of 'deny member request to join group' button.")
-        actionSheet.addAction(ActionSheetAction(title: actionTitle,
-                                                style: .destructive) { _ in
-                                                    self.acceptOrDenyMemberRequests(address: address, shouldAccept: false)
+        actionSheet.addAction(ActionSheetAction(title: actionTitle, style: .destructive) { _ in
+            self.acceptOrDenyMemberRequests(address: address, shouldAccept: false)
         })
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
