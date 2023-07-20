@@ -69,7 +69,10 @@ extension SpoilerableViewAnimator {
 /// reusing the same rendered spoiler tiles across all views on the same animation manager.
 public class SpoilerAnimationManager {
 
-    private let renderer = SpoilerRenderer()
+    private let renderer = SpoilerRenderer(
+        particlesPerUnit: SpoilerAnimationManager.highDensityParticlesPerUnit,
+        numParticleSets: SpoilerAnimationManager.highDensityNumParticleSets
+    )
 
     public init() {
         NotificationCenter.default.addObserver(
@@ -98,7 +101,7 @@ public class SpoilerAnimationManager {
 
     public func addViewAnimator(_ animator: SpoilerableViewAnimator) {
         animators.append(animator)
-        redraw(animator: animator)
+        _ = redraw(animator: animator)
         startTimerIfNeeded()
     }
 
@@ -117,17 +120,18 @@ public class SpoilerAnimationManager {
 
     private var animators: [SpoilerableViewAnimator] = []
 
-    private func redraw(animator: SpoilerableViewAnimator) {
+    private func redraw(animator: SpoilerableViewAnimator) -> SurfaceArea {
         guard FeatureFlags.spoilerAnimations else {
-            return
+            return 0
         }
 
         guard let view = animator.spoilerableView else {
-            return
+            return 0
         }
 
-        let specs = getOrLoadSpoilerSpecs(animator: animator)
+        let (specs, surfaceArea) = getOrLoadSpoilerSpecs(animator: animator)
         renderer.render(specs, onto: view)
+        return surfaceArea
     }
 
     // MARK: - Caches
@@ -137,14 +141,15 @@ public class SpoilerAnimationManager {
     // To avoid this, we cache the last computed frame, and rely on animators
     // to provide a cache key (which should be cheap to compute) to determine
     // when we should discard the cache and recompute frames.
-    private var specCache = [Int: [SpoilerRenderer.Spec]]()
+    private var specCache = [Int: ([SpoilerRenderer.Spec], SurfaceArea)]()
 
-    private func getOrLoadSpoilerSpecs(animator: SpoilerableViewAnimator) -> [SpoilerRenderer.Spec] {
+    private func getOrLoadSpoilerSpecs(animator: SpoilerableViewAnimator) -> ([SpoilerRenderer.Spec], SurfaceArea) {
         let cacheKey = animator.spoilerFramesCacheKey
         if let cachedFrames = specCache[cacheKey] {
             return cachedFrames
         }
         let computedFrames = animator.spoilerFrames()
+        var surfaceArea: SurfaceArea = 0
         var specs = [ThemedColor: [SpoilerFrame.Style: SpoilerRenderer.Spec]]()
         for frame in computedFrames {
             let color = frame.color
@@ -156,18 +161,44 @@ public class SpoilerAnimationManager {
                 }
             }()
             spec.frames.append(frame.frame)
+            surfaceArea += frame.frame.width * frame.frame.height
             var colorSpecs = specs[color] ?? [:]
             colorSpecs[style] = spec
             specs[color] = colorSpecs
         }
         let finalSpecs: [SpoilerRenderer.Spec] = specs.values.flatMap(\.values)
-        specCache[cacheKey] = finalSpecs
-        return finalSpecs
+        specCache[cacheKey] = (finalSpecs, surfaceArea)
+        return (finalSpecs, surfaceArea)
     }
+
+    // MARK: - Performance Degradation
+
+    typealias SurfaceArea = CGFloat
+
+    /// Once we hit this much total surface area being used to render spoilers, we lower fidelity
+    /// to improve performance.
+    private static let surfaceAreaThreshold: SurfaceArea = 200 * 200
+
+    private static let highFramerate: Double = 20 // fps
+    private static let lowFramerate: Double = 15 // fps
+
+    private static let highDensityNumParticleSets = 3
+    private static let lowDensityNumParticleSets = 2
+
+    private static let highDensityParticlesPerUnit = 0.04
+    private static let lowDensityParticlesPerUnit = 0.02
+
+    private var isHighFidelity = true
 
     // MARK: - Timer
 
-    private static let tickInterval: TimeInterval = 0.05
+    private var tickInterval: TimeInterval {
+        if isHighFidelity {
+            return 1 / Self.highFramerate
+        } else {
+            return 1 / Self.lowFramerate
+        }
+    }
 
     private var timer: Timer?
 
@@ -179,7 +210,7 @@ public class SpoilerAnimationManager {
             return
         }
         renderer.resetLastTickDate()
-        let timer = Timer(timeInterval: Self.tickInterval, repeats: true, block: { [weak self] _ in
+        let timer = Timer(timeInterval: tickInterval, repeats: true, block: { [weak self] _ in
             self?.tick()
         })
         RunLoop.main.add(timer, forMode: .common)
@@ -193,15 +224,29 @@ public class SpoilerAnimationManager {
 
     private func tick() {
         renderer.tick()
+        var totalSurfaceArea: SurfaceArea = 0
         animators = animators.compactMap { animator in
             guard animator.spoilerableView != nil else {
                 return nil
             }
-            self.redraw(animator: animator)
+            totalSurfaceArea += self.redraw(animator: animator)
             return animator
         }
         if animators.isEmpty {
             stopTimer()
+        }
+        let shouldBeHighFidelity = totalSurfaceArea < Self.surfaceAreaThreshold
+        if shouldBeHighFidelity != isHighFidelity {
+            stopTimer()
+            self.isHighFidelity = shouldBeHighFidelity
+            if shouldBeHighFidelity {
+                renderer.particlesPerUnit = Self.highDensityParticlesPerUnit
+                renderer.numParticleSets = Self.highDensityNumParticleSets
+            } else {
+                renderer.particlesPerUnit = Self.lowDensityParticlesPerUnit
+                renderer.numParticleSets = Self.lowDensityNumParticleSets
+            }
+            startTimerIfNeeded()
         }
     }
 

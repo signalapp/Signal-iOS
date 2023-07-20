@@ -12,38 +12,79 @@ import SignalServiceKit
 /// as custom sublayers on UIViews
 public class SpoilerRenderer {
 
-    /// Should these vary by device? Or drop when getting a memory warning?
-    /// Performance is sensitive to these values. Tweak them if it becomes an issue.
     private static let tileWidth: CGFloat = 100
     private static let xOverlayPercent: CGFloat = 0.10
     private static let tileHeight: CGFloat = 50
     private static let yOverlayPercent: CGFloat = 0.10
-    private static let particlesPerUnit: CGFloat = 0.04
 
-    private static let particleCount = Int(tileWidth * tileHeight * particlesPerUnit)
+    /// When updated, sets the desired particles per unit, which will slowly
+    /// transition existing particles to their final desired state by not respawning
+    /// naturally despawned particles, and slowly spawning new particles each tick.
+    ///
+    /// This value is the number of particles in each particle set per unit area.
+    /// So the total number of particles rendered will be:
+    /// `particlesPerUnit * surfaceArea * numParticleSets`
+    public var particlesPerUnit: CGFloat {
+        get {
+            return CGFloat(self.desiredParticlesPerSet) / (Self.tileWidth * Self.tileHeight)
+        }
+        set {
+            self.desiredParticlesPerSet = Self.particleCount(particlesPerUnit: newValue)
+        }
+    }
 
-    // Must be three sets in sync with the config below.
-    // We render 3 groups of particles, at different alphas, to enhance
-    // the visual effect. Each has independent random motion.
-    private lazy var particleSets: [[Particle]] = [
-        .random(count: Self.particleCount),
-        .random(count: Self.particleCount),
-        .random(count: Self.particleCount)
-    ]
+    public var numParticleSets: Int {
+        get {
+            return desiredNumParticleSets
+        }
+        set {
+            desiredNumParticleSets = newValue
+        }
+    }
+
+    private static func particleCount(particlesPerUnit: CGFloat) -> Int {
+        return Int(tileWidth * tileHeight * particlesPerUnit)
+    }
+
+    /// We render `numParticleSets` groups of particles,
+    /// at different alphas, to enhance the visual effect.
+    /// Each set has independent random motion.
+    private lazy var particleSets: [[Particle]] = {
+        var sets = [[Particle]]()
+        for _ in 0..<desiredNumParticleSets {
+            sets.append(.random(count: desiredParticlesPerSet))
+        }
+        return sets
+    }()
 
     public struct Config: Hashable, Equatable {
-        // Must be three alpha values, for the three particle sets.
-        // constructors for this config are private for this reason.
-        fileprivate let particleAlphas: [CGFloat]
+        // The first particle set will have this alpha
+        fileprivate let maxAlpha: CGFloat
+        // Subsequent particle sets will reduce their alpha by this much.
+        fileprivate let alphaDropoffRate: CGFloat
         fileprivate let particleRadiusPoints: CGFloat
         fileprivate let color: ThemedColor
 
         public static func standard(color: ThemedColor) -> Self {
-            return .init(particleAlphas: [0.8, 0.7, 0.6], particleRadiusPoints: 0.5, color: color)
+            return .init(
+                maxAlpha: 0.8,
+                alphaDropoffRate: 0.1,
+                particleRadiusPoints: 0.5,
+                color: color
+            )
         }
 
         public static func highlight(color: ThemedColor) -> Self {
-            return .init(particleAlphas: [0.9, 0.85, 0.8], particleRadiusPoints: 1, color: color)
+            return .init(
+                maxAlpha: 0.9,
+                alphaDropoffRate: 0.05,
+                particleRadiusPoints: 1,
+                color: color
+            )
+        }
+
+        fileprivate func alpha(forSetIndex index: Int) -> CGFloat {
+            return max(0.1, maxAlpha - alphaDropoffRate * CGFloat(index))
         }
     }
 
@@ -52,7 +93,10 @@ public class SpoilerRenderer {
         public var config: Config
     }
 
-    public init() {}
+    public init(particlesPerUnit: CGFloat, numParticleSets: Int) {
+        self.desiredParticlesPerSet = SpoilerRenderer.particleCount(particlesPerUnit: particlesPerUnit)
+        self.desiredNumParticleSets = numParticleSets
+    }
 
     public func render(_ specs: [Spec], onto view: UIView) {
         CATransaction.begin()
@@ -172,11 +216,13 @@ public class SpoilerRenderer {
             return cachedValue
         }
 
-        let patternSpecs = PatternSpecs(specs: config.particleAlphas.enumerated().map { index, alpha in
+        let patternSpecs = PatternSpecs(specs: (0..<particleSets.count).map { setIndex in
             return PatternSpec(
-                particles: particleSets[index],
+                particles: particleSets[setIndex],
                 radius: config.particleRadiusPoints,
-                color: config.color.forCurrentTheme.withAlphaComponent(alpha).cgColor
+                color: config.color.forCurrentTheme.withAlphaComponent(
+                    config.alpha(forSetIndex: setIndex)
+                ).cgColor
             )
         })
 
@@ -242,6 +288,9 @@ public class SpoilerRenderer {
         self.lastTickDate = Date()
     }
 
+    private var desiredNumParticleSets: Int
+    private var desiredParticlesPerSet: Int
+
     public func tick() {
         patternCache = [:]
         let now = Date()
@@ -250,7 +299,20 @@ public class SpoilerRenderer {
 
         let timeDeltaF = CGFloat(timeDelta)
 
+        // Update particle positions.
+        // Some particles will despawn (because they hit an edge,
+        // or hit the end of their lifetime). If we are targeting
+        // fewer particles than we have, let them die and remove them.
+        // If not, respawn them.
+        var particleIndexesToDespawn = [Int: [Int]]()
         for setIndex in 0..<particleSets.count {
+            var currentParticleCount = particleSets[setIndex].count
+            let desiredParticlesInSet: Int
+            if setIndex > self.desiredNumParticleSets {
+                desiredParticlesInSet = 0
+            } else {
+                desiredParticlesInSet = self.desiredParticlesPerSet
+            }
             for particleIndex in 0..<particleSets[setIndex].count {
                 var particle = particleSets[setIndex][particleIndex]
                 defer {
@@ -262,11 +324,41 @@ public class SpoilerRenderer {
                 let outOfBoundsY = newY < -Self.yOverlayPercent || newY > 1 + Self.yOverlayPercent
                 particle.timeRemaining -= timeDelta
                 if particle.timeRemaining < 0 || outOfBoundsX || outOfBoundsY {
-                    particle.respawn()
+                    if currentParticleCount > desiredParticlesInSet {
+                        currentParticleCount -= 1
+                        var indexesToDespawn = particleIndexesToDespawn[setIndex] ?? []
+                        indexesToDespawn.append(particleIndex)
+                        particleIndexesToDespawn[setIndex] = indexesToDespawn
+                    } else {
+                        particle.respawn()
+                    }
                 } else {
                     particle.x = newX
                     particle.y = newY
                 }
+            }
+        }
+        // Despawn any as needed.
+        for (setIndex, particleIndexes) in particleIndexesToDespawn {
+            var particleSet = particleSets[setIndex]
+            for particleIndex in particleIndexes.reversed() {
+                particleSet.remove(at: particleIndex)
+            }
+            particleSets[setIndex] = particleSet
+        }
+        // Spawn new ones as needed.
+        for setIndex in 0..<desiredNumParticleSets {
+            var particleSet = particleSets[safe: setIndex] ?? []
+            // Only spawn up to 5 particles per tick.
+            var particlesToSpawn = max(5, desiredParticlesPerSet - particleSet.count)
+            while particlesToSpawn > 0 {
+                particleSet.append(Particle.random())
+                particlesToSpawn -= 1
+            }
+            if self.particleSets.count <= setIndex {
+                self.particleSets.append(particleSet)
+            } else {
+                particleSets[setIndex] = particleSet
             }
         }
     }
