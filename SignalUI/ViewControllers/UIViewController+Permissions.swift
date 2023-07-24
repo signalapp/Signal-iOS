@@ -21,15 +21,17 @@ extension UIViewController {
             }
         }
 
-        guard CurrentAppContext().reportedApplicationState != .background else {
-            Logger.error("Skipping camera permissions request when app is in background.")
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) || Platform.isSimulator else {
+            Logger.error("Camera ImagePicker source not available")
             threadSafeCallback(false)
             return
         }
 
-        guard UIImagePickerController.isSourceTypeAvailable(.camera) || Platform.isSimulator else {
-            Logger.error("Camera ImagePicker source not available")
-            threadSafeCallback(false)
+        let authorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
+
+        guard CurrentAppContext().reportedApplicationState != .background else {
+            Logger.warn("Skipping camera permissions request when app is in background, relying on previous status \(authorizationStatus.rawValue)")
+            threadSafeCallback(authorizationStatus == .authorized)
             return
         }
 
@@ -53,7 +55,6 @@ extension UIViewController {
             self.presentActionSheet(actionSheet)
         }
 
-        let authorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
         switch authorizationStatus {
         case .denied:
             DispatchMainThreadSafe { presentSettingsDialog() }

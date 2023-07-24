@@ -402,18 +402,28 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         if call.isGroupCall {
             // Explicitly unmute to request permissions, if needed.
             callService.updateIsLocalAudioMuted(isLocalAudioMuted: call.isOutgoingAudioMuted)
+            // Explicitly start video to request permissions, if needed.
+            // This has the added effect of putting the video mute button in the correct state
+            // if the user has disabled camera permissions for the app.
+            callService.updateIsLocalVideoMuted(isLocalVideoMuted: call.groupCall.isOutgoingVideoMuted)
             callService.joinGroupCallIfNecessary(call)
             action.fulfill()
-        } else if call.individualCall.state == .localRinging_Anticipatory {
-            // We can't answer the call until RingRTC is ready
-            call.individualCall.state = .accepting
-            call.individualCall.deferredAnswerCompletion = {
+        } else {
+            // Explicitly start video to request permissions, if needed.
+            // This has the added effect of putting the video mute button in the correct state
+            // if the user has disabled camera permissions for the app.
+            callService.updateIsLocalVideoMuted(isLocalVideoMuted: !call.individualCall.hasLocalVideo)
+            if call.individualCall.state == .localRinging_Anticipatory {
+                // We can't answer the call until RingRTC is ready
+                call.individualCall.state = .accepting
+                call.individualCall.deferredAnswerCompletion = {
+                    action.fulfill()
+                }
+            } else {
+                owsAssertDebug(call.individualCall.state == .localRinging_ReadyToAnswer)
+                self.callService.individualCallService.handleAcceptCall(call)
                 action.fulfill()
             }
-        } else {
-            owsAssertDebug(call.individualCall.state == .localRinging_ReadyToAnswer)
-            self.callService.individualCallService.handleAcceptCall(call)
-            action.fulfill()
         }
     }
 
