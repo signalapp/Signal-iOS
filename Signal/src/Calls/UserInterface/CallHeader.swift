@@ -221,7 +221,7 @@ class CallHeader: UIView {
     private func updateCallStatusLabel() {
         let callStatusText: String
         switch call.groupCall.localDeviceState.joinState {
-        case .notJoined, .joining:
+        case .notJoined, .joining, .pending:
             if case .incomingRing(let caller, _) = call.groupCallRingState {
                 let callerName = databaseStorage.read { transaction in
                     contactsManager.shortDisplayName(for: caller, transaction: transaction)

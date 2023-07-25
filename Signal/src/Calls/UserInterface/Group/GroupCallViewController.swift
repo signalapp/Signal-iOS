@@ -407,7 +407,7 @@ class GroupCallViewController: UIViewController {
                 speakerPage.addSubview(localMemberView)
                 localMemberView.frame = CGRect(origin: .zero, size: size)
             }
-        case .notJoined, .joining:
+        case .notJoined, .joining, .pending:
             speakerPage.addSubview(localMemberView)
             localMemberView.frame = CGRect(origin: .zero, size: size)
         }
@@ -774,7 +774,7 @@ extension GroupCallViewController: CallObserver {
             if membersAtJoin == nil {
                 membersAtJoin = Set(call.groupCall.remoteDeviceStates.lazy.map { $0.value.address })
             }
-        case .joining, .notJoined:
+        case .pending, .joining, .notJoined:
             membersAtJoin = nil
         }
     }

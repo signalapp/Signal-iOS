@@ -226,7 +226,7 @@ class CallControls: UIView {
                     comment: "Text explaining the group call is full"),
                 for: .normal)
 
-        } else if joinState == .joining {
+        } else if joinState == .joining || joinState == .pending {
             joinButton.isUserInteractionEnabled = false
             joinButtonActivityIndicator.startAnimating()
 
