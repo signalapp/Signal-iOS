@@ -2144,13 +2144,13 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopiera";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Redigering av meddelanden är endast tillgängligt för betaanvändare av Signal. Om du redigerar ett meddelande kommer det bara att vara synligt för personer som använder den senaste betaversionen av Signal.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Skicka";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Endast Signal beta";
 
 /* Error message to display to user when a messaeg is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Redigeringar kan bara tillämpas inom 3 timmar från det att du skickade det här meddelandet.";
@@ -3869,7 +3869,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Hämtar";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "Edited";
+"MESSAGE_STATUS_EDITED" = "Redigerad";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Sändningen misslyckades.";
@@ -5075,7 +5075,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Redigera användarnamn";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR-kod eller länk";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Användarnamn";
@@ -6755,7 +6755,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "Inga uppdateringar att visa just nu.";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+"STORIES_NO_REPLIES_SUBTITLE" = "Alla medlemmar i denna grupp kan visa svar";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Inga svar ännu";
@@ -6902,7 +6902,7 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Svara gruppen";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Svara gruppen";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Den här storyn kunde inte skickas. Kontrollera din anslutning och försök igen";
@@ -7367,10 +7367,10 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "Alla med denna länk kan se ditt användarnamn och starta en chatt med dig. Dela den bara med personer du litar på.";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Låt andra starta en chatt med dig genom att dela din unika QR-kod eller länk.";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
+"USERNAME_LINK_TOOLTIP_TITLE" = "Dela ditt användarnamn";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Ett fel uppstod när användarnamnet letades upp. Försök igen senare.";

@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Rendszerünk mostantól támogatja a legújabb emoji karaktereket.
 • Új (és opcionális) Lista módot adtunk az „Összes médiafájl” nézethez. Ha úgy döntesz, hogy elhagyod a rácsnézetet, mostantól több információt láthatsz egyszerre, beleértve a fájlneveket, fájlméreteket, dátumokat stb.

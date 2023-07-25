@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Reakcje na wiadomości wspierają teraz najnowsze emotikony, więc możesz już wyrażać swoją ekscytację za pomocą „trzęsącej się buźki” lub reagować przy użyciu „strączka groszku”, gdy ktoś zapyta Cię o Twoje ulubione warzywo.
 • Dodaliśmy nowy (opcjonalny) tryb listy w galerii multimediów. Jeśli nie po drodze Ci z widokiem siatki, możesz teraz widzieć więcej informacji, w tym nazwy plików, rozmiary, daty itd.

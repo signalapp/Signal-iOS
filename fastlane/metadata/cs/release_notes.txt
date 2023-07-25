@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Přidali jsme podporu pro nejnovější znaky emoji.
 • V zobrazení Všechna média jsme přidali nový (a volitelný) režim Seznam. Jestliže vám nepřijde mřížka dost dobrá, můžete si teď přehledně zobrazit více informací (včetně názvů souborů, jejich velikostí, dat atd.)

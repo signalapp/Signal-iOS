@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Nachrichtenreaktionen unterstützen jetzt die neuesten Emojis, sodass du deine Ungläubigkeit mit einem „Erstaunten Gesicht“ ausdrücken oder mit einem „Umarmenden Gesicht“ reagieren kannst, wenn dich jemand fragt, wie eng du mit jemandem befreundet bist.
 • Wir haben in der Medienansicht einen neuen (und optionalen) Listenmodus hinzugefügt. Wenn du dich entscheidest, aus dem Raster zu fallen, kannst du jetzt mehr Informationen auf einen Blick sehen, darunter Dateinamen, Dateigrößen, Daten usw.

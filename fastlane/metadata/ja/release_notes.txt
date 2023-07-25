@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• メッセージのリアクションが最新の絵文字に対応しました。
 • 全メディアビューに新しい (オプションの) リストビューを追加しました。リストビューなら、ファイル名、ファイルサイズ、日付など、より多くの情報を一目で確認できます。

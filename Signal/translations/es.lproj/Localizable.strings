@@ -2144,13 +2144,13 @@
 "EDIT_ITEM_COPY_ACTION" = "Copiar";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "La función de edición de mensajes solo está disponible para las personas que tengan la versión beta de Signal. Si editas un mensaje, solo será visible para las personas que tengan la última versión de Signal beta.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Enviar";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Solo para la versión beta de Signal";
 
 /* Error message to display to user when a messaeg is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Solo pueden hacerse cambios hasta 3 horas después del momento en que enviaste este mensaje.";
@@ -3869,7 +3869,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Descargando";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "Edited";
+"MESSAGE_STATUS_EDITED" = "Editado";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Fallo al enviar.";
@@ -5075,7 +5075,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Editar alias";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "Código QR o enlace";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Alias (nombre de usuari@)";
@@ -6755,7 +6755,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "No hay actualizaciones que mostrar.";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+"STORIES_NO_REPLIES_SUBTITLE" = "Todos los miembros de este grupo pueden ver las respuestas.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Sin respuestas por ahora";
@@ -6902,7 +6902,7 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Responder en el grupo";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Responder en el grupo";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "No se ha podido enviar esta historia. Comprueba tu conexión y vuelve a intentarlo";
@@ -7367,10 +7367,10 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "Cualquiera que tenga este enlace puede ver tu alias y empezar un chat contigo. Compártelo solo con personas de confianza.";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Deja que otras personas inicien un chat contigo compartiendo tu código QR o enlace único.";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
+"USERNAME_LINK_TOOLTIP_TITLE" = "Comparte tu alias";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Fallo al buscar alias. Inténtalo más tarde.";

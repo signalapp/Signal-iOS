@@ -1946,7 +1946,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Donatie bevestigen";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Verdwijnende berichten staan aan voor deze chat. Je donatiebericht verdwijnt over %1$@ .";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Verlopende berichten staan aan voor deze chat. Je donatiebericht verdwijnt over %1$@ .";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Kan niet doneren. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
@@ -2144,13 +2144,13 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopiëren";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Berichten bewerken is alleen beschikbaar voor gebruikers van Signal-bèta. Als je een bericht bewerkt, is dat alleen zichtbaar voor mensen met de laatste versie van Signal-bèta.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Verzend";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Alleen Signal-bèta";
 
 /* Error message to display to user when a messaeg is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Dit bericht kan je alleen binnen 3 uur na verzending bewerken.";
@@ -3869,7 +3869,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Wordt gedownload";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "Edited";
+"MESSAGE_STATUS_EDITED" = "Bewerkt";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Verzenden mislukt.";
@@ -3995,7 +3995,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Overslaan";
 
 /* String representing only the cellular interface */
-"NETWORK_INTERFACE_SET_CELLULAR" = "Alleen bij mobieledata";
+"NETWORK_INTERFACE_SET_CELLULAR" = "Alleen bij mobiele data";
 
 /* String representing the 'never' condition of having no supported network interfaces */
 "NETWORK_INTERFACE_SET_NEVER" = "Nooit";
@@ -4004,7 +4004,7 @@
 "NETWORK_INTERFACE_SET_WIFI" = "Alleen bij wifi";
 
 /* String representing both wifi and cellular interfaces */
-"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Bij wifi & mobieledata";
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Bij wifi & mobiele data";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Op telefoonnummer zoeken";
@@ -5075,7 +5075,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Gebruikersnaam bewerken";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR-code of link";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Gebruikersnaam";
@@ -5915,7 +5915,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Nooit";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wifi & mobieledata";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wifi & mobiele data";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wifi";
@@ -6755,7 +6755,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "Geen updates op dit moment.";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+"STORIES_NO_REPLIES_SUBTITLE" = "Alle leden van deze groep kunnen antwoorden bekijken";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Nog geen reacties";
@@ -6902,7 +6902,7 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Naar de groep reageren";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Naar de groep reageren";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Je verhaal kan niet worden verstuurd. Controleer je internetverbinding en probeer het opnieuw.";
@@ -7364,13 +7364,13 @@
 "USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "Link kopiëren";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "Iedereen met deze link kan jouw gebruikersnaam zien en een gesprek met je starten. Deel deze alleen met mensen die je vertrouwt.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "Iedereen met deze link kan jouw gebruikersnaam zien en een chat met je starten. Deel deze alleen met mensen die je vertrouwt.";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Laat anderen een chat met jou starten door je unieke QR-code of link te delen.";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
+"USERNAME_LINK_TOOLTIP_TITLE" = "Deel je gebruikersnaam";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Er is iets fout gegaan bij het opzoeken van de gebruikersnaam. Probeer het later opnieuw.";

@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Kami menambahkan dukungan untuk karakter emoji terbaru.
 • Kami menambahkan mode Daftar yang baru (dan opsional) di tampilan Semua Media. Jika Anda memilih tampilan Daftar untuk melihat media, kini Anda bisa melihat lebih banyak info secara sekilas, termasuk nama file, ukuran file, tanggal, dll.

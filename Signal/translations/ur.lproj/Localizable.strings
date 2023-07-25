@@ -2144,13 +2144,13 @@
 "EDIT_ITEM_COPY_ACTION" = "کاپی";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "میسجز میں ترمیم کرنے کا آپشن صرف سگنل بی ٹا یوزرز کے لیے دستیاب ہے۔ اگر آپ کسی میسج میں ترمیم کرتے ہیں، تو یہ صرف ان لوگوں کو نظر آئے گی جو سگنل بی ٹا کا تازہ ترین ورژن استعمال کرتے ہیں۔";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "بھیجیں";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "صرف Signal بی ٹا";
 
 /* Error message to display to user when a messaeg is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "آپ کی طرف سے اس میسج کو بھیجنے کے بعد ترامیم کا اطلاق محض 3 گھنٹوں کے اندر کیا جا سکتا ہے۔";
@@ -3869,7 +3869,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "ڈاؤن لوڈ ہو رہا ہے";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "Edited";
+"MESSAGE_STATUS_EDITED" = "ترمیم کردہ";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "بھیجنے میں ناکام ہو رہا ہے۔";
@@ -5075,7 +5075,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "یوزر نیم میں ترمیم کریں";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR کوڈ یا لنک";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "صارف کا نام";
@@ -6755,7 +6755,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "ابھی دکھانے کے لیے کوئی اپ ڈیٹس نہیں ہیں۔";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+"STORIES_NO_REPLIES_SUBTITLE" = "اس گروپ کے تمام ممبرز جوابات دیکھ سکتے ہیں";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "ابھی تک کوئی جوابات نہیں";
@@ -6902,7 +6902,7 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "گروپ کو جواب دیں";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "گروپ کو جواب دیں";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "یہ سٹوری بھیجی نہیں جا سکتی۔ اپنا انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں";
@@ -7367,10 +7367,10 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "اس لنک کے ساتھ کوئی بھی شخص آپ کا یوزر نیم دیکھ سکتا ہے اور آپ کے ساتھ چیٹ کا آغاز کر سکتا ہے۔ اسے محض ان لوگوں کے ساتھ شیئر کریں جو آپ کے نزدیک قابلِ اعتماد ہیں۔";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "دوسروں کے ساتھ اپنا منفرد QR کوڈ یا لنک شیئر کر کے انہیں اپنے ساتھ چیٹ شروع کرنے کی اجازت دیں۔";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
+"USERNAME_LINK_TOOLTIP_TITLE" = "اپنا یوزر نیم شیئر کریں";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "صارف نام کو تلاش کرتے وقت ایک خرابی پیش آگئی۔ براہ کرم کچھ دیر بعد کوشش کریں.";

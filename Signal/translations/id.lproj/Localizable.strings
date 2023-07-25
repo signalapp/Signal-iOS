@@ -2144,13 +2144,13 @@
 "EDIT_ITEM_COPY_ACTION" = "Salin";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Fitur Edit Pesan hanya tersedia bagi pengguna Signal beta. Jika Anda mengedit pesan, pengeditan hanya bisa terlihat oleh pengguna Signal beta versi terbaru.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Kirim";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Khusus versi Signal beta";
 
 /* Error message to display to user when a messaeg is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Pengeditan hanya dapat diterapkan dalam rentang waktu 3 jam sejak Anda mengirimkan pesan ini.";
@@ -3869,7 +3869,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Mengunduh";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "Edited";
+"MESSAGE_STATUS_EDITED" = "Diedit";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Gagal mengirim";
@@ -5075,7 +5075,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Edit nama pengguna";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "Kode QR atau Tautan";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nama Pengguna";
@@ -6755,7 +6755,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "Tidak ada pembaruan untuk ditampilkan saat ini.";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+"STORIES_NO_REPLIES_SUBTITLE" = "Semua anggota grup ini dapat melihat balasan";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Belum ada balasan";
@@ -6902,7 +6902,7 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Balas ke Grup";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Balas ke Grup";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Cerita ini tidak dapat dikirim. Periksa koneksi Anda dan coba lagi";
@@ -7367,10 +7367,10 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "Siapa pun yang punya tautan ini bisa melihat nama pengguna Anda dan memulai obrolan dengan Anda. Hanya bagikan dengan orang yang Anda percaya.";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Izinkan orang lain memulai obrolan dengan membagikan tautan atau kode QR unik Anda.";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
+"USERNAME_LINK_TOOLTIP_TITLE" = "Bagikan Nama Pengguna Anda";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Terjadi kesalahan saat mencari nama pengguna. Silakan coba lagi nanti.";

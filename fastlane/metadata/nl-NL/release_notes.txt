@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Je kunt nu ook op berichten reageren met de allernieuwste emoji's. Bijvoorbeeld met een "schuddend gezicht" als je beste vriend weer eens onzin uitkraamt of met "erwtjes" als je die bent vergeten mee te nemen uit de supermarkt.
 • We hebben een nieuwe (en optionele) lijstmodus toegevoegd in de weergave Alle media. Zie in één oogopslag meer informatie, inclusief bestandsnamen, bestandsgroottes, datums, enz.

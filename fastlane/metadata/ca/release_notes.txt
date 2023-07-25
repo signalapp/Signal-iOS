@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Els últims emojis del moment ja són compatibles amb Signal.
 • Hem afegit un nou mode de llista (opcional) en el mode de vista de Tots els arxius multimèdia. Si prefereixes deixar de ser tan quadriculat, podràs veure més informació amb un cop d'ull, com ara els noms dels arxius, les seves mides, les dates, etc.

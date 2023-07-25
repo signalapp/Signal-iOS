@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Las reacciones de mensajes ahora son compatibles con los emoji más recientes.
 • Hemos añadido un nuevo (y opcional) modo de lista en la vista Todos los archivos multimedia. Si prefieres dejar de ser tan cuadriculadx, podrás ver más información de solo un vistazo, incluidos los nombres de los archivos, los tamaños de los archivos, las fechas, etc.

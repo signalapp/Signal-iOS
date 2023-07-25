@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• הוספנו תמיכה באימוג׳ים הכי עדכניים עבור תגובות להודעות, אז עכשיו אפשר לבטא בדיוק את מה שמרגישים.
 • הוספנו מצב רשימה חדש (ואופציונלי) בתצוגת ׳כל המדיה׳. אם החלטת שפחות בא לך על תצוגת גריד, עכשיו אפשר לראות יותר מידע במבט חטוף, כולל שמות קבצים, גדלי קבצים, תאריכים ועוד.

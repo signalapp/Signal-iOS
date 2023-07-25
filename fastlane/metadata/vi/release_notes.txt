@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Chúng tôi đã hỗ trợ các biểu tượng emoji mới nhất.
 • Chúng tôi đã thêm chế độ xem Danh sách mới (tùy chọn) trong giao diện xem Tất cả tệp đa phương tiện. Ở chế độ này, bạn có thể nhanh chóng thấy được tên tệp, kích cỡ tệp, thông tin ngày tháng, v.v.

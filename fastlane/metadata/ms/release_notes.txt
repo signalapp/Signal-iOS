@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Reaksi mesej kini menyokong emoji terbaharu, jadi anda boleh meluahkan rasa tidak percaya anda dengan "Muka Bergegar" atau bertindak balas dengan "Pea Pod" apabila seseorang bertanya serapat mana anda dengan rakan-rakan anda.
 • Kami menambah mod Senarai baharu (dan pilihan) dalam paparan Semua Media. Jika anda memutuskan untuk keluar dari grid, kini anda boleh melihat sepintas lalu lebih banyak maklumat, termasuk nama fail, saiz fail, tarikh, dsb.

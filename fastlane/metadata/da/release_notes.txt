@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Beskedreaktioner understøtter nu de nyeste emojis, så du kan udtrykke din mistro med et "rystende ansigt" eller reagere med et par "ærter", når nogen spørger dig, hvor tæt du er på dine venner.
 • Vi har tilføjet en ny (og valgfri) listetilstand i visningen af Alle medier. Hvis du gerne vil prøve noget nyt, kan du nu se mere ved første øjekast, som f.eks. filnavne, filstørrelser, datoer osv.

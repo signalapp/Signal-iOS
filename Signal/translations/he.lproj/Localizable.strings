@@ -5,7 +5,7 @@
 "ABOUT_SECTION_TITLE" = "אודות Signal";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "אשר מספר ביטחון חדש";
+"ACCEPT_NEW_IDENTITY_ACTION" = "אישור מספר בטיחות חדש";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "צרופה";
@@ -698,7 +698,7 @@
 "CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ מתקשר/ת לקבוצה…";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ שיחה לא נענתה מאחר שמספר הביטחון של המתקשר השתנה.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ שיחה לא נענתה מאחר שמספר הבטיחות של המתקשר השתנה.";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "חזור אל השיחה";
@@ -2144,13 +2144,13 @@
 "EDIT_ITEM_COPY_ACTION" = "העתק";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "עריכת הודעות זמינה למשתמשי גרסת הבטא של Signal בלבד. אם עורכים הודעה, היא תהיה זמינה רק לאנשים שמשתמשים בגרסת הבטא האחרונה של Signal.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "שלח";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "רק עבור Signal בטא";
 
 /* Error message to display to user when a messaeg is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "ניתן לערוך רק עד 3 שעות מזמן שליחת ההודעה.";
@@ -2294,7 +2294,7 @@
 "ERROR_MESSAGE_NO_SESSION" = "אין שיח זמין עבור איש קשר.";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "מספר ביטחון השתנה.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "מספר בטיחות השתנה.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "מספר הביטחון שלך עם %1$@ השתנה.";
@@ -2306,7 +2306,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "התרחשה שגיאה לא ידועה";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "מספר ביטחון השתנה.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "מספר בטיחות השתנה.";
 
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "שגיאת רשת";
@@ -2360,7 +2360,7 @@
 "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "אין אפשרות לממש את התרומה";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "נכשל בוידוא מספר ביטחון!";
+"FAILED_VERIFICATION_TITLE" = "אימות מספר בטיחות נכשל!";
 
 /* Section header directing user to select a badge */
 "FEATURED_BADGE_SECTION_HEADER" = "בחר תג";
@@ -3869,7 +3869,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "מוריד";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "Edited";
+"MESSAGE_STATUS_EDITED" = "נערך";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "שליחה נכשלה.";
@@ -4988,7 +4988,7 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal לא היה יכול למצוא מספר ביטחון כלשהו בלוח העריכה שלך. האם העתקת אותו כראוי?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "כל זוג של משתמשי Signal משתף מספר ביטחון נבדל. בדוק שוב כי %1$@ מציג את מספר הביטחון הנבדל *שלך*.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "כל זוג של משתמשי Signal חולק מספר ביטחון ייחודי. חשוב לבדוק שוב ש%1$@ מציג את מספר הביטחון הייחודי *שלך*.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "אתה מריץ גרסה ישנה של Signal. אתה צריך לעדכן גרסה לפני שתוכל לוודא.";
@@ -5000,7 +5000,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "הקוד הסרוק לא נראה כמו מספר ביטחון. האם שניכם על גרסה מעודכנת של Signal?";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "וודא מספר ביטחון";
+"PRIVACY_VERIFICATION_TITLE" = "אימות מספר בטיחות";
 
 /* Button that lets user mark another user's identity as verified. */
 "PRIVACY_VERIFY_BUTTON" = "סמן כמוודא";
@@ -5075,7 +5075,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "עריכת שם משתמש";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "קוד QR או לינק";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "שם משתמש";
@@ -6755,7 +6755,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "אין עדכונים להראות כרגע.";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+"STORIES_NO_REPLIES_SUBTITLE" = "כל חברי קבוצה זו יכולים לראות תשובות";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "אין תשובות עדין";
@@ -6902,7 +6902,7 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "השב אל קבוצה";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "השב אל קבוצה";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "לא הצלחנו לשלוח את הסטורי. כדאי לבדוק את החיבור ולנסות שוב.";
@@ -6986,7 +6986,7 @@
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "מספר הביטחון שלך עם %1$@ תואם. אתה יכול לסמן איש קשר זה כמוודא.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "מספר ביטחון תואם!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "מספר בטיחות תואם!";
 
 /* Header of support description field */
 "SUPPORT_CONTACT_US_HEADER" = "צור איתנו קשר";
@@ -7367,10 +7367,10 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "כל מי שיש לו את הלינק הזה יוכל לראות את שם המשתמש שלך ולהתחיל איתך צ׳אט. חשוב לשתף רק עם אנשים שבוטחים בהם.";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "מאפשרים לאחרים להתחיל איתך צ׳אט באמצעות שיתוף קוד ה–QR או הלינק הייחודיים שלך.";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
+"USERNAME_LINK_TOOLTIP_TITLE" = "שיתוף שם המשתמש שלך";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "התרחשה שגיאה בעת חיפוש שם המשתמש. יש לנסות שוב מאוחר יותר.";
@@ -7445,10 +7445,10 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "מצב וידוא השתנה.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "הצג מספר ביטחון";
+"VERIFY_PRIVACY" = "הצגת מספר בטיחות";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "סקור מספרי ביטחון";
+"VERIFY_PRIVACY_MULTIPLE" = "סקירת מספרי בטיחות";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
 "VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "כדי לאמת את האבטחה מקצה לקצה שלך עם %1$@, יש להתאים את כרטיסיית הצבע שלמעלה עם המכשיר שלו או שלה ולהשוות את המספרים. אם הם לא תואמים, אפשר להחליק ולנסות זוג אחר של מספרי בטיחות. רק זוג אחד צריך להתאים.";

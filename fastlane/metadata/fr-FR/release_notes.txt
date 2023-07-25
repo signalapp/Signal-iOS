@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Les émojis pour réagir aux messages se multiplient et vous permettent d'exprimer votre incrédulité avec un visage tremblant ou encore votre proximité avec vos amis grâce une cosse de petits pois.
 • Nous avons ajouté un nouveau mode Liste (facultatif) dans la section Tous les médias. Contrairement au mode Grille, le mode Liste affiche plus d’informations, comme le nom, la taille, la date de création des fichiers, etc.

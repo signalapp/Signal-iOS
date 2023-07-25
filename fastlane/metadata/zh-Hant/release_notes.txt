@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• 心情回應現已支援最新的表情符號，因此你可以使用「搖晃的臉」來表達你的懷疑，或者當有人問你與朋友有多親近時，使用「豌豆莢」來回應。
 • 我們在「所有媒體」檢視中新增了新的（和可選用的）「清單」模式。如你想跳出框框，現在你可以一目了然地看到更多資訊，包括檔案名稱、檔案大小和日期等等。

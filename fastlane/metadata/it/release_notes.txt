@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Abbiamo aggiunto il supporto alle ultime emoji introdotte per le reazioni ai messaggi: dal baccello di piselli alla faccina tremante, ora hai tutto il necessario per esprimerti al meglio!
 • Abbiamo aggiunto una nuova (e opzionale) Modalità Elenco per avere tutti i dettagli dei tuoi media sotto mano: il nome del file, le dimensioni, la data e così via.

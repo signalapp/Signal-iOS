@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• تدعم ردود الرسائل الآن آخر الرموز التعبيرية، لذا يُمكنك التعبير عن ذهولك من خلال "الوجه المهتزّ" أو الرد بـ "حبة بازلاء" عندما يسألك أحد عن مدى متانة علاقتك بأصدقائك.
 •لقد أضفنا وضع قائمة جديد (واختياري) في عرض جميع الوسائط. إذا قرّرت تغيير الرؤية، يُمكنك الآن رؤية المزيد من المعلومات في لمحة، بما في ذلك أسماء المِلفات وأحجامها والتواريخ وما إلى ذلك.

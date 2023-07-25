@@ -1,2 +1,2 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
+• Reacțiile la mesaje acceptă acum cele mai recente emoji, astfel încât să îți poți exprima neîncrederea cu „Fața tremurătoare” sau să reacționezi cu o „Pastă de mazăre” atunci când cineva te întreabă cât de aproape ești de prietenii tăi.
 • Am adăugat un nou (și opțional) mod Listă în vizualizarea Tuturor fișierelor. Dacă decizi să renunți la grile, acum poți să vezi mai multe informații dintr-un foc, inclusiv numele fișierelor, dimensiunile fișierelor, date, etc.
