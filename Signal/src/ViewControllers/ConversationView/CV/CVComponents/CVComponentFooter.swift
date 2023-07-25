@@ -129,11 +129,11 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
         }
 
-        let label = componentView.editedLabel
         if wasEdited {
-            editedLabelConfig(textColor: textColor).applyForRendering(label: label)
+            let editedLabel = componentView.editedLabel
+            editedLabelConfig(textColor: textColor).applyForRendering(label: editedLabel)
+            innerViews.append(editedLabel)
         }
-        innerViews.append(label)
 
         timestampLabelConfig(textColor: textColor).applyForRendering(label: timestampLabel)
         innerViews.append(timestampLabel)
@@ -369,14 +369,11 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         // We always use a stretching spacer.
         outerSubviewInfos.append(ManualStackSubviewInfo.empty)
 
-        let editedLabelConfig = self.editedLabelConfig(textColor: .black)
-        let editedLabelSize = wasEdited
-            ? CVText.measureLabel(
-                config: editedLabelConfig,
-                maxWidth: maxWidth
-            )
-            : .zero
-        innerSubviewInfos.append(editedLabelSize.asManualSubviewInfo(hasFixedWidth: true))
+        if wasEdited {
+            let editedLabelConfig = self.editedLabelConfig(textColor: .black)
+            let editedLabelSize = CVText.measureLabel(config: editedLabelConfig, maxWidth: maxWidth)
+            innerSubviewInfos.append(editedLabelSize.asManualSubviewInfo(hasFixedWidth: true))
+        }
 
         // The color doesn't matter for measurement.
         let timestampLabelConfig = self.timestampLabelConfig(textColor: UIColor.black)
