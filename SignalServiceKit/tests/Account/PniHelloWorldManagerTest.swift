@@ -222,15 +222,15 @@ class PniHelloWorldManagerTest: XCTestCase {
 
 private extension LocalIdentifiers {
     static var mock: LocalIdentifiers {
-        return .withPni(pni: FuturePni.randomForTesting())
+        return .withPni(pni: Pni.randomForTesting())
     }
 
     static var missingPni: LocalIdentifiers {
         return .withPni(pni: nil)
     }
 
-    private static func withPni(pni: UntypedServiceId?) -> LocalIdentifiers {
-        return LocalIdentifiers(aci: FutureAci.randomForTesting(), pni: pni, e164: E164("+17735550199")!)
+    private static func withPni(pni: Pni?) -> LocalIdentifiers {
+        return LocalIdentifiers(aci: Aci.randomForTesting(), pni: pni, e164: E164("+17735550199")!)
     }
 }
 

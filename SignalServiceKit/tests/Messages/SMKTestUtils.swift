@@ -21,7 +21,7 @@ class MockClient {
     }
 
     var localIdentifiers: LocalIdentifiers {
-        LocalIdentifiers(aci: serviceId, pni: nil, phoneNumber: phoneNumber.stringValue)
+        LocalIdentifiers(aci: Aci(fromUUID: serviceId.uuidValue), pni: nil, phoneNumber: phoneNumber.stringValue)
     }
 
     let serviceId: UntypedServiceId

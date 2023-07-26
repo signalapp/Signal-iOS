@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 // MARK: - GroupMemberState
 
@@ -711,8 +712,8 @@ public extension GroupMembership {
     /// PNIs can only be invited members. Further note that profile keys are
     /// required for full and requesting members, and PNIs have no associated
     /// profile or profile key.
-    private func localPniAsInvitedMember(localIdentifiers: LocalIdentifiers) -> UntypedServiceId? {
-        if let localPni = localIdentifiers.pni, isInvitedMember(localPni.uuidValue) {
+    private func localPniAsInvitedMember(localIdentifiers: LocalIdentifiers) -> ServiceId? {
+        if let localPni = localIdentifiers.pni, isInvitedMember(localPni.temporary_rawUUID) {
             return localPni
         }
 
@@ -745,11 +746,11 @@ public extension GroupMembership {
     ///
     /// Checks membership for the local ACI first. If none is available, falls
     /// back to checking membership for the local PNI.
-    func localUserInvitedAtServiceId(localIdentifiers: LocalIdentifiers) -> UntypedServiceId? {
-        if isMemberOfAnyKind(localIdentifiers.aci.uuidValue) {
+    func localUserInvitedAtServiceId(localIdentifiers: LocalIdentifiers) -> ServiceId? {
+        if isMemberOfAnyKind(localIdentifiers.aci.temporary_rawUUID) {
             // If our ACI is any kind of member, return that membership rather
             // than falling back to the PNI.
-            if isInvitedMember(localIdentifiers.aci.uuidValue) {
+            if isInvitedMember(localIdentifiers.aci.temporary_rawUUID) {
                 return localIdentifiers.aci
             }
 

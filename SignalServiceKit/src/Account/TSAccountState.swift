@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 /// A cache of frequently-accessed database state. This class should _only_ be
 /// used from ``TSAccountManager``.
@@ -22,10 +23,10 @@ class TSAccountState: NSObject {
     var localNumber: String? { localIdentifiers?.phoneNumber }
 
     @objc
-    var localUuid: UUID? { localIdentifiers?.aci.uuidValue }
+    var localUuid: UUID? { localIdentifiers?.aci.temporary_rawUUID }
 
     @objc
-    var localPni: UUID? { localIdentifiers?.pni?.uuidValue }
+    var localPni: UUID? { localIdentifiers?.pni?.temporary_rawUUID }
 
     @objc
     let deviceId: UInt32
@@ -88,8 +89,8 @@ class TSAccountState: NSObject {
                 return nil
             }
             return LocalIdentifiers(
-                aci: UntypedServiceId(localAci),
-                pni: getUuid(TSAccountManager_RegisteredPNIKey).map { UntypedServiceId($0) },
+                aci: Aci(fromUUID: localAci),
+                pni: getUuid(TSAccountManager_RegisteredPNIKey).map { Pni(fromUUID: $0) },
                 phoneNumber: localNumber
             )
         }()

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 public protocol GroupUpdateItemBuilder {
@@ -561,7 +562,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
 
         /// Move the given service ID to the front of ``allUsersSorted``, if it
         /// is present therein.
-        func moveServiceIdToFront(_ serviceId: UntypedServiceId?) {
+        func moveServiceIdToFront(_ serviceId: ServiceId?) {
             guard let address = serviceId.map({ SignalServiceAddress($0) }) else { return }
 
             if allUsersSorted.contains(address) {
@@ -1757,7 +1758,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         of address: SignalServiceAddress,
         in groupMembership: GroupMembership
     ) -> MembershipStatus {
-        guard let serviceId = address.untypedServiceId else {
+        guard let serviceId = address.serviceId else {
             return .none
         }
 
@@ -1765,14 +1766,14 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
     }
 
     static func membershipStatus(
-        serviceId: UntypedServiceId,
+        serviceId: ServiceId,
         in groupMembership: GroupMembership
     ) -> MembershipStatus {
-        if groupMembership.isFullMember(serviceId.uuidValue) {
+        if groupMembership.isFullMember(serviceId.temporary_rawUUID) {
             return .normalMember
-        } else if groupMembership.isInvitedMember(serviceId.uuidValue) {
-            return .invited(invitedBy: groupMembership.addedByUuid(forInvitedMember: serviceId.uuidValue))
-        } else if groupMembership.isRequestingMember(serviceId.uuidValue) {
+        } else if groupMembership.isInvitedMember(serviceId.temporary_rawUUID) {
+            return .invited(invitedBy: groupMembership.addedByUuid(forInvitedMember: serviceId.temporary_rawUUID))
+        } else if groupMembership.isRequestingMember(serviceId.temporary_rawUUID) {
             return .requesting
         } else {
             return .none

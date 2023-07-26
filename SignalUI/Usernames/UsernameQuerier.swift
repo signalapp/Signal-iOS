@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalMessaging
 import SignalServiceKit
 
@@ -79,7 +80,7 @@ public struct UsernameQuerier {
             let localLink = localUsernameManager.usernameState(tx: tx.asV2Read).usernameLink,
             localLink == link
         {
-            queryMatchedLocalUser(onSuccess: onSuccess, localAci: localAci, tx: tx)
+            queryMatchedLocalUser(onSuccess: onSuccess, localAci: localAci.untypedServiceId, tx: tx)
             return
         }
 
@@ -135,7 +136,7 @@ public struct UsernameQuerier {
             let localUsername = localUsernameManager.usernameState(tx: tx.asV2Read).username,
             localUsername.caseInsensitiveCompare(username) == .orderedSame
         {
-            queryMatchedLocalUser(onSuccess: onSuccess, localAci: localAci, tx: tx)
+            queryMatchedLocalUser(onSuccess: onSuccess, localAci: localAci.untypedServiceId, tx: tx)
             return
         }
 

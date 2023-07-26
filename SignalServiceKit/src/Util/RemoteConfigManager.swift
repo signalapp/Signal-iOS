@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 @objc
@@ -370,10 +371,10 @@ public class RemoteConfig: BaseFlags {
     }
 
     private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64, account: AuthedAccount) -> Bool {
-        let aci: FutureAci
+        let aci: Aci
         switch account.info {
         case .explicit(let explicitAccount):
-            aci = UntypedServiceId(explicitAccount.aci)
+            aci = Aci(fromUUID: explicitAccount.aci)
         case .implicit:
             guard let localAci = TSAccountManager.shared.localIdentifiers?.aci else {
                 owsFailDebug("Missing local UUID")
@@ -385,13 +386,13 @@ public class RemoteConfig: BaseFlags {
         return countEnabled > bucket(key: key, aci: aci, bucketSize: bucketSize)
     }
 
-    static func bucket(key: String, aci: UntypedServiceId, bucketSize: UInt64) -> UInt64 {
+    static func bucket(key: String, aci: Aci, bucketSize: UInt64) -> UInt64 {
         guard var data = (key + ".").data(using: .utf8) else {
             owsFailDebug("Failed to get data from key")
             return 0
         }
 
-        data.append(aci.uuidValue.data)
+        data.append(Data(aci.serviceIdBinary))
 
         guard let hash = Cryptography.computeSHA256Digest(data) else {
             owsFailDebug("Failed to calculate hash")

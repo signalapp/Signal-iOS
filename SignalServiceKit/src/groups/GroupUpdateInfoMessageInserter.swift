@@ -58,7 +58,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                     .bannedMemberChange:
                 switch handlePossiblyCollapsibleMembershipChange(
                     precomputedUpdateType: precomputedUpdateType,
-                    localAci: localIdentifiers.aci,
+                    localAci: localIdentifiers.aci.untypedServiceId,
                     groupThread: groupThread,
                     oldGroupModel: oldGroupModel,
                     newGroupModel: newGroupModel,

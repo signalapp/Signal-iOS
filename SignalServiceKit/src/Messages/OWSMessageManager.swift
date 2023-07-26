@@ -610,7 +610,7 @@ extension OWSMessageManager {
         let serviceId = envelope.sourceServiceId
         let deviceId = envelope.sourceDeviceId
 
-        guard serviceId == tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
+        guard serviceId == tsAccountManager.localIdentifiers(transaction: tx)?.aci.untypedServiceId else {
             return
         }
 

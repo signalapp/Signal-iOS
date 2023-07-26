@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalMessaging
 import SignalServiceKit
 import SignalUI
@@ -276,7 +277,7 @@ extension ConversationViewController {
                         return incoming.authorAddress.untypedServiceId == draftReply.author
                     }
                     if candidate is TSOutgoingMessage {
-                        return tsAccountManager.localIdentifiers(transaction: transaction)?.aci == draftReply.author
+                        return tsAccountManager.localIdentifiers(transaction: transaction)?.aci.untypedServiceId == draftReply.author
                     }
                     return false
                 },

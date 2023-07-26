@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 @objc
 public class AuthedAccount: NSObject {
@@ -121,7 +122,7 @@ extension AuthedAccount.Explicit {
     }
 
     public var localIdentifiers: LocalIdentifiers {
-        return LocalIdentifiers(aci: UntypedServiceId(aci), pni: UntypedServiceId(pni), phoneNumber: e164.stringValue)
+        return LocalIdentifiers(aci: Aci(fromUUID: aci), pni: Pni(fromUUID: pni), phoneNumber: e164.stringValue)
     }
 
     public var chatServiceAuth: ChatServiceAuth {

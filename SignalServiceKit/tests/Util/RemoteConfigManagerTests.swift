@@ -18,7 +18,7 @@ class RemoteConfigManagerTests: XCTestCase {
             ("research.megaphone.1", "15b9729c-51ea-4ddb-b516-652befe78062", 100_000, 43_315)
         ]
         for (key, uuidString, bucketSize, expectedBucket) in testCases {
-            let actualBucket = RemoteConfig.bucket(key: key, aci: FutureAci.constantForTesting(uuidString), bucketSize: bucketSize)
+            let actualBucket = RemoteConfig.bucket(key: key, aci: Aci.constantForTesting(uuidString), bucketSize: bucketSize)
             XCTAssertEqual(actualBucket, expectedBucket)
         }
     }

@@ -94,7 +94,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
     private func fetchMyPniIfNecessary(localIdentifiers: LocalIdentifiers) -> Promise<UntypedServiceId> {
         if let localPni = localIdentifiers.pni {
             logger.info("Skipping PNI fetch, PNI already available.")
-            return .value(localPni)
+            return .value(localPni.untypedServiceId)
         }
 
         return firstly(on: self.schedulers.sync) { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
@@ -107,7 +107,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
             self.logger.info("Successfully fetched PNI: \(remotePni)")
 
             guard
-                localIdentifiers.aci == remoteAci,
+                localIdentifiers.aci.untypedServiceId == remoteAci,
                 localIdentifiers.contains(phoneNumber: remoteE164)
             else {
                 throw OWSGenericError(

@@ -301,7 +301,7 @@ public extension OWSReceiptManager {
             let messages = interactions.compactMap({ $0 as? TSMessage }).filter {
                 switch $0 {
                 case is TSOutgoingMessage:
-                    return senderServiceId == tsAccountManager.localIdentifiers(transaction: tx)?.aci
+                    return senderServiceId == tsAccountManager.localIdentifiers(transaction: tx)?.aci.untypedServiceId
                 case let incomingMessage as TSIncomingMessage:
                     return senderServiceId == incomingMessage.authorAddress.untypedServiceId
                 default:

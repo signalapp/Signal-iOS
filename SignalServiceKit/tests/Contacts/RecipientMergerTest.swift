@@ -85,7 +85,7 @@ class RecipientMergerTest: XCTestCase {
         let e164_A = E164("+16505550101")!
         let e164_B = E164("+16505550102")!
         let e164Me = E164("+16505550103")!
-        let localIdentifiers = LocalIdentifiers(aci: aciMe, pni: nil, phoneNumber: e164Me.stringValue)
+        let localIdentifiers = LocalIdentifiers(aci: Aci(fromUUID: aciMe.uuidValue), pni: nil, phoneNumber: e164Me.stringValue)
 
         enum TrustLevel {
             case high

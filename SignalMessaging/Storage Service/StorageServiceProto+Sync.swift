@@ -366,7 +366,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             owsFailDebug("address unexpectedly missing for contact")
             return .invalid
         }
-        if localIdentifiers.contains(serviceId: contact.serviceId) {
+        if localIdentifiers.aci.untypedServiceId == contact.serviceId {
             owsFailDebug("Trying to merge contact with our own serviceId.")
             return .invalid
         }

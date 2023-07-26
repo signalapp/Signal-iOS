@@ -70,7 +70,7 @@ public class ReactionManager: NSObject {
 
         Logger.info("Sending reaction, isRemoving: \(isRemoving)")
 
-        guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
+        guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci.untypedServiceId else {
             throw OWSAssertionError("missing local address")
         }
 
@@ -178,7 +178,7 @@ public class ReactionManager: NSObject {
                 )
 
                 // If this is a reaction to a message we sent, notify the user.
-                let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+                let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci.untypedServiceId
                 if let reaction, let message = message as? TSOutgoingMessage, reactor.wrappedValue != localAci {
                     self.notificationsManager.notifyUser(
                         forReaction: reaction,
@@ -218,7 +218,7 @@ public class ReactionManager: NSObject {
             let message: TSMessage
 
             let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
-            if reactor.wrappedValue == localAci {
+            if reactor.wrappedValue == localAci?.untypedServiceId {
                 let builder = TSOutgoingMessageBuilder(thread: thread)
                 populateStoryContext(on: builder)
                 message = builder.build(transaction: transaction)

@@ -132,6 +132,11 @@ extension Aci {
     }
 }
 
+extension ServiceId {
+    public var temporary_rawUUID: UUID { rawUUID }
+    public var untypedServiceId: UntypedServiceId { UntypedServiceId(rawUUID) }
+}
+
 @objc
 public class ServiceIdObjC: NSObject, NSCopying {
     public var wrappedValue: ServiceId { owsFail("Subclasses must implement.") }

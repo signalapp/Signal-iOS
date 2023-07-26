@@ -86,7 +86,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
                 localAccountId,
                 localUserAllDeviceIds
             ) = signalRecipientStore.localAccountAndDeviceIds(
-                localAci: localIdentifiers.aci,
+                localAci: localIdentifiers.aci.untypedServiceId,
                 tx: syncTx
             )
         else {
@@ -115,7 +115,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
             logger.info("Building PNI distribution parameters.")
 
             return self.pniDistributionParameterBuilder.buildPniDistributionParameters(
-                localAci: localIdentifiers.aci,
+                localAci: localIdentifiers.aci.untypedServiceId,
                 localAccountId: localAccountId,
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds,

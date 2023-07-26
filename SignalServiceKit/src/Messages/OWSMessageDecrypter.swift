@@ -74,9 +74,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
 
         switch destinationServiceId {
-        case localIdentifiers.aci:
+        case localIdentifiers.aci.untypedServiceId:
             return .aci
-        case localIdentifiers.pni:
+        case localIdentifiers.pni?.untypedServiceId:
             return .pni
         default:
             throw MessageProcessingError.wrongDestinationUuid

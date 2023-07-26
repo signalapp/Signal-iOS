@@ -323,7 +323,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
             throw OWSAssertionError("Missing local identifiers!")
         }
 
-        let localAci: UUID = localIdentifiers.aci.uuidValue
+        let localAci = localIdentifiers.aci.temporary_rawUUID
 
         let oldRevision = currentGroupModel.revision
         let newRevision = oldRevision + 1
@@ -682,7 +682,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
             var promotedLocalAci: Bool
             let isLocalInvitedByAci = currentGroupMembership.isInvitedMember(localAci)
             let isLocalInvitedByPni = {
-                guard let localPni = localIdentifiers.pni?.uuidValue else { return false }
+                guard let localPni = localIdentifiers.pni?.temporary_rawUUID else { return false }
                 return currentGroupMembership.isInvitedMember(localPni)
             }()
 
@@ -742,7 +742,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
 
                 // Decline invite
                 var actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
-                let invitedAtUserId = try groupV2Params.userId(forUuid: invitedAtServiceId.uuidValue)
+                let invitedAtUserId = try groupV2Params.userId(forUuid: invitedAtServiceId.temporary_rawUUID)
                 actionBuilder.setDeletedUserID(invitedAtUserId)
                 actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
                 didChange = true

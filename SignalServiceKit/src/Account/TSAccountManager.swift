@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public extension TSAccountManager {
 
@@ -265,8 +266,8 @@ public extension TSAccountManager {
         }
 
         didStoreLocalNumber?(LocalIdentifiersObjC(LocalIdentifiers(
-            aci: newAci.wrappedValue,
-            pni: newPni?.wrappedValue,
+            aci: Aci(fromUUID: newAci.wrappedValue.uuidValue),
+            pni: newPni.map { Pni(fromUUID: $0.wrappedValue.uuidValue) },
             phoneNumber: newLocalNumber.stringValue
         )))
 

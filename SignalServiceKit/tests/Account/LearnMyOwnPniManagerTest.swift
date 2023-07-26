@@ -104,12 +104,12 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testFetchesPniIfMissing() {
-        let localAci = FutureAci.randomForTesting()
+        let localAci = Aci.randomForTesting()
         let localE164 = E164("+17735550199")!
         let remotePni = FuturePni.randomForTesting()
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: nil, e164: localE164)
-        accountServiceClientMock.mockWhoAmI = .init(aci: localAci, pni: remotePni, e164: localE164)
+        accountServiceClientMock.mockWhoAmI = .init(aci: localAci.untypedServiceId, pni: remotePni, e164: localE164)
 
         db.read { tx in
             _ = learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
@@ -123,8 +123,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testSkipsPniFetchIfPresent() {
-        let localAci = FutureAci.randomForTesting()
-        let localPni = FuturePni.randomForTesting()
+        let localAci = Aci.randomForTesting()
+        let localPni = Pni.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
@@ -141,7 +141,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testSkipsPniSaveIfMismatchedAci() {
-        let localAci = FutureAci.randomForTesting()
+        let localAci = Aci.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         let remoteAci = FutureAci.randomForTesting()
@@ -162,8 +162,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testCreatesPniKeysWithoutFetchingRemoteIfNoneLocal() {
-        let localAci = FutureAci.randomForTesting()
-        let localPni = FuturePni.randomForTesting()
+        let localAci = Aci.randomForTesting()
+        let localPni = Pni.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
@@ -180,8 +180,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testCreatesPniKeysIfRemoteMissing() {
-        let localAci = FutureAci.randomForTesting()
-        let localPni = FuturePni.randomForTesting()
+        let localAci = Aci.randomForTesting()
+        let localPni = Pni.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
@@ -200,8 +200,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testCreatesPniKeysIfRemoteDoesNotMatchLocal() {
-        let localAci = FutureAci.randomForTesting()
-        let localPni = FuturePni.randomForTesting()
+        let localAci = Aci.randomForTesting()
+        let localPni = Pni.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
@@ -220,8 +220,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testDoesNotCreatePniKeysIfErrorFetchingRemoteToCompare() {
-        let localAci = FutureAci.randomForTesting()
-        let localPni = FuturePni.randomForTesting()
+        let localAci = Aci.randomForTesting()
+        let localPni = Pni.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
@@ -240,8 +240,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testDoesNotCreatePniKeysIfRemoteMatchesLocal() {
-        let localAci = FutureAci.randomForTesting()
-        let localPni = FuturePni.randomForTesting()
+        let localAci = Aci.randomForTesting()
+        let localPni = Pni.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)

@@ -14,14 +14,14 @@ class SignalRecipientTest: SSKBaseTestSwift {
     private lazy var localAci = FutureAci.randomForTesting()
     private lazy var localPhoneNumber = E164("+16505550199")!
     private lazy var localIdentifiers = LocalIdentifiers(
-        aci: localAci,
-        pni: FuturePni.randomForTesting(),
+        aci: Aci(fromUUID: localAci.uuidValue),
+        pni: Pni.randomForTesting(),
         phoneNumber: localPhoneNumber.stringValue
     )
 
     override func setUp() {
         super.setUp()
-        tsAccountManager.registerForTests(withLocalNumber: localIdentifiers.phoneNumber, uuid: localIdentifiers.aci.uuidValue)
+        tsAccountManager.registerForTests(withLocalNumber: localIdentifiers.phoneNumber, uuid: localIdentifiers.aci.rawUUID)
     }
 
     func testSelfRecipientWithExistingRecord() {
