@@ -128,8 +128,22 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         )
     }
 
-    public init(
+    public convenience init(
         uuid: UUID?,
+        phoneNumber: String?,
+        cache: SignalServiceAddressCache,
+        cachePolicy: SignalServiceAddressCache.CachePolicy
+    ) {
+        self.init(
+            serviceId: uuid.map { ServiceId($0) },
+            phoneNumber: phoneNumber,
+            cache: cache,
+            cachePolicy: cachePolicy
+        )
+    }
+
+    public init(
+        serviceId: ServiceId?,
         phoneNumber: String?,
         cache: SignalServiceAddressCache,
         cachePolicy: SignalServiceAddressCache.CachePolicy
@@ -140,7 +154,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
         self.cachedAddress = cache.registerAddress(
             proposedIdentifiers: CachedAddress.Identifiers(
-                serviceId: uuid.map { ServiceId($0) },
+                serviceId: serviceId,
                 phoneNumber: phoneNumber
             ),
             cachePolicy: cachePolicy

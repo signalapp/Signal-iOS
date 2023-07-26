@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import GRDB
 
 public struct ServiceId: Equatable, Hashable, Codable, CustomDebugStringConvertible {
@@ -109,3 +110,30 @@ extension ServiceId: DatabaseValueConvertible {
         UUID.fromDatabaseValue(dbValue).map { ServiceId($0) }
     }
 }
+
+public typealias FutureAci = ServiceId
+public typealias FuturePni = ServiceId
+
+#if TESTABLE_BUILD
+
+extension Aci {
+    public static func randomForTesting() -> FutureAci {
+        ServiceId(Aci(fromUUID: UUID()).rawUUID)
+    }
+
+    public static func constantForTesting(_ uuidString: String) -> FutureAci {
+        ServiceId((try! LibSignalClient.ServiceId.parseFrom(serviceIdString: uuidString) as! Aci).rawUUID)
+     }
+ }
+
+extension Pni {
+    public static func randomForTesting() -> FuturePni {
+        ServiceId(Pni(fromUUID: UUID()).rawUUID)
+    }
+
+    public static func constantForTesting(_ serviceIdString: String) -> FuturePni {
+        ServiceId((try! LibSignalClient.ServiceId.parseFrom(serviceIdString: serviceIdString) as! Pni).rawUUID)
+    }
+}
+
+#endif
