@@ -1,2 +1,1 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
-• We added a new (and optional) List mode in the All Media view. If you decide to go off the grid, now you can see more info at a glance, including file names, file sizes, dates, etc.
+• Think fast. Improve your reaction time when replying to a Signal story. Now you can quickly scroll through recent emoji and send a reaction to someone’s story right away.

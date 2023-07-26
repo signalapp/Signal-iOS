@@ -1,2 +1,1 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
-• 모든 미디어 보기에 목록 모드 옵션을 새로 추가했습니다. 이제 목록 모드를 사용하여 파일 이름, 파일 크기, 날짜 등을 한눈에 확인하세요.
+• Think fast. Improve your reaction time when replying to a Signal story. Now you can quickly scroll through recent emoji and send a reaction to someone’s story right away.

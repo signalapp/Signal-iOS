@@ -1,2 +1,1 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
-• 我们在“所有媒体”视图中新增了（可选的）列表模式。如果您将网格模式切换为列表模式，您可以轻松浏览更多信息，包括文件名、文件大小和日期等等。
+• Think fast. Improve your reaction time when replying to a Signal story. Now you can quickly scroll through recent emoji and send a reaction to someone’s story right away.

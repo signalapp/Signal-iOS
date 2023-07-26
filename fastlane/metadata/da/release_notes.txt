@@ -1,2 +1,1 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
-• Vi har tilføjet en ny (og valgfri) listetilstand i visningen af Alle medier. Hvis du gerne vil prøve noget nyt, kan du nu se mere ved første øjekast, som f.eks. filnavne, filstørrelser, datoer osv.
+• Think fast. Improve your reaction time when replying to a Signal story. Now you can quickly scroll through recent emoji and send a reaction to someone’s story right away.

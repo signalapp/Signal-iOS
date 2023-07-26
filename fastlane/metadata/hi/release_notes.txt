@@ -1,2 +1,1 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
-• हमने ऑल मीडिया व्यू में एक नया (और वैकल्पिक) लिस्ट मोड जोड़ा है। यदि आप ग्रिड बंद करना चाहते हैं, तो अब आप एक नज़र में अधिक जानकारी देख सकते हैं, जिसमें फाइल नाम, फाइल आकार, तिथि आदि शामिल हैं।
+• Think fast. Improve your reaction time when replying to a Signal story. Now you can quickly scroll through recent emoji and send a reaction to someone’s story right away.

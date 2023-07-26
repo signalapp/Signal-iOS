@@ -1,2 +1,1 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
-• Hem afegit un nou mode de llista (opcional) en el mode de vista de Tots els arxius multimèdia. Si prefereixes deixar de ser tan quadriculat, podràs veure més informació amb un cop d'ull, com ara els noms dels arxius, les seves mides, les dates, etc.
+• Think fast. Improve your reaction time when replying to a Signal story. Now you can quickly scroll through recent emoji and send a reaction to someone’s story right away.

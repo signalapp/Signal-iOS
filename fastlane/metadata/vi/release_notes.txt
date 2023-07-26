@@ -1,2 +1,1 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
-• Chúng tôi đã thêm chế độ xem Danh sách mới (tùy chọn) trong giao diện xem Tất cả tệp đa phương tiện. Ở chế độ này, bạn có thể nhanh chóng thấy được tên tệp, kích cỡ tệp, thông tin ngày tháng, v.v.
+• Think fast. Improve your reaction time when replying to a Signal story. Now you can quickly scroll through recent emoji and send a reaction to someone’s story right away.

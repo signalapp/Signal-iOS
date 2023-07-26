@@ -1,2 +1,1 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
-• Adicionámos um modo Lista novo (e opcional) na visualização Toda a Multimédia. Se não for fã da grelha (ou de grelhados), agora pode ver mais informações de relance, incluindo nomes e tamanhos dos ficheiros, datas, etc.
+• Think fast. Improve your reaction time when replying to a Signal story. Now you can quickly scroll through recent emoji and send a reaction to someone’s story right away.

@@ -1,2 +1,1 @@
-• Message reactions now support the latest emoji, so you can express your disbelief with "Shaking Face" or react with a "Pea Pod" when someone asks you how close you are to your friends.
-• Kami menambahkan mode Daftar yang baru (dan opsional) di tampilan Semua Media. Jika Anda memilih tampilan Daftar untuk melihat media, kini Anda bisa melihat lebih banyak info secara sekilas, termasuk nama file, ukuran file, tanggal, dll.
+• Think fast. Improve your reaction time when replying to a Signal story. Now you can quickly scroll through recent emoji and send a reaction to someone’s story right away.
