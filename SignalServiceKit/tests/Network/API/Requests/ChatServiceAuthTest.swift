@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
+import LibSignalClient
 import SignalServiceKit
+import XCTest
 
 final class ChatServiceAuthTest: XCTestCase {
     func testImplicit() {
@@ -23,8 +24,8 @@ final class ChatServiceAuthTest: XCTestCase {
     }
 
     func testEquality() {
-        let uuid1 = UUID()
-        let uuid2 = UUID()
+        let uuid1 = FutureAci.randomForTesting().uuidValue
+        let uuid2 = FutureAci.randomForTesting().uuidValue
 
         let implicit = ChatServiceAuth.implicit()
         let explicit1 = ChatServiceAuth.explicit(aci: uuid1, password: "foo bar")

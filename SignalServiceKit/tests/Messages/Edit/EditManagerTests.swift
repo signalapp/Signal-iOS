@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
+
 @testable import SignalServiceKit
 
 class EditManagerTests: SSKBaseTestSwift {
@@ -14,7 +16,7 @@ class EditManagerTests: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
         db = MockDB()
-        authorAci = ServiceIdObjC(ServiceId(uuidString: "00000000-0000-4000-8000-000000000000")!)
+        authorAci = ServiceIdObjC(FutureAci.constantForTesting("00000000-0000-4000-8000-000000000000"))
         thread = TSThread(uniqueId: "1")
     }
 

@@ -19,16 +19,16 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     // MARK: - Setup/Teardown
 
     let aliceE164 = "+13213214321"
-    let aliceUuid = UUID()
+    let aliceAci = FutureAci.randomForTesting()
     let trustRoot = IdentityKeyPair.generate()
-    lazy var aliceAddress = SignalServiceAddress(uuid: aliceUuid, phoneNumber: aliceE164)
+    lazy var aliceAddress = SignalServiceAddress(serviceId: aliceAci, phoneNumber: aliceE164)
     lazy var defaultSenderCert = buildSenderCertificate(uuidOnly: false)
     lazy var uuidOnlySenderCert = buildSenderCertificate(uuidOnly: true)
 
     override func setUp() {
         super.setUp()
 
-        tsAccountManager.registerForTests(withLocalNumber: aliceE164, uuid: aliceUuid)
+        tsAccountManager.registerForTests(withLocalNumber: aliceE164, uuid: aliceAci.uuidValue)
 
         // Configure UDManager
         self.write { transaction in
@@ -225,7 +225,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         // Ensure UD is enabled by setting our own access level to enabled.
         udManagerImpl.setUnidentifiedAccessMode(.enabled, address: localAddress)
 
-        let bobRecipientAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+13213214322")
+        let bobRecipientAddress = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+13213214322")
         XCTAssertFalse(bobRecipientAddress.isLocalAddress)
         write { transaction in
             self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
@@ -284,7 +284,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         // Ensure UD is enabled by setting our own access level to enabled.
         udManagerImpl.setUnidentifiedAccessMode(.enabled, address: localAddress)
 
-        let bobRecipientAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+13213214322")
+        let bobRecipientAddress = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+13213214322")
         XCTAssertFalse(bobRecipientAddress.isLocalAddress)
         write { transaction in
             self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
@@ -357,7 +357,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
                                                 publicKey: serverKeys.publicKey,
                                                 trustRoot: trustRoot.privateKey)
 
-        var senderAddress = try! SealedSenderAddress(e164: nil, uuidString: aliceUuid.uuidString, deviceId: 1)
+        var senderAddress = try! SealedSenderAddress(e164: nil, uuidString: aliceAci.uuidValue.uuidString, deviceId: 1)
         if !uuidOnly {
             senderAddress.e164 = aliceE164
         }

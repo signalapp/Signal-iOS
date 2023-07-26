@@ -14,14 +14,14 @@ import SignalCoreKit
 class SMKSecretSessionCipherTest: XCTestCase {
 
     private lazy var aliceMockClient = MockClient(
-        serviceId: ServiceId(uuidString: "aaaaaaaa-7000-11eb-b32a-33b8a8a487a6")!,
+        serviceId: FutureAci.constantForTesting("aaaaaaaa-7000-11eb-b32a-33b8a8a487a6"),
         phoneNumber: E164("+16505550100")!,
         deviceId: 1,
         registrationId: 1234
     )
 
     private lazy var bobMockClient = MockClient(
-        serviceId: ServiceId(uuidString: "bbbbbbbb-7000-11eb-b32a-33b8a8a487a6")!,
+        serviceId: FutureAci.constantForTesting("bbbbbbbb-7000-11eb-b32a-33b8a8a487a6"),
         phoneNumber: E164("+16505550101")!,
         deviceId: 1,
         registrationId: 1234

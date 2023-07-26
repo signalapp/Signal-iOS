@@ -370,28 +370,28 @@ public class RemoteConfig: BaseFlags {
     }
 
     private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64, account: AuthedAccount) -> Bool {
-        let uuid: UUID
+        let aci: FutureAci
         switch account.info {
         case .explicit(let explicitAccount):
-            uuid = explicitAccount.aci
+            aci = ServiceId(explicitAccount.aci)
         case .implicit:
-            guard let localUuid = TSAccountManager.shared.localUuid else {
+            guard let localAci = TSAccountManager.shared.localIdentifiers?.aci else {
                 owsFailDebug("Missing local UUID")
                 return false
             }
-            uuid = localUuid
+            aci = localAci
         }
 
-        return countEnabled > bucket(key: key, uuid: uuid, bucketSize: bucketSize)
+        return countEnabled > bucket(key: key, aci: aci, bucketSize: bucketSize)
     }
 
-    static func bucket(key: String, uuid: UUID, bucketSize: UInt64) -> UInt64 {
+    static func bucket(key: String, aci: ServiceId, bucketSize: UInt64) -> UInt64 {
         guard var data = (key + ".").data(using: .utf8) else {
             owsFailDebug("Failed to get data from key")
             return 0
         }
 
-        data.append(uuid.data)
+        data.append(aci.uuidValue.data)
 
         guard let hash = Cryptography.computeSHA256Digest(data) else {
             owsFailDebug("Failed to calculate hash")

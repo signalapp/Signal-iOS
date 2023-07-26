@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -24,7 +25,7 @@ final class ThreadMergerTest: XCTestCase {
 
     private var _signalServiceAddressCache: SignalServiceAddressCache!
 
-    private let serviceId = ServiceId(uuidString: "00000000-0000-4000-8000-000000000000")!
+    private let serviceId = FutureAci.constantForTesting("00000000-0000-4000-8000-000000000000")
     private let phoneNumber = E164("+16505550100")!
 
     private var serviceIdThread: TSContactThread!

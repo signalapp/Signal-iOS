@@ -4,7 +4,9 @@
 //
 
 import Foundation
+import LibSignalClient
 import XCTest
+
 @testable import SignalServiceKit
 
 class ChangePhoneNumberPniManagerTest: XCTestCase {
@@ -138,7 +140,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         e164: E164,
         linkedDeviceIds: [UInt32]
     ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult> {
-        let aci = ServiceId(UUID())
+        let aci = FutureAci.randomForTesting()
         let accountId: String = UUID().uuidString
 
         let localDeviceId: UInt32 = 1
@@ -227,7 +229,7 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
-        localDevicePniSignedPreKey: SignedPreKeyRecord,
+        localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
         guard let buildOutcome = buildOutcomes.first else {
@@ -256,11 +258,11 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
 // MARK: SignedPreKeyStore
 
 private class SignedPreKeyStoreMock: ChangePhoneNumberPniManagerImpl.Shims.SignedPreKeyStore {
-    var generatedSignedPreKeys: [SignedPreKeyRecord] = []
+    var generatedSignedPreKeys: [SignalServiceKit.SignedPreKeyRecord] = []
     var storedSignedPreKeyId: Int32?
-    var storedSignedPreKeyRecord: SignedPreKeyRecord?
+    var storedSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?
 
-    func generateSignedPreKey(signedBy: ECKeyPair) -> SignedPreKeyRecord {
+    func generateSignedPreKey(signedBy: ECKeyPair) -> SignalServiceKit.SignedPreKeyRecord {
         let signedPreKey = SSKSignedPreKeyStore.generateSignedPreKey(signedBy: signedBy)
         generatedSignedPreKeys.append(signedPreKey)
         return signedPreKey
@@ -268,7 +270,7 @@ private class SignedPreKeyStoreMock: ChangePhoneNumberPniManagerImpl.Shims.Signe
 
     func storeSignedPreKeyAsAcceptedAndCurrent(
         signedPreKeyId: Int32,
-        signedPreKeyRecord: SignedPreKeyRecord,
+        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
         transaction: DBWriteTransaction
     ) {
         storedSignedPreKeyId = signedPreKeyId

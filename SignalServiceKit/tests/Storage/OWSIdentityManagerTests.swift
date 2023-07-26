@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
+import LibSignalClient
 import XCTest
+
+@testable import SignalServiceKit
 
 class OWSIdentityManagerTests: SSKBaseTestSwift {
     override func setUp() {
@@ -96,8 +98,8 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
     }
 
     func testShouldSharePhoneNumber() {
-        let aliceAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+12223334444")
-        let bobAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+17775556666")
+        let aliceAddress = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+12223334444")
+        let bobAddress = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+17775556666")
 
         write { transaction in
             // {}

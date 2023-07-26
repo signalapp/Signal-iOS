@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -25,11 +26,11 @@ class UserProfileMergerTest: XCTestCase {
     }
 
     func testMergeLocal() {
-        let serviceId = ServiceId(uuidString: "00000000-0000-4000-8000-000000000000")!
+        let serviceId = FutureAci.constantForTesting("00000000-0000-4000-8000-000000000000")
         let phoneNumber = E164("+16505550100")!
 
         let localProfile = buildUserProfile(serviceId: nil, phoneNumber: kLocalProfileInvariantPhoneNumber, profileKey: nil)
-        let otherProfile = buildUserProfile(serviceId: ServiceId(UUID()), phoneNumber: nil, profileKey: nil)
+        let otherProfile = buildUserProfile(serviceId: FutureAci.randomForTesting(), phoneNumber: nil, profileKey: nil)
 
         userProfileStore.userProfiles = [
             localProfile,
@@ -55,11 +56,11 @@ class UserProfileMergerTest: XCTestCase {
     }
 
     func testMergeOther() {
-        let serviceId = ServiceId(uuidString: "00000000-0000-4000-8000-000000000000")!
+        let serviceId = FutureAci.constantForTesting("00000000-0000-4000-8000-000000000000")
         let phoneNumber = E164("+16505550100")!
 
         let localProfile = buildUserProfile(serviceId: nil, phoneNumber: kLocalProfileInvariantPhoneNumber, profileKey: nil)
-        let otherProfile = buildUserProfile(serviceId: ServiceId(UUID()), phoneNumber: phoneNumber.stringValue, profileKey: nil)
+        let otherProfile = buildUserProfile(serviceId: FutureAci.randomForTesting(), phoneNumber: phoneNumber.stringValue, profileKey: nil)
         let finalProfile = buildUserProfile(serviceId: serviceId, phoneNumber: nil, profileKey: nil)
 
         userProfileStore.userProfiles = [

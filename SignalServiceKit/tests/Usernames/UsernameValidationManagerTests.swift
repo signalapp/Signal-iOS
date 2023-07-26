@@ -3,11 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import GRDB
+import LibSignalClient
+import XCTest
+
 @testable import SignalServiceKit
 
 final class UsernameValidationManagerTest: XCTestCase {
+    typealias ServiceId = SignalServiceKit.ServiceId
+    typealias Username = String
+
     private var mockAccountServiceClient: MockAccountServiceClient!
     private var mockContext: UsernameValidationManagerImpl.Context!
     private var mockDB: DB!
@@ -17,12 +22,12 @@ final class UsernameValidationManagerTest: XCTestCase {
     private var mockUsernameLookupManager: UsernameLookupManagerMock!
 
     func setupContext(
-        localAci: UUID,
+        localAci: FutureAci,
         localUsername: String?,
         remoteUsername: String?,
         mockDeleteRequest: Bool = false
     ) {
-        let mockAccountManager = MockAccountManager(uuid: localAci)
+        let mockAccountManager = MockAccountManager(aci: localAci)
 
         var remoteUserHash: String?
         if let remoteUsername = remoteUsername {
@@ -30,7 +35,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
         mockAccountServiceClient = MockAccountServiceClient(
             aci: localAci,
-            pni: UUID(),
+            pni: FuturePni.randomForTesting(),
             e164: E164("+16125550101")!,
             usernameHash: remoteUserHash
         )
@@ -71,7 +76,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     }
 
     func testSuccessfulValidation() {
-        let localAci: UUID = UUID()
+        let localAci = FutureAci.randomForTesting()
         let localUsername = "testUsername.42"
         let remoteUsername = localUsername
 
@@ -95,7 +100,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     }
 
     func testFailedValidation() {
-        let localAci: UUID = UUID()
+        let localAci = FutureAci.randomForTesting()
         let localUsername = "testUsername.42"
         let remoteUsername = "testUsername.43"
 
@@ -122,7 +127,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     }
 
     func testMissingRemoteHashValidation() {
-        let localAci: UUID = UUID()
+        let localAci = FutureAci.randomForTesting()
         let localUsername = "testUsername.42"
         let remoteUsername: String? = nil
 
@@ -149,7 +154,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     }
 
     func testValidationAfterTimeout() {
-        let localAci: UUID = UUID()
+        let localAci = FutureAci.randomForTesting()
         let localUsername = "testUsername.42"
         let remoteUsername = localUsername
 
@@ -180,7 +185,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     }
 
     func testFailValidationAfterTimeout() {
-        let localAci: UUID = UUID()
+        let localAci = FutureAci.randomForTesting()
         let localUsername = "testUsername.42"
         let remoteUsername = "testUsername.43"
 
@@ -213,7 +218,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     }
 
     func testSkipValidation() {
-        let localAci: UUID = UUID()
+        let localAci = FutureAci.randomForTesting()
         let localUsername = "testUsername.42"
         let remoteUsername = "testUsername.43"
 
@@ -244,7 +249,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     }
 
     func testInvalidLocalUsername() {
-        let localAci: UUID = UUID()
+        let localAci = FutureAci.randomForTesting()
         let localUsername = "testUsername"
         let remoteUsername = "testUsername.43"
 
@@ -275,9 +280,9 @@ final class UsernameValidationManagerTest: XCTestCase {
 
 extension UsernameValidationManagerTest {
     private class MockAccountManager: Usernames.Validation.Shims.TSAccountManager {
-        private let aci: ServiceId
-        init(uuid: UUID) { self.aci = ServiceId(uuid) }
-        public func localAci(tx _: DBReadTransaction) -> ServiceId? { aci }
+        private let aci: FutureAci
+        init(aci: FutureAci) { self.aci = aci }
+        public func localAci(tx _: DBReadTransaction) -> FutureAci? { aci }
     }
 
     private class UsernameFakeNetworkManager: OWSFakeNetworkManager {
@@ -336,10 +341,10 @@ extension UsernameValidationManagerTest {
 
     private class MockAccountServiceClient: Usernames.Validation.Shims.AccountServiceClient {
         private let response: WhoAmIRequestFactory.Responses.WhoAmI
-        init(aci: UUID, pni: UUID, e164: E164, usernameHash: String?) {
+        init(aci: FutureAci, pni: FuturePni, e164: E164, usernameHash: String?) {
             response = WhoAmIRequestFactory.Responses.WhoAmI(
-                aci: aci,
-                pni: pni,
+                aci: aci.uuidValue,
+                pni: pni.uuidValue,
                 e164: e164,
                 usernameHash: usernameHash
             )

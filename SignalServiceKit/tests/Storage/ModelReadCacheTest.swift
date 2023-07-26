@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -43,8 +44,8 @@ class ModelReadCacheTest: SSKBaseTestSwift {
     // MARK: - Test ModelReadCache.readValues(for:, transaction:)
 
     func testReadNonNilCacheableValues() {
-        let addresses = [SignalServiceAddress(uuid: UUID()),
-                         SignalServiceAddress(uuid: UUID())]
+        let addresses = [SignalServiceAddress.randomForTesting(),
+                         SignalServiceAddress.randomForTesting()]
         for address in addresses {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
@@ -60,8 +61,8 @@ class ModelReadCacheTest: SSKBaseTestSwift {
     }
 
     func testReadNilCacheableValues() {
-        let addresses = [SignalServiceAddress(uuid: UUID()),
-                         SignalServiceAddress(uuid: UUID())]
+        let addresses = [SignalServiceAddress.randomForTesting(),
+                         SignalServiceAddress.randomForTesting()]
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
             cache.performSync {
@@ -88,8 +89,8 @@ class ModelReadCacheTest: SSKBaseTestSwift {
     }
 
     func testReadNilUncacheableValues() {
-        let addresses = [SignalServiceAddress(uuid: UUID()),
-                         SignalServiceAddress(uuid: UUID())]
+        let addresses = [SignalServiceAddress.randomForTesting(),
+                         SignalServiceAddress.randomForTesting()]
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
             cache.performSync {
@@ -126,8 +127,8 @@ class ModelReadCacheTest: SSKBaseTestSwift {
         // After: Cache is empty.
 
         // 1. Put alice in DB.
-        let alice = SignalServiceAddress(uuid: UUID())
-        let bob = SignalServiceAddress(uuid: UUID())
+        let alice = SignalServiceAddress.randomForTesting()
+        let bob = SignalServiceAddress.randomForTesting()
         adapter.storage[alice] = OWSUserProfile(address: alice)
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
@@ -154,8 +155,8 @@ class ModelReadCacheTest: SSKBaseTestSwift {
     // MARK: - Test ModelReadCache.getValue(for:, transaction:)
 
     func testGetUncachedSingleValueThatExists() {
-        let addresses = [SignalServiceAddress(uuid: UUID()),
-                         SignalServiceAddress(uuid: UUID())]
+        let addresses = [SignalServiceAddress.randomForTesting(),
+                         SignalServiceAddress.randomForTesting()]
         for address in addresses {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
@@ -172,15 +173,15 @@ class ModelReadCacheTest: SSKBaseTestSwift {
     }
 
     func testGetSingleValueThatDoesNotExist() {
-        let addresses = [SignalServiceAddress(uuid: UUID()),
-                         SignalServiceAddress(uuid: UUID())]
+        let addresses = [SignalServiceAddress.randomForTesting(),
+                         SignalServiceAddress.randomForTesting()]
         for address in addresses {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
             cache.performSync {
-                let alice = SignalServiceAddress(uuid: UUID())
+                let alice = SignalServiceAddress.randomForTesting()
                 let key = adapter.cacheKey(forKey: alice)
                 let actual = cache.getValue(for: key, transaction: transaction)
                 XCTAssertNil(actual)
@@ -189,8 +190,8 @@ class ModelReadCacheTest: SSKBaseTestSwift {
     }
 
     func testGetCachedSingleValue() {
-        let addresses = [SignalServiceAddress(uuid: UUID()),
-                         SignalServiceAddress(uuid: UUID())]
+        let addresses = [SignalServiceAddress.randomForTesting(),
+                         SignalServiceAddress.randomForTesting()]
         for address in addresses {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
@@ -210,8 +211,8 @@ class ModelReadCacheTest: SSKBaseTestSwift {
     }
 
     func testGetSingleValueReturnNilOnCacheMiss() {
-        let addresses = [SignalServiceAddress(uuid: UUID()),
-                         SignalServiceAddress(uuid: UUID())]
+        let addresses = [SignalServiceAddress.randomForTesting(),
+                         SignalServiceAddress.randomForTesting()]
         for address in addresses {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
@@ -229,8 +230,8 @@ class ModelReadCacheTest: SSKBaseTestSwift {
     // MARK: - Test ModelReadCache.getValues(for:, transaction:)
 
     func testGetUncachedMultipleValuesThatExist() {
-        let addresses = [SignalServiceAddress(uuid: UUID()),
-                         SignalServiceAddress(uuid: UUID())]
+        let addresses = [SignalServiceAddress.randomForTesting(),
+                         SignalServiceAddress.randomForTesting()]
         for address in addresses {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
@@ -246,8 +247,8 @@ class ModelReadCacheTest: SSKBaseTestSwift {
     }
 
     func testGetMultipleValuesThatDoNotExist() {
-        let addresses = [SignalServiceAddress(uuid: UUID()),
-                         SignalServiceAddress(uuid: UUID())]
+        let addresses = [SignalServiceAddress.randomForTesting(),
+                         SignalServiceAddress.randomForTesting()]
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
             cache.performSync {
@@ -259,8 +260,8 @@ class ModelReadCacheTest: SSKBaseTestSwift {
     }
 
     func testGetCachedMultipleValues() {
-        let addresses = [SignalServiceAddress(uuid: UUID()),
-                         SignalServiceAddress(uuid: UUID())]
+        let addresses = [SignalServiceAddress.randomForTesting(),
+                         SignalServiceAddress.randomForTesting()]
         for address in addresses {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
@@ -282,13 +283,13 @@ class ModelReadCacheTest: SSKBaseTestSwift {
     }
 
     func testGetMixOfCachedAndUncachedAndUnknownValues() {
-        let storedAddresses = [SignalServiceAddress(uuid: UUID()),
-                               SignalServiceAddress(uuid: UUID())]
+        let storedAddresses = [SignalServiceAddress.randomForTesting(),
+                               SignalServiceAddress.randomForTesting()]
         for address in storedAddresses {
             adapter.storage[address] = OWSUserProfile(address: address)
         }
         // Add a bogus address to test querying a nonexistent key.
-        let addresses = storedAddresses + [SignalServiceAddress(uuid: UUID())]
+        let addresses = storedAddresses + [SignalServiceAddress.randomForTesting()]
         read { [unowned self] transaction in
             let cache = TestableModelReadCache(mode: .read, adapter: adapter)
             cache.performSync {

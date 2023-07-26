@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
+import LibSignalClient
 import XCTest
+
+@testable import SignalServiceKit
 
 class SignalAccountTest: XCTestCase {
 
@@ -83,7 +85,7 @@ class SignalAccountTest: XCTestCase {
         let aliceAci = "00000000-0000-4000-8000-000000000000"
         let alicePhoneNumber = "+16505550100"
         let aliceAddress = SignalServiceAddress(
-            uuid: ServiceId(uuidString: aliceAci)!.uuidValue,
+            serviceId: FutureAci.constantForTesting(aliceAci),
             phoneNumber: nil,
             cache: SignalServiceAddressCache(),
             cachePolicy: .ignoreCache
@@ -169,7 +171,7 @@ class SignalAccountTest: XCTestCase {
     func testNicknamePreferred() {
         let contact = Contact(
             address: SignalServiceAddress(
-                uuid: UUID(uuidString: "ec43071b-2dc0-4d82-82b2-0266968a4c2b")!,
+                serviceId: FutureAci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
                 phoneNumber: "myPhoneNumber",
                 cache: SignalServiceAddressCache(),
                 cachePolicy: .ignoreCache
@@ -200,7 +202,7 @@ class SignalAccountTest: XCTestCase {
     func testEmptyNickname() {
         let contact = Contact(
             address: SignalServiceAddress(
-                uuid: UUID(uuidString: "ec43071b-2dc0-4d82-82b2-0266968a4c2b")!,
+                serviceId: FutureAci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
                 phoneNumber: "myPhoneNumber",
                 cache: SignalServiceAddressCache(),
                 cachePolicy: .ignoreCache
@@ -231,7 +233,7 @@ class SignalAccountTest: XCTestCase {
     func testNilNickname() {
         let contact = Contact(
             address: SignalServiceAddress(
-                uuid: UUID(uuidString: "ec43071b-2dc0-4d82-82b2-0266968a4c2b")!,
+                serviceId: FutureAci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
                 phoneNumber: "myPhoneNumber",
                 cache: SignalServiceAddressCache(),
                 cachePolicy: .ignoreCache
@@ -258,7 +260,7 @@ class SignalAccountTest: XCTestCase {
     func testFullNameOnly() {
         let contact = Contact(
             address: SignalServiceAddress(
-                uuid: UUID(uuidString: "ec43071b-2dc0-4d82-82b2-0266968a4c2b")!,
+                serviceId: FutureAci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
                 phoneNumber: "myPhoneNumber",
                 cache: SignalServiceAddressCache(),
                 cachePolicy: .ignoreCache
@@ -284,7 +286,7 @@ class SignalAccountTest: XCTestCase {
     func testNoNames() {
         let contact = Contact(
             address: SignalServiceAddress(
-                uuid: UUID(uuidString: "ec43071b-2dc0-4d82-82b2-0266968a4c2b")!,
+                serviceId: FutureAci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
                 phoneNumber: "myPhoneNumber",
                 cache: SignalServiceAddressCache(),
                 cachePolicy: .ignoreCache
@@ -357,7 +359,7 @@ extension SignalAccount: ValidatableModel {
 
     private enum ContactFixtures {
         private static let address = SignalServiceAddress(
-            uuid: UUID(uuidString: "ec43071b-2dc0-4d82-82b2-0266968a4c2b")!,
+            serviceId: FutureAci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
             phoneNumber: "myPhoneNumber",
             cache: SignalServiceAddressCache(),
             cachePolicy: .ignoreCache

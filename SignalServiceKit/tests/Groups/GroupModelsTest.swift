@@ -4,13 +4,15 @@
 //
 
 import Foundation
+import LibSignalClient
 import XCTest
+
 @testable import SignalServiceKit
 
 private extension UUID {
-    static let uuid1 = UUID()
-    static let uuid2 = UUID()
-    static let uuid3 = UUID()
+    static let uuid1 = FutureAci.randomForTesting().uuidValue
+    static let uuid2 = FutureAci.randomForTesting().uuidValue
+    static let uuid3 = FutureAci.randomForTesting().uuidValue
 }
 
 class GroupModelsTest: SSKBaseTestSwift {

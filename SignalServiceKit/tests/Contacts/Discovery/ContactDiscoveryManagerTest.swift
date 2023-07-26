@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
+
 @testable import SignalServiceKit
 
 final class ContactDiscoveryManagerTest: XCTestCase {
@@ -15,7 +17,7 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         }
 
         static func foundResponse(for phoneNumbers: Set<String>) -> Set<SignalRecipient> {
-            Set(phoneNumbers.lazy.map { SignalRecipient(serviceId: ServiceId(UUID()), phoneNumber: E164($0)!, deviceIds: [1])})
+            Set(phoneNumbers.lazy.map { SignalRecipient(serviceId: FutureAci.randomForTesting(), phoneNumber: E164($0)!, deviceIds: [1])})
         }
     }
 

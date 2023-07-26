@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import GRDB
+import LibSignalClient
 import SignalServiceKit
+import XCTest
 
 final class SpamReportingTokenRecordTest: XCTestCase {
     private func createDatabaseQueue() throws -> DatabaseQueue {
@@ -22,29 +23,29 @@ final class SpamReportingTokenRecordTest: XCTestCase {
     }
 
     func testRoundTrip() throws {
-        let sourceServiceId = ServiceId(UUID())
+        let sourceAci = FutureAci.randomForTesting()
         let spamReportingToken = SpamReportingToken(data: .init([1, 2, 3]))!
 
         let databaseQueue = try createDatabaseQueue()
 
         try databaseQueue.write { db in
             let record = SpamReportingTokenRecord(
-                sourceUuid: sourceServiceId,
+                sourceUuid: sourceAci,
                 spamReportingToken: spamReportingToken
             )
             try record.insert(db)
         }
 
         let loadedRecord = try databaseQueue.read { db in
-            try SpamReportingTokenRecord.fetchOne(db, key: sourceServiceId)!
+            try SpamReportingTokenRecord.fetchOne(db, key: sourceAci)!
         }
-        XCTAssertEqual(loadedRecord.sourceUuid, sourceServiceId)
+        XCTAssertEqual(loadedRecord.sourceUuid, sourceAci)
         XCTAssertEqual(loadedRecord.spamReportingToken, spamReportingToken)
     }
 
     func testUpsert() throws {
-        let sourceServiceId1 = ServiceId(UUID())
-        let sourceServiceId2 = ServiceId(UUID())
+        let sourceAci1 = FutureAci.randomForTesting()
+        let sourceAci2 = FutureAci.randomForTesting()
         let spamReportingToken1 = SpamReportingToken(data: .init([1]))!
         let spamReportingToken2 = SpamReportingToken(data: .init([2]))!
 
@@ -52,9 +53,9 @@ final class SpamReportingTokenRecordTest: XCTestCase {
 
         try databaseQueue.write { db in
             let recordsToUpsert: [SpamReportingTokenRecord] = [
-                .init(sourceUuid: sourceServiceId1, spamReportingToken: spamReportingToken1),
-                .init(sourceUuid: sourceServiceId2, spamReportingToken: spamReportingToken1),
-                .init(sourceUuid: sourceServiceId1, spamReportingToken: spamReportingToken2)
+                .init(sourceUuid: sourceAci1, spamReportingToken: spamReportingToken1),
+                .init(sourceUuid: sourceAci2, spamReportingToken: spamReportingToken1),
+                .init(sourceUuid: sourceAci1, spamReportingToken: spamReportingToken2)
             ]
             for record in recordsToUpsert {
                 try record.upsert(db)
@@ -62,8 +63,8 @@ final class SpamReportingTokenRecordTest: XCTestCase {
         }
 
         let (tokenForUuid1, tokenForUuid2) = try databaseQueue.read { db in (
-            try SpamReportingTokenRecord.fetchOne(db, key: sourceServiceId1)?.spamReportingToken,
-            try SpamReportingTokenRecord.fetchOne(db, key: sourceServiceId2)?.spamReportingToken
+            try SpamReportingTokenRecord.fetchOne(db, key: sourceAci1)?.spamReportingToken,
+            try SpamReportingTokenRecord.fetchOne(db, key: sourceAci2)?.spamReportingToken
         )}
         XCTAssertEqual(tokenForUuid1, spamReportingToken2)
         XCTAssertEqual(tokenForUuid2, spamReportingToken1)

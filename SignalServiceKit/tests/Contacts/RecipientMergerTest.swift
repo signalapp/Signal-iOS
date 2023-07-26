@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalCoreKit
 import XCTest
 
@@ -78,9 +79,9 @@ private class MockStorageServiceManager: StorageServiceManager {
 
 class RecipientMergerTest: XCTestCase {
     func testTwoWayMergeCases() {
-        let aci_A = ServiceId(uuidString: "00000000-0000-4000-8000-00000000000A")!
-        let aci_B = ServiceId(uuidString: "00000000-0000-4000-8000-00000000000B")!
-        let aciMe = ServiceId(uuidString: "00000000-0000-4000-8000-00000000000C")!
+        let aci_A = FutureAci.constantForTesting("00000000-0000-4000-8000-00000000000A")
+        let aci_B = FutureAci.constantForTesting("00000000-0000-4000-8000-00000000000B")
+        let aciMe = FutureAci.constantForTesting("00000000-0000-4000-8000-00000000000C")
         let e164_A = E164("+16505550101")!
         let e164_B = E164("+16505550102")!
         let e164Me = E164("+16505550103")!

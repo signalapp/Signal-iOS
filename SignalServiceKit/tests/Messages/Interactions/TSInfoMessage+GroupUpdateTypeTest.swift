@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
+
 @testable import SignalServiceKit
 
 final class GroupUpdateItemCopyTest: XCTestCase {
@@ -223,14 +225,14 @@ private extension String {
 
 private extension SignalServiceAddress {
     static let otherUser1: SignalServiceAddress = SignalServiceAddress(
-        uuid: UUID(),
+        serviceId: FutureAci.randomForTesting(),
         phoneNumber: nil,
         cache: SignalServiceAddressCache(),
         cachePolicy: .ignoreCache
     )
 
     static let otherUser2: SignalServiceAddress = SignalServiceAddress(
-        uuid: UUID(),
+        serviceId: FutureAci.randomForTesting(),
         phoneNumber: nil,
         cache: SignalServiceAddressCache(),
         cachePolicy: .ignoreCache

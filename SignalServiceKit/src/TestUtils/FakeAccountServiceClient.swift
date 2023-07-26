@@ -4,6 +4,9 @@
 //
 
 import Foundation
+import LibSignalClient
+
+#if TESTABLE_BUILD
 
 @objc
 public class FakeAccountServiceClient: AccountServiceClient {
@@ -27,14 +30,14 @@ public class FakeAccountServiceClient: AccountServiceClient {
     public override func setPreKeys(
         for identity: OWSIdentity,
         identityKey: IdentityKey,
-        signedPreKeyRecord: SignedPreKeyRecord,
-        preKeyRecords: [PreKeyRecord],
+        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
+        preKeyRecords: [SignalServiceKit.PreKeyRecord],
         auth: ChatServiceAuth
     ) -> Promise<Void> {
         return .value(())
     }
 
-    public override func setSignedPreKey(_ signedPreKey: SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
+    public override func setSignedPreKey(_ signedPreKey: SignalServiceKit.SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
         return Promise { $0.resolve() }
     }
 
@@ -43,6 +46,15 @@ public class FakeAccountServiceClient: AccountServiceClient {
     }
 
     public override func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
-        return Promise { $0.resolve(WhoAmIRequestFactory.Responses.WhoAmI(aci: UUID(), pni: UUID(), e164: E164("+17735550199")!, usernameHash: nil)) }
+        return Promise {
+            $0.resolve(WhoAmIRequestFactory.Responses.WhoAmI(
+                aci: FutureAci.randomForTesting().uuidValue,
+                pni: FuturePni.randomForTesting().uuidValue,
+                e164: E164("+17735550199")!,
+                usernameHash: nil
+            ))
+        }
     }
 }
+
+#endif

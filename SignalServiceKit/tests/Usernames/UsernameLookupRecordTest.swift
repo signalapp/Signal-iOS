@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import GRDB
+import LibSignalClient
+import XCTest
+
 @testable import SignalServiceKit
 
 final class UsernameLookupRecordTest: XCTestCase {
@@ -51,8 +53,8 @@ final class UsernameLookupRecordTest: XCTestCase {
     }
 
     func testUpsert() throws {
-        let aci1 = ServiceId(UUID())
-        let aci2 = ServiceId(UUID())
+        let aci1 = FutureAci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let username1 = "jango_fett.42"
         let username2 = "boba_fett.42"
 
@@ -122,7 +124,7 @@ final class UsernameLookupRecordTest: XCTestCase {
 extension UsernameLookupRecord: ValidatableModel {
     static var constants: [(UsernameLookupRecord, base64JsonData: Data)] = [
         (
-            UsernameLookupRecord(aci: ServiceId(uuidString: "effc880f-8b41-4985-9bf6-3c4f0231a959")!, username: "boba_fett.42"),
+            UsernameLookupRecord(aci: FutureAci.constantForTesting("effc880f-8b41-4985-9bf6-3c4f0231a959"), username: "boba_fett.42"),
             Data(base64Encoded: "eyJhY2kiOiJFRkZDODgwRi04QjQxLTQ5ODUtOUJGNi0zQzRGMDIzMUE5NTkiLCJ1c2VybmFtZSI6ImJvYmFfZmV0dC40MiJ9")!
         )
     ]

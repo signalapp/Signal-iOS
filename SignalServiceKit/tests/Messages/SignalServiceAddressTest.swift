@@ -34,8 +34,8 @@ class SignalServiceAddressTest: XCTestCase {
     func test_isEqualPermissive() {
         let phoneNumber1 = "+16505550100"
         let phoneNumber2 = "+16505550101"
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
 
         // Double match
         XCTAssertEqual(
@@ -113,8 +113,8 @@ class SignalServiceAddressTest: XCTestCase {
     }
 
     func test_mappingChanges() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
         let phoneNumber2 = "+16505550101"
         let phoneNumber3 = "+16505550102"
@@ -186,8 +186,8 @@ class SignalServiceAddressTest: XCTestCase {
 
     // A new address "takes" a uuid component a pre-existing address.
     func test_mappingChanges1a() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
         let phoneNumber2 = "+16505550101"
 
@@ -235,8 +235,8 @@ class SignalServiceAddressTest: XCTestCase {
 
     // A new address "takes" a uuid component a pre-existing address.
     func test_mappingChanges1b() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
         let phoneNumber2 = "+16505550101"
 
@@ -284,8 +284,8 @@ class SignalServiceAddressTest: XCTestCase {
 
     // A new address "takes" a phone number component a pre-existing address.
     func test_mappingChanges2a() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
         let phoneNumber2 = "+16505550101"
 
@@ -335,8 +335,8 @@ class SignalServiceAddressTest: XCTestCase {
 
     // A new address "takes" a phone number component a pre-existing address.
     func test_mappingChanges2b() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
         let phoneNumber2 = "+16505550101"
 
@@ -386,7 +386,7 @@ class SignalServiceAddressTest: XCTestCase {
 
     // A new address "combines" 2 pre-existing addresses.
     func test_mappingChanges3a() {
-        let aci1 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
 
         let hash1 = makeHighTrustAddress(aci: aci1, phoneNumber: nil).hash
@@ -417,7 +417,7 @@ class SignalServiceAddressTest: XCTestCase {
 
     // A new address "combines" 2 pre-existing addresses.
     func test_mappingChanges3b() {
-        let aci1 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
 
         let hash1 = makeHighTrustAddress(aci: aci1, phoneNumber: nil).hash
@@ -448,8 +448,8 @@ class SignalServiceAddressTest: XCTestCase {
 
     // A new address "takes" 1 component each from 2 pre-existing addresses.
     func test_mappingChanges4a() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
         let phoneNumber2 = "+16505550101"
 
@@ -490,8 +490,8 @@ class SignalServiceAddressTest: XCTestCase {
 
     // A new address "takes" 1 component each from 2 pre-existing addresses.
     func test_mappingChanges4b() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
         let phoneNumber2 = "+16505550101"
 
@@ -532,8 +532,8 @@ class SignalServiceAddressTest: XCTestCase {
 
     // A new address "takes" 1 component from a pre-existing address for a pre-existing uuid.
     func test_mappingChanges5a() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let phoneNumber2 = "+16505550101"
 
         let hash1 = makeHighTrustAddress(aci: aci1, phoneNumber: nil).hash
@@ -568,8 +568,8 @@ class SignalServiceAddressTest: XCTestCase {
 
     // A new address "takes" 1 component from a pre-existing address for a pre-existing uuid.
     func test_mappingChanges5b() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let phoneNumber2 = "+16505550101"
 
         let hash1 = makeHighTrustAddress(aci: aci1, phoneNumber: nil).hash
@@ -604,7 +604,7 @@ class SignalServiceAddressTest: XCTestCase {
 
     // A new address "takes" 1 component from a pre-existing address for a pre-existing phone number.
     func test_mappingChanges6a() {
-        let aci2 = Aci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
         let phoneNumber2 = "+16505550101"
 
@@ -640,7 +640,7 @@ class SignalServiceAddressTest: XCTestCase {
 
     // A new address "takes" 1 component from a pre-existing address for a pre-existing phone number.
     func test_mappingChanges6b() {
-        let aci2 = Aci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
         let phoneNumber2 = "+16505550101"
 
@@ -675,8 +675,8 @@ class SignalServiceAddressTest: XCTestCase {
     }
 
     func test_hashStability1() {
-        let aci1 = Aci.randomForTesting()
-        let aci2 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
+        let aci2 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
         let phoneNumber2 = "+16505550101"
 
@@ -707,7 +707,7 @@ class SignalServiceAddressTest: XCTestCase {
     }
 
     func test_hashStability2() {
-        let aci1 = Aci.randomForTesting()
+        let aci1 = FutureAci.randomForTesting()
         let phoneNumber1 = "+16505550100"
 
         let hash_u1 = makeAddress(serviceId: aci1, phoneNumber: nil).hash
@@ -737,7 +737,7 @@ class SignalServiceAddressTest: XCTestCase {
     }
 
     func testInitializers() {
-        let aci = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
+        let aci = FutureAci.constantForTesting("00000000-0000-4000-8000-00000000000A")
         let pn_a = E164("+16505550101")!
         let pn_b = E164("+16505550102")!
 
@@ -828,7 +828,7 @@ class SignalServiceAddressTest: XCTestCase {
     func testInitializerPerformance() {
         let iterations = 15_000
 
-        let serviceId = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
+        let serviceId = FutureAci.constantForTesting("00000000-0000-4000-8000-00000000000A")
         let phoneNumber = E164("+16505550101")!
 
         cache.updateRecipient(SignalRecipient(serviceId: serviceId, phoneNumber: phoneNumber))

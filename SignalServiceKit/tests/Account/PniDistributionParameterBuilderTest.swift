@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
+import LibSignalClient
 import XCTest
+
+@testable import SignalServiceKit
 
 class PniDistributionParameterBuilderTest: XCTestCase {
     private var messageSenderMock: MessageSenderMock!
@@ -154,10 +156,10 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
-        localDevicePniSignedPreKey: SignedPreKeyRecord,
+        localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
-        let aci = ServiceId(UUID())
+        let aci = FutureAci.randomForTesting()
         let accountId = "what's up"
 
         return pniDistributionParameterBuilder.buildPniDistributionParameters(
@@ -244,9 +246,9 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
 // MARK: SignedPreKeyStore
 
 private class SignedPreKeyStoreMock: PniDistributionParameterBuilderImpl.Shims.SignedPreKeyStore {
-    var generatedSignedPreKeys: [SignedPreKeyRecord] = []
+    var generatedSignedPreKeys: [SignalServiceKit.SignedPreKeyRecord] = []
 
-    func generateSignedPreKey(signedBy: ECKeyPair) -> SignedPreKeyRecord {
+    func generateSignedPreKey(signedBy: ECKeyPair) -> SignalServiceKit.SignedPreKeyRecord {
         let signedPreKey = SSKSignedPreKeyStore.generateSignedPreKey(signedBy: signedBy)
         generatedSignedPreKeys.append(signedPreKey)
         return signedPreKey

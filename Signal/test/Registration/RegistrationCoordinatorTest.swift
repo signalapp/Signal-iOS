@@ -4,9 +4,11 @@
 //
 
 import Foundation
+import LibSignalClient
+import XCTest
+
 @testable import Signal
 @testable import SignalServiceKit
-import XCTest
 
 public class RegistrationCoordinatorTest: XCTestCase {
 
@@ -2985,7 +2987,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private enum Stubs {
 
         static let e164 = E164("+17875550100")!
-        static let aci = UUID()
+        static let aci = FutureAci.randomForTesting().uuidValue
         static let pinCode = "1234"
 
         static let regRecoveryPwData = Data(repeating: 8, count: 8)
@@ -3026,7 +3028,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         static func accountIdentityResponse() -> RegistrationServiceResponses.AccountIdentityResponse {
             return RegistrationServiceResponses.AccountIdentityResponse(
                 aci: aci,
-                pni: UUID(),
+                pni: FuturePni.randomForTesting().uuidValue,
                 e164: e164,
                 username: nil,
                 hasPreviouslyUsedSVR: false

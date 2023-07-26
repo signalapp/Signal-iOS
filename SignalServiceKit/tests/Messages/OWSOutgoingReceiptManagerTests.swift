@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -11,11 +12,11 @@ class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
 
     func testMergeAddress() {
         // Setup – Store two different receipt sets for a uuid and an e164
-        let uuidAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: nil)
+        let uuidAddress = SignalServiceAddress.randomForTesting()
         let uuidReceiptSet = MessageReceiptSet()
         uuidReceiptSet.insert(timestamp: 1234, messageUniqueId: "uuid")
 
-        let e164Address = SignalServiceAddress(uuid: nil, phoneNumber: "+1234567890")
+        let e164Address = SignalServiceAddress(serviceId: nil, phoneNumber: "+1234567890")
         let e164ReceiptSet = MessageReceiptSet()
         e164ReceiptSet.insert(timestamp: 5678, messageUniqueId: "e164")
 
@@ -25,7 +26,7 @@ class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
         }
 
         // Test – Fetch the receipt set for a merged address
-        let mergedAddress = SignalServiceAddress(uuid: uuidAddress.uuid!, phoneNumber: e164Address.phoneNumber!)
+        let mergedAddress = SignalServiceAddress(serviceId: uuidAddress.serviceId!, phoneNumber: e164Address.phoneNumber!)
         let mergedReceipt = databaseStorage.write { tx in
             outgoingReceiptManager.fetchAndMergeReceiptSet(type: .delivery, address: mergedAddress, transaction: tx)
         }
@@ -39,11 +40,11 @@ class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
 
     func testMergeAll() {
         // Setup – Store two different receipt sets for a uuid and an e164
-        let uuidAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: nil)
+        let uuidAddress = SignalServiceAddress.randomForTesting()
         let uuidReceiptSet = MessageReceiptSet()
         uuidReceiptSet.insert(timestamp: 1234, messageUniqueId: "uuid")
 
-        let e164Address = SignalServiceAddress(uuid: nil, phoneNumber: "+1234567890")
+        let e164Address = SignalServiceAddress(serviceId: nil, phoneNumber: "+1234567890")
         let e164ReceiptSet = MessageReceiptSet()
         e164ReceiptSet.insert(timestamp: 5678, messageUniqueId: "e164")
 
@@ -62,7 +63,7 @@ class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
 
         // Verify – The resulting dictionary contains one element. Maps the merged address to the merged receipt
         XCTAssertEqual(allReceipts.count, 1)
-        XCTAssertEqual(allReceipts.keys.first?.uuid, uuidAddress.uuid)
+        XCTAssertEqual(allReceipts.keys.first?.serviceId, uuidAddress.serviceId)
         XCTAssertEqual(allReceipts.keys.first?.phoneNumber, e164Address.phoneNumber)
 
         XCTAssertTrue(allReceipts.values.first!.timestamps.contains(1234))

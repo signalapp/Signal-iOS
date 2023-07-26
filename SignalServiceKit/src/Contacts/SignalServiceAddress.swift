@@ -99,6 +99,10 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(uuid: uuid, phoneNumber: phoneNumber, ignoreCache: false)
     }
 
+    public convenience init(serviceId: ServiceId?, phoneNumber: String?) {
+        self.init(uuid: serviceId?.uuidValue, phoneNumber: phoneNumber)
+    }
+
     public convenience init(uuid: UUID?, e164: E164?) {
         self.init(uuid: uuid, phoneNumber: e164?.stringValue)
     }
@@ -121,7 +125,15 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     @objc
     public convenience init(uuid: UUID?, phoneNumber: String?, ignoreCache: Bool) {
         self.init(
-            uuid: uuid,
+            serviceId: uuid.map { ServiceId($0) },
+            phoneNumber: phoneNumber,
+            ignoreCache: ignoreCache
+        )
+    }
+
+    public convenience init(serviceId: ServiceId?, phoneNumber: String?, ignoreCache: Bool) {
+        self.init(
+            serviceId: serviceId,
             phoneNumber: phoneNumber,
             cache: Self.signalServiceAddressCache,
             cachePolicy: ignoreCache ? .ignoreCache : .preferInitialPhoneNumberAndListenForUpdates
@@ -623,6 +635,10 @@ public extension UUID {
 // MARK: - Unit Tests
 
 #if TESTABLE_BUILD
+
+extension SignalServiceAddress {
+    static func randomForTesting() -> SignalServiceAddress { SignalServiceAddress(FutureAci.randomForTesting()) }
+}
 
 extension SignalServiceAddressCache {
     func makeAddress(serviceId: ServiceId?, phoneNumber: E164?) -> SignalServiceAddress {

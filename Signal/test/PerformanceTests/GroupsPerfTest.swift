@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import XCTest
+import LibSignalClient
 import SignalServiceKit
+import XCTest
 
 class GroupsPerfTest: PerformanceBaseTest {
 
@@ -30,16 +31,16 @@ class GroupsPerfTest: PerformanceBaseTest {
 
         var builder = GroupMembership.Builder()
         for _ in 0..<memberCount {
-            builder.addFullMember(UUID(), role: .`normal`)
+            builder.addFullMember(FutureAci.randomForTesting().uuidValue, role: .`normal`)
         }
         for _ in 0..<memberCount {
-            builder.addInvitedMember(UUID(), role: .`normal`, addedByUuid: UUID())
+            builder.addInvitedMember(FutureAci.randomForTesting().uuidValue, role: .`normal`, addedByUuid: FutureAci.randomForTesting().uuidValue)
         }
         for _ in 0..<memberCount {
-            builder.addRequestingMember(UUID())
+            builder.addRequestingMember(FutureAci.randomForTesting().uuidValue)
         }
         for i in 0..<memberCount {
-            builder.addBannedMember(UUID(), bannedAtTimestamp: UInt64(i))
+            builder.addBannedMember(FutureAci.randomForTesting().uuidValue, bannedAtTimestamp: UInt64(i))
         }
         return builder.build()
     }

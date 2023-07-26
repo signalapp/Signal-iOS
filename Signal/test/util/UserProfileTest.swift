@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
+
 @testable import SignalServiceKit
 
 class UserProfileTest: SignalBaseTest {
@@ -17,24 +19,24 @@ class UserProfileTest: SignalBaseTest {
     }
 
     func testUserProfileForUUID() {
-        let uuid = UUID()
-        let address = SignalServiceAddress(uuid: uuid)
+        let aci = FutureAci.randomForTesting()
+        let address = SignalServiceAddress(aci)
         write { transaction in
             OWSUserProfile(address: address).anyInsert(transaction: transaction)
         }
         read { transaction in
             let actual = OWSUserProfile.getFor(address, transaction: transaction)
-            XCTAssertEqual(actual?.recipientUUID, uuid.uuidString)
+            XCTAssertEqual(actual?.recipientUUID, aci.uuidValue.uuidString)
         }
         read { transaction in
-            let actual = OWSUserProfile.getFor(SignalServiceAddress(uuid: UUID()), transaction: transaction)
+            let actual = OWSUserProfile.getFor(SignalServiceAddress.randomForTesting(), transaction: transaction)
             XCTAssertNil(actual)
         }
     }
 
     func testUserProfilesForUUIDs() {
-        let addresses = [SignalServiceAddress(uuid: UUID()),
-                         SignalServiceAddress(uuid: UUID())]
+        let addresses = [SignalServiceAddress.randomForTesting(),
+                         SignalServiceAddress.randomForTesting()]
         let profiles = addresses.map { OWSUserProfile(address: $0) }
         write { transaction in
             for profile in profiles {
@@ -42,7 +44,7 @@ class UserProfileTest: SignalBaseTest {
             }
         }
         read { transaction in
-            let bogusAddresses = [SignalServiceAddress(uuid: UUID())]
+            let bogusAddresses = [SignalServiceAddress.randomForTesting()]
             let actual = SignalServiceKit.OWSUserProfile.getFor(keys: addresses + bogusAddresses,
                                                                 transaction: transaction)
             let expected = profiles + [nil]

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
 
 @testable import SignalMessaging
@@ -23,7 +24,7 @@ class StorageServiceContactTest: XCTestCase {
 
         for (unregisteredAtTimestamp, expectedValue) in testCases {
             let storageServiceContact = try XCTUnwrap(StorageServiceContact(
-                serviceId: ServiceId(UUID()),
+                serviceId: FutureAci.randomForTesting(),
                 serviceE164: nil,
                 unregisteredAtTimestamp: unregisteredAtTimestamp
             ))
@@ -47,7 +48,7 @@ class StorageServiceContactTest: XCTestCase {
 
         for (unregisteredAtTimestamp, expectedValue) in testCases {
             let storageServiceContact = try XCTUnwrap(StorageServiceContact(
-                serviceId: ServiceId(UUID()),
+                serviceId: FutureAci.randomForTesting(),
                 serviceE164: nil,
                 unregisteredAtTimestamp: unregisteredAtTimestamp
             ))

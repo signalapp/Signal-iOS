@@ -4,18 +4,19 @@
 //
 
 import Foundation
-import XCTest
 import GRDB
+import LibSignalClient
+import XCTest
 
 @testable import SignalServiceKit
 
 class OWSRecipientIdentityTest: SSKBaseTestSwift {
-    private lazy var localServiceId = ServiceId(UUID())
-    private lazy var aliceServiceId = ServiceId(UUID())
-    private lazy var bobServiceId = ServiceId(UUID())
-    private lazy var charlieServiceId = ServiceId(UUID())
+    private lazy var localAci = FutureAci.randomForTesting()
+    private lazy var aliceAci = FutureAci.randomForTesting()
+    private lazy var bobAci = FutureAci.randomForTesting()
+    private lazy var charlieAci = FutureAci.randomForTesting()
     private var recipients: [ServiceId] {
-        [aliceServiceId, bobServiceId, charlieServiceId, localServiceId]
+        [aliceAci, bobAci, charlieAci, localAci]
     }
     private var groupThread: TSGroupThread!
     private var identityKeys = [ServiceId: Data]()
@@ -33,7 +34,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
         // Create local account.
         tsAccountManager.registerForTests(
             withLocalNumber: "+16505550100",
-            uuid: localServiceId.uuidValue
+            uuid: localAci.uuidValue
         )
         // Create recipients.
         write { tx in
@@ -106,8 +107,8 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
             )
         }
         // Make Alice and Bob no-longer-verified.
-        let deverifiedServiceIds = [aliceServiceId, bobServiceId]
-        for recipient in deverifiedServiceIds {
+        let deverifiedAcis = [aliceAci, bobAci]
+        for recipient in deverifiedAcis {
             OWSIdentityManager.shared.setVerificationState(
                 .noLongerVerified,
                 identityKey: identityKey(recipient),
@@ -126,7 +127,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
                 limit: 2,
                 transaction: transaction
             )
-            XCTAssertEqual(Set(noLongerVerifiedAddresses), Set(deverifiedServiceIds.map { SignalServiceAddress($0) }))
+            XCTAssertEqual(Set(noLongerVerifiedAddresses), Set(deverifiedAcis.map { SignalServiceAddress($0) }))
         }
     }
 
@@ -155,7 +156,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
     func testLocalAddressIgnoredForVerifiedCheck() {
         // Verify everyone except me.
         for recipient in recipients {
-            if recipient == localServiceId {
+            if recipient == localAci {
                 continue
             }
             OWSIdentityManager.shared.setVerificationState(

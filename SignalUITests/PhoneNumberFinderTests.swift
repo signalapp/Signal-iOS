@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -86,7 +87,7 @@ final class PhoneNumberFinderTests: XCTestCase {
                 localNumber: "+16505550100",
                 contactDiscoveryManager: MockContactDiscoveryManager(lookUpBlock: { phoneNumbers in
                     XCTAssertTrue(testCase.isValid)
-                    return .value(testCase.isFound ? [SignalRecipient(serviceId: ServiceId(UUID()), phoneNumber: nil)] : [])
+                    return .value(testCase.isFound ? [SignalRecipient(serviceId: FutureAci.randomForTesting(), phoneNumber: nil)] : [])
                 })
             )
             let resultPromise = finder.lookUp(phoneNumber: testCase.searchResult)

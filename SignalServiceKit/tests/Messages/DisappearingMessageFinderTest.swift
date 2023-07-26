@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
+import LibSignalClient
 import SignalCoreKit
+import XCTest
+
 @testable import SignalServiceKit
 
 final class DisappearingMessageFinderTest: SSKBaseTestSwift {
@@ -21,7 +23,7 @@ final class DisappearingMessageFinderTest: SSKBaseTestSwift {
         SignalServiceAddress(phoneNumber: "+12225550123")
     }
 
-    private lazy var otherAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+13335550198")
+    private lazy var otherAddress = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+13335550198")
 
     func thread(with transaction: SDSAnyWriteTransaction) -> TSThread {
         TSContactThread.getOrCreateThread(

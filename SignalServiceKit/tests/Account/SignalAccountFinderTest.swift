@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -18,32 +19,32 @@ class SignalAccountFinderTest: SSKBaseTestSwift {
 
     private func createAccount(serviceId: ServiceId, phoneNumber: E164?) -> SignalAccount {
         write {
-            let account = SignalAccount(address: SignalServiceAddress(uuid: serviceId.uuidValue, phoneNumber: phoneNumber?.stringValue))
+            let account = SignalAccount(address: SignalServiceAddress(serviceId: serviceId, phoneNumber: phoneNumber?.stringValue))
             account.anyInsert(transaction: $0)
             return account
         }
     }
 
     func testFetchAccounts() {
-        let sid1 = ServiceId(UUID())
+        let sid1 = FutureAci.randomForTesting()
         let pn1 = E164("+16505550100")!
         let account1 = createAccount(serviceId: sid1, phoneNumber: pn1)
 
-        let sid2 = ServiceId(UUID())
+        let sid2 = FutureAci.randomForTesting()
         let account2 = createAccount(serviceId: sid2, phoneNumber: nil)
 
         // Nothing prevents us from creating multiple accounts for the same recipient.
-        let sid3 = ServiceId(UUID())
+        let sid3 = FutureAci.randomForTesting()
         let pn3 = E164("+16505550101")!
         let account3a = createAccount(serviceId: sid3, phoneNumber: pn3)
         _ = createAccount(serviceId: sid3, phoneNumber: pn3)
 
         // Create an account but don't fetch it.
-        let sid4 = ServiceId(UUID())
+        let sid4 = FutureAci.randomForTesting()
         _ = createAccount(serviceId: sid4, phoneNumber: nil)
 
         // Create a ServiceId without an account.
-        let sid5 = ServiceId(UUID())
+        let sid5 = FutureAci.randomForTesting()
 
         let addressesToFetch: [SignalServiceAddress] = [
             SignalServiceAddress(sid1),
@@ -54,7 +55,7 @@ class SignalAccountFinderTest: SSKBaseTestSwift {
             // In practice, every SignalAccount has a UUID, and we should be populating
             // the UUID for phone number-only addresses. However, keep this around for
             // historical purposes (for now).
-            SignalServiceAddress(uuid: nil, phoneNumber: pn1.stringValue, ignoreCache: true)
+            SignalServiceAddress(serviceId: nil, phoneNumber: pn1.stringValue, ignoreCache: true)
         ]
 
         let expectedAccounts: [SignalAccount?] = [

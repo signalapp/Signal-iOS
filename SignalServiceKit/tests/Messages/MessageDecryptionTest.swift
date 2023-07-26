@@ -188,7 +188,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
     func testDecryptPreKeyPniWithWrongDestinationUuid() {
         expectDecryptionFailure(type: .prekeyBundle,
                                 destinationIdentity: .pni,
-                                destinationUuid: UUID()) { error in
+                                destinationUuid: FuturePni.randomForTesting().uuidValue) { error in
             if case MessageProcessingError.wrongDestinationUuid = error {
                 return true
             }

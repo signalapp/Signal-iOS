@@ -15,7 +15,7 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_createsPrivateStoryWithWhitelistedAuthor() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress(uuid: UUID())
+        let author = SignalServiceAddress.randomForTesting()
         let storyMessage = try Self.makePrivateStory(author: author)
 
         try write {
@@ -45,7 +45,7 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_dropsPrivateStoryWithUnwhitelistedAuthor() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress(uuid: UUID())
+        let author = SignalServiceAddress.randomForTesting()
         let storyMessage = try Self.makePrivateStory(author: author)
 
         try write {
@@ -69,7 +69,7 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_dropsStoryWithBlockedAuthor() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress(uuid: UUID())
+        let author = SignalServiceAddress.randomForTesting()
         let privateStoryMessage = try Self.makePrivateStory(author: author)
         let groupStoryMessage = try Self.makeGroupStory(author: author)
 
@@ -113,7 +113,7 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_dropsStoryWithBlockedGroup() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress(uuid: UUID())
+        let author = SignalServiceAddress.randomForTesting()
         let storyMessage = try Self.makeGroupStory(author: author)
 
         let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
@@ -151,7 +151,7 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_dropsStoryWhenNotAGroupMember() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress(uuid: UUID())
+        let author = SignalServiceAddress.randomForTesting()
         let storyMessage = try Self.makeGroupStory(author: author)
 
         let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
@@ -185,7 +185,7 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_dropsAnnouncementStoryWhenNotAnAdmin() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress(uuid: UUID())
+        let author = SignalServiceAddress.randomForTesting()
         let storyMessage = try Self.makeGroupStory(author: author)
 
         let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
@@ -219,7 +219,7 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_createsAnnouncementStoryWhenAnAdmin() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress(uuid: UUID())
+        let author = SignalServiceAddress.randomForTesting()
         let storyMessage = try Self.makeGroupStory(author: author)
 
         let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
@@ -253,7 +253,7 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_createsStoryWhenAValidGroupMember() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress(uuid: UUID())
+        let author = SignalServiceAddress.randomForTesting()
         let storyMessage = try Self.makeGroupStory(author: author)
 
         let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
@@ -287,7 +287,7 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_storeAuthorProfileKey() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress(uuid: UUID())
+        let author = SignalServiceAddress.randomForTesting()
         let storyMessage = try Self.makePrivateStory(author: author)
 
         try write {
@@ -315,7 +315,7 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_dropMessageThatAlreadyExists() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress(uuid: UUID())
+        let author = SignalServiceAddress.randomForTesting()
         let storyMessage = try Self.makePrivateStory(author: author)
 
         try write {

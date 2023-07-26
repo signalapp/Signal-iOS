@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
-@testable import SignalServiceKit
 import GRDB
+import LibSignalClient
+import XCTest
+
+@testable import SignalServiceKit
 
 final class DatabaseRecoveryTest: SSKBaseTestSwift {
     // MARK: - Setup
@@ -112,7 +114,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
         let (databaseStorage, url) = database()
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
 
-        let contactAci = ServiceId(UUID())
+        let contactAci = FutureAci.randomForTesting()
 
         guard let localAddress = tsAccountManager.localAddress else {
             XCTFail("No local address. Test is not set up correctly")
@@ -275,7 +277,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
 
         databaseStorage.write { transaction in
-            let contactAci = ServiceId(UUID())
+            let contactAci = FutureAci.randomForTesting()
 
             let contactThread = insertContactThread(
                 contactAddress: SignalServiceAddress(contactAci),

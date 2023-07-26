@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
+import LibSignalClient
 import XCTest
+
+@testable import SignalServiceKit
 
 class TSInfoMessageUpdateMessagesTest: XCTestCase {
     private typealias UpdateMessage = TSInfoMessage.UpdateMessage
@@ -54,8 +56,8 @@ extension TSInfoMessage.UpdateMessage: ValidatableModel {
             ),
             (
                 .invitedPniPromotedToFullMemberAci(
-                    pni: ServiceId(uuidString: "7CE80DE3-6243-4AD5-AE60-0D1F205391DA")!,
-                    aci: ServiceId(uuidString: "56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC")!
+                    pni: FuturePni.constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA"),
+                    aci: FutureAci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC")
                 ),
                 Data(base64Encoded: "eyJpbnZpdGVkUG5pUHJvbW90ZWRUb0Z1bGxNZW1iZXJBY2kiOnsicG5pIjoiN0NFODBERTMtNjI0My00QUQ1LUFFNjAtMEQxRjIwNTM5MURBIiwiYWNpIjoiNTZFRTBFRjQtQTdERi00QjUyLUJGQUYtQzYzN0YxNUI0RkVDIn19")!
             )

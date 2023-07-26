@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
+import LibSignalClient
 import XCTest
+
+@testable import SignalServiceKit
 
 class PniHelloWorldManagerTest: XCTestCase {
     private struct TestKeyValueStore {
@@ -216,7 +218,7 @@ class PniHelloWorldManagerTest: XCTestCase {
 
 private extension LocalIdentifiers {
     static var mock: LocalIdentifiers {
-        return .withPni(pni: ServiceId(UUID()))
+        return .withPni(pni: FuturePni.randomForTesting())
     }
 
     static var missingPni: LocalIdentifiers {
@@ -224,7 +226,7 @@ private extension LocalIdentifiers {
     }
 
     private static func withPni(pni: ServiceId?) -> LocalIdentifiers {
-        return LocalIdentifiers(aci: ServiceId(UUID()), pni: pni, e164: E164("+17735550199")!)
+        return LocalIdentifiers(aci: FutureAci.randomForTesting(), pni: pni, e164: E164("+17735550199")!)
     }
 }
 
@@ -298,7 +300,7 @@ private class PniDistributionParamaterBuilderMock: PniDistributionParamaterBuild
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
-        localDevicePniSignedPreKey: SignedPreKeyRecord,
+        localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
         guard let buildOutcome = buildOutcomes.first else {
@@ -355,9 +357,9 @@ private class SignalRecipientStoreMock: _PniHelloWorldManagerImpl_SignalRecipien
 // MARK: SignedPreKeyStore
 
 private class SignedPreKeyStoreMock: _PniHelloWorldManagerImpl_SignedPreKeyStore_Shim {
-    var currentSignedPreKey: SignedPreKeyRecord?
+    var currentSignedPreKey: SignalServiceKit.SignedPreKeyRecord?
 
-    func currentSignedPreKey(tx: DBReadTransaction) -> SignedPreKeyRecord? {
+    func currentSignedPreKey(tx: DBReadTransaction) -> SignalServiceKit.SignedPreKeyRecord? {
         return currentSignedPreKey
     }
 }

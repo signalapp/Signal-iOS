@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
+import LibSignalClient
 import XCTest
+
+@testable import SignalServiceKit
 
 final class MessageBodyTests: XCTestCase {
 
@@ -14,7 +16,7 @@ final class MessageBodyTests: XCTestCase {
 
     // MARK: - Hydration
 
-    let uuids = (0...5).map { _ in UUID() }
+    let uuids = (0...5).map { _ in FutureAci.randomForTesting().uuidValue }
 
     func testHydration_noMentions() {
         runHydrationTest(

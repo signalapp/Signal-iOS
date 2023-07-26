@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -50,8 +51,8 @@ class BlockingManagerTests: SSKBaseTestSwift {
                 Set(allExpectedBlockedAddresses.compactMap { $0.phoneNumber })
             )
             XCTAssertEqual(
-                Set(allFetchedBlockedAddresses.compactMap { $0.uuidString }),
-                Set(allExpectedBlockedAddresses.compactMap { $0.uuidString })
+                Set(allFetchedBlockedAddresses.compactMap { $0.serviceId }),
+                Set(allExpectedBlockedAddresses.compactMap { $0.serviceId })
             )
             // Next, ensure that querying an individual address or thread works properly
             generatedAddresses.forEach {
@@ -126,7 +127,7 @@ class BlockingManagerTests: SSKBaseTestSwift {
         let victimBlockedAddress = CommonGenerator.address()
         let victimGroupId = TSGroupModel.generateRandomV1GroupId()
 
-        let blockedUUIDs = Set((0..<10).map { _ in UUID() })
+        let blockedUUIDs = Set((0..<10).map { _ in FutureAci.randomForTesting().uuidValue })
         let blockedE164s = Set((0..<10).map { _ in CommonGenerator.e164() })
         let blockedGroupIds = Set((0..<10).map { _ in TSGroupModel.generateRandomV1GroupId() })
         databaseStorage.write { writeTx in

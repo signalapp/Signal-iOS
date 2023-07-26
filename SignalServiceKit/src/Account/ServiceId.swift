@@ -116,23 +116,33 @@ public typealias FuturePni = ServiceId
 
 #if TESTABLE_BUILD
 
-extension Aci {
-    public static func randomForTesting() -> FutureAci {
-        ServiceId(Aci(fromUUID: UUID()).rawUUID)
+extension ServiceId {
+    public static func randomForTesting() -> ServiceId {
+        return ServiceId(UUID())
     }
 
-    public static func constantForTesting(_ uuidString: String) -> FutureAci {
-        ServiceId((try! LibSignalClient.ServiceId.parseFrom(serviceIdString: uuidString) as! Aci).rawUUID)
+    public static func constantForTesting(_ serviceIdString: String) -> ServiceId {
+        return ServiceId((try! LibSignalClient.ServiceId.parseFrom(serviceIdString: serviceIdString)).rawUUID)
+    }
+}
+
+extension Aci {
+    public static func randomForTesting() -> Aci {
+        Aci(fromUUID: UUID())
+    }
+
+    public static func constantForTesting(_ uuidString: String) -> Aci {
+        try! LibSignalClient.ServiceId.parseFrom(serviceIdString: uuidString) as! Aci
      }
  }
 
 extension Pni {
-    public static func randomForTesting() -> FuturePni {
-        ServiceId(Pni(fromUUID: UUID()).rawUUID)
+    public static func randomForTesting() -> Pni {
+        Pni(fromUUID: UUID())
     }
 
-    public static func constantForTesting(_ serviceIdString: String) -> FuturePni {
-        ServiceId((try! LibSignalClient.ServiceId.parseFrom(serviceIdString: serviceIdString) as! Pni).rawUUID)
+    public static func constantForTesting(_ serviceIdString: String) -> Pni {
+        try! LibSignalClient.ServiceId.parseFrom(serviceIdString: serviceIdString) as! Pni
     }
 }
 

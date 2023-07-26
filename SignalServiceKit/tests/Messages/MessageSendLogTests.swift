@@ -4,6 +4,7 @@
 //
 
 import GRDB
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -19,7 +20,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             let payloadId = try XCTUnwrap(messageSendLog.recordPayload(payloadData, for: newMessage, tx: writeTx))
 
             // "Send" the message to a recipient
-            let serviceId = ServiceId(UUID())
+            let serviceId = FutureAci.randomForTesting()
             let deviceId = UInt32.random(in: 0..<100)
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
@@ -51,7 +52,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             let payloadId = try XCTUnwrap(messageSendLog.recordPayload(payloadData, for: newMessage, tx: writeTx))
 
             // "Send" the message to one recipient
-            let serviceId = ServiceId(UUID())
+            let serviceId = FutureAci.randomForTesting()
             let deviceId = UInt32.random(in: 0..<100)
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
@@ -71,7 +72,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
 
             // Expect no results when re-fetching the payload with a different address
             XCTAssertNil(messageSendLog.fetchPayload(
-                recipientServiceId: ServiceId(UUID()),
+                recipientServiceId: FutureAci.randomForTesting(),
                 recipientDeviceId: deviceId,
                 timestamp: newMessage.timestamp,
                 tx: writeTx
@@ -87,7 +88,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             let payloadId = try XCTUnwrap(messageSendLog.recordPayload(payloadData, for: newMessage, tx: writeTx))
 
             // "Send" the message to two devices
-            let serviceId = ServiceId(UUID())
+            let serviceId = FutureAci.randomForTesting()
             for deviceId: UInt32 in [0, 1] {
                 messageSendLog.recordPendingDelivery(
                     payloadId: payloadId,
@@ -132,7 +133,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             let payloadId = try XCTUnwrap(messageSendLog.recordPayload(payloadData, for: newMessage, tx: writeTx))
 
             // "Send" the message to a recipient
-            let serviceId = ServiceId(UUID())
+            let serviceId = FutureAci.randomForTesting()
             let deviceId = UInt32.random(in: 0..<100)
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
@@ -160,7 +161,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             let payloadId = try XCTUnwrap(messageSendLog.recordPayload(payloadData, for: newMessage, tx: writeTx))
 
             // "Send" the message to one recipient, two devices
-            let serviceId = ServiceId(UUID())
+            let serviceId = FutureAci.randomForTesting()
             for deviceId: UInt32 in [0, 1] {
                 messageSendLog.recordPendingDelivery(
                     payloadId: payloadId,
@@ -203,7 +204,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
             let payloadId = try XCTUnwrap(messageSendLog.recordPayload(payloadData, for: newMessage, tx: writeTx))
 
-            let serviceId = ServiceId(UUID())
+            let serviceId = FutureAci.randomForTesting()
 
             // "Send" the message to one device. It acks delivery
             messageSendLog.recordPendingDelivery(
@@ -266,7 +267,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
             let initialPayloadId = try XCTUnwrap(messageSendLog.recordPayload(payloadData, for: newMessage, tx: writeTx))
 
-            let serviceId = ServiceId(UUID())
+            let serviceId = FutureAci.randomForTesting()
 
             // "Send" the message to one device. Complete send but don't mark as delivered.
             messageSendLog.recordPendingDelivery(
@@ -323,7 +324,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let serviceId = ServiceId(UUID())
+            let serviceId = FutureAci.randomForTesting()
 
             // Record + Send + Deliver + Complete (Deliver and Complete can happen in either order)
             let initialPayloadId = try XCTUnwrap(messageSendLog.recordPayload(payloadData, for: newMessage, tx: writeTx))
@@ -395,7 +396,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             let payloadId = try XCTUnwrap(messageSendLog.recordPayload(payloadData, for: newMessage, tx: writeTx))
 
             // "Send" the message to a recipient
-            let serviceId = ServiceId(UUID())
+            let serviceId = FutureAci.randomForTesting()
             let deviceId = UInt32.random(in: 0..<100)
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
@@ -428,7 +429,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             let index3 = try XCTUnwrap(messageSendLog.recordPayload(data3, for: readReceiptMessage, tx: writeTx))
 
             // "Send" the messages to a recipient
-            let serviceId = ServiceId(UUID())
+            let serviceId = FutureAci.randomForTesting()
             let deviceId = UInt32.random(in: 0..<100)
             for index in [index1, index2, index3] {
                 messageSendLog.recordPendingDelivery(
@@ -498,7 +499,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             let originalDate = Date(millisecondsSince1970: originalTimestamp)
             XCTAssertEqual(originalDate.ows_millisecondsSince1970, originalTimestamp)
 
-            let serviceId = ServiceId(UUID())
+            let serviceId = FutureAci.randomForTesting()
             let message = createOutgoingMessage(date: originalDate, transaction: writeTx)
             let data = CommonGenerator.sentence.data(using: .utf8)!
             XCTAssertEqual(message.timestamp, originalTimestamp)

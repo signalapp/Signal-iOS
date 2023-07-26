@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
-import SignalServiceKit
+
+@testable import SignalServiceKit
 
 class OWSRequestFactoryTest: XCTestCase {
     private func getUdAccessKey() throws -> SMKUDAccessKey {
@@ -69,7 +71,7 @@ class OWSRequestFactoryTest: XCTestCase {
     func testSubmitMessageRequest() throws {
         let udAccessKey = try getUdAccessKey()
 
-        let serviceId = ServiceId(UUID())
+        let serviceId = FutureAci.randomForTesting()
 
         let request = OWSRequestFactory.submitMessageRequest(
             withServiceId: ServiceIdObjC(serviceId),
@@ -213,7 +215,7 @@ class OWSRequestFactoryTest: XCTestCase {
     func testReportSpamFromUuidWithEmptyServerGuid() {
         // This will probably never happen, but if the server wants, this should be allowed.
         let request = OWSRequestFactory.reportSpam(
-            from: ServiceId(uuidString: "EB7B0432-BE7F-4A62-9859-4D7835D0D724")!,
+            from: FutureAci.constantForTesting("EB7B0432-BE7F-4A62-9859-4D7835D0D724"),
             withServerGuid: "",
             reportingToken: nil
         )
@@ -226,7 +228,7 @@ class OWSRequestFactoryTest: XCTestCase {
 
     func testReportSpamWithReportingToken() {
         let request = OWSRequestFactory.reportSpam(
-            from: ServiceId(UUID()),
+            from: FutureAci.randomForTesting(),
             withServerGuid: "abc123",
             reportingToken: .init(data: .init([97, 98, 99]))
         )

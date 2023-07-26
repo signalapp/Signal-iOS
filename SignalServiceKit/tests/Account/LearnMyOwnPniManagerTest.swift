@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
+import LibSignalClient
 import XCTest
+
+@testable import SignalServiceKit
 
 class LearnMyOwnPniManagerTest: XCTestCase {
     private struct TestKeyValueStore {
@@ -102,9 +104,9 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testFetchesPniIfMissing() {
-        let localAci = ServiceId(UUID())
+        let localAci = FutureAci.randomForTesting()
         let localE164 = E164("+17735550199")!
-        let remotePni = ServiceId(UUID())
+        let remotePni = FuturePni.randomForTesting()
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: nil, e164: localE164)
         accountServiceClientMock.mockWhoAmI = .init(aci: localAci, pni: remotePni, e164: localE164)
@@ -121,8 +123,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testSkipsPniFetchIfPresent() {
-        let localAci = ServiceId(UUID())
-        let localPni = ServiceId(UUID())
+        let localAci = FutureAci.randomForTesting()
+        let localPni = FuturePni.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
@@ -139,11 +141,11 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testSkipsPniSaveIfMismatchedAci() {
-        let localAci = ServiceId(UUID())
+        let localAci = FutureAci.randomForTesting()
         let localE164 = E164("+17735550199")!
 
-        let remoteAci = ServiceId(UUID())
-        let remotePni = ServiceId(UUID())
+        let remoteAci = FutureAci.randomForTesting()
+        let remotePni = FuturePni.randomForTesting()
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: nil, e164: localE164)
         accountServiceClientMock.mockWhoAmI = .init(aci: remoteAci, pni: remotePni, e164: localE164)
@@ -160,8 +162,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testCreatesPniKeysWithoutFetchingRemoteIfNoneLocal() {
-        let localAci = ServiceId(UUID())
-        let localPni = ServiceId(UUID())
+        let localAci = FutureAci.randomForTesting()
+        let localPni = FuturePni.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
@@ -178,8 +180,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testCreatesPniKeysIfRemoteMissing() {
-        let localAci = ServiceId(UUID())
-        let localPni = ServiceId(UUID())
+        let localAci = FutureAci.randomForTesting()
+        let localPni = FuturePni.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
@@ -198,8 +200,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testCreatesPniKeysIfRemoteDoesNotMatchLocal() {
-        let localAci = ServiceId(UUID())
-        let localPni = ServiceId(UUID())
+        let localAci = FutureAci.randomForTesting()
+        let localPni = FuturePni.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
@@ -218,8 +220,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testDoesNotCreatePniKeysIfErrorFetchingRemoteToCompare() {
-        let localAci = ServiceId(UUID())
-        let localPni = ServiceId(UUID())
+        let localAci = FutureAci.randomForTesting()
+        let localPni = FuturePni.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
@@ -238,8 +240,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     }
 
     func testDoesNotCreatePniKeysIfRemoteMatchesLocal() {
-        let localAci = ServiceId(UUID())
-        let localPni = ServiceId(UUID())
+        let localAci = FutureAci.randomForTesting()
+        let localPni = FuturePni.randomForTesting()
         let localE164 = E164("+17735550199")!
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: localPni, e164: localE164)
