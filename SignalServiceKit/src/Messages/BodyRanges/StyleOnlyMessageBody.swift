@@ -35,11 +35,18 @@ public class StyleOnlyMessageBody: NSObject, Codable {
     }
 
     public convenience init(text: String, style: MessageBodyRanges.SingleStyle) {
-        let protoBuilder = SSKProtoBodyRange.builder()
-        protoBuilder.setStart(0)
-        protoBuilder.setLength(UInt32((text as NSString).length))
-        protoBuilder.setStyle(style.asProtoStyle)
-        self.init(text: text, protos: [protoBuilder.buildInfallibly()])
+        self.init(text: text, styles: style.asStyle)
+    }
+
+    public convenience init(text: String, styles: MessageBodyRanges.Style) {
+        let protos = styles.contents.map { style in
+            let protoBuilder = SSKProtoBodyRange.builder()
+            protoBuilder.setStart(0)
+            protoBuilder.setLength(UInt32((text as NSString).length))
+            protoBuilder.setStyle(style.asProtoStyle)
+            return protoBuilder.buildInfallibly()
+        }
+        self.init(text: text, protos: protos)
     }
 
     public convenience init(plaintext: String) {

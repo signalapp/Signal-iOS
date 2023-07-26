@@ -23,6 +23,7 @@ public protocol EditableMessageBodyDelegate: AnyObject {
 
 public class EditableMessageBodyTextStorage: NSTextStorage {
 
+    public typealias Style = MessageBodyRanges.Style
     public typealias SingleStyle = MessageBodyRanges.SingleStyle
 
     /// Abstraction so callers can either provide an already-open transaction or allow
@@ -151,32 +152,29 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     /// If any change is made to a mention range, the mention will be removed (but its representation
     /// as plaintext will persist).
     public func replaceCharacters(in range: NSRange, with string: String, selectedRange: NSRange) {
-        replaceCharacters(in: range, with: string, selectedRange: selectedRange, txProvider: db.readTxProvider)
+        replaceCharacters(
+            in: range,
+            with: string,
+            selectedRange: selectedRange,
+            forceIgnoreStylesInReplacedRange: false,
+            txProvider: db.readTxProvider
+        )
     }
 
-    private func replaceCharacters(in range: NSRange, with string: String, selectedRange: NSRange, txProvider: ReadTxProvider) {
+    private func replaceCharacters(
+        in range: NSRange,
+        with string: String,
+        selectedRange: NSRange,
+        forceIgnoreStylesInReplacedRange: Bool,
+        txProvider: ReadTxProvider
+    ) {
         let string = string.removingPlaceholders()
         let hydratedTextBeforeChange = body.hydratedText
         let changeInLength = (string as NSString).length - range.length
         var modifiedRange = range
         // For append-only, we can efficiently update without recomputing anything.
         if range.location == displayString.length, range.length == 0 {
-            self.body.hydratedText = body.hydratedText + string
-            guard let editableBodyDelegate else {
-                owsFailDebug("Should have delegate")
-                self.displayString.append(string)
-                return
-            }
-            let config = editableBodyDelegate.editableMessageBodyDisplayConfig()
-            let isDarkThemeEnabled = editableBodyDelegate.isEditableMessageBodyDarkThemeEnabled()
-            self.displayString.append(
-                string,
-                attributes: [
-                    .font: config.mention.font,
-                    .foregroundColor: config.baseTextColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
-                ]
-            )
-            super.edited(.editedCharacters, range: range, changeInLength: changeInLength)
+            self.efficientAppendText(string, range: range, changeInLength: changeInLength)
             return
         }
         // If the change is within a mention, that mention is eliminated.
@@ -222,7 +220,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             body.flattenedStyles,
             forReplacementOf: range,
             with: string,
-            preserveStyleInReplacement: false
+            preserveStyleInReplacement: (!forceIgnoreStylesInReplacedRange && string.shouldContinueExistingStyle)
         )
 
         body.hydratedText = (body.hydratedText as NSString)
@@ -235,6 +233,64 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             modifiedRange: modifiedRange,
             selectedRangeAfterChange: nil
         )
+    }
+
+    private func efficientAppendText(_ string: String, range: NSRange, changeInLength: Int) {
+        self.body.hydratedText = body.hydratedText + string
+        guard let editableBodyDelegate else {
+            owsFailDebug("Should have delegate")
+            self.displayString.append(string)
+            return
+        }
+
+        // See if there are styles to preserve.
+        var stylesToApply: Style?
+        if string.shouldContinueExistingStyle, range.location > 0 {
+            let indexToCheck = range.location - 1
+            for (i, style) in body.flattenedStyles.enumerated() {
+                if style.range.contains(indexToCheck) {
+                    // Extend the existing style.
+                    let newStyle = NSRangedValue<SingleStyle>(
+                        style.value,
+                        range: NSRange(
+                            location: style.range.location,
+                            length: style.range.length + range.length + changeInLength
+                        )
+                    )
+                    // Safe to reinsert in place as its sorted by location,
+                    // which didn't change as we only touched length.
+                    body.flattenedStyles[i] = newStyle
+                    if stylesToApply != nil {
+                        stylesToApply?.insert(style: style.value)
+                    } else {
+                        stylesToApply = style.value.asStyle
+                    }
+                }
+            }
+        }
+
+        let config = editableBodyDelegate.editableMessageBodyDisplayConfig()
+        let isDarkThemeEnabled = editableBodyDelegate.isEditableMessageBodyDarkThemeEnabled()
+        let stringToAppend: NSAttributedString
+        let editActions: NSTextStorage.EditActions
+        if let stylesToApply {
+            stringToAppend = StyleOnlyMessageBody(text: string, styles: stylesToApply).asAttributedStringForDisplay(
+                config: config.style,
+                isDarkThemeEnabled: isDarkThemeEnabled
+            )
+            editActions = [.editedAttributes, .editedCharacters]
+        } else {
+            stringToAppend = NSAttributedString(
+                string: string,
+                attributes: [
+                    .font: config.mention.font,
+                    .foregroundColor: config.baseTextColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+                ]
+            )
+            editActions = .editedCharacters
+        }
+        self.displayString.append(stringToAppend)
+        super.edited(editActions, range: range, changeInLength: changeInLength)
     }
 
     public func replaceCharacters(in range: NSRange, withMentionUUID mentionUuid: UUID, txProvider: ReadTxProvider) {
@@ -277,19 +333,21 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             modifiedRange.formUnion($0)
         }
 
+        // Add a space after the inserted mention
+        let suffix = insertSpaceAfter ? " " : ""
+        let finalMentionText = hydratedMention + suffix
+
         // Styles need updated ranges.
         body.flattenedStyles = Self.updateFlattenedStyles(
             body.flattenedStyles,
             forReplacementOf: range,
-            with: hydratedMention,
+            with: finalMentionText,
             preserveStyleInReplacement: true
         )
 
-        // Add a space after the inserted mention
-        let suffix = insertSpaceAfter ? " " : ""
         body.hydratedText = (body.hydratedText as NSString).replacingCharacters(
             in: range,
-            with: hydratedMention + suffix
+            with: finalMentionText
         ).removingPlaceholders()
         // Any space isn't included in the mention's range.
         let mentionRange = NSRange(location: range.location, length: (hydratedMention as NSString).length)
@@ -544,7 +602,13 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         let insertedBody = hydrated.asEditableMessageBody()
 
         // First replace with plaintext, then apply the styles and mentions.
-        self.replaceCharacters(in: range, with: insertedBody.hydratedText, selectedRange: range, txProvider: txProvider)
+        self.replaceCharacters(
+            in: range,
+            with: insertedBody.hydratedText,
+            selectedRange: range,
+            forceIgnoreStylesInReplacedRange: true,
+            txProvider: txProvider
+        )
         for mention in insertedBody.mentions {
             self.replaceCharacters(
                 in: NSRange(location: range.location + mention.key.location, length: mention.key.length),
@@ -572,6 +636,13 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         )
     }
 
+    /// If `preserveStyleInReplacement` is true, any styles existing
+    /// in the first character of the range being replaced will be applied to the
+    /// entirety of the new text.
+    /// For replacement ranges of length 0 (aka insertions), we look a the style
+    /// on the preceding character and extend it.
+    /// Only false if inserting a copy-pasted MessageBody that has styles
+    /// of its own.
     private static func updateFlattenedStyles(
         _ flattenedStyles: [NSRangedValue<SingleStyle>],
         forReplacementOf range: NSRange,
@@ -580,14 +651,50 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     ) -> [NSRangedValue<SingleStyle>] {
         let stringLength = (string as NSString).length
         let changeLengthDiff = stringLength - range.length
-        var newStyles = [NSRangedValue<SingleStyle>]()
+
+        var finalStyles = [NSRangedValue<SingleStyle>]()
+        func appendToFinalStyles(_ style: NSRangedValue<SingleStyle>) {
+            guard style.range.length > 0 else {
+                return
+            }
+            finalStyles.append(style)
+        }
+
+        let targetIndexForPreservation: Int?
+        if range.length == 0 {
+            if range.location > 0 {
+                targetIndexForPreservation = range.location - 1
+            } else {
+                targetIndexForPreservation = nil
+            }
+        } else {
+            targetIndexForPreservation = range.location
+        }
+
         for style in flattenedStyles {
-            if style.range.upperBound <= range.location {
+            if
+                preserveStyleInReplacement,
+                let targetIndexForPreservation,
+                style.range.contains(targetIndexForPreservation)
+            {
+                // We should preserve this style, and apply it to the entire new range.
+                let newLength =
+                    range.location - style.range.location /* part before the range start */
+                    + range.length + changeLengthDiff /* applies to the entire range */
+                    + max(0, style.range.upperBound - range.upperBound) /* part after the end, if any */
+                appendToFinalStyles(.init(
+                    style.value,
+                    range: NSRange(
+                        location: style.range.location,
+                        length: newLength
+                    )
+                ))
+            } else if style.range.upperBound <= range.location {
                 // Its before the changed region, no changes needed.
-                newStyles.append(style)
+                appendToFinalStyles(style)
             } else if style.range.location >= range.upperBound {
                 // Its after the changed region, just update the location.
-                newStyles.append(.init(
+                appendToFinalStyles(.init(
                     style.value,
                     range: NSRange(
                         location: style.range.location + changeLengthDiff,
@@ -595,86 +702,49 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     )
                 ))
             } else if style.range.location >= range.location, style.range.upperBound <= range.upperBound {
-                // Total overlap.
-                guard preserveStyleInReplacement, string.isEmpty.negated else {
-                    // we can skip this style entirely; its wiped.
-                    continue
-                }
-                // We just shrink the style to the new range.
-                newStyles.append(.init(
-                    style.value,
-                    range: NSRange(location: range.location, length: stringLength)
-                ))
+                // Total overlap; the range being replaced fully contains the existing style.
+                // But we already determined this style _isn't_ to be preserved since this
+                // is an "else" after the first "if". So we can skip this style.
+                continue
             } else if style.range.location < range.location, style.range.upperBound > range.upperBound {
-                // The style contains the changed range.
-                if preserveStyleInReplacement {
-                    // Shrink the style by the change in range.
-                    newStyles.append(.init(
-                        style.value,
-                        range: NSRange(location: style.range.location, length: style.range.length + changeLengthDiff)
-                    ))
-                } else {
-                    // Split the style in two on either side of the eliminated region.
-                    newStyles.append(.init(
-                        style.value,
-                        range: NSRange(
-                            location: style.range.location,
-                            length: range.location - style.range.location
-                        )
-                    ))
-                    newStyles.append(.init(
-                        style.value,
-                        range: NSRange(
-                            location: range.upperBound + changeLengthDiff,
-                            length: style.range.upperBound - range.upperBound
-                        )
-                    ))
-                }
+                // The style contains the changed range. We have to split it two on either side of the eliminated region.
+                appendToFinalStyles(.init(
+                    style.value,
+                    range: NSRange(
+                        location: style.range.location,
+                        length: range.location - style.range.location
+                    )
+                ))
+                appendToFinalStyles(.init(
+                    style.value,
+                    range: NSRange(
+                        location: range.upperBound + changeLengthDiff,
+                        length: style.range.upperBound - range.upperBound
+                    )
+                ))
             } else if style.range.location < range.location {
                 // The style hangs off the start of the affected range.
-                if preserveStyleInReplacement {
-                    // Extend the style to the whole new range.
-                    newStyles.append(.init(
-                        style.value,
-                        range: NSRange(
-                            location: style.range.location,
-                            length: (range.location + stringLength) - style.range.location
-                        )
-                    ))
-                } else {
-                    // Add the hanging head
-                    newStyles.append(.init(
-                        style.value,
-                        range: NSRange(
-                            location: style.range.location,
-                            length: range.location - style.range.location
-                        )
-                    ))
-                }
+                // Slice off the overlapping bit and keep the start.
+                appendToFinalStyles(.init(
+                    style.value,
+                    range: NSRange(
+                        location: style.range.location,
+                        length: range.location - style.range.location
+                    )
+                ))
             } else {
                 // The style hangs off the end of the affected range.
-                if preserveStyleInReplacement {
-                    // Extend the style to the whole new range.
-                    newStyles.append(.init(
-                        style.value,
-                        range: NSRange(
-                            location: range.location,
-                            length: style.range.upperBound - range.location + changeLengthDiff
-                        )
-                    ))
-                } else {
-                    // Add the hanging tail
-                    newStyles.append(.init(
-                        style.value,
-                        range: NSRange(
-                            location: range.upperBound + changeLengthDiff,
-                            length: style.range.upperBound - range.upperBound
-                        )
-                    ))
-                }
+                // Slice off the overlapping bit and keep the end.
+                appendToFinalStyles(.init(
+                    style.value,
+                    range: NSRange(
+                        location: range.upperBound + changeLengthDiff,
+                        length: style.range.upperBound - range.upperBound
+                    )
+                ))
             }
         }
-        return newStyles
+        return finalStyles
     }
 
     // MARK: - MessageBody
@@ -867,5 +937,10 @@ extension SDSDatabaseStorage {
 extension String {
     fileprivate func removingPlaceholders() -> String {
         return (self as NSString).replacingOccurrences(of: "\u{fffc}", with: "")
+    }
+
+    // We preserve style as long as we are not adding a single whitespace.
+    fileprivate var shouldContinueExistingStyle: Bool {
+        return !(self.count == 1 && self.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
     }
 }

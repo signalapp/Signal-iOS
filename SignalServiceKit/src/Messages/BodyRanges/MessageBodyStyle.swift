@@ -48,6 +48,10 @@ extension MessageBodyRanges {
                 return .monospace
             }
         }
+
+        public var asStyle: Style {
+            return Style(rawValue: rawValue)
+        }
     }
 
     public struct Style: OptionSet, Equatable, Hashable, Codable {
@@ -66,15 +70,15 @@ extension MessageBodyRanges {
         static let attributedStringKey = NSAttributedString.Key("OWSStyle")
 
         public func contains(style: SingleStyle) -> Bool {
-            return self.contains(Style(rawValue: style.rawValue))
+            return self.contains(style.asStyle)
         }
 
         public mutating func insert(style: SingleStyle) {
-            self.insert(.init(rawValue: style.rawValue))
+            self.insert(style.asStyle)
         }
 
         public mutating func remove(style: SingleStyle) {
-            self.remove(.init(rawValue: style.rawValue))
+            self.remove(style.asStyle)
         }
 
         public var contents: [SingleStyle] {
