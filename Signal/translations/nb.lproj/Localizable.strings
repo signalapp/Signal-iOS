@@ -2144,13 +2144,13 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopier";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Kun Signal Beta-brukere kan redigere meldinger. Hvis du redigerer en melding, vil endringen kun vises for personer som bruker den nyeste versjonen av Signal Beta.";
 
 /* Label to confirm sending an edit */
 "EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Kun med Signal Beta";
 
 /* Error message to display to user when a messaeg is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Meldinger kan kun redigeres de første tre timene etter at de ble sendt.";
@@ -3325,6 +3325,9 @@
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "Innkommende videoanrop";
 
+/* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
+"INFO_MESSAGE_CONTACT_REMOVED" = "You have removed this person, messaging them again will add them back to your list.";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3850,6 +3853,9 @@
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Bli med i denne gruppen? De vil ikke se om du har sett meldingene deres før du godtar.";
 
+/* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Let %1$@ message you and share your name and photo with them? You have removed this person in the past.";
+
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Fjern blokkeringen";
 
@@ -3869,7 +3875,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Laster ned";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "Edited";
+"MESSAGE_STATUS_EDITED" = "Redigert";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Sending feilet.";
@@ -5075,7 +5081,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Endre brukernavnet";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR-kode eller lenke";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Brukernavn";
@@ -6755,7 +6761,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "Ingen oppdateringer å vise.";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+"STORIES_NO_REPLIES_SUBTITLE" = "Alle gruppemedlemmene kan se svarene";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Ingen svar ennå";
@@ -6892,9 +6898,6 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Reagerte på storyen";
 
-/* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Privat svar til %1$@";
-
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Svar";
 
@@ -6902,7 +6905,10 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Svar til gruppen";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Svar til gruppen";
+
+/* placeholder text for replying to a private story. Embeds {{author name}} */
+"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Reply to %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Storyen kunne ikke sendes. Sjekk internettilkoblingen og prøv igjen.";
@@ -7367,10 +7373,10 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "Alle som har denne lenken, kan se brukernavnet ditt og starte nye samtaler med deg. Ikke del lenken med personer du ikke stoler på.";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Del din unike QR-kode eller lenke og la andre starte nye samtaler med deg.";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
+"USERNAME_LINK_TOOLTIP_TITLE" = "Del brukernavnet ditt";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Det oppstod en feil under søket etter brukernavnet. Prøv igjen senere.";

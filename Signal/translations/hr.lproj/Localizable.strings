@@ -2144,13 +2144,13 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopiraj";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Uređivanje poruka dostupno je samo korisnicima beta verzije Signala. Ako uredite poruku, izmjene će biti vidljive samo osobama koje koriste najnoviju beta verziju Signala.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Pošalji";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Samo u beta verziji Signala";
 
 /* Error message to display to user when a messaeg is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Poruke je moguće uređivati samo u roku od 3 sata od trenutka slanja.";
@@ -3325,6 +3325,9 @@
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "Dolazni videopoziv";
 
+/* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
+"INFO_MESSAGE_CONTACT_REMOVED" = "You have removed this person, messaging them again will add them back to your list.";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3850,6 +3853,9 @@
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Pridružiti se ovoj grupi? Neće znati da ste vidjeli njihove poruke dok ne prihvatite.";
 
+/* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Let %1$@ message you and share your name and photo with them? You have removed this person in the past.";
+
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Odblokiraj";
 
@@ -3869,7 +3875,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Preuzimanje";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "Edited";
+"MESSAGE_STATUS_EDITED" = "Uređeno";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Slanje nije uspjelo.";
@@ -5075,7 +5081,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Uredi korisničko ime";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR kôd ili poveznica";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Korisničko ime";
@@ -6755,7 +6761,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "Trenutno nema ažuriranja za prikaz.";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+"STORIES_NO_REPLIES_SUBTITLE" = "Svi članovi grupe mogu vidjeti odgovore";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Još nema odgovora";
@@ -6892,9 +6898,6 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Reakcija na priču";
 
-/* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Odgovori korisniku %1$@ u privatnoj poruci";
-
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Odgovori";
 
@@ -6902,7 +6905,10 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Odgovori grupi";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Odgovori grupi";
+
+/* placeholder text for replying to a private story. Embeds {{author name}} */
+"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Reply to %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Nije moguće poslati priču. Provjerite internetsku vezu i pokušajte ponovno";
@@ -7367,10 +7373,10 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "Svaka osoba koja ima pristup poveznici može vidjeti vaše korisničko ime i započeti razgovor s vama. Podijelite ovu poveznicu samo s osobama kojima vjerujete.";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Podijelite svoj jedinstveni QR kôd ili poveznicu kako bi drugi mogli započeti razgovor s vama.";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
+"USERNAME_LINK_TOOLTIP_TITLE" = "Podijelite svoje korisničko ime";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Došlo je do pogreške prilikom pretraživanja korisničkog imena. Pokušajte ponovno kasnije.";

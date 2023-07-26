@@ -2144,13 +2144,13 @@
 "EDIT_ITEM_COPY_ACTION" = "複製";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "編輯訊息功能只限 Signal 測試版嘅用戶使用。只有用 Signal 最新測試版嘅用戶先可以睇到你嘅編輯訊息。";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "傳送";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "只限 Signal 測試版";
 
 /* Error message to display to user when a messaeg is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "你只可以喺傳送訊息後 3 個鐘內套用編輯。";
@@ -3325,6 +3325,9 @@
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "打入嚟嘅視像通話";
 
+/* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
+"INFO_MESSAGE_CONTACT_REMOVED" = "You have removed this person, messaging them again will add them back to your list.";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3850,6 +3853,9 @@
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "係咪要加入呢個谷？您話䎺之前，佢哋都唔會知您睇過個訊息嘅。";
 
+/* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Let %1$@ message you and share your name and photo with them? You have removed this person in the past.";
+
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "解除封鎖";
 
@@ -3869,7 +3875,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "下載緊";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "Edited";
+"MESSAGE_STATUS_EDITED" = "編輯咗";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "傳送失敗。";
@@ -5075,7 +5081,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "編輯用戶名稱";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "二維碼或連結";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "使用者名稱";
@@ -6755,7 +6761,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "暫時冇更新內容顯示。";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+"STORIES_NO_REPLIES_SUBTITLE" = "所有群組成員都可以睇到回覆";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "未有人回覆";
@@ -6892,9 +6898,6 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "對限時動態傳送咗心情回應";
 
-/* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "私下回覆 %1$@";
-
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "回覆";
 
@@ -6902,7 +6905,10 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "回覆群組";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "回覆群組";
+
+/* placeholder text for replying to a private story. Embeds {{author name}} */
+"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Reply to %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "傳送唔到限時動態。請你檢查吓網絡連線然後再試過啦。";
@@ -7367,10 +7373,10 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "任何擁有呢條連結嘅人都可以睇到你嘅用戶名稱，同埋開始同你傾計。記得淨係好同你信任嘅人分享呀。";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "分享你嘅專屬二維碼或者連結，其他人就可以同你開始聊天。";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
+"USERNAME_LINK_TOOLTIP_TITLE" = "分享你嘅用戶名稱";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "搜尋用戶名稱嘅時候發生錯誤。請遲啲再試過啦。";

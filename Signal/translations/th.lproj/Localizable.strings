@@ -2144,13 +2144,13 @@
 "EDIT_ITEM_COPY_ACTION" = "คัดลอก";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "ฟีเจอร์แก้ไขข้อความมีให้บริการเฉพาะในผู้ใช้ Signal รุ่นเบต้าเท่านั้น และผู้ใช้ Signal รุ่นเบต้าเวอร์ชันล่าสุดเท่านั้นที่จะเห็นข้อความที่แก้ไขแล้ว";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "ส่ง";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "สำหรับ Signal รุ่นเบต้าเท่านั้น";
 
 /* Error message to display to user when a messaeg is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "สามารถแก้ไขข้อความนี้ได้ภายใน 3 ชั่วโมงนับจากเวลาที่คุณส่ง";
@@ -3325,6 +3325,9 @@
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "วิดีโอคอลขาเข้า";
 
+/* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
+"INFO_MESSAGE_CONTACT_REMOVED" = "You have removed this person, messaging them again will add them back to your list.";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3850,6 +3853,9 @@
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "เข้าร่วมกลุ่มนี้หรือไม่? พวกเขาจะไม่รู้ว่าคุณเห็นข้อความของพวกเขาจนกว่าคุณจะตอบรับ";
 
+/* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Let %1$@ message you and share your name and photo with them? You have removed this person in the past.";
+
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "เลิกบล็อก";
 
@@ -3869,7 +3875,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "กำลังดาวน์โหลด";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "Edited";
+"MESSAGE_STATUS_EDITED" = "แก้ไข";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "การส่งล้มเหลว";
@@ -5075,7 +5081,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "แก้ไขชื่อผู้ใช้";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "คิวอาร์โค้ดหรือลิงก์";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "ชื่อผู้ใช้";
@@ -6755,7 +6761,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "ไม่มีการอัปเดตให้แสดงในตอนนี้";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+"STORIES_NO_REPLIES_SUBTITLE" = "สมาชิกทุกคนในกลุ่มนี้สามารถดูการตอบกลับได้";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "ยังไม่มีการตอบกลับ";
@@ -6892,9 +6898,6 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "แสดงความรู้สึกต่อสตอรี่";
 
-/* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "ตอบกลับเป็นการส่วนตัวกับ %1$@";
-
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "ตอบกลับ";
 
@@ -6902,7 +6905,10 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "ตอบกลับกลุ่ม";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "ตอบกลับกลุ่ม";
+
+/* placeholder text for replying to a private story. Embeds {{author name}} */
+"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Reply to %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "ไม่สามารถส่งสตอรี่นี้ได้ ตรวจสอบการเชื่อมต่อของคุณแล้วลองอีกครั้ง";
@@ -7367,10 +7373,10 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "ทุกคนที่มีลิงก์นี้จะสามารถมองเห็นชื่อผู้ใช้ของคุณและเริ่มแชทกับคุณได้ เราขอแนะนำให้แชร์ลิงก์นี้กับคนที่คุณไว้วางใจเท่านั้น";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "แชร์คิวอาร์โค้ดหรือลิงก์เฉพาะเพื่อให้ผู้ติดต่อเริ่มแชทกับคุณได้";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
+"USERNAME_LINK_TOOLTIP_TITLE" = "แชร์ชื่อผู้ใช้ของคุณ";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "เกิดข้อผิดพลาดขณะค้นหาชื่อผู้ใช้ โปรดลองอีกครั้งในภายหลัง";

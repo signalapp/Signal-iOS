@@ -1229,7 +1229,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 час";
 
 /* 1 week */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 недеља";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 седмица";
 
 /* 8 hours */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 сати";
@@ -1376,7 +1376,7 @@
 "CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 минут";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 недеља";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 седмица";
 
 /* Indicates that this thread is muted forever. */
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Увек";
@@ -1841,7 +1841,7 @@
 "DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Када је омогућено, послате и примљене поруке у овом разговору што сте ви започели ће нестати након што буду приказане.";
 
 /* The unit for a number of weeks */
-"DISAPPEARING_MESSAGES_WEEKS" = "недељ(а)";
+"DISAPPEARING_MESSAGES_WEEKS" = "седмиц(а)";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Одбаци";
@@ -2144,13 +2144,13 @@
 "EDIT_ITEM_COPY_ACTION" = "Копирај";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Измена порука је доступна само бета корисницима Signal-а. Ако измените поруку, она ће бити видљива само људима који су на најновијој бета верзији Signal-а.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Пошаљи";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Само у бета верзији Signal-а";
 
 /* Error message to display to user when a messaeg is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Измене се могу применити само у року од 3 сата од тренутка када сте послали ову поруку.";
@@ -3325,6 +3325,9 @@
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "Долазни видео позив";
 
+/* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
+"INFO_MESSAGE_CONTACT_REMOVED" = "You have removed this person, messaging them again will add them back to your list.";
+
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
@@ -3850,6 +3853,9 @@
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Придружите се групи? Неће знати да сте им прочитали поруке док не прихватите.";
 
+/* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Let %1$@ message you and share your name and photo with them? You have removed this person in the past.";
+
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Одблокирај";
 
@@ -3869,7 +3875,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Преузима се";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "Edited";
+"MESSAGE_STATUS_EDITED" = "Измењено";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Слање није успело.";
@@ -4934,10 +4940,10 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Подсетићемо вас сутра поново.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Подсетићемо вас поново за пар недеља.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Подсетићемо вас поново за пар седмица.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Подсетићемо вас поново за недељу дана.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Подсетићемо вас поново за 1 седмицу.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Нетачан PIN, покушајте поново.";
@@ -5075,7 +5081,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Измените корисничко име";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR Code or Link";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "QR кôд или линк";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Корисничко име";
@@ -6755,7 +6761,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "Тренутно нема нових прича.";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "All members of this group can view replies";
+"STORIES_NO_REPLIES_SUBTITLE" = "Одговори су видљиви за све чланове ове групе";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Без одговора";
@@ -6892,9 +6898,6 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Реаговао/ла је на причу";
 
-/* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Пошаљите приватан одговор кориснику (%1$@)";
-
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Одговори";
 
@@ -6902,7 +6905,10 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Одговорити групи";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Reply to Group";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "Одговорити групи";
+
+/* placeholder text for replying to a private story. Embeds {{author name}} */
+"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Reply to %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Slanje ove priče nije uspelo. Proverite vezu i probajte ponovo";
@@ -7208,10 +7214,10 @@
 "TIME_AMOUNT_SINGLE_MINUTE" = "%1$@ минут";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%1$@ недеља";
+"TIME_AMOUNT_SINGLE_WEEK" = "%1$@ седмица";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%1$@ недеље";
+"TIME_AMOUNT_WEEKS" = "%1$@ седмице";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@н";
@@ -7367,10 +7373,10 @@
 "USERNAME_LINK_SHARE_SHEET_HEADER" = "Свако ко има овај линк може видети ваше корисничко име и започети ћаскање с вама. Делите га само с људима којима верујете.";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Let others start a chat with you by sharing your unique QR code or link.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Како би неко други могао да започне ћаскање, поделите свој јединствени QR кôд или линк.";
 
 /* Title for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_TITLE" = "Share Your Username";
+"USERNAME_LINK_TOOLTIP_TITLE" = "Поделите своје корисничко име";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Грешка при тражењу корисничког имена. Покушајте поново касније.";
