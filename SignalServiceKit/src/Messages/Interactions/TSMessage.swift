@@ -14,15 +14,6 @@ public extension TSMessage {
     @objc
     var isOutgoing: Bool { self as? TSOutgoingMessage != nil }
 
-    // MARK: - Any Transaction Hooks
-
-    // Override anyWillRemove to ensure any associated edits are deleted before
-    // removing the interaction
-    override func anyWillRemove(with transaction: SDSAnyWriteTransaction) {
-        removeEdits(transaction: transaction)
-        super.anyWillRemove(with: transaction)
-    }
-
     // MARK: - Attachments
 
     func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {

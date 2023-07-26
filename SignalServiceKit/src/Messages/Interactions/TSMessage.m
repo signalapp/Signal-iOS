@@ -558,6 +558,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    // Ensure any associated edits are deleted before removing the interaction
+    [self removeEditsWithTransaction:transaction];
+
     [super anyWillRemoveWithTransaction:transaction];
 
     // StickerManager does reference counting of "known" sticker packs.
