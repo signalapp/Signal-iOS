@@ -12,7 +12,7 @@ import Foundation
 @objc
 public class TSIncomingMessageBuilder: TSMessageBuilder {
     @objc
-    public var authorAci: ServiceIdObjC?
+    public var authorAci: UntypedServiceIdObjC?
     @objc
     public var sourceDeviceId: UInt32 = OWSDevice.primaryDeviceId
     @objc
@@ -26,7 +26,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
 
     public required init(thread: TSThread,
                          timestamp: UInt64? = nil,
-                         authorAci: ServiceId? = nil,
+                         authorAci: UntypedServiceId? = nil,
                          sourceDeviceId: UInt32 = 0,
                          messageBody: String? = nil,
                          bodyRanges: MessageBodyRanges? = nil,
@@ -69,7 +69,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                    storyReactionEmoji: storyReactionEmoji,
                    giftBadge: giftBadge)
 
-        self.authorAci = authorAci.map { ServiceIdObjC($0) }
+        self.authorAci = authorAci.map { UntypedServiceIdObjC($0) }
         self.sourceDeviceId = sourceDeviceId
         self.serverTimestamp = serverTimestamp
         self.serverDeliveryTimestamp = serverDeliveryTimestamp
@@ -95,7 +95,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     @objc
     public class func builder(thread: TSThread,
                               timestamp: UInt64,
-                              authorAci: ServiceIdObjC?,
+                              authorAci: UntypedServiceIdObjC?,
                               sourceDeviceId: UInt32,
                               messageBody: String?,
                               bodyRanges: MessageBodyRanges?,

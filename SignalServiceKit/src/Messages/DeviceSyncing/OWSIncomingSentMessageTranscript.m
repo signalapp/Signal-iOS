@@ -204,10 +204,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (sentProto.unidentifiedStatus.count > 0) {
-        NSMutableArray<ServiceIdObjC *> *nonUdRecipients = [NSMutableArray new];
-        NSMutableArray<ServiceIdObjC *> *udRecipients = [NSMutableArray new];
+        NSMutableArray<UntypedServiceIdObjC *> *nonUdRecipients = [NSMutableArray new];
+        NSMutableArray<UntypedServiceIdObjC *> *udRecipients = [NSMutableArray new];
         for (SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *statusProto in sentProto.unidentifiedStatus) {
-            ServiceIdObjC *serviceId = [[ServiceIdObjC alloc] initWithUuidString:statusProto.destinationUuid];
+            UntypedServiceIdObjC *serviceId =
+                [[UntypedServiceIdObjC alloc] initWithUuidString:statusProto.destinationUuid];
             if (serviceId == nil) {
                 OWSFailDebug(@"Delivery status proto is missing destination.");
                 continue;

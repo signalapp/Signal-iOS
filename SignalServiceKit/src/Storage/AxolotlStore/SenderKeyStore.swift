@@ -43,9 +43,9 @@ public class SenderKeyStore: NSObject {
     @objc
     public func recipientsInNeedOfSenderKey(
         for thread: TSThread,
-        serviceIds: [ServiceIdObjC],
+        serviceIds: [UntypedServiceIdObjC],
         readTx: SDSAnyReadTransaction
-    ) -> [ServiceIdObjC] {
+    ) -> [UntypedServiceIdObjC] {
         var serviceIdsNeedingSenderKey = Set(serviceIds)
 
         storageLock.withLock {
@@ -61,7 +61,7 @@ public class SenderKeyStore: NSObject {
             // Iterate over each cached recipient. If no new devices or reregistrations have occurred since
             // we last recorded an SKDM send, we can skip sending to them.
             for (address, sendInfo) in keyMetadata.sentKeyInfo {
-                guard let serviceId = address.serviceIdObjC else {
+                guard let serviceId = address.untypedServiceIdObjC else {
                     continue
                 }
                 do {
@@ -91,7 +91,7 @@ public class SenderKeyStore: NSObject {
     @objc
     public func recordSenderKeySent(
         for thread: TSThread,
-        to serviceId: ServiceIdObjC,
+        to serviceId: UntypedServiceIdObjC,
         timestamp: UInt64,
         writeTx: SDSAnyWriteTransaction) throws {
         try storageLock.withLock {
@@ -109,7 +109,7 @@ public class SenderKeyStore: NSObject {
 
     public func resetSenderKeyDeliveryRecord(
         for thread: TSThread,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         writeTx: SDSAnyWriteTransaction
     ) {
         storageLock.withLock {
@@ -456,7 +456,7 @@ private struct KeyRecipient: Codable, Dependencies {
     }
 
     /// Build a KeyRecipient for the given address by fetching all of the devices and corresponding registrationIds
-    static func currentState(for serviceId: ServiceId, transaction: SDSAnyReadTransaction) throws -> KeyRecipient {
+    static func currentState(for serviceId: UntypedServiceId, transaction: SDSAnyReadTransaction) throws -> KeyRecipient {
         guard
             let recipient = SignalRecipient.fetchRecipient(
                 for: SignalServiceAddress(serviceId),
@@ -549,11 +549,11 @@ private struct KeyMetadata {
         return (expirationDate.isAfterNow && isForEncrypting)
     }
 
-    mutating func resetDeliveryRecord(for serviceId: ServiceId) {
+    mutating func resetDeliveryRecord(for serviceId: UntypedServiceId) {
         sentKeyInfo[SignalServiceAddress(serviceId)] = nil
     }
 
-    mutating func recordSKDMSent(at timestamp: UInt64, serviceId: ServiceId, transaction: SDSAnyReadTransaction) throws {
+    mutating func recordSKDMSent(at timestamp: UInt64, serviceId: UntypedServiceId, transaction: SDSAnyReadTransaction) throws {
         let recipient = try KeyRecipient.currentState(for: serviceId, transaction: transaction)
         let sendInfo = SKDMSendInfo(skdmTimestamp: timestamp, keyRecipient: recipient)
         sentKeyInfo[SignalServiceAddress(serviceId)] = sendInfo

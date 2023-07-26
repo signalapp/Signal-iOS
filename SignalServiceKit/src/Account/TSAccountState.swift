@@ -88,8 +88,8 @@ class TSAccountState: NSObject {
                 return nil
             }
             return LocalIdentifiers(
-                aci: ServiceId(localAci),
-                pni: getUuid(TSAccountManager_RegisteredPNIKey).map { ServiceId($0) },
+                aci: UntypedServiceId(localAci),
+                pni: getUuid(TSAccountManager_RegisteredPNIKey).map { UntypedServiceId($0) },
                 phoneNumber: localNumber
             )
         }()

@@ -18,7 +18,7 @@ extension GroupManager {
         newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken,
-        newlyLearnedPniToAciAssociations: [ServiceId: ServiceId],
+        newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId],
         groupUpdateSourceAddress: SignalServiceAddress?,
         transaction: SDSAnyWriteTransaction
     ) {

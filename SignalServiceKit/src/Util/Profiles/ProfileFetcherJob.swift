@@ -282,7 +282,7 @@ public class ProfileFetcherJob: NSObject {
         Logger.verbose("address: \(address)")
 
         // If we don't have a UUID, the request will fail, so bail out early.
-        guard let serviceId = address.serviceId else {
+        guard let serviceId = address.untypedServiceId else {
             return Promise(error: ProfileFetchError.missing)
         }
 

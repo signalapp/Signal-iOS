@@ -434,7 +434,7 @@ extension ConversationViewController: CVComponentDelegate {
 
         var address = address
         // Reload the address from disk if missing info so we don't rely on any cache.
-        if address.serviceId == nil || address.e164 == nil {
+        if address.untypedServiceId == nil || address.e164 == nil {
             databaseStorage.read { tx in
                 address = SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: tx)?.address ?? address
             }

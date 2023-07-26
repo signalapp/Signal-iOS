@@ -6,7 +6,7 @@
 import Foundation
 
 public protocol RecipientFetcher {
-    func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient
+    func fetchOrCreate(serviceId: UntypedServiceId, tx: DBWriteTransaction) -> SignalRecipient
     func fetchOrCreate(phoneNumber: E164, tx: DBWriteTransaction) -> SignalRecipient
 }
 
@@ -17,7 +17,7 @@ class RecipientFetcherImpl: RecipientFetcher {
         self.recipientStore = recipientStore
     }
 
-    func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient {
+    func fetchOrCreate(serviceId: UntypedServiceId, tx: DBWriteTransaction) -> SignalRecipient {
         if let serviceIdRecipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx) {
             return serviceIdRecipient
         }

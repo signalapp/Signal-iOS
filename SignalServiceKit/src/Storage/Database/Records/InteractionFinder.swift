@@ -22,7 +22,7 @@ protocol InteractionFinderAdapter {
 
     static func fetch(rowId: Int64, transaction: ReadTransaction) throws -> TSInteraction?
 
-    static func existsIncomingMessage(timestamp: UInt64, sourceServiceId: ServiceId, sourceDeviceId: UInt32, transaction: ReadTransaction) -> Bool
+    static func existsIncomingMessage(timestamp: UInt64, sourceServiceId: UntypedServiceId, sourceDeviceId: UInt32, transaction: ReadTransaction) -> Bool
 
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
 
@@ -43,7 +43,7 @@ protocol InteractionFinderAdapter {
 
     static func enumerateGroupReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
     static func hasLocalUserReplied(storyTimestamp: UInt64, storyAuthorUuidString: String, transaction: ReadTransaction) -> Bool
-    static func groupReplyUniqueIdsAndRowIds(storyAuthor: ServiceId, storyTimestamp: UInt64, transaction: ReadTransaction) -> [(String, Int64)]
+    static func groupReplyUniqueIdsAndRowIds(storyAuthor: UntypedServiceId, storyTimestamp: UInt64, transaction: ReadTransaction) -> [(String, Int64)]
 
     // MARK: - instance methods
 
@@ -119,7 +119,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    public class func existsIncomingMessage(timestamp: UInt64, sourceServiceId: ServiceId, sourceDeviceId: UInt32, transaction: SDSAnyReadTransaction) -> Bool {
+    public class func existsIncomingMessage(timestamp: UInt64, sourceServiceId: UntypedServiceId, sourceDeviceId: UInt32, transaction: SDSAnyReadTransaction) -> Bool {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             return GRDBInteractionFinder.existsIncomingMessage(timestamp: timestamp, sourceServiceId: sourceServiceId, sourceDeviceId: sourceDeviceId, transaction: grdbRead)
@@ -249,7 +249,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     public static func groupReplyUniqueIdsAndRowIds(
-        storyAuthor: ServiceId,
+        storyAuthor: UntypedServiceId,
         storyTimestamp: UInt64,
         transaction: SDSAnyReadTransaction
     ) -> [(String, Int64)] {
@@ -691,7 +691,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         )
     }
 
-    static func existsIncomingMessage(timestamp: UInt64, sourceServiceId: ServiceId, sourceDeviceId: UInt32, transaction: GRDBReadTransaction) -> Bool {
+    static func existsIncomingMessage(timestamp: UInt64, sourceServiceId: UntypedServiceId, sourceDeviceId: UInt32, transaction: GRDBReadTransaction) -> Bool {
         let sql = """
             SELECT EXISTS(
                 SELECT 1
@@ -1002,7 +1002,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     static func groupReplyUniqueIdsAndRowIds(
-        storyAuthor: ServiceId,
+        storyAuthor: UntypedServiceId,
         storyTimestamp: UInt64,
         transaction: GRDBReadTransaction
     ) -> [(String, Int64)] {

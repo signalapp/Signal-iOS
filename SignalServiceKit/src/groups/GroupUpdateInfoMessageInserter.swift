@@ -13,7 +13,7 @@ public protocol GroupUpdateInfoMessageInserter {
         newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken,
-        newlyLearnedPniToAciAssociations: [ServiceId: ServiceId],
+        newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId],
         groupUpdateSourceAddress: SignalServiceAddress?,
         transaction: DBWriteTransaction
     )
@@ -33,7 +33,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken,
-        newlyLearnedPniToAciAssociations: [ServiceId: ServiceId],
+        newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId],
         groupUpdateSourceAddress: SignalServiceAddress?,
         transaction v2Transaction: DBWriteTransaction
     ) {

@@ -1043,7 +1043,7 @@ public class GroupManager: NSObject {
     public static func tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
         newGroupModel: TSGroupModel,
         newDisappearingMessageToken: DisappearingMessageToken?,
-        newlyLearnedPniToAciAssociations: [ServiceId: ServiceId],
+        newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId],
         groupUpdateSourceAddress: SignalServiceAddress?,
         canInsert: Bool,
         didAddLocalUserToV2Group: Bool,
@@ -1109,7 +1109,7 @@ public class GroupManager: NSObject {
     public static func updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
         newGroupModel: TSGroupModel,
         newDisappearingMessageToken: DisappearingMessageToken?,
-        newlyLearnedPniToAciAssociations: [ServiceId: ServiceId],
+        newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId],
         groupUpdateSourceAddress: SignalServiceAddress?,
         infoMessagePolicy: InfoMessagePolicy = .always,
         transaction: SDSAnyWriteTransaction

@@ -17,7 +17,7 @@ public struct ChangedGroupModel {
 
     /// Associations between a PNI and ACI that we learned as a part of this
     /// group change.
-    public let newlyLearnedPniToAciAssociations: [ServiceId: ServiceId]
+    public let newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId]
 
     public init(
         oldGroupModel: TSGroupModelV2,
@@ -25,7 +25,7 @@ public struct ChangedGroupModel {
         newDisappearingMessageToken: DisappearingMessageToken?,
         changeAuthorUuid: UUID,
         profileKeys: [UUID: Data],
-        newlyLearnedPniToAciAssociations: [ServiceId: ServiceId]
+        newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId]
     ) {
         self.oldGroupModel = oldGroupModel
         self.newGroupModel = newGroupModel
@@ -149,7 +149,7 @@ public class GroupsV2IncomingChanges: Dependencies {
 
         // We may learn that a PNI and ACI are associated while processing group
         // change protos.
-        var newlyLearnedPniToAciAssociations = [ServiceId: ServiceId]()
+        var newlyLearnedPniToAciAssociations = [UntypedServiceId: UntypedServiceId]()
 
         for action in changeActionsProto.addMembers {
             let didJoinFromInviteLink = (action.hasJoinFromInviteLink && action.joinFromInviteLink)
@@ -411,7 +411,7 @@ public class GroupsV2IncomingChanges: Dependencies {
             profileKeys[aci] = profileKey
 
             // ...and track the PNI -> ACI promotion.
-            newlyLearnedPniToAciAssociations[ServiceId(pni)] = ServiceId(aci)
+            newlyLearnedPniToAciAssociations[UntypedServiceId(pni)] = UntypedServiceId(aci)
         }
 
         for action in changeActionsProto.addRequestingMembers {

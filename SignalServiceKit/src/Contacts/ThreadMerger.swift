@@ -208,7 +208,7 @@ final class ThreadMerger: RecipientMergeObserver {
         }
     }
 
-    private func mergeThreads(serviceId: ServiceId, phoneNumber: E164, tx: DBWriteTransaction) {
+    private func mergeThreads(serviceId: UntypedServiceId, phoneNumber: E164, tx: DBWriteTransaction) {
         // Fetch all the threads related to the new recipient. Because we don't
         // have UNIQUE constraints on the TSThread table, there might be many
         // duplicate threads that we need to merge. We fetch the ServiceId threads
@@ -249,7 +249,7 @@ final class ThreadMerger: RecipientMergeObserver {
         }
     }
 
-    func willBreakAssociation(serviceId: ServiceId, phoneNumber: E164, transaction tx: DBWriteTransaction) {
+    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction tx: DBWriteTransaction) {
         mergeThreads(serviceId: serviceId, phoneNumber: phoneNumber, tx: tx)
     }
 

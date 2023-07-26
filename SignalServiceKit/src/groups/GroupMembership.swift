@@ -711,7 +711,7 @@ public extension GroupMembership {
     /// PNIs can only be invited members. Further note that profile keys are
     /// required for full and requesting members, and PNIs have no associated
     /// profile or profile key.
-    private func localPniAsInvitedMember(localIdentifiers: LocalIdentifiers) -> ServiceId? {
+    private func localPniAsInvitedMember(localIdentifiers: LocalIdentifiers) -> UntypedServiceId? {
         if let localPni = localIdentifiers.pni, isInvitedMember(localPni.uuidValue) {
             return localPni
         }
@@ -745,7 +745,7 @@ public extension GroupMembership {
     ///
     /// Checks membership for the local ACI first. If none is available, falls
     /// back to checking membership for the local PNI.
-    func localUserInvitedAtServiceId(localIdentifiers: LocalIdentifiers) -> ServiceId? {
+    func localUserInvitedAtServiceId(localIdentifiers: LocalIdentifiers) -> UntypedServiceId? {
         if isMemberOfAnyKind(localIdentifiers.aci.uuidValue) {
             // If our ACI is any kind of member, return that membership rather
             // than falling back to the PNI.

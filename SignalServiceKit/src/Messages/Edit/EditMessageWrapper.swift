@@ -36,7 +36,7 @@ public protocol EditMessageWrapper {
 public struct IncomingEditMessageWrapper: EditMessageWrapper {
 
     public let message: TSIncomingMessage
-    public let authorAci: ServiceId?
+    public let authorAci: UntypedServiceId?
 
     public func createMessageCopy(
         dataStore: EditManager.Shims.DataStore,

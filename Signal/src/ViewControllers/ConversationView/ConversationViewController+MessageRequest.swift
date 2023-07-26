@@ -142,7 +142,7 @@ extension ConversationViewController: MessageRequestDelegate {
             return owsFailDebug("Unexpected thread type for reporting spam \(type(of: thread))")
         }
 
-        guard let serviceId = contactThread.contactAddress.serviceId else {
+        guard let serviceId = contactThread.contactAddress.untypedServiceId else {
             return owsFailDebug("Missing uuid for reporting spam from \(contactThread.contactAddress)")
         }
 

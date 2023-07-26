@@ -14,8 +14,8 @@ extension TSInfoMessage {
         }
 
         case sequenceOfInviteLinkRequestAndCancels(count: UInt, isTail: Bool)
-        case invitedPniPromotedToFullMemberAci(pni: ServiceId, aci: ServiceId)
-        case inviteRemoved(invitee: ServiceId, wasLocalUser: Bool)
+        case invitedPniPromotedToFullMemberAci(pni: UntypedServiceId, aci: UntypedServiceId)
+        case inviteRemoved(invitee: UntypedServiceId, wasLocalUser: Bool)
 
         public var description: String {
             switch self {

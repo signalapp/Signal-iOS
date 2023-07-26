@@ -8,7 +8,7 @@ import SignalCoreKit
 
 protocol ThreadStore {
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread?
-    func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread]
+    func fetchContactThreads(serviceId: UntypedServiceId, tx: DBReadTransaction) -> [TSContactThread]
     func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread]
     func removeThread(_ thread: TSThread, tx: DBWriteTransaction)
     func updateThread(_ thread: TSThread, tx: DBWriteTransaction)
@@ -26,7 +26,7 @@ extension ThreadStore {
         return groupThread
     }
 
-    func fetchThread(serviceId: ServiceId, tx: DBReadTransaction) -> TSContactThread? {
+    func fetchThread(serviceId: UntypedServiceId, tx: DBReadTransaction) -> TSContactThread? {
         return fetchContactThreads(serviceId: serviceId, tx: tx).first
     }
 }
@@ -36,7 +36,7 @@ class ThreadStoreImpl: ThreadStore {
         TSThread.anyFetch(uniqueId: uniqueId, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread] {
+    func fetchContactThreads(serviceId: UntypedServiceId, tx: DBReadTransaction) -> [TSContactThread] {
         AnyContactThreadFinder().contactThreads(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
@@ -70,8 +70,8 @@ class MockThreadStore: ThreadStore {
         threads.first(where: { $0.uniqueId == uniqueId })
     }
 
-    func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread] {
-        threads.lazy.compactMap { $0 as? TSContactThread }.filter { ServiceId(uuidString: $0.contactUUID) == serviceId }
+    func fetchContactThreads(serviceId: UntypedServiceId, tx: DBReadTransaction) -> [TSContactThread] {
+        threads.lazy.compactMap { $0 as? TSContactThread }.filter { UntypedServiceId(uuidString: $0.contactUUID) == serviceId }
     }
 
     func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread] {

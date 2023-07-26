@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"unexpectedly missing local address");
         return;
     }
-    ServiceIdObjC *localAci = [[ServiceIdObjC alloc] initWithUuidValue:localUuid];
+    UntypedServiceIdObjC *localAci = [[UntypedServiceIdObjC alloc] initWithUuidValue:localUuid];
 
     TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:self.messageUniqueId transaction:transaction];
     if (!message) {

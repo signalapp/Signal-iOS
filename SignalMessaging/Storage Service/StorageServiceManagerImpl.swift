@@ -267,7 +267,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         Logger.info("Recording pending update for addresses: \(updatedAddresses)")
 
         updatePendingMutations {
-            $0.updatedServiceIds.formUnion(updatedAddresses.lazy.compactMap({ $0.serviceId }))
+            $0.updatedServiceIds.formUnion(updatedAddresses.lazy.compactMap({ $0.untypedServiceId }))
         }
     }
 
@@ -415,7 +415,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
 private struct PendingMutations {
     var updatedAccountIds = Set<AccountId>()
-    var updatedServiceIds = Set<ServiceId>()
+    var updatedServiceIds = Set<UntypedServiceId>()
     var updatedGroupV2MasterKeys = Set<Data>()
     var updatedStoryDistributionListIds = Set<Data>()
     var updatedLocalAccount = false

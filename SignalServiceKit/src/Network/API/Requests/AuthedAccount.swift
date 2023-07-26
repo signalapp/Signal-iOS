@@ -121,7 +121,7 @@ extension AuthedAccount.Explicit {
     }
 
     public var localIdentifiers: LocalIdentifiers {
-        return LocalIdentifiers(aci: ServiceId(aci), pni: ServiceId(pni), phoneNumber: e164.stringValue)
+        return LocalIdentifiers(aci: UntypedServiceId(aci), pni: UntypedServiceId(pni), phoneNumber: e164.stringValue)
     }
 
     public var chatServiceAuth: ChatServiceAuth {

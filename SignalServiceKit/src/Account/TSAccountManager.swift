@@ -224,8 +224,8 @@ public extension TSAccountManager {
     @objc
     func storeLocalNumber(
         _ newLocalNumber: E164ObjC,
-        aci newAci: ServiceIdObjC,
-        pni newPni: ServiceIdObjC?,
+        aci newAci: UntypedServiceIdObjC,
+        pni newPni: UntypedServiceIdObjC?,
         transaction: SDSAnyWriteTransaction
     ) {
         func setIdentifier(_ newValue: String, for key: String) {

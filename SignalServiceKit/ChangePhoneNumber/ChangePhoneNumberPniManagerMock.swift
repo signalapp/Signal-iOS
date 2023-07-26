@@ -11,7 +11,7 @@ public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
 
     public func generatePniIdentity(
         forNewE164 newE164: E164,
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32]

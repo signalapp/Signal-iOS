@@ -23,7 +23,7 @@ public enum EditMessageTarget {
 public class EditMessageFinder {
     public static func editTarget(
         timestamp: UInt64,
-        authorAci: ServiceId?,
+        authorAci: UntypedServiceId?,
         transaction: SDSAnyReadTransaction
     ) -> EditMessageTarget? {
         let sql = """

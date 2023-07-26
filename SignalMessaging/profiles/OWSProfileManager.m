@@ -1163,7 +1163,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         return;
     }
 
-    ServiceIdObjC *serviceId = addressParam.serviceIdObjC;
+    UntypedServiceIdObjC *serviceId = addressParam.untypedServiceIdObjC;
     if (serviceId != nil) {
         // Whenever a user's profile key changes, we need to fetch a new
         // profile key credential for them.

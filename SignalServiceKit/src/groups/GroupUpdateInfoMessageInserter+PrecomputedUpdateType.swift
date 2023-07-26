@@ -20,8 +20,8 @@ extension GroupUpdateInfoMessageInserterImpl {
         case newJoinRequestFromSingleUser(requestingAddress: SignalServiceAddress)
         case canceledJoinRequestFromSingleUser(cancelingAddress: SignalServiceAddress)
         case bannedMemberChange
-        case invitedPnisPromotedToFullMemberAcis(promotions: [(pni: ServiceId, aci: ServiceId)])
-        case invitesRemoved(invitees: [ServiceId])
+        case invitedPnisPromotedToFullMemberAcis(promotions: [(pni: UntypedServiceId, aci: UntypedServiceId)])
+        case invitesRemoved(invitees: [UntypedServiceId])
 
         /// Computes the matching group update type, if any.
         ///
@@ -31,7 +31,7 @@ extension GroupUpdateInfoMessageInserterImpl {
         static func from(
             oldGroupMembership: GroupMembership,
             newGroupMembership: GroupMembership,
-            newlyLearnedPniToAciAssociations: [ServiceId: ServiceId]
+            newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId]
         ) -> Self? {
             let membersDiff: Set<UUID> = newGroupMembership.allMemberUuidsOfAnyKind
                 .symmetricDifference(oldGroupMembership.allMemberUuidsOfAnyKind)
@@ -131,12 +131,12 @@ extension GroupUpdateInfoMessageInserterImpl {
             membersDiff: Set<UUID>,
             oldGroupMembership: GroupMembership,
             newGroupMembership: GroupMembership,
-            newlyLearnedPniToAciAssociations: [ServiceId: ServiceId]
-        ) -> [(pni: ServiceId, aci: ServiceId)]? {
+            newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId]
+        ) -> [(pni: UntypedServiceId, aci: UntypedServiceId)]? {
             var remainingMembers = membersDiff
-            var promotions: [(pni: ServiceId, aci: ServiceId)] = []
+            var promotions: [(pni: UntypedServiceId, aci: UntypedServiceId)] = []
 
-            for possiblyInvitedPni in membersDiff.map({ ServiceId($0) }) {
+            for possiblyInvitedPni in membersDiff.map({ UntypedServiceId($0) }) {
                 if
                     oldGroupMembership.isInvitedMember(possiblyInvitedPni.uuidValue),
                     let fullMemberAci = newlyLearnedPniToAciAssociations[possiblyInvitedPni],
@@ -165,11 +165,11 @@ extension GroupUpdateInfoMessageInserterImpl {
             membersDiff: Set<UUID>,
             oldGroupMembership: GroupMembership,
             newGroupMembership: GroupMembership
-        ) -> [ServiceId]? {
+        ) -> [UntypedServiceId]? {
             var remainingMembers = membersDiff
-            var removedInvites: [ServiceId] = []
+            var removedInvites: [UntypedServiceId] = []
 
-            for possiblyRemovedInvite in membersDiff.map({ ServiceId($0) }) {
+            for possiblyRemovedInvite in membersDiff.map({ UntypedServiceId($0) }) {
                 if
                     oldGroupMembership.isInvitedMember(possiblyRemovedInvite.uuidValue),
                     !newGroupMembership.isMemberOfAnyKind(possiblyRemovedInvite.uuidValue)

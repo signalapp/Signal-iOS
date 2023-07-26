@@ -48,7 +48,7 @@ final class DisappearingMessageFinderTest: SSKBaseTestSwift {
 
             let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: body)
             incomingMessageBuilder.timestamp = 1
-            incomingMessageBuilder.authorAci = otherAddress.serviceIdObjC!
+            incomingMessageBuilder.authorAci = otherAddress.untypedServiceIdObjC!
             incomingMessageBuilder.expiresInSeconds = expiresInSeconds
             let message = incomingMessageBuilder.build()
             message.anyInsert(transaction: transaction)
@@ -215,7 +215,7 @@ final class DisappearingMessageFinderTest: SSKBaseTestSwift {
         write { transaction in
             // Mark outgoing message as "sent", "delivered" or "delivered and read" using production methods.
             expiringSentOutgoingMessage.update(
-                withSentRecipient: otherAddress.serviceIdObjC!,
+                withSentRecipient: otherAddress.untypedServiceIdObjC!,
                 wasSentByUD: false,
                 transaction: transaction
             )

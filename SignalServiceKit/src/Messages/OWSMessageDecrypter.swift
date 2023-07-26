@@ -69,7 +69,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         guard let destinationUuidString else {
             return .aci
         }
-        guard let destinationServiceId = ServiceId(uuidString: destinationUuidString) else {
+        guard let destinationServiceId = UntypedServiceId(uuidString: destinationUuidString) else {
             throw OWSAssertionError("incoming envelope has invalid destinationUuid: \(destinationUuidString)")
         }
 

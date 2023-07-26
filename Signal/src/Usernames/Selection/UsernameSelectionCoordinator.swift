@@ -16,7 +16,7 @@ class UsernameSelectionCoordinator {
         let storageServiceManager: StorageServiceManager
     }
 
-    private let localAci: ServiceId
+    private let localAci: UntypedServiceId
     private let currentUsername: String?
 
     private weak var usernameSelectionDelegate: UsernameSelectionDelegate?
@@ -24,7 +24,7 @@ class UsernameSelectionCoordinator {
     private let context: Context
 
     init(
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         currentUsername: String?,
         usernameSelectionDelegate: UsernameSelectionDelegate? = nil,
         context: Context

@@ -71,9 +71,9 @@ typedef NS_ENUM(NSInteger, EncryptionStyle) {
 @class SSKProtoAttachmentPointer;
 @class SSKProtoContentBuilder;
 @class SSKProtoDataMessageBuilder;
-@class ServiceIdObjC;
 @class SignalServiceAddress;
 @class TSOutgoingMessageBuilder;
+@class UntypedServiceIdObjC;
 
 @interface TSOutgoingMessageRecipientState : MTLModel
 
@@ -283,7 +283,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 #pragma mark - Update With... Methods
 
 // This method is used to record a successful send to one recipient.
-- (void)updateWithSentRecipient:(ServiceIdObjC *)serviceId
+- (void)updateWithSentRecipient:(UntypedServiceIdObjC *)serviceId
                     wasSentByUD:(BOOL)wasSentByUD
                     transaction:(SDSAnyWriteTransaction *)transaction;
 
@@ -326,8 +326,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                              context:(id<DeliveryReceiptContext>)deliveryReceiptContext
                          transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<ServiceIdObjC *> *)udRecipients
-                                          nonUdRecipients:(nullable NSArray<ServiceIdObjC *> *)nonUdRecipients
+- (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<UntypedServiceIdObjC *> *)udRecipients
+                                          nonUdRecipients:(nullable NSArray<UntypedServiceIdObjC *> *)nonUdRecipients
                                              isSentUpdate:(BOOL)isSentUpdate
                                               transaction:(SDSAnyWriteTransaction *)transaction;
 

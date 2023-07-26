@@ -3266,7 +3266,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             now - 2 * 30 * kDayInMs
         ]
 
-        guard let incomingSenderAci = anyIncomingSenderAddress(forThread: thread)?.serviceId else {
+        guard let incomingSenderAci = anyIncomingSenderAddress(forThread: thread)?.untypedServiceId else {
             owsFailDebug("Missing incomingSenderAci.")
             return
         }
@@ -3278,7 +3278,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 // Legit usage of SenderTimestamp to backdate incoming sent messages for Debug
                 let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: randomText)
                 incomingMessageBuilder.timestamp = timestamp
-                incomingMessageBuilder.authorAci = ServiceIdObjC(incomingSenderAci)
+                incomingMessageBuilder.authorAci = UntypedServiceIdObjC(incomingSenderAci)
                 let incomingMessage = incomingMessageBuilder.build()
                 incomingMessage.anyInsert(transaction: transaction)
                 incomingMessage.debugonly_markAsReadNow(transaction: transaction)
@@ -3289,7 +3289,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 let outgoingMessage = outgoingMessageBuilder.build(transaction: transaction)
                 outgoingMessage.anyInsert(transaction: transaction)
                 outgoingMessage.update(withFakeMessageState: .sent, transaction: transaction)
-                outgoingMessage.update(withSentRecipient: ServiceIdObjC(incomingSenderAci), wasSentByUD: false, transaction: transaction)
+                outgoingMessage.update(withSentRecipient: UntypedServiceIdObjC(incomingSenderAci), wasSentByUD: false, transaction: transaction)
                 outgoingMessage.update(
                     withDeliveredRecipient: SignalServiceAddress(incomingSenderAci),
                     recipientDeviceId: 0,
@@ -3413,7 +3413,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
     ) {
         Logger.info("createFakeMessages: \(counter)")
 
-        guard let incomingSenderAci = anyIncomingSenderAddress(forThread: thread)?.serviceId else {
+        guard let incomingSenderAci = anyIncomingSenderAddress(forThread: thread)?.untypedServiceId else {
             owsFailDebug("Missing incomingSenderAci.")
             return
         }
@@ -3431,7 +3431,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             switch Int.random(in: 0..<numberOfCases) {
             case 0:
                 let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: randomText)
-                incomingMessageBuilder.authorAci = ServiceIdObjC(incomingSenderAci)
+                incomingMessageBuilder.authorAci = UntypedServiceIdObjC(incomingSenderAci)
                 let message = incomingMessageBuilder.build()
                 message.anyInsert(transaction: transaction)
                 message.debugonly_markAsReadNow(transaction: transaction)
@@ -3467,7 +3467,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 pointer.anyInsert(transaction: transaction)
 
                 let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread)
-                incomingMessageBuilder.authorAci = ServiceIdObjC(incomingSenderAci)
+                incomingMessageBuilder.authorAci = UntypedServiceIdObjC(incomingSenderAci)
                 incomingMessageBuilder.attachmentIds = [ pointer.uniqueId ]
 
                 let message = incomingMessageBuilder.build()
@@ -3708,7 +3708,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
     // MARK: Disappearing Messages
 
     private static func createDisappearingMessagesWhichFailedToStartInThread(_ thread: TSThread) {
-        guard let aci = thread.recipientAddressesWithSneakyTransaction.first?.serviceId else {
+        guard let aci = thread.recipientAddressesWithSneakyTransaction.first?.untypedServiceId else {
             owsFailDebug("No recipient")
             return
         }
@@ -3716,7 +3716,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let now = Date.ows_millisecondTimestamp()
         let messageBody = "Should disappear 60s after \(now)"
         let incomingMessageBuilder = TSIncomingMessageBuilder.incomingMessageBuilder(thread: thread, messageBody: messageBody)
-        incomingMessageBuilder.authorAci = ServiceIdObjC(aci)
+        incomingMessageBuilder.authorAci = UntypedServiceIdObjC(aci)
         incomingMessageBuilder.expiresInSeconds = 60
         let message = incomingMessageBuilder.build()
         // private setter to avoid starting expire machinery.
@@ -4200,10 +4200,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             attachmentIds = []
         }
 
-        let authorAci = DebugUIMessages.anyIncomingSenderAddress(forThread: thread)!.serviceId!
+        let authorAci = DebugUIMessages.anyIncomingSenderAddress(forThread: thread)!.untypedServiceId!
 
         let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: messageBody)
-        incomingMessageBuilder.authorAci = ServiceIdObjC(authorAci)
+        incomingMessageBuilder.authorAci = UntypedServiceIdObjC(authorAci)
         incomingMessageBuilder.attachmentIds = attachmentIds
         incomingMessageBuilder.quotedMessage = quotedMessage
         let message = incomingMessageBuilder.build()

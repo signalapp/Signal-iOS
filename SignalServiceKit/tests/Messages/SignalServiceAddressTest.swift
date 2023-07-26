@@ -12,7 +12,7 @@ class SignalServiceAddressTest: XCTestCase {
 
     private lazy var cache = SignalServiceAddressCache()
 
-    private func makeAddress(serviceId: ServiceId? = nil, phoneNumber: String? = nil) -> SignalServiceAddress {
+    private func makeAddress(serviceId: UntypedServiceId? = nil, phoneNumber: String? = nil) -> SignalServiceAddress {
         SignalServiceAddress(
             serviceId: serviceId,
             phoneNumber: phoneNumber,
@@ -130,57 +130,57 @@ class SignalServiceAddressTest: XCTestCase {
         // Make sure nothing has been resolved about these addresses other than
         // what was explicitly provided as part of the initializer.
 
-        XCTAssertEqual(address1a.serviceId, aci1)
+        XCTAssertEqual(address1a.untypedServiceId, aci1)
         XCTAssertNil(address1a.phoneNumber)
-        XCTAssertEqual(address1b.serviceId, aci1)
+        XCTAssertEqual(address1b.untypedServiceId, aci1)
         XCTAssertNil(address1b.phoneNumber)
-        XCTAssertEqual(address1c.serviceId, aci1)
+        XCTAssertEqual(address1c.untypedServiceId, aci1)
         XCTAssertEqual(address1c.phoneNumber, phoneNumber1)
-        XCTAssertNil(address1d.serviceId)
+        XCTAssertNil(address1d.untypedServiceId)
         XCTAssertEqual(address1d.phoneNumber, phoneNumber1)
-        XCTAssertEqual(address2a.serviceId, aci2)
+        XCTAssertEqual(address2a.untypedServiceId, aci2)
         XCTAssertNil(address2a.phoneNumber)
-        XCTAssertEqual(address2b.serviceId, aci2)
+        XCTAssertEqual(address2b.untypedServiceId, aci2)
         XCTAssertEqual(address2b.phoneNumber, phoneNumber2)
-        XCTAssertNil(address3a.serviceId)
+        XCTAssertNil(address3a.untypedServiceId)
         XCTAssertEqual(address3a.phoneNumber, phoneNumber3)
 
         // High-trust with phoneNumber1.
 
         updateMapping(aci: aci1, phoneNumber: phoneNumber1)
 
-        XCTAssertEqual(address1a.serviceId, aci1)
+        XCTAssertEqual(address1a.untypedServiceId, aci1)
         XCTAssertEqual(address1a.phoneNumber, phoneNumber1)
-        XCTAssertEqual(address1b.serviceId, aci1)
+        XCTAssertEqual(address1b.untypedServiceId, aci1)
         XCTAssertEqual(address1b.phoneNumber, phoneNumber1)
-        XCTAssertEqual(address1c.serviceId, aci1)
+        XCTAssertEqual(address1c.untypedServiceId, aci1)
         XCTAssertEqual(address1c.phoneNumber, phoneNumber1)
-        XCTAssertEqual(address1d.serviceId, aci1)
+        XCTAssertEqual(address1d.untypedServiceId, aci1)
         XCTAssertEqual(address1d.phoneNumber, phoneNumber1)
-        XCTAssertEqual(address2a.serviceId, aci2)
+        XCTAssertEqual(address2a.untypedServiceId, aci2)
         XCTAssertNil(address2a.phoneNumber)
-        XCTAssertEqual(address2b.serviceId, aci2)
+        XCTAssertEqual(address2b.untypedServiceId, aci2)
         XCTAssertEqual(address2b.phoneNumber, phoneNumber2)
-        XCTAssertNil(address3a.serviceId)
+        XCTAssertNil(address3a.untypedServiceId)
         XCTAssertEqual(address3a.phoneNumber, phoneNumber3)
 
         // High-trust with phoneNumber3.
 
         updateMapping(aci: aci1, phoneNumber: phoneNumber3)
 
-        XCTAssertEqual(address1a.serviceId, aci1)
+        XCTAssertEqual(address1a.untypedServiceId, aci1)
         XCTAssertEqual(address1a.phoneNumber, phoneNumber3)
-        XCTAssertEqual(address1b.serviceId, aci1)
+        XCTAssertEqual(address1b.untypedServiceId, aci1)
         XCTAssertEqual(address1b.phoneNumber, phoneNumber3)
-        XCTAssertEqual(address1c.serviceId, aci1)
+        XCTAssertEqual(address1c.untypedServiceId, aci1)
         XCTAssertEqual(address1c.phoneNumber, phoneNumber3)
-        XCTAssertEqual(address1d.serviceId, aci1)
+        XCTAssertEqual(address1d.untypedServiceId, aci1)
         XCTAssertEqual(address1d.phoneNumber, phoneNumber3)
-        XCTAssertEqual(address2a.serviceId, aci2)
+        XCTAssertEqual(address2a.untypedServiceId, aci2)
         XCTAssertNil(address2a.phoneNumber)
-        XCTAssertEqual(address2b.serviceId, aci2)
+        XCTAssertEqual(address2b.untypedServiceId, aci2)
         XCTAssertEqual(address2b.phoneNumber, phoneNumber2)
-        XCTAssertEqual(address3a.serviceId, aci1)
+        XCTAssertEqual(address3a.untypedServiceId, aci1)
         XCTAssertEqual(address3a.phoneNumber, phoneNumber3)
     }
 
@@ -204,11 +204,11 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
         XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber2).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertNil(makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertNil(makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
+        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
 
         // aci2, phoneNumber1
@@ -223,13 +223,13 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash3, makeAddress(phoneNumber: phoneNumber1).hash)
         XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber2).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
+        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
+        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
@@ -253,11 +253,11 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
         XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber2).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertNil(makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertNil(makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
+        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
 
         // aci2, phoneNumber1
@@ -272,13 +272,13 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash3, makeAddress(phoneNumber: phoneNumber1).hash)
         XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber2).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
+        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
+        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
@@ -304,11 +304,11 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
         XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber1).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertNil(makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
+        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
 
         // aci1, phoneNumber2
@@ -323,13 +323,13 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber1).hash)
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber2).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
+        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
+        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
@@ -355,11 +355,11 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
         XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber1).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertNil(makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
+        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
 
         // aci1, phoneNumber2
@@ -374,13 +374,13 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash2, makeAddress(phoneNumber: phoneNumber1).hash)
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber2).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
+        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
+        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
@@ -409,9 +409,9 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
     }
 
@@ -440,9 +440,9 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash1, makeAddress(serviceId: aci1).hash)
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber1).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
     }
 
@@ -478,13 +478,13 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber2).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertNil(makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertNil(makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
+        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).untypedServiceId)
         XCTAssertNil(makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
+        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
@@ -520,13 +520,13 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber2).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertNil(makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertNil(makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
+        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).untypedServiceId)
         XCTAssertNil(makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
+        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
@@ -558,11 +558,11 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber2).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
+        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).untypedServiceId)
         XCTAssertNil(makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
+        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
@@ -594,11 +594,11 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
         XCTAssertEqual(hash1, makeAddress(phoneNumber: phoneNumber2).hash)
 
-        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).serviceId)
+        XCTAssertEqual(aci1, makeAddress(serviceId: aci1).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(serviceId: aci1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
+        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).untypedServiceId)
         XCTAssertNil(makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).serviceId)
+        XCTAssertEqual(aci1, makeAddress(phoneNumber: phoneNumber2).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
@@ -630,11 +630,11 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
         XCTAssertNotEqual(hash1, makeAddress(phoneNumber: phoneNumber2).hash)
 
-        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
+        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertNil(makeAddress(phoneNumber: phoneNumber2).serviceId)
+        XCTAssertNil(makeAddress(phoneNumber: phoneNumber2).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
@@ -666,11 +666,11 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(hash2, makeAddress(serviceId: aci2).hash)
         XCTAssertNotEqual(hash1, makeAddress(phoneNumber: phoneNumber2).hash)
 
-        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).serviceId)
+        XCTAssertEqual(aci2, makeAddress(phoneNumber: phoneNumber1).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(phoneNumber: phoneNumber1).phoneNumber)
-        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).serviceId)
+        XCTAssertEqual(aci2, makeAddress(serviceId: aci2).untypedServiceId)
         XCTAssertEqual(phoneNumber1, makeAddress(serviceId: aci2).phoneNumber)
-        XCTAssertNil(makeAddress(phoneNumber: phoneNumber2).serviceId)
+        XCTAssertNil(makeAddress(phoneNumber: phoneNumber2).untypedServiceId)
         XCTAssertEqual(phoneNumber2, makeAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 

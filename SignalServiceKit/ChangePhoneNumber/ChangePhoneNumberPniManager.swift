@@ -36,7 +36,7 @@ public protocol ChangePhoneNumberPniManager {
     /// error is returned, automatic retry is not recommended.
     func generatePniIdentity(
         forNewE164 newE164: E164,
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32]
@@ -124,7 +124,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
     func generatePniIdentity(
         forNewE164 newE164: E164,
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32]

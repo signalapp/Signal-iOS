@@ -12,10 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class PreKeyRecord;
 @class ProfileValue;
 @class SMKUDAccessKey;
-@class ServiceIdObjC;
 @class SignalServiceAddress;
 @class SignedPreKeyRecord;
 @class TSRequest;
+@class UntypedServiceIdObjC;
 
 typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
     TSVerificationTransportVoice = 1,
@@ -42,7 +42,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                                   auth:(ChatServiceAuth *)auth
     NS_SWIFT_NAME(getUnversionedProfileRequest(address:udAccessKey:auth:));
 
-+ (TSRequest *)getVersionedProfileRequestWithServiceId:(ServiceIdObjC *)serviceId
++ (TSRequest *)getVersionedProfileRequestWithServiceId:(UntypedServiceIdObjC *)serviceId
                                      profileKeyVersion:(nullable NSString *)profileKeyVersion
                                      credentialRequest:(nullable NSData *)credentialRequest
                                            udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
@@ -70,7 +70,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                             transport:(TSVerificationTransport)transport
     NS_SWIFT_NAME(requestVerificationCodeRequest(e164:preauthChallenge:captchaToken:transport:));
 
-+ (TSRequest *)submitMessageRequestWithServiceId:(ServiceIdObjC *)serviceId
++ (TSRequest *)submitMessageRequestWithServiceId:(UntypedServiceIdObjC *)serviceId
                                         messages:(NSArray<DeviceMessage *> *)messages
                                        timestamp:(uint64_t)timestamp
                                      udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
@@ -101,7 +101,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)currentSignedPreKeyRequest;
 
-+ (TSRequest *)recipientPreKeyRequestWithServiceId:(ServiceIdObjC *)serviceId
++ (TSRequest *)recipientPreKeyRequestWithServiceId:(UntypedServiceIdObjC *)serviceId
                                           deviceId:(uint32_t)deviceId
                                        udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
 

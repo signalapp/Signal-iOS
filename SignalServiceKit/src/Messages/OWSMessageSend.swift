@@ -44,7 +44,7 @@ public class OWSMessageSend: NSObject, UDSendingParamsProvider {
     public let thread: TSThread
 
     @objc
-    public let serviceId: ServiceIdObjC
+    public let serviceId: UntypedServiceIdObjC
 
     @objc
     public let address: SignalServiceAddress
@@ -77,7 +77,7 @@ public class OWSMessageSend: NSObject, UDSendingParamsProvider {
         plaintextContent: Data,
         plaintextPayloadId: Int64?,
         thread: TSThread,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         udSendingAccess: OWSUDSendingAccess?,
         localAddress: SignalServiceAddress,
         sendErrorBlock: ((Error) -> Void)?
@@ -86,7 +86,7 @@ public class OWSMessageSend: NSObject, UDSendingParamsProvider {
         self.plaintextContent = plaintextContent
         self.plaintextPayloadId = plaintextPayloadId
         self.thread = thread
-        self.serviceId = ServiceIdObjC(serviceId)
+        self.serviceId = UntypedServiceIdObjC(serviceId)
         self.address = SignalServiceAddress(serviceId)
         self.localAddress = localAddress
         self.isLocalAddress = address.isLocalAddress

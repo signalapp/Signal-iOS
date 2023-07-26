@@ -31,7 +31,7 @@ public protocol VersionedProfileRequest: AnyObject {
 public protocol VersionedProfiles: AnyObject {
     @objc(clearProfileKeyCredentialForServiceId:transaction:)
     func clearProfileKeyCredential(
-        for serviceId: ServiceIdObjC,
+        for serviceId: UntypedServiceIdObjC,
         transaction: SDSAnyWriteTransaction
     )
 
@@ -59,13 +59,13 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
     ) -> Promise<VersionedProfileUpdate>
 
     func versionedProfileRequest(
-        for serviceId: ServiceId,
+        for serviceId: UntypedServiceId,
         udAccessKey: SMKUDAccessKey?,
         auth: ChatServiceAuth
     ) throws -> VersionedProfileRequest
 
     func validProfileKeyCredential(
-        for serviceId: ServiceId,
+        for serviceId: UntypedServiceId,
         transaction: SDSAnyReadTransaction
     ) throws -> ExpiringProfileKeyCredential?
 }
@@ -74,13 +74,13 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
 
 @objc
 public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedProfiles {
-    public func clearProfileKeyCredential(for serviceId: ServiceIdObjC,
+    public func clearProfileKeyCredential(for serviceId: UntypedServiceIdObjC,
                                           transaction: SDSAnyWriteTransaction) {}
 
     public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {}
 
     public func versionedProfileRequest(
-        for serviceId: ServiceId,
+        for serviceId: UntypedServiceId,
         udAccessKey: SMKUDAccessKey?,
         auth: ChatServiceAuth
     ) throws -> VersionedProfileRequest {
@@ -103,7 +103,7 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
         owsFail("Not implemented.")
     }
 
-    public func validProfileKeyCredential(for serviceId: ServiceId,
+    public func validProfileKeyCredential(for serviceId: UntypedServiceId,
                                           transaction: SDSAnyReadTransaction) throws -> ExpiringProfileKeyCredential? {
         owsFail("Not implemented")
     }

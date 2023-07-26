@@ -10,7 +10,7 @@ extension MessageSender {
     private static var maxSenderKeyEnvelopeSize: UInt64 { 256 * 1024 }
 
     struct Recipient {
-        let serviceId: ServiceId
+        let serviceId: UntypedServiceId
         let devices: [UInt32]
         var protocolAddresses: [ProtocolAddress] {
             devices.compactMap {
@@ -23,7 +23,7 @@ extension MessageSender {
             }
         }
 
-        init(serviceId: ServiceId, transaction readTx: SDSAnyReadTransaction) {
+        init(serviceId: UntypedServiceId, transaction readTx: SDSAnyReadTransaction) {
             let recipient = SignalRecipient.fetchRecipient(
                 for: SignalServiceAddress(serviceId),
                 onlyIfRegistered: false,
@@ -83,12 +83,12 @@ extension MessageSender {
             case NeedsSKDM
             case FanoutOnly
         }
-        var participants: [ServiceIdObjC: ParticipantState]
+        var participants: [UntypedServiceIdObjC: ParticipantState]
         init(numberOfParticipants: Int) {
             self.participants = Dictionary(minimumCapacity: numberOfParticipants)
         }
 
-        init(fanoutOnlyParticipants: [ServiceIdObjC]) {
+        init(fanoutOnlyParticipants: [UntypedServiceIdObjC]) {
             self.participants = Dictionary(minimumCapacity: fanoutOnlyParticipants.count)
             super.init()
 
@@ -96,20 +96,20 @@ extension MessageSender {
         }
 
         @objc
-        var fanoutParticipants: [ServiceIdObjC] {
+        var fanoutParticipants: [UntypedServiceIdObjC] {
             Array(participants.lazy.filter { $0.value == .FanoutOnly }.map { $0.key })
         }
 
         @objc
-        var allSenderKeyParticipants: [ServiceIdObjC] {
+        var allSenderKeyParticipants: [UntypedServiceIdObjC] {
             Array(participants.lazy.filter { $0.value != .FanoutOnly }.map { $0.key })
         }
 
-        var participantsNeedingSKDM: [ServiceIdObjC] {
+        var participantsNeedingSKDM: [UntypedServiceIdObjC] {
             Array(participants.lazy.filter { $0.value == .NeedsSKDM }.map { $0.key })
         }
 
-        var readyParticipants: [ServiceIdObjC] {
+        var readyParticipants: [UntypedServiceIdObjC] {
             Array(participants.lazy.filter { $0.value == .SenderKeyReady }.map { $0.key })
         }
     }
@@ -118,8 +118,8 @@ extension MessageSender {
     @objc
     func senderKeyStatus(
         for thread: TSThread,
-        intendedRecipients: [ServiceIdObjC],
-        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess]
+        intendedRecipients: [UntypedServiceIdObjC],
+        udAccessMap: [UntypedServiceIdObjC: OWSUDSendingAccess]
     ) -> SenderKeyStatus {
         guard !RemoteConfig.senderKeyKillSwitch else {
             Logger.info("Sender key kill switch activated. No recipients support sender key.")
@@ -139,7 +139,7 @@ extension MessageSender {
             )
 
             let senderKeyStatus = SenderKeyStatus(numberOfParticipants: intendedRecipients.count)
-            let threadRecipients = thread.recipientAddresses(with: readTx).compactMap { $0.serviceIdObjC }
+            let threadRecipients = thread.recipientAddresses(with: readTx).compactMap { $0.untypedServiceIdObjC }
             intendedRecipients.forEach { candidate in
                 // Sender key requires that you're a full member of the group and you support UD
                 guard
@@ -192,16 +192,16 @@ extension MessageSender {
         payloadId: Int64?,
         thread: TSThread,
         status: SenderKeyStatus,
-        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess],
+        udAccessMap: [UntypedServiceIdObjC: OWSUDSendingAccess],
         senderCertificates: SenderCertificates,
-        sendErrorBlock: @escaping (ServiceIdObjC, NSError) -> Void
+        sendErrorBlock: @escaping (UntypedServiceIdObjC, NSError) -> Void
     ) -> Promise<Void> {
 
         // Because of the way promises are combined further up the chain, we need to ensure that if
         // *any* send fails, the entire Promise rejcts. The error it rejects with doesn't really matter
         // and isn't consulted.
         let didHitAnyFailure = AtomicBool(false)
-        let wrappedSendErrorBlock = { (serviceId: ServiceIdObjC, error: Error) -> Void in
+        let wrappedSendErrorBlock = { (serviceId: UntypedServiceIdObjC, error: Error) -> Void in
             Logger.info("Sender key send failed for \(serviceId): \(error)")
             _ = didHitAnyFailure.tryToSetFlag()
 
@@ -218,7 +218,7 @@ extension MessageSender {
         // pend indefinitely.
         let senderKeyGuarantee: Guarantee<Void>
 
-        senderKeyGuarantee = { () -> Guarantee<[ServiceIdObjC]> in
+        senderKeyGuarantee = { () -> Guarantee<[UntypedServiceIdObjC]> in
             // If none of our recipients need an SKDM let's just skip the database write.
             if status.participantsNeedingSKDM.count > 0 {
                 return senderKeyDistributionPromise(
@@ -230,7 +230,7 @@ extension MessageSender {
             } else {
                 return .value(status.readyParticipants)
             }
-        }().then(on: senderKeyQueue) { (senderKeyRecipients: [ServiceIdObjC]) -> Guarantee<Void> in
+        }().then(on: senderKeyQueue) { (senderKeyRecipients: [UntypedServiceIdObjC]) -> Guarantee<Void> in
             guard senderKeyRecipients.count > 0 else {
                 // Something went wrong with the SKDM promise. Exit early.
                 owsAssertDebug(didHitAnyFailure.get())
@@ -261,12 +261,12 @@ extension MessageSender {
                         self.markAsUnregistered(serviceId: serviceId, message: message, thread: thread, transaction: tx)
 
                         let error = MessageSenderNoSuchSignalRecipientError()
-                        wrappedSendErrorBlock(ServiceIdObjC(serviceId), error)
+                        wrappedSendErrorBlock(UntypedServiceIdObjC(serviceId), error)
                     }
 
                     sendResult.success.forEach { recipient in
                         message.update(
-                            withSentRecipient: ServiceIdObjC(recipient.serviceId),
+                            withSentRecipient: UntypedServiceIdObjC(recipient.serviceId),
                             wasSentByUD: true,
                             transaction: tx
                         )
@@ -317,7 +317,7 @@ extension MessageSender {
     }
 
     private static func senderCertificate(
-        forSenderKeyRecipients senderKeyRecipients: [ServiceIdObjC],
+        forSenderKeyRecipients senderKeyRecipients: [UntypedServiceIdObjC],
         senderCertificates: SenderCertificates
     ) -> SenderCertificate {
         switch udManager.phoneNumberSharingMode {
@@ -334,14 +334,14 @@ extension MessageSender {
     //
     // Returns the list of all recipients ready for the SenderKeyMessage.
     private func senderKeyDistributionPromise(
-        recipients: [ServiceIdObjC],
+        recipients: [UntypedServiceIdObjC],
         thread: TSThread,
         originalMessage: TSOutgoingMessage,
-        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess],
-        sendErrorBlock: @escaping (ServiceIdObjC, Error) -> Void
-    ) -> Guarantee<[ServiceIdObjC]> {
+        udAccessMap: [UntypedServiceIdObjC: OWSUDSendingAccess],
+        sendErrorBlock: @escaping (UntypedServiceIdObjC, Error) -> Void
+    ) -> Guarantee<[UntypedServiceIdObjC]> {
 
-        var recipientsNotNeedingSKDM: Set<ServiceIdObjC> = Set()
+        var recipientsNotNeedingSKDM: Set<UntypedServiceIdObjC> = Set()
         return databaseStorage.write(.promise) { writeTx -> [OWSMessageSend] in
             // Here we fetch all of the recipients that need an SKDM
             // We then construct an OWSMessageSend for each recipient that needs an SKDM.
@@ -431,11 +431,11 @@ extension MessageSender {
                     throw wrappedError
                 }
             })
-        }.map(on: self.senderKeyQueue) { resultArray -> [ServiceIdObjC] in
+        }.map(on: self.senderKeyQueue) { resultArray -> [UntypedServiceIdObjC] in
             // This is a hot path, so we do a bit of a dance here to prepare all of the successful send
             // info before opening the write transaction. We need the recipient address and the SKDM
             // timestamp.
-            let successfulSendInfo: [(recipient: ServiceIdObjC, timestamp: UInt64)]
+            let successfulSendInfo: [(recipient: UntypedServiceIdObjC, timestamp: UInt64)]
 
             successfulSendInfo = resultArray.compactMap { result in
                 switch result {
@@ -475,8 +475,8 @@ extension MessageSender {
         let success: [Recipient]
         let unregistered: [Recipient]
 
-        var successServiceIds: [ServiceId] { success.map { $0.serviceId } }
-        var unregisteredServiceIds: [ServiceId] { unregistered.map { $0.serviceId } }
+        var successServiceIds: [UntypedServiceId] { success.map { $0.serviceId } }
+        var unregisteredServiceIds: [UntypedServiceId] { unregistered.map { $0.serviceId } }
     }
 
     // Encrypts and sends the message using SenderKey
@@ -486,8 +486,8 @@ extension MessageSender {
         message: TSOutgoingMessage,
         plaintext: Data,
         thread: TSThread,
-        serviceIds: [ServiceIdObjC],
-        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess],
+        serviceIds: [UntypedServiceIdObjC],
+        udAccessMap: [UntypedServiceIdObjC: OWSUDSendingAccess],
         senderCertificate: SenderCertificate
     ) -> Promise<SenderKeySendResult> {
         return self.databaseStorage.write(.promise) { writeTx -> ([Recipient], Data) in
@@ -527,7 +527,7 @@ extension MessageSender {
         isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
-        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess],
+        udAccessMap: [UntypedServiceIdObjC: OWSUDSendingAccess],
         senderCertificate: SenderCertificate,
         remainingAttempts: UInt
     ) -> Promise<SenderKeySendResult> {
@@ -589,7 +589,7 @@ extension MessageSender {
                     self.databaseStorage.write { tx in
                         for account in responseBody {
                             Self.updateDevices(
-                                serviceId: ServiceId(account.uuid),
+                                serviceId: UntypedServiceId(account.uuid),
                                 devicesToAdd: account.devices.missingDevices,
                                 devicesToRemove: account.devices.extraDevices,
                                 transaction: tx
@@ -694,12 +694,12 @@ extension MessageSender {
         isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
-        udAccessMap: [ServiceIdObjC: OWSUDSendingAccess]
+        udAccessMap: [UntypedServiceIdObjC: OWSUDSendingAccess]
     ) throws -> Promise<HTTPResponse> {
 
         // Sender key messages use an access key composed of every recipient's individual access key.
         let allAccessKeys = recipients.compactMap {
-            udAccessMap[ServiceIdObjC($0.serviceId)]?.udAccess.senderKeyUDAccessKey
+            udAccessMap[UntypedServiceIdObjC($0.serviceId)]?.udAccess.senderKeyUDAccessKey
         }
         guard recipients.count == allAccessKeys.count else {
             throw OWSAssertionError("Incomplete access key set")
@@ -793,7 +793,7 @@ fileprivate extension MessageSender {
     /// Also check for missing sessions (shouldn't happen if we've gotten this far, since
     /// SenderKeyStore already said this address has previous Sender Key sends). We should
     /// investigate how this ever happened, but for now fall back to sending another SKDM.
-    static func registrationIdStatus(for serviceId: ServiceId, transaction: SDSAnyReadTransaction) -> RegistrationIdStatus {
+    static func registrationIdStatus(for serviceId: UntypedServiceId, transaction: SDSAnyReadTransaction) -> RegistrationIdStatus {
         let candidateDevices = MessageSender.Recipient(serviceId: serviceId, transaction: transaction).devices
         let sessionStore = signalProtocolStore(for: .aci).sessionStore
         for deviceId in candidateDevices {

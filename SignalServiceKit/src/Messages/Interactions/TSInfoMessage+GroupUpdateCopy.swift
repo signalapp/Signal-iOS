@@ -561,7 +561,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
 
         /// Move the given service ID to the front of ``allUsersSorted``, if it
         /// is present therein.
-        func moveServiceIdToFront(_ serviceId: ServiceId?) {
+        func moveServiceIdToFront(_ serviceId: UntypedServiceId?) {
             guard let address = serviceId.map({ SignalServiceAddress($0) }) else { return }
 
             if allUsersSorted.contains(address) {
@@ -1757,7 +1757,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         of address: SignalServiceAddress,
         in groupMembership: GroupMembership
     ) -> MembershipStatus {
-        guard let serviceId = address.serviceId else {
+        guard let serviceId = address.untypedServiceId else {
             return .none
         }
 
@@ -1765,7 +1765,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
     }
 
     static func membershipStatus(
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         in groupMembership: GroupMembership
     ) -> MembershipStatus {
         if groupMembership.isFullMember(serviceId.uuidValue) {

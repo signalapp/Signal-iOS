@@ -9,7 +9,7 @@ import GRDB
 public struct SpamReportingTokenRecord: Codable, FetchableRecord, PersistableRecord {
     public static let databaseTableName = "spamReportingTokenRecords"
 
-    public let sourceUuid: ServiceId
+    public let sourceUuid: UntypedServiceId
     public let spamReportingToken: SpamReportingToken
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -17,13 +17,13 @@ public struct SpamReportingTokenRecord: Codable, FetchableRecord, PersistableRec
         case spamReportingToken
     }
 
-    public init(sourceUuid: ServiceId, spamReportingToken: SpamReportingToken) {
+    public init(sourceUuid: UntypedServiceId, spamReportingToken: SpamReportingToken) {
         self.sourceUuid = sourceUuid
         self.spamReportingToken = spamReportingToken
     }
 
     public static func reportingToken(
-        for sourceUuid: ServiceId,
+        for sourceUuid: UntypedServiceId,
         database: Database
     ) throws -> SpamReportingToken? {
         try Self.fetchOne(database, key: sourceUuid)?.spamReportingToken

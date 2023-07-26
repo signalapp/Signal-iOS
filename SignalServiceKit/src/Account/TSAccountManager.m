@@ -164,8 +164,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self storeLocalNumber:e164
-                       aci:[[ServiceIdObjC alloc] initWithUuidValue:uuid]
-                       pni:(pni == nil ? nil : [[ServiceIdObjC alloc] initWithUuidValue:pni])
+                       aci:[[UntypedServiceIdObjC alloc] initWithUuidValue:uuid]
+                       pni:(pni == nil ? nil : [[UntypedServiceIdObjC alloc] initWithUuidValue:pni])
                transaction:transaction];
 
     [transaction addAsyncCompletionOffMain:^{
@@ -254,8 +254,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self storeLocalNumber:phoneNumber
-                           aci:[[ServiceIdObjC alloc] initWithUuidValue:aci]
-                           pni:[[ServiceIdObjC alloc] initWithUuidValue:pni]
+                           aci:[[UntypedServiceIdObjC alloc] initWithUuidValue:aci]
+                           pni:[[UntypedServiceIdObjC alloc] initWithUuidValue:pni]
                    transaction:transaction];
     });
 
@@ -269,8 +269,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
                        transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self storeLocalNumber:e164
-                       aci:[[ServiceIdObjC alloc] initWithUuidValue:aci]
-                       pni:[[ServiceIdObjC alloc] initWithUuidValue:pni]
+                       aci:[[UntypedServiceIdObjC alloc] initWithUuidValue:aci]
+                       pni:[[UntypedServiceIdObjC alloc] initWithUuidValue:pni]
                transaction:transaction];
     [self setStoredServerAuthToken:authToken deviceId:OWSDeviceObjc.primaryDeviceId transaction:transaction];
     [transaction addSyncCompletion:^{ [self postRegistrationStateDidChangeNotification]; }];
@@ -520,8 +520,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self storeLocalNumber:[[E164ObjC alloc] init:localNumber]
-                           aci:[[ServiceIdObjC alloc] initWithUuidValue:uuid]
-                           pni:(pni == nil ? nil : [[ServiceIdObjC alloc] initWithUuidValue:pni])
+                           aci:[[UntypedServiceIdObjC alloc] initWithUuidValue:uuid]
+                           pni:(pni == nil ? nil : [[UntypedServiceIdObjC alloc] initWithUuidValue:pni])
                    transaction:transaction];
     });
 }

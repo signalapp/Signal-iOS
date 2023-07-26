@@ -225,7 +225,7 @@ private extension LocalIdentifiers {
         return .withPni(pni: nil)
     }
 
-    private static func withPni(pni: ServiceId?) -> LocalIdentifiers {
+    private static func withPni(pni: UntypedServiceId?) -> LocalIdentifiers {
         return LocalIdentifiers(aci: FutureAci.randomForTesting(), pni: pni, e164: E164("+17735550199")!)
     }
 }
@@ -295,7 +295,7 @@ private class PniDistributionParamaterBuilderMock: PniDistributionParamaterBuild
     var buildRequestedDeviceIds: [[UInt32]] = []
 
     func buildPniDistributionParameters(
-        localAci _: ServiceId,
+        localAci _: UntypedServiceId,
         localAccountId _: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
@@ -343,7 +343,7 @@ private class SignalRecipientStoreMock: _PniHelloWorldManagerImpl_SignalRecipien
     var deviceIds: [UInt32]?
 
     func localAccountAndDeviceIds(
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         tx: DBReadTransaction
     ) -> (accountId: String, deviceIds: [UInt32])? {
         guard let localAccountId, let deviceIds else {

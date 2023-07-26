@@ -89,13 +89,13 @@ public class ReactionManager: NSObject {
             transaction: tx
         )
 
-        outgoingMessage.previousReaction = message.reaction(for: ServiceIdObjC(localAci), tx: tx)
+        outgoingMessage.previousReaction = message.reaction(for: UntypedServiceIdObjC(localAci), tx: tx)
 
         if isRemoving {
-            message.removeReaction(for: ServiceIdObjC(localAci), tx: tx)
+            message.removeReaction(for: UntypedServiceIdObjC(localAci), tx: tx)
         } else {
             outgoingMessage.createdReaction = message.recordReaction(
-                for: ServiceIdObjC(localAci),
+                for: UntypedServiceIdObjC(localAci),
                 emoji: emoji,
                 sentAtTimestamp: outgoingMessage.timestamp,
                 receivedAtTimestamp: outgoingMessage.timestamp,
@@ -120,7 +120,7 @@ public class ReactionManager: NSObject {
     public class func processIncomingReaction(
         _ reaction: SSKProtoDataMessageReaction,
         thread: TSThread,
-        reactor: ServiceIdObjC,
+        reactor: UntypedServiceIdObjC,
         timestamp: UInt64,
         serverTimestamp: UInt64,
         expiresInSeconds: UInt32,
@@ -135,7 +135,7 @@ public class ReactionManager: NSObject {
             owsFailDebug("Received invalid emoji")
             return .invalidReaction
         }
-        guard let messageAuthor = ServiceId(uuidString: reaction.authorUuid) else {
+        guard let messageAuthor = UntypedServiceId(uuidString: reaction.authorUuid) else {
             owsFailDebug("reaction missing message author")
             return .invalidReaction
         }

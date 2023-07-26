@@ -844,7 +844,7 @@ private extension GroupV2UpdatesImpl {
         let newGroupModel: TSGroupModel
         let newDisappearingMessageToken: DisappearingMessageToken?
         let newProfileKeys: [UUID: Data]
-        let newlyLearnedPniToAciAssociations: [ServiceId: ServiceId]
+        let newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId]
 
         // We should prefer to update models using the change action if we can,
         // since it contains information about the change author.

@@ -19,7 +19,7 @@ private class MockGroupMemberUpdaterTemporaryShims: GroupMemberUpdaterTemporaryS
         transaction: DBReadTransaction
     ) -> UInt64? {
         let resultIndex = fetchableLatestInteractionTimestamps.firstIndex {
-            $0.groupThreadId == groupThreadId && $0.serviceId == groupMemberAddress.serviceId?.uuidValue.uuidString
+            $0.groupThreadId == groupThreadId && $0.serviceId == groupMemberAddress.untypedServiceId?.uuidValue.uuidString
         }
         let result = fetchableLatestInteractionTimestamps.remove(at: resultIndex!)
         return result.interactionTimestamp
@@ -103,7 +103,7 @@ class GroupMemberUpdaterTest: XCTestCase {
 
         for signalRecipient in signalRecipients {
             mockSignalServiceAddressCache.updateRecipient(SignalRecipient(
-                serviceId: ServiceId(uuidString: signalRecipient.serviceId),
+                serviceId: UntypedServiceId(uuidString: signalRecipient.serviceId),
                 phoneNumber: E164(signalRecipient.phoneNumber)
             ))
         }
@@ -125,7 +125,7 @@ class GroupMemberUpdaterTest: XCTestCase {
             for oldGroupMember in oldGroupMembers {
                 mockGroupMemberStore.insert(
                     fullGroupMember: TSGroupMember(
-                        serviceId: oldGroupMember.serviceId.map { ServiceId(uuidString: $0)! },
+                        serviceId: oldGroupMember.serviceId.map { UntypedServiceId(uuidString: $0)! },
                         phoneNumber: oldGroupMember.phoneNumber,
                         groupThreadId: groupThread.uniqueId,
                         lastInteractionTimestamp: oldGroupMember.interactionTimestamp

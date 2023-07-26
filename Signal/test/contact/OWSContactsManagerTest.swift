@@ -11,8 +11,6 @@ import XCTest
 @testable import SignalServiceKit
 
 class OWSContactsManagerTest: SignalBaseTest {
-    typealias ServiceId = SignalServiceKit.ServiceId
-
     private lazy var localAddress = CommonGenerator.address()
 
     private let dbV2: MockDB = .init()
@@ -43,7 +41,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         return contactsManager
     }
 
-    private func createRecipients(_ serviceIds: [ServiceId]) {
+    private func createRecipients(_ serviceIds: [UntypedServiceId]) {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         write { tx in
             for serviceId in serviceIds {

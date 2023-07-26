@@ -564,7 +564,7 @@ NS_ASSUME_NONNULL_BEGIN
 // remoteTimestamp is the time the message was delivered, read, or viewed.
 // earlyTimestamps contains the collection of outgoing messages referred to by the receipt.
 - (void)recordEarlyReceiptOfType:(SSKProtoReceiptMessageType)receiptType
-                 senderServiceId:(ServiceIdObjC *)senderServiceId
+                 senderServiceId:(UntypedServiceIdObjC *)senderServiceId
                   senderDeviceId:(uint32_t)senderDeviceId
                       timestamps:(NSArray<NSNumber *> *)earlyTimestamps
                  remoteTimestamp:(uint64_t)remoteTimestamp
@@ -933,8 +933,8 @@ NS_ASSUME_NONNULL_BEGIN
                     case OWSReactionProcessingResultInvalidReaction:
                         break;
                     case OWSReactionProcessingResultAssociatedMessageMissing: {
-                        ServiceIdObjC *messageAuthor =
-                            [[ServiceIdObjC alloc] initWithUuidString:dataMessage.reaction.authorUuid];
+                        UntypedServiceIdObjC *messageAuthor =
+                            [[UntypedServiceIdObjC alloc] initWithUuidString:dataMessage.reaction.authorUuid];
                         [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                         plainTextData:plaintextData
                                                       wasReceivedByUD:wasReceivedByUD
@@ -1027,7 +1027,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                        readTimestamp:envelope.timestamp
                                                                   tx:transaction];
         for (SSKProtoSyncMessageRead *readReceiptProto in earlyReceipts) {
-            ServiceIdObjC *messageAuthor = [[ServiceIdObjC alloc] initWithUuidString:readReceiptProto.senderUuid];
+            UntypedServiceIdObjC *messageAuthor =
+                [[UntypedServiceIdObjC alloc] initWithUuidString:readReceiptProto.senderUuid];
             [self.earlyMessageManager recordEarlyReadReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
                                                                associatedMessageTimestamp:readReceiptProto.timestamp
                                                                   associatedMessageAuthor:messageAuthor
@@ -1040,7 +1041,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                        viewedTimestamp:envelope.timestamp
                                                                     tx:transaction];
         for (SSKProtoSyncMessageViewed *viewedReceiptProto in earlyReceipts) {
-            ServiceIdObjC *messageAuthor = [[ServiceIdObjC alloc] initWithUuidString:viewedReceiptProto.senderUuid];
+            UntypedServiceIdObjC *messageAuthor =
+                [[UntypedServiceIdObjC alloc] initWithUuidString:viewedReceiptProto.senderUuid];
             [self.earlyMessageManager recordEarlyViewedReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
                                                                  associatedMessageTimestamp:viewedReceiptProto.timestamp
                                                                     associatedMessageAuthor:messageAuthor
@@ -1073,8 +1075,8 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSViewOnceSyncMessageProcessingResultInvalidSyncMessage:
                 break;
             case OWSViewOnceSyncMessageProcessingResultAssociatedMessageMissing: {
-                ServiceIdObjC *messageAuthor =
-                    [[ServiceIdObjC alloc] initWithUuidString:syncMessage.viewOnceOpen.senderUuid];
+                UntypedServiceIdObjC *messageAuthor =
+                    [[UntypedServiceIdObjC alloc] initWithUuidString:syncMessage.viewOnceOpen.senderUuid];
                 [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                 plainTextData:plaintextData
                                               wasReceivedByUD:wasReceivedByUD
@@ -1262,8 +1264,8 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSReactionProcessingResultInvalidReaction:
                 break;
             case OWSReactionProcessingResultAssociatedMessageMissing: {
-                ServiceIdObjC *messageAuthor =
-                    [[ServiceIdObjC alloc] initWithUuidString:dataMessage.reaction.authorUuid];
+                UntypedServiceIdObjC *messageAuthor =
+                    [[UntypedServiceIdObjC alloc] initWithUuidString:dataMessage.reaction.authorUuid];
                 [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                 plainTextData:plaintextData
                                               wasReceivedByUD:wasReceivedByUD
@@ -1484,7 +1486,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Check for any placeholders inserted because of a previously undecryptable message
     // The sender may have resent the message. If so, we should swap it in place of the placeholder
     [message insertOrReplacePlaceholderFrom:[[SignalServiceAddress alloc]
-                                                initWithServiceIdObjC:incomingEnvelope.sourceServiceIdObjC]
+                                                initWithUntypedServiceIdObjC:incomingEnvelope.sourceServiceIdObjC]
                                 transaction:transaction];
 
     // Inserting the message may have modified the thread on disk, so reload it.

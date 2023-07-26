@@ -86,7 +86,7 @@ protocol PniDistributionParamaterBuilder {
     /// - An encrypted message for each linked device informing them about the
     ///   new identity. Note that this message contains private key data.
     func buildPniDistributionParameters(
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
@@ -117,7 +117,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     }
 
     func buildPniDistributionParameters(
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
@@ -191,7 +191,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     /// are being built. A `nil` param in a resolved promise indicates a linked
     /// device that is no longer valid, and was ignored.
     private func buildLinkedDevicePniGenerationParams(
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
@@ -251,7 +251,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     /// invalid and should be skipped.
     private func encryptPniDistributionMessage(
         recipientId: String,
-        recipientAci: ServiceId,
+        recipientAci: UntypedServiceId,
         recipientDeviceId: UInt32,
         identityKeyPair: ECKeyPair,
         signedPreKey: SignedPreKeyRecord,
@@ -314,7 +314,7 @@ protocol _PniDistributionParameterBuilder_MessageSender_Shim {
         forMessagePlaintextContent messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
         recipientId: String,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
@@ -335,7 +335,7 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
         forMessagePlaintextContent messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
         recipientId: String,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,

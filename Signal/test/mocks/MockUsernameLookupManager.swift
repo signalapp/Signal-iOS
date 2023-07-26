@@ -8,7 +8,7 @@ import SignalServiceKit
 
 class MockUsernameLookupManager: UsernameLookupManager {
 
-    private var mockUsernames: [ServiceId: Username] = [:]
+    private var mockUsernames: [UntypedServiceId: Username] = [:]
 
     init() {}
 
@@ -18,19 +18,19 @@ class MockUsernameLookupManager: UsernameLookupManager {
 
     // MARK: - UsernameLookupManager
 
-    func fetchUsername(forAci aci: ServiceId, transaction: DBReadTransaction) -> Username? {
+    func fetchUsername(forAci aci: UntypedServiceId, transaction: DBReadTransaction) -> Username? {
         mockUsernames[aci]
     }
 
     func fetchUsernames(forAddresses addresses: AnySequence<SignalServiceAddress>, transaction: DBReadTransaction) -> [Username?] {
         addresses.map { address -> Username? in
-            guard let aci = address.serviceId else { return nil }
+            guard let aci = address.untypedServiceId else { return nil }
 
             return fetchUsername(forAci: aci, transaction: transaction)
         }
     }
 
-    func saveUsername(_ username: Username?, forAci aci: ServiceId, transaction: DBWriteTransaction) {
+    func saveUsername(_ username: Username?, forAci aci: UntypedServiceId, transaction: DBWriteTransaction) {
         mockUsernames[aci] = username
     }
 }

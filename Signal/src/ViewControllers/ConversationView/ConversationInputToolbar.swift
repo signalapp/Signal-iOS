@@ -1062,7 +1062,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     var draftReply: ThreadReplyInfo? {
         guard let quotedReply else { return nil }
-        guard let serviceId = quotedReply.authorAddress.serviceId else { return nil }
+        guard let serviceId = quotedReply.authorAddress.untypedServiceId else { return nil }
         return ThreadReplyInfo(timestamp: quotedReply.timestamp, author: serviceId)
     }
 

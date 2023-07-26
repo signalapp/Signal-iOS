@@ -1297,7 +1297,6 @@
 		D925F563298D8F9400158EE4 /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
 		D925F56A298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
 		D925F56B298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
-		D927934D2A61D9D500B9160E /* PreferSSKServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D927934C2A61D9D500B9160E /* PreferSSKServiceId.swift */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
 		D92C57552A2925AD00A03BB7 /* TSInfoMessage+GroupUpdateTypeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+GroupUpdateTypeTest.swift */; };
 		D9317FD32A4BAC8300075A92 /* BitmapsImagePixelMergingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD12A4BA7B000075A92 /* BitmapsImagePixelMergingTest.swift */; };
@@ -1325,7 +1324,6 @@
 		D96BE42E292EF04200E4FE1A /* PaypalButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96BE42D292EF04200E4FE1A /* PaypalButton.swift */; };
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
 		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
-		D97A12DC2A65AD76005A75D4 /* PreferSSKServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97A12DB2A65AD76005A75D4 /* PreferSSKServiceId.swift */; };
 		D98300B22936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98300B12936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift */; };
 		D985D86629B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */; };
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
@@ -3889,7 +3887,6 @@
 		D925F55E298C743E00158EE4 /* UsernameLookupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupManager.swift; sourceTree = "<group>"; };
 		D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameLookupManager.swift; sourceTree = "<group>"; };
 		D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLookupRecordTest.swift; sourceTree = "<group>"; };
-		D927934C2A61D9D500B9160E /* PreferSSKServiceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferSSKServiceId.swift; sourceTree = "<group>"; };
 		D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManager.swift; sourceTree = "<group>"; };
 		D92C57542A2925AD00A03BB7 /* TSInfoMessage+GroupUpdateTypeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateTypeTest.swift"; sourceTree = "<group>"; };
 		D9317FD12A4BA7B000075A92 /* BitmapsImagePixelMergingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsImagePixelMergingTest.swift; sourceTree = "<group>"; };
@@ -3916,7 +3913,6 @@
 		D96BE42D292EF04200E4FE1A /* PaypalButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaypalButton.swift; sourceTree = "<group>"; };
 		D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManagerTest.swift; sourceTree = "<group>"; };
 		D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupManager+GenericGroupUpdates.swift"; sourceTree = "<group>"; };
-		D97A12DB2A65AD76005A75D4 /* PreferSSKServiceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferSSKServiceId.swift; sourceTree = "<group>"; };
 		D98300B12936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubscriptionManager+DonationConfiguration.swift"; sourceTree = "<group>"; };
 		D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerTest.swift; sourceTree = "<group>"; };
 		D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChangePhoneNumberPniManager+Shims.swift"; sourceTree = "<group>"; };
@@ -5336,7 +5332,6 @@
 				501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */,
 				F962FF4829AD0C7C00AFA397 /* OWSScrubbingLogFormatter.swift */,
 				768F720C2A22CEAC002C4E7D /* Preferences.swift */,
-				D927934C2A61D9D500B9160E /* PreferSSKServiceId.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				3406D31D25DBF70400885B14 /* RefreshEvent.swift */,
 				34641E172088D7E900E2EDE5 /* ScreenLock.swift */,
@@ -8277,7 +8272,6 @@
 				4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */,
 				F9CAC7842919B5A400EEC1DE /* PhoneNumberRegionsTest.swift */,
 				F908AA7728CB894400472E68 /* PngChunkerTest.swift */,
-				D97A12DB2A65AD76005A75D4 /* PreferSSKServiceId.swift */,
 				F94261F0289B1B5400460798 /* RefineryTest.swift */,
 				F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */,
 				F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */,
@@ -11213,7 +11207,6 @@
 				D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */,
 				D938CD6029283402006FB16A /* Paypal.swift in Sources */,
 				768F720D2A22CEAC002C4E7D /* Preferences.swift in Sources */,
-				D927934D2A61D9D500B9160E /* PreferSSKServiceId.swift in Sources */,
 				F9292634297743EF0097F8FF /* PreparedGiftPayment.swift in Sources */,
 				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
 				3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */,
@@ -12788,7 +12781,6 @@
 				F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */,
 				D9CAF7532A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift in Sources */,
 				D9CAF74E2A09D2BD0049193A /* PniHelloWorldManagerTest.swift in Sources */,
-				D97A12DC2A65AD76005A75D4 /* PreferSSKServiceId.swift in Sources */,
 				F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */,
 				506695E129C296D500B6D8D0 /* RecipientMergerTest.swift in Sources */,
 				F942625D289B1B5500460798 /* RefineryTest.swift in Sources */,

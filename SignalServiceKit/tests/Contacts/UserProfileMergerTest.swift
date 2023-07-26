@@ -90,7 +90,7 @@ class UserProfileMergerTest: XCTestCase {
         XCTAssertEqual(userProfileStore.userProfiles, [localProfile, finalProfile, otherProfile])
     }
 
-    private func buildUserProfile(serviceId: ServiceId?, phoneNumber: String?, profileKey: Data?) -> OWSUserProfile {
+    private func buildUserProfile(serviceId: UntypedServiceId?, phoneNumber: String?, profileKey: Data?) -> OWSUserProfile {
         OWSUserProfile(
             grdbId: 0,
             uniqueId: UUID().uuidString,

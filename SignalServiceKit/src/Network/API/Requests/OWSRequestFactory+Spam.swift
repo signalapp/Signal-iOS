@@ -7,7 +7,7 @@ import Foundation
 
 public extension OWSRequestFactory {
     static func reportSpam(
-        from sender: ServiceId,
+        from sender: UntypedServiceId,
         withServerGuid serverGuid: String,
         reportingToken: SpamReportingToken?
     ) -> TSRequest {

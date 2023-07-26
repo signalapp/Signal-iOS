@@ -82,7 +82,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         let phoneNumber = E164("+16505550101")!
 
         let addressToBeUpdated = SignalServiceAddress(phoneNumber: phoneNumber.stringValue)
-        XCTAssertNil(addressToBeUpdated.serviceId)
+        XCTAssertNil(addressToBeUpdated.untypedServiceId)
 
         write { transaction in
             let recipient = mergeHighTrust(serviceId: aci, phoneNumber: phoneNumber, transaction: transaction)
@@ -91,7 +91,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             // The incomplete address is automatically filled after marking the
             // complete address as registered.
-            XCTAssertEqual(addressToBeUpdated.serviceId, aci)
+            XCTAssertEqual(addressToBeUpdated.untypedServiceId, aci)
 
             XCTAssertNotNil(fetchRecipient(serviceId: aci, transaction: transaction))
             XCTAssertNotNil(fetchRecipient(phoneNumber: phoneNumber, transaction: transaction))
@@ -178,7 +178,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             // after the phone number change. They are updated to reflect
             // the new address.
             XCTAssertEqual(oldAddress.phoneNumber, newAddress.phoneNumber)
-            XCTAssertEqual(oldAddress.serviceId, newAddress.serviceId)
+            XCTAssertEqual(oldAddress.untypedServiceId, newAddress.untypedServiceId)
 
             XCTAssertEqual(oldThread.uniqueId, newThread.uniqueId)
             XCTAssertNotEqual(oldThread.contactPhoneNumber, newThread.contactPhoneNumber)
@@ -256,7 +256,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             // number stripped.
             XCTAssertNil(oldAddress.phoneNumber)
             XCTAssertNotEqual(oldAddress.phoneNumber, newAddress.phoneNumber)
-            XCTAssertNotEqual(oldAddress.serviceId, newAddress.serviceId)
+            XCTAssertNotEqual(oldAddress.untypedServiceId, newAddress.untypedServiceId)
 
             oldThread.anyReload(transaction: transaction)
             XCTAssertNotEqual(oldThread.uniqueId, newThread.uniqueId)
@@ -280,7 +280,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         }
     }
 
-    private func createGroupAndThreads(for addresses: [(aci: ServiceId?, phoneNumber: E164?)]) -> TSGroupThread {
+    private func createGroupAndThreads(for addresses: [(aci: UntypedServiceId?, phoneNumber: E164?)]) -> TSGroupThread {
         return self.write { (tx) -> TSGroupThread in
             // Create a group with all the addresses.
             let groupThread = {
@@ -312,7 +312,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         }
     }
 
-    private func assertEqual(groupMembers: [TSGroupMember], expectedAddresses: [(aci: ServiceId?, phoneNumber: E164?)]) {
+    private func assertEqual(groupMembers: [TSGroupMember], expectedAddresses: [(aci: UntypedServiceId?, phoneNumber: E164?)]) {
         let actualValues = Set(groupMembers.lazy.map {
             "\($0.serviceId?.uuidValue.uuidString ?? "nil")-\($0.phoneNumber ?? "nil")"
         })
@@ -637,7 +637,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
     // MARK: - Helpers
 
     @discardableResult
-    private func mergeHighTrust(serviceId: ServiceId, phoneNumber: E164?, transaction tx: SDSAnyWriteTransaction) -> SignalRecipient {
+    private func mergeHighTrust(serviceId: UntypedServiceId, phoneNumber: E164?, transaction tx: SDSAnyWriteTransaction) -> SignalRecipient {
         let recipientMerger = DependenciesBridge.shared.recipientMerger
         return recipientMerger.applyMergeFromLinkedDevice(
             localIdentifiers: localIdentifiers,
@@ -647,7 +647,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         )
     }
 
-    private func fetchRecipient(serviceId: ServiceId, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
+    private func fetchRecipient(serviceId: UntypedServiceId, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
         SignalRecipient.fetchRecipient(for: SignalServiceAddress(serviceId), onlyIfRegistered: false, tx: transaction)
     }
 

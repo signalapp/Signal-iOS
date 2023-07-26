@@ -77,14 +77,14 @@ public extension TSMessage {
     }
 
     @objc(reactionFor:tx:)
-    func reaction(for reactor: ServiceIdObjC, tx: SDSAnyReadTransaction) -> OWSReaction? {
+    func reaction(for reactor: UntypedServiceIdObjC, tx: SDSAnyReadTransaction) -> OWSReaction? {
         return reactionFinder.reaction(for: reactor.wrappedValue, tx: tx.unwrapGrdbRead)
     }
 
     @objc(recordReactionFor:emoji:sentAtTimestamp:receivedAtTimestamp:tx:)
     @discardableResult
     func recordReaction(
-        for reactor: ServiceIdObjC,
+        for reactor: UntypedServiceIdObjC,
         emoji: String,
         sentAtTimestamp: UInt64,
         receivedAtTimestamp: UInt64,
@@ -123,7 +123,7 @@ public extension TSMessage {
     }
 
     @objc(removeReactionFor:tx:)
-    func removeReaction(for reactor: ServiceIdObjC, tx: SDSAnyWriteTransaction) {
+    func removeReaction(for reactor: UntypedServiceIdObjC, tx: SDSAnyWriteTransaction) {
         Logger.info("")
 
         guard let reaction = reaction(for: reactor, tx: tx) else { return }

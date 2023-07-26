@@ -8,9 +8,9 @@ import Foundation
 /// Describes a message that is being replied to in a draft.
 public struct ThreadReplyInfo: Codable {
     public let timestamp: UInt64
-    public let author: ServiceId
+    public let author: UntypedServiceId
 
-    public init(timestamp: UInt64, author: ServiceId) {
+    public init(timestamp: UInt64, author: UntypedServiceId) {
         self.timestamp = timestamp
         self.author = author
     }

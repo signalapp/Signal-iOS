@@ -314,7 +314,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                         owsFailDebug("Update failed.")
                         self.databaseStorage.write { transaction in
                             self.versionedProfiles.clearProfileKeyCredential(
-                                for: ServiceIdObjC(uuidValue: localUuid),
+                                for: UntypedServiceIdObjC(uuidValue: localUuid),
                                 transaction: transaction
                             )
                         }

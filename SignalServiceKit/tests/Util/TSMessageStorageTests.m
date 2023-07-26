@@ -24,24 +24,24 @@
 
 @implementation TSMessageStorageTests
 
-- (ServiceIdObjC *)localAci
+- (UntypedServiceIdObjC *)localAci
 {
-    return [[ServiceIdObjC alloc] initWithUuidString:@"00000000-0000-4000-8000-000000000000"];
+    return [[UntypedServiceIdObjC alloc] initWithUuidString:@"00000000-0000-4000-8000-000000000000"];
 }
 
 - (SignalServiceAddress *)localAddress
 {
-    return [[SignalServiceAddress alloc] initWithServiceIdObjC:[self localAci]];
+    return [[SignalServiceAddress alloc] initWithUntypedServiceIdObjC:[self localAci]];
 }
 
-- (ServiceIdObjC *)otherAci
+- (UntypedServiceIdObjC *)otherAci
 {
-    return [[ServiceIdObjC alloc] initWithUuidString:@"00000000-0000-4000-8000-000000000001"];
+    return [[UntypedServiceIdObjC alloc] initWithUuidString:@"00000000-0000-4000-8000-000000000001"];
 }
 
 - (SignalServiceAddress *)otherAddress
 {
-    return [[SignalServiceAddress alloc] initWithServiceIdObjC:[self otherAci]];
+    return [[SignalServiceAddress alloc] initWithUntypedServiceIdObjC:[self otherAci]];
 }
 
 - (void)setUp
@@ -156,7 +156,7 @@
             TSIncomingMessageBuilder *incomingMessageBuilder =
                 [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:body];
             incomingMessageBuilder.timestamp = i + 1;
-            incomingMessageBuilder.authorAci = authorAddress.serviceIdObjC;
+            incomingMessageBuilder.authorAci = authorAddress.untypedServiceIdObjC;
             incomingMessageBuilder.sourceDeviceId = 1;
             TSIncomingMessage *newMessage = [incomingMessageBuilder build];
             [newMessage anyInsertWithTransaction:transaction];

@@ -78,7 +78,7 @@ public protocol _EditManager_DataStore {
 
     func findEditTarget(
         timestamp: UInt64,
-        authorAci: ServiceId?,
+        authorAci: UntypedServiceId?,
         tx: DBReadTransaction
     ) -> EditMessageTarget?
 }
@@ -169,7 +169,7 @@ public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
 
     public func findEditTarget(
         timestamp: UInt64,
-        authorAci: ServiceId?,
+        authorAci: UntypedServiceId?,
         tx: DBReadTransaction
     ) -> EditMessageTarget? {
         return EditMessageFinder.editTarget(

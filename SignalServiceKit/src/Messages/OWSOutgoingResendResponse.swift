@@ -18,7 +18,7 @@ extension OWSOutgoingResendResponse {
         let builder = TSOutgoingMessageBuilder(thread: targetThread)
 
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
-        if let serviceId = address.serviceId, let payloadRecord = messageSendLog.fetchPayload(
+        if let serviceId = address.untypedServiceId, let payloadRecord = messageSendLog.fetchPayload(
             recipientServiceId: serviceId,
             recipientDeviceId: deviceId,
             timestamp: failedTimestamp,

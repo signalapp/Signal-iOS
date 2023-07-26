@@ -28,7 +28,7 @@ public extension AnyUserProfileFinder {
         return profile
     }
 
-    func fetchUserProfiles(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> [OWSUserProfile] {
+    func fetchUserProfiles(for serviceId: UntypedServiceId, tx: SDSAnyReadTransaction) -> [OWSUserProfile] {
         let userProfiles = grdbAdapter.fetchUserProfiles(for: serviceId, tx: tx.unwrapGrdbRead)
         userProfiles.forEach { $0.loadBadgeContent(with: tx) }
         return userProfiles
@@ -98,7 +98,7 @@ class GRDBUserProfileFinder: NSObject {
         return userProfilesForUUIDs([uuid], transaction: transaction)[0]
     }
 
-    fileprivate func fetchUserProfiles(for serviceId: ServiceId, tx: GRDBReadTransaction) -> [OWSUserProfile] {
+    fileprivate func fetchUserProfiles(for serviceId: UntypedServiceId, tx: GRDBReadTransaction) -> [OWSUserProfile] {
         return userProfilesWhere(
             column: "\(userProfileColumn: .recipientUUID)",
             anyValueIn: [serviceId.uuidValue.uuidString],

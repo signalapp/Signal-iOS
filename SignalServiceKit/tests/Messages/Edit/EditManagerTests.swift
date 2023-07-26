@@ -10,13 +10,13 @@ import XCTest
 
 class EditManagerTests: SSKBaseTestSwift {
     var db: DB!
-    var authorAci: ServiceIdObjC!
+    var authorAci: UntypedServiceIdObjC!
     var thread: TSThread!
 
     override func setUp() {
         super.setUp()
         db = MockDB()
-        authorAci = ServiceIdObjC(FutureAci.constantForTesting("00000000-0000-4000-8000-000000000000"))
+        authorAci = UntypedServiceIdObjC(FutureAci.constantForTesting("00000000-0000-4000-8000-000000000000"))
         thread = TSThread(uniqueId: "1")
     }
 
@@ -293,7 +293,7 @@ class EditManagerTests: SSKBaseTestSwift {
 
         func findEditTarget(
             timestamp: UInt64,
-            authorAci: ServiceId?,
+            authorAci: UntypedServiceId?,
             tx: DBReadTransaction
         ) -> EditMessageTarget? {
             return nil

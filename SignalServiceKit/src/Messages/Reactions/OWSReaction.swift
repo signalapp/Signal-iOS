@@ -92,7 +92,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         emoji = try container.decode(String.self, forKey: .emoji)
 
         // If we have a ServiceId, ignore the phone number.
-        if let reactorServiceId = try container.decodeIfPresent(ServiceId.self, forKey: .reactorUUID) {
+        if let reactorServiceId = try container.decodeIfPresent(UntypedServiceId.self, forKey: .reactorUUID) {
             reactor = SignalServiceAddress(reactorServiceId)
         } else if let reactorPhoneNumber = try container.decodeIfPresent(String.self, forKey: .reactorE164) {
             reactor = SignalServiceAddress(phoneNumber: reactorPhoneNumber)
@@ -116,7 +116,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         try container.encode(emoji, forKey: .emoji)
 
         // If we have a ServiceId, ignore the phone number.
-        if let reactorServiceId = reactor.serviceId {
+        if let reactorServiceId = reactor.untypedServiceId {
             try container.encode(reactorServiceId.uuidValue, forKey: .reactorUUID)
         } else if let reactorPhoneNumber = reactor.phoneNumber {
             try container.encode(reactorPhoneNumber, forKey: .reactorE164)
@@ -139,7 +139,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         coder.encode(emoji, forKey: CodingKeys.emoji.rawValue)
 
         // If we have a ServiceId, ignore the phone number.
-        if let reactorServiceId = reactor.serviceId {
+        if let reactorServiceId = reactor.untypedServiceId {
             coder.encode(reactorServiceId.uuidValue, forKey: CodingKeys.reactorUUID.rawValue)
         } else if let reactorPhoneNumber = reactor.phoneNumber {
             coder.encode(reactorPhoneNumber, forKey: CodingKeys.reactorE164.rawValue)
@@ -173,7 +173,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
 
         // If we have a ServiceId, ignore the phone number.
         if let reactorServiceId = coder.decodeObject(of: NSUUID.self, forKey: CodingKeys.reactorUUID.rawValue) {
-            reactor = SignalServiceAddress(ServiceId(reactorServiceId as UUID))
+            reactor = SignalServiceAddress(UntypedServiceId(reactorServiceId as UUID))
         } else if let reactorPhoneNumber = coder.decodeObject(of: NSString.self, forKey: CodingKeys.reactorE164.rawValue) {
             reactor = SignalServiceAddress(phoneNumber: reactorPhoneNumber as String)
         } else {

@@ -19,7 +19,7 @@ extension GroupUpdateInfoMessageInserterImpl {
 
     func handlePossiblyCollapsibleMembershipChange(
         precomputedUpdateType: PrecomputedUpdateType,
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         groupThread: TSGroupThread,
         oldGroupModel: TSGroupModel,
         newGroupModel: TSGroupModel,
@@ -40,7 +40,7 @@ extension GroupUpdateInfoMessageInserterImpl {
 
         switch precomputedUpdateType {
         case .newJoinRequestFromSingleUser(let requestingAddress):
-            guard localAci != requestingAddress.serviceId else {
+            guard localAci != requestingAddress.untypedServiceId else {
                 return nil
             }
 
@@ -50,7 +50,7 @@ extension GroupUpdateInfoMessageInserterImpl {
                 transaction: transaction
             )
         case .canceledJoinRequestFromSingleUser(let cancelingAddress):
-            guard localAci != cancelingAddress.serviceId else {
+            guard localAci != cancelingAddress.untypedServiceId else {
                 return nil
             }
 

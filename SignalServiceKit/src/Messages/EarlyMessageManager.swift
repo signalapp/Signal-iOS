@@ -185,7 +185,7 @@ public class EarlyMessageManager: NSObject {
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
         associatedMessageTimestamp: UInt64,
-        associatedMessageAuthor: ServiceIdObjC?,
+        associatedMessageAuthor: UntypedServiceIdObjC?,
         transaction: SDSAnyWriteTransaction
     ) {
         guard plainTextData?.count ?? 0 <= Self.maxEarlyEnvelopeSize else {
@@ -233,7 +233,7 @@ public class EarlyMessageManager: NSObject {
     @objc
     public func recordEarlyReceiptForOutgoingMessage(
         type: SSKProtoReceiptMessageType,
-        senderServiceId: ServiceIdObjC,
+        senderServiceId: UntypedServiceIdObjC,
         senderDeviceId: UInt32,
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
@@ -263,7 +263,7 @@ public class EarlyMessageManager: NSObject {
     public func recordEarlyReadReceiptFromLinkedDevice(
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
-        associatedMessageAuthor: ServiceIdObjC?,
+        associatedMessageAuthor: UntypedServiceIdObjC?,
         transaction: SDSAnyWriteTransaction
     ) {
         guard let associatedMessageAuthor else {
@@ -288,7 +288,7 @@ public class EarlyMessageManager: NSObject {
     public func recordEarlyViewedReceiptFromLinkedDevice(
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
-        associatedMessageAuthor: ServiceIdObjC?,
+        associatedMessageAuthor: UntypedServiceIdObjC?,
         transaction: SDSAnyWriteTransaction
     ) {
         guard let associatedMessageAuthor else {

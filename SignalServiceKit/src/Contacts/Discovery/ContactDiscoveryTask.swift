@@ -96,7 +96,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         let registeredRecipients = Set(discoveredContacts.map { discoveredContact -> SignalRecipient in
             let recipient = recipientMerger.applyMergeFromContactDiscovery(
                 localIdentifiers: localIdentifiers,
-                aci: ServiceId(discoveredContact.uuid),
+                aci: UntypedServiceId(discoveredContact.uuid),
                 phoneNumber: discoveredContact.e164,
                 tx: tx
             )

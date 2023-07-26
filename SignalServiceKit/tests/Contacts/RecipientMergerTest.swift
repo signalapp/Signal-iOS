@@ -13,7 +13,7 @@ private class MockRecipientDataStore: RecipientDataStore {
     var nextRowId = 1
     var recipientTable: [Int: SignalRecipient] = [:]
 
-    func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient? {
+    func fetchRecipient(serviceId: UntypedServiceId, transaction: DBReadTransaction) -> SignalRecipient? {
         copyRecipient(recipientTable.values.first(where: { $0.serviceId == serviceId }) ?? nil)
     }
 
@@ -95,9 +95,9 @@ class RecipientMergerTest: XCTestCase {
         // Taken from the "ACI-E164 Merging Test Cases" document.
         let testCases: [(
             trustLevel: TrustLevel,
-            mergeRequest: (serviceId: ServiceId?, phoneNumber: E164?),
-            initialState: [(rowId: Int, serviceId: ServiceId?, phoneNumber: E164?)],
-            finalState: [(rowId: Int, serviceId: ServiceId?, phoneNumber: E164?)]
+            mergeRequest: (serviceId: UntypedServiceId?, phoneNumber: E164?),
+            initialState: [(rowId: Int, serviceId: UntypedServiceId?, phoneNumber: E164?)],
+            finalState: [(rowId: Int, serviceId: UntypedServiceId?, phoneNumber: E164?)]
         )] = [
             (.high, (aci_A, nil), [], [(1, aci_A, nil)]),
             (.low, (aci_A, nil), [], [(1, aci_A, nil)]),

@@ -120,7 +120,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                 TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
                 return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
             }
-            if let serviceId = ServiceId(uuidString: syncMessage.threadUuid) {
+            if let serviceId = UntypedServiceId(uuidString: syncMessage.threadUuid) {
                 return TSContactThread.getWithContactAddress(SignalServiceAddress(serviceId), transaction: transaction)
             }
             return nil

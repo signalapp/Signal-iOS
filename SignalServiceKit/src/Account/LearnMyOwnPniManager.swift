@@ -78,7 +78,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
 
         let localPniIdentityPublicKeyData: Data? = identityManager.pniIdentityPublicKeyData(tx: syncTx)
 
-        return firstly(on: schedulers.sync) { () -> Promise<ServiceId> in
+        return firstly(on: schedulers.sync) { () -> Promise<UntypedServiceId> in
             return self.fetchMyPniIfNecessary(localIdentifiers: localIdentifiers)
         }.then(on: schedulers.sync) { localPni -> Promise<Void> in
             return self.createPniKeysIfNecessary(
@@ -91,7 +91,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
         }
     }
 
-    private func fetchMyPniIfNecessary(localIdentifiers: LocalIdentifiers) -> Promise<ServiceId> {
+    private func fetchMyPniIfNecessary(localIdentifiers: LocalIdentifiers) -> Promise<UntypedServiceId> {
         if let localPni = localIdentifiers.pni {
             logger.info("Skipping PNI fetch, PNI already available.")
             return .value(localPni)
@@ -99,10 +99,10 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
 
         return firstly(on: self.schedulers.sync) { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
             self.accountServiceClient.getAccountWhoAmI()
-        }.map(on: schedulers.global()) { whoAmI -> ServiceId in
+        }.map(on: schedulers.global()) { whoAmI -> UntypedServiceId in
             let remoteE164 = whoAmI.e164
-            let remoteAci: ServiceId = ServiceId(whoAmI.aci)
-            let remotePni: ServiceId = ServiceId(whoAmI.pni)
+            let remoteAci: UntypedServiceId = UntypedServiceId(whoAmI.aci)
+            let remotePni: UntypedServiceId = UntypedServiceId(whoAmI.pni)
 
             self.logger.info("Successfully fetched PNI: \(remotePni)")
 
@@ -133,7 +133,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
     /// This method ensures the local PNI identity key matches that on the
     /// service.
     private func createPniKeysIfNecessary(
-        localPni: ServiceId,
+        localPni: UntypedServiceId,
         localPniIdentityPublicKeyData: Data?
     ) -> Promise<Void> {
         return firstly(on: schedulers.sync) { () -> Guarantee<Bool> in
@@ -277,7 +277,7 @@ class _LearnMyOwnPniManagerImpl_PreKeyManager_Wrapper: _LearnMyOwnPniManagerImpl
 // MARK: ProfileFetcher
 
 protocol _LearnMyOwnPniManagerImpl_ProfileFetcher_Shim {
-    func fetchPniIdentityPublicKey(localPni: ServiceId) -> Promise<Data?>
+    func fetchPniIdentityPublicKey(localPni: UntypedServiceId) -> Promise<Data?>
 }
 
 class _LearnMyOwnPniManagerImpl_ProfileFetcher_Wrapper: _LearnMyOwnPniManagerImpl_ProfileFetcher_Shim {
@@ -287,7 +287,7 @@ class _LearnMyOwnPniManagerImpl_ProfileFetcher_Wrapper: _LearnMyOwnPniManagerImp
         self.schedulers = schedulers
     }
 
-    func fetchPniIdentityPublicKey(localPni: ServiceId) -> Promise<Data?> {
+    func fetchPniIdentityPublicKey(localPni: UntypedServiceId) -> Promise<Data?> {
         let logger = LearnMyOwnPniManagerImpl.logger
 
         return ProfileFetcherJob.fetchProfilePromise(
@@ -317,7 +317,7 @@ class _LearnMyOwnPniManagerImpl_ProfileFetcher_Wrapper: _LearnMyOwnPniManagerImp
 protocol _LearnMyOwnPniManagerImpl_TSAccountManager_Shim {
     func isPrimaryDevice(tx: DBReadTransaction) -> Bool
     func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers?
-    func updateLocalIdentifiers(e164: E164, aci: ServiceId, pni: ServiceId, tx: DBWriteTransaction)
+    func updateLocalIdentifiers(e164: E164, aci: UntypedServiceId, pni: UntypedServiceId, tx: DBWriteTransaction)
 }
 
 class _LearnMyOwnPniManagerImpl_TSAccountManager_Wrapper: _LearnMyOwnPniManagerImpl_TSAccountManager_Shim {
@@ -335,7 +335,7 @@ class _LearnMyOwnPniManagerImpl_TSAccountManager_Wrapper: _LearnMyOwnPniManagerI
         return tsAccountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    func updateLocalIdentifiers(e164: E164, aci: ServiceId, pni: ServiceId, tx: DBWriteTransaction) {
+    func updateLocalIdentifiers(e164: E164, aci: UntypedServiceId, pni: UntypedServiceId, tx: DBWriteTransaction) {
         tsAccountManager.updateLocalPhoneNumber(
             E164ObjC(e164),
             aci: aci.uuidValue,

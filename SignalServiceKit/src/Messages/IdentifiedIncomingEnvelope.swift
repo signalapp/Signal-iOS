@@ -8,10 +8,10 @@ import SignalCoreKit
 
 @objc
 class IdentifiedIncomingEnvelope: NSObject {
-    let sourceServiceId: ServiceId
+    let sourceServiceId: UntypedServiceId
 
     @objc
-    let sourceServiceIdObjC: ServiceIdObjC
+    let sourceServiceIdObjC: UntypedServiceIdObjC
 
     @objc
     let sourceDeviceId: UInt32
@@ -31,7 +31,7 @@ class IdentifiedIncomingEnvelope: NSObject {
     private init(
         validatedEnvelope: ValidatedIncomingEnvelope,
         updatedEnvelope: SSKProtoEnvelope,
-        sourceServiceId: ServiceId,
+        sourceServiceId: UntypedServiceId,
         sourceDeviceId: UInt32
     ) throws {
         self.envelope = updatedEnvelope
@@ -39,7 +39,7 @@ class IdentifiedIncomingEnvelope: NSObject {
         self.serverTimestamp = validatedEnvelope.serverTimestamp
         self.envelopeType = validatedEnvelope.envelopeType
         self.sourceServiceId = sourceServiceId
-        self.sourceServiceIdObjC = ServiceIdObjC(sourceServiceId)
+        self.sourceServiceIdObjC = UntypedServiceIdObjC(sourceServiceId)
         guard sourceDeviceId >= 1 else {
             throw OWSAssertionError("Invalid source device.")
         }
@@ -64,7 +64,7 @@ class IdentifiedIncomingEnvelope: NSObject {
 
     convenience init(
         validatedEnvelope: ValidatedIncomingEnvelope,
-        sourceServiceId: ServiceId,
+        sourceServiceId: UntypedServiceId,
         sourceDeviceId: UInt32
     ) throws {
         let envelopeBuilder = validatedEnvelope.envelope.asBuilder()

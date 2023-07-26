@@ -276,7 +276,7 @@ public extension OWSReceiptManager {
     ) -> [T] {
         var earlyReceiptProtos = [T]()
         for receiptProto in receiptProtos {
-            guard let senderServiceId = ServiceId(uuidString: receiptProto[keyPath: senderServiceId]) else {
+            guard let senderServiceId = UntypedServiceId(uuidString: receiptProto[keyPath: senderServiceId]) else {
                 owsFailDebug("Missing serviceId.")
                 continue
             }
@@ -303,7 +303,7 @@ public extension OWSReceiptManager {
                 case is TSOutgoingMessage:
                     return senderServiceId == tsAccountManager.localIdentifiers(transaction: tx)?.aci
                 case let incomingMessage as TSIncomingMessage:
-                    return senderServiceId == incomingMessage.authorAddress.serviceId
+                    return senderServiceId == incomingMessage.authorAddress.untypedServiceId
                 default:
                     return false
                 }
@@ -659,7 +659,7 @@ extension OWSReceiptManager {
     /// might arrive after the receipts.
     @objc
     func processDeliveryReceipts(
-        from recipientServiceId: ServiceIdObjC,
+        from recipientServiceId: UntypedServiceIdObjC,
         recipientDeviceId: UInt32,
         sentTimestamps: [NSNumber],
         deliveryTimestamp: UInt64,
@@ -690,7 +690,7 @@ extension OWSReceiptManager {
     /// might arrive after the receipts.
     @objc
     func processReadReceipts(
-        from recipientServiceId: ServiceIdObjC,
+        from recipientServiceId: UntypedServiceIdObjC,
         recipientDeviceId: UInt32,
         sentTimestamps: [NSNumber],
         readTimestamp: UInt64,
@@ -724,7 +724,7 @@ extension OWSReceiptManager {
     /// might arrive after the receipts.
     @objc
     func processViewedReceipts(
-        from recipientServiceId: ServiceIdObjC,
+        from recipientServiceId: UntypedServiceIdObjC,
         recipientDeviceId: UInt32,
         sentTimestamps: [NSNumber],
         viewedTimestamp: UInt64,

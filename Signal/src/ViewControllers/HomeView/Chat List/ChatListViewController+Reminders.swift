@@ -132,7 +132,7 @@ public class CLVReminderViews: Dependencies {
             owsFailDebug("Missing viewController.")
             return
         }
-        guard let localAci = tsAccountManager.localUuid.map({ ServiceId($0) }) else {
+        guard let localAci = tsAccountManager.localUuid.map({ UntypedServiceId($0) }) else {
             owsFailDebug("Missing local ACI.")
             return
         }

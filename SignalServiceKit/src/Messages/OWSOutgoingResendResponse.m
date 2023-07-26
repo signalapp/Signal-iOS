@@ -83,7 +83,7 @@
     }
 }
 
-- (void)updateWithSentRecipient:(ServiceIdObjC *)serviceId
+- (void)updateWithSentRecipient:(UntypedServiceIdObjC *)serviceId
                     wasSentByUD:(BOOL)wasSentByUD
                     transaction:(SDSAnyWriteTransaction *)transaction
 {

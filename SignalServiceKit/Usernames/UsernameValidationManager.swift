@@ -197,7 +197,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
     ///     2. remove the username on the account record (local) & save
     ///     3. post a notification that something has changed
     ///     4. make a note that the user is in a bad state.
-    private func handleInvalidUsername(for aci: ServiceId) -> Promise<Void> {
+    private func handleInvalidUsername(for aci: UntypedServiceId) -> Promise<Void> {
         return firstly(on: context.schedulers.global()) {
             // Delete remotely
             Usernames
@@ -343,14 +343,14 @@ internal class _UsernameValidationManager_StorageServiceManagerWrapper: Username
 // MARK: TSAccountManager
 
 public protocol _UsernameValidationManager_TSAccountManagerShim {
-    func localAci(tx: DBReadTransaction) -> ServiceId?
+    func localAci(tx: DBReadTransaction) -> UntypedServiceId?
 }
 
 internal class _UsernameValidationManager_TSAccountManagerWrapper: Usernames.Validation.Shims.TSAccountManager {
     private let accountManager: TSAccountManager
     public init(_ accountManager: TSAccountManager) { self.accountManager = accountManager }
 
-    public func localAci(tx: DBReadTransaction) -> ServiceId? {
+    public func localAci(tx: DBReadTransaction) -> UntypedServiceId? {
         return accountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx))?.aci
     }
 }

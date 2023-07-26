@@ -74,7 +74,7 @@ class OWSRequestFactoryTest: XCTestCase {
         let serviceId = FutureAci.randomForTesting()
 
         let request = OWSRequestFactory.submitMessageRequest(
-            withServiceId: ServiceIdObjC(serviceId),
+            withServiceId: UntypedServiceIdObjC(serviceId),
             messages: [],
             timestamp: 1234,
             udAccessKey: udAccessKey,
@@ -198,7 +198,7 @@ class OWSRequestFactoryTest: XCTestCase {
 
     func testReportSpamFromUuid() {
         let request = OWSRequestFactory.reportSpam(
-            from: ServiceId(uuidString: "37EBAFB5-91D6-4C63-BFF7-82F540856386")!,
+            from: UntypedServiceId(uuidString: "37EBAFB5-91D6-4C63-BFF7-82F540856386")!,
             withServerGuid: "abc 123",
             reportingToken: nil
         )

@@ -138,7 +138,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
                 messageBody: "test outgoing message"
             )
             messageBuilder.timestamp = 1234
-            messageBuilder.authorAci = ServiceIdObjC(contactAci)
+            messageBuilder.authorAci = UntypedServiceIdObjC(contactAci)
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)
 
@@ -289,7 +289,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
                 messageBody: "foo bar"
             )
             messageBuilder.timestamp = 1234
-            messageBuilder.authorAci = ServiceIdObjC(contactAci)
+            messageBuilder.authorAci = UntypedServiceIdObjC(contactAci)
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)
         }

@@ -188,7 +188,7 @@ public extension OWSProfileManager {
             let newProfileKey = OWSAES256Key.generateRandom()
             return self.reuploadLocalProfilePromise(unsavedRotatedProfileKey: newProfileKey, authedAccount: authedAccount).map { newProfileKey }
         }.then(on: DispatchQueue.global()) { newProfileKey -> Promise<Void> in
-            guard let localAddress = self.tsAccountManager.localAddress, let serviceId = localAddress.serviceId else {
+            guard let localAddress = self.tsAccountManager.localAddress, let serviceId = localAddress.untypedServiceId else {
                 throw OWSAssertionError("Missing local address")
             }
 
@@ -204,7 +204,7 @@ public extension OWSProfileManager {
 
                 // Whenever a user's profile key changes, we need to fetch a new
                 // profile key credential for them.
-                self.versionedProfiles.clearProfileKeyCredential(for: ServiceIdObjC(serviceId), transaction: transaction)
+                self.versionedProfiles.clearProfileKeyCredential(for: UntypedServiceIdObjC(serviceId), transaction: transaction)
 
                 // We schedule the updates here but process them below using processProfileKeyUpdates.
                 // It's more efficient to process them after the intermediary steps are done.

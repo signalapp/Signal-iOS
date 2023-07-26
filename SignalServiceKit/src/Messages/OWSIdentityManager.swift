@@ -104,7 +104,7 @@ extension OWSIdentityManager {
 extension OWSIdentityManager {
     @objc
     public func processIncomingVerifiedProto(_ verified: SSKProtoVerified, transaction: SDSAnyWriteTransaction) throws {
-        guard let serviceId = ServiceId(uuidString: verified.destinationUuid) else {
+        guard let serviceId = UntypedServiceId(uuidString: verified.destinationUuid) else {
             return owsFailDebug("Verification state sync message missing destination.")
         }
         Logger.info("Received verification state message for \(serviceId)")
@@ -139,7 +139,7 @@ extension OWSIdentityManager {
 
     private func applyVerificationState(
         _ verificationState: OWSVerificationState,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         identityKey: Data,
         overwriteOnConflict: Bool,
         transaction: SDSAnyWriteTransaction
@@ -345,13 +345,13 @@ extension OWSIdentityManager {
 
     @objc(shouldSharePhoneNumberWithAddress:transaction:)
     func shouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        guard let serviceId = recipient.serviceId else {
+        guard let serviceId = recipient.untypedServiceId else {
             return false
         }
         return shouldSharePhoneNumber(with: serviceId, transaction: transaction)
     }
 
-    func shouldSharePhoneNumber(with serviceId: ServiceId, transaction: SDSAnyReadTransaction) -> Bool {
+    func shouldSharePhoneNumber(with serviceId: UntypedServiceId, transaction: SDSAnyReadTransaction) -> Bool {
         let uuidString = serviceId.uuidValue.uuidString
         return shareMyPhoneNumberStore.getBool(uuidString, defaultValue: false, transaction: transaction)
     }

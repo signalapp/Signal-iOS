@@ -609,7 +609,7 @@ struct ProcessingRequestBuilder {
 
     private func processingStep(
         _ result: DecryptedEnvelope,
-        sourceServiceId: ServiceId,
+        sourceServiceId: UntypedServiceId,
         transaction: SDSAnyWriteTransaction
     ) -> ProcessingStep {
         guard let plaintextData = result.plaintextData,

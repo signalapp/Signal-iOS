@@ -38,7 +38,7 @@ private extension MessageSender {
     /// This may make blocking network requests.
     func ensureRecipientHasSession(
         recipientId: AccountId,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
@@ -81,7 +81,7 @@ private extension MessageSender {
 
     static func makePrekeyRequest(
         recipientId: AccountId?,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
@@ -126,7 +126,7 @@ private extension MessageSender {
             requestFactoryBlock: { (udAccessKeyForRequest: SMKUDAccessKey?) -> TSRequest? in
                 Logger.verbose("Building prekey request for serviceId: \(serviceId), deviceId: \(deviceId)")
                 return OWSRequestFactory.recipientPreKeyRequest(
-                    withServiceId: ServiceIdObjC(serviceId),
+                    withServiceId: UntypedServiceIdObjC(serviceId),
                     deviceId: deviceId,
                     udAccessKey: udAccessKeyForRequest
                 )
@@ -188,7 +188,7 @@ private extension MessageSender {
     static func createSession(
         for preKeyBundle: SignalServiceKit.PreKeyBundle,
         recipientId: String,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         deviceId: UInt32,
         transaction: SDSAnyWriteTransaction
     ) throws {
@@ -379,13 +379,13 @@ private extension MessageSender {
 
 private extension MessageSender {
     private struct CacheKey: Hashable {
-        let serviceId: ServiceId
+        let serviceId: UntypedServiceId
         let deviceId: UInt32
     }
 
     private static var missingDevicesCache = AtomicDictionary<CacheKey, Date>(lock: .init())
 
-    static func reportMissingDeviceError(serviceId: ServiceId, deviceId: UInt32) {
+    static func reportMissingDeviceError(serviceId: UntypedServiceId, deviceId: UInt32) {
         assert(!Thread.isMainThread)
 
         guard deviceId == OWSDevice.primaryDeviceId else {
@@ -399,7 +399,7 @@ private extension MessageSender {
         missingDevicesCache[cacheKey] = Date()
     }
 
-    static func deviceRecentlyReportedMissing(serviceId: ServiceId, deviceId: UInt32) -> Bool {
+    static func deviceRecentlyReportedMissing(serviceId: UntypedServiceId, deviceId: UInt32) -> Bool {
         assert(!Thread.isMainThread)
 
         // Prekey rate limits are strict. Therefore, we want to avoid requesting
@@ -466,7 +466,7 @@ extension MessageSender {
     // * A recipient does not have the required capability.
     private static func markSkippedRecipients(
         of message: TSOutgoingMessage,
-        sendingRecipients: [ServiceId],
+        sendingRecipients: [UntypedServiceId],
         tx: SDSAnyWriteTransaction
     ) {
         let skippedRecipients = Set(message.sendingRecipientAddresses())
@@ -570,17 +570,17 @@ extension MessageSender {
         }
     }
 
-    private static func partitionAddresses(_ addresses: [SignalServiceAddress]) -> ([ServiceId], [E164]) {
-        var serviceIds = [ServiceId]()
+    private static func partitionAddresses(_ addresses: [SignalServiceAddress]) -> ([UntypedServiceId], [E164]) {
+        var serviceIds = [UntypedServiceId]()
         var phoneNumbers = [E164]()
 
         for address in addresses {
-            if let serviceId = address.serviceId {
+            if let serviceId = address.untypedServiceId {
                 serviceIds.append(serviceId)
             } else if let phoneNumber = address.e164 {
                 phoneNumbers.append(phoneNumber)
             } else {
-                owsFailDebug("Recipient has neither ServiceId nor E164.")
+                owsFailDebug("Recipient has neither UntypedServiceId nor E164.")
             }
         }
 
@@ -665,7 +665,7 @@ extension MessageSender {
         case lookUpPhoneNumbersAndTryAgain([E164])
 
         /// Perform the `sendMessageToService` step.
-        case sendMessage(serializedMessage: SerializedMessage, serviceIds: [ServiceId], thread: TSThread)
+        case sendMessage(serializedMessage: SerializedMessage, serviceIds: [UntypedServiceId], thread: TSThread)
     }
 
     private func sendMessageToService(
@@ -678,7 +678,7 @@ extension MessageSender {
                 throw MessageSenderError.threadMissing
             }
 
-            let serviceIds: [ServiceId]
+            let serviceIds: [UntypedServiceId]
             do {
                 let proposedAddresses = try Self.unsentRecipients(of: message, in: thread, tx: tx)
                 let (proposedServiceIds, phoneNumbersToFetch) = Self.partitionAddresses(proposedAddresses)
@@ -762,7 +762,7 @@ extension MessageSender {
                 return try self.sendMessageToService(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
             }
         case .sendMessage(let serializedMessage, let serviceIds, let thread):
-            let allErrors = AtomicArray<(serviceId: ServiceId, error: Error)>(lock: AtomicLock())
+            let allErrors = AtomicArray<(serviceId: UntypedServiceId, error: Error)>(lock: AtomicLock())
             return sendMessage(
                 message,
                 serializedMessage: serializedMessage,
@@ -783,20 +783,20 @@ extension MessageSender {
         _ message: TSOutgoingMessage,
         serializedMessage: SerializedMessage,
         in thread: TSThread,
-        to serviceIds: [ServiceId],
+        to serviceIds: [UntypedServiceId],
         senderCertificates: SenderCertificates,
-        sendErrorBlock: @escaping (ServiceId, Error) -> Void
+        sendErrorBlock: @escaping (UntypedServiceId, Error) -> Void
     ) -> Promise<Void> {
         // 2. Gather "ud sending access".
-        var sendingAccessMap = [ServiceIdObjC: OWSUDSendingAccess]()
+        var sendingAccessMap = [UntypedServiceIdObjC: OWSUDSendingAccess]()
         for serviceId in serviceIds {
             if tsAccountManager.localUuid == serviceId.uuidValue {
                 continue
             }
-            sendingAccessMap[ServiceIdObjC(serviceId)] = (
+            sendingAccessMap[UntypedServiceIdObjC(serviceId)] = (
                 message.isStorySend
-                ? udManager.storySendingAccess(for: ServiceIdObjC(serviceId), senderCertificates: senderCertificates)
-                : udManager.udSendingAccess(for: ServiceIdObjC(serviceId), requireSyncAccess: true, senderCertificates: senderCertificates)
+                ? udManager.storySendingAccess(for: UntypedServiceIdObjC(serviceId), senderCertificates: senderCertificates)
+                : udManager.udSendingAccess(for: UntypedServiceIdObjC(serviceId), requireSyncAccess: true, senderCertificates: senderCertificates)
             )
         }
 
@@ -804,13 +804,13 @@ extension MessageSender {
         // for their send.
         let senderKeyStatus = senderKeyStatus(
             for: thread,
-            intendedRecipients: serviceIds.map { ServiceIdObjC($0) },
+            intendedRecipients: serviceIds.map { UntypedServiceIdObjC($0) },
             udAccessMap: sendingAccessMap
         )
 
         var senderKeyMessagePromise: Promise<Void>?
-        var senderKeyServiceIds: [ServiceId] = senderKeyStatus.allSenderKeyParticipants.map { $0.wrappedValue }
-        var fanoutServiceIds: [ServiceId] = senderKeyStatus.fanoutParticipants.map { $0.wrappedValue }
+        var senderKeyServiceIds: [UntypedServiceId] = senderKeyStatus.allSenderKeyParticipants.map { $0.wrappedValue }
+        var fanoutServiceIds: [UntypedServiceId] = senderKeyStatus.fanoutParticipants.map { $0.wrappedValue }
         if thread.usesSenderKey, senderKeyServiceIds.count >= 2, message.canSendWithSenderKey {
             senderKeyMessagePromise = senderKeyMessageSendPromise(
                 message: message,
@@ -839,7 +839,7 @@ extension MessageSender {
                 plaintextPayloadId: serializedMessage.payloadId,
                 thread: thread,
                 serviceId: serviceId,
-                udSendingAccess: sendingAccessMap[ServiceIdObjC(serviceId)],
+                udSendingAccess: sendingAccessMap[UntypedServiceIdObjC(serviceId)],
                 localAddress: tsAccountManager.localAddress!,
                 sendErrorBlock: { error in sendErrorBlock(serviceId, error) }
             )
@@ -866,7 +866,7 @@ extension MessageSender {
     private func handleSendFailure(
         message: TSOutgoingMessage,
         thread: TSThread,
-        perRecipientErrors allErrors: [(serviceId: ServiceId, error: Error)]
+        perRecipientErrors allErrors: [(serviceId: UntypedServiceId, error: Error)]
     ) throws -> Promise<Void> {
         // Some errors should be ignored when sending messages to non 1:1 threads.
         // See discussion on NSError (MessageSender) category.
@@ -1171,7 +1171,7 @@ extension MessageSender {
         messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
         recipientId: AccountId,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
@@ -1547,7 +1547,7 @@ extension MessageSender {
     }
 
     func markAsUnregistered(
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         message: TSOutgoingMessage,
         thread: TSThread,
         transaction: SDSAnyWriteTransaction
@@ -1612,7 +1612,7 @@ extension MessageSender {
     }
 
     static func updateDevices(
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         devicesToAdd: [UInt32],
         devicesToRemove: [UInt32],
         transaction: SDSAnyWriteTransaction
@@ -1650,7 +1650,7 @@ extension MessageSender {
 private extension MessageSender {
     func encryptMessage(
         plaintextContent plainText: Data,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         deviceId: UInt32,
         udSendingParamsProvider: UDSendingParamsProvider?,
         transaction: SDSAnyWriteTransaction
@@ -1741,7 +1741,7 @@ private extension MessageSender {
 
     func wrapPlaintextMessage(
         plaintextContent rawPlaintext: Data,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         deviceId: UInt32,
         isResendRequestMessage: Bool,
         udSendingParamsProvider: UDSendingParamsProvider?,

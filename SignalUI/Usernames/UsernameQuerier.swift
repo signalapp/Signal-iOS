@@ -48,7 +48,7 @@ public struct UsernameQuerier {
     public func queryForUsername(
         username: String,
         fromViewController: UIViewController,
-        onSuccess: @escaping (ServiceId) -> Void
+        onSuccess: @escaping (UntypedServiceId) -> Void
     ) {
         if let localAciToReturn = databaseStorage.read(block: { tx in
             isOwnUsername(username: username, tx: tx)
@@ -83,7 +83,7 @@ public struct UsernameQuerier {
 
     /// If the given username refers to the local user, returns the local ACI.
     /// Otherwise, returns `nil`.
-    private func isOwnUsername(username: String, tx: SDSAnyReadTransaction) -> ServiceId? {
+    private func isOwnUsername(username: String, tx: SDSAnyReadTransaction) -> UntypedServiceId? {
         guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
             owsFailDebug("Missing local ACI!")
             return nil
@@ -110,13 +110,13 @@ public struct UsernameQuerier {
     private func queryServiceForUsernameBehindSpinner(
         hashedUsername: Usernames.HashedUsername,
         fromViewController: UIViewController,
-        onSuccess: @escaping (ServiceId) -> Void
+        onSuccess: @escaping (UntypedServiceId) -> Void
     ) {
         ModalActivityIndicatorViewController.present(
             fromViewController: fromViewController,
             canCancel: true
         ) { modal in
-            firstly(on: schedulers.sync) { () -> Promise<ServiceId?> in
+            firstly(on: schedulers.sync) { () -> Promise<UntypedServiceId?> in
                 return Usernames.API(
                     networkManager: self.networkManager,
                     schedulers: self.schedulers
@@ -166,7 +166,7 @@ public struct UsernameQuerier {
     }
 
     private func handleUsernameLookupCompleted(
-        aci: ServiceId,
+        aci: UntypedServiceId,
         username: String,
         tx: SDSAnyWriteTransaction
     ) {

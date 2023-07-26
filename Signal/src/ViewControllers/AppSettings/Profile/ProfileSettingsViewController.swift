@@ -14,7 +14,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         didSet { updateNavigationItem() }
     }
 
-    private var localAci: ServiceId?
+    private var localAci: UntypedServiceId?
 
     private var avatarData: Data?
     private var givenName: String?
@@ -250,7 +250,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
     private func buildUsernameContextMenuCell(
         username: String,
-        localAci: ServiceId
+        localAci: UntypedServiceId
     ) -> UITableViewCell {
         let editUsernameAction = ContextMenuAction(
             title: OWSLocalizedString(
@@ -306,7 +306,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         )
     }
 
-    private func presentUsernameSelection(localAci: ServiceId) {
+    private func presentUsernameSelection(localAci: UntypedServiceId) {
         let usernameSelectionCoordinator = UsernameSelectionCoordinator(
             localAci: localAci,
             currentUsername: username,
@@ -324,7 +324,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         usernameSelectionCoordinator.present(fromViewController: self)
     }
 
-    private func offerToDeleteUsername(localAci: ServiceId) {
+    private func offerToDeleteUsername(localAci: UntypedServiceId) {
         OWSActionSheets.showConfirmationAlert(
             message: OWSLocalizedString(
                 "USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE",
@@ -342,7 +342,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    private func deleteUsernameBehindModalActivityIndicator(localAci: ServiceId) {
+    private func deleteUsernameBehindModalActivityIndicator(localAci: UntypedServiceId) {
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
             canCancel: false

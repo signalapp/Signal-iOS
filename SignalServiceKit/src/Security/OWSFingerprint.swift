@@ -9,7 +9,7 @@ import CommonCrypto
 public class OWSFingerprint {
 
     public enum Source {
-        case aci(myAci: ServiceId, theirAci: ServiceId)
+        case aci(myAci: UntypedServiceId, theirAci: UntypedServiceId)
         case e164(myE164: E164, theirE164: E164)
     }
 

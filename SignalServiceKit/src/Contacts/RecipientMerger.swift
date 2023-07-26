@@ -10,8 +10,8 @@ public protocol RecipientMerger {
     /// We're registering, linking, changing our number, etc. This is the only
     /// time we're allowed to "merge" the identifiers for our own account.
     func applyMergeForLocalAccount(
-        aci: ServiceId,
-        pni: ServiceId?,
+        aci: UntypedServiceId,
+        pni: UntypedServiceId?,
         phoneNumber: E164,
         tx: DBWriteTransaction
     ) -> SignalRecipient
@@ -20,7 +20,7 @@ public protocol RecipientMerger {
     /// don't indicate whether a ServiceId is an ACI or PNI.
     func applyMergeFromLinkedDevice(
         localIdentifiers: LocalIdentifiers,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         phoneNumber: E164?,
         tx: DBWriteTransaction
     ) -> SignalRecipient
@@ -28,7 +28,7 @@ public protocol RecipientMerger {
     /// We've learned about an association from CDS.
     func applyMergeFromContactDiscovery(
         localIdentifiers: LocalIdentifiers,
-        aci: ServiceId,
+        aci: UntypedServiceId,
         phoneNumber: E164,
         tx: DBWriteTransaction
     ) -> SignalRecipient
@@ -38,7 +38,7 @@ public protocol RecipientMerger {
     /// number sharing is disabled.
     func applyMergeFromSealedSender(
         localIdentifiers: LocalIdentifiers,
-        aci: ServiceId,
+        aci: UntypedServiceId,
         phoneNumber: E164?,
         tx: DBWriteTransaction
     ) -> SignalRecipient
@@ -48,7 +48,7 @@ protocol RecipientMergeObserver {
     /// We are about to learn a new association between identifiers.
     ///
     /// This is called for the identifiers that will no longer be linked.
-    func willBreakAssociation(serviceId: ServiceId, phoneNumber: E164, transaction: DBWriteTransaction)
+    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction: DBWriteTransaction)
 
     /// We just learned a new association between identifiers.
     ///
@@ -60,7 +60,7 @@ protocol RecipientMergeObserver {
 }
 
 struct MergedRecipient {
-    let serviceId: ServiceId
+    let serviceId: UntypedServiceId
     let oldPhoneNumber: String?
     let newPhoneNumber: E164
     let isLocalRecipient: Bool
@@ -154,8 +154,8 @@ class RecipientMergerImpl: RecipientMerger {
     }
 
     func applyMergeForLocalAccount(
-        aci: ServiceId,
-        pni: ServiceId?,
+        aci: UntypedServiceId,
+        pni: UntypedServiceId?,
         phoneNumber: E164,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
@@ -164,7 +164,7 @@ class RecipientMergerImpl: RecipientMerger {
 
     func applyMergeFromLinkedDevice(
         localIdentifiers: LocalIdentifiers,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         phoneNumber: E164?,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
@@ -176,7 +176,7 @@ class RecipientMergerImpl: RecipientMerger {
 
     func applyMergeFromSealedSender(
         localIdentifiers: LocalIdentifiers,
-        aci: ServiceId,
+        aci: UntypedServiceId,
         phoneNumber: E164?,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
@@ -188,7 +188,7 @@ class RecipientMergerImpl: RecipientMerger {
 
     func applyMergeFromContactDiscovery(
         localIdentifiers: LocalIdentifiers,
-        aci: ServiceId,
+        aci: UntypedServiceId,
         phoneNumber: E164,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
@@ -202,7 +202,7 @@ class RecipientMergerImpl: RecipientMerger {
     /// return whichever recipient exists for the provided `serviceId`.
     private func mergeIfNotLocalIdentifier(
         localIdentifiers: LocalIdentifiers,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         phoneNumber: E164,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
@@ -232,7 +232,7 @@ class RecipientMergerImpl: RecipientMerger {
     /// * Phone numbers are transient and can move freely between ACIs. When
     /// they do, we must backfill the database to reflect the change.
     private func mergeAlways(
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         phoneNumber: E164,
         isLocalRecipient: Bool,
         tx transaction: DBWriteTransaction
@@ -303,7 +303,7 @@ class RecipientMergerImpl: RecipientMerger {
     }
 
     private func _mergeHighTrust(
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         phoneNumber: E164,
         serviceIdRecipient: SignalRecipient?,
         phoneNumberRecipient: SignalRecipient?,
@@ -374,7 +374,7 @@ class RecipientMergerImpl: RecipientMerger {
     }
 
     private func mergeRecipients(
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         serviceIdRecipient: SignalRecipient,
         phoneNumber: E164,
         phoneNumberRecipient: SignalRecipient,
@@ -430,7 +430,7 @@ class RecipientMergerImpl: RecipientMerger {
 // MARK: - SignalServiceAddressCache
 
 extension SignalServiceAddressCache: RecipientMergeObserver {
-    func willBreakAssociation(serviceId: ServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {}
+    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
         updateRecipient(mergedRecipient.signalRecipient)

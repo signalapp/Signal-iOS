@@ -2468,7 +2468,7 @@ public class GRDBSchemaMigrator: NSObject {
 
                     let latestInteraction = interactionFinder.latestInteraction(from: memberAddress, transaction: transaction.asAnyWrite)
                     let memberRecord = TSGroupMember(
-                        serviceId: memberAddress.serviceId,
+                        serviceId: memberAddress.untypedServiceId,
                         phoneNumber: memberAddress.phoneNumber,
                         groupThreadId: groupThread.uniqueId,
                         lastInteractionTimestamp: latestInteraction?.timestamp ?? 0

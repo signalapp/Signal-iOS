@@ -10,7 +10,7 @@ import XCTest
 @testable import SignalServiceKit
 
 final class UsernameValidationManagerTest: XCTestCase {
-    typealias ServiceId = SignalServiceKit.ServiceId
+    typealias UntypedServiceId = SignalServiceKit.UntypedServiceId
     typealias Username = String
 
     private var mockAccountServiceClient: MockAccountServiceClient!
@@ -307,7 +307,7 @@ extension UsernameValidationManagerTest {
             self.currentlySetUsername = username
         }
 
-        public func fetchUsername(forAci aci: ServiceId, transaction: DBReadTransaction) -> UsernameLookupManager.Username? {
+        public func fetchUsername(forAci aci: UntypedServiceId, transaction: DBReadTransaction) -> UsernameLookupManager.Username? {
             return username
         }
 
@@ -315,7 +315,7 @@ extension UsernameValidationManagerTest {
             return [username]
         }
 
-        public func saveUsername(_ username: Username?, forAci aci: ServiceId, transaction: DBWriteTransaction) {
+        public func saveUsername(_ username: Username?, forAci aci: UntypedServiceId, transaction: DBWriteTransaction) {
             self.currentlySetUsername = username
         }
     }

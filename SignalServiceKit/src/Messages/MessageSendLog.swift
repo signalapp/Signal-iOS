@@ -173,7 +173,7 @@ public class MessageSendLog {
     }
 
     func fetchPayload(
-        recipientServiceId: ServiceId,
+        recipientServiceId: UntypedServiceId,
         recipientDeviceId: UInt32,
         timestamp: UInt64,
         tx: SDSAnyReadTransaction
@@ -271,7 +271,7 @@ public class MessageSendLog {
 
     func deviceIdsPendingDelivery(
         for payloadId: Int64,
-        recipientServiceId: ServiceId,
+        recipientServiceId: UntypedServiceId,
         tx: SDSAnyReadTransaction
     ) -> [UInt32?]? {
         do {
@@ -289,7 +289,7 @@ public class MessageSendLog {
 
     func recordPendingDelivery(
         payloadId: Int64,
-        recipientServiceId: ServiceId,
+        recipientServiceId: UntypedServiceId,
         recipientDeviceId: UInt32,
         message: TSOutgoingMessage,
         tx: SDSAnyWriteTransaction
@@ -319,7 +319,7 @@ public class MessageSendLog {
 
     func recordSuccessfulDelivery(
         message: TSOutgoingMessage,
-        recipientServiceId: ServiceId,
+        recipientServiceId: UntypedServiceId,
         recipientDeviceId: UInt32,
         tx: SDSAnyWriteTransaction
     ) {

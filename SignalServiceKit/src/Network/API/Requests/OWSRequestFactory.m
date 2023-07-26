@@ -68,7 +68,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
-+ (TSRequest *)getVersionedProfileRequestWithServiceId:(ServiceIdObjC *)serviceId
++ (TSRequest *)getVersionedProfileRequestWithServiceId:(UntypedServiceIdObjC *)serviceId
                                      profileKeyVersion:(nullable NSString *)profileKeyVersion
                                      credentialRequest:(nullable NSData *)credentialRequest
                                            udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
@@ -149,7 +149,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)recipientPreKeyRequestWithServiceId:(ServiceIdObjC *)serviceId
++ (TSRequest *)recipientPreKeyRequestWithServiceId:(UntypedServiceIdObjC *)serviceId
                                           deviceId:(uint32_t)deviceId
                                        udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
@@ -313,7 +313,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [capabilities copy];
 }
 
-+ (TSRequest *)submitMessageRequestWithServiceId:(ServiceIdObjC *)serviceId
++ (TSRequest *)submitMessageRequestWithServiceId:(UntypedServiceIdObjC *)serviceId
                                         messages:(NSArray<DeviceMessage *> *)messages
                                        timestamp:(uint64_t)timestamp
                                      udAccessKey:(nullable SMKUDAccessKey *)udAccessKey

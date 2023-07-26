@@ -115,7 +115,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     private let existingUsername: ParsedUsername?
 
     /// The local user's ACI.
-    private let localAci: ServiceId
+    private let localAci: UntypedServiceId
 
     /// Injected dependencies.
     private let context: Context
@@ -135,7 +135,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
 
     init(
         existingUsername: ParsedUsername?,
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         context: Context
     ) {
         self.existingUsername = existingUsername

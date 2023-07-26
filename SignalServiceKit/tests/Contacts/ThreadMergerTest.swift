@@ -316,7 +316,7 @@ final class ThreadMergerTest: XCTestCase {
         }
     }
 
-    private func makeThread(serviceId: ServiceId?, phoneNumber: E164?) -> TSContactThread {
+    private func makeThread(serviceId: UntypedServiceId?, phoneNumber: E164?) -> TSContactThread {
         let result = TSContactThread(contactAddress: SignalServiceAddress(
             uuid: serviceId?.uuidValue,
             phoneNumber: phoneNumber?.stringValue,

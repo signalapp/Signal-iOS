@@ -248,14 +248,14 @@ class _PniHelloWorldManagerImpl_ProfileManager_Wrapper: _PniHelloWorldManagerImp
 
 protocol _PniHelloWorldManagerImpl_SignalRecipientStore_Shim {
     func localAccountAndDeviceIds(
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         tx: DBReadTransaction
     ) -> (accountId: String, deviceIds: [UInt32])?
 }
 
 class _PniHelloWorldManagerImpl_SignalRecipientStore_Wrapper: _PniHelloWorldManagerImpl_SignalRecipientStore_Shim {
     func localAccountAndDeviceIds(
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         tx: DBReadTransaction
     ) -> (accountId: String, deviceIds: [UInt32])? {
         guard

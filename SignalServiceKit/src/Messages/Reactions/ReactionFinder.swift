@@ -21,7 +21,7 @@ public class ReactionFinder: NSObject {
     }
 
     /// Returns the given users reaction if it exists, otherwise nil
-    public func reaction(for aci: ServiceId, tx: GRDBReadTransaction) -> OWSReaction? {
+    public func reaction(for aci: UntypedServiceId, tx: GRDBReadTransaction) -> OWSReaction? {
         // If there is a reaction for the ACI, return it.
         do {
             let sql = """

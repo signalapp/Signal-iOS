@@ -9,16 +9,16 @@ import SignalServiceKit
 class ServiceIdTest: XCTestCase {
     func testInit() {
         let uuidValue = UUID()
-        XCTAssertEqual(ServiceId(uuidValue).uuidValue, uuidValue)
-        XCTAssertEqual(ServiceId(uuidString: uuidValue.uuidString)?.uuidValue, uuidValue)
+        XCTAssertEqual(UntypedServiceId(uuidValue).uuidValue, uuidValue)
+        XCTAssertEqual(UntypedServiceId(uuidString: uuidValue.uuidString)?.uuidValue, uuidValue)
     }
 
     func testCodable() throws {
-        let serviceId = try XCTUnwrap(ServiceId(uuidString: "61C5DC1F-8198-4303-B862-9C0E81C5D8D4"))
+        let serviceId = try XCTUnwrap(UntypedServiceId(uuidString: "61C5DC1F-8198-4303-B862-9C0E81C5D8D4"))
         let expectedValue = #"{"key":"61C5DC1F-8198-4303-B862-9C0E81C5D8D4"}"#
 
         struct KeyedValue: Codable {
-            var key: ServiceId
+            var key: UntypedServiceId
         }
 
         // Decoding

@@ -50,7 +50,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
                 for fullMemberAddress in thread.groupMembership.fullMembers {
                     groupMemberStore.insert(
                         fullGroupMember: TSGroupMember(
-                            serviceId: fullMemberAddress.serviceId,
+                            serviceId: fullMemberAddress.untypedServiceId,
                             phoneNumber: fullMemberAddress.phoneNumber,
                             groupThreadId: thread.uniqueId,
                             lastInteractionTimestamp: 0),
@@ -151,7 +151,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
     }
 
     private func makeRecipient(
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         oldPhoneNumber: E164?,
         newPhoneNumber: E164,
         isLocalRecipient: Bool

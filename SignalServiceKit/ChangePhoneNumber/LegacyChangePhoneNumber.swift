@@ -53,7 +53,7 @@ public class LegacyChangePhoneNumber: NSObject {
                 usingTransaction transaction: SDSAnyWriteTransaction
             ) -> Promise<(Parameters, PendingState)> {
                 guard
-                    let localAci = tsAccountManager.localUuid(with: transaction).map({ ServiceId($0) }),
+                    let localAci = tsAccountManager.localUuid(with: transaction).map({ UntypedServiceId($0) }),
                     let localAddress = tsAccountManager.localAddress(with: transaction),
                     let localRecipient = SignalRecipient.fetchRecipient(
                         for: localAddress,
@@ -317,8 +317,8 @@ public class LegacyChangePhoneNumber: NSObject {
 
         let recipientMerger = DependenciesBridge.shared.recipientMerger
         let localRecipient = recipientMerger.applyMergeForLocalAccount(
-            aci: ServiceId(serviceAci),
-            pni: ServiceId(servicePni),
+            aci: UntypedServiceId(serviceAci),
+            pni: UntypedServiceId(servicePni),
             phoneNumber: serviceE164,
             tx: transaction.asV2Write
         )

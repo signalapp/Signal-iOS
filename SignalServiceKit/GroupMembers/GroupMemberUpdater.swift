@@ -64,7 +64,7 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
         // use values contained in the cache.
         var expectedAddresses = Set<SignalServiceAddress>()
         for fullMemberAddress in groupThread.groupMembership.fullMembers {
-            if let serviceId = fullMemberAddress.serviceId {
+            if let serviceId = fullMemberAddress.untypedServiceId {
                 expectedAddresses.insert(SignalServiceAddress(
                     uuid: serviceId.uuidValue,
                     phoneNumber: nil,
@@ -87,7 +87,7 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
                 cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
             ))
 
-            if let expectedAddress, expectedAddress.serviceId == serviceId, expectedAddress.phoneNumber == phoneNumber {
+            if let expectedAddress, expectedAddress.untypedServiceId == serviceId, expectedAddress.phoneNumber == phoneNumber {
                 // The value on disk already matches the source of truth; do nothing.
                 continue
             }
@@ -98,7 +98,7 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
             if let expectedAddress {
                 // It needs to be updated, so copy fields from the removed group member.
                 groupMembersToInsert.append(TSGroupMember(
-                    serviceId: expectedAddress.serviceId,
+                    serviceId: expectedAddress.untypedServiceId,
                     phoneNumber: expectedAddress.phoneNumber,
                     groupThreadId: groupThreadId,
                     lastInteractionTimestamp: groupMember.lastInteractionTimestamp
@@ -115,7 +115,7 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
                 transaction: transaction
             )
             groupMembersToInsert.append(TSGroupMember(
-                serviceId: expectedAddress.serviceId,
+                serviceId: expectedAddress.untypedServiceId,
                 phoneNumber: expectedAddress.phoneNumber,
                 groupThreadId: groupThreadId,
                 lastInteractionTimestamp: latestInteractionTimestamp ?? 0

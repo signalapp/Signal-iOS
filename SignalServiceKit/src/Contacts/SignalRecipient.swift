@@ -38,8 +38,8 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     private(set) public var deviceIds: [UInt32]
     private(set) public var unregisteredAtTimestamp: UInt64?
 
-    public var serviceId: ServiceId? {
-        get { ServiceId(uuidString: serviceIdString) }
+    public var serviceId: UntypedServiceId? {
+        get { UntypedServiceId(uuidString: serviceIdString) }
         set { serviceIdString = newValue?.uuidValue.uuidString }
     }
 
@@ -47,11 +47,11 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         SignalServiceAddress(uuidString: serviceIdString, phoneNumber: phoneNumber)
     }
 
-    public convenience init(serviceId: ServiceId?, phoneNumber: E164?) {
+    public convenience init(serviceId: UntypedServiceId?, phoneNumber: E164?) {
         self.init(serviceId: serviceId, phoneNumber: phoneNumber, deviceIds: [])
     }
 
-    public convenience init(serviceId: ServiceId?, phoneNumber: E164?, deviceIds: [UInt32]) {
+    public convenience init(serviceId: UntypedServiceId?, phoneNumber: E164?, deviceIds: [UInt32]) {
         self.init(
             id: nil,
             uniqueId: UUID().uuidString,
@@ -325,7 +325,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         newPhoneNumber: String?,
         transaction: SDSAnyWriteTransaction
     ) {
-        let serviceId = ServiceId(uuidString: serviceIdString)
+        let serviceId = UntypedServiceId(uuidString: serviceIdString)
 
         let oldAddress = SignalServiceAddress(
             uuid: serviceId?.uuidValue,
@@ -364,7 +364,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         if let serviceId {
             if !newAddress.isLocalAddress {
                 self.versionedProfiles.clearProfileKeyCredential(
-                    for: ServiceIdObjC(serviceId),
+                    for: UntypedServiceIdObjC(serviceId),
                     transaction: transaction
                 )
 

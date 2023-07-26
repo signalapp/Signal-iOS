@@ -17,7 +17,7 @@ class SignalAccountFinderTest: SSKBaseTestSwift {
         tsAccountManager.registerForTests(withLocalNumber: localAddress.phoneNumber!, uuid: localAddress.uuid!)
     }
 
-    private func createAccount(serviceId: ServiceId, phoneNumber: E164?) -> SignalAccount {
+    private func createAccount(serviceId: UntypedServiceId, phoneNumber: E164?) -> SignalAccount {
         write {
             let account = SignalAccount(address: SignalServiceAddress(serviceId: serviceId, phoneNumber: phoneNumber?.stringValue))
             account.anyInsert(transaction: $0)

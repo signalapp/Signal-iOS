@@ -170,7 +170,7 @@ public class ViewOnceMessages: NSObject {
         envelope: SSKProtoEnvelope,
         transaction: SDSAnyWriteTransaction
     ) -> ViewOnceSyncMessageProcessingResult {
-        guard let messageSender = ServiceId(uuidString: message.senderUuid) else {
+        guard let messageSender = UntypedServiceId(uuidString: message.senderUuid) else {
             owsFailDebug("Invalid messageSender.")
             return .invalidSyncMessage
         }
@@ -192,7 +192,7 @@ public class ViewOnceMessages: NSObject {
                 owsFailDebug("Could not process sync message; no local number.")
                 return false
             }
-            guard senderAddress.serviceId == messageSender else {
+            guard senderAddress.untypedServiceId == messageSender else {
                 return false
             }
             guard message.isViewOnceMessage else {

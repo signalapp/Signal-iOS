@@ -15,13 +15,13 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
     private lazy var aliceAci = FutureAci.randomForTesting()
     private lazy var bobAci = FutureAci.randomForTesting()
     private lazy var charlieAci = FutureAci.randomForTesting()
-    private var recipients: [ServiceId] {
+    private var recipients: [UntypedServiceId] {
         [aliceAci, bobAci, charlieAci, localAci]
     }
     private var groupThread: TSGroupThread!
-    private var identityKeys = [ServiceId: Data]()
+    private var identityKeys = [UntypedServiceId: Data]()
 
-    private func identityKey(_ serviceId: ServiceId) -> Data {
+    private func identityKey(_ serviceId: UntypedServiceId) -> Data {
         if let value = identityKeys[serviceId] {
             return value
         }

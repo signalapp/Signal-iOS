@@ -51,7 +51,7 @@ class StoryGroupReplyLoader: Dependencies {
         self.storyMessage = storyMessage
         self.tableView = tableView
         self.messageBatchFetcher = StoryGroupReplyBatchFetcher(
-            storyAuthor: ServiceId(storyMessage.authorUuid),
+            storyAuthor: UntypedServiceId(storyMessage.authorUuid),
             storyTimestamp: storyMessage.timestamp
         )
         self.messageLoader = MessageLoader(
@@ -324,12 +324,12 @@ extension StoryGroupReplyLoader: DatabaseChangeDelegate {
 // MARK: - Batch Fetcher
 
 private class StoryGroupReplyBatchFetcher: MessageLoaderBatchFetcher {
-    private let storyAuthor: ServiceId
+    private let storyAuthor: UntypedServiceId
     private let storyTimestamp: UInt64
 
     private(set) var uniqueIdsAndRowIds = [(uniqueId: String, rowId: Int64)]()
 
-    init(storyAuthor: ServiceId, storyTimestamp: UInt64) {
+    init(storyAuthor: UntypedServiceId, storyTimestamp: UInt64) {
         self.storyAuthor = storyAuthor
         self.storyTimestamp = storyTimestamp
     }

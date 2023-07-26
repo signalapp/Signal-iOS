@@ -6,7 +6,7 @@
 import Foundation
 
 public struct ContactDetails {
-    public let serviceId: ServiceId?
+    public let serviceId: UntypedServiceId?
     public let phoneNumber: E164?
     public let verifiedProto: SSKProtoVerified?
     public let profileKey: Data?
@@ -47,7 +47,7 @@ public class ContactsInputStream {
             try inputStream.decodeData(value: &decodedData, count: Int(avatar.length))
         }
 
-        let serviceId = ServiceId.expectNilOrValid(uuidString: contactDetails.contactUuid)
+        let serviceId = UntypedServiceId.expectNilOrValid(uuidString: contactDetails.contactUuid)
         let phoneNumber = E164.expectNilOrValid(stringValue: contactDetails.contactE164)
 
         return ContactDetails(

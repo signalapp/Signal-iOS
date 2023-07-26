@@ -224,7 +224,7 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
     var buildRequestedForDeviceIds: [[UInt32]] = []
 
     func buildPniDistributionParameters(
-        localAci: ServiceId,
+        localAci: UntypedServiceId,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],

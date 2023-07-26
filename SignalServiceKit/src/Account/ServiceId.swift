@@ -7,14 +7,14 @@ import Foundation
 import LibSignalClient
 import GRDB
 
-public struct ServiceId: Equatable, Hashable, Codable, CustomDebugStringConvertible {
+public struct UntypedServiceId: Equatable, Hashable, Codable, CustomDebugStringConvertible {
     private enum Constant {
         static let myStory = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
         static let systemStory = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
     }
 
-    public static var myStory: ServiceId { ServiceId(Constant.myStory) }
-    public static var systemStory: ServiceId { ServiceId(Constant.myStory) }
+    public static var myStory: UntypedServiceId { UntypedServiceId(Constant.myStory) }
+    public static var systemStory: UntypedServiceId { UntypedServiceId(Constant.myStory) }
 
     public let uuidValue: UUID
 
@@ -29,8 +29,8 @@ public struct ServiceId: Equatable, Hashable, Codable, CustomDebugStringConverti
         self.init(uuidValue)
     }
 
-    public static func expectNilOrValid(uuidString: String?) -> ServiceId? {
-        let result = ServiceId(uuidString: uuidString)
+    public static func expectNilOrValid(uuidString: String?) -> UntypedServiceId? {
+        let result = UntypedServiceId(uuidString: uuidString)
         owsAssertDebug(uuidString == nil || result != nil, "Couldn't parse a ServiceId that should be valid")
         return result
     }
@@ -65,21 +65,21 @@ public struct ServiceId: Equatable, Hashable, Codable, CustomDebugStringConverti
 }
 
 @objc
-public class ServiceIdObjC: NSObject, NSCopying {
-    public let wrappedValue: ServiceId
+public class UntypedServiceIdObjC: NSObject, NSCopying {
+    public let wrappedValue: UntypedServiceId
 
-    public init(_ wrappedValue: ServiceId) {
+    public init(_ wrappedValue: UntypedServiceId) {
         self.wrappedValue = wrappedValue
     }
 
     @objc
     public init(uuidValue: UUID) {
-        self.wrappedValue = ServiceId(uuidValue)
+        self.wrappedValue = UntypedServiceId(uuidValue)
     }
 
     @objc
     public init?(uuidString: String?) {
-        guard let uuidString, let wrappedValue = ServiceId(uuidString: uuidString) else {
+        guard let uuidString, let wrappedValue = UntypedServiceId(uuidString: uuidString) else {
             return nil
         }
         self.wrappedValue = wrappedValue
@@ -92,7 +92,7 @@ public class ServiceIdObjC: NSObject, NSCopying {
     public override var hash: Int { uuidValue.hashValue }
 
     @objc
-    public override func isEqual(_ object: Any?) -> Bool { uuidValue == (object as? ServiceIdObjC)?.uuidValue }
+    public override func isEqual(_ object: Any?) -> Bool { uuidValue == (object as? UntypedServiceIdObjC)?.uuidValue }
 
     @objc
     public func copy(with zone: NSZone? = nil) -> Any { self }
@@ -103,26 +103,26 @@ public class ServiceIdObjC: NSObject, NSCopying {
 
 // MARK: - DatabaseValueConvertible
 
-extension ServiceId: DatabaseValueConvertible {
+extension UntypedServiceId: DatabaseValueConvertible {
     public var databaseValue: DatabaseValue { uuidValue.databaseValue }
 
-    public static func fromDatabaseValue(_ dbValue: DatabaseValue) -> ServiceId? {
-        UUID.fromDatabaseValue(dbValue).map { ServiceId($0) }
+    public static func fromDatabaseValue(_ dbValue: DatabaseValue) -> UntypedServiceId? {
+        UUID.fromDatabaseValue(dbValue).map { UntypedServiceId($0) }
     }
 }
 
-public typealias FutureAci = ServiceId
-public typealias FuturePni = ServiceId
+public typealias FutureAci = UntypedServiceId
+public typealias FuturePni = UntypedServiceId
 
 #if TESTABLE_BUILD
 
-extension ServiceId {
-    public static func randomForTesting() -> ServiceId {
-        return ServiceId(UUID())
+extension UntypedServiceId {
+    public static func randomForTesting() -> UntypedServiceId {
+        return UntypedServiceId(UUID())
     }
 
-    public static func constantForTesting(_ serviceIdString: String) -> ServiceId {
-        return ServiceId((try! LibSignalClient.ServiceId.parseFrom(serviceIdString: serviceIdString)).rawUUID)
+    public static func constantForTesting(_ serviceIdString: String) -> UntypedServiceId {
+        return UntypedServiceId((try! ServiceId.parseFrom(serviceIdString: serviceIdString)).rawUUID)
     }
 }
 
@@ -132,7 +132,7 @@ extension Aci {
     }
 
     public static func constantForTesting(_ uuidString: String) -> Aci {
-        try! LibSignalClient.ServiceId.parseFrom(serviceIdString: uuidString) as! Aci
+        try! ServiceId.parseFrom(serviceIdString: uuidString) as! Aci
      }
  }
 
@@ -142,7 +142,7 @@ extension Pni {
     }
 
     public static func constantForTesting(_ serviceIdString: String) -> Pni {
-        try! LibSignalClient.ServiceId.parseFrom(serviceIdString: serviceIdString) as! Pni
+        try! ServiceId.parseFrom(serviceIdString: serviceIdString) as! Pni
     }
 }
 

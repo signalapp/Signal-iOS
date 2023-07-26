@@ -24,7 +24,7 @@ class MockClient {
         LocalIdentifiers(aci: serviceId, pni: nil, phoneNumber: phoneNumber.stringValue)
     }
 
-    let serviceId: ServiceId
+    let serviceId: UntypedServiceId
     let phoneNumber: E164
     let deviceId: UInt32
     let registrationId: Int32
@@ -38,7 +38,7 @@ class MockClient {
     let identityStore: InMemorySignalProtocolStore
     let senderKeyStore: InMemorySignalProtocolStore
 
-    init(serviceId: ServiceId, phoneNumber: E164, deviceId: UInt32, registrationId: Int32) {
+    init(serviceId: UntypedServiceId, phoneNumber: E164, deviceId: UInt32, registrationId: Int32) {
         self.serviceId = serviceId
         self.phoneNumber = phoneNumber
         self.deviceId = deviceId

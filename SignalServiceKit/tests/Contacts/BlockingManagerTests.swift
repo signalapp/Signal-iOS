@@ -51,8 +51,8 @@ class BlockingManagerTests: SSKBaseTestSwift {
                 Set(allExpectedBlockedAddresses.compactMap { $0.phoneNumber })
             )
             XCTAssertEqual(
-                Set(allFetchedBlockedAddresses.compactMap { $0.serviceId }),
-                Set(allExpectedBlockedAddresses.compactMap { $0.serviceId })
+                Set(allFetchedBlockedAddresses.compactMap { $0.untypedServiceId }),
+                Set(allExpectedBlockedAddresses.compactMap { $0.untypedServiceId })
             )
             // Next, ensure that querying an individual address or thread works properly
             generatedAddresses.forEach {

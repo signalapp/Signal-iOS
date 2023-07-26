@@ -9,7 +9,7 @@ import LibSignalClient
 import SignalCoreKit
 
 public struct SecretSessionKnownSenderError: Error {
-    public let senderServiceId: ServiceId
+    public let senderServiceId: UntypedServiceId
     public let senderDeviceId: UInt32
     public let cipherType: CiphertextMessage.MessageType
     public let groupId: Data?
@@ -17,7 +17,7 @@ public struct SecretSessionKnownSenderError: Error {
     public let contentHint: UnidentifiedSenderMessageContent.ContentHint
     public let underlyingError: Error
 
-    init(senderServiceId: ServiceId, messageContent: UnidentifiedSenderMessageContent, underlyingError: Error) {
+    init(senderServiceId: UntypedServiceId, messageContent: UnidentifiedSenderMessageContent, underlyingError: Error) {
         self.senderServiceId = senderServiceId
         self.senderDeviceId = messageContent.senderCertificate.sender.deviceId
         self.cipherType = messageContent.messageType
@@ -45,7 +45,7 @@ public enum SMKMessageType: Int {
 }
 
 public struct SMKDecryptResult {
-    let senderServiceId: ServiceId
+    let senderServiceId: UntypedServiceId
     let senderE164: String?
     let senderDeviceId: UInt32
     let paddedPayload: Data
@@ -111,7 +111,7 @@ public class SMKSecretSessionCipher: NSObject {
     // MARK: - Public
 
     public func encryptMessage(
-        for serviceId: ServiceId,
+        for serviceId: UntypedServiceId,
         deviceId: UInt32,
         paddedPlaintext: Data,
         contentHint: UnidentifiedSenderMessageContent.ContentHint,
@@ -201,7 +201,7 @@ public class SMKSecretSessionCipher: NSObject {
         guard sender.deviceId <= Int32.max else {
             throw SMKError.assertionError(description: "\(logTag) Invalid senderDeviceId.")
         }
-        guard let senderServiceId = ServiceId(uuidString: sender.uuidString) else {
+        guard let senderServiceId = UntypedServiceId(uuidString: sender.uuidString) else {
             throw SMKError.assertionError(description: "\(logTag) Invalid senderServiceId.")
         }
 

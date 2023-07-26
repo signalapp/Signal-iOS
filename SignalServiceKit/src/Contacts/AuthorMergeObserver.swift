@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 
 class AuthorMergeObserver: RecipientMergeObserver {
-    func willBreakAssociation(serviceId: ServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {
+    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {
         populateMissingAcis(phoneNumber: phoneNumber, aci: serviceId, tx: transaction)
     }
 
@@ -19,7 +19,7 @@ class AuthorMergeObserver: RecipientMergeObserver {
         // able to fetch based on the phone number.
     }
 
-    private func populateMissingAcis(phoneNumber: E164, aci: ServiceId, tx: DBWriteTransaction) {
+    private func populateMissingAcis(phoneNumber: E164, aci: UntypedServiceId, tx: DBWriteTransaction) {
         for table in AuthorDatabaseTable.all {
             let sql = """
                 UPDATE "\(table.name)"

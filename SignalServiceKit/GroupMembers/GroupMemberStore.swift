@@ -11,7 +11,7 @@ protocol GroupMemberStore {
     func update(fullGroupMember: TSGroupMember, tx: DBWriteTransaction)
     func remove(fullGroupMember: TSGroupMember, tx: DBWriteTransaction)
 
-    func groupThreadIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String]
+    func groupThreadIds(withFullMember serviceId: UntypedServiceId, tx: DBReadTransaction) -> [String]
     func groupThreadIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String]
 
     func sortedFullGroupMembers(in groupThreadId: String, tx: DBReadTransaction) -> [TSGroupMember]
@@ -30,11 +30,11 @@ class GroupMemberStoreImpl: GroupMemberStore {
         groupMember.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    func groupThreadIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {
+    func groupThreadIds(withFullMember serviceId: UntypedServiceId, tx: DBReadTransaction) -> [String] {
         Self.groupThreadIds(withFullMember: serviceId, db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database)
     }
 
-    fileprivate static func groupThreadIds(withFullMember serviceId: ServiceId, db: Database) -> [String] {
+    fileprivate static func groupThreadIds(withFullMember serviceId: UntypedServiceId, db: Database) -> [String] {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId))
             FROM \(TSGroupMember.databaseTableName)
@@ -87,7 +87,7 @@ class MockGroupMemberStore: GroupMemberStore {
         db.remove(model: groupMember)
     }
 
-    func groupThreadIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {
+    func groupThreadIds(withFullMember serviceId: UntypedServiceId, tx: DBReadTransaction) -> [String] {
         db.read { GroupMemberStoreImpl.groupThreadIds(withFullMember: serviceId, db: $0) }
     }
 

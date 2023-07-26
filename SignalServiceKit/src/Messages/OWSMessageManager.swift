@@ -234,7 +234,7 @@ extension OWSMessageManager {
         do {
             let placeholders = try InteractionFinder.interactions(
                 withTimestamp: envelope.timestamp,
-                filter: { ($0 as? OWSRecoverableDecryptionPlaceholder)?.sender?.serviceId == envelope.sourceServiceId },
+                filter: { ($0 as? OWSRecoverableDecryptionPlaceholder)?.sender?.untypedServiceId == envelope.sourceServiceId },
                 transaction: tx
             )
             owsAssertDebug(placeholders.count <= 1)

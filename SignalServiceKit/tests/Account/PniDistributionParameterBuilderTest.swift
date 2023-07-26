@@ -212,7 +212,7 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
         forMessagePlaintextContent messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
         recipientId: String,
-        serviceId: ServiceId,
+        serviceId: UntypedServiceId,
         deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,

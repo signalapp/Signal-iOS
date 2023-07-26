@@ -151,13 +151,13 @@ public protocol OWSUDManager: AnyObject {
 
     @objc
     func udSendingAccess(
-        for serviceId: ServiceIdObjC,
+        for serviceId: UntypedServiceIdObjC,
         requireSyncAccess: Bool,
         senderCertificates: SenderCertificates
     ) -> OWSUDSendingAccess?
 
     @objc
-    func storySendingAccess(for serviceId: ServiceIdObjC, senderCertificates: SenderCertificates) -> OWSUDSendingAccess
+    func storySendingAccess(for serviceId: UntypedServiceIdObjC, senderCertificates: SenderCertificates) -> OWSUDSendingAccess
 
     // MARK: Sender Certificate
 
@@ -522,7 +522,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // Returns the UD access key and appropriate sender certificate for sending to a given recipient
     @objc
     public func udSendingAccess(
-        for serviceId: ServiceIdObjC,
+        for serviceId: UntypedServiceIdObjC,
         requireSyncAccess: Bool,
         senderCertificates: SenderCertificates
     ) -> OWSUDSendingAccess? {
@@ -534,13 +534,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     @objc
-    public func storySendingAccess(for serviceId: ServiceIdObjC, senderCertificates: SenderCertificates) -> OWSUDSendingAccess {
+    public func storySendingAccess(for serviceId: UntypedServiceIdObjC, senderCertificates: SenderCertificates) -> OWSUDSendingAccess {
         let udAccess = OWSUDAccess(udAccessKey: randomUDAccessKey(), udAccessMode: .unrestricted, isRandomKey: true)
         return udSendingAccess(for: serviceId.wrappedValue, udAccess: udAccess, senderCertificates: senderCertificates)
     }
 
     private func udSendingAccess(
-        for serviceId: ServiceId,
+        for serviceId: UntypedServiceId,
         udAccess: OWSUDAccess,
         senderCertificates: SenderCertificates
     ) -> OWSUDSendingAccess {

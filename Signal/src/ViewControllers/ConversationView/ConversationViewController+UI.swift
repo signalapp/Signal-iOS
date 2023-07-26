@@ -273,7 +273,7 @@ extension ConversationViewController {
                 withTimestamp: draftReply.timestamp,
                 filter: { candidate in
                     if let incoming = candidate as? TSIncomingMessage {
-                        return incoming.authorAddress.serviceId == draftReply.author
+                        return incoming.authorAddress.untypedServiceId == draftReply.author
                     }
                     if candidate is TSOutgoingMessage {
                         return tsAccountManager.localIdentifiers(transaction: transaction)?.aci == draftReply.author

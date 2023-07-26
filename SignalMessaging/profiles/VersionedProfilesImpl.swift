@@ -30,7 +30,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
         private static let expiringCredentialStore = SDSKeyValueStore(collection: "VersionedProfilesImpl.expiringCredentialStore")
 
-        private static func storeKey(for serviceId: ServiceId) -> String {
+        private static func storeKey(for serviceId: UntypedServiceId) -> String {
             return serviceId.uuidValue.uuidString
         }
 
@@ -39,14 +39,14 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         }
 
         static func hasValidCredential(
-            for serviceId: ServiceId,
+            for serviceId: UntypedServiceId,
             transaction: SDSAnyReadTransaction
         ) throws -> Bool {
             try getValidCredential(for: serviceId, transaction: transaction) != nil
         }
 
         static func getValidCredential(
-            for serviceId: ServiceId,
+            for serviceId: UntypedServiceId,
             transaction: SDSAnyReadTransaction
         ) throws -> ExpiringProfileKeyCredential? {
             guard let credentialData = expiringCredentialStore.getData(
@@ -72,7 +72,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
         static func setCredential(
             _ credential: ExpiringProfileKeyCredential,
-            for serviceId: ServiceId,
+            for serviceId: UntypedServiceId,
             transaction: SDSAnyWriteTransaction
         ) throws {
             let credentialData = credential.serialize().asData
@@ -88,7 +88,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             )
         }
 
-        static func removeValue(for serviceId: ServiceId, transaction: SDSAnyWriteTransaction) {
+        static func removeValue(for serviceId: UntypedServiceId, transaction: SDSAnyWriteTransaction) {
             expiringCredentialStore.removeValue(forKey: storeKey(for: serviceId), transaction: transaction)
         }
 
@@ -282,7 +282,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
     // MARK: - Get
 
     public func versionedProfileRequest(
-        for serviceId: ServiceId,
+        for serviceId: UntypedServiceId,
         udAccessKey: SMKUDAccessKey?,
         auth: ChatServiceAuth
     ) throws -> VersionedProfileRequest {
@@ -317,7 +317,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         }
 
         let request = OWSRequestFactory.getVersionedProfileRequest(
-            serviceId: ServiceIdObjC(serviceId),
+            serviceId: UntypedServiceIdObjC(serviceId),
             profileKeyVersion: profileKeyVersionArg,
             credentialRequest: credentialRequestArg,
             udAccessKey: udAccessKey,
@@ -362,7 +362,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 throw OWSAssertionError("Missing profile key for credential from versioned profile fetch.")
             }
 
-            guard let serviceId = profile.address.serviceId else {
+            guard let serviceId = profile.address.untypedServiceId else {
                 throw OWSAssertionError("Missing serviceId.")
             }
             let address = profile.address
@@ -391,7 +391,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
     // MARK: - Credentials
 
     public func validProfileKeyCredential(
-        for serviceId: ServiceId,
+        for serviceId: UntypedServiceId,
         transaction: SDSAnyReadTransaction
     ) throws -> ExpiringProfileKeyCredential? {
         try CredentialStore.getValidCredential(for: serviceId, transaction: transaction)
@@ -399,7 +399,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     @objc(clearProfileKeyCredentialForServiceId:transaction:)
     public func clearProfileKeyCredential(
-        for serviceId: ServiceIdObjC,
+        for serviceId: UntypedServiceIdObjC,
         transaction: SDSAnyWriteTransaction
     ) {
         CredentialStore.removeValue(for: serviceId.wrappedValue, transaction: transaction)

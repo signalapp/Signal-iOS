@@ -15,14 +15,14 @@ public class LocalIdentifiersObjC: NSObject {
 
 public class LocalIdentifiers {
     /// The ACI for the current user.
-    public let aci: ServiceId
+    public let aci: UntypedServiceId
 
     /// The PNI for the current user.
     ///
     /// - Note: Primary & linked devices may not have access to their PNI. The
     /// primary may need to fetch it from the server, and a linked device may be
     /// waiting to learn about it from the primary.
-    public let pni: ServiceId?
+    public let pni: UntypedServiceId?
 
     /// The phone number for the current user.
     ///
@@ -30,20 +30,20 @@ public class LocalIdentifiers {
     /// in prior versions of the application may not be a valid E164.
     public let phoneNumber: String
 
-    public init(aci: ServiceId, pni: ServiceId?, phoneNumber: String) {
+    public init(aci: UntypedServiceId, pni: UntypedServiceId?, phoneNumber: String) {
         self.aci = aci
         self.pni = pni
         self.phoneNumber = phoneNumber
     }
 
-    public convenience init(aci: ServiceId, pni: ServiceId?, e164: E164) {
+    public convenience init(aci: UntypedServiceId, pni: UntypedServiceId?, e164: E164) {
         self.init(aci: aci, pni: pni, phoneNumber: e164.stringValue)
     }
 
     /// Checks if `serviceId` refers to ourself.
     ///
     /// Returns true if it's our ACI or our PNI.
-    public func contains(serviceId: ServiceId) -> Bool {
+    public func contains(serviceId: UntypedServiceId) -> Bool {
         return serviceId == aci || serviceId == pni
     }
 
@@ -64,7 +64,7 @@ public class LocalIdentifiers {
         // If the address has a ServiceId, then it must match one of our
         // ServiceIds. (If it has some other ServiceId, then it's not us because
         // that's not our ServiceId, even if the phone number matches.)
-        if let serviceId = address.serviceId {
+        if let serviceId = address.untypedServiceId {
             return contains(serviceId: serviceId)
         }
         // Otherwise, it's us if the phone number matches. (This shouldn't happen
@@ -77,7 +77,7 @@ public class LocalIdentifiers {
     }
 
     public func isAciAddressEqualToAddress(_ address: SignalServiceAddress) -> Bool {
-        if let serviceId = address.serviceId {
+        if let serviceId = address.untypedServiceId {
             return serviceId == self.aci
         }
         return address.phoneNumber == self.phoneNumber

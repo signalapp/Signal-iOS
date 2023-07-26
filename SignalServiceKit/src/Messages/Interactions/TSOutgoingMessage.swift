@@ -223,7 +223,7 @@ public extension TSOutgoingMessage {
         recipientDeviceId deviceId: UInt32,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard let serviceId = recipientAddress.serviceId else {
+        guard let serviceId = recipientAddress.untypedServiceId else {
             // We can't be sharing our phone number b/c there's no ServiceId.
             return
         }
@@ -333,7 +333,7 @@ extension TSOutgoingMessage {
     @objc
     func clearMessageSendLogEntry(forRecipient address: SignalServiceAddress, deviceId: UInt32, tx: SDSAnyWriteTransaction) {
         // MSL entries will only exist for addresses with UUIDs
-        guard let serviceId = address.serviceId else {
+        guard let serviceId = address.untypedServiceId else {
             return
         }
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
@@ -381,7 +381,7 @@ public extension TSOutgoingMessage {
                 plaintextContent: serializedMessage.plaintextData,
                 plaintextPayloadId: serializedMessage.payloadId,
                 thread: localThread,
-                serviceId: ServiceId(localUuid),
+                serviceId: UntypedServiceId(localUuid),
                 udSendingAccess: nil,
                 localAddress: Self.tsAccountManager.localAddress!,
                 sendErrorBlock: nil

@@ -1396,7 +1396,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             for serviceIdUuidValue in serviceIdUuidValues {
                 do {
                     if let credential = try self.versionedProfilesSwift.validProfileKeyCredential(
-                        for: ServiceId(serviceIdUuidValue),
+                        for: UntypedServiceId(serviceIdUuidValue),
                         transaction: transaction
                     ) {
                         credentialMap[serviceIdUuidValue] = credential
@@ -1415,7 +1415,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         transaction: SDSAnyReadTransaction
     ) -> Bool {
         do {
-            guard let serviceId = address.serviceId else {
+            guard let serviceId = address.untypedServiceId else {
                 throw OWSAssertionError("Missing serviceId.")
             }
             return try self.versionedProfilesSwift.validProfileKeyCredential(

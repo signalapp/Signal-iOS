@@ -82,7 +82,7 @@ struct StorageServiceContact {
     }
 
     /// All contact records must have a UUID.
-    var serviceId: ServiceId
+    var serviceId: UntypedServiceId
 
     /// Contact records may have a phone number.
     var serviceE164: E164?
@@ -90,7 +90,7 @@ struct StorageServiceContact {
     /// Contact records may be unregistered.
     var unregisteredAtTimestamp: UInt64?
 
-    init?(serviceId: ServiceId?, serviceE164: E164?, unregisteredAtTimestamp: UInt64?) {
+    init?(serviceId: UntypedServiceId?, serviceE164: E164?, unregisteredAtTimestamp: UInt64?) {
         guard let serviceId else {
             return nil
         }
@@ -126,7 +126,7 @@ struct StorageServiceContact {
             unregisteredAtTimestamp = contactRecord.unregisteredAtTimestamp
         }
         self.init(
-            serviceId: ServiceId.expectNilOrValid(uuidString: contactRecord.serviceUuid),
+            serviceId: UntypedServiceId.expectNilOrValid(uuidString: contactRecord.serviceUuid),
             serviceE164: E164.expectNilOrValid(stringValue: contactRecord.serviceE164),
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )
@@ -358,7 +358,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         transaction: SDSAnyWriteTransaction
     ) -> StorageServiceMergeResult<AccountId> {
         let immutableAddress = SignalServiceAddress(
-            uuid: ServiceId(uuidString: record.serviceUuid)?.uuidValue,
+            uuid: UntypedServiceId(uuidString: record.serviceUuid)?.uuidValue,
             phoneNumber: E164(record.serviceE164)?.stringValue,
             ignoreCache: true
         )

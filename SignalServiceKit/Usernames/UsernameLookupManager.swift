@@ -14,7 +14,7 @@ public protocol UsernameLookupManager {
 
     /// Fetch the most recently-known username for the given ACI, if any.
     func fetchUsername(
-        forAci aci: ServiceId,
+        forAci aci: UntypedServiceId,
         transaction: DBReadTransaction
     ) -> Username?
 
@@ -28,7 +28,7 @@ public protocol UsernameLookupManager {
     /// Save the given username, or lack thereof, for the given ACI.
     func saveUsername(
         _ username: Username?,
-        forAci aci: ServiceId,
+        forAci aci: UntypedServiceId,
         transaction: DBWriteTransaction
     )
 }
@@ -53,7 +53,7 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
 
     // MARK: - Init
 
-    private let cachedLookups: AtomicDictionary<ServiceId, CachedLookupResult>
+    private let cachedLookups: AtomicDictionary<UntypedServiceId, CachedLookupResult>
 
     init() {
         cachedLookups = .init(lock: .init())
@@ -62,7 +62,7 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
     // MARK: - UsernameLookupManager
 
     func fetchUsername(
-        forAci aci: ServiceId,
+        forAci aci: UntypedServiceId,
         transaction: DBReadTransaction
     ) -> Username? {
         if let cachedLookup = cachedLookups[aci] {
@@ -86,7 +86,7 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
         transaction: DBReadTransaction
     ) -> [Username?] {
         addresses.map { address -> Username? in
-            guard let aci = address.serviceId else { return nil }
+            guard let aci = address.untypedServiceId else { return nil }
 
             return fetchUsername(forAci: aci, transaction: transaction)
         }
@@ -94,7 +94,7 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
 
     func saveUsername(
         _ username: Username?,
-        forAci aci: ServiceId,
+        forAci aci: UntypedServiceId,
         transaction: DBWriteTransaction
     ) {
         if let username {

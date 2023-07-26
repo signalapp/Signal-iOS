@@ -32,15 +32,15 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     ///
     /// * When doing "find by phone number", there will be a window of time
     /// where all we know about a recipient is their e164.
-    public var serviceId: ServiceId? {
+    public var untypedServiceId: UntypedServiceId? {
         cachedAddress.identifiers.get().serviceId
     }
 
     @objc
-    public var serviceIdObjC: ServiceIdObjC? { serviceId.map { ServiceIdObjC($0) } }
+    public var untypedServiceIdObjC: UntypedServiceIdObjC? { untypedServiceId.map { UntypedServiceIdObjC($0) } }
 
     @objc
-    public var uuid: UUID? { serviceId?.uuidValue }
+    public var uuid: UUID? { untypedServiceId?.uuidValue }
 
     @objc
     public var uuidString: String? { uuid?.uuidString }
@@ -67,11 +67,11 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     @objc
-    public convenience init(serviceIdObjC: ServiceIdObjC) {
-        self.init(serviceIdObjC.wrappedValue)
+    public convenience init(untypedServiceIdObjC: UntypedServiceIdObjC) {
+        self.init(untypedServiceIdObjC.wrappedValue)
     }
 
-    public convenience init(_ serviceId: ServiceId) {
+    public convenience init(_ serviceId: UntypedServiceId) {
         self.init(uuid: serviceId.uuidValue)
     }
 
@@ -99,7 +99,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(uuid: uuid, phoneNumber: phoneNumber, ignoreCache: false)
     }
 
-    public convenience init(serviceId: ServiceId?, phoneNumber: String?) {
+    public convenience init(serviceId: UntypedServiceId?, phoneNumber: String?) {
         self.init(uuid: serviceId?.uuidValue, phoneNumber: phoneNumber)
     }
 
@@ -125,13 +125,13 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     @objc
     public convenience init(uuid: UUID?, phoneNumber: String?, ignoreCache: Bool) {
         self.init(
-            serviceId: uuid.map { ServiceId($0) },
+            serviceId: uuid.map { UntypedServiceId($0) },
             phoneNumber: phoneNumber,
             ignoreCache: ignoreCache
         )
     }
 
-    public convenience init(serviceId: ServiceId?, phoneNumber: String?, ignoreCache: Bool) {
+    public convenience init(serviceId: UntypedServiceId?, phoneNumber: String?, ignoreCache: Bool) {
         self.init(
             serviceId: serviceId,
             phoneNumber: phoneNumber,
@@ -147,7 +147,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         cachePolicy: SignalServiceAddressCache.CachePolicy
     ) {
         self.init(
-            serviceId: uuid.map { ServiceId($0) },
+            serviceId: uuid.map { UntypedServiceId($0) },
             phoneNumber: phoneNumber,
             cache: cache,
             cachePolicy: cachePolicy
@@ -155,7 +155,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     public init(
-        serviceId: ServiceId?,
+        serviceId: UntypedServiceId?,
         phoneNumber: String?,
         cache: SignalServiceAddressCache,
         cachePolicy: SignalServiceAddressCache.CachePolicy
@@ -361,7 +361,7 @@ public extension Array where Element == SignalServiceAddress {
 
 private class CachedAddress {
     struct Identifiers: Equatable {
-        var serviceId: ServiceId?
+        var serviceId: UntypedServiceId?
         var phoneNumber: String?
     }
 
@@ -380,13 +380,13 @@ public class SignalServiceAddressCache: NSObject {
     private let state = AtomicValue(CacheState(), lock: AtomicLock())
 
     private struct CacheState {
-        var serviceIdHashValues = [ServiceId: Int]()
+        var serviceIdHashValues = [UntypedServiceId: Int]()
         var phoneNumberHashValues = [String: Int]()
 
-        var serviceIdToPhoneNumber = [ServiceId: String]()
-        var phoneNumberToServiceIds = [String: [ServiceId]]()
+        var serviceIdToPhoneNumber = [UntypedServiceId: String]()
+        var phoneNumberToServiceIds = [String: [UntypedServiceId]]()
 
-        var serviceIdCachedAddresses = [ServiceId: [CachedAddress]]()
+        var serviceIdCachedAddresses = [UntypedServiceId: [CachedAddress]]()
         var phoneNumberOnlyCachedAddresses = [String: [CachedAddress]]()
     }
 
@@ -397,7 +397,7 @@ public class SignalServiceAddressCache: NSObject {
         databaseStorage.read { transaction in
             if let localAddress = tsAccountManager.localAddress(with: transaction) {
                 updateRecipient(
-                    serviceId: localAddress.serviceId,
+                    serviceId: localAddress.untypedServiceId,
                     // PNI TODO: Fetch our own PNI once it's stored on our SignalRecipient.
                     //
                     // (Even though our own PNI may be available at this point, we should have
@@ -423,7 +423,7 @@ public class SignalServiceAddressCache: NSObject {
         )
     }
 
-    private func updateRecipient(serviceId: ServiceId?, pniString: String?, phoneNumber: String?) {
+    private func updateRecipient(serviceId: UntypedServiceId?, pniString: String?, phoneNumber: String?) {
         state.update { cacheState in
             // This cache associates phone numbers to the other identifiers. If we
             // don't have a phone number, there's nothing to associate.
@@ -436,10 +436,10 @@ public class SignalServiceAddressCache: NSObject {
                 return
             }
 
-            let oldServiceIds: [ServiceId] = cacheState.phoneNumberToServiceIds[phoneNumber] ?? []
-            let newServiceIds: [ServiceId] = [
+            let oldServiceIds: [UntypedServiceId] = cacheState.phoneNumberToServiceIds[phoneNumber] ?? []
+            let newServiceIds: [UntypedServiceId] = [
                 serviceId,
-                ServiceId(uuidString: pniString)
+                UntypedServiceId(uuidString: pniString)
             ].compacted()
 
             // If this phone number still points at the same ServiceIds, there's
@@ -608,7 +608,7 @@ public class SignalServiceAddressCache: NSObject {
     /// identifier to be considered valid, and addresses without identifiers
     /// always return `false` from `isEqual:`, so it's perfectly acceptable for
     /// each of these addresses to have its own hash value.
-    private func hashValue(cacheState: inout CacheState, serviceId: ServiceId?, phoneNumber: String?) -> Int {
+    private func hashValue(cacheState: inout CacheState, serviceId: UntypedServiceId?, phoneNumber: String?) -> Int {
         let hashValue = (
             serviceId.flatMap { cacheState.serviceIdHashValues[$0] }
             ?? phoneNumber.flatMap { cacheState.phoneNumberHashValues[$0] }
@@ -641,9 +641,9 @@ extension SignalServiceAddress {
 }
 
 extension SignalServiceAddressCache {
-    func makeAddress(serviceId: ServiceId?, phoneNumber: E164?) -> SignalServiceAddress {
+    func makeAddress(serviceId: UntypedServiceId?, phoneNumber: E164?) -> SignalServiceAddress {
         SignalServiceAddress(
-            uuid: serviceId?.uuidValue,
+            serviceId: serviceId,
             phoneNumber: phoneNumber?.stringValue,
             cache: self,
             cachePolicy: .preferInitialPhoneNumberAndListenForUpdates

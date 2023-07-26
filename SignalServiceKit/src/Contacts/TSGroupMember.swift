@@ -24,12 +24,12 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
 
     public var id: Int64?
     public let uniqueId: String
-    public let serviceId: ServiceId?
+    public let serviceId: UntypedServiceId?
     public let phoneNumber: String?
     public let groupThreadId: String
     public private(set) var lastInteractionTimestamp: UInt64
 
-    required public init(serviceId: ServiceId?, phoneNumber: String?, groupThreadId: String, lastInteractionTimestamp: UInt64) {
+    required public init(serviceId: UntypedServiceId?, phoneNumber: String?, groupThreadId: String, lastInteractionTimestamp: UInt64) {
         self.uniqueId = UUID().uuidString
         self.serviceId = serviceId
         self.phoneNumber = phoneNumber
@@ -48,7 +48,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
         groupThreadId = try container.decode(String.self, forKey: .groupThreadId)
-        serviceId = try container.decodeIfPresent(ServiceId.self, forKey: .serviceId)
+        serviceId = try container.decodeIfPresent(UntypedServiceId.self, forKey: .serviceId)
         phoneNumber = try container.decodeIfPresent(String.self, forKey: .phoneNumber)
         lastInteractionTimestamp = try container.decode(UInt64.self, forKey: .lastInteractionTimestamp)
     }

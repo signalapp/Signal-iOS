@@ -106,9 +106,9 @@ public class OWSFingerprintBuilder {
         theirName: String
     ) -> OWSFingerprint? {
         if
-            let myAci = accountManager.localAddress?.serviceId,
+            let myAci = accountManager.localAddress?.untypedServiceId,
             // TODO(PNP): We should fail if this is a PNI and not an ACI.
-            let theirAci = theirSignalAddress.serviceId
+            let theirAci = theirSignalAddress.untypedServiceId
         {
             return OWSFingerprint(
                 source: .aci(myAci: myAci, theirAci: theirAci),

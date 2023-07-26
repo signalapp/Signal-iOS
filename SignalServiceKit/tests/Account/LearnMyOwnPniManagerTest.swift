@@ -262,7 +262,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
 }
 
 private extension WhoAmIRequestFactory.Responses.WhoAmI {
-    init(aci: ServiceId, pni: ServiceId, e164: E164) {
+    init(aci: UntypedServiceId, pni: UntypedServiceId, e164: E164) {
         self.init(aci: aci.uuidValue, pni: pni.uuidValue, e164: e164, usernameHash: nil)
     }
 }
@@ -379,7 +379,7 @@ private class ProfileFetcherMock: LearnMyOwnPniManagerImpl.Shims.ProfileFetcher 
         return true
     }
 
-    func fetchPniIdentityPublicKey(localPni: ServiceId) -> Promise<Data?> {
+    func fetchPniIdentityPublicKey(localPni: UntypedServiceId) -> Promise<Data?> {
         guard profileFetchFuture == nil else {
             XCTFail("Fetch already in-flight!")
             return Promise(error: OWSGenericError("Fetch already in flight!"))
@@ -397,7 +397,7 @@ private class ProfileFetcherMock: LearnMyOwnPniManagerImpl.Shims.ProfileFetcher 
 private class TSAccountManagerMock: LearnMyOwnPniManagerImpl.Shims.TSAccountManager {
     var isPrimaryDevice: Bool = true
     var mockIdentifiers: LocalIdentifiers?
-    var updatedPni: ServiceId?
+    var updatedPni: UntypedServiceId?
 
     func isPrimaryDevice(tx _: DBReadTransaction) -> Bool {
         return isPrimaryDevice
@@ -407,7 +407,7 @@ private class TSAccountManagerMock: LearnMyOwnPniManagerImpl.Shims.TSAccountMana
         return mockIdentifiers
     }
 
-    func updateLocalIdentifiers(e164 _: E164, aci _: ServiceId, pni: ServiceId, tx _: DBWriteTransaction) {
+    func updateLocalIdentifiers(e164 _: E164, aci _: UntypedServiceId, pni: UntypedServiceId, tx _: DBWriteTransaction) {
         updatedPni = pni
     }
 }

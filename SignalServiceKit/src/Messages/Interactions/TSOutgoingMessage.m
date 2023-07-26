@@ -667,14 +667,14 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                             }];
 }
 
-- (void)updateWithSentRecipient:(ServiceIdObjC *)serviceId
+- (void)updateWithSentRecipient:(UntypedServiceIdObjC *)serviceId
                     wasSentByUD:(BOOL)wasSentByUD
                     transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(serviceId);
     OWSAssertDebug(transaction);
 
-    SignalServiceAddress *recipientAddress = [[SignalServiceAddress alloc] initWithServiceIdObjC:serviceId];
+    SignalServiceAddress *recipientAddress = [[SignalServiceAddress alloc] initWithUntypedServiceIdObjC:serviceId];
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
                                                 TSOutgoingMessageRecipientState *_Nullable recipientState
@@ -853,8 +853,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                             }];
 }
 
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<ServiceIdObjC *> *)udRecipients
-                                          nonUdRecipients:(nullable NSArray<ServiceIdObjC *> *)nonUdRecipients
+- (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<UntypedServiceIdObjC *> *)udRecipients
+                                          nonUdRecipients:(nullable NSArray<UntypedServiceIdObjC *> *)nonUdRecipients
                                              isSentUpdate:(BOOL)isSentUpdate
                                               transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -869,10 +869,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                   NSMutableDictionary<SignalServiceAddress *,
                                                       TSOutgoingMessageRecipientState *> *recipientAddressStates
                                                       = [NSMutableDictionary new];
-                                                  for (ServiceIdObjC *serviceId in udRecipients) {
+                                                  for (UntypedServiceIdObjC *serviceId in udRecipients) {
                                                       SignalServiceAddress *recipientAddress =
                                                           [[SignalServiceAddress alloc]
-                                                              initWithServiceIdObjC:serviceId];
+                                                              initWithUntypedServiceIdObjC:serviceId];
                                                       if (recipientAddressStates[recipientAddress]) {
                                                           OWSFailDebug(@"recipient appears more than once in recipient "
                                                                        @"lists: %@",
@@ -885,10 +885,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                       recipientState.wasSentByUD = YES;
                                                       recipientAddressStates[recipientAddress] = recipientState;
                                                   }
-                                                  for (ServiceIdObjC *serviceId in nonUdRecipients) {
+                                                  for (UntypedServiceIdObjC *serviceId in nonUdRecipients) {
                                                       SignalServiceAddress *recipientAddress =
                                                           [[SignalServiceAddress alloc]
-                                                              initWithServiceIdObjC:serviceId];
+                                                              initWithUntypedServiceIdObjC:serviceId];
                                                       if (recipientAddressStates[recipientAddress]) {
                                                           OWSFailDebug(@"recipient appears more than once in recipient "
                                                                        @"lists: %@",

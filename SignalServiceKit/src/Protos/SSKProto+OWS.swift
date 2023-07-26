@@ -13,12 +13,12 @@ public extension SSKProtoSyncMessageSent {
 }
 
 public extension SSKProtoEnvelope {
-    var sourceServiceId: ServiceId? {
-        ServiceId(uuidString: sourceUuid)
+    var sourceServiceId: UntypedServiceId? {
+        UntypedServiceId(uuidString: sourceUuid)
     }
 
     @objc
-    var sourceServiceIdObjC: ServiceIdObjC? {
-        sourceServiceId.map { ServiceIdObjC($0) }
+    var sourceServiceIdObjC: UntypedServiceIdObjC? {
+        sourceServiceId.map { UntypedServiceIdObjC($0) }
     }
 }

@@ -35,7 +35,7 @@ class UserProfileMerger: RecipientMergeObserver {
         )
     }
 
-    func willBreakAssociation(serviceId: ServiceId, phoneNumber: E164, transaction tx: DBWriteTransaction) {
+    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction tx: DBWriteTransaction) {
         mergeUserProfiles(serviceId: serviceId, phoneNumber: phoneNumber, tx: tx)
     }
 
@@ -57,7 +57,7 @@ class UserProfileMerger: RecipientMergeObserver {
         }
     }
 
-    private func mergeUserProfiles(serviceId: ServiceId, phoneNumber: E164, tx: DBWriteTransaction) {
+    private func mergeUserProfiles(serviceId: UntypedServiceId, phoneNumber: E164, tx: DBWriteTransaction) {
         let userProfiles = fetchAndExpungeUserProfiles(serviceId: serviceId, phoneNumber: phoneNumber, tx: tx)
         guard let userProfileToMergeInto = userProfiles.first else {
             return
@@ -77,7 +77,7 @@ class UserProfileMerger: RecipientMergeObserver {
         }
     }
 
-    private func fetchAndExpungeUserProfiles(serviceId: ServiceId, phoneNumber: E164, tx: DBWriteTransaction) -> [OWSUserProfile] {
+    private func fetchAndExpungeUserProfiles(serviceId: UntypedServiceId, phoneNumber: E164, tx: DBWriteTransaction) -> [OWSUserProfile] {
         var results = [OWSUserProfile]()
 
         // Find any profiles already associated with `serviceId`.
