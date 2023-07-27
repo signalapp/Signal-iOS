@@ -749,7 +749,11 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
 
     // MARK: - MessageBody
 
-    public var messageBody: MessageBody { return makeMessageBody() }
+    public var messageBody: MessageBody { return getOrMakeMessageBody() }
+
+    public func messageBody(forHydratedTextSubrange subrange: NSRange) -> MessageBody {
+        return Self.makeMessageBody(body: self.body, subrange: subrange)
+    }
 
     public func setMessageBody(_ messageBody: MessageBody?, txProvider: ReadTxProvider) {
         let hydratedTextBeforeChange = body.hydratedText
@@ -776,20 +780,62 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     // Constructing this is expensive and is used as input to the displayed string. Cache it.
     private var cachedMessageBody: MessageBody?
 
-    private func makeMessageBody() -> MessageBody {
-        Self.makeMessageBody(cache: &cachedMessageBody, body: body)
+    private func getOrMakeMessageBody() -> MessageBody {
+        Self.getOrMakeMessageBody(cache: &cachedMessageBody, body: body)
     }
 
-    private static func makeMessageBody(cache: inout MessageBody?, body: Body) -> MessageBody {
+    private static func getOrMakeMessageBody(cache: inout MessageBody?, body: Body) -> MessageBody {
         if let cache {
             return cache
         }
+        let body = makeMessageBody(body: body, subrange: nil)
+        cache = body
+        return body
+    }
+
+    // Note: subrange is denoted in the _hydrated_ text, not in the final
+    // message body text after un-hydrating.
+    private static func makeMessageBody(body: Body, subrange: NSRange?) -> MessageBody {
         // Un-hydrate the mentions first.
-        var text: NSString = body.hydratedText as NSString
+        var text: NSString = (body.hydratedText as NSString)
         var flattenedStyles = body.flattenedStyles
+        if let subrange {
+            text = text.substring(with: subrange) as NSString
+            flattenedStyles = flattenedStyles.compactMap { flattenedStyle in
+                guard
+                    let intersection = flattenedStyle.range.intersection(subrange),
+                    intersection.length > 0
+                else {
+                    return nil
+                }
+                return .init(
+                    flattenedStyle.value,
+                    range: NSRange(
+                        location: intersection.location - subrange.location,
+                        length: intersection.length
+                    )
+                )
+            }
+        }
         let orderedMentions: [NSRangedValue<UUID>] = body.mentions.lazy
-            .map({
-                return NSRangedValue($0.value, range: $0.key)
+            .compactMap({ (range: NSRange, uuid: UUID) -> NSRangedValue<UUID>? in
+                guard let subrange else {
+                    return .init(uuid, range: range)
+                }
+                guard
+                    let intersection = range.intersection(subrange),
+                    // We need total overlap or we won't preserve the mention.
+                    intersection.length == range.length
+                else {
+                    return nil
+                }
+                return .init(
+                    uuid,
+                    range: NSRange(
+                        location: intersection.location - subrange.location,
+                        length: intersection.length
+                    )
+                )
             })
             .sorted(by: {
                 return $0.range.location < $1.range.location
@@ -810,15 +856,13 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             )
             mentionOffset += mentionPlaceholderLength - mention.range.length
         }
-        let body = MessageBody(
+        return MessageBody(
             text: text as String,
             ranges: MessageBodyRanges(
                 mentions: finalMentions,
                 styles: flattenedStyles
             )
         )
-        cache = body
-        return body
     }
 
     private func regenerateDisplayString(
@@ -833,7 +877,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         }
         let config = editableBodyDelegate.editableMessageBodyDisplayConfig()
         let isDarkThemeEnabled = editableBodyDelegate.isEditableMessageBodyDarkThemeEnabled()
-        let displayString = makeMessageBody()
+        let displayString = getOrMakeMessageBody()
             .hydrating(mentionHydrator: hydrator.hydrator, filterStringForDisplay: false)
             .asAttributedStringForDisplay(
                 config: config,
