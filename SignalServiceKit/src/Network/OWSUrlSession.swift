@@ -381,7 +381,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             if let error = task.error {
                 let requestUrl = requestConfig.requestUrl
 
-                if error.isNetworkConnectivityFailure {
+                if error.isNetworkFailureOrTimeout {
                     Logger.warn("Request failed: \(error)")
                     throw OWSHTTPError.networkFailure(requestUrl: requestUrl)
                 } else {

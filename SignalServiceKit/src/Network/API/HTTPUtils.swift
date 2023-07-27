@@ -162,8 +162,8 @@ public extension Error {
         }
     }
 
-    var isNetworkConnectivityFailure: Bool {
-        HTTPUtils.isNetworkConnectivityFailure(forError: self)
+    var isNetworkFailureOrTimeout: Bool {
+        HTTPUtils.isNetworkFailureOrTimeout(forError: self)
     }
 
     func hasFatalHttpStatusCode() -> Bool {
@@ -193,8 +193,8 @@ public extension NSError {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    var isNetworkConnectivityFailure: Bool {
-        HTTPUtils.isNetworkConnectivityFailure(forError: self)
+    var isNetworkFailureOrTimeout: Bool {
+        HTTPUtils.isNetworkFailureOrTimeout(forError: self)
     }
 }
 
@@ -245,7 +245,7 @@ fileprivate extension HTTPUtils {
         return statusCode
     }
 
-    static func isNetworkConnectivityFailure(forError error: Error?) -> Bool {
+    static func isNetworkFailureOrTimeout(forError error: Error?) -> Bool {
         guard let error = error else {
             return false
         }
@@ -295,7 +295,7 @@ public func owsFailDebugUnlessNetworkFailure(_ error: Error,
                                              file: String = #file,
                                              function: String = #function,
                                              line: Int = #line) {
-    if error.isNetworkConnectivityFailure {
+    if error.isNetworkFailureOrTimeout {
         // Log but otherwise ignore network failures.
         Logger.warn("Error: \(error)", file: file, function: function, line: line)
     } else {
@@ -310,7 +310,7 @@ public func owsFailBetaUnlessNetworkFailure(
     function: String = #function,
     line: Int = #line
 ) {
-    if error.isNetworkConnectivityFailure {
+    if error.isNetworkFailureOrTimeout {
         // Log but otherwise ignore network failures.
         Logger.warn("Error: \(error)", file: file, function: function, line: line)
     } else {

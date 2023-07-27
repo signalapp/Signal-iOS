@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 dispatch_queue_t NetworkManagerQueue(void);
 
 #define OWSFailDebugUnlessNetworkFailure(error)                                                                        \
-    if (error.isNetworkConnectivityFailure) {                                                                          \
+    if (error.isNetworkFailureOrTimeout) {                                                                             \
         OWSLogWarn(@"Error: %@", error);                                                                               \
     } else {                                                                                                           \
         OWSFailDebug(@"Error: %@", error);                                                                             \

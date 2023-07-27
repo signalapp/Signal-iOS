@@ -173,7 +173,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
 {
     __block NSError *_Nullable error = [super checkForPreconditionError];
     if (error) {
-        if (error.isNetworkConnectivityFailure) {
+        if (error.isNetworkFailureOrTimeout) {
             OWSLogWarn(@"Precondition failure: %@.", error);
         } else {
             OWSFailDebug(@"Precondition failure: %@.", error);

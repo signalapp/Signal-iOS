@@ -588,7 +588,7 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
                 )
             }
             .recover(on: schedulers.sync) { (error: Error) -> Guarantee<ResponseType> in
-                if error.isNetworkConnectivityFailure {
+                if error.isNetworkFailureOrTimeout {
                     return .value(networkFailureError)
                 }
                 guard let error = error as? OWSHTTPError else {

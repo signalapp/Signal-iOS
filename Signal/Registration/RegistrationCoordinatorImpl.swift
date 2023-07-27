@@ -973,7 +973,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 if
                     let error,
-                    error.isNetworkConnectivityFailure,
+                    error.isNetworkFailureOrTimeout,
                     retriesLeft > 0
                 {
                     return self.updateAccountAttributesAndFinish(
@@ -3126,7 +3126,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 guard let self else {
                     return unretainedSelfError()
                 }
-                if error.isNetworkConnectivityFailure {
+                if error.isNetworkFailureOrTimeout {
                     if retriesLeft > 0 {
                         return self.backupToSVR(
                             pin: pin,

@@ -1391,21 +1391,6 @@ public class GroupManager: NSObject {
             return self.groupsV2Swift.reuploadLocalProfilePromise()
         }
     }
-
-    // MARK: - Network Errors
-
-    static func isNetworkFailureOrTimeout(_ error: Error) -> Bool {
-        if error.isNetworkConnectivityFailure {
-            return true
-        }
-
-        switch error {
-        case GroupsV2Error.timeout:
-            return true
-        default:
-            return false
-        }
-    }
 }
 
 // MARK: -
@@ -1436,14 +1421,6 @@ public extension GroupManager {
                   description: description) {
             GroupsV2Error.timeout
         }
-    }
-}
-
-// MARK: -
-
-public extension Error {
-    var isNetworkFailureOrTimeout: Bool {
-        return GroupManager.isNetworkFailureOrTimeout(self)
     }
 }
 

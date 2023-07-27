@@ -364,7 +364,7 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
         return job.run()
             .map(on: SyncScheduler()) { return .success }
             .recover(on: SyncScheduler()) { error -> Guarantee<Registration.SyncPushTokensResult> in
-                if error.isNetworkConnectivityFailure {
+                if error.isNetworkFailureOrTimeout {
                     return .value(.networkError)
                 }
                 switch error {

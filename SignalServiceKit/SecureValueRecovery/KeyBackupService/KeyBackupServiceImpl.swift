@@ -223,7 +223,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             }
             return .success
         }.recover(on: schedulers.sync) { error -> Guarantee<SVR.RestoreKeysResult> in
-            if error.isNetworkConnectivityFailure {
+            if error.isNetworkFailureOrTimeout {
                 return .value(.networkError(error))
             }
             guard let kbsError = error as? SVR.SVRError else {
@@ -356,7 +356,7 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
             return .success
         }
         .recover(on: schedulers.global()) { error -> Guarantee<SVR.RestoreKeysResult> in
-            if error.isNetworkConnectivityFailure {
+            if error.isNetworkFailureOrTimeout {
                 return .value(.networkError(error))
             }
             guard let kbsError = error as? SVR.SVRError else {

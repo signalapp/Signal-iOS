@@ -246,7 +246,7 @@ extension OWSHTTPError: HTTPError {
                 return true
             }
             if let responseError = responseError {
-                return responseError.isNetworkConnectivityFailure
+                return responseError.isNetworkFailureOrTimeout
             }
             return false
         }

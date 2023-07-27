@@ -14,7 +14,7 @@ public class Promises {
             return promiseBlock()
         }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<T> in
             guard remainingRetries > 0,
-                error.isNetworkConnectivityFailure else {
+                error.isNetworkFailureOrTimeout else {
                     throw error
             }
 

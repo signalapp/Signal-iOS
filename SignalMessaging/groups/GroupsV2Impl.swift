@@ -1921,7 +1921,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                                                            inviteLinkPassword: inviteLinkPassword,
                                                            groupV2Params: groupV2Params)
         }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<TSGroupThread> in
-            guard !error.isNetworkConnectivityFailure else {
+            guard !error.isNetworkFailureOrTimeout else {
                 throw error
             }
             Logger.warn("Error: \(error)")

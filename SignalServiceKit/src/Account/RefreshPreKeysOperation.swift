@@ -134,7 +134,7 @@ public class RefreshPreKeysOperation: OWSOperation {
     }
 
     override public func didFail(error: Error) {
-        guard !error.isNetworkConnectivityFailure else {
+        guard !error.isNetworkFailureOrTimeout else {
             Logger.debug("don't report PK rotation failure w/ network error")
             return
         }

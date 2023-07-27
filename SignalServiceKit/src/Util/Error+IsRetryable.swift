@@ -31,7 +31,7 @@ extension NSError {
         if self is IsRetryableProvider {
             return true
         }
-        if self.isNetworkConnectivityFailure {
+        if self.isNetworkFailureOrTimeout {
             return true
         }
         return false
@@ -60,7 +60,7 @@ extension NSError {
             return error.isRetryableProvider
         }
 
-        if self.isNetworkConnectivityFailure {
+        if self.isNetworkFailureOrTimeout {
             // We can safely default to retrying network failures.
             Logger.verbose("Network error without retry behavior specified: \(self)")
             return true

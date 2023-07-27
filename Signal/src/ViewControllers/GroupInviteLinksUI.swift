@@ -406,7 +406,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                                 return OWSLocalizedString(
                                     "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE",
                                     comment: "Subtitle indicating that the local user has been blocked from joining the group")
-                            case _ where error.isNetworkConnectivityFailure:
+                            case _ where error.isNetworkFailureOrTimeout:
                                 return OWSLocalizedString(
                                     "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE",
                                     comment: "Error message the attempt to request to join the group failed due to network connectivity.")

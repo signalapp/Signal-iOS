@@ -334,7 +334,7 @@ extension RegistrationCoordinatorImpl {
             request.setAuth(auth)
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request).asVoid()
                 .recover(on: schedulers.sync) { error in
-                    if error.isNetworkConnectivityFailure, retriesLeft > 0 {
+                    if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
                         return makeEnableReglockRequest(
                             reglockToken: reglockToken,
                             auth: auth,
@@ -369,7 +369,7 @@ extension RegistrationCoordinatorImpl {
                     return nil
                 }
                 .recover(on: schedulers.sync) { error in
-                    if error.isNetworkConnectivityFailure, retriesLeft > 0 {
+                    if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
                         return makeUpdateAccountAttributesRequest(
                             attributes,
                             auth: auth,
@@ -412,7 +412,7 @@ extension RegistrationCoordinatorImpl {
                     return .success(response)
                 }
                 .recover(on: schedulers.sync) { error -> Guarantee<WhoAmIResponse> in
-                    if error.isNetworkConnectivityFailure, retriesLeft > 0 {
+                    if error.isNetworkFailureOrTimeout, retriesLeft > 0 {
                         return makeWhoAmIRequest(
                             auth: auth,
                             signalService: signalService,
@@ -441,7 +441,7 @@ extension RegistrationCoordinatorImpl {
                     )
                 }
                 .recover(on: schedulers.sharedBackground) { (error: Error) -> Guarantee<ResponseType> in
-                    if error.isNetworkConnectivityFailure {
+                    if error.isNetworkFailureOrTimeout {
                         return .value(networkFailureError)
                     }
                     guard let error = error as? OWSHTTPError else {

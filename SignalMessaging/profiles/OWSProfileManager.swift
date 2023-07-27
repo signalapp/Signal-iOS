@@ -603,7 +603,7 @@ extension OWSProfileManager {
             // We retry network errors forever (with exponential backoff).
             // Other errors cause us to give up immediately.
             // Note that we only ever retry the latest profile update.
-            if error.isNetworkConnectivityFailure {
+            if error.isNetworkFailureOrTimeout {
                 Logger.warn("Retrying after error: \(error)")
             } else {
                 owsFailDebug("Error: \(error)")

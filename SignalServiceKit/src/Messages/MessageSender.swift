@@ -1222,7 +1222,7 @@ extension MessageSender {
             case is SpamChallengeRequiredError, is SpamChallengeResolvedError:
                 throw error
             default:
-                owsAssertDebug(error.isNetworkConnectivityFailure)
+                owsAssertDebug(error.isNetworkFailureOrTimeout)
                 throw OWSRetryableMessageSenderError()
             }
         }

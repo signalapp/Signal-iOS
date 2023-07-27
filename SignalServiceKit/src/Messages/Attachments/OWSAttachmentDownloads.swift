@@ -1489,7 +1489,7 @@ public extension OWSAttachmentDownloads {
             Logger.warn("Error: \(error)")
 
             let maxAttemptCount = 16
-            if error.isNetworkConnectivityFailure,
+            if error.isNetworkFailureOrTimeout,
                attemptIndex < maxAttemptCount {
 
                 return firstly {

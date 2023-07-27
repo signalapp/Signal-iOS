@@ -344,7 +344,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
                 spinner.removeFromSuperview()
                 self.saveButton.setEnabled(self.isValidProfile)
 
-                if error.isNetworkConnectivityFailure {
+                if error.isNetworkFailureOrTimeout {
                     OWSActionSheets.showErrorAlert(
                         message: OWSLocalizedString(
                             "PROFILE_VIEW_NO_CONNECTION",

@@ -261,7 +261,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
                 }
                 .recover { (error: Error) -> Guarantee<Bool> in
                     guard
-                        !error.isNetworkConnectivityFailure,
+                        !error.isNetworkFailureOrTimeout,
                         let error = error as? OWSHTTPError
                     else {
                         return .value(false)
