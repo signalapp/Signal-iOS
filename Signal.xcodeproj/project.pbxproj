@@ -876,6 +876,8 @@
 		66AEFCA42A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */; };
 		66AF4D7328D1377E008A156E /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
+		66B9437E2A6EFCD900DCF2FF /* SpoilerParticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437D2A6EFCD900DCF2FF /* SpoilerParticleView.swift */; };
+		66B943812A6F217600DCF2FF /* SpoilerParticleShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */; };
 		66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */; };
 		66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1302A05D28A008DDE72 /* TSRequest.swift */; };
 		66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */; };
@@ -3393,6 +3395,8 @@
 		66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerableLabelAnimator.swift; sourceTree = "<group>"; };
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
 		66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatingContextMenuButton.swift; sourceTree = "<group>"; };
+		66B9437D2A6EFCD900DCF2FF /* SpoilerParticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerParticleView.swift; sourceTree = "<group>"; };
+		66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SpoilerParticleShader.metal; sourceTree = "<group>"; };
 		66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextOnboardingOverlayView.swift; sourceTree = "<group>"; };
 		66C2B1302A05D28A008DDE72 /* TSRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequest.swift; sourceTree = "<group>"; };
 		66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRUtil.swift; sourceTree = "<group>"; };
@@ -5839,15 +5843,11 @@
 		34A9552A271B510400B05242 /* BodyRanges */ = {
 			isa = PBXGroup;
 			children = (
+				66B9437C2A6EEAA600DCF2FF /* SpoilerRendering */,
 				34A9552D271B510400B05242 /* BodyRangesTextView.swift */,
 				34A9552C271B510400B05242 /* MentionPicker.swift */,
 				663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */,
 				66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */,
-				66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */,
-				66CDE5C32A58928000B7C607 /* SpoilerableTextViewAnimator.swift */,
-				662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */,
-				662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */,
-				663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */,
 			);
 			path = BodyRanges;
 			sourceTree = "<group>";
@@ -6814,6 +6814,20 @@
 				F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */,
 			);
 			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		66B9437C2A6EEAA600DCF2FF /* SpoilerRendering */ = {
+			isa = PBXGroup;
+			children = (
+				66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */,
+				66CDE5C32A58928000B7C607 /* SpoilerableTextViewAnimator.swift */,
+				662AC9282A4A4A0A009E2D5F /* SpoilerAnimationManager.swift */,
+				66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */,
+				66B9437D2A6EFCD900DCF2FF /* SpoilerParticleView.swift */,
+				662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */,
+				663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */,
+			);
+			path = SpoilerRendering;
 			sourceTree = "<group>";
 		};
 		66C2B1342A0DA16F008DDE72 /* KeyBackupService */ = {
@@ -11091,6 +11105,7 @@
 				66AEFCA42A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift in Sources */,
 				66CDE5C42A58928000B7C607 /* SpoilerableTextViewAnimator.swift in Sources */,
 				662AC9292A4A4A0A009E2D5F /* SpoilerAnimationManager.swift in Sources */,
+				66B9437E2A6EFCD900DCF2FF /* SpoilerParticleView.swift in Sources */,
 				662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */,
 				663BA3182A4B8595004B9A43 /* SpoilerRenderState.swift in Sources */,
 				3402AA47271D9DCD0084CBAE /* StickerHorizontalListView.swift in Sources */,
@@ -11853,6 +11868,7 @@
 				F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */,
 				34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */,
 				662AC92B2A4A4D04009E2D5F /* SpoilerAnimationTestController.swift in Sources */,
+				66B943812A6F217600DCF2FF /* SpoilerParticleShader.metal in Sources */,
 				45069FC829D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift in Sources */,
 				349767E425B8744700ECE1B0 /* StickerPackViewController.swift in Sources */,
 				8852572927DD366D0032073C /* StoriesViewController.swift in Sources */,

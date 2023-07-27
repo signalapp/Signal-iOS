@@ -21,6 +21,7 @@ public class SpoilerableTextViewAnimator {
     }
 
     private var isAnimating = false
+    private var animationManager: SpoilerAnimationManager?
 
     public func updateAnimationState(_ configBuilder: SpoilerableTextConfig.Builder) {
         guard let config = configBuilder.build() else {
@@ -32,6 +33,7 @@ public class SpoilerableTextViewAnimator {
     public func updateAnimationState(_ config: SpoilerableTextConfig) {
         self.text = config.text
         self.displayConfig = config.displayConfig
+        self.animationManager = config.animationManager
 
         let wantsToAnimate: Bool
         if config.isViewVisible, let text = config.text {
@@ -46,6 +48,9 @@ public class SpoilerableTextViewAnimator {
         }
 
         guard wantsToAnimate != isAnimating else {
+            if isAnimating {
+                config.animationManager.didUpdateAnimationState(for: self)
+            }
             return
         }
         if wantsToAnimate {
@@ -93,6 +98,9 @@ public class SpoilerableTextViewAnimator {
             // that's what we observe)
             let size = textView.sizeThatFits(textView.frame.size)
             self._animationContainerView?.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+            if self.isAnimating, let animationManager = self.animationManager {
+                animationManager.didUpdateAnimationState(for: self)
+            }
         })
 
         return view

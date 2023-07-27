@@ -87,9 +87,11 @@ public class SpoilerableLabelAnimator {
 
     public init(label: UILabel) {
         self.label = label
+        self.beginObservingLabelBounds()
     }
 
     private var isAnimating = false
+    private var animationManager: SpoilerAnimationManager?
 
     public func updateAnimationState(_ configBuilder: SpoilerableTextConfig.Builder) {
         guard let config = configBuilder.build() else {
@@ -101,6 +103,7 @@ public class SpoilerableLabelAnimator {
     public func updateAnimationState(_ config: SpoilerableTextConfig) {
         self.text = config.text
         self.displayConfig = config.displayConfig
+        self.animationManager = config.animationManager
 
         let wantsToAnimate: Bool
         if config.isViewVisible, let text = config.text {
@@ -115,6 +118,9 @@ public class SpoilerableLabelAnimator {
         }
 
         guard wantsToAnimate != isAnimating else {
+            if isAnimating {
+                config.animationManager.didUpdateAnimationState(for: self)
+            }
             return
         }
         if wantsToAnimate {
@@ -125,6 +131,21 @@ public class SpoilerableLabelAnimator {
             config.animationManager.removeViewAnimator(self)
             self.isAnimating = false
         }
+    }
+
+    private var labelBoundsObservation: NSKeyValueObservation?
+
+    private func beginObservingLabelBounds() {
+        guard labelBoundsObservation == nil, let label else {
+            return
+        }
+
+        labelBoundsObservation = label.observe(\.layer.bounds, changeHandler: { [weak self] label, _ in
+            guard let self else { return }
+            if self.isAnimating, let animationManager = self.animationManager {
+                animationManager.didUpdateAnimationState(for: self)
+            }
+        })
     }
 }
 

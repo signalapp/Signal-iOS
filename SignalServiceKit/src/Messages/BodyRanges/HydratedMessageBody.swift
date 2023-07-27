@@ -285,7 +285,8 @@ public class HydratedMessageBody: Equatable, Hashable {
             revealedSpoilerBgColor: ThemedColor? = nil,
             revealAllSpoilers: Bool = false,
             revealedSpoilerIds: Set<StyleIdType> = Set(),
-            searchRanges: SearchRanges? = nil
+            searchRanges: SearchRanges? = nil,
+            useAnimatedSpoilers: Bool
         ) {
             self.init(
                 baseFont: baseFont,
@@ -300,7 +301,8 @@ public class HydratedMessageBody: Equatable, Hashable {
                     textColor: baseTextColor,
                     revealedSpoilerBgColor: revealedSpoilerBgColor,
                     revealAllIds: revealAllSpoilers,
-                    revealedIds: revealedSpoilerIds
+                    revealedIds: revealedSpoilerIds,
+                    useAnimatedSpoilers: useAnimatedSpoilers
                 ),
                 searchRanges: searchRanges
             )

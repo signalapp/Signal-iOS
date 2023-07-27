@@ -325,6 +325,18 @@ public class CVTextLabel: NSObject {
             super.init(coder: aDecoder)
         }
 
+        override var frame: CGRect {
+            didSet {
+                // Ensure the text container size is kept in sync;
+                // this is used to compute spoiler positions.
+                textContainer.size = bounds.size
+
+                if oldValue != frame, isAnimatingSpoilers, let spoilerAnimationManager {
+                    spoilerAnimationManager.didUpdateAnimationState(for: self)
+                }
+            }
+        }
+
         private var isCellVisible = false
 
         fileprivate func setIsCellVisible(_ isCellVisible: Bool) {
@@ -502,7 +514,13 @@ public class CVTextLabel: NSObject {
                 wantsToAnimate = false
             }
 
-            guard isAnimatingSpoilers != wantsToAnimate, let spoilerAnimationManager else {
+            guard let spoilerAnimationManager else {
+                return
+            }
+            guard isAnimatingSpoilers != wantsToAnimate else {
+                if isAnimatingSpoilers {
+                    spoilerAnimationManager.didUpdateAnimationState(for: self)
+                }
                 return
             }
             if wantsToAnimate {
@@ -567,8 +585,8 @@ extension CVTextLabel.Label: SpoilerableViewAnimator {
         hasher.combine(config?.text)
         config?.displayConfig.hashForSpoilerFrames(into: &hasher)
         // Order matters. 100x10 is not the same hash value as 10x100.
-        hasher.combine(bounds.width)
-        hasher.combine(bounds.height)
+        hasher.combine(textContainer.size.width)
+        hasher.combine(textContainer.size.height)
         return hasher.finalize()
     }
 

@@ -185,3 +185,31 @@ extension ThemedColor {
 extension UIFont {
     fileprivate static let defaultBaseFont = UIFont.dynamicTypeBody
 }
+
+extension HydratedMessageBody.DisplayConfiguration {
+
+    fileprivate init(
+        baseFont: UIFont,
+        baseTextColor: ThemedColor,
+        mentionFont: UIFont? = nil,
+        mentionForegroundColor: ThemedColor? = nil,
+        mentionBackgroundColor: ThemedColor? = nil,
+        revealedSpoilerBgColor: ThemedColor? = nil,
+        revealAllSpoilers: Bool = false,
+        revealedSpoilerIds: Set<StyleIdType> = Set(),
+        searchRanges: SearchRanges? = nil
+    ) {
+        self.init(
+            baseFont: baseFont,
+            baseTextColor: baseTextColor,
+            mentionFont: mentionFont,
+            mentionForegroundColor: mentionForegroundColor,
+            mentionBackgroundColor: mentionBackgroundColor,
+            revealedSpoilerBgColor: revealedSpoilerBgColor,
+            revealAllSpoilers: revealAllSpoilers,
+            revealedSpoilerIds: revealedSpoilerIds,
+            searchRanges: searchRanges,
+            useAnimatedSpoilers: SpoilerAnimationManager.canRenderAnimatedSpoilers
+        )
+    }
+}

@@ -18,18 +18,24 @@ public struct StyleDisplayConfiguration: Equatable {
     public let revealAllIds: Bool
     public let revealedIds: Set<StyleIdType>
 
+    /// If true, unrevealed spoiler text will be invisible (clear).
+    /// If false, unrevealed spoiler text will use `textColor` as its background color.
+    public let useAnimatedSpoilers: Bool
+
     public init(
         baseFont: UIFont,
         textColor: ThemedColor,
         revealedSpoilerBgColor: ThemedColor? = nil,
         revealAllIds: Bool,
-        revealedIds: Set<StyleIdType>
+        revealedIds: Set<StyleIdType>,
+        useAnimatedSpoilers: Bool
     ) {
         self.baseFont = baseFont
         self.textColor = textColor
         self.revealedSpoilerBgColor = revealedSpoilerBgColor
         self.revealAllIds = revealAllIds
         self.revealedIds = revealedIds
+        self.useAnimatedSpoilers = useAnimatedSpoilers
     }
 
     public func hashForSpoilerFrames(into hasher: inout Hasher) {
@@ -86,7 +92,7 @@ internal struct StyleAttribute: Equatable, Hashable {
             isSpoilerRevealed = config.revealAllIds || config.revealedIds.contains(spoilerId)
             if !isSpoilerRevealed! {
                 attributes[.foregroundColor] = UIColor.clear
-                if FeatureFlags.spoilerAnimations {
+                if config.useAnimatedSpoilers {
                     attributes[.backgroundColor] = UIColor.clear
                 } else {
                     attributes[.backgroundColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
@@ -119,7 +125,7 @@ internal struct StyleAttribute: Equatable, Hashable {
                     continue
                 }
                 let backgroundColor: UIColor
-                if FeatureFlags.spoilerAnimations {
+                if config.useAnimatedSpoilers {
                     backgroundColor = .clear
                 } else {
                     backgroundColor = searchRanges.matchingBackgroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled)

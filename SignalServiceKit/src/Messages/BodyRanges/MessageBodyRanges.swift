@@ -12,6 +12,10 @@ import Foundation
 /// This object must be further applied to NSAttributedString to actually display mentions and styles.
 @objcMembers
 public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
+
+    // Limit to up to 250 ranges per message.
+    public static let maxRangesPerMessage = 250
+
     public static var supportsSecureCoding = true
     public static var empty: MessageBodyRanges { MessageBodyRanges(mentions: [:], styles: []) }
 
@@ -61,8 +65,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     public convenience init(protos: [SSKProtoBodyRange]) {
         var mentions = [NSRange: UUID]()
         var styles = [NSRangedValue<SingleStyle>]()
-        // Limit to up to 250 ranges per message.
-        for proto in protos.prefix(250) {
+        for proto in protos.prefix(Self.maxRangesPerMessage) {
             guard proto.length > 0 else {
                 // Ignore empty ranges.
                 continue
