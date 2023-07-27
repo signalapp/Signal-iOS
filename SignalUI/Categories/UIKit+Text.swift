@@ -95,7 +95,7 @@ public extension NSTextContainer {
         textStorage: NSTextStorage,
         layoutManager: NSLayoutManager,
         textContainerInsets: UIEdgeInsets = .zero,
-        transform: (CGRect, T) -> R
+        transform: @escaping (CGRect, T) -> R
     ) -> [R] {
         return ranges.flatMap { (value: T) -> [R] in
             let range = rangeMap(value)
@@ -104,7 +104,7 @@ public extension NSTextContainer {
             }
 
             let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
-            var perLineGlyphRanges = [NSRange]()
+            var perLineResults = [R]()
             layoutManager.enumerateLineFragments(forGlyphRange: glyphRange, using: { _, _, _, entireLineGlyphRange, _ in
                 guard
                     let perLineGlyphRange = entireLineGlyphRange.intersection(glyphRange),
@@ -113,15 +113,41 @@ public extension NSTextContainer {
                 else {
                     return
                 }
-                perLineGlyphRanges.append(perLineGlyphRange)
+                var boundingRect = layoutManager.boundingRect(forGlyphRange: perLineGlyphRange, in: self)
+
+                // NSLayoutManager give us the _wrong_ bounding box values for RTL text
+                // that starts in the middle of a line. So this horrible, horrible code is an
+                // attempt to work around that. Its less "known good fix" and more "this was
+                // the spaghetti that stuck to the wall". If this breaks, may I suggest
+                // throwing more spaghetti?
+                if textStorage.string.naturalTextAlignment == .right, glyphRange.location > entireLineGlyphRange.location {
+                    // Grab the bounding rect from the line start to our target range.
+                    let prefixRect = layoutManager.boundingRect(
+                        forGlyphRange: NSRange(
+                            location: entireLineGlyphRange.location,
+                            length: glyphRange.location - entireLineGlyphRange.location
+                        ),
+                        in: self
+                    )
+                    // Its RTL-aware, so the prefix's rect might be before or after our target.
+                    // Check whether it straddles the start or end, and if so, move the start
+                    // or end accordingly.
+                    if prefixRect.maxX > boundingRect.maxX, prefixRect.minX < boundingRect.maxX {
+                        let diff = boundingRect.maxX - prefixRect.minX
+                        boundingRect.size.width -= diff
+                    } else if prefixRect.minX < boundingRect.minX, prefixRect.maxX > boundingRect.minX {
+                        let diff = prefixRect.maxX - boundingRect.minX
+                        boundingRect.x += diff
+                        boundingRect.size.width -= diff
+                    }
+                }
+                boundingRect.x = max(0, boundingRect.x + textContainerInsets.leading)
+                boundingRect.y = max(0, boundingRect.y + textContainerInsets.top)
+                boundingRect.size.width = min(self.size.width - boundingRect.x, boundingRect.width)
+                boundingRect.size.height = min(self.size.height - boundingRect.y, boundingRect.height)
+                perLineResults.append(transform(boundingRect, value))
             })
-            return perLineGlyphRanges.map { perLineGlyphRange in
-                let rect = layoutManager.boundingRect(forGlyphRange: perLineGlyphRange, in: self).offsetBy(
-                    dx: textContainerInsets.leading,
-                    dy: textContainerInsets.top
-                )
-                return transform(rect, value)
-            }
+            return perLineResults
         }
     }
 }
@@ -147,7 +173,7 @@ extension UILabel {
     func boundingRects<T, R>(
         ofCharacterRanges ranges: [T],
         rangeMap: (T) -> NSRange,
-        transform: (CGRect, T) -> R
+        transform: @escaping (CGRect, T) -> R
     ) -> [R] {
         guard let (textContainer, textStorage, layoutManager) = makeMatchingTextContainer() else {
             return []
@@ -177,7 +203,10 @@ extension UILabel {
         let layoutManager = NSLayoutManager()
         textStorage.addLayoutManager(layoutManager)
 
-        let textContainer = NSTextContainer(size: self.bounds.size)
+        let textContainer = NSTextContainer(size: CGSize(
+            width: self.bounds.width,
+            height: .greatestFiniteMagnitude /* width is the important part */
+        ))
         textContainer.lineFragmentPadding = 0
         textContainer.maximumNumberOfLines = self.numberOfLines
         textContainer.lineBreakMode = self.lineBreakMode
