@@ -62,23 +62,33 @@ public class RefreshPreKeysOperation: OWSOperation {
                 owsAssertDebug(preKeysCount == 0)
             }
 
-            let signalProtocolStore = self.signalProtocolStore(for: self.identity)
+            let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: self.identity)
+            let currentSignedPreKeyId = self.databaseStorage.read { tx in
+                signalProtocolStore.signedPreKeyStore.currentSignedPreKeyId(tx: tx.asV2Read)
+            }
 
             guard preKeysCount < kEphemeralPreKeysMinimumCount ||
-                    signalProtocolStore.signedPreKeyStore.currentSignedPrekeyId() == nil else {
+                    currentSignedPreKeyId == nil else {
                 Logger.debug("Available \(self.identity) keys sufficient: \(preKeysCount)")
                 return Promise.value(())
             }
 
             let newPreKeyRecords: [PreKeyRecord] = signalProtocolStore.preKeyStore.generatePreKeyRecords()
 
+            self.databaseStorage.write { transaction in
+                signalProtocolStore.preKeyStore.storePreKeyRecords(newPreKeyRecords, tx: transaction.asV2Write)
+            }
+
             // Store pre key records, and get a signed pre key record.
             let (signedPreKeyRecord, isNewSignedPreKey) = self.databaseStorage.write { transaction in
-                signalProtocolStore.preKeyStore.storePreKeyRecords(newPreKeyRecords, transaction: transaction)
+                signalProtocolStore.preKeyStore.storePreKeyRecords(
+                    newPreKeyRecords,
+                    tx: transaction.asV2Write
+                )
 
                 if
                     !self.shouldRefreshSignedPreKey,
-                    let currentSignedPreKey = signalProtocolStore.signedPreKeyStore.currentSignedPreKey(with: transaction)
+                    let currentSignedPreKey = signalProtocolStore.signedPreKeyStore.currentSignedPreKey(tx: transaction.asV2Read)
                 {
                     Logger.info("Using existing signed pre-key!")
                     return (currentSignedPreKey, false)
@@ -90,7 +100,7 @@ public class RefreshPreKeysOperation: OWSOperation {
                     signalProtocolStore.signedPreKeyStore.storeSignedPreKey(
                         newSignedPreKeyRecord.id,
                         signedPreKeyRecord: newSignedPreKeyRecord,
-                        transaction: transaction
+                        tx: transaction.asV2Write
                     )
 
                     return (newSignedPreKeyRecord, true)
@@ -111,14 +121,14 @@ public class RefreshPreKeysOperation: OWSOperation {
                         signalProtocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
                             signedPreKeyId: signedPreKeyRecord.id,
                             signedPreKeyRecord: signedPreKeyRecord,
-                            transaction: transaction
+                            tx: transaction.asV2Write
                         )
                     }
 
-                    signalProtocolStore.signedPreKeyStore.cullSignedPreKeyRecords(transaction: transaction)
-                    signalProtocolStore.signedPreKeyStore.clearPrekeyUpdateFailureCount(transaction: transaction)
+                    signalProtocolStore.signedPreKeyStore.cullSignedPreKeyRecords(tx: transaction.asV2Write)
+                    signalProtocolStore.signedPreKeyStore.clearPreKeyUpdateFailureCount(tx: transaction.asV2Write)
 
-                    signalProtocolStore.preKeyStore.cullPreKeyRecords(transaction: transaction)
+                    signalProtocolStore.preKeyStore.cullPreKeyRecords(tx: transaction.asV2Write)
                 }
             }
         }.done(on: DispatchQueue.global()) {
@@ -147,9 +157,9 @@ public class RefreshPreKeysOperation: OWSOperation {
             return
         }
 
-        let signalProtocolStore = self.signalProtocolStore(for: identity)
+        let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: identity)
         self.databaseStorage.write { transaction in
-            signalProtocolStore.signedPreKeyStore.incrementPrekeyUpdateFailureCount(transaction: transaction)
+            signalProtocolStore.signedPreKeyStore.incrementPreKeyUpdateFailureCount(tx: transaction.asV2Write)
         }
     }
 }

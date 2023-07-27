@@ -33,10 +33,13 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             return
         }
 
-        let signalProtocolStore = self.signalProtocolStore(for: identity)
+        let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: identity)
+        let currentSignedPreKey = self.databaseStorage.read { transaction in
+            signalProtocolStore.signedPreKeyStore.currentSignedPreKey(tx: transaction.asV2Read)
+        }
 
         if shouldSkipIfRecent,
-           let currentSignedPreKey = signalProtocolStore.signedPreKeyStore.currentSignedPreKey(),
+           let currentSignedPreKey,
            abs(currentSignedPreKey.generatedAt.timeIntervalSinceNow) < kSignedPreKeyRotationTime {
             self.reportCancelled()
             return
@@ -48,9 +51,11 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             self.databaseStorage.write { transaction in
-                signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                                        signedPreKeyRecord: signedPreKeyRecord,
-                                                                        transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.storeSignedPreKey(
+                    signedPreKeyRecord.id,
+                    signedPreKeyRecord: signedPreKeyRecord,
+                    tx: transaction.asV2Write
+                )
             }
             return self.accountServiceClient.setSignedPreKey(signedPreKeyRecord, for: self.identity)
         }.done(on: DispatchQueue.global()) { () in
@@ -59,11 +64,11 @@ public class RotateSignedPreKeyOperation: OWSOperation {
                 signalProtocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
                     signedPreKeyId: signedPreKeyRecord.id,
                     signedPreKeyRecord: signedPreKeyRecord,
-                    transaction: transaction
+                    tx: transaction.asV2Write
                 )
 
-                signalProtocolStore.signedPreKeyStore.cullSignedPreKeyRecords(transaction: transaction)
-                signalProtocolStore.signedPreKeyStore.clearPrekeyUpdateFailureCount(transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.cullSignedPreKeyRecords(tx: transaction.asV2Write)
+                signalProtocolStore.signedPreKeyStore.clearPreKeyUpdateFailureCount(tx: transaction.asV2Write)
             }
 
             Logger.info("done")
@@ -87,9 +92,9 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             return
         }
 
-        let signalProtocolStore = self.signalProtocolStore(for: identity)
+        let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: identity)
         self.databaseStorage.write { transaction in
-            signalProtocolStore.signedPreKeyStore.incrementPrekeyUpdateFailureCount(transaction: transaction)
+            signalProtocolStore.signedPreKeyStore.incrementPreKeyUpdateFailureCount(tx: transaction.asV2Write)
         }
     }
 }

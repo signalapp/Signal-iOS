@@ -24,8 +24,6 @@
 #import "OWSUploadOperation.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "ProfileManagerProtocol.h"
-#import "SSKPreKeyStore.h"
-#import "SSKSignedPreKeyStore.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"

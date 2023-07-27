@@ -100,13 +100,13 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     private let logger = PrefixedLogger(prefix: "PDPBI")
 
     private let messageSender: Shims.MessageSender
-    private let pniSignedPreKeyStore: Shims.SignedPreKeyStore
+    private let pniSignedPreKeyStore: SignalSignedPreKeyStore
     private let schedulers: Schedulers
     private let tsAccountManager: Shims.TSAccountManager
 
     init(
         messageSender: Shims.MessageSender,
-        pniSignedPreKeyStore: Shims.SignedPreKeyStore,
+        pniSignedPreKeyStore: SignalSignedPreKeyStore,
         schedulers: Schedulers,
         tsAccountManager: Shims.TSAccountManager
     ) {
@@ -296,13 +296,11 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
 extension PniDistributionParameterBuilderImpl {
     enum Shims {
         typealias MessageSender = _PniDistributionParameterBuilder_MessageSender_Shim
-        typealias SignedPreKeyStore = _PniDistributionParameterBuilder_SignedPreKeyStore_Shim
         typealias TSAccountManager = _PniDistributionParameterBuilder_TSAccountManager_Shim
     }
 
     enum Wrappers {
         typealias MessageSender = _PniDistributionParameterBuilder_MessageSender_Wrapper
-        typealias SignedPreKeyStore = _PniDistributionParameterBuilder_SignedPreKeyStore_Wrapper
         typealias TSAccountManager = _PniDistributionParameterBuilder_TSAccountManager_Wrapper
     }
 }
@@ -355,24 +353,6 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
             isResendRequestMessage: isResendRequestMessage,
             udSendingParamsProvider: udSendingParamsProvider
         )
-    }
-}
-
-// MARK: SignedPreKeyStore
-
-protocol _PniDistributionParameterBuilder_SignedPreKeyStore_Shim {
-    func generateSignedPreKey(signedBy: ECKeyPair) -> SignedPreKeyRecord
-}
-
-class _PniDistributionParameterBuilder_SignedPreKeyStore_Wrapper: _PniDistributionParameterBuilder_SignedPreKeyStore_Shim {
-    private let signedPreKeyStore: SSKSignedPreKeyStore
-
-    init(_ signedPreKeyStore: SSKSignedPreKeyStore) {
-        self.signedPreKeyStore = signedPreKeyStore
-    }
-
-    func generateSignedPreKey(signedBy: ECKeyPair) -> SignedPreKeyRecord {
-        return SSKSignedPreKeyStore.generateSignedPreKey(signedBy: signedBy)
     }
 }
 

@@ -99,6 +99,17 @@ extension OWSIdentityManager {
     }
 }
 
+// MARK: - ObjC shim
+
+extension OWSIdentityManager {
+    @objc
+    func archiveSessionsForAccountId(_ accountId: String, transaction: SDSAnyWriteTransaction) {
+        // PNI TODO: this should end the PNI session if it was sent to our PNI.
+        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+        sessionStore.archiveAllSessions(forAccountId: accountId, tx: transaction.asV2Write)
+    }
+}
+
 // MARK: - Verified
 
 extension OWSIdentityManager {
@@ -267,7 +278,7 @@ extension OWSIdentityManager {
             return
         }
 
-        let pniProtocolStore = signalProtocolStore(for: .pni)
+        let pniProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
         // Store in the right places
 
@@ -281,7 +292,7 @@ extension OWSIdentityManager {
         pniProtocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
             signedPreKeyId: pniSignedPreKey.id,
             signedPreKeyRecord: pniSignedPreKey,
-            transaction: transaction
+            tx: transaction.asV2Write
         )
 
         tsAccountManager.setPniRegistrationId(

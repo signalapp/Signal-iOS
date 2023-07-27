@@ -330,14 +330,14 @@ extension OWSMessageManager {
                 // If a ratchet key is included, this was a 1:1 session message
                 // Archive the session if the current key matches.
                 // PNI TODO: We should never get a DEM for our PNI, but we should check that anyway.
-                let sessionStore = signalProtocolStore(for: .aci).sessionStore
+                let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
                 let sessionRecord = try sessionStore.loadSession(for: protocolAddress, context: writeTx)
                 if try sessionRecord?.currentRatchetKeyMatches(ratchetKey) == true {
                     Logger.info("Decryption error included ratchet key. Archiving...")
                     sessionStore.archiveSession(
                         for: SignalServiceAddress(sourceServiceId),
                         deviceId: Int32(sourceDeviceId),
-                        transaction: writeTx
+                        tx: writeTx.asV2Write
                     )
                     didPerformSessionReset = true
                 } else {
@@ -629,6 +629,15 @@ extension OWSMessageManager {
             OWSDevicesService.refreshDevices()
             profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
         }
+    }
+
+    @objc
+    func archiveSessions(for address: SignalServiceAddress?, transaction: SDSAnyWriteTransaction) {
+        guard let address else { return }
+
+        // PNI TODO: this should end the PNI session if it was sent to our PNI.
+        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+        sessionStore.archiveAllSessions(for: address, tx: transaction.asV2Write)
     }
 }
 

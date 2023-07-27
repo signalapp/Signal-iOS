@@ -433,9 +433,9 @@ public extension String.StringInterpolation {
 // MARK: -
 
 class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
-    private let sessionStore: SSKSessionStore
+    private let sessionStore: SignalSessionStore
 
-    init(sessionStore: SSKSessionStore) {
+    init(sessionStore: SignalSessionStore) {
         self.sessionStore = sessionStore
     }
 
@@ -457,7 +457,7 @@ class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
         sessionStore.containsActiveSession(
             forAccountId: recipientId,
             deviceId: deviceId,
-            transaction: SDSDB.shimOnlyBridge(transaction)
+            tx: transaction
         )
     }
 }

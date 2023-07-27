@@ -105,7 +105,7 @@ class _ChangePhoneNumberPniManager_SignedPreKeyStoreWrapper: _ChangePhoneNumberP
     }
 
     func generateSignedPreKey(signedBy: ECKeyPair) -> SignedPreKeyRecord {
-        return SSKSignedPreKeyStore.generateSignedPreKey(signedBy: signedBy)
+        return signedPreKeyStore.generateSignedPreKey(signedBy: signedBy)
     }
 
     func storeSignedPreKeyAsAcceptedAndCurrent(

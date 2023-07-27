@@ -13,7 +13,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
     private var identityManagerMock: IdentityManagerMock!
     private var pniDistributionParameterBuilderMock: PniDistributionParameterBuilderMock!
     private var preKeyManagerMock: PreKeyManagerMock!
-    private var signedPreKeyStoreMock: SignedPreKeyStoreMock!
+    private var signedPreKeyStoreMock: MockSignalSignedPreKeyStore!
     private var tsAccountManagerMock: TSAccountManagerMock!
 
     private var schedulers: TestSchedulers!
@@ -252,29 +252,6 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
         case .failure:
             return .value(.failure)
         }
-    }
-}
-
-// MARK: SignedPreKeyStore
-
-private class SignedPreKeyStoreMock: ChangePhoneNumberPniManagerImpl.Shims.SignedPreKeyStore {
-    var generatedSignedPreKeys: [SignalServiceKit.SignedPreKeyRecord] = []
-    var storedSignedPreKeyId: Int32?
-    var storedSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?
-
-    func generateSignedPreKey(signedBy: ECKeyPair) -> SignalServiceKit.SignedPreKeyRecord {
-        let signedPreKey = SSKSignedPreKeyStore.generateSignedPreKey(signedBy: signedBy)
-        generatedSignedPreKeys.append(signedPreKey)
-        return signedPreKey
-    }
-
-    func storeSignedPreKeyAsAcceptedAndCurrent(
-        signedPreKeyId: Int32,
-        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
-        transaction: DBWriteTransaction
-    ) {
-        storedSignedPreKeyId = signedPreKeyId
-        storedSignedPreKeyRecord = signedPreKeyRecord
     }
 }
 

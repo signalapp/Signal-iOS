@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-extension SSKPreKeyStore: PreKeyStore {
+extension SSKPreKeyStore: LibSignalClient.PreKeyStore {
     enum Error: Swift.Error {
         case noPreKeyWithId(UInt32)
     }

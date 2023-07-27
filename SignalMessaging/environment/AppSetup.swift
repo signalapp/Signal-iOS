@@ -49,7 +49,7 @@ public class AppSetup {
         // MARK: DependenciesBridge
 
         let accountServiceClient = AccountServiceClient()
-        let aciSignalProtocolStore = SignalProtocolStore(for: .aci)
+        let aciSignalProtocolStore = SignalProtocolStoreImpl(for: .aci)
         let dateProvider = Date.provider
         let groupsV2 = GroupsV2Impl()
         let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
@@ -58,8 +58,12 @@ public class AppSetup {
         let modelReadCaches = ModelReadCaches(factory: ModelReadCacheFactory())
         let networkManager = NetworkManager()
         let ows2FAManager = OWS2FAManager()
-        let pniSignalProtocolStore = SignalProtocolStore(for: .pni)
+        let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni)
         let profileManager = OWSProfileManager(databaseStorage: databaseStorage, recipientHidingManager: recipientHidingManager)
+        let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
+            aciProtocolStore: aciSignalProtocolStore,
+            pniProtocolStore: pniSignalProtocolStore
+        )
         let signalService = OWSSignalService()
         let signalServiceAddressCache = SignalServiceAddressCache()
         let storageServiceManager = StorageServiceManagerImpl.shared
@@ -68,7 +72,6 @@ public class AppSetup {
 
         let dependenciesBridge = DependenciesBridge.setupSingleton(
             accountServiceClient: accountServiceClient,
-            aciProtocolStore: aciSignalProtocolStore,
             appVersion: appVersion,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
@@ -80,9 +83,9 @@ public class AppSetup {
             networkManager: networkManager,
             notificationsManager: notificationPresenter,
             ows2FAManager: ows2FAManager,
-            pniProtocolStore: pniSignalProtocolStore,
             profileManager: profileManager,
             recipientHidingManager: recipientHidingManager,
+            signalProtocolServiceManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,

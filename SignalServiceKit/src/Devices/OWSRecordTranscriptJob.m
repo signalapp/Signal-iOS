@@ -49,8 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientAddress);
-        SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
-        [sessionStore archiveAllSessionsForAddress:transcript.recipientAddress transaction:transaction];
+        [self archiveSessionsFor:transcript.recipientAddress transaction:transaction];
 
         TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithThread:transcript.thread
                                                                messageType:TSInfoMessageTypeSessionDidEnd];

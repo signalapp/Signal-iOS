@@ -690,6 +690,12 @@ extension TSAccountManager {
             return error
         }
     }
+
+    @objc
+    func resetSessionStores(transaction: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.resetSessionStore(tx: transaction.asV2Write)
+        DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .pni).sessionStore.resetSessionStore(tx: transaction.asV2Write)
+    }
 }
 
 // MARK: -

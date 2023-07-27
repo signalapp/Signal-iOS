@@ -37,4 +37,16 @@ extension TSPreKeyManager {
 
         operationQueue.addOperation(refreshOperation)
     }
+
+    @objc
+    public static func preKeyFailureCount(identity: OWSIdentity, transaction: SDSAnyReadTransaction) -> Int {
+        let store = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: identity).signedPreKeyStore
+        return Int(store.getPreKeyUpdateFailureCount(tx: transaction.asV2Read))
+    }
+
+    @objc
+    public static func firstPreKeyFailureDate(identity: OWSIdentity, transaction: SDSAnyReadTransaction) -> Date? {
+        let store = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: identity).signedPreKeyStore
+        return store.getFirstPreKeyUpdateFailureDate(tx: transaction.asV2Read)
+    }
 }

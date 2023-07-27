@@ -96,8 +96,10 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
                 Logger.info("archiving sessions for recipient: \(self.recipientAddress)")
                 // PNI TODO: should this archive PNI sessions as well, or should that be a parameter of the job?
                 // Do we ever need a SessionResetJob for a PNI session?
-                self.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(for: self.recipientAddress,
-                                                                                    transaction: transaction)
+                DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(
+                    for: self.recipientAddress,
+                    tx: transaction.asV2Write
+                )
             }
             firstAttempt = false
         }
@@ -119,8 +121,10 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
                 // session upon receiving and decrypting our EndSession message.
                 // Otherwise if we send another message before them, they won't have the session to decrypt it.
                 // PNI TODO: same as above
-                self.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(for: self.recipientAddress,
-                                                                                    transaction: transaction)
+                DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(
+                    for: self.recipientAddress,
+                    tx: transaction.asV2Write
+                )
 
                 let message = TSInfoMessage(thread: self.contactThread,
                                             messageType: TSInfoMessageType.typeSessionDidEnd)
@@ -165,8 +169,10 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             // session upon receiving and decrypting our EndSession message.
             // Otherwise if we send another message before them, they won't have the session to decrypt it.
             // PNI TODO: same as above
-            self.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(for: self.recipientAddress,
-                                                                                transaction: transaction)
+            DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(
+                for: self.recipientAddress,
+                tx: transaction.asV2Write
+            )
         }
     }
 }

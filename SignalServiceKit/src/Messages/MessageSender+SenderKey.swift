@@ -660,12 +660,13 @@ extension MessageSender {
             groupIdForSending = Data()
         }
 
+        let signalProtocolStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
         let protocolAddresses = recipients.flatMap { $0.protocolAddresses }
         let secretCipher = try SMKSecretSessionCipher(
-            sessionStore: Self.signalProtocolStore(for: .aci).sessionStore,
-            preKeyStore: Self.signalProtocolStore(for: .aci).preKeyStore,
-            signedPreKeyStore: Self.signalProtocolStore(for: .aci).signedPreKeyStore,
-            kyberPreKeyStore: Self.signalProtocolStore(for: .aci).kyberPreKeyStore,
+            sessionStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore,
+            preKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).preKeyStore,
+            signedPreKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).signedPreKeyStore,
+            kyberPreKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).kyberPreKeyStore,
             identityStore: Self.identityManager.store(for: .aci, transaction: writeTx),
             senderKeyStore: Self.senderKeyStore)
 
@@ -795,14 +796,14 @@ fileprivate extension MessageSender {
     /// investigate how this ever happened, but for now fall back to sending another SKDM.
     static func registrationIdStatus(for serviceId: UntypedServiceId, transaction: SDSAnyReadTransaction) -> RegistrationIdStatus {
         let candidateDevices = MessageSender.Recipient(serviceId: serviceId, transaction: transaction).devices
-        let sessionStore = signalProtocolStore(for: .aci).sessionStore
+        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         for deviceId in candidateDevices {
             do {
                 guard
                     let sessionRecord = try sessionStore.loadSession(
                         for: SignalServiceAddress(serviceId),
                         deviceId: Int32(deviceId),
-                        transaction: transaction
+                        tx: transaction.asV2Read
                     ),
                     sessionRecord.hasCurrentState
                 else { return .noSession }

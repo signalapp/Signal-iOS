@@ -5,6 +5,9 @@
 
 import LibSignalClient
 
+public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
+}
+
 public class SSKKyberPreKeyStore {
     let identity: OWSIdentity
 
@@ -13,7 +16,7 @@ public class SSKKyberPreKeyStore {
     }
 }
 
-extension SSKKyberPreKeyStore: KyberPreKeyStore {
+extension SSKKyberPreKeyStore: SignalKyberPreKeyStore {
 
     public func loadKyberPreKey(id: UInt32, context: StoreContext) throws -> KyberPreKeyRecord {
         preconditionFailure("unimplemented")

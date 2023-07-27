@@ -48,10 +48,10 @@ private extension MessageSender {
         owsAssertDebug(!Thread.isMainThread)
 
         let hasSession = databaseStorage.read { tx in
-            signalProtocolStore(for: .aci).sessionStore.containsActiveSession(
+            DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.containsActiveSession(
                 forAccountId: recipientId,
                 deviceId: Int32(bitPattern: deviceId),
-                transaction: tx
+                tx: tx.asV2Read
             )
         }
         if hasSession {
@@ -199,10 +199,10 @@ private extension MessageSender {
         Logger.info("Creating session for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
 
         let containsActiveSession = { () -> Bool in
-            signalProtocolStore(for: .aci).sessionStore.containsActiveSession(
+            DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.containsActiveSession(
                 forAccountId: recipientId,
                 deviceId: Int32(bitPattern: deviceId),
-                transaction: transaction
+                tx: transaction.asV2Read
             )
         }
 
@@ -237,7 +237,7 @@ private extension MessageSender {
             try processPreKeyBundle(
                 bundle,
                 for: protocolAddress,
-                sessionStore: signalProtocolStore(for: .aci).sessionStore,
+                sessionStore: DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore,
                 identityStore: identityManager.store(for: .aci, transaction: transaction),
                 context: transaction
             )
@@ -1604,9 +1604,13 @@ extension MessageSender {
 
         Self.databaseStorage.write { transaction in
             Logger.info("Archiving sessions for stale devices: \(staleDevices)")
-            let sessionStore = signalProtocolStore(for: .aci).sessionStore
+            let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
             for staleDeviceId in staleDevices {
-                sessionStore.archiveSession(for: address, deviceId: Int32(staleDeviceId), transaction: transaction)
+                sessionStore.archiveSession(
+                    for: address,
+                    deviceId: Int32(staleDeviceId),
+                    tx: transaction.asV2Write
+                )
             }
         }
     }
@@ -1633,12 +1637,12 @@ extension MessageSender {
 
         if !devicesToRemove.isEmpty {
             Logger.info("Archiving sessions for extra devices: \(devicesToRemove)")
-            let sessionStore = signalProtocolStore(for: .aci).sessionStore
+            let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
             for deviceId in devicesToRemove {
                 sessionStore.archiveSession(
                     for: SignalServiceAddress(serviceId),
                     deviceId: Int32(bitPattern: deviceId),
-                    transaction: transaction
+                    tx: transaction.asV2Write
                 )
             }
         }
@@ -1657,12 +1661,12 @@ private extension MessageSender {
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
-        let signalProtocolStore = signalProtocolStore(for: .aci)
+        let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci)
         guard
             signalProtocolStore.sessionStore.containsActiveSession(
                 for: serviceId,
                 deviceId: Int32(bitPattern: deviceId),
-                transaction: transaction
+                tx: transaction.asV2Read
             )
         else {
             throw MessageSendEncryptionError(serviceId: serviceId, deviceId: deviceId)
@@ -1729,7 +1733,10 @@ private extension MessageSender {
         }
 
         // We had better have a session after encrypting for this recipient!
-        let session = try signalProtocolStore.sessionStore.loadSession(for: protocolAddress, context: transaction)!
+        let session = try signalProtocolStore.sessionStore.loadSession(
+            for: protocolAddress,
+            context: transaction
+        )!
 
         return DeviceMessage(
             type: messageType,
@@ -1783,8 +1790,10 @@ private extension MessageSender {
             messageType = .plaintextContent
         }
 
-        let session = try signalProtocolStore(for: .aci).sessionStore.loadSession(for: protocolAddress,
-                                                                                  context: transaction)!
+        let session = try DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.loadSession(
+            for: protocolAddress,
+            context: transaction
+        )!
         return DeviceMessage(
             type: messageType,
             destinationDeviceId: protocolAddress.deviceId,

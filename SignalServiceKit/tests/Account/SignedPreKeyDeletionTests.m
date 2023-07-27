@@ -41,7 +41,7 @@
 
 - (SSKSignedPreKeyStore *)signedPreKeyStore
 {
-    return [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
+    return [[SSKSignedPreKeyStore alloc] initForIdentity:OWSIdentityACI];
 }
 
 - (NSUInteger)signedPreKeyCount

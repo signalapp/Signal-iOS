@@ -320,22 +320,30 @@ class DebugUIMisc: DebugUIPage, Dependencies {
 
     private static func removeAllPrekeys() {
         databaseStorage.write { transaction in
-            let signalProtocolStoreACI = signalProtocolStore(for: .aci)
-            signalProtocolStoreACI.signedPreKeyStore.removeAll(transaction)
-            signalProtocolStoreACI.preKeyStore.removeAll(transaction)
+            let signalProtoclStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
+            let signalProtocolStoreACI = signalProtoclStoreManager.signalProtocolStore(for: .aci)
+            signalProtocolStoreACI.signedPreKeyStore.removeAll(tx: transaction.asV2Write)
+            signalProtocolStoreACI.preKeyStore.removeAll(tx: transaction.asV2Write)
 
-            let signalProtocolStorePNI = signalProtocolStore(for: .pni)
-            signalProtocolStorePNI.signedPreKeyStore.removeAll(transaction)
-            signalProtocolStorePNI.preKeyStore.removeAll(transaction)
+            let signalProtocolStorePNI = signalProtoclStoreManager.signalProtocolStore(for: .pni)
+            signalProtocolStorePNI.signedPreKeyStore.removeAll(tx: transaction.asV2Write)
+            signalProtocolStorePNI.preKeyStore.removeAll(tx: transaction.asV2Write)
         }
     }
 
     private static func removeAllSessions() {
         databaseStorage.write { transaction in
-            let signalProtocolStore = signalProtocolStore(for: .aci)
-            signalProtocolStore.sessionStore.removeAll(transaction: transaction)
-            signalProtocolStore.signedPreKeyStore.removeAll(transaction)
-            signalProtocolStore.preKeyStore.removeAll(transaction)
+            let signalProtoclStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
+
+            let signalProtocolStoreACI = signalProtoclStoreManager.signalProtocolStore(for: .aci)
+            signalProtocolStoreACI.sessionStore.removeAll(tx: transaction.asV2Write)
+            signalProtocolStoreACI.signedPreKeyStore.removeAll(tx: transaction.asV2Write)
+            signalProtocolStoreACI.preKeyStore.removeAll(tx: transaction.asV2Write)
+
+            let signalProtocolStorePNI = signalProtoclStoreManager.signalProtocolStore(for: .pni)
+            signalProtocolStorePNI.sessionStore.removeAll(tx: transaction.asV2Write)
+            signalProtocolStorePNI.signedPreKeyStore.removeAll(tx: transaction.asV2Write)
+            signalProtocolStorePNI.preKeyStore.removeAll(tx: transaction.asV2Write)
         }
     }
 

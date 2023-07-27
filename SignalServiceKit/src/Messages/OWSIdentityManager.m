@@ -253,8 +253,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                        verificationState:verificationState] anyUpsertWithTransaction:transaction];
 
         // PNI TODO: archive PNI sessions too
-        SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
-        [sessionStore archiveAllSessionsForAccountId:accountId transaction:transaction];
+        [self archiveSessionsForAccountId:accountId transaction:transaction];
 
         // Cancel any pending verification state sync messages for this recipient.
         [self clearSyncMessageForAccountId:accountId transaction:transaction];

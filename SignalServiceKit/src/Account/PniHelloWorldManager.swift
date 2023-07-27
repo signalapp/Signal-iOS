@@ -32,7 +32,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
     private let keyValueStore: KeyValueStore
     private let networkManager: Shims.NetworkManager
     private let pniDistributionParameterBuilder: PniDistributionParamaterBuilder
-    private let pniSignedPreKeyStore: Shims.SignedPreKeyStore
+    private let pniSignedPreKeyStore: SignalSignedPreKeyStore
     private let profileManager: Shims.ProfileManager
     private let schedulers: Schedulers
     private let signalRecipientStore: Shims.SignalRecipientStore
@@ -44,7 +44,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         keyValueStoreFactory: KeyValueStoreFactory,
         networkManager: Shims.NetworkManager,
         pniDistributionParameterBuilder: PniDistributionParamaterBuilder,
-        pniSignedPreKeyStore: Shims.SignedPreKeyStore,
+        pniSignedPreKeyStore: SignalSignedPreKeyStore,
         profileManager: Shims.ProfileManager,
         schedulers: Schedulers,
         signalRecipientStore: Shims.SignalRecipientStore,
@@ -172,7 +172,6 @@ extension PniHelloWorldManagerImpl {
         typealias NetworkManager = _PniHelloWorldManagerImpl_NetworkManager_Shim
         typealias ProfileManager = _PniHelloWorldManagerImpl_ProfileManager_Shim
         typealias SignalRecipientStore = _PniHelloWorldManagerImpl_SignalRecipientStore_Shim
-        typealias SignedPreKeyStore = _PniHelloWorldManagerImpl_SignedPreKeyStore_Shim
         typealias TSAccountManager = _PniHelloWorldManagerImpl_TSAccountManager_Shim
     }
 
@@ -181,7 +180,6 @@ extension PniHelloWorldManagerImpl {
         typealias NetworkManager = _PniHelloWorldManagerImpl_NetworkManager_Wrapper
         typealias ProfileManager = _PniHelloWorldManagerImpl_ProfileManager_Wrapper
         typealias SignalRecipientStore = _PniHelloWorldManagerImpl_SignalRecipientStore_Wrapper
-        typealias SignedPreKeyStore = _PniHelloWorldManagerImpl_SignedPreKeyStore_Wrapper
         typealias TSAccountManager = _PniHelloWorldManagerImpl_TSAccountManager_Wrapper
     }
 }
@@ -272,24 +270,6 @@ class _PniHelloWorldManagerImpl_SignalRecipientStore_Wrapper: _PniHelloWorldMana
             localRecipient.accountId,
             localRecipient.deviceIds
         )
-    }
-}
-
-// MARK: SignedPreKeyStore
-
-protocol _PniHelloWorldManagerImpl_SignedPreKeyStore_Shim {
-    func currentSignedPreKey(tx: DBReadTransaction) -> SignedPreKeyRecord?
-}
-
-class _PniHelloWorldManagerImpl_SignedPreKeyStore_Wrapper: _PniHelloWorldManagerImpl_SignedPreKeyStore_Shim {
-    private let signedPreKeyStore: SSKSignedPreKeyStore
-
-    init(_ signedPreKeyStore: SSKSignedPreKeyStore) {
-        self.signedPreKeyStore = signedPreKeyStore
-    }
-
-    func currentSignedPreKey(tx: DBReadTransaction) -> SignedPreKeyRecord? {
-        return signedPreKeyStore.currentSignedPreKey(with: SDSDB.shimOnlyBridge(tx))
     }
 }
 

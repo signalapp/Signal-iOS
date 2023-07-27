@@ -46,16 +46,21 @@ public class CreatePreKeysOperation: OWSOperation {
             return
         }
 
-        let signalProtocolStore = self.signalProtocolStore(for: identity)
+        let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: identity)
         let signedPreKeyRecord: SignedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
         let preKeyRecords: [PreKeyRecord] = signalProtocolStore.preKeyStore.generatePreKeyRecords()
         let identityKey: Data = identityKeyPair.publicKey
 
         self.databaseStorage.write { transaction in
-            signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                                    signedPreKeyRecord: signedPreKeyRecord,
-                                                                    transaction: transaction)
-            signalProtocolStore.preKeyStore.storePreKeyRecords(preKeyRecords, transaction: transaction)
+            signalProtocolStore.signedPreKeyStore.storeSignedPreKey(
+                signedPreKeyRecord.id,
+                signedPreKeyRecord: signedPreKeyRecord,
+                tx: transaction.asV2Write
+            )
+            signalProtocolStore.preKeyStore.storePreKeyRecords(
+                preKeyRecords,
+                tx: transaction.asV2Write
+            )
         }
 
         firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
@@ -76,7 +81,7 @@ public class CreatePreKeysOperation: OWSOperation {
                 signalProtocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
                     signedPreKeyId: signedPreKeyRecord.id,
                     signedPreKeyRecord: signedPreKeyRecord,
-                    transaction: transaction
+                    tx: transaction.asV2Write
                 )
             }
 

@@ -10,7 +10,7 @@ import XCTest
 
 class PniDistributionParameterBuilderTest: XCTestCase {
     private var messageSenderMock: MessageSenderMock!
-    private var pniSignedPreKeyStoreMock: SignedPreKeyStoreMock!
+    private var pniSignedPreKeyStoreMock: MockSignalSignedPreKeyStore!
     private var tsAccountManagerMock: TSAccountManagerMock!
 
     private var schedulers: TestSchedulers!
@@ -19,7 +19,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
 
     override func setUp() {
         messageSenderMock = .init()
-        pniSignedPreKeyStoreMock = .init()
+        pniSignedPreKeyStoreMock = MockSignalSignedPreKeyStore()
         tsAccountManagerMock = .init()
 
         schedulers = TestSchedulers(scheduler: TestScheduler())
@@ -240,18 +240,6 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
         case .error:
             throw BuildDeviceMessageError()
         }
-    }
-}
-
-// MARK: SignedPreKeyStore
-
-private class SignedPreKeyStoreMock: PniDistributionParameterBuilderImpl.Shims.SignedPreKeyStore {
-    var generatedSignedPreKeys: [SignalServiceKit.SignedPreKeyRecord] = []
-
-    func generateSignedPreKey(signedBy: ECKeyPair) -> SignalServiceKit.SignedPreKeyRecord {
-        let signedPreKey = SSKSignedPreKeyStore.generateSignedPreKey(signedBy: signedBy)
-        generatedSignedPreKeys.append(signedPreKey)
-        return signedPreKey
     }
 }
 

@@ -255,16 +255,6 @@ public extension NSObject {
         SSKEnvironment.shared.groupsV2Ref
     }
 
-    @objc(signalProtocolStoreForIdentity:)
-    final func signalProtocolStore(for identity: OWSIdentity) -> SignalProtocolStore {
-        SSKEnvironment.shared.signalProtocolStoreRef(for: identity)
-    }
-
-    @objc(signalProtocolStoreForIdentity:)
-    static func signalProtocolStore(for identity: OWSIdentity) -> SignalProtocolStore {
-        SSKEnvironment.shared.signalProtocolStoreRef(for: identity)
-    }
-
     @nonobjc
     final var signalService: OWSSignalServiceProtocol {
         SSKEnvironment.shared.signalServiceRef
@@ -729,14 +719,6 @@ public extension Dependencies {
 
     static var groupsV2: GroupsV2 {
         SSKEnvironment.shared.groupsV2Ref
-    }
-
-    func signalProtocolStore(for identity: OWSIdentity) -> SignalProtocolStore {
-        SSKEnvironment.shared.signalProtocolStoreRef(for: identity)
-    }
-
-    static func signalProtocolStore(for identity: OWSIdentity) -> SignalProtocolStore {
-        SSKEnvironment.shared.signalProtocolStoreRef(for: identity)
     }
 
     var signalService: OWSSignalServiceProtocol {

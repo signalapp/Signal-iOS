@@ -69,6 +69,8 @@ public class DependenciesBridge {
 
     public let registrationSessionManager: RegistrationSessionManager
 
+    public let signalProtocolStoreManager: SignalProtocolStoreManager
+
     public let usernameLookupManager: UsernameLookupManager
     public let usernameEducationManager: UsernameEducationManager
     public let usernameValidationManager: UsernameValidationManager
@@ -78,7 +80,6 @@ public class DependenciesBridge {
     /// Initialize and configure the ``DependenciesBridge`` singleton.
     public static func setupSingleton(
         accountServiceClient: AccountServiceClient,
-        aciProtocolStore: SignalProtocolStore,
         appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
@@ -90,9 +91,9 @@ public class DependenciesBridge {
         networkManager: NetworkManager,
         notificationsManager: NotificationsProtocol,
         ows2FAManager: OWS2FAManager,
-        pniProtocolStore: SignalProtocolStore,
         profileManager: ProfileManagerProtocol,
         recipientHidingManager: RecipientHidingManager,
+        signalProtocolServiceManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
@@ -102,7 +103,6 @@ public class DependenciesBridge {
     ) -> DependenciesBridge {
         let result = DependenciesBridge(
             accountServiceClient: accountServiceClient,
-            aciProtocolStore: aciProtocolStore,
             appVersion: appVersion,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
@@ -114,9 +114,9 @@ public class DependenciesBridge {
             networkManager: networkManager,
             notificationsManager: notificationsManager,
             ows2FAManager: ows2FAManager,
-            pniProtocolStore: pniProtocolStore,
             profileManager: profileManager,
             recipientHidingManager: recipientHidingManager,
+            signalProtocolServiceManager: signalProtocolServiceManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
@@ -131,7 +131,6 @@ public class DependenciesBridge {
 
     private init(
         accountServiceClient: AccountServiceClient,
-        aciProtocolStore: SignalProtocolStore,
         appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
@@ -143,9 +142,9 @@ public class DependenciesBridge {
         networkManager: NetworkManager,
         notificationsManager: NotificationsProtocol,
         ows2FAManager: OWS2FAManager,
-        pniProtocolStore: SignalProtocolStore,
         profileManager: ProfileManagerProtocol,
         recipientHidingManager: RecipientHidingManager,
+        signalProtocolServiceManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
@@ -158,9 +157,12 @@ public class DependenciesBridge {
         self.db = SDSDB(databaseStorage: databaseStorage)
         self.keyValueStoreFactory = SDSKeyValueStoreFactory()
 
+        let aciProtocolStore = signalProtocolServiceManager.signalProtocolStore(for: .aci)
+        let pniProtocolStore = signalProtocolServiceManager.signalProtocolStore(for: .pni)
+
         let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
             messageSender: PniDistributionParameterBuilderImpl.Wrappers.MessageSender(messageSender),
-            pniSignedPreKeyStore: PniDistributionParameterBuilderImpl.Wrappers.SignedPreKeyStore(pniProtocolStore.signedPreKeyStore),
+            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
             schedulers: schedulers,
             tsAccountManager: PniDistributionParameterBuilderImpl.Wrappers.TSAccountManager(tsAccountManager)
         )
@@ -177,7 +179,7 @@ public class DependenciesBridge {
             pniDistributionParameterBuilder: pniDistributionParameterBuilder,
             identityManager: ChangePhoneNumberPniManagerImpl.Wrappers.IdentityManager(identityManager),
             preKeyManager: ChangePhoneNumberPniManagerImpl.Wrappers.PreKeyManager(),
-            pniSignedPreKeyStore: ChangePhoneNumberPniManagerImpl.Wrappers.SignedPreKeyStore(pniProtocolStore.signedPreKeyStore),
+            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
             tsAccountManager: ChangePhoneNumberPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
         )
 
@@ -233,7 +235,7 @@ public class DependenciesBridge {
             keyValueStoreFactory: keyValueStoreFactory,
             networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
             pniDistributionParameterBuilder: pniDistributionParameterBuilder,
-            pniSignedPreKeyStore: PniHelloWorldManagerImpl.Wrappers.SignedPreKeyStore(pniProtocolStore.signedPreKeyStore),
+            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
             profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
             schedulers: schedulers,
             signalRecipientStore: PniHelloWorldManagerImpl.Wrappers.SignalRecipientStore(),
@@ -310,6 +312,8 @@ public class DependenciesBridge {
         )
 
         self.recipientHidingManager = recipientHidingManager
+
+        self.signalProtocolStoreManager = signalProtocolServiceManager
 
         self.usernameLookupManager = UsernameLookupManagerImpl()
         self.usernameEducationManager = UsernameEducationManagerImpl(keyValueStoreFactory: keyValueStoreFactory)

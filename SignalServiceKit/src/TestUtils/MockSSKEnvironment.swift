@@ -52,7 +52,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         // Set up DependenciesBridge
 
         let accountServiceClient = FakeAccountServiceClient()
-        let aciSignalProtocolStore = SignalProtocolStore(for: .aci)
+        let aciSignalProtocolStore = SignalProtocolStoreImpl(for: .aci)
         let dateProvider = Date.provider
         let groupsV2 = MockGroupsV2()
         let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
@@ -62,9 +62,13 @@ public class MockSSKEnvironment: SSKEnvironment {
         let networkManager = OWSFakeNetworkManager()
         let notificationsManager = NoopNotificationsManager()
         let ows2FAManager = OWS2FAManager()
-        let pniSignalProtocolStore = SignalProtocolStore(for: .pni)
+        let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni)
         let profileManager = OWSFakeProfileManager()
         let recipientHidingManager = RecipientHidingManagerImpl()
+        let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
+            aciProtocolStore: aciSignalProtocolStore,
+            pniProtocolStore: pniSignalProtocolStore
+        )
         let signalService = OWSSignalServiceMock()
         let signalServiceAddressCache = SignalServiceAddressCache()
         let storageServiceManager = FakeStorageServiceManager()
@@ -74,7 +78,6 @@ public class MockSSKEnvironment: SSKEnvironment {
 
         let dependenciesBridge = DependenciesBridge.setupSingleton(
             accountServiceClient: accountServiceClient,
-            aciProtocolStore: aciSignalProtocolStore,
             appVersion: AppVersion.shared,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
@@ -86,9 +89,9 @@ public class MockSSKEnvironment: SSKEnvironment {
             networkManager: networkManager,
             notificationsManager: notificationsManager,
             ows2FAManager: ows2FAManager,
-            pniProtocolStore: pniSignalProtocolStore,
             profileManager: profileManager,
             recipientHidingManager: recipientHidingManager,
+            signalProtocolServiceManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,

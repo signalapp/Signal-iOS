@@ -30,7 +30,7 @@ class PniHelloWorldManagerTest: XCTestCase {
     private var identityManagerMock: IdentityManagerMock!
     private var networkManagerMock: NetworkManagerMock!
     private var pniDistributionParameterBuilderMock: PniDistributionParamaterBuilderMock!
-    private var pniSignedPreKeyStoreMock: SignedPreKeyStoreMock!
+    private var pniSignedPreKeyStoreMock: MockSignalSignedPreKeyStore!
     private var profileManagerMock: ProfileManagerMock!
     private var signalRecipientStoreMock: SignalRecipientStoreMock!
     private var tsAccountManagerMock: TSAccountManagerMock!
@@ -78,7 +78,11 @@ class PniHelloWorldManagerTest: XCTestCase {
 
         let keyPair = Curve25519.generateKeyPair()
         identityManagerMock.identityKeyPair = keyPair
-        pniSignedPreKeyStoreMock.currentSignedPreKey = SSKSignedPreKeyStore.generateSignedPreKey(signedBy: keyPair)
+        pniSignedPreKeyStoreMock.setCurrentSignedPreKey(
+            pniSignedPreKeyStoreMock.generateSignedPreKey(
+                signedBy: keyPair
+            )
+        )
 
         pniDistributionParameterBuilderMock.buildOutcomes = [.success]
         networkManagerMock.requestShouldSucceed = true
@@ -178,7 +182,7 @@ class PniHelloWorldManagerTest: XCTestCase {
     func testSkipsIfMissingPniKeyParameters() {
         setMocksForHappyPath()
         identityManagerMock.identityKeyPair = nil
-        pniSignedPreKeyStoreMock.currentSignedPreKey = nil
+        pniSignedPreKeyStoreMock.setCurrentSignedPreKey(nil)
 
         db.write { tx in
             pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
@@ -351,16 +355,6 @@ private class SignalRecipientStoreMock: _PniHelloWorldManagerImpl_SignalRecipien
         }
 
         return (localAccountId, deviceIds)
-    }
-}
-
-// MARK: SignedPreKeyStore
-
-private class SignedPreKeyStoreMock: _PniHelloWorldManagerImpl_SignedPreKeyStore_Shim {
-    var currentSignedPreKey: SignalServiceKit.SignedPreKeyRecord?
-
-    func currentSignedPreKey(tx: DBReadTransaction) -> SignalServiceKit.SignedPreKeyRecord? {
-        return currentSignedPreKey
     }
 }
 

@@ -214,9 +214,11 @@ public struct FakeSignalClient: TestSignalClient {
 /// used in the app.
 public struct LocalSignalClient: TestSignalClient {
     public let identity: OWSIdentity
+    public let protocolStore: SignalProtocolStore
 
     public init(identity: OWSIdentity = .aci) {
         self.identity = identity
+        self.protocolStore = SignalProtocolStoreImpl(for: identity)
     }
 
     public var identityKeyPair: ECKeyPair {
@@ -237,19 +239,19 @@ public struct LocalSignalClient: TestSignalClient {
     public let deviceId: UInt32 = 1
 
     public var sessionStore: SessionStore {
-        return SSKEnvironment.shared.signalProtocolStore(for: identity).sessionStore
+        return protocolStore.sessionStore
     }
 
     public var preKeyStore: PreKeyStore {
-        return SSKEnvironment.shared.signalProtocolStore(for: identity).preKeyStore
+        return protocolStore.preKeyStore
     }
 
     public var signedPreKeyStore: SignedPreKeyStore {
-        return SSKEnvironment.shared.signalProtocolStore(for: identity).signedPreKeyStore
+        return protocolStore.signedPreKeyStore
     }
 
     public var kyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
-        return SSKEnvironment.shared.signalProtocolStore(for: identity).kyberPreKeyStore
+        return protocolStore.kyberPreKeyStore
     }
 
     public var identityKeyStore: IdentityKeyStore {

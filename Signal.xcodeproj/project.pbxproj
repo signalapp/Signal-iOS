@@ -1266,6 +1266,11 @@
 		C182BEF629ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */; };
 		C198FDD62A37C905000BCAC9 /* SSKKyberPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */; };
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
+		C1CD0E362A6B0BC900307F1A /* SignalPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */; };
+		C1CD0E382A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E372A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift */; };
+		C1CD0E3A2A6B0D2700307F1A /* SignalSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E392A6B0D2700307F1A /* SignalSessionStore.swift */; };
+		C1CD0E3E2A6B141D00307F1A /* OWSRecordTranscriptJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E3D2A6B141D00307F1A /* OWSRecordTranscriptJob.swift */; };
+		C1CD0E402A6B37BF00307F1A /* SSKPreKeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */; };
 		C1DB22C329C9F95500757380 /* EditManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DB22C229C9F95500757380 /* EditManager.swift */; };
 		C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */; };
 		C1EAECDF2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EAECDE2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift */; };
@@ -1477,7 +1482,6 @@
 		F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261DD289B1B5400460798 /* ModelReadCacheTest.swift */; };
 		F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261DE289B1B5400460798 /* InteractionFinderTest.swift */; };
 		F942624E289B1B5500460798 /* SDSDatabaseStorageObservationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261DF289B1B5400460798 /* SDSDatabaseStorageObservationTest.swift */; };
-		F942624F289B1B5500460798 /* SSKPreKeyStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F94261E0289B1B5400460798 /* SSKPreKeyStoreTests.m */; };
 		F9426250289B1B5500460798 /* SSKSignedPreKeyStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261E1289B1B5400460798 /* SSKSignedPreKeyStoreTest.swift */; };
 		F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261E3289B1B5400460798 /* GroupModelsTest.swift */; };
 		F9426252289B1B5500460798 /* kbs_vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = F94261E5289B1B5400460798 /* kbs_vectors.json */; };
@@ -3855,6 +3859,11 @@
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
 		C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStore.swift; sourceTree = "<group>"; };
 		C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerShims.swift; sourceTree = "<group>"; };
+		C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalPreKeyStore.swift; sourceTree = "<group>"; };
+		C1CD0E372A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalSignedPreKeyStore.swift; sourceTree = "<group>"; };
+		C1CD0E392A6B0D2700307F1A /* SignalSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalSessionStore.swift; sourceTree = "<group>"; };
+		C1CD0E3D2A6B141D00307F1A /* OWSRecordTranscriptJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSRecordTranscriptJob.swift; sourceTree = "<group>"; };
+		C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKPreKeyStoreTests.swift; sourceTree = "<group>"; };
 		C1DB22C229C9F95500757380 /* EditManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManager.swift; sourceTree = "<group>"; };
 		C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationViewController.swift; sourceTree = "<group>"; };
 		C1EAECDE2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditSyncMessage.swift; sourceTree = "<group>"; };
@@ -4075,7 +4084,6 @@
 		F94261DD289B1B5400460798 /* ModelReadCacheTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelReadCacheTest.swift; sourceTree = "<group>"; };
 		F94261DE289B1B5400460798 /* InteractionFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderTest.swift; sourceTree = "<group>"; };
 		F94261DF289B1B5400460798 /* SDSDatabaseStorageObservationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSDatabaseStorageObservationTest.swift; sourceTree = "<group>"; };
-		F94261E0289B1B5400460798 /* SSKPreKeyStoreTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKPreKeyStoreTests.m; sourceTree = "<group>"; };
 		F94261E1289B1B5400460798 /* SSKSignedPreKeyStoreTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSignedPreKeyStoreTest.swift; sourceTree = "<group>"; };
 		F94261E3289B1B5400460798 /* GroupModelsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupModelsTest.swift; sourceTree = "<group>"; };
 		F94261E5289B1B5400460798 /* kbs_vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = kbs_vectors.json; sourceTree = "<group>"; };
@@ -8227,7 +8235,7 @@
 				F94261DF289B1B5400460798 /* SDSDatabaseStorageObservationTest.swift */,
 				F94261DC289B1B5400460798 /* SDSDatabaseStorageTest.swift */,
 				F94261DB289B1B5400460798 /* SDSKeyValueStoreTest.swift */,
-				F94261E0289B1B5400460798 /* SSKPreKeyStoreTests.m */,
+				C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */,
 				F94261E1289B1B5400460798 /* SSKSignedPreKeyStoreTest.swift */,
 				F94261DA289B1B5400460798 /* TestModelTests.swift */,
 			);
@@ -9084,6 +9092,7 @@
 				F9C5CA2B289453B100548EEE /* OWSReceiptsForSenderMessage.m */,
 				F9C5CA0A289453B100548EEE /* OWSRecordTranscriptJob.h */,
 				F9C5CA24289453B100548EEE /* OWSRecordTranscriptJob.m */,
+				C1CD0E3D2A6B141D00307F1A /* OWSRecordTranscriptJob.swift */,
 				F9C5CA26289453B100548EEE /* OWSStickerPackSyncMessage.h */,
 				F9C5CA0C289453B100548EEE /* OWSStickerPackSyncMessage.m */,
 				F9C5CA27289453B100548EEE /* OWSVerificationStateSyncMessage.h */,
@@ -9200,7 +9209,10 @@
 				F9C5CA5D289453B100548EEE /* NSData+keyVersionByte.m */,
 				F9C5CA59289453B100548EEE /* SenderKeyStore.swift */,
 				F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */,
+				C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */,
 				F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */,
+				C1CD0E392A6B0D2700307F1A /* SignalSessionStore.swift */,
+				C1CD0E372A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift */,
 				C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */,
 				F9C5CA5A289453B100548EEE /* SSKPreKeyStore.h */,
 				F9C5CA76289453B100548EEE /* SSKPreKeyStore.m */,
@@ -12339,6 +12351,7 @@
 				F9C5CE71289453B400548EEE /* OWSRecipientIdentity+SDS.swift in Sources */,
 				F9C5CE6D289453B400548EEE /* OWSRecipientIdentity.m in Sources */,
 				F9C5CD07289453B300548EEE /* OWSRecordTranscriptJob.m in Sources */,
+				C1CD0E3E2A6B141D00307F1A /* OWSRecordTranscriptJob.swift in Sources */,
 				F9C5CC68289453B300548EEE /* OWSRecoverableDecryptionPlaceholder+Replace.swift in Sources */,
 				F9C5CC6E289453B300548EEE /* OWSRecoverableDecryptionPlaceholder+SDS.swift in Sources */,
 				F9C5CC85289453B300548EEE /* OWSRecoverableDecryptionPlaceholder.m in Sources */,
@@ -12490,6 +12503,7 @@
 				50EF8DD52A1FE55D00A00935 /* SignalAccountMergeObserver.swift in Sources */,
 				F9C5CC8F289453B300548EEE /* SignalIOS.pb.swift in Sources */,
 				F9C5CC9E289453B300548EEE /* SignalIOSProto.swift in Sources */,
+				C1CD0E362A6B0BC900307F1A /* SignalPreKeyStore.swift in Sources */,
 				F9C5CD34289453B300548EEE /* SignalProtocolStore.swift in Sources */,
 				88DF819D28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift in Sources */,
 				88DF819B28E1158800F8BA80 /* SignalProxy+RelayClient.swift in Sources */,
@@ -12501,6 +12515,8 @@
 				F9C5CCE2289453B300548EEE /* SignalServiceAddress.swift in Sources */,
 				F9C5CD96289453B300548EEE /* SignalServiceClient.swift in Sources */,
 				F9C5CDBB289453B400548EEE /* SignalServiceProfile.swift in Sources */,
+				C1CD0E3A2A6B0D2700307F1A /* SignalSessionStore.swift in Sources */,
+				C1CD0E382A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift in Sources */,
 				F9C5CD42289453B300548EEE /* SignedPrekeyRecord.m in Sources */,
 				F9C5CC51289453B300548EEE /* SMKError.swift in Sources */,
 				F9C5CC53289453B300548EEE /* SMKSecretSessionCipher.swift in Sources */,
@@ -12808,7 +12824,7 @@
 				F9613CDE2981F15700894B55 /* SqliteUtilTest.swift in Sources */,
 				F942626F289B1B5500460798 /* SSKBaseTestObjC.m in Sources */,
 				F94262A2289B1B5600460798 /* SSKBaseTestSwift.swift in Sources */,
-				F942624F289B1B5500460798 /* SSKPreKeyStoreTests.m in Sources */,
+				C1CD0E402A6B37BF00307F1A /* SSKPreKeyStoreTests.swift in Sources */,
 				F9426250289B1B5500460798 /* SSKSignedPreKeyStoreTest.swift in Sources */,
 				F9426270289B1B5500460798 /* SSKSwiftTests.swift in Sources */,
 				F942628D289B1B5600460798 /* StickerManagerTest.swift in Sources */,

@@ -23,8 +23,8 @@ private extension SSKSignedPreKeyStore {
 
 class SSKSignedPreKeyStoreTest: SSKBaseTestSwift {
     func testPniStoreIsSeparate() {
-        let aciStore = signalProtocolStore(for: .aci).signedPreKeyStore
-        let pniStore = signalProtocolStore(for: .pni).signedPreKeyStore
+        let aciStore = SSKSignedPreKeyStore(for: .aci)
+        let pniStore = SSKSignedPreKeyStore(for: .pni)
 
         XCTAssertEqual(0, aciStore.countSignedPreKeys)
         XCTAssertEqual(0, pniStore.countSignedPreKeys)
@@ -73,15 +73,16 @@ class SSKSignedPreKeyStoreTest: SSKBaseTestSwift {
     }
 
     func testGenerateWithCorrectSignature() {
+        let aciStore = SSKSignedPreKeyStore(for: .aci)
+        let pniStore = SSKSignedPreKeyStore(for: .pni)
+
         let aciIdentity = identityManager.generateAndPersistNewIdentityKey(for: .aci)
-        let aciStore = signalProtocolStore(for: .aci).signedPreKeyStore
         let aciRecord = aciStore.generateRandomSignedRecord()
         let aciPublicKey = aciIdentity.identityKeyPair.publicKey
         XCTAssert(try! aciPublicKey.verifySignature(message: aciRecord.keyPair.identityKeyPair.publicKey.serialize(),
                                                    signature: aciRecord.signature))
 
         let pniIdentity = identityManager.generateAndPersistNewIdentityKey(for: .pni)
-        let pniStore = signalProtocolStore(for: .pni).signedPreKeyStore
         let pniRecord = pniStore.generateRandomSignedRecord()
         let pniPublicKey = pniIdentity.identityKeyPair.publicKey
         XCTAssert(try! pniPublicKey.verifySignature(message: pniRecord.keyPair.identityKeyPair.publicKey.serialize(),

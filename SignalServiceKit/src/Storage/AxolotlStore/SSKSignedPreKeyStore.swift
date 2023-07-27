@@ -26,7 +26,7 @@ extension SSKSignedPreKeyStore {
     }
 }
 
-extension SSKSignedPreKeyStore: SignedPreKeyStore {
+extension SSKSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
     enum Error: Swift.Error {
         case noPreKeyWithId(UInt32)
     }

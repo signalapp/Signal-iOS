@@ -47,16 +47,19 @@ class MessageDecryptionTest: SSKBaseTestSwift {
         type: SSKProtoEnvelopeType,
         destinationIdentity: OWSIdentity,
         destinationUuid: UUID? = nil,
-        prepareForDecryption: (SDSAnyWriteTransaction) -> Void = { _ in },
+        prepareForDecryption: (SignalProtocolStore, SDSAnyWriteTransaction) -> Void = { _, _  in },
         handleResult: (Result<OWSMessageDecryptResult, Error>, SSKProtoEnvelope) -> Void
     ) {
         write { transaction in
             let localClient: TestSignalClient
+            let localProtocolStore: SignalProtocolStore
             switch destinationIdentity {
             case .aci:
                 localClient = self.localClient
+                localProtocolStore = self.localClient.protocolStore
             case .pni:
                 localClient = self.localPniClient
+                localProtocolStore = self.localPniClient.protocolStore
             }
 
             switch type {
@@ -108,7 +111,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
 
             let envelope = try! envelopeBuilder.build()
 
-            prepareForDecryption(transaction)
+            prepareForDecryption(localProtocolStore, transaction)
             handleResult(
                 Result { try messageDecrypter.decryptEnvelope(envelope, envelopeData: nil, transaction: transaction) },
                 envelope
@@ -135,7 +138,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
     private func expectDecryptionFailure(type: SSKProtoEnvelopeType,
                                          destinationIdentity: OWSIdentity,
                                          destinationUuid: UUID? = nil,
-                                         prepareForDecryption: (SDSAnyWriteTransaction) -> Void = { _ in },
+                                         prepareForDecryption: (SignalProtocolStore, SDSAnyWriteTransaction) -> Void = { _, _ in },
                                          isExpectedError: (Error) -> Bool) {
         generateAndDecrypt(type: type,
                            destinationIdentity: destinationIdentity,
@@ -240,8 +243,8 @@ class MessageDecryptionTest: SSKBaseTestSwift {
 
         expectDecryptionFailure(type: .prekeyBundle,
                                 destinationIdentity: .aci,
-                                prepareForDecryption: { transaction in
-            signalProtocolStore(for: .aci).signedPreKeyStore.removeAll(transaction)
+                                prepareForDecryption: { protocolStore, transaction in
+                protocolStore.signedPreKeyStore.removeAll(tx: transaction.asV2Write)
         }) { error in
             if let error = error as? OWSError {
                 let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
@@ -258,8 +261,8 @@ class MessageDecryptionTest: SSKBaseTestSwift {
 
         expectDecryptionFailure(type: .unidentifiedSender,
                                 destinationIdentity: .aci,
-                                prepareForDecryption: { transaction in
-            signalProtocolStore(for: .aci).signedPreKeyStore.removeAll(transaction)
+                                prepareForDecryption: { protocolStore, transaction in
+            protocolStore.signedPreKeyStore.removeAll(tx: transaction.asV2Write)
         }) { error in
             if let error = error as? OWSError {
                 let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
@@ -280,8 +283,8 @@ class MessageDecryptionTest: SSKBaseTestSwift {
 
         expectDecryptionFailure(type: .prekeyBundle,
                                 destinationIdentity: .aci,
-                                prepareForDecryption: { transaction in
-            signalProtocolStore(for: .aci).preKeyStore.removeAll(transaction)
+                                prepareForDecryption: { protocolStore, transaction in
+            protocolStore.preKeyStore.removeAll(tx: transaction.asV2Write)
         }) { error in
             if let error = error as? OWSError {
                 let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
@@ -298,8 +301,8 @@ class MessageDecryptionTest: SSKBaseTestSwift {
 
         expectDecryptionFailure(type: .unidentifiedSender,
                                 destinationIdentity: .aci,
-                                prepareForDecryption: { transaction in
-            signalProtocolStore(for: .aci).preKeyStore.removeAll(transaction)
+                                prepareForDecryption: { protocolStore, transaction in
+            protocolStore.preKeyStore.removeAll(tx: transaction.asV2Write)
         }) { error in
             if let error = error as? OWSError {
                 let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]

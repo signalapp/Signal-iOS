@@ -28,13 +28,14 @@ static const NSInteger kMaxPrekeyUpdateFailureCount = 5;
 
 static BOOL needsSignedPreKeyRotation(OWSIdentity identity, SDSAnyReadTransaction *transaction)
 {
-    SSKSignedPreKeyStore *store = [SSKEnvironment signalProtocolStoreForIdentity:identity].signedPreKeyStore;
+    NSInteger failureCount = [TSPreKeyManager preKeyFailureCountWithIdentity:identity transaction:transaction];
     // Only disable message sending if we have failed more than N times...
-    if ([store prekeyUpdateFailureCountWithTransaction:transaction] < kMaxPrekeyUpdateFailureCount) {
+    if (failureCount < kMaxPrekeyUpdateFailureCount) {
         return NO;
     }
     // ...over a period of at least M days.
-    NSDate *_Nullable firstFailureDate = [store firstPrekeyUpdateFailureDateWithTransaction:transaction];
+    NSDate *_Nullable firstFailureDate = [TSPreKeyManager firstPreKeyFailureDateWithIdentity:identity
+                                                                                 transaction:transaction];
     // If firstFailureDate is nil, the time interval will be zero.
     return fabs(firstFailureDate.timeIntervalSinceNow) >= kSignedPreKeyUpdateFailureMaxFailureDuration;
 }
@@ -76,6 +77,8 @@ static BOOL needsSignedPreKeyRotation(OWSIdentity identity, SDSAnyReadTransactio
 #if TESTABLE_BUILD
 + (void)storeFakePreKeyUploadFailuresForIdentity:(OWSIdentity)identity
 {
+    // TODO(PQXDH): Temporarily Disabled
+    /*
     SSKSignedPreKeyStore *store = [self signalProtocolStoreForIdentity:identity].signedPreKeyStore;
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         NSDate *firstFailureDate = [NSDate dateWithTimeIntervalSinceNow:-kSignedPreKeyUpdateFailureMaxFailureDuration];
@@ -83,6 +86,7 @@ static BOOL needsSignedPreKeyRotation(OWSIdentity identity, SDSAnyReadTransactio
                           firstFailureDate:firstFailureDate
                                transaction:transaction];
     });
+     */
 }
 #endif
 

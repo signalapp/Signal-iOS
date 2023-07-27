@@ -498,9 +498,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
             Logger.warn("Archiving session for undecryptable message from \(senderId)")
             // PNI TODO: make this dependent on destinationUuid
-            Self.signalProtocolStore(for: .aci).sessionStore.archiveSession(for: sourceAddress,
-                                                                            deviceId: Int32(envelope.sourceDevice),
-                                                                            transaction: transaction)
+            DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.archiveSession(
+                for: sourceAddress,
+                deviceId: Int32(envelope.sourceDevice),
+                tx: transaction.asV2Write
+            )
 
             trySendNullMessage(in: contactThread, senderId: senderId, transaction: transaction)
             return true
@@ -533,7 +535,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             }
 
             let protocolAddress = try ProtocolAddress(uuid: identifiedEnvelope.sourceServiceId.uuidValue, deviceId: deviceId)
-            let signalProtocolStore = signalProtocolStore(for: localIdentity)
+            let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: localIdentity)
 
             let plaintext: [UInt8]
             switch cipherType {
@@ -654,7 +656,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         guard let encryptedData = incomingEnvelope.envelope.content else {
             throw OWSAssertionError("UD Envelope is missing content.")
         }
-        let signalProtocolStore = Self.signalProtocolStore(for: localIdentity)
+        let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: localIdentity)
 
         let cipher = try SMKSecretSessionCipher(
             sessionStore: signalProtocolStore.sessionStore,

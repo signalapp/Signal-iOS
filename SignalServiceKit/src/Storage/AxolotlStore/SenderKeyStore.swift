@@ -468,7 +468,7 @@ private struct KeyRecipient: Codable, Dependencies {
         }
         let deviceIds = recipient.deviceIds
         let protocolAddresses = try deviceIds.map { try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: $0) }
-        let sessionStore = signalProtocolStore(for: .aci).sessionStore
+        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         let devices: [Device] = try protocolAddresses.map {
             // We have to fetch the registrationId since deviceIds can be reused.
             // By comparing a set of (deviceId,registrationId) structs, we should be able to detect reused
@@ -476,7 +476,7 @@ private struct KeyRecipient: Codable, Dependencies {
             let registrationId = try sessionStore.loadSession(
                 for: SignalServiceAddress(from: $0),
                 deviceId: Int32($0.deviceId),
-                transaction: transaction
+                tx: transaction.asV2Read
             )?.remoteRegistrationId()
 
             return Device(deviceId: $0.deviceId, registrationId: registrationId)

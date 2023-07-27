@@ -22,8 +22,8 @@ class DebugUISessionState: DebugUIPage, Dependencies {
                 }),
                 OWSTableItem(title: "Log All Sessions", actionBlock: {
                     self.databaseStorage.read { transaction in
-                        let sessionStore = self.signalProtocolStore(for: .aci).sessionStore
-                        sessionStore.printAllSessions(transaction: transaction)
+                        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+                        sessionStore.printAll(tx: transaction.asV2Read)
                     }
                 }),
                 OWSTableItem(title: "Toggle Key Change", actionBlock: {
@@ -31,14 +31,14 @@ class DebugUISessionState: DebugUIPage, Dependencies {
                 }),
                 OWSTableItem(title: "Delete All Sessions", actionBlock: {
                     self.databaseStorage.write { transaction in
-                        let sessionStore = self.signalProtocolStore(for: .aci).sessionStore
-                        sessionStore.deleteAllSessions(for: contactThread.contactAddress, transaction: transaction)
+                        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+                        sessionStore.deleteAllSessions(for: contactThread.contactAddress, tx: transaction.asV2Write)
                     }
                 }),
                 OWSTableItem(title: "Archive All Sessions", actionBlock: {
                     self.databaseStorage.write { transaction in
-                        let sessionStore = self.signalProtocolStore(for: .aci).sessionStore
-                        sessionStore.archiveAllSessions(for: contactThread.contactAddress, transaction: transaction)
+                        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+                        sessionStore.archiveAllSessions(for: contactThread.contactAddress, tx: transaction.asV2Write)
                     }
                 }),
                 OWSTableItem(title: "Send Session Reset", actionBlock: {
@@ -66,8 +66,8 @@ class DebugUISessionState: DebugUIPage, Dependencies {
         items += [
             OWSTableItem(title: "Clear Session and Identity Store", actionBlock: {
                 self.databaseStorage.write { transaction in
-                    let sessionStore = self.signalProtocolStore(for: .aci).sessionStore
-                    sessionStore.resetSessionStore(transaction)
+                    let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+                    sessionStore.resetSessionStore(tx: transaction.asV2Write)
                     OWSIdentityManager.shared.clearIdentityState(transaction)
                 }
             }),

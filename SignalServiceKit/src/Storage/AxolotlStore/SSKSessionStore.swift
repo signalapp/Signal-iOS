@@ -241,7 +241,7 @@ extension SSKSessionStore {
     }
 }
 
-extension SSKSessionStore: SessionStore {
+extension SSKSessionStore: LibSignalClient.SessionStore {
     public func loadSession(for address: ProtocolAddress, context: StoreContext) throws -> SessionRecord? {
         return try loadSession(for: SignalServiceAddress(from: address),
                                deviceId: Int32(bitPattern: address.deviceId),

@@ -100,7 +100,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
     private let identityManager: Shims.IdentityManager
     private let preKeyManager: Shims.PreKeyManager
-    private let pniSignedPreKeyStore: Shims.SignedPreKeyStore
+    private let pniSignedPreKeyStore: SignalSignedPreKeyStore
     private let tsAccountManager: Shims.TSAccountManager
 
     init(
@@ -108,7 +108,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         pniDistributionParameterBuilder: PniDistributionParamaterBuilder,
         identityManager: Shims.IdentityManager,
         preKeyManager: Shims.PreKeyManager,
-        pniSignedPreKeyStore: Shims.SignedPreKeyStore,
+        pniSignedPreKeyStore: SignalSignedPreKeyStore,
         tsAccountManager: Shims.TSAccountManager
     ) {
         self.schedulers = schedulers
@@ -180,7 +180,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         pniSignedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
             signedPreKeyId: newSignedPreKeyRecord.id,
             signedPreKeyRecord: newSignedPreKeyRecord,
-            transaction: transaction
+            tx: transaction
         )
 
         tsAccountManager.setPniRegistrationId(
