@@ -805,7 +805,13 @@ extension BodyRangesTextView {
     public static var pasteboardType: String { SignalAttachment.bodyRangesPasteboardType }
 
     open override func copy(_ sender: Any?) {
-        Self.copyToPasteboard(editableBody.messageBody)
+        let messageBody: MessageBody
+        if selectedRange.length > 0 {
+            messageBody = editableBody.messageBody(forHydratedTextSubrange: selectedRange)
+        } else {
+            messageBody = editableBody.messageBody
+        }
+        Self.copyToPasteboard(messageBody)
     }
 
     open override func paste(_ sender: Any?) {
