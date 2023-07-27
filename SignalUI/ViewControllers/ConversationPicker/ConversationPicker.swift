@@ -337,6 +337,13 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
                 switch thread {
                 case let contactThread as TSContactThread:
+                    let isThreadHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
+                        contactThread.contactAddress,
+                        tx: transaction
+                    )
+                    if isThreadHidden {
+                        return
+                    }
                     let item = self.buildContactItem(
                         contactThread.contactAddress,
                         isBlocked: isThreadBlocked,
@@ -399,6 +406,11 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 )
 
                 if isContactBlocked {
+                    return
+                }
+
+                let isRecipientHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: transaction)
+                if isRecipientHidden {
                     return
                 }
 
