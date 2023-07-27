@@ -181,24 +181,11 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             /// Won't show the ring even if there are stories.
             case disabled
             /// Shows the ring based on the provided state; won't observe updates.
-            case fixed(StoryState)
+            case fixed(StoryContextViewState)
             /// Shows the ring if needed and observes story state changes.
             /// Optional initial value to speed up first load, if not provided state
             /// will be loaded on its own.
-            case autoUpdate(state: StoryState? = nil)
-        }
-
-        public enum StoryState: Equatable {
-            case unviewed
-            case viewed
-            case noStories
-
-            var hasStoriesToDisplay: Bool {
-                switch self {
-                case .noStories: return false
-                case .viewed, .unviewed: return true
-                }
-            }
+            case autoUpdate(state: StoryContextViewState? = nil)
         }
 
         public var storyConfiguration: StoryConfiguration = .disabled
@@ -447,7 +434,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     override public func layoutSubviews() {
         super.layoutSubviews()
 
-        let storyState: Configuration.StoryState?
+        let storyState: StoryContextViewState?
         switch configuration.storyConfiguration {
         case .disabled:
             storyState = nil
@@ -640,7 +627,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                         self?.stopObservingStoryChanges()
                         return
                     }
-                    let newStoryState: Configuration.StoryState = {
+                    let newStoryState: StoryContextViewState = {
                         guard
                             StoryManager.areStoriesEnabled,
                             associatedData?.hasUnexpiredStories ?? false

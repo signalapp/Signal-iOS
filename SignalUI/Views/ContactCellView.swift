@@ -43,6 +43,8 @@ public class ContactCellConfiguration: NSObject {
 
     public var badged = true // TODO: Badges — Default false? Configure each use-case?
 
+    public var storyState: StoryContextViewState?
+
     public var hasAccessoryText: Bool {
         accessoryMessage?.nilIfEmpty != nil
     }
@@ -106,6 +108,16 @@ public class ContactCellView: ManualStackView {
 
     public static let avatarTextHSpacing: CGFloat = 12
 
+    private lazy var groupStoryBadgeView: UIView = {
+        let backgroundView = UIView.container()
+        let symbolView = UIImageView(image: UIImage(named: "stories-fill-compact"))
+        backgroundView.addSubview(symbolView)
+        symbolView.tintColor = .ows_white
+        symbolView.autoSetDimensions(to: .square(12))
+        symbolView.autoCenterInSuperview()
+        return backgroundView
+    }()
+
     private let nameLabel = CVLabel()
     private let subtitleLabel = CVLabel()
     private let accessoryLabel = CVLabel()
@@ -159,6 +171,34 @@ public class ContactCellView: ManualStackView {
             config.dataSource = avatarDataSource
             config.addBadgeIfApplicable = configuration.badged
             config.localUserDisplayMode = configuration.localUserDisplayMode
+            if let storyState = configuration.storyState {
+                config.storyConfiguration = .fixed(storyState)
+            } else {
+                config.storyConfiguration = .disabled
+            }
+        }
+
+        if avatarDataSource?.isGroupAvatar ?? false,
+           let storyState = configuration.storyState {
+            // Group story. Add badge
+            avatarView.addSubview(groupStoryBadgeView)
+            let badgeColor: UIColor
+            switch storyState {
+            case .unviewed:
+                badgeColor = .ows_accentBlue
+            case .viewed, .noStories:
+                badgeColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray25
+            }
+            let size: CGFloat = 20
+            groupStoryBadgeView.backgroundColor = badgeColor
+            groupStoryBadgeView.layer.cornerRadius = size/2
+            groupStoryBadgeView.layer.masksToBounds = true
+            groupStoryBadgeView.autoSetDimensions(to: .square(size))
+            groupStoryBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -2)
+            groupStoryBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: -5)
+        } else {
+            // Not a group or not a story. Remove badge
+            groupStoryBadgeView.removeFromSuperview()
         }
 
         // Update fonts to reflect changes to dynamic type.

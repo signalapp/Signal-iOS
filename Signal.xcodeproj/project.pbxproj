@@ -1252,6 +1252,7 @@
 		B6F509971AA53F760068F56A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */; };
 		B9439F3DDBE241269273DD6F /* Pods_SignalServiceKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */; };
+		B99B155D2A71BA5200E26DAC /* StoryContextViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
 		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
@@ -3845,6 +3846,7 @@
 		B6BC3D0C1AA544B100C2907F /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = translations/da.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6F509961AA53F760068F56A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = translations/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
+		B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextViewState.swift; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHistoryTableSheetViewController.swift; sourceTree = "<group>"; };
@@ -5644,6 +5646,7 @@
 				3402A9D8271D953A0084CBAE /* Environment */,
 				34330A581E7875FB00DF2FB9 /* Fonts */,
 				34A955B7271B553D00B05242 /* Payments */,
+				B99B155B2A71B9F300E26DAC /* Stories */,
 				34A954C9271B4BE600B05242 /* UI */,
 				D9A3E22E2A0DABC000E2A8B5 /* Usernames */,
 				34A95502271B510400B05242 /* Utils */,
@@ -7720,6 +7723,14 @@
 				1466AB262817F7E7003B3D9F /* PluralAware.stringsdict */,
 			);
 			name = Translations;
+			sourceTree = "<group>";
+		};
+		B99B155B2A71B9F300E26DAC /* Stories */ = {
+			isa = PBXGroup;
+			children = (
+				B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */,
+			);
+			path = Stories;
 			sourceTree = "<group>";
 		};
 		C182C4BC29E45D64007F7A7C /* Edit */ = {
@@ -11087,6 +11098,7 @@
 				3402AA5B271D9DCD0084CBAE /* StickerPackCollectionView.swift in Sources */,
 				3402AA3E271D9DCD0084CBAE /* StickerPackDataSource.swift in Sources */,
 				3402AA4D271D9DCD0084CBAE /* StickerView.swift in Sources */,
+				B99B155D2A71BA5200E26DAC /* StoryContextViewState.swift in Sources */,
 				88B6D674280770C4005D86EC /* StoryMessage+SignalUI.swift in Sources */,
 				88F5FA9428EBD4CF007AA1BF /* StorySharing.swift in Sources */,
 				3402A9DA271D953B0084CBAE /* SUIEnvironment.swift in Sources */,

@@ -493,21 +493,12 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     )
                 }
 
-                let storyItems = searchResults.storyThreads.compactMap { storyThread -> StoryConversationItem? in
-                    let isThreadBlocked = self.blockingManager.isThreadBlocked(
-                        storyThread,
-                        transaction: transaction
-                    )
-
-                    if isThreadBlocked {
-                        return nil
-                    }
-
-                    return StoryConversationItem.from(
-                        thread: storyThread,
-                        isBlocked: isThreadBlocked
-                    )
-                }
+                let storyItems = StoryConversationItem.buildItems(
+                    from: searchResults.storyThreads,
+                    excludeHiddenContexts: false,
+                    blockingManager: self.blockingManager,
+                    transaction: transaction
+                )
 
                 return ConversationCollection(
                     contactConversations: contactItems,
@@ -1316,6 +1307,9 @@ internal class ConversationPickerCell: ContactTableViewCell {
 
         if let storyItem = conversationItem as? StoryConversationItem {
             configuration.attributedSubtitle = storyItem.subtitle(transaction: transaction)?.asAttributedString
+            configuration.storyState = storyItem.storyState
+        } else {
+            configuration.storyState = nil
         }
 
         super.configure(configuration: configuration, transaction: transaction)

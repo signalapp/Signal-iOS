@@ -282,6 +282,8 @@ public struct StoryConversationItem {
         }
     }
 
+    public var storyState: StoryContextViewState?
+
     public static func allItems(
         includeImplicitGroupThreads: Bool,
         excludeHiddenContexts: Bool,
@@ -303,20 +305,17 @@ public struct StoryConversationItem {
             return thread.lastSentStoryTimestamp?.uint64Value ?? 0
         }
 
-        return AnyThreadFinder()
-            .storyThreads(
-                includeImplicitGroupThreads: includeImplicitGroupThreads,
-                transaction: transaction
-            )
-            .lazy
-            .compactMap { (thread: TSThread) -> (TSThread, StoryContextAssociatedData?)? in
-                let associatedData = StoryFinder.associatedData(for: thread, transaction: transaction)
-                if excludeHiddenContexts, associatedData?.isHidden ?? false {
-                    return nil
-                }
-                return (thread, associatedData)
-            }
-            .sorted { lhs, rhs in
+        let threads = AnyThreadFinder().storyThreads(
+            includeImplicitGroupThreads: includeImplicitGroupThreads,
+            transaction: transaction
+        )
+
+        return buildItems(
+            from: threads,
+            excludeHiddenContexts: excludeHiddenContexts,
+            blockingManager: blockingManager,
+            transaction: transaction,
+            sortingBy: { lhs, rhs in
                 if (lhs.0 as? TSPrivateStoryThread)?.isMyStory == true { return true }
                 if (rhs.0 as? TSPrivateStoryThread)?.isMyStory == true { return false }
                 if let priorityDateThreshold = prioritizeThreadsCreatedAfter {
@@ -328,8 +327,53 @@ public struct StoryConversationItem {
                 }
                 return sortTime(for: lhs.1, thread: lhs.0) > sortTime(for: rhs.1, thread: rhs.0)
             }
-            .map(\.0)
-            .compactMap { thread -> Self? in
+        )
+    }
+
+    public static func buildItems(
+        from threads: [TSThread],
+        excludeHiddenContexts: Bool,
+        blockingManager: BlockingManager,
+        transaction: SDSAnyReadTransaction,
+        sortingBy areInIncreasingOrderFunc: (((TSThread, StoryContextAssociatedData?), (TSThread, StoryContextAssociatedData?)) -> Bool)? = nil
+    ) -> [Self] {
+        let outgoingStories = StoryFinder
+            .outgoingStories(transaction: transaction)
+            .reduce(
+                into: (privateStoryThreadUniqueIDs: Set<String>(), groupIDs: Set<Data>())
+            ) { partialResult, story in
+                if let groupID = story.groupId {
+                    partialResult.groupIDs.insert(groupID)
+                    return
+                }
+
+                switch story.manifest {
+                case .incoming:
+                    break
+                case .outgoing(recipientStates: let recipientStates):
+                    partialResult.privateStoryThreadUniqueIDs.formUnion(
+                        recipientStates.values.lazy
+                            .flatMap(\.contexts)
+                            .map(\.uuidString)
+                    )
+                }
+            }
+
+        var threadsAndAssociatedData = threads
+            .compactMap { (thread: TSThread) -> (TSThread, StoryContextAssociatedData?)? in
+                let associatedData = StoryFinder.associatedData(for: thread, transaction: transaction)
+                if excludeHiddenContexts, associatedData?.isHidden ?? false {
+                    return nil
+                }
+                return (thread, associatedData)
+            }
+
+        if let areInIncreasingOrderFunc {
+            threadsAndAssociatedData.sort(by: areInIncreasingOrderFunc)
+        }
+
+        return threadsAndAssociatedData
+            .compactMap { thread, associatedData -> Self? in
                 let isThreadBlocked = blockingManager.isThreadBlocked(
                     thread,
                     transaction: transaction
@@ -339,15 +383,48 @@ public struct StoryConversationItem {
                     return nil
                 }
 
+                // Associated data tracks view state for incoming stories.
+                // It does not track our own outgoing stories, so we need
+                // to check that separately.
+                lazy var threadHasOutgoingStories: Bool = {
+                    if let groupThread = thread as? TSGroupThread {
+                        if outgoingStories.groupIDs.contains(groupThread.groupId) {
+                            return true
+                        }
+                    } else {
+                        if outgoingStories.privateStoryThreadUniqueIDs.contains(thread.uniqueId) {
+                            return true
+                        }
+                    }
+                    return false
+                }()
+
+                let storyState: StoryContextViewState
+
+                switch (associatedData?.hasUnviewedStories, associatedData?.hasUnexpiredStories) {
+                case (true, _):
+                    // There is an unviewed thread
+                    storyState = .unviewed
+                case (_, true),
+                    (_, _) where threadHasOutgoingStories:
+                    // There are unexpired or outgoing stories
+                    storyState = .viewed
+                default:
+                    // There are no stories
+                    storyState = .noStories
+                }
+
                 return .from(
                     thread: thread,
+                    storyState: storyState,
                     isBlocked: isThreadBlocked
                 )
             }
     }
 
-    public static func from(
+    private static func from(
         thread: TSThread,
+        storyState: StoryContextViewState?,
         isBlocked: Bool
     ) -> Self? {
         let backingItem: StoryConversationItem.ItemType? = {
@@ -373,7 +450,7 @@ public struct StoryConversationItem {
         guard let backingItem = backingItem else {
             return nil
         }
-        return .init(backingItem: backingItem)
+        return .init(backingItem: backingItem, storyState: storyState)
     }
 }
 

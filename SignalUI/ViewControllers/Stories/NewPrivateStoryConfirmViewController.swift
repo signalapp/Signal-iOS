@@ -185,7 +185,8 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
                     backingItem: .privateStory(.init(
                         storyThreadId: newStory.uniqueId,
                         isMyStory: false
-                    ))
+                    )),
+                    storyState: nil
                 )]
             )
         }
