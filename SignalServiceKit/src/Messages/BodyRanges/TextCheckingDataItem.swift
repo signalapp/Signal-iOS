@@ -78,13 +78,10 @@ public struct TextCheckingDataItem: Equatable {
             var customUrl: URL?
             let resultType: NSTextCheckingResult.CheckingType = match.resultType
             if resultType.contains(.orthography) {
-                Logger.verbose("orthography data type; skipping")
                 return nil
             } else if resultType.contains(.spelling) {
-                Logger.verbose("spelling data type; skipping")
                 return nil
             } else if resultType.contains(.grammar) {
-                Logger.verbose("grammar data type; skipping")
                 return nil
             } else if resultType.contains(.date) {
                 dataType = .date
@@ -106,53 +103,35 @@ public struct TextCheckingDataItem: Equatable {
                     customUrl = calendarUrl
                 }
             } else if resultType.contains(.address) {
-                Logger.verbose("address")
-
                 dataType = .address
 
-                // Skip building customUrl if we already have a URL.
+                // Skip building a custom URL if we have a match URL.
                 if matchUrl == nil {
-
-                    // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html
-                    guard let urlEncodedAddress = snippet.encodeURIComponent else {
-                        owsFailDebug("Could not URL encode address.")
-                        return nil
-                    }
-                    let urlString = "https://maps.apple.com/?q=" + urlEncodedAddress
-                    guard let mapUrl = URL(string: urlString) else {
-                        owsFailDebug("Couldn't build mapUrl.")
-                        return nil
-                    }
-                    customUrl = mapUrl
+                    // By default, build a query URL for Apple Maps.
+                    customUrl = Self.buildAddressQueryUrl(
+                        appScheme: "maps",
+                        addressToQuery: snippet
+                    )
                 }
             } else if resultType.contains(.link) {
                 if let url = matchUrl,
                    url.absoluteString.lowercased().hasPrefix("mailto:"),
                    !snippet.lowercased().hasPrefix("mailto:") {
-                    Logger.verbose("emailAddress")
                     dataType = .emailAddress
                 } else {
-                    Logger.verbose("link")
                     dataType = .link
                 }
             } else if resultType.contains(.quote) {
-                Logger.verbose("quote")
                 return nil
             } else if resultType.contains(.dash) {
-                Logger.verbose("dash")
                 return nil
             } else if resultType.contains(.replacement) {
-                Logger.verbose("replacement")
                 return nil
             } else if resultType.contains(.correction) {
-                Logger.verbose("correction")
                 return nil
             } else if resultType.contains(.regularExpression) {
-                Logger.verbose("regularExpression")
                 return nil
             } else if resultType.contains(.phoneNumber) {
-                Logger.verbose("phoneNumber")
-
                 dataType = .phoneNumber
 
                 // Skip building customUrl if we already have a URL.
@@ -171,8 +150,6 @@ public struct TextCheckingDataItem: Equatable {
                     customUrl = phoneNumberUrl
                 }
             } else if resultType.contains(.transitInformation) {
-                Logger.verbose("transitInformation")
-
                 dataType = .transitInformation
 
                 // Skip building customUrl if we already have a URL.
@@ -196,8 +173,6 @@ public struct TextCheckingDataItem: Equatable {
                     customUrl = transitUrl
                 }
             } else {
-                let snippet = (text as NSString).substring(with: match.range)
-                Logger.verbose("snippet: '\(snippet)'")
                 owsFailDebug("Unknown link type: \(resultType.rawValue)")
                 return nil
             }
@@ -214,5 +189,28 @@ public struct TextCheckingDataItem: Equatable {
                 url: url
             )
         }
+    }
+
+    /// Builds a URL for passing the given address to another app to query.
+    ///
+    /// - Parameter appScheme
+    /// A scheme recognized by the app that should handle the address query.
+    /// - Parameter addressToQuery
+    /// The address the destination app should query.
+    /// - Returns
+    /// The URL, or `nil` if the URL could not be constructed.
+    public static func buildAddressQueryUrl(
+        appScheme: String,
+        addressToQuery: String
+    ) -> URL? {
+        var components = URLComponents()
+        components.scheme = appScheme
+        components.host = ""
+        components.queryItems = [URLQueryItem(
+            name: "q",
+            value: addressToQuery
+        )]
+
+        return components.url
     }
 }

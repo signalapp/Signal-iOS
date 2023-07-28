@@ -49,6 +49,8 @@
 	<string>public.app-category.social-networking</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>maps</string>
+		<string>comgooglemaps</string>
 		<string>mailto</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>

@@ -43,10 +43,8 @@ extension ConversationViewController {
             case .link:
                 didTapLink(dataItem: dataItem)
             case .address:
-                // Open in iOS Maps app using URL.
-                //
-                // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html
-                UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
+                // Treat taps and long-press the same.
+                didLongPressAddress(dataItem: dataItem)
             case .phoneNumber:
                 // Initiate PSTN call using URL.
                 //
@@ -60,9 +58,6 @@ extension ConversationViewController {
                 // I'm not sure if there's official docs around these links.
                 UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
             case .transitInformation:
-                // Open in iOS maps app using URL.
-                //
-                // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html
                 UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
             case .emailAddress:
                 didTapEmail(dataItem: dataItem)
@@ -89,12 +84,7 @@ extension ConversationViewController {
             case .link:
                 didLongPressLink(dataItem: dataItem)
             case .address:
-                // Open in iOS Maps app using URL.
-                //
-                // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html
-                //
-                // TODO: Show action sheet with options for addresses.
-                UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
+                didLongPressAddress(dataItem: dataItem)
             case .phoneNumber:
                 didLongPressPhoneNumber(dataItem: dataItem)
             case .date:
@@ -105,9 +95,6 @@ extension ConversationViewController {
                 // TODO: Show action sheet with options for dates.
                 UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
             case .transitInformation:
-                // Open in iOS maps app using URL.
-                //
-                // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html
                 UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
             case .emailAddress:
                 didLongPressEmail(dataItem: dataItem)
@@ -183,6 +170,52 @@ extension ConversationViewController {
                                                 style: .default) { _ in
             AttachmentSharing.showShareUI(for: dataItem.url, sender: self)
         })
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        presentActionSheet(actionSheet)
+    }
+
+    private func didLongPressAddress(dataItem: TextCheckingDataItem) {
+        let addressString = dataItem.snippet
+
+        let actionSheet = ActionSheetController(title: addressString)
+
+        // The URL on an address data item is, by default, an Apple Maps URL.
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS",
+                comment: "A label for a button that will open an address in Apple Maps. \"Maps\" is a proper noun referring to the Apple Maps app, and should be translated as such."
+            ),
+            handler: { _ in
+                UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
+            }
+        ))
+
+        if
+            let googleMapsUrl = TextCheckingDataItem.buildAddressQueryUrl(
+                appScheme: "comgooglemaps",
+                addressToQuery: addressString
+            ),
+            UIApplication.shared.canOpenURL(googleMapsUrl)
+        {
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString(
+                    "MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS",
+                    comment: "A label for a button that will open an address in Google Maps. \"Google Maps\" is a proper noun referring to the Google Maps app, and should be translated as such."
+                ),
+                handler: { _ in
+                    UIApplication.shared.open(googleMapsUrl, options: [:], completionHandler: nil)
+                }
+            ))
+        }
+
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.copyButton,
+            handler: { _ in
+                UIPasteboard.general.string = addressString
+            }
+        ))
+
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         presentActionSheet(actionSheet)
