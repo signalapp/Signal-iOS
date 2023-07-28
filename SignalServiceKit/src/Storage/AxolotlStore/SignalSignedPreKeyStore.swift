@@ -34,6 +34,8 @@ public protocol SignalSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
     func clearPreKeyUpdateFailureCount(tx: DBWriteTransaction)
 
     // MARK: - Testing
+#if TESTABLE_BUILD
+
     func removeAll(tx: DBWriteTransaction)
 
     func setPrekeyUpdateFailureCount(
@@ -41,6 +43,8 @@ public protocol SignalSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
         firstFailureDate: Date,
         tx: DBWriteTransaction
     )
+
+#endif
 }
 
 extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
@@ -103,6 +107,8 @@ extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
 
     // MARK: - Testing
 
+#if TESTABLE_BUILD
+
     public func removeAll(tx: DBWriteTransaction) {
         removeAll(SDSDB.shimOnlyBridge(tx))
     }
@@ -117,6 +123,8 @@ extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
             firstFailureDate: firstFailureDate,
             transaction: SDSDB.shimOnlyBridge(tx))
     }
+
+#endif
 }
 
 internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {

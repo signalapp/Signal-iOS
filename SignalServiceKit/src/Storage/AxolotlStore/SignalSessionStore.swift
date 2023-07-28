@@ -55,9 +55,11 @@ public protocol SignalSessionStore: LibSignalClient.SessionStore {
 
     // MARK: - Debug
 
-    func removeAll(tx: DBWriteTransaction)
-
     func printAll(tx: DBReadTransaction)
+
+#if TESTABLE_BUILD
+    func removeAll(tx: DBWriteTransaction)
+#endif
 }
 
 extension SSKSessionStore: SignalSessionStore {
@@ -94,11 +96,13 @@ extension SSKSessionStore: SignalSessionStore {
         deleteAllSessions(for: address, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func removeAll(tx: DBWriteTransaction) {
-        removeAll(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
     public func printAll(tx: DBReadTransaction) {
         printAllSessions(transaction: SDSDB.shimOnlyBridge(tx))
     }
+
+#if TESTABLE_BUILD
+    public func removeAll(tx: DBWriteTransaction) {
+        removeAll(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+#endif
 }

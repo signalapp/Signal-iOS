@@ -11,10 +11,11 @@ public protocol SignalPreKeyStore: LibSignalClient.PreKeyStore {
 
     func storePreKeyRecords(_ records: [SignalServiceKit.PreKeyRecord], tx: DBWriteTransaction)
 
-    func removeAll(tx: DBWriteTransaction)
-
     func cullPreKeyRecords(tx: DBWriteTransaction)
 
+#if TESTABLE_BUILD
+    func removeAll(tx: DBWriteTransaction)
+#endif
 }
 
 extension SSKPreKeyStore: SignalPreKeyStore {
@@ -22,11 +23,13 @@ extension SSKPreKeyStore: SignalPreKeyStore {
         storePreKeyRecords(records, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func removeAll(tx: DBWriteTransaction) {
-        removeAll(SDSDB.shimOnlyBridge(tx))
-    }
-
     public func cullPreKeyRecords(tx: DBWriteTransaction) {
         cullPreKeyRecords(transaction: SDSDB.shimOnlyBridge(tx))
     }
+
+#if TESTABLE_BUILD
+    public func removeAll(tx: DBWriteTransaction) {
+        removeAll(SDSDB.shimOnlyBridge(tx))
+    }
+#endif
 }

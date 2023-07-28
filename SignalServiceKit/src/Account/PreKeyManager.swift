@@ -237,6 +237,8 @@ public class PreKeyManagerImpl: PreKeyManager {
 
 // MARK: - Debug UI
 
+#if TESTABLE_BUILD
+
 public extension PreKeyManagerImpl {
 
     func storeFakePreKeyUploadFailures(for identity: OWSIdentity, tx: DBWriteTransaction) {
@@ -253,6 +255,8 @@ public extension PreKeyManagerImpl {
         checkPreKeys(shouldThrottle: false, tx: tx)
     }
 }
+
+#endif
 
 extension PreKeyManagerImpl {
     public enum Shims {
