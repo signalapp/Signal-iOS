@@ -133,7 +133,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     public override var bounds: CGRect {
         didSet {
-            guard oldValue.size.height != bounds.size.height else { return }
+            guard abs(oldValue.size.height - bounds.size.height) > 1 else { return }
 
             // Compensate for autolayout frame/bounds changes when animating in/out the quoted reply view.
             // This logic ensures the input toolbar stays pinned to the keyboard visually
