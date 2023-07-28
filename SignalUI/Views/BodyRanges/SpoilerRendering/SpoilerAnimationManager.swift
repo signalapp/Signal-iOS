@@ -92,6 +92,12 @@ public class SpoilerAnimationManager {
 
     public init() {}
 
+    /// Prepares a view for rendering spoilers, before actually having spoilers available
+    /// to render. (e.g. adds necessary subviews).
+    public func prepareViewForRendering(_ view: UIView) {
+        renderer?.prepareForRendering(onto: view)
+    }
+
     /// Add a view animator. Handles duplicates, so adding is idempotent.
     public func addViewAnimator(_ animator: SpoilerableViewAnimator) {
         if animators.contains(where: { $0.equals(animator)}) {

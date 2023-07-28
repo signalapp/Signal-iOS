@@ -25,20 +25,6 @@ float rand(uint x, uint y, uint z)
 /// in SpoilerParticleView.swift, as they are both schemas for interpreting
 /// the same shared memory across the CPU (swift) and GPU (metal).
 
-/// The GPU uses the elapsed time and rect position to create an RNG seed
-/// to determine the actual particle positions deterministically on each tick.
-/// This just contains metadata needed to draw each particle (a pointer to which
-/// rect to draw it in).
-/// For each one of these, the GPU will draw one little particle per layer.
-/// (We do this to have less repeated information copied from CPU to GPU.)
-struct ParticleSeed {
-    /// Index in the provided draw rects array to draw this particle into.
-    ushort drawRectIndex;
-    /// Index of this particle in the draw rect. Serves as a unique identifier
-    /// and part of the position random seeding.
-    ushort indexInDrawRect;
-};
-
 /// A rectangle to draw particles into, represented in
 /// the texture's coordinates.
 struct DrawRect {
@@ -67,13 +53,8 @@ struct DrawRect {
 struct Uniforms {
     /// The amount of time passed since the animation started, in milliseconds.
     uint elapsedTimeMs;
-    /// The number of particles seeds being rendered.
-    /// This determines the max number of threads used
-    /// and corresponds to the id value.
-    uint numParticleSeeds;
-    /// The number of layers to draw.
-    /// We draw one particle per layer for each seed.
-    uchar numParticleLayers;
+    /// The number of rects being drawn into.
+    uint numDrawRects;
 };
 
 // MARK: - Computation
@@ -128,40 +109,61 @@ kernel void clear_pass_func(texture2d<half, access::write> tex [[ texture(0) ]],
  * this is the index of the particle being drawn in the particles array.
  *
  * And the params themselves:
- * - parameter particleSeeds: A seed from which to generate particles, in other words the index
- * of the rect to draw it into, and an index _in_ that rect that serves to uniquely identify it from other seeds
- * in that rect). Indexed by `id`, with total capacity determined by the rect sizes and particle densities
- * (but we don't explicitly need it in here).
  * - parameter drawRects: The rects to draw into. They are uniquely identified by their origin.
  * - parameter uniforms: "Uniforms" is a term of art of data that is the same (uniform) across all
  * parallel threads. Stuff that is the same for all particles we are drawing.
  * - parameter id: Technically speaking, the thread's position in the grid. Serves as the index
  * into the particle array, since our "grid" is a 1d line of particles being drawn.
  */
-kernel void draw_particles_func(constant ParticleSeed *particleSeeds [[ buffer(0) ]],
-                                constant DrawRect *drawRects [[ buffer(1) ]],
-                                constant Uniforms &uniforms [[ buffer(2) ]],
+kernel void draw_particles_func(constant DrawRect *drawRects [[ buffer(0) ]],
+                                constant Uniforms &uniforms [[ buffer(1) ]],
                                 texture2d<half, access::write> tex [[ texture(0) ]],
                                 uint id [[ thread_position_in_grid ]]){
+
+    /// This constant must be the same as those in SpoilerParticleView.Constants.
+    /// Its replicated to avoid copying bytes from the cpu to the gpu.
+    half particleDensityPerLayer = 0.004f;
+
+    int numDrawRects = int(uniforms.numDrawRects);
+
+    // We have to find which rect to draw this particle in.
+    // To do so, iterate over the draw rects, checking the number
+    // of particles each has, until we hit the id of this particle,
+    // at which point we have found our target rect.
+    DrawRect rect;
+    uint particleCountSoFar = 0;
+    int particleIndexInDrawRect = -1;
+    for (int i = 0; i < numDrawRects; i++) {
+        rect = drawRects[i];
+        uint numParticlesInRect = uint(particleDensityPerLayer * float(rect.size.x) * float(rect.size.y));
+        particleCountSoFar += numParticlesInRect;
+        if (particleCountSoFar > id) {
+            particleIndexInDrawRect = particleCountSoFar - id;
+            break;
+        }
+    }
+
     // If the device doesn't support non-uniform thread groups, we
     // may end up with more compute passes than we have particles.
-    // Just early exit.
-    if (id >= uniforms.numParticleSeeds) {
+    // Just early exit if we didn't find a rect, which means
+    // this particle is "after" the last rect.
+    if (particleIndexInDrawRect < 0) {
         return;
     }
 
-    ParticleSeed particleSeed = particleSeeds[id];
-    DrawRect rect = drawRects[particleSeed.drawRectIndex];
-
     // We encode these constant values here to avoid copying the memory from
     // cpu to gpu constantly.
+    // These are exclusive to the GPU though, and unused by the cpu.
     uint minParticleLifetimeMs = 1000;
     uint maxAdditionalParticleLifetimeMs = 2000;
     // Measured in pixels per ms.
     float maxParticleVelocity = 0.01;
+    /// When we draw particles, we draw them in 3 layers in decreasing alpha
+    /// in each layer to give it a nice visual effect.
+    uchar numParticleLayers = 3;
 
     // Draw one particle per layer.
-    for (uchar layer = 0; layer < uniforms.numParticleLayers; layer++) {
+    for (uchar layer = 0; layer < numParticleLayers; layer++) {
 
         // We are going to use some pseudo-random number generators to produce
         // the particle info (position, speed, etc) based a seed for each particle.
@@ -181,7 +183,7 @@ kernel void draw_particles_func(constant ParticleSeed *particleSeeds [[ buffer(0
 
         // First lets generate seed (2): we take the index in the rect, but offset by
         // the layer so each particle in each layer gets a unique seed.
-        uint seedIndex = uint(particleSeed.indexInDrawRect) * uint(uniforms.numParticleLayers) + uint(layer);
+        uint seedIndex = uint(particleIndexInDrawRect) * uint(numParticleLayers) + uint(layer);
 
         // Now we compute the lifetime and how many times we've reached it (seed (3)).
         float lifetimeRel = rand(rect.origin.x, rect.origin.y, seedIndex);

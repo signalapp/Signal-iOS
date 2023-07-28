@@ -157,6 +157,7 @@ public class CVTextLabel: NSObject {
         AssertIsOnMainThread()
         label.config = config
         label.spoilerAnimationManager = spoilerAnimationManager
+        spoilerAnimationManager.prepareViewForRendering(view)
     }
 
     public func setIsCellVisible(_ isCellVisible: Bool) {

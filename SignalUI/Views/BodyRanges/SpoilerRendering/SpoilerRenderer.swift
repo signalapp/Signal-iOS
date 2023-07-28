@@ -107,6 +107,21 @@ public class SpoilerRenderer {
         NotificationCenter.default.removeObserver(self)
     }
 
+    /// Prepares a view for rendering spoilers, before actually having spoilers available
+    /// to render. (e.g. adds necessary subviews).
+    /// Only prepares a single tile at most.
+    public func prepareForRendering(onto view: UIView) {
+        if view.subviews.contains(where: { $0 is SpoilerParticleView }) {
+            return
+        }
+        let particleView = SpoilerParticleView(
+            metalConfig: metalConfig,
+            renderer: self
+        )
+        particleView.isInUse = false
+        view.addSubview(particleView)
+    }
+
     public func render(_ specs: [Spec], onto view: UIView) {
         // We pop from this array as we use the views.
         var particleViews = view.subviews.compactMap { $0 as? SpoilerParticleView }

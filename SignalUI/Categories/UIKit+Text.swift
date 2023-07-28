@@ -105,48 +105,17 @@ public extension NSTextContainer {
 
             let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
             var perLineResults = [R]()
-            layoutManager.enumerateLineFragments(forGlyphRange: glyphRange, using: { _, _, _, entireLineGlyphRange, _ in
-                guard
-                    let perLineGlyphRange = entireLineGlyphRange.intersection(glyphRange),
-                    perLineGlyphRange.location >= 0,
-                    perLineGlyphRange.length > 0
-                else {
+            layoutManager.enumerateEnclosingRects(
+                forGlyphRange: glyphRange,
+                withinSelectedGlyphRange: NSRange(location: NSNotFound, length: 0),
+                in: self
+            ) { rect, stop in
+                if rect.maxY > self.size.height {
+                    stop.pointee = true
                     return
                 }
-                var boundingRect = layoutManager.boundingRect(forGlyphRange: perLineGlyphRange, in: self)
-
-                // NSLayoutManager give us the _wrong_ bounding box values for RTL text
-                // that starts in the middle of a line. So this horrible, horrible code is an
-                // attempt to work around that. Its less "known good fix" and more "this was
-                // the spaghetti that stuck to the wall". If this breaks, may I suggest
-                // throwing more spaghetti?
-                if textStorage.string.naturalTextAlignment == .right, glyphRange.location > entireLineGlyphRange.location {
-                    // Grab the bounding rect from the line start to our target range.
-                    let prefixRect = layoutManager.boundingRect(
-                        forGlyphRange: NSRange(
-                            location: entireLineGlyphRange.location,
-                            length: glyphRange.location - entireLineGlyphRange.location
-                        ),
-                        in: self
-                    )
-                    // Its RTL-aware, so the prefix's rect might be before or after our target.
-                    // Check whether it straddles the start or end, and if so, move the start
-                    // or end accordingly.
-                    if prefixRect.maxX > boundingRect.maxX, prefixRect.minX < boundingRect.maxX {
-                        let diff = boundingRect.maxX - prefixRect.minX
-                        boundingRect.size.width -= diff
-                    } else if prefixRect.minX < boundingRect.minX, prefixRect.maxX > boundingRect.minX {
-                        let diff = prefixRect.maxX - boundingRect.minX
-                        boundingRect.x += diff
-                        boundingRect.size.width -= diff
-                    }
-                }
-                boundingRect.x = max(0, boundingRect.x + textContainerInsets.leading)
-                boundingRect.y = max(0, boundingRect.y + textContainerInsets.top)
-                boundingRect.size.width = min(self.size.width - boundingRect.x, boundingRect.width)
-                boundingRect.size.height = min(self.size.height - boundingRect.y, boundingRect.height)
-                perLineResults.append(transform(boundingRect, value))
-            })
+                perLineResults.append(transform(rect, value))
+            }
             return perLineResults
         }
     }
