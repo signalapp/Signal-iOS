@@ -85,7 +85,7 @@ public class AppSetup {
             ows2FAManager: ows2FAManager,
             profileManager: profileManager,
             recipientHidingManager: recipientHidingManager,
-            signalProtocolServiceManager: signalProtocolStoreManager,
+            signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,

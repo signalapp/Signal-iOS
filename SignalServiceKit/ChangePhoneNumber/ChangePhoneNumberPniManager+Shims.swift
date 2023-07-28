@@ -90,7 +90,7 @@ class _ChangePhoneNumberPniManager_PreKeyManagerWrapper: _ChangePhoneNumberPniMa
         forIdentity identity: OWSIdentity,
         alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
     ) {
-        TSPreKeyManager.refreshOneTimePreKeys(
+        DependenciesBridge.shared.preKeyManager.refreshOneTimePreKeys(
             forIdentity: identity,
             alsoRefreshSignedPreKey: shouldRefreshSignedPreKey
         )

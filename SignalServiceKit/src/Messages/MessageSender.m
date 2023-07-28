@@ -31,7 +31,6 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSOutgoingMessage.h"
-#import "TSPreKeyManager.h"
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
 #import <SignalCoreKit/NSData+OWS.h>

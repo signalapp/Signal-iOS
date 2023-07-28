@@ -5,7 +5,7 @@
 
 import Foundation
 import SignalCoreKit
-import SignalServiceKit
+@testable import SignalServiceKit
 @testable import Signal
 
 extension RegistrationCoordinatorImpl {
@@ -164,10 +164,10 @@ public class _RegistrationCoordinator_OWS2FAManagerMock: _RegistrationCoordinato
 
 // MARK: - PreKeyManager
 
-public class _RegistrationCoordinator_PreKeyManagerMock: _RegistrationCoordinator_PreKeyManagerShim {
+public class _RegistrationCoordinator_PreKeyManagerMock: MockPreKeyManager {
     public var createPreKeysMock: ((ChatServiceAuth) -> Promise<Void>)?
 
-    public func createPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
+    override public func createPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
         return createPreKeysMock!(auth)
     }
 }

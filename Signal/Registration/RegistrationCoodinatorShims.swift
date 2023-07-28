@@ -18,7 +18,6 @@ extension RegistrationCoordinatorImpl {
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorShim
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorShim
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerShim
-        public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerShim
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerShim
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
@@ -34,7 +33,6 @@ extension RegistrationCoordinatorImpl {
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorWrapper
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorWrapper
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerWrapper
-        public typealias PreKeyManager = _RegistrationCoordinator_PreKeyManagerWrapper
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerWrapper
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
@@ -227,32 +225,6 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
 
     public func markRegistrationLockEnabled(_ tx: DBWriteTransaction) {
         manager.markRegistrationLockV2Enabled(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-}
-
-// MARK: - PreKeyManager
-
-public protocol _RegistrationCoordinator_PreKeyManagerShim {
-
-    func createPreKeys(
-        auth: ChatServiceAuth
-    ) -> Promise<Void>
-}
-
-public class _RegistrationCoordinator_PreKeyManagerWrapper: _RegistrationCoordinator_PreKeyManagerShim {
-
-    public init() {}
-
-    public func createPreKeys(
-        auth: ChatServiceAuth
-    ) -> Promise<Void> {
-        let (promise, future) = Promise<Void>.pending()
-        TSPreKeyManager.createPreKeys(
-            with: auth,
-            success: future.resolve,
-            failure: future.reject
-        )
-        return promise
     }
 }
 

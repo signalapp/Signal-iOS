@@ -320,7 +320,7 @@ private class IdentityManagerMock: LearnMyOwnPniManagerImpl.Shims.IdentityManage
 
 // MARK: PreKeyManager
 
-private class PreKeyManagerMock: LearnMyOwnPniManagerImpl.Shims.PreKeyManager {
+private class PreKeyManagerMock: MockPreKeyManager {
     private var createKeysFuture: Future<Void>?
 
     /// Completes a mocked operation that is async in the real app. Otherwise,
@@ -336,7 +336,7 @@ private class PreKeyManagerMock: LearnMyOwnPniManagerImpl.Shims.PreKeyManager {
         return true
     }
 
-    func createPniIdentityKeyAndUploadPreKeys() -> Promise<Void> {
+    override func createPreKeys(identity: OWSIdentity) -> Promise<Void> {
         guard createKeysFuture == nil else {
             XCTFail("Creation already in-flight!")
             return Promise(error: OWSGenericError("Creation already in-flight!"))

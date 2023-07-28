@@ -19,7 +19,7 @@ public struct RegistrationCoordinatorDependencies {
     public let messagePipelineSupervisor: RegistrationCoordinatorImpl.Shims.MessagePipelineSupervisor
     public let messageProcessor: RegistrationCoordinatorImpl.Shims.MessageProcessor
     public let ows2FAManager: RegistrationCoordinatorImpl.Shims.OWS2FAManager
-    public let preKeyManager: RegistrationCoordinatorImpl.Shims.PreKeyManager
+    public let preKeyManager: PreKeyManager
     public let profileManager: RegistrationCoordinatorImpl.Shims.ProfileManager
     public let pushRegistrationManager: RegistrationCoordinatorImpl.Shims.PushRegistrationManager
     public let receiptManager: RegistrationCoordinatorImpl.Shims.ReceiptManager
@@ -47,7 +47,7 @@ public struct RegistrationCoordinatorDependencies {
             messagePipelineSupervisor: RegistrationCoordinatorImpl.Wrappers.MessagePipelineSupervisor(object.messagePipelineSupervisor),
             messageProcessor: RegistrationCoordinatorImpl.Wrappers.MessageProcessor(object.messageProcessor),
             ows2FAManager: RegistrationCoordinatorImpl.Wrappers.OWS2FAManager(object.ows2FAManager),
-            preKeyManager: RegistrationCoordinatorImpl.Wrappers.PreKeyManager(),
+            preKeyManager: DependenciesBridge.shared.preKeyManager,
             profileManager: RegistrationCoordinatorImpl.Wrappers.ProfileManager(object.profileManager),
             pushRegistrationManager: RegistrationCoordinatorImpl.Wrappers.PushRegistrationManager(object.pushRegistrationManager),
             receiptManager: RegistrationCoordinatorImpl.Wrappers.ReceiptManager(object.receiptManager),

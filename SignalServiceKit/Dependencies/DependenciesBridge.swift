@@ -60,6 +60,8 @@ public class DependenciesBridge {
 
     public let learnMyOwnPniManager: LearnMyOwnPniManager
 
+    public let preKeyManager: PreKeyManager
+
     public let pniHelloWorldManager: PniHelloWorldManager
 
     public let recipientFetcher: RecipientFetcher
@@ -93,7 +95,7 @@ public class DependenciesBridge {
         ows2FAManager: OWS2FAManager,
         profileManager: ProfileManagerProtocol,
         recipientHidingManager: RecipientHidingManager,
-        signalProtocolServiceManager: SignalProtocolStoreManager,
+        signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
@@ -116,7 +118,7 @@ public class DependenciesBridge {
             ows2FAManager: ows2FAManager,
             profileManager: profileManager,
             recipientHidingManager: recipientHidingManager,
-            signalProtocolServiceManager: signalProtocolServiceManager,
+            signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
             storageServiceManager: storageServiceManager,
@@ -144,7 +146,7 @@ public class DependenciesBridge {
         ows2FAManager: OWS2FAManager,
         profileManager: ProfileManagerProtocol,
         recipientHidingManager: RecipientHidingManager,
-        signalProtocolServiceManager: SignalProtocolStoreManager,
+        signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
         storageServiceManager: StorageServiceManager,
@@ -157,8 +159,8 @@ public class DependenciesBridge {
         self.db = SDSDB(databaseStorage: databaseStorage)
         self.keyValueStoreFactory = SDSKeyValueStoreFactory()
 
-        let aciProtocolStore = signalProtocolServiceManager.signalProtocolStore(for: .aci)
-        let pniProtocolStore = signalProtocolServiceManager.signalProtocolStore(for: .pni)
+        let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
+        let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
         let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
             messageSender: PniDistributionParameterBuilderImpl.Wrappers.MessageSender(messageSender),
@@ -201,6 +203,13 @@ public class DependenciesBridge {
             notificationsManager: notificationsManager
         )
 
+        self.preKeyManager = PreKeyManagerImpl(
+            accountManager: PreKeyManagerImpl.Wrappers.TSAccountManager(tsAccountManager),
+            messageProcessor: PreKeyManagerImpl.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
+            preKeyOperationFactory: PreKeyManagerImpl.Wrappers.PreKeyOperationFactory(),
+            protocolStoreManager: signalProtocolStoreManager
+        )
+
         self.svrCredentialStorage = SVRAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
         self.svr = OrchestratingSVRImpl(
             accountManager: SVR.Wrappers.TSAccountManager(tsAccountManager),
@@ -221,7 +230,7 @@ public class DependenciesBridge {
         self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
             accountServiceClient: LearnMyOwnPniManagerImpl.Wrappers.AccountServiceClient(accountServiceClient),
             identityManager: LearnMyOwnPniManagerImpl.Wrappers.IdentityManager(identityManager),
-            preKeyManager: LearnMyOwnPniManagerImpl.Wrappers.PreKeyManager(),
+            preKeyManager: preKeyManager,
             profileFetcher: LearnMyOwnPniManagerImpl.Wrappers.ProfileFetcher(schedulers: schedulers),
             tsAccountManager: LearnMyOwnPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager),
             databaseStorage: db,
@@ -313,7 +322,7 @@ public class DependenciesBridge {
 
         self.recipientHidingManager = recipientHidingManager
 
-        self.signalProtocolStoreManager = signalProtocolServiceManager
+        self.signalProtocolStoreManager = signalProtocolStoreManager
 
         self.usernameLookupManager = UsernameLookupManagerImpl()
         self.usernameEducationManager = UsernameEducationManagerImpl(keyValueStoreFactory: keyValueStoreFactory)

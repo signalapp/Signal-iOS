@@ -25,7 +25,6 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/StickerInfo.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSPreKeyManager.h>
 #import <UserNotifications/UserNotifications.h>
 #import <WebRTC/WebRTC.h>
 

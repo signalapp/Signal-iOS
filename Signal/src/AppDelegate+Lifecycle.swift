@@ -78,8 +78,10 @@ extension AppDelegate {
 
         Logger.warn("handleActivation.")
 
-        // Always check prekeys after app launches, and sometimes check on app activation.
-        TSPreKeyManager.checkPreKeysIfNecessary()
+        databaseStorage.read { tx in
+            // Always check prekeys after app launches, and sometimes check on app activation.
+            DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx.asV2Read)
+        }
 
         if !Self.hasActivated {
             Self.hasActivated = true

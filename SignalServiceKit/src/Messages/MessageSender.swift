@@ -430,7 +430,10 @@ private extension MessageSender {
 extension MessageSender {
     private static func prepareToSendMessages() -> Promise<SenderCertificates> {
         firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            guard TSPreKeyManager.isAppLockedDueToPreKeyUpdateFailures() else {
+            let isAppLockedDueToPreKeyUpdateFailures  = databaseStorage.read { tx in
+                DependenciesBridge.shared.preKeyManager.isAppLockedDueToPreKeyUpdateFailures(tx: tx.asV2Read)
+            }
+            guard isAppLockedDueToPreKeyUpdateFailures else {
                 // The signed pre-key is valid, so don't rotate it.
                 return .value(())
             }
@@ -440,9 +443,7 @@ extension MessageSender {
             //
             // Only try to update the signed prekey; updating it is sufficient to
             // re-enable message sending.
-            let (promise, future) = Promise<Void>.pending()
-            TSPreKeyManager.rotateSignedPreKeys(success: future.resolve, failure: future.reject(_:))
-            return promise
+            return DependenciesBridge.shared.preKeyManager.rotateSignedPreKeys()
         }.then(on: DispatchQueue.global()) { () -> Promise<SenderCertificates> in
             let (promise, future) = Promise<SenderCertificates>.pending()
             self.udManager.ensureSenderCertificates(

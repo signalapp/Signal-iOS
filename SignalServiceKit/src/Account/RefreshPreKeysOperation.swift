@@ -140,7 +140,7 @@ public class RefreshPreKeysOperation: OWSOperation {
     }
 
     public override func didSucceed() {
-        TSPreKeyManager.refreshPreKeysDidSucceed()
+        DependenciesBridge.shared.preKeyManager.refreshPreKeysDidSucceed()
     }
 
     override public func didFail(error: Error) {

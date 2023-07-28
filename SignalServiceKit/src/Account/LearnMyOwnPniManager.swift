@@ -25,7 +25,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
 
     private let accountServiceClient: Shims.AccountServiceClient
     private let identityManager: Shims.IdentityManager
-    private let preKeyManager: Shims.PreKeyManager
+    private let preKeyManager: PreKeyManager
     private let profileFetcher: Shims.ProfileFetcher
     private let tsAccountManager: Shims.TSAccountManager
 
@@ -36,7 +36,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
     init(
         accountServiceClient: Shims.AccountServiceClient,
         identityManager: Shims.IdentityManager,
-        preKeyManager: Shims.PreKeyManager,
+        preKeyManager: PreKeyManager,
         profileFetcher: Shims.ProfileFetcher,
         tsAccountManager: Shims.TSAccountManager,
         databaseStorage: DB,
@@ -177,7 +177,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
             guard needsUpdate else { return }
 
             firstly(on: self.schedulers.sync) { () -> Promise<Void> in
-                return self.preKeyManager.createPniIdentityKeyAndUploadPreKeys()
+                return self.preKeyManager.createPreKeys(identity: .pni)
             }.done(on: self.schedulers.global()) {
                 self.logger.info("Successfully created PNI keys!")
 
@@ -201,7 +201,6 @@ extension LearnMyOwnPniManagerImpl {
     enum Shims {
         typealias AccountServiceClient = _LearnMyOwnPniManagerImpl_AccountServiceClient_Shim
         typealias IdentityManager = _LearnMyOwnPniManagerImpl_IdentityManager_Shim
-        typealias PreKeyManager = _LearnMyOwnPniManagerImpl_PreKeyManager_Shim
         typealias ProfileFetcher = _LearnMyOwnPniManagerImpl_ProfileFetcher_Shim
         typealias TSAccountManager = _LearnMyOwnPniManagerImpl_TSAccountManager_Shim
     }
@@ -209,7 +208,6 @@ extension LearnMyOwnPniManagerImpl {
     enum Wrappers {
         typealias AccountServiceClient = _LearnMyOwnPniManagerImpl_AccountServiceClient_Wrapper
         typealias IdentityManager = _LearnMyOwnPniManagerImpl_IdentityManager_Wrapper
-        typealias PreKeyManager = _LearnMyOwnPniManagerImpl_PreKeyManager_Wrapper
         typealias ProfileFetcher = _LearnMyOwnPniManagerImpl_ProfileFetcher_Wrapper
         typealias TSAccountManager = _LearnMyOwnPniManagerImpl_TSAccountManager_Wrapper
     }
@@ -251,26 +249,6 @@ class _LearnMyOwnPniManagerImpl_IdentityManager_Wrapper: _LearnMyOwnPniManagerIm
             for: .pni,
             transaction: SDSDB.shimOnlyBridge(tx)
         )?.publicKey
-    }
-}
-
-// MARK: PreKeyManager
-
-protocol _LearnMyOwnPniManagerImpl_PreKeyManager_Shim {
-    func createPniIdentityKeyAndUploadPreKeys() -> Promise<Void>
-}
-
-class _LearnMyOwnPniManagerImpl_PreKeyManager_Wrapper: _LearnMyOwnPniManagerImpl_PreKeyManager_Shim {
-    func createPniIdentityKeyAndUploadPreKeys() -> Promise<Void> {
-        let (promise, future) = Promise<Void>.pending()
-
-        TSPreKeyManager.createPreKeys(
-            for: .pni,
-            success: { future.resolve() },
-            failure: { error in future.reject(error) }
-        )
-
-        return promise
     }
 }
 

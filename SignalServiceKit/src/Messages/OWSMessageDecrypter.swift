@@ -133,7 +133,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         case .ciphertext:
             cipherType = .whisper
         case .prekeyBundle:
-            TSPreKeyManager.checkPreKeysIfNecessary()
+            DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction.asV2Read)
             cipherType = .preKey
         case .senderkeyMessage:
             cipherType = .senderKey
@@ -700,7 +700,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
 
         if decryptResult.messageType == .prekey {
-            TSPreKeyManager.checkPreKeysIfNecessary()
+            DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction.asV2Read)
         }
 
         let rawSourceDeviceId = decryptResult.senderDeviceId

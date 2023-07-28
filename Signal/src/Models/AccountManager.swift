@@ -139,7 +139,7 @@ public class AccountManager: NSObject, Dependencies {
 
             return self.accountServiceClient.updatePrimaryDeviceAccountAttributes()
         }.then {
-            self.createPreKeys()
+            DependenciesBridge.shared.preKeyManager.createPreKeys(auth: .implicit())
         }.done {
             self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
         }.then { _ -> Promise<Void> in
@@ -393,7 +393,7 @@ public class AccountManager: NSObject, Dependencies {
                                                                transaction: transaction)
             }
         }.then { _ -> Promise<Void> in
-            self.createPreKeys()
+            DependenciesBridge.shared.preKeyManager.createPreKeys(auth: .implicit())
         }.then { _ -> Promise<Void> in
             return self.syncPushTokens().recover { error in
                 switch error {
@@ -519,13 +519,6 @@ public class AccountManager: NSObject, Dependencies {
             let hasPreviouslyUsedKBS = try params.optional(key: "storageCapable") ?? false
 
             return RegistrationResponse(aci: aci, pni: pni, hasPreviouslyUsedKBS: hasPreviouslyUsedKBS)
-        }
-    }
-
-    private func createPreKeys() -> Promise<Void> {
-        return Promise { future in
-            TSPreKeyManager.createPreKeys(success: { future.resolve() },
-                                          failure: future.reject)
         }
     }
 

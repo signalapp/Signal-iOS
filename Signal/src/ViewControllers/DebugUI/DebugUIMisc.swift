@@ -107,7 +107,12 @@ class DebugUIMisc: DebugUIPage, Dependencies {
             }),
 
             OWSTableItem(title: "Check Prekeys", actionBlock: {
-                TSPreKeyManager.checkPreKeysImmediately()
+                guard let preKeyManagerImpl = DependenciesBridge.shared.preKeyManager as? PreKeyManagerImpl else {
+                    return
+                }
+                self.databaseStorage.read { tx in
+                    preKeyManagerImpl.checkPreKeysImmediately(tx: tx.asV2Read)
+                }
             }),
             OWSTableItem(title: "Remove All Prekeys", actionBlock: {
                 DebugUIMisc.removeAllPrekeys()
@@ -116,7 +121,12 @@ class DebugUIMisc: DebugUIPage, Dependencies {
                 DebugUIMisc.removeAllSessions()
             }),
             OWSTableItem(title: "Fake PNI pre-key upload failures", actionBlock: {
-                TSPreKeyManager.storeFakePreKeyUploadFailures(for: .pni)
+                guard let preKeyManagerImpl = DependenciesBridge.shared.preKeyManager as? PreKeyManagerImpl else {
+                    return
+                }
+                self.databaseStorage.asyncWrite { tx in
+                    preKeyManagerImpl.storeFakePreKeyUploadFailures(for: .pni, tx: tx.asV2Write)
+                }
             }),
             OWSTableItem(title: "Remove local PNI identity key", actionBlock: {
                 DebugUIMisc.removeLocalPniIdentityKey()
