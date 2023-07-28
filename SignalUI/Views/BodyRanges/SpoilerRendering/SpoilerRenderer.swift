@@ -22,8 +22,8 @@ public class SpoilerRenderer {
         public static func standard(color: ThemedColor) -> Self {
             return .init(
                 maxAlpha: 0.9,
-                alphaDropoffRate: 0.15,
-                particleSizePixels: 2,
+                alphaDropoffRate: 0.2,
+                particleSizePixels: 1,
                 color: color
             )
         }

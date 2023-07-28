@@ -55,6 +55,13 @@ struct Uniforms {
     uint elapsedTimeMs;
     /// The number of rects being drawn into.
     uint numDrawRects;
+    /// The density of particles per pixel, per layer.
+    /// In other words, in the texture's coordinates.
+    float particlesPerPixelPerLayer;
+    /// The number of layers of particles to draw.
+    uchar numLayers;
+    /// Divisor for max particle speed.
+    uchar particleSpeedDivisor;
 };
 
 // MARK: - Computation
@@ -119,11 +126,6 @@ kernel void draw_particles_func(constant DrawRect *drawRects [[ buffer(0) ]],
                                 constant Uniforms &uniforms [[ buffer(1) ]],
                                 texture2d<half, access::write> tex [[ texture(0) ]],
                                 uint id [[ thread_position_in_grid ]]){
-
-    /// This constant must be the same as those in SpoilerParticleView.Constants.
-    /// Its replicated to avoid copying bytes from the cpu to the gpu.
-    half particleDensityPerLayer = 0.004f;
-
     int numDrawRects = int(uniforms.numDrawRects);
 
     // We have to find which rect to draw this particle in.
@@ -135,7 +137,7 @@ kernel void draw_particles_func(constant DrawRect *drawRects [[ buffer(0) ]],
     int particleIndexInDrawRect = -1;
     for (int i = 0; i < numDrawRects; i++) {
         rect = drawRects[i];
-        uint numParticlesInRect = uint(particleDensityPerLayer * float(rect.size.x) * float(rect.size.y));
+        uint numParticlesInRect = uint(uniforms.particlesPerPixelPerLayer * float(rect.size.x) * float(rect.size.y));
         particleCountSoFar += numParticlesInRect;
         if (particleCountSoFar > id) {
             particleIndexInDrawRect = particleCountSoFar - id;
@@ -157,13 +159,10 @@ kernel void draw_particles_func(constant DrawRect *drawRects [[ buffer(0) ]],
     uint minParticleLifetimeMs = 1000;
     uint maxAdditionalParticleLifetimeMs = 2000;
     // Measured in pixels per ms.
-    float maxParticleVelocity = 0.01;
-    /// When we draw particles, we draw them in 3 layers in decreasing alpha
-    /// in each layer to give it a nice visual effect.
-    uchar numParticleLayers = 3;
+    float maxParticleVelocity = 0.02 / float(uniforms.particleSpeedDivisor);
 
     // Draw one particle per layer.
-    for (uchar layer = 0; layer < numParticleLayers; layer++) {
+    for (uchar layer = 0; layer < uniforms.numLayers; layer++) {
 
         // We are going to use some pseudo-random number generators to produce
         // the particle info (position, speed, etc) based a seed for each particle.
@@ -183,7 +182,7 @@ kernel void draw_particles_func(constant DrawRect *drawRects [[ buffer(0) ]],
 
         // First lets generate seed (2): we take the index in the rect, but offset by
         // the layer so each particle in each layer gets a unique seed.
-        uint seedIndex = uint(particleIndexInDrawRect) * uint(numParticleLayers) + uint(layer);
+        uint seedIndex = uint(particleIndexInDrawRect) * uint(uniforms.numLayers) + uint(layer);
 
         // Now we compute the lifetime and how many times we've reached it (seed (3)).
         float lifetimeRel = rand(rect.origin.x, rect.origin.y, seedIndex);
@@ -205,22 +204,14 @@ kernel void draw_particles_func(constant DrawRect *drawRects [[ buffer(0) ]],
         float yVelRel = rand(rect.origin.x, rect.origin.y, seedIndex + 3);
 
         // Positions are relative to the draw frame. compute final starting position.
-        uint xPos = rect.origin.x + uint(xPosRel * rect.size.x);
-        uint yPos = rect.origin.y + uint(yPosRel * rect.size.y);
+        int xPos = rect.origin.x + int(xPosRel * rect.size.x);
+        int yPos = rect.origin.y + int(yPosRel * rect.size.y);
 
         // Velocities are relative to the provided max velocity,
         // since it should be the same velocity distribution across rects.
         // Mininmum of half as much velocity, with positive or negative values.
-        if (xVelRel > 0.5) {
-            xPos += uint(xVelRel * maxParticleVelocity * durationInCurrentLifetime);
-        } else {
-            xPos -= uint((1 - xVelRel) * maxParticleVelocity * durationInCurrentLifetime);
-        }
-        if (yVelRel > 0.5) {
-            yPos += uint(yVelRel * maxParticleVelocity * durationInCurrentLifetime);
-        } else {
-            yPos -= uint((1 - yVelRel) * maxParticleVelocity * durationInCurrentLifetime);
-        }
+        xPos += int((xVelRel - 0.5) * maxParticleVelocity * durationInCurrentLifetime);
+        yPos += int((yVelRel - 0.5) * maxParticleVelocity * durationInCurrentLifetime);
 
         if(
            xPos < rect.origin.x
@@ -250,20 +241,11 @@ kernel void draw_particles_func(constant DrawRect *drawRects [[ buffer(0) ]],
 
         // Figure out how many pixels we need to draw into.
         uint particleSize = uint(rect.particleSizePixels);
-        uint topLeftOffset;
-        uint bottomRightOffset;
-        if (particleSize % 2 == 0) {
-            topLeftOffset = particleSize / 2 - 1;
-            bottomRightOffset = particleSize / 2;
-        } else {
-            topLeftOffset = (particleSize - 1) / 2;
-            bottomRightOffset = (particleSize + 1) / 2 - 1;
-        }
 
         // And draw.
-        for(uint x = xPos - topLeftOffset; x <= xPos + bottomRightOffset; x++) {
-            for(uint y = yPos - topLeftOffset; y <= yPos + bottomRightOffset; y++) {
-                tex.write(color, uint2(x, y));
+        for(uint xOffset = 0; xOffset <= particleSize; xOffset++) {
+            for(uint yOffset = 0; yOffset <= particleSize; yOffset++) {
+                tex.write(color, uint2(xPos + xOffset, yPos + yOffset));
             }
         }
     }

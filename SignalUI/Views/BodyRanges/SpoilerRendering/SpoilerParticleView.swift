@@ -115,7 +115,7 @@ internal class SpoilerParticleView: MTKView {
         super.init(frame: .zero, device: metalConfig.device)
 
         self.framebufferOnly = false
-        self.preferredFramesPerSecond = Int(1 / Constants.frameDelay)
+        self.preferredFramesPerSecond = Int(1 / Constants.defaultFrameDelay)
         layer.isOpaque = false
         // Start out paused until objects can be set.
         self.isPaused = true
@@ -175,33 +175,71 @@ internal class SpoilerParticleView: MTKView {
         var elapsedTimeMs: UInt32
         /// The number of rects being drawn into.
         var numDrawRects: UInt32
+        /// The density of particles per pixel, per layer.
+        /// In other words, in the texture's coordinates.
+        var particlesPerPixelPerLayer: Float32
+        /// The number of layers of particles to draw.
+        var numLayers: UInt8
+        /// Divisor for max particle speed.
+        var particleSpeedDivisor: UInt8
     }
 
     private static let uniformsSize = MemoryLayout<Uniforms>.stride
 
     // MARK: - Metal Inputs
 
+    private var frameDelay: CGFloat = Constants.defaultFrameDelay {
+        didSet {
+            self.preferredFramesPerSecond = Int(1 / frameDelay)
+        }
+    }
+    private var numLayers: UInt8 = Constants.defaultNumLayers
+    private var particleSpeedDivisor: UInt8 = Constants.defaultParticleSpeedDivisor
+    private var particlesPerPixelPerLayer: Float32 = 0
     private var numDrawRects: UInt32 = 0
     private var drawRectBuffer: MTLBuffer?
     private var totalNumParticlesPerLayer: Int = 0
 
+    private func resetMetalInputs() {
+        frameDelay = Constants.defaultFrameDelay
+        numLayers = Constants.defaultNumLayers
+        particleSpeedDivisor = Constants.defaultParticleSpeedDivisor
+        particlesPerPixelPerLayer = 0
+        numDrawRects = 0
+        drawRectBuffer = nil
+        totalNumParticlesPerLayer = 0
+        isPaused = true
+    }
+
     func prepareInputBuffersForMetal() {
         guard bounds.width > 0, bounds.height > 0, let spec else {
-            self.numDrawRects = 0
-            self.drawRectBuffer = nil
-            self.totalNumParticlesPerLayer = 0
-            self.isPaused = true
+            resetMetalInputs()
             return
         }
         var drawRects = [DrawRect]()
 
         let scale = UIScreen.main.scale
-        // Multiply by scale sqaured because its 2d area.
-        let particlesPerUnitArea = Constants.particlesPerPixelArea * scale * scale
+
+        var particlesPerUnitArea = Constants.defaultParticlesPerUnitArea
+
+        var totalNumParticlesPerLayer = particlesPerUnitArea * spec.totalSurfaceArea
+        if totalNumParticlesPerLayer > Constants.maxParticleCountPerLayer {
+            particlesPerUnitArea *= Constants.maxParticleCountPerLayer / totalNumParticlesPerLayer
+            totalNumParticlesPerLayer = Constants.maxParticleCountPerLayer
+        }
+        // Divide by scale sqaured because its 2d area.
+        let particlesPerPixelPerLayer: CGFloat = particlesPerUnitArea / (scale * scale)
+
+        var frameDelay = Constants.defaultFrameDelay
+        var numLayers = Constants.defaultNumLayers
+        var particleSpeedDivisor = Constants.defaultParticleSpeedDivisor
+        if totalNumParticlesPerLayer > Constants.particleCountEfficiencyThreshold {
+            frameDelay = Constants.efficientFrameDelay
+            numLayers = Constants.efficientNumLayers
+            particleSpeedDivisor = Constants.efficientParticleSpeedDivisor
+        }
 
         owsAssertDebug(spec.spoilerFrames.count <= SpoilerAnimationManager.maxSpoilerFrameCount)
-
-        var totalNumParticlesPerLayer = 0
         for spoilerFrame in spec.spoilerFrames {
             guard
                 spoilerFrame.frame.x >= bounds.x,
@@ -228,22 +266,21 @@ internal class SpoilerParticleView: MTKView {
                 particleSizePixels: spoilerFrame.config.particleSizePixels
             )
             drawRects.append(drawRect)
-
-            let numParticlesPerLayer = Int(spoilerFrame.surfaceArea * particlesPerUnitArea)
-            totalNumParticlesPerLayer += numParticlesPerLayer
         }
 
         guard drawRects.isEmpty.negated else {
-            self.numDrawRects = 0
-            self.drawRectBuffer = nil
-            self.totalNumParticlesPerLayer = 0
-            self.isPaused = true
+            resetMetalInputs()
             return
         }
 
+        self.particlesPerPixelPerLayer = Float32(particlesPerPixelPerLayer)
         self.numDrawRects = UInt32(clamping: drawRects.count)
         drawRectBuffer = metalConfig.device.makeBuffer(bytes: drawRects, length: MemoryLayout<DrawRect>.stride * drawRects.count)
-        self.totalNumParticlesPerLayer = totalNumParticlesPerLayer
+        self.totalNumParticlesPerLayer = Int(totalNumParticlesPerLayer)
+
+        self.frameDelay = frameDelay
+        self.numLayers = numLayers
+        self.particleSpeedDivisor = particleSpeedDivisor
 
         drawableSize = CGSize(
             width: bounds.width * scale,
@@ -321,7 +358,10 @@ internal class SpoilerParticleView: MTKView {
         // setBytes to directly copy bytes and let Metal manage the memory.
         var uniforms = Uniforms(
             elapsedTimeMs: renderer.getAnimationDuration(),
-            numDrawRects: numDrawRects
+            numDrawRects: numDrawRects,
+            particlesPerPixelPerLayer: particlesPerPixelPerLayer,
+            numLayers: numLayers,
+            particleSpeedDivisor: particleSpeedDivisor
         )
         computeCommandEncoder.setBytes(&uniforms, length: Self.uniformsSize, index: 1)
 
@@ -348,21 +388,31 @@ internal class SpoilerParticleView: MTKView {
         #if targetEnvironment(simulator)
         commandbuffer.present(drawable)
         #else
-        commandbuffer.present(drawable, afterMinimumDuration: Constants.frameDelay)
+        commandbuffer.present(drawable, afterMinimumDuration: frameDelay)
         #endif
         commandbuffer.commit()
     }
 
     fileprivate enum Constants {
-        static let frameDelay: TimeInterval = 1/(20 /*FPS*/)
+        /// After this many particles, framerate, number of layers, and particle velocity degrade.
+        static let particleCountEfficiencyThreshold: CGFloat = 1000
+        /// Allow up to a maximum number of particles, to put an upper bound on compute.
+        static let maxParticleCountPerLayer: CGFloat = 5000
 
-        // The values below must be the same as those
-        // at the top of SpoilerParticleShader.draw_particles_func.
-        // They are replicated to avoid copying the bytes from
-        // the cpu to the gpu.
+        static let defaultFrameDelay: TimeInterval = 1/(20 /*FPS*/)
+        static let efficientFrameDelay: TimeInterval = 1/(15 /*FPS*/)
 
-        /// Number of particles per pixel of surface area we render (per layer).
-        static let particlesPerPixelArea: CGFloat = 0.004
+        static let defaultParticleSpeedDivisor: UInt8 = 1
+        static let efficientParticleSpeedDivisor: UInt8 = 2
+
+        /// Number of particles per unit of surface area we render (per layer).
+        /// If there's too much surface area to cover, the actual density may be lower,
+        /// subject to max particle count limits.
+        static let defaultParticlesPerUnitArea: CGFloat = 0.03
+        static let efficientParticlesPerUnitArea: CGFloat = 0.01
+
+        static let defaultNumLayers: UInt8 = 3
+        static let efficientNumLayers: UInt8 = 2
 
         // Note that the particle max velocity, lifetime,
         // and number of layers are defined in
