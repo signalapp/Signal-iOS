@@ -244,7 +244,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("Presenting content view")
 
-        guard tsAccountManager.isRegistered else {
+        guard tsAccountManager.registrationState == .registered else {
             showNotRegisteredView()
             return
         }
