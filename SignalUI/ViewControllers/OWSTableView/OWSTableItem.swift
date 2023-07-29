@@ -22,6 +22,8 @@ public class OWSTableItem {
 
     public private(set) var actionBlock: (() -> Void)?
 
+    public private(set) var contextMenuActionProvider: UIContextMenuActionProvider?
+
     // MARK: -
 
     public init(title: String?, actionBlock: (() -> Void)?) {
@@ -45,10 +47,12 @@ public class OWSTableItem {
 
     public convenience init(
         dequeueCellBlock: @escaping (UITableView) -> UITableViewCell,
-        actionBlock: (() -> Void)? = nil
+        actionBlock: (() -> Void)? = nil,
+        contextMenuActionProvider: UIContextMenuActionProvider? = nil
     ) {
         self.init(title: nil, actionBlock: actionBlock)
         self.dequeueCellBlock = dequeueCellBlock
+        self.contextMenuActionProvider = contextMenuActionProvider
     }
 
     public convenience init(

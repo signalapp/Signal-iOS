@@ -158,10 +158,19 @@ public final class RecipientHidingManagerImpl: NSObject, RecipientHidingManager 
             owsFailDebug("Cannot hide the local address")
             return
         }
+        guard !isHiddenAddress(address, tx: tx) else {
+            // This is a perhaps extraneous safeguard against
+            // hiding an already-hidden address. I say extraneous
+            // because theoretically the UI should not be available to
+            // hide an already-hidden recipient. However, we return here,
+            // just in case, in order to avoid the side-effects of
+            // `didSetAsHidden`.
+            return
+        }
         if let id = OWSAccountIdFinder.ensureId(forAddress: address, transaction: tx) {
             let record = HiddenRecipient(recipientId: id)
             try record.save(tx.unwrapGrdbWrite.database)
-            didSetAsHidden(address: address, tx: tx)
+            didSetAsHidden(address: address, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
         } else {
             Logger.warn("Could not find id on recipient to hide.")
         }
@@ -185,7 +194,7 @@ public final class RecipientHidingManagerImpl: NSObject, RecipientHidingManager 
                 WHERE \(HiddenRecipient.CodingKeys.recipientId.stringValue) = ?
             """
             tx.unwrapGrdbWrite.execute(sql: sql, arguments: [id])
-            didSetAsUnhidden(address: address, tx: tx)
+            didSetAsUnhidden(address: address, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
         }
     }
 }
@@ -201,11 +210,9 @@ private extension RecipientHidingManager {
     /// - Parameter wasLocallyInitiated: Whether the user initiated
     ///   the hide on this device (true) or a linked device (false).
     /// - Parameter tx: The transaction to use for database operations.
-    ///
-    /// TODO recipientHiding: utilize `wasLocallyInitiated`.
     func didSetAsHidden(
         address: SignalServiceAddress,
-        wasLocallyInitiated: Bool = false,
+        wasLocallyInitiated: Bool,
         tx: SDSAnyWriteTransaction
     ) {
         if let thread = TSContactThread.getWithContactAddress(address, transaction: tx) {
@@ -219,10 +226,9 @@ private extension RecipientHidingManager {
             /// - Flush incoming/outgoing messages first.
             /// - Throw away existing Stories from hidden user.
             /// - If this is primary device, rotate own Profile Key if not in group with them.
-
             if wasLocallyInitiated {
-                /// TODO recipientHiding:
-                /// - Update ContactRecord in StorageService: hidden, whitelisted properties.
+                SSKEnvironment.shared.profileManagerRef.removeUser(fromProfileWhitelist: address, userProfileWriter: .storageService, transaction: tx)
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [address])
             }
         }
     }
@@ -232,15 +238,19 @@ private extension RecipientHidingManager {
     ///
     /// - Parameter address: The service address corresponding
     ///   with the ``SignalRecipient`` who was just unhidden.
+    /// - Parameter wasLocallyInitiated: Whether the user initiated
+    ///   the hide on this device (true) or a linked device (false).
     /// - Parameter tx: The transaction to use for database operations.
     ///
     /// Note: If a ``SignalRecipient`` is deleted, a cascade
     /// rule is in place that will also delete the corresponding
     /// `HiddenRecipient` entry. This method does not get hit in
     /// that case.
-    func didSetAsUnhidden(address: SignalServiceAddress, tx: SDSAnyWriteTransaction) {
-        SSKEnvironment.shared.profileManagerRef.addUser(toProfileWhitelist: address, userProfileWriter: .storageService, transaction: tx)
-        SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [address])
+    func didSetAsUnhidden(address: SignalServiceAddress, wasLocallyInitiated: Bool, tx: SDSAnyWriteTransaction) {
+        if wasLocallyInitiated {
+            SSKEnvironment.shared.profileManagerRef.addUser(toProfileWhitelist: address, userProfileWriter: .storageService, transaction: tx)
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [address])
+        }
     }
 }
 

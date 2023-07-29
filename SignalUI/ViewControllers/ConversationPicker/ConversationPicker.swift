@@ -663,7 +663,21 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
+    /// This must be retained for as long as we want to be able
+    /// to display recipient context menus in this view controller.
+    private lazy var recipientContextMenuHelper = {
+        return RecipientContextMenuHelper(
+            databaseStorage: databaseStorage,
+            blockingManager: blockingManager,
+            recipientHidingManager: DependenciesBridge.shared.recipientHidingManager
+        )
+    }()
+
     private func addConversationPickerCell(to section: OWSTableSection, for item: ConversationItem) {
+        var contextMenuActionProvider: UIContextMenuActionProvider?
+        if case let .contact(address) = item.messageRecipient {
+            contextMenuActionProvider = recipientContextMenuHelper.actionProvider(address: address)
+        }
         section.add(OWSTableItem(dequeueCellBlock: { tableView in
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationPickerCell.reuseIdentifier) as? ConversationPickerCell else {
                 owsFailDebug("Missing cell.")
@@ -676,7 +690,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         },
         actionBlock: { [weak self] in
             self?.didToggleSelection(conversation: item)
-        }))
+        },
+        contextMenuActionProvider: contextMenuActionProvider))
     }
 
     private func addMediaPreview(

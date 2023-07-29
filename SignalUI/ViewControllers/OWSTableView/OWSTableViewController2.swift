@@ -1168,6 +1168,17 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     public override func viewSafeAreaInsetsDidChange() {
         applyContents()
     }
+
+    public func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        if
+            FeatureFlags.recipientHiding,
+            let item = self.item(for: indexPath),
+            let contextMenuActionProvider = item.contextMenuActionProvider
+        {
+            return UIContextMenuConfiguration(actionProvider: contextMenuActionProvider)
+        }
+        return nil
+    }
 }
 
 // MARK: -

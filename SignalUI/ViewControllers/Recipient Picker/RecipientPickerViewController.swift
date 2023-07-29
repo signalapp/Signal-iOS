@@ -281,6 +281,18 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         tableViewController.applyTheme(to: viewController)
     }
 
+    // MARK: Context Menu
+
+    /// This must be retained for as long as we want to be able
+    /// to display recipient context menus in this view controller.
+    private lazy var recipientContextMenuHelper = {
+        return RecipientContextMenuHelper(
+            databaseStorage: databaseStorage,
+            blockingManager: blockingManager,
+            recipientHidingManager: DependenciesBridge.shared.recipientHidingManager
+        )
+    }()
+
     // MARK: Table Contents
 
     public func reloadContent() {
@@ -1044,7 +1056,8 @@ extension RecipientPickerViewController {
                 },
                 actionBlock: { [weak self] in
                     self?.tryToSelectRecipient(recipient)
-                }
+                },
+                contextMenuActionProvider: recipientContextMenuHelper.actionProvider(address: address)
             )
         case .group(let groupThread):
             return OWSTableItem(

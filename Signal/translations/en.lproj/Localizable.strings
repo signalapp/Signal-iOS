@@ -5227,6 +5227,12 @@
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Read";
 
+/* The title for a context menu item that blocks a recipient from your recipient picker list. */
+"RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "Block";
+
+/* The title for a context menu item that removes a recipient from your recipient picker list. */
+"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Remove";
+
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
 
