@@ -115,7 +115,7 @@ internal class SpoilerParticleView: MTKView {
         super.init(frame: .zero, device: metalConfig.device)
 
         self.framebufferOnly = false
-        self.preferredFramesPerSecond = Int(1 / Constants.defaultFrameDelay)
+        self.preferredFramesPerSecond = Int(1 / fidelity.frameDelay)
         layer.isOpaque = false
         // Start out paused until objects can be set.
         self.isPaused = true
@@ -127,20 +127,39 @@ internal class SpoilerParticleView: MTKView {
 
     // MARK: - Public API
 
-    private var spec: SpoilerRenderer.Spec?
-
-    public func setSpec(_ spec: SpoilerRenderer.Spec) {
-        self.spec = spec
-    }
+    public var spec: SpoilerRenderer.Spec?
 
     /// Must be called after setting specs and view.frame information
     /// to generate metadata and be ready for rendering.
     func commitChanges() {
-        prepareInputBuffersForMetal()
+        prepareDrawRectsForMetal()
+        updateParticleCount()
         setNeedsDisplay()
     }
 
     public var isInUse = false
+
+    public enum Fidelity {
+        case high
+        case low
+
+        private static let defaultParticlesPerUnitArea: CGFloat = 0.03
+
+        public static func forTotalSurfaceArea(_ surfaceArea: SurfaceArea) -> Fidelity {
+            let defaultNumParticles = surfaceArea * defaultParticlesPerUnitArea
+            if defaultNumParticles >= Constants.particleCountEfficiencyThreshold {
+                return .low
+            }
+            return .high
+        }
+    }
+
+    public var fidelity: Fidelity = .high {
+        didSet {
+            self.preferredFramesPerSecond = Int(1 / fidelity.frameDelay)
+            updateParticleCount()
+        }
+    }
 
     // MARK: - Swift<->C shared structs
 
@@ -188,39 +207,26 @@ internal class SpoilerParticleView: MTKView {
 
     // MARK: - Metal Inputs
 
-    private var frameDelay: CGFloat = Constants.defaultFrameDelay {
-        didSet {
-            self.preferredFramesPerSecond = Int(1 / frameDelay)
-        }
-    }
-    private var numLayers: UInt8 = Constants.defaultNumLayers
-    private var particleSpeedDivisor: UInt8 = Constants.defaultParticleSpeedDivisor
     private var particlesPerPixelPerLayer: Float32 = 0
     private var numDrawRects: UInt32 = 0
     private var drawRectBuffer: MTLBuffer?
     private var totalNumParticlesPerLayer: Int = 0
 
     private func resetMetalInputs() {
-        frameDelay = Constants.defaultFrameDelay
-        numLayers = Constants.defaultNumLayers
-        particleSpeedDivisor = Constants.defaultParticleSpeedDivisor
-        particlesPerPixelPerLayer = 0
         numDrawRects = 0
         drawRectBuffer = nil
-        totalNumParticlesPerLayer = 0
         isPaused = true
     }
 
-    func prepareInputBuffersForMetal() {
-        guard bounds.width > 0, bounds.height > 0, let spec else {
-            resetMetalInputs()
+    private func updateParticleCount() {
+        guard let spec else {
+            particlesPerPixelPerLayer = 0
+            isPaused = true
             return
         }
-        var drawRects = [DrawRect]()
-
         let scale = UIScreen.main.scale
 
-        var particlesPerUnitArea = Constants.defaultParticlesPerUnitArea
+        var particlesPerUnitArea = fidelity.particlesPerUnitAreaPerLayer
 
         var totalNumParticlesPerLayer = particlesPerUnitArea * spec.totalSurfaceArea
         if totalNumParticlesPerLayer > Constants.maxParticleCountPerLayer {
@@ -230,14 +236,19 @@ internal class SpoilerParticleView: MTKView {
         // Divide by scale sqaured because its 2d area.
         let particlesPerPixelPerLayer: CGFloat = particlesPerUnitArea / (scale * scale)
 
-        var frameDelay = Constants.defaultFrameDelay
-        var numLayers = Constants.defaultNumLayers
-        var particleSpeedDivisor = Constants.defaultParticleSpeedDivisor
-        if totalNumParticlesPerLayer > Constants.particleCountEfficiencyThreshold {
-            frameDelay = Constants.efficientFrameDelay
-            numLayers = Constants.efficientNumLayers
-            particleSpeedDivisor = Constants.efficientParticleSpeedDivisor
+        self.particlesPerPixelPerLayer = Float32(particlesPerPixelPerLayer)
+        self.totalNumParticlesPerLayer = Int(totalNumParticlesPerLayer)
+        self.isPaused = numDrawRects == 0
+    }
+
+    private func prepareDrawRectsForMetal() {
+        guard bounds.width > 0, bounds.height > 0, let spec else {
+            resetMetalInputs()
+            return
         }
+        var drawRects = [DrawRect]()
+
+        let scale = UIScreen.main.scale
 
         owsAssertDebug(spec.spoilerFrames.count <= SpoilerAnimationManager.maxSpoilerFrameCount)
         for spoilerFrame in spec.spoilerFrames {
@@ -278,15 +289,11 @@ internal class SpoilerParticleView: MTKView {
         drawRectBuffer = metalConfig.device.makeBuffer(bytes: drawRects, length: MemoryLayout<DrawRect>.stride * drawRects.count)
         self.totalNumParticlesPerLayer = Int(totalNumParticlesPerLayer)
 
-        self.frameDelay = frameDelay
-        self.numLayers = numLayers
-        self.particleSpeedDivisor = particleSpeedDivisor
-
         drawableSize = CGSize(
             width: bounds.width * scale,
             height: bounds.height * scale
         )
-        self.isPaused = false
+        self.isPaused = particlesPerPixelPerLayer == 0
     }
 
     override func draw(_ rect: CGRect) {
@@ -360,8 +367,8 @@ internal class SpoilerParticleView: MTKView {
             elapsedTimeMs: renderer.getAnimationDuration(),
             numDrawRects: numDrawRects,
             particlesPerPixelPerLayer: particlesPerPixelPerLayer,
-            numLayers: numLayers,
-            particleSpeedDivisor: particleSpeedDivisor
+            numLayers: fidelity.numLayers,
+            particleSpeedDivisor: fidelity.particleSpeedDivisor
         )
         computeCommandEncoder.setBytes(&uniforms, length: Self.uniformsSize, index: 1)
 
@@ -388,7 +395,7 @@ internal class SpoilerParticleView: MTKView {
         #if targetEnvironment(simulator)
         commandbuffer.present(drawable)
         #else
-        commandbuffer.present(drawable, afterMinimumDuration: frameDelay)
+        commandbuffer.present(drawable, afterMinimumDuration: fidelity.frameDelay)
         #endif
         commandbuffer.commit()
     }
@@ -398,25 +405,44 @@ internal class SpoilerParticleView: MTKView {
         static let particleCountEfficiencyThreshold: CGFloat = 1000
         /// Allow up to a maximum number of particles, to put an upper bound on compute.
         static let maxParticleCountPerLayer: CGFloat = 5000
+    }
+}
 
-        static let defaultFrameDelay: TimeInterval = 1/(20 /*FPS*/)
-        static let efficientFrameDelay: TimeInterval = 1/(15 /*FPS*/)
+extension SpoilerParticleView.Fidelity {
 
-        static let defaultParticleSpeedDivisor: UInt8 = 1
-        static let efficientParticleSpeedDivisor: UInt8 = 2
+    // Note that the particle max velocity and lifetime are
+    // defined in `SpoilerParticleShader.metal`, so we avoid
+    // copying values from the CPU to the GPU.
 
-        /// Number of particles per unit of surface area we render (per layer).
-        /// If there's too much surface area to cover, the actual density may be lower,
-        /// subject to max particle count limits.
-        static let defaultParticlesPerUnitArea: CGFloat = 0.03
-        static let efficientParticlesPerUnitArea: CGFloat = 0.01
+    fileprivate var particlesPerUnitAreaPerLayer: CGFloat {
+        switch self {
+        case .high:
+            return Self.defaultParticlesPerUnitArea
+        case .low:
+            return 0.015
+        }
+    }
 
-        static let defaultNumLayers: UInt8 = 3
-        static let efficientNumLayers: UInt8 = 2
+    fileprivate var numLayers: UInt8 {
+        switch self {
+        case .high: return 3
+        case .low: return 2
+        }
+    }
 
-        // Note that the particle max velocity, lifetime,
-        // and number of layers are defined in
-        // `SpoilerParticleShader.metal`, so we avoid copying
-        // values from the CPU to the GPU.
+    fileprivate var frameDelay: TimeInterval {
+        switch self {
+        case .high: return 1/(20 /*FPS*/)
+        case .low: return 1/(12 /*FPS*/)
+        }
+    }
+
+    fileprivate var particleSpeedDivisor: UInt8 {
+        // Keeping in case we want to bring this back;
+        // trying same speed at lower framerate.
+        switch self {
+        case .high: return 1
+        case .low: return 1
+        }
     }
 }

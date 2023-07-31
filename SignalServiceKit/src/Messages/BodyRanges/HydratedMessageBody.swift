@@ -268,6 +268,8 @@ public class HydratedMessageBody: Equatable, Hashable {
          *   If nil, baseTextColor is used.
          * - parameter mentionBackgroundColor: The color to use to "highlight" mentions.
          *   If nil, no highlight is applied to mentions.
+         * - parameter spoilerAnimationColorOverride: If set, animated spoiler particles
+         *   will use this color instead of the baseTextColor.
          * - parameter revealedSpoilerBgColor: The color to use to "highlight" revealed spoilers.
          *   If nil, no highlight is applied to revealed spoilers.
          * - parameter revealAllSpoilers: If true, all spoilers will be revealed and
@@ -282,6 +284,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             mentionFont: UIFont? = nil,
             mentionForegroundColor: ThemedColor? = nil,
             mentionBackgroundColor: ThemedColor? = nil,
+            spoilerAnimationColorOverride: ThemedColor? = nil,
             revealedSpoilerBgColor: ThemedColor? = nil,
             revealAllSpoilers: Bool = false,
             revealedSpoilerIds: Set<StyleIdType> = Set(),
@@ -299,6 +302,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                 style: .init(
                     baseFont: baseFont,
                     textColor: baseTextColor,
+                    spoilerAnimationColorOverride: spoilerAnimationColorOverride,
                     revealedSpoilerBgColor: revealedSpoilerBgColor,
                     revealAllIds: revealAllSpoilers,
                     revealedIds: revealedSpoilerIds,
@@ -652,7 +656,7 @@ public class HydratedMessageBody: Equatable, Hashable {
         }
 
         guard let searchConfig = config.searchRanges, !searchConfig.matchedRanges.isEmpty else {
-            return finalRanges.map { .init(range: $0, color: config.style.textColor, isSearchResult: false) }
+            return finalRanges.map { .init(range: $0, color: config.style.spoilerColor, isSearchResult: false) }
         }
 
         var coloredRanges = [AnimatableSpoilerRange]()
@@ -667,7 +671,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                                 location: remainingSpoilerRange.location,
                                 length: intersection.location - remainingSpoilerRange.location
                             ),
-                            color: config.style.textColor,
+                            color: config.style.spoilerColor,
                             isSearchResult: false
                         ))
                     }
@@ -690,7 +694,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                 }
             }
             if remainingSpoilerRange.length > 0 {
-                coloredRanges.append(.init(range: remainingSpoilerRange, color: config.style.textColor, isSearchResult: false))
+                coloredRanges.append(.init(range: remainingSpoilerRange, color: config.style.spoilerColor, isSearchResult: false))
             }
         }
         return coloredRanges

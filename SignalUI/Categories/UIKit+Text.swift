@@ -114,7 +114,10 @@ public extension NSTextContainer {
                     stop.pointee = true
                     return
                 }
-                perLineResults.append(transform(rect, value))
+                perLineResults.append(transform(
+                    rect.offsetBy(dx: textContainerInsets.left, dy: textContainerInsets.top),
+                    value
+                ))
             }
             return perLineResults
         }
@@ -172,10 +175,7 @@ extension UILabel {
         let layoutManager = NSLayoutManager()
         textStorage.addLayoutManager(layoutManager)
 
-        let textContainer = NSTextContainer(size: CGSize(
-            width: self.bounds.width,
-            height: .greatestFiniteMagnitude /* width is the important part */
-        ))
+        let textContainer = NSTextContainer(size: self.bounds.size)
         textContainer.lineFragmentPadding = 0
         textContainer.maximumNumberOfLines = self.numberOfLines
         textContainer.lineBreakMode = self.lineBreakMode

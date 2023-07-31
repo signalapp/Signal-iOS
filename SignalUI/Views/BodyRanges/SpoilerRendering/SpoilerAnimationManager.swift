@@ -200,6 +200,9 @@ public class SpoilerAnimationManager {
             if frameIndex > Self.maxSpoilerFrameCount {
                 return specs
             }
+            guard frame.frame.intersects(CGRect(x: 0, y: 0, width: viewBounds.width, height: viewBounds.height)) else {
+                continue
+            }
             let config: SpoilerRenderer.Config = {
                 switch frame.style {
                 case .standard: return .standard(color: frame.color)

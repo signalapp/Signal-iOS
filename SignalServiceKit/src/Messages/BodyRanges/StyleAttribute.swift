@@ -13,6 +13,7 @@ import Foundation
 public struct StyleDisplayConfiguration: Equatable {
     public let baseFont: UIFont
     public let textColor: ThemedColor
+    public let spoilerAnimationColorOverride: ThemedColor?
     public let revealedSpoilerBgColor: ThemedColor?
 
     public let revealAllIds: Bool
@@ -22,9 +23,18 @@ public struct StyleDisplayConfiguration: Equatable {
     /// If false, unrevealed spoiler text will use `textColor` as its background color.
     public let useAnimatedSpoilers: Bool
 
+    public var spoilerColor: ThemedColor {
+        if FeatureFlags.spoilerAnimations, let spoilerAnimationColorOverride {
+            return spoilerAnimationColorOverride
+        } else {
+            return textColor
+        }
+    }
+
     public init(
         baseFont: UIFont,
         textColor: ThemedColor,
+        spoilerAnimationColorOverride: ThemedColor? = nil,
         revealedSpoilerBgColor: ThemedColor? = nil,
         revealAllIds: Bool,
         revealedIds: Set<StyleIdType>,
@@ -32,6 +42,7 @@ public struct StyleDisplayConfiguration: Equatable {
     ) {
         self.baseFont = baseFont
         self.textColor = textColor
+        self.spoilerAnimationColorOverride = spoilerAnimationColorOverride
         self.revealedSpoilerBgColor = revealedSpoilerBgColor
         self.revealAllIds = revealAllIds
         self.revealedIds = revealedIds
@@ -40,6 +51,7 @@ public struct StyleDisplayConfiguration: Equatable {
 
     public func hashForSpoilerFrames(into hasher: inout Hasher) {
         hasher.combine(textColor)
+        hasher.combine(spoilerAnimationColorOverride)
         hasher.combine(revealAllIds)
         hasher.combine(revealedIds)
     }
@@ -95,7 +107,7 @@ internal struct StyleAttribute: Equatable, Hashable {
                 if config.useAnimatedSpoilers {
                     attributes[.backgroundColor] = UIColor.clear
                 } else {
-                    attributes[.backgroundColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+                    attributes[.backgroundColor] = config.spoilerColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
                 }
             } else if let revealedSpoilerBgColor = config.revealedSpoilerBgColor {
                 attributes[.foregroundColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)

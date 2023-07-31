@@ -21,8 +21,8 @@ public class SpoilerRenderer {
 
         public static func standard(color: ThemedColor) -> Self {
             return .init(
-                maxAlpha: 0.9,
-                alphaDropoffRate: 0.2,
+                maxAlpha: 0.95,
+                alphaDropoffRate: 0.15,
                 particleSizePixels: 1,
                 color: color
             )
@@ -147,18 +147,37 @@ public class SpoilerRenderer {
             }()
             particleView.isHidden = specs.isEmpty
             particleView.frame = spec.boundingRect
-            particleView.setSpec(spec)
+            particleView.spec = spec
             particleView.commitChanges()
             didChangeAnimationState()
         }
         // Remove any extra, unused views.
         removeSpoilerViews(particleViews)
+        recomputeFidelity()
     }
 
     public func removeSpoilerViews(from view: UIView) {
         removeSpoilerViews(view.subviews.lazy
             .compactMap { $0 as? SpoilerParticleView }
        )
+        recomputeFidelity()
+    }
+
+    private func recomputeFidelity() {
+        let totalSurfaceArea: SurfaceArea = self.particleViews.reduce(0, { sum, weakView in
+            guard
+                let spec = weakView.value?.spec,
+                weakView.value?.isInUse == true,
+                weakView.value?.isHidden == false
+            else {
+                return sum
+            }
+            return sum + spec.totalSurfaceArea
+        })
+        let fidelity = SpoilerParticleView.Fidelity.forTotalSurfaceArea(totalSurfaceArea)
+        self.particleViews.forEach {
+            $0.value?.fidelity = fidelity
+        }
     }
 
     private func removeSpoilerViews(_ spoilerViews: [SpoilerParticleView]) {

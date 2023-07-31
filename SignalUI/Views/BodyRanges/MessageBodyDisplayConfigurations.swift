@@ -121,14 +121,16 @@ public extension HydratedMessageBody.DisplayConfiguration {
     ) -> Self {
         return .init(
             baseFont: font,
-            baseTextColor: textColor
+            baseTextColor: textColor,
+            spoilerAnimationColorOverride: ConversationStyle.bubbleTextColorIncomingThemed
         )
     }
 
     static func conversationListSearchResultSnippet() -> Self {
         return .init(
             baseFont: .dynamicTypeBody2,
-            baseTextColor: .secondaryTextAndIcon
+            baseTextColor: .secondaryTextAndIcon,
+            spoilerAnimationColorOverride: ConversationStyle.bubbleTextColorIncomingThemed
         )
     }
 
@@ -194,6 +196,7 @@ extension HydratedMessageBody.DisplayConfiguration {
         mentionFont: UIFont? = nil,
         mentionForegroundColor: ThemedColor? = nil,
         mentionBackgroundColor: ThemedColor? = nil,
+        spoilerAnimationColorOverride: ThemedColor? = nil,
         revealedSpoilerBgColor: ThemedColor? = nil,
         revealAllSpoilers: Bool = false,
         revealedSpoilerIds: Set<StyleIdType> = Set(),
@@ -205,6 +208,7 @@ extension HydratedMessageBody.DisplayConfiguration {
             mentionFont: mentionFont,
             mentionForegroundColor: mentionForegroundColor,
             mentionBackgroundColor: mentionBackgroundColor,
+            spoilerAnimationColorOverride: spoilerAnimationColorOverride,
             revealedSpoilerBgColor: revealedSpoilerBgColor,
             revealAllSpoilers: revealAllSpoilers,
             revealedSpoilerIds: revealedSpoilerIds,
