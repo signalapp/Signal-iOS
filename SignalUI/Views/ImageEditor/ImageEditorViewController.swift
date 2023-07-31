@@ -186,6 +186,7 @@ class ImageEditorViewController: OWSViewController {
     // Text UI
     var textUIInitialized = false
     var startEditingTextOnViewAppear = false
+    var discardTextEditsOnEditingEnd = false
     var currentTextItem: (textItem: ImageEditorTextItem, isNewItem: Bool)?
     var pinchFontSizeStart: CGFloat = ImageEditorTextItem.defaultFontSize
     var textViewContainerBottomConstraint: NSLayoutConstraint? // to bottom of self.view
@@ -298,7 +299,7 @@ class ImageEditorViewController: OWSViewController {
         switch mode {
         case .draw, .blur:
             strokeWidthSliderContainer.isHidden = false
-            finishTextEditing(applyEdits: true)
+            finishTextEditing()
 
         case .text:
             strokeWidthSliderContainer.isHidden = true
@@ -405,7 +406,7 @@ class ImageEditorViewController: OWSViewController {
         Logger.verbose("")
 
         if mode == .text {
-            finishTextEditing(applyEdits: false)
+            finishTextEditing(discardEdits: true)
         }
 
         while canUndo {
@@ -420,14 +421,14 @@ extension ImageEditorViewController {
 
     private func prepareToDismiss(completion: ((Bool) -> Void)?) {
         if mode == .text {
-            finishTextEditing(applyEdits: false)
+            finishTextEditing(discardEdits: true)
         }
         transitionUI(toState: .initial, animated: true, completion: completion)
     }
 
     private func prepareToFinish(completion: ((Bool) -> Void)?) {
         if mode == .text {
-            finishTextEditing(applyEdits: true)
+            finishTextEditing()
         }
         transitionUI(toState: .initial, animated: true, completion: completion)
     }

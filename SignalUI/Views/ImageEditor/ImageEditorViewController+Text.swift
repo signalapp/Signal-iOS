@@ -150,22 +150,18 @@ extension ImageEditorViewController {
         textView.becomeFirstResponder()
     }
 
-    func finishTextEditing(applyEdits: Bool) {
+    func finishTextEditing(discardEdits: Bool = false) {
         guard textUIInitialized else { return }
         guard textView.isFirstResponder else { return }
 
-        bottomBar.setIsHidden(false, animated: true)
+        discardTextEditsOnEditingEnd = discardEdits
 
         textView.acceptAutocorrectSuggestion()
         textView.resignFirstResponder()
+    }
 
-        defer {
-            currentTextItem = nil
-        }
-
-        guard applyEdits else { return }
-
-        guard let currentTextItem = currentTextItem else { return }
+    private func applyTextEdits() {
+        guard let currentTextItem else { return }
 
         var textItem = currentTextItem.textItem
 
@@ -258,7 +254,7 @@ extension ImageEditorViewController {
 
     @objc
     private func didTapDimmerView(_ gestureRecognizer: UITapGestureRecognizer) {
-        finishTextEditing(applyEdits: true)
+        finishTextEditing()
     }
 
     @objc
@@ -280,7 +276,7 @@ extension ImageEditorViewController {
 
     @objc
     func didTapTextEditingDoneButton(sender: UIButton) {
-        finishTextEditing(applyEdits: true)
+        finishTextEditing()
     }
 }
 
@@ -288,11 +284,27 @@ extension ImageEditorViewController {
 
 extension ImageEditorViewController: UITextViewDelegate {
 
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        // Reset each time user starts editing text.
+        discardTextEditsOnEditingEnd = false
+    }
+
     func textViewDidEndEditing(_ textView: UITextView) {
+        bottomBar.setIsHidden(false, animated: true)
+
+        // Save changes to the model unless we were told not to (eg when dismissing screen).
+        if !discardTextEditsOnEditingEnd {
+            applyTextEdits()
+        }
+
+        // Existing text is made hidden on the canvas while user is editing.
+        // This is the time to make it visible.
         UIView.animate(withDuration: 0.2) {
             self.imageEditorView.canvasView.hiddenItemId = nil
             self.textViewContainer.alpha = 0
         }
+
+        currentTextItem = nil
     }
 }
 
