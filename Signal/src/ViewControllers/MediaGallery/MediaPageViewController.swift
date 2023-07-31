@@ -92,18 +92,6 @@ class MediaPageViewController: UIPageViewController {
     // MARK: UIViewController
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        let useDarkContentStatusBar: Bool
-        if mediaInteractiveDismiss.interactionInProgress {
-            useDarkContentStatusBar = true
-        } else if isBeingDismissed, let transitionCoordinator {
-            useDarkContentStatusBar = !transitionCoordinator.isCancelled
-        } else {
-            useDarkContentStatusBar = false
-        }
-
-        if useDarkContentStatusBar {
-            return .darkContent
-        }
         return .lightContent
     }
 
