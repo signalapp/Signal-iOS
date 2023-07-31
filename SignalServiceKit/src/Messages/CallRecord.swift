@@ -169,6 +169,7 @@ public final class CallRecord: NSObject, SDSCodableModel, Decodable {
     ) {
         guard let peerUuid = thread.contactUUID
         else {
+            Logger.info("Unable to create/update call record; peer UUID missing")
             return
         }
         if let callRecord = Self.fetch(forCallId: callId, transaction: transaction) {
@@ -333,6 +334,7 @@ public final class CallRecord: NSObject, SDSCodableModel, Decodable {
                 Logger.error("Got a call sync message for a contact without a thread, dropping.")
                 return
             }
+            Logger.info("Creating call interaction from incoming sync message")
             let callInteraction = TSCall(
                 callType: callType,
                 offerType: callEvent.type == .videoCall ? .video : .audio,

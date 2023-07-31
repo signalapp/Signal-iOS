@@ -81,6 +81,7 @@ final public class IndividualCallService: NSObject {
             return
         }
 
+        Logger.info("Creating call interaction: \(call)")
         call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingIncomplete)
 
         // It's key that we configure the AVAudioSession for a call *before* we fulfill the

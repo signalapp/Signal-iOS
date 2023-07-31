@@ -76,6 +76,8 @@ public class IndividualCall: NSObject {
             Self.databaseStorage.asyncWrite { transaction in
                 if let callInteraction = self.callInteraction {
                     self.createOrUpdateCallRecordIfNeeded(for: callInteraction, transaction: transaction)
+                } else {
+                    Logger.info("Unable to create call record with id; no interaction yet")
                 }
             }
         }
@@ -304,6 +306,7 @@ public class IndividualCall: NSObject {
         transaction: SDSAnyWriteTransaction
     ) {
         if let existingCall = self.callInteraction {
+            Logger.info("Existing call interaction found, updating")
             if let newCallType = self.validateCallType(callType, state: state, for: existingCall, transaction: transaction) {
                 existingCall.updateCallType(newCallType, transaction: transaction)
             }
@@ -320,12 +323,15 @@ public class IndividualCall: NSObject {
                 transaction: transaction
             )
         {
+            Logger.info("Existing call interaction found on disk, updating")
             self.callInteraction = existingCall
             if let newCallType = self.validateCallType(callType, state: state, for: existingCall, transaction: transaction) {
                 existingCall.updateCallType(newCallType, transaction: transaction)
             }
             return
         }
+
+        Logger.info("No existing call interaction found; creating")
 
         // Validation might modify the call type, but ignore if it tries to say we
         // shouldn't update and fall back to the original value since we are creating,
@@ -426,8 +432,10 @@ public class IndividualCall: NSObject {
         transaction: SDSAnyWriteTransaction
     ) {
         guard let callId = self.callId else {
+            Logger.info("No call id; unable to create call record.")
             return
         }
+        Logger.info("Creating or updating call record.")
         CallRecord.createOrUpdate(
             interaction: callInteraction,
             thread: thread,
