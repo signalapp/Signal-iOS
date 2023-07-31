@@ -869,7 +869,11 @@ extension AppDelegate {
             return false
         }
         AppReadiness.runNowOrWhenUIDidBecomeReadySync {
-            let urlOpener = UrlOpener(tsAccountManager: self.tsAccountManager)
+            let urlOpener = UrlOpener(
+                databaseStorage: self.databaseStorage,
+                tsAccountManager: self.tsAccountManager
+            )
+
             urlOpener.openUrl(parsedUrl, in: self.window!)
         }
         return true

@@ -18,7 +18,7 @@ public class ChatListViewController: OWSViewController {
 
         tableDataSource.viewController = self
         loadCoordinator.viewController = self
-        reminderViews.viewController = self
+        reminderViews.chatListViewController = self
         viewState.configure()
     }
 
@@ -972,6 +972,8 @@ extension ChatListViewController {
         case paymentsTransferIn
         case appearance
         case avatarBuilder
+        case corruptedUsernameResolution
+        case corruptedUsernameLinkResolution
         case donate(donateMode: DonateViewController.DonateMode)
         case proxy
     }
@@ -1048,13 +1050,14 @@ extension ChatListViewController {
         Logger.info("")
 
         // Dismiss any message actions if they're presented
-            conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
+        conversationSplitViewController?.selectedConversationViewController?
+            .dismissMessageContextMenu(animated: true)
 
-        let navigationController = AppSettingsViewController.inModalNavigationController()
+        let appSettingsViewController = AppSettingsViewController()
 
         var completion: (() -> Void)?
+        var viewControllers: [UIViewController] = [ appSettingsViewController ]
 
-        var viewControllers = navigationController.viewControllers
         switch mode {
         case .none:
             break
@@ -1073,9 +1076,26 @@ extension ChatListViewController {
             let appearance = AppearanceSettingsTableViewController()
             viewControllers += [ appearance ]
         case .avatarBuilder:
-            let profile = ProfileSettingsViewController()
+            let profile = ProfileSettingsViewController(
+                usernameChangeDelegate: appSettingsViewController
+            )
+
             viewControllers += [ profile ]
             completion = { profile.presentAvatarSettingsView() }
+        case .corruptedUsernameResolution:
+            let profile = ProfileSettingsViewController(
+                usernameChangeDelegate: appSettingsViewController
+            )
+
+            viewControllers += [ profile ]
+            completion = { profile.presentUsernameCorruptedResolution() }
+        case .corruptedUsernameLinkResolution:
+            let profile = ProfileSettingsViewController(
+                usernameChangeDelegate: appSettingsViewController
+            )
+
+            viewControllers += [ profile ]
+            completion = { profile.presentUsernameLinkCorruptedResolution() }
         case let .donate(donateMode):
             guard DonationUtilities.canDonate(
                 inMode: donateMode.asDonationMode,
@@ -1102,6 +1122,8 @@ extension ChatListViewController {
         case .proxy:
             viewControllers += [ PrivacySettingsViewController(), AdvancedPrivacySettingsViewController(), ProxySettingsViewController() ]
         }
+
+        let navigationController = OWSNavigationController()
         navigationController.setViewControllers(viewControllers, animated: false)
         presentFormSheet(navigationController, animated: true, completion: completion)
     }

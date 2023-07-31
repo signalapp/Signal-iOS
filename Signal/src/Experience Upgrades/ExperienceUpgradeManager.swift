@@ -152,28 +152,26 @@ class ExperienceUpgradeManager: Dependencies {
         case .notificationPermissionReminder:
             return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .createUsernameReminder:
-            guard let localAci = tsAccountManager.localUuid.map({ UntypedServiceId($0) }) else {
-                return nil
+            let usernameIsUnset: Bool = databaseStorage.read { tx in
+                return DependenciesBridge.shared.localUsernameManager
+                    .usernameState(tx: tx.asV2Read).isExplicitlyUnset
             }
 
-            let currentUsername: String? = databaseStorage.read { transaction in
-                DependenciesBridge.shared.usernameLookupManager.fetchUsername(
-                    forAci: localAci,
-                    transaction: transaction.asV2Read
-                )
+            guard usernameIsUnset else {
+                owsFailDebug("Should never try and show this megaphone if a username is set!")
+                return nil
             }
 
             return CreateUsernameMegaphone(
                 usernameSelectionCoordinator: .init(
-                    localAci: localAci,
-                    currentUsername: currentUsername,
+                    currentUsername: nil,
                     context: .init(
-                        usernameEducationManager: DependenciesBridge.shared.usernameEducationManager,
-                        networkManager: networkManager,
                         databaseStorage: databaseStorage,
-                        usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
+                        networkManager: networkManager,
                         schedulers: DependenciesBridge.shared.schedulers,
-                        storageServiceManager: storageServiceManager
+                        storageServiceManager: storageServiceManager,
+                        usernameEducationManager: DependenciesBridge.shared.usernameEducationManager,
+                        localUsernameManager: DependenciesBridge.shared.localUsernameManager
                     )
                 ),
                 experienceUpgrade: experienceUpgrade,

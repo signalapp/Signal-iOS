@@ -1266,7 +1266,6 @@
 		C169095F2A4DE2A200B6A65D /* EditMessageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
-		C182BEF629ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */; };
 		C198FDD62A37C905000BCAC9 /* SSKKyberPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */; };
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
 		C1CD0E362A6B0BC900307F1A /* SignalPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */; };
@@ -1301,7 +1300,6 @@
 		D925F55F298C743E00158EE4 /* UsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F55E298C743E00158EE4 /* UsernameLookupManager.swift */; };
 		D925F560298D8F9400158EE4 /* Usernames+UsernameLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F552298349EF00158EE4 /* Usernames+UsernameLink.swift */; };
 		D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */; };
-		D925F562298D8F9400158EE4 /* Usernames+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C5297A0F9500F7ED6D /* Usernames+API.swift */; };
 		D925F563298D8F9400158EE4 /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
 		D925F56A298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
 		D925F56B298DC6E100158EE4 /* MockUsernameLookupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F566298DC33E00158EE4 /* MockUsernameLookupManager.swift */; };
@@ -1311,7 +1309,16 @@
 		D9317FD52A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */; };
 		D9317FD82A4BC4FC00075A92 /* BitmapsRectTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */; };
 		D9317FDC2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */; };
-		D934279C2A4E43680062311B /* UsernameLinkQRCodeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D934279B2A4E43680062311B /* UsernameLinkQRCodeColor.swift */; };
+		D93830722A703728006CDCDE /* UsernameApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830712A703727006CDCDE /* UsernameApiClient.swift */; };
+		D93830742A703969006CDCDE /* LocalUsernameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830732A703968006CDCDE /* LocalUsernameManager.swift */; };
+		D938307A2A704123006CDCDE /* UsernameLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830792A704123006CDCDE /* UsernameLinkManager.swift */; };
+		D938307B2A70432B006CDCDE /* ConsumableMockPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */; };
+		D938307C2A704338006CDCDE /* LocalUsernameManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830752A70396E006CDCDE /* LocalUsernameManagerTests.swift */; };
+		D938307E2A70441D006CDCDE /* Usernames+QRCodeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938307D2A70441D006CDCDE /* Usernames+QRCodeColor.swift */; };
+		D93830802A705D64006CDCDE /* UsernameLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938307F2A705D64006CDCDE /* UsernameLogger.swift */; };
+		D93830812A7065C7006CDCDE /* UsernameValidationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */; };
+		D93830832A708E95006CDCDE /* UsernameChangeDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830822A708E95006CDCDE /* UsernameChangeDelegate.swift */; };
+		D93830852A784210006CDCDE /* UsernameApiClientImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830842A784210006CDCDE /* UsernameApiClientImpl.swift */; };
 		D938CD6029283402006FB16A /* Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938CD5F29283402006FB16A /* Paypal.swift */; };
 		D93CE1242A5C84F600D916B7 /* OWSSyncRequestMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */; };
 		D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */; };
@@ -1349,7 +1356,6 @@
 		D99ABC7A2A3D1D710034CD3B /* semitransparent.png in Resources */ = {isa = PBXBuildFile; fileRef = D99ABC792A3D1D710034CD3B /* semitransparent.png */; };
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
 		D9A3E22B2A0D633500E2A8B5 /* UsernameLookupRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */; };
-		D9A3E22D2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */; };
 		D9A3E2302A0DABDF00E2A8B5 /* UsernameQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */; };
 		D9A3E2322A0DBDFC00E2A8B5 /* Usernames+UsernameLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F55429834BC900158EE4 /* Usernames+UsernameLinkTests.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
@@ -3907,7 +3913,15 @@
 		D9317FD42A4BB15D00075A92 /* BitmapsImageCenteredDeadzoneTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsImageCenteredDeadzoneTest.swift; sourceTree = "<group>"; };
 		D9317FD62A4BC4F000075A92 /* BitmapsRectTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsRectTest.swift; sourceTree = "<group>"; };
 		D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeColorPickerViewController.swift; sourceTree = "<group>"; };
-		D934279B2A4E43680062311B /* UsernameLinkQRCodeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeColor.swift; sourceTree = "<group>"; };
+		D93830712A703727006CDCDE /* UsernameApiClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameApiClient.swift; sourceTree = "<group>"; };
+		D93830732A703968006CDCDE /* LocalUsernameManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUsernameManager.swift; sourceTree = "<group>"; };
+		D93830752A70396E006CDCDE /* LocalUsernameManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUsernameManagerTests.swift; sourceTree = "<group>"; };
+		D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsumableMockPromise.swift; sourceTree = "<group>"; };
+		D93830792A704123006CDCDE /* UsernameLinkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameLinkManager.swift; sourceTree = "<group>"; };
+		D938307D2A70441D006CDCDE /* Usernames+QRCodeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+QRCodeColor.swift"; sourceTree = "<group>"; };
+		D938307F2A705D64006CDCDE /* UsernameLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameLogger.swift; sourceTree = "<group>"; };
+		D93830822A708E95006CDCDE /* UsernameChangeDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameChangeDelegate.swift; sourceTree = "<group>"; };
+		D93830842A784210006CDCDE /* UsernameApiClientImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameApiClientImpl.swift; sourceTree = "<group>"; };
 		D938CD5F29283402006FB16A /* Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paypal.swift; sourceTree = "<group>"; };
 		D93CE1232A5C84F600D916B7 /* OWSSyncRequestMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSyncRequestMessage.swift; sourceTree = "<group>"; };
 		D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManager.swift; sourceTree = "<group>"; };
@@ -3936,7 +3950,6 @@
 		D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+UsernameTextField.swift"; sourceTree = "<group>"; };
 		D99840BE297A04EB00F7ED6D /* Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Usernames.swift; sourceTree = "<group>"; };
 		D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+ParsedUsername.swift"; sourceTree = "<group>"; };
-		D99840C5297A0F9500F7ED6D /* Usernames+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+API.swift"; sourceTree = "<group>"; };
 		D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+HeaderView.swift"; sourceTree = "<group>"; };
 		D99840CD2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkShareSheetViewController.swift; sourceTree = "<group>"; };
 		D99A0F5729F1ABBB002E02E3 /* TSGroupMemberRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupMemberRole.swift; sourceTree = "<group>"; };
@@ -3946,7 +3959,6 @@
 		D99ABC762A3D132D0034CD3B /* blue-rectangle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-rectangle.png"; sourceTree = "<group>"; };
 		D99ABC792A3D1D710034CD3B /* semitransparent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = semitransparent.png; sourceTree = "<group>"; };
 		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
-		D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkOpener.swift; sourceTree = "<group>"; };
 		D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameQuerier.swift; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
@@ -7902,12 +7914,17 @@
 		D925F55C298C6A6000158EE4 /* Usernames */ = {
 			isa = PBXGroup;
 			children = (
+				D93830732A703968006CDCDE /* LocalUsernameManager.swift */,
+				D93830712A703727006CDCDE /* UsernameApiClient.swift */,
+				D93830842A784210006CDCDE /* UsernameApiClientImpl.swift */,
 				D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */,
+				D93830792A704123006CDCDE /* UsernameLinkManager.swift */,
+				D938307F2A705D64006CDCDE /* UsernameLogger.swift */,
 				D925F55E298C743E00158EE4 /* UsernameLookupManager.swift */,
 				D925F557298B39D800158EE4 /* UsernameLookupRecord.swift */,
-				D99840C5297A0F9500F7ED6D /* Usernames+API.swift */,
 				D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */,
 				D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */,
+				D938307D2A70441D006CDCDE /* Usernames+QRCodeColor.swift */,
 				D925F552298349EF00158EE4 /* Usernames+UsernameLink.swift */,
 				D99840BE297A04EB00F7ED6D /* Usernames.swift */,
 				C15837EE29A592BA00176927 /* UsernameValidationManager.swift */,
@@ -7930,9 +7947,7 @@
 		D9317FDA2A4CE47100075A92 /* Links */ = {
 			isa = PBXGroup;
 			children = (
-				D9A3E22C2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift */,
 				D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */,
-				D934279B2A4E43680062311B /* UsernameLinkQRCodeColor.swift */,
 				D9317FDB2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift */,
 				D9CAFAE52A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift */,
 				D9CAFAE32A538BDF00B32BDE /* UsernameLinkScanQRCodeViewController.swift */,
@@ -8001,6 +8016,7 @@
 			children = (
 				D9317FDA2A4CE47100075A92 /* Links */,
 				D9317FD92A4CE45500075A92 /* Selection */,
+				D93830822A708E95006CDCDE /* UsernameChangeDelegate.swift */,
 				C1DF443D2991BB3C003882D5 /* UsernameEducationViewController.swift */,
 			);
 			path = Usernames;
@@ -8009,6 +8025,7 @@
 		D99840C2297A0DC400F7ED6D /* Usernames */ = {
 			isa = PBXGroup;
 			children = (
+				D93830752A70396E006CDCDE /* LocalUsernameManagerTests.swift */,
 				D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */,
 				D925F55429834BC900158EE4 /* Usernames+UsernameLinkTests.swift */,
 				C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */,
@@ -8448,6 +8465,7 @@
 		F945FE4E2984820B00C835C7 /* TestUtils */ = {
 			isa = PBXGroup;
 			children = (
+				D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */,
 				F945FE4F2984822D00C835C7 /* UserDefaults.swift */,
 			);
 			path = TestUtils;
@@ -11922,10 +11940,9 @@
 				346CD5C226306578004162D6 /* UnknownThreadWarningInteraction.swift in Sources */,
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
 				5033D47029DCACEF007FEADA /* UrlOpener.swift in Sources */,
+				D93830832A708E95006CDCDE /* UsernameChangeDelegate.swift in Sources */,
 				C1DF443E2991BB3C003882D5 /* UsernameEducationViewController.swift in Sources */,
-				D9A3E22D2A0DA8EF00E2A8B5 /* UsernameLinkOpener.swift in Sources */,
 				D9DCFDA52A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift in Sources */,
-				D934279C2A4E43680062311B /* UsernameLinkQRCodeColor.swift in Sources */,
 				D9317FDC2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift in Sources */,
 				D9CAFAE62A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift in Sources */,
 				D9DCFDB02A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift in Sources */,
@@ -12024,7 +12041,6 @@
 				E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */,
 				503BDDB4296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift in Sources */,
 				5033D47329DCB3FF007FEADA /* UrlOpenerTest.swift in Sources */,
-				C182BEF629ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift in Sources */,
 				45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */,
 				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
 				5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */,
@@ -12233,6 +12249,7 @@
 				5033D46729D76BD0007FEADA /* LocalIdentifiers.swift in Sources */,
 				D925937A28B0497900D5D437 /* LocalUserLeaveGroupJob.swift in Sources */,
 				D9170EEF2911F55000CD813A /* LocalUserLeaveGroupJobRecord.swift in Sources */,
+				D93830742A703969006CDCDE /* LocalUsernameManager.swift in Sources */,
 				F9C5CDF6289453B400548EEE /* LRUCache.swift in Sources */,
 				F9C5CDE3289453B400548EEE /* MailtoLink.swift in Sources */,
 				F9C5CE08289453B400548EEE /* Math+OWS.swift in Sources */,
@@ -12715,12 +12732,16 @@
 				F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */,
 				6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */,
 				F9D5BFCF2979AFF4001737E5 /* URLPathComponents.swift in Sources */,
+				D93830722A703728006CDCDE /* UsernameApiClient.swift in Sources */,
+				D93830852A784210006CDCDE /* UsernameApiClientImpl.swift in Sources */,
 				D9C2D77E299D750200D79715 /* UsernameEducationManager.swift in Sources */,
+				D938307A2A704123006CDCDE /* UsernameLinkManager.swift in Sources */,
+				D93830802A705D64006CDCDE /* UsernameLogger.swift in Sources */,
 				D925F55F298C743E00158EE4 /* UsernameLookupManager.swift in Sources */,
 				D925F55D298C6A7D00158EE4 /* UsernameLookupRecord.swift in Sources */,
-				D925F562298D8F9400158EE4 /* Usernames+API.swift in Sources */,
 				D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */,
 				D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */,
+				D938307E2A70441D006CDCDE /* Usernames+QRCodeColor.swift in Sources */,
 				D925F560298D8F9400158EE4 /* Usernames+UsernameLink.swift in Sources */,
 				D925F563298D8F9400158EE4 /* Usernames.swift in Sources */,
 				C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */,
@@ -12755,6 +12776,7 @@
 				661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */,
 				D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */,
 				F9C9610B29A91026001E4A09 /* ChatServiceAuthTest.swift in Sources */,
+				D938307B2A70432B006CDCDE /* ConsumableMockPromise.swift in Sources */,
 				5075004628B09CE6001922C9 /* ContactDiscoveryE164CollectionTest.swift in Sources */,
 				50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */,
 				500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */,
@@ -12785,6 +12807,7 @@
 				66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */,
 				D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */,
 				50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */,
+				D938307C2A704338006CDCDE /* LocalUsernameManagerTests.swift in Sources */,
 				F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */,
 				F9426269289B1B5500460798 /* MathOWSTests.swift in Sources */,
 				66FC637229DF7A1500F00DAC /* MessageBodyRangesTests.swift in Sources */,
@@ -12889,6 +12912,7 @@
 				F945FE502984822D00C835C7 /* UserDefaults.swift in Sources */,
 				D9A3E22B2A0D633500E2A8B5 /* UsernameLookupRecordTest.swift in Sources */,
 				D9A3E2322A0DBDFC00E2A8B5 /* Usernames+UsernameLinkTests.swift in Sources */,
+				D93830812A7065C7006CDCDE /* UsernameValidationManagerTests.swift in Sources */,
 				506ABE6E2A43B2FE008844D1 /* UserProfileMergerTest.swift in Sources */,
 				D9B95A9D29E894A600D7CB95 /* ValidatableModel.swift in Sources */,
 				F942626A289B1B5500460798 /* ViewOnceMessagesTest.swift in Sources */,

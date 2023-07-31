@@ -376,7 +376,19 @@ extension ConversationViewController: CVComponentDelegate {
     }
 
     public func didTapUsernameLink(usernameLink: Usernames.UsernameLink) {
-        UsernameLinkOpener(link: usernameLink).open(fromViewController: self)
+        databaseStorage.read { tx in
+            UsernameQuerier().queryForUsernameLink(
+                link: usernameLink,
+                fromViewController: self,
+                tx: tx,
+                onSuccess: { aci in
+                    SignalApp.shared.presentConversationForAddress(
+                        SignalServiceAddress(aci),
+                        animated: true
+                    )
+                }
+            )
+        }
     }
 
     public func didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {

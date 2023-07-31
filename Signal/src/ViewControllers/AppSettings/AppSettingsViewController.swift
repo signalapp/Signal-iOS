@@ -12,20 +12,14 @@ class AppSettingsViewController: OWSTableViewController2 {
         OWSNavigationController(rootViewController: AppSettingsViewController())
     }
 
-    private var localUsername: String?
+    private var localUsernameState: Usernames.LocalUsernameState!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        localUsername = databaseStorage.read { tx in
-            guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
-                return nil
-            }
-
-            return DependenciesBridge.shared.usernameLookupManager.fetchUsername(
-                forAci: localAci,
-                transaction: tx.asV2Read
-            )
+        databaseStorage.read { tx in
+            localUsernameState = DependenciesBridge.shared.localUsernameManager
+                .usernameState(tx: tx.asV2Read)
         }
 
         title = OWSLocalizedString("SETTINGS_NAV_BAR_TITLE", comment: "Title for settings activity")
@@ -128,7 +122,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     guard let self else { return }
-                    let vc = ProfileSettingsViewController(usernameSelectionDelegate: self)
+                    let vc = ProfileSettingsViewController(usernameChangeDelegate: self)
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             )
@@ -465,8 +459,15 @@ class AppSettingsViewController: OWSTableViewController2 {
     /// Note that this button does not use autolayout, so as to play nice with
     /// ``UITableViewCell``'s accessory view.
     private func profileCellUsernameLinkButton() -> UIButton? {
-        guard let localUsername else {
+        let localUsername: String
+        let localUsernameLink: Usernames.UsernameLink
+
+        switch localUsernameState {
+        case nil, .unset, .usernameAndLinkCorrupted, .linkCorrupted:
             return nil
+        case let .available(username, usernameLink):
+            localUsername = username
+            localUsernameLink = usernameLink
         }
 
         let usernameLinkButton = OWSRoundedButton { [weak self] in
@@ -474,8 +475,11 @@ class AppSettingsViewController: OWSTableViewController2 {
 
             let usernameLinkController = UsernameLinkQRCodeContentController(
                 db: DependenciesBridge.shared.db,
-                kvStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
-                usernameLink: Usernames.UsernameLink(username: localUsername),
+                localUsernameManager: DependenciesBridge.shared.localUsernameManager,
+                schedulers: DependenciesBridge.shared.schedulers,
+                username: localUsername,
+                usernameLink: localUsernameLink,
+                changeDelegate: self,
                 scanDelegate: self
             )
 
@@ -523,9 +527,9 @@ class AppSettingsViewController: OWSTableViewController2 {
     }
 }
 
-extension AppSettingsViewController: UsernameSelectionDelegate {
-    func usernameDidChange(to newValue: String?) {
-        localUsername = newValue
+extension AppSettingsViewController: UsernameChangeDelegate {
+    func usernameStateDidChange(newState: Usernames.LocalUsernameState) {
+        localUsernameState = newState
         updateTableContents()
     }
 }
@@ -538,7 +542,18 @@ extension AppSettingsViewController: UsernameLinkScanDelegate {
         }
 
         dismiss(animated: true) {
-            UsernameLinkOpener(link: usernameLink).open(fromViewController: self)
+            self.databaseStorage.read { tx in
+                UsernameQuerier().queryForUsernameLink(
+                    link: usernameLink,
+                    fromViewController: self,
+                    tx: tx
+                ) { aci in
+                    SignalApp.shared.presentConversationForAddress(
+                        SignalServiceAddress(aci),
+                        animated: true
+                    )
+                }
+            }
         }
     }
 }

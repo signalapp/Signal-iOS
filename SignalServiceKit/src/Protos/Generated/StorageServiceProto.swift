@@ -2663,6 +2663,257 @@ extension StorageServiceProtoAccountRecordPaymentsBuilder {
 
 #endif
 
+// MARK: - StorageServiceProtoAccountRecordUsernameLinkColor
+
+public enum StorageServiceProtoAccountRecordUsernameLinkColor: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case unknown // 0
+    case blue // 1
+    case white // 2
+    case grey // 3
+    case olive // 4
+    case green // 5
+    case orange // 6
+    case pink // 7
+    case purple // 8
+    case UNRECOGNIZED(Int)
+
+    public init() {
+        self = .unknown
+    }
+
+    public init?(rawValue: Int) {
+        switch rawValue {
+            case 0: self = .unknown
+            case 1: self = .blue
+            case 2: self = .white
+            case 3: self = .grey
+            case 4: self = .olive
+            case 5: self = .green
+            case 6: self = .orange
+            case 7: self = .pink
+            case 8: self = .purple
+            default: self = .UNRECOGNIZED(rawValue)
+        }
+    }
+
+    public var rawValue: Int {
+        switch self {
+            case .unknown: return 0
+            case .blue: return 1
+            case .white: return 2
+            case .grey: return 3
+            case .olive: return 4
+            case .green: return 5
+            case .orange: return 6
+            case .pink: return 7
+            case .purple: return 8
+            case .UNRECOGNIZED(let i): return i
+        }
+    }
+}
+
+private func StorageServiceProtoAccountRecordUsernameLinkColorWrap(_ value: StorageServiceProtos_AccountRecord.UsernameLink.Color) -> StorageServiceProtoAccountRecordUsernameLinkColor {
+    switch value {
+    case .unknown: return .unknown
+    case .blue: return .blue
+    case .white: return .white
+    case .grey: return .grey
+    case .olive: return .olive
+    case .green: return .green
+    case .orange: return .orange
+    case .pink: return .pink
+    case .purple: return .purple
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
+private func StorageServiceProtoAccountRecordUsernameLinkColorUnwrap(_ value: StorageServiceProtoAccountRecordUsernameLinkColor) -> StorageServiceProtos_AccountRecord.UsernameLink.Color {
+    switch value {
+    case .unknown: return .unknown
+    case .blue: return .blue
+    case .white: return .white
+    case .grey: return .grey
+    case .olive: return .olive
+    case .green: return .green
+    case .orange: return .orange
+    case .pink: return .pink
+    case .purple: return .purple
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
+// MARK: - StorageServiceProtoAccountRecordUsernameLink
+
+public struct StorageServiceProtoAccountRecordUsernameLink: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: StorageServiceProtos_AccountRecord.UsernameLink
+
+    public var entropy: Data? {
+        guard hasEntropy else {
+            return nil
+        }
+        return proto.entropy
+    }
+    public var hasEntropy: Bool {
+        return !proto.entropy.isEmpty
+    }
+
+    public var serverID: Data? {
+        guard hasServerID else {
+            return nil
+        }
+        return proto.serverID
+    }
+    public var hasServerID: Bool {
+        return !proto.serverID.isEmpty
+    }
+
+    public var color: StorageServiceProtoAccountRecordUsernameLinkColor? {
+        guard hasColor else {
+            return nil
+        }
+        return StorageServiceProtoAccountRecordUsernameLinkColorWrap(proto.color)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedColor: StorageServiceProtoAccountRecordUsernameLinkColor {
+        if !hasColor {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: UsernameLink.color.")
+        }
+        return StorageServiceProtoAccountRecordUsernameLinkColorWrap(proto.color)
+    }
+    public var hasColor: Bool {
+        return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_AccountRecord.UsernameLink) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_AccountRecord.UsernameLink(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate init(_ proto: StorageServiceProtos_AccountRecord.UsernameLink) {
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension StorageServiceProtoAccountRecordUsernameLink {
+    public static func builder() -> StorageServiceProtoAccountRecordUsernameLinkBuilder {
+        return StorageServiceProtoAccountRecordUsernameLinkBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoAccountRecordUsernameLinkBuilder {
+        var builder = StorageServiceProtoAccountRecordUsernameLinkBuilder()
+        if let _value = entropy {
+            builder.setEntropy(_value)
+        }
+        if let _value = serverID {
+            builder.setServerID(_value)
+        }
+        if let _value = color {
+            builder.setColor(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct StorageServiceProtoAccountRecordUsernameLinkBuilder {
+
+    private var proto = StorageServiceProtos_AccountRecord.UsernameLink()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setEntropy(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.entropy = valueParam
+    }
+
+    public mutating func setEntropy(_ valueParam: Data) {
+        proto.entropy = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setServerID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.serverID = valueParam
+    }
+
+    public mutating func setServerID(_ valueParam: Data) {
+        proto.serverID = valueParam
+    }
+
+    public mutating func setColor(_ valueParam: StorageServiceProtoAccountRecordUsernameLinkColor) {
+        proto.color = StorageServiceProtoAccountRecordUsernameLinkColorUnwrap(valueParam)
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> StorageServiceProtoAccountRecordUsernameLink {
+        return StorageServiceProtoAccountRecordUsernameLink(proto)
+    }
+
+    public func buildInfallibly() -> StorageServiceProtoAccountRecordUsernameLink {
+        return StorageServiceProtoAccountRecordUsernameLink(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try StorageServiceProtoAccountRecordUsernameLink(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension StorageServiceProtoAccountRecordUsernameLink {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoAccountRecordUsernameLinkBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoAccountRecordUsernameLink? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - StorageServiceProtoAccountRecordPhoneNumberSharingMode
 
 public enum StorageServiceProtoAccountRecordPhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -2722,6 +2973,8 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     public let pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation]
 
     public let payments: StorageServiceProtoAccountRecordPayments?
+
+    public let usernameLink: StorageServiceProtoAccountRecordUsernameLink?
 
     public var profileKey: Data? {
         guard hasProfileKey else {
@@ -2979,10 +3232,12 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
 
     private init(proto: StorageServiceProtos_AccountRecord,
                  pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation],
-                 payments: StorageServiceProtoAccountRecordPayments?) {
+                 payments: StorageServiceProtoAccountRecordPayments?,
+                 usernameLink: StorageServiceProtoAccountRecordUsernameLink?) {
         self.proto = proto
         self.pinnedConversations = pinnedConversations
         self.payments = payments
+        self.usernameLink = usernameLink
     }
 
     public func serializedData() throws -> Data {
@@ -3003,9 +3258,15 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
             payments = StorageServiceProtoAccountRecordPayments(proto.payments)
         }
 
+        var usernameLink: StorageServiceProtoAccountRecordUsernameLink?
+        if proto.hasUsernameLink {
+            usernameLink = StorageServiceProtoAccountRecordUsernameLink(proto.usernameLink)
+        }
+
         self.init(proto: proto,
                   pinnedConversations: pinnedConversations,
-                  payments: payments)
+                  payments: payments,
+                  usernameLink: usernameLink)
     }
 
     public init(from decoder: Swift.Decoder) throws {
@@ -3119,6 +3380,9 @@ extension StorageServiceProtoAccountRecord {
         }
         if hasCompletedUsernameOnboarding {
             builder.setCompletedUsernameOnboarding(completedUsernameOnboarding)
+        }
+        if let _value = usernameLink {
+            builder.setUsernameLink(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -3317,6 +3581,16 @@ public struct StorageServiceProtoAccountRecordBuilder {
 
     public mutating func setCompletedUsernameOnboarding(_ valueParam: Bool) {
         proto.completedUsernameOnboarding = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setUsernameLink(_ valueParam: StorageServiceProtoAccountRecordUsernameLink?) {
+        guard let valueParam = valueParam else { return }
+        proto.usernameLink = valueParam.proto
+    }
+
+    public mutating func setUsernameLink(_ valueParam: StorageServiceProtoAccountRecordUsernameLink) {
+        proto.usernameLink = valueParam.proto
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

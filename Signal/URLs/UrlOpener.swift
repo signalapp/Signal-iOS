@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalUI
 
 private enum OpenableUrl {
     case phoneNumberLink(URL)
@@ -16,9 +17,14 @@ private enum OpenableUrl {
 }
 
 class UrlOpener {
+    private let databaseStorage: SDSDatabaseStorage
     private let tsAccountManager: TSAccountManager
 
-    init(tsAccountManager: TSAccountManager) {
+    init(
+        databaseStorage: SDSDatabaseStorage,
+        tsAccountManager: TSAccountManager
+    ) {
+        self.databaseStorage = databaseStorage
         self.tsAccountManager = tsAccountManager
     }
 
@@ -118,7 +124,18 @@ class UrlOpener {
             SignalDotMePhoneNumberLink.openChat(url: url, fromViewController: rootViewController)
 
         case .usernameLink(let link):
-            UsernameLinkOpener(link: link).open(fromViewController: rootViewController)
+            databaseStorage.read { tx in
+                UsernameQuerier().queryForUsernameLink(
+                    link: link,
+                    fromViewController: rootViewController,
+                    tx: tx
+                ) { aci in
+                    SignalApp.shared.presentConversationForAddress(
+                        SignalServiceAddress(aci),
+                        animated: true
+                    )
+                }
+            }
 
         case .stickerPack(let stickerPackInfo):
             let stickerPackViewController = StickerPackViewController(stickerPackInfo: stickerPackInfo)

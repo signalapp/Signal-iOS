@@ -9,34 +9,110 @@ import SignalServiceKit
 public struct UsernameQuerier {
     private let contactsManager: ContactsManagerProtocol
     private let databaseStorage: SDSDatabaseStorage
+    private let localUsernameManager: LocalUsernameManager
     private let networkManager: NetworkManager
     private let profileManager: ProfileManagerProtocol
     private let recipientFetcher: RecipientFetcher
     private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
+    private let usernameApiClient: UsernameApiClient
+    private let usernameLinkManager: UsernameLinkManager
     private let usernameLookupManager: UsernameLookupManager
+
+    public init() {
+        struct Deps: Dependencies {}
+        let deps = Deps()
+
+        self.init(
+            contactsManager: deps.contactsManager,
+            databaseStorage: deps.databaseStorage,
+            localUsernameManager: DependenciesBridge.shared.localUsernameManager,
+            networkManager: deps.networkManager,
+            profileManager: deps.profileManager,
+            recipientFetcher: DependenciesBridge.shared.recipientFetcher,
+            schedulers: DependenciesBridge.shared.schedulers,
+            storageServiceManager: deps.storageServiceManager,
+            tsAccountManager: deps.tsAccountManager,
+            usernameApiClient: DependenciesBridge.shared.usernameApiClient,
+            usernameLinkManager: DependenciesBridge.shared.usernameLinkManager,
+            usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
+        )
+    }
 
     public init(
         contactsManager: ContactsManagerProtocol,
         databaseStorage: SDSDatabaseStorage,
+        localUsernameManager: LocalUsernameManager,
         networkManager: NetworkManager,
         profileManager: ProfileManagerProtocol,
         recipientFetcher: RecipientFetcher,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
+        usernameApiClient: UsernameApiClient,
+        usernameLinkManager: UsernameLinkManager,
         usernameLookupManager: UsernameLookupManager
     ) {
         self.contactsManager = contactsManager
         self.databaseStorage = databaseStorage
+        self.localUsernameManager = localUsernameManager
         self.networkManager = networkManager
         self.profileManager = profileManager
         self.recipientFetcher = recipientFetcher
         self.schedulers = schedulers
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
+        self.usernameApiClient = usernameApiClient
+        self.usernameLinkManager = usernameLinkManager
         self.usernameLookupManager = usernameLookupManager
+    }
+
+    public func queryForUsernameLink(
+        link: Usernames.UsernameLink,
+        fromViewController: UIViewController,
+        tx: SDSAnyReadTransaction,
+        onSuccess: @escaping (FutureAci) -> Void
+    ) {
+        if
+            let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci,
+            let localLink = localUsernameManager.usernameState(tx: tx.asV2Read).usernameLink,
+            localLink == link
+        {
+            queryMatchedLocalUser(onSuccess: onSuccess, localAci: localAci, tx: tx)
+            return
+        }
+
+        ModalActivityIndicatorViewController.present(
+            fromViewController: fromViewController,
+            canCancel: true
+        ) { modal in
+            firstly(on: schedulers.sync) { () -> Promise<String?> in
+                usernameLinkManager.decryptEncryptedLink(link: link)
+            }.done(on: schedulers.main) { username in
+                guard let username else {
+                    showUsernameLinkOutdatedError()
+                    return
+                }
+
+                guard let hashedUsername = try? Usernames.HashedUsername(
+                    forUsername: username
+                ) else {
+                    modal.dismissIfNotCanceled {
+                        showInvalidUsernameError(username: username)
+                    }
+                    return
+                }
+
+                queryServiceForUsernameBehindSpinner(
+                    presentedModalActivityIndicator: modal,
+                    hashedUsername: hashedUsername,
+                    onSuccess: onSuccess
+                )
+            }.catch(on: schedulers.main) { _ in
+                showGenericError(presentedModal: modal)
+            }
+        }
     }
 
     /// Query the service for the given username, invoking a callback if the
@@ -48,125 +124,97 @@ public struct UsernameQuerier {
     public func queryForUsername(
         username: String,
         fromViewController: UIViewController,
-        onSuccess: @escaping (UntypedServiceId) -> Void
+        tx: SDSAnyReadTransaction,
+        onSuccess: @escaping (FutureAci) -> Void
     ) {
-        if let localAciToReturn = databaseStorage.read(block: { tx in
-            isOwnUsername(username: username, tx: tx)
-        }) {
-            // Queried for ourselves, no need to hit the service.
-            onSuccess(localAciToReturn)
+        if
+            let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci,
+            let localUsername = localUsernameManager.usernameState(tx: tx.asV2Read).username,
+            localUsername.caseInsensitiveCompare(username) == .orderedSame
+        {
+            queryMatchedLocalUser(onSuccess: onSuccess, localAci: localAci, tx: tx)
             return
         }
 
-        if let hashedUsername = try? Usernames.HashedUsername(forUsername: username) {
-            queryServiceForUsernameBehindSpinner(
-                hashedUsername: hashedUsername,
-                fromViewController: fromViewController,
-                onSuccess: onSuccess
-            )
-        } else {
-            OWSActionSheets.showActionSheet(
-                title: OWSLocalizedString(
-                    "USERNAME_LOOKUP_INVALID_USERNAME_TITLE",
-                    comment: "Title for an action sheet indicating that a user-entered username value is not a valid username."
-                ),
-                message: String(
-                    format: OWSLocalizedString(
-                        "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT",
-                        comment: "A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}."
-                    ),
-                    username
-                )
-            )
-        }
-    }
-
-    /// If the given username refers to the local user, returns the local ACI.
-    /// Otherwise, returns `nil`.
-    private func isOwnUsername(username: String, tx: SDSAnyReadTransaction) -> UntypedServiceId? {
-        guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
-            owsFailDebug("Missing local ACI!")
-            return nil
+        guard let hashedUsername = try? Usernames.HashedUsername(
+            forUsername: username
+        ) else {
+            showInvalidUsernameError(username: username)
+            return
         }
 
-        let localUsername = usernameLookupManager.fetchUsername(
-            forAci: localAci,
-            transaction: tx.asV2Read
-        )
-
-        if localUsername?.caseInsensitiveCompare(username) == .orderedSame {
-            return localAci
-        }
-
-        return nil
-    }
-
-    /// Query the service for the ACI of the given username, while presenting a
-    /// modal activity indicator.
-    ///
-    /// - Parameter onSuccess
-    /// Called if the username resolves successfully to an ACI. Guaranteed to be
-    /// called on the main thread.
-    private func queryServiceForUsernameBehindSpinner(
-        hashedUsername: Usernames.HashedUsername,
-        fromViewController: UIViewController,
-        onSuccess: @escaping (UntypedServiceId) -> Void
-    ) {
         ModalActivityIndicatorViewController.present(
             fromViewController: fromViewController,
             canCancel: true
         ) { modal in
-            firstly(on: schedulers.sync) { () -> Promise<UntypedServiceId?> in
-                return Usernames.API(
-                    networkManager: self.networkManager,
-                    schedulers: self.schedulers
-                )
-                .attemptAciLookup(forHashedUsername: hashedUsername)
-            }.done(on: schedulers.main) { maybeAci in
-                modal.dismissIfNotCanceled {
-                    if let aci = maybeAci {
-                        self.databaseStorage.write { tx in
-                            self.handleUsernameLookupCompleted(
-                                aci: aci,
-                                username: hashedUsername.usernameString,
-                                tx: tx
-                            )
-                        }
+            queryServiceForUsernameBehindSpinner(
+                presentedModalActivityIndicator: modal,
+                hashedUsername: hashedUsername,
+                onSuccess: onSuccess
+            )
+        }
+    }
 
-                        schedulers.main.async {
-                            onSuccess(aci)
-                        }
-                    } else {
-                        OWSActionSheets.showActionSheet(
-                            title: OWSLocalizedString(
-                                "USERNAME_LOOKUP_NOT_FOUND_TITLE",
-                                comment: "Title for an action sheet indicating that the given username is not associated with a registered Signal account."
-                            ),
-                            message: String(
-                                format: OWSLocalizedString(
-                                    "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT",
-                                    comment: "A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}."
-                                ),
-                                hashedUsername.usernameString
-                            )
+    /// Handle a query that we know will match the local user.
+    ///
+    /// - Parameter tx
+    /// An unused database transaction. Forced as a parameter here to draw
+    /// attention to the fact that this workaround is required because the query
+    /// methods are within the context of a transaction.
+    private func queryMatchedLocalUser(
+        onSuccess: @escaping (FutureAci) -> Void,
+        localAci: FutureAci,
+        tx _: SDSAnyReadTransaction
+    ) {
+        // Dispatch asynchronously, since we are inside a transaction.
+        schedulers.main.async {
+            onSuccess(localAci)
+        }
+    }
+
+    /// Query the service for the ACI of the given username.
+    ///
+    /// - Parameter presentedModalActivityIndicator
+    /// The currently-presented modal activity indicator.
+    /// - Parameter onSuccess
+    /// Called if the username resolves successfully to an ACI. Guaranteed to be
+    /// called on the main thread.
+    private func queryServiceForUsernameBehindSpinner(
+        presentedModalActivityIndicator modal: ModalActivityIndicatorViewController,
+        hashedUsername: Usernames.HashedUsername,
+        onSuccess: @escaping (FutureAci) -> Void
+    ) {
+        firstly(on: schedulers.sync) { () -> Promise<FutureAci?> in
+            return self.usernameApiClient.lookupAci(
+                forHashedUsername: hashedUsername
+            )
+        }.done(on: schedulers.main) { maybeAci in
+            modal.dismissIfNotCanceled {
+                if let aci = maybeAci {
+                    self.databaseStorage.write { tx in
+                        self.handleUsernameLookupCompleted(
+                            aci: aci,
+                            username: hashedUsername.usernameString,
+                            tx: tx
                         )
                     }
-                }
-            }.catch(on: schedulers.main) { _ in
-                Logger.error("Error while querying for username!")
 
-                modal.dismissIfNotCanceled {
-                    OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
-                        "USERNAME_LOOKUP_ERROR_MESSAGE",
-                        comment: "A message indicating that username lookup failed."
-                    ))
+                    schedulers.main.async {
+                        onSuccess(aci)
+                    }
+                } else {
+                    self.showUsernameNotFoundError(
+                        username: hashedUsername.usernameString
+                    )
                 }
             }
+        }.catch(on: schedulers.main) { _ in
+            showGenericError(presentedModal: modal)
         }
     }
 
     private func handleUsernameLookupCompleted(
-        aci: UntypedServiceId,
+        aci: FutureAci,
         username: String,
         tx: SDSAnyWriteTransaction
     ) {
@@ -200,6 +248,63 @@ public struct UsernameQuerier {
                 forAci: aci,
                 transaction: tx.asV2Write
             )
+        }
+    }
+
+    // MARK: - Errors
+
+    private func showInvalidUsernameError(username: String) {
+        OWSActionSheets.showActionSheet(
+            title: OWSLocalizedString(
+                "USERNAME_LOOKUP_INVALID_USERNAME_TITLE",
+                comment: "Title for an action sheet indicating that a user-entered username value is not a valid username."
+            ),
+            message: String(
+                format: OWSLocalizedString(
+                    "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT",
+                    comment: "A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}."
+                ),
+                username
+            )
+        )
+    }
+
+    private func showUsernameNotFoundError(username: String) {
+        OWSActionSheets.showActionSheet(
+            title: OWSLocalizedString(
+                "USERNAME_LOOKUP_NOT_FOUND_TITLE",
+                comment: "Title for an action sheet indicating that the given username is not associated with a registered Signal account."
+            ),
+            message: String(
+                format: OWSLocalizedString(
+                    "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT",
+                    comment: "A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}."
+                ),
+                username
+            )
+        )
+    }
+
+    private func showUsernameLinkOutdatedError() {
+        OWSActionSheets.showActionSheet(
+            title: CommonStrings.errorAlertTitle,
+            message: OWSLocalizedString(
+                "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE",
+                comment: "A message indicating that a username link the user attempted to query is no longer valid."
+            )
+        )
+    }
+
+    private func showGenericError(
+        presentedModal modal: ModalActivityIndicatorViewController
+    ) {
+        Logger.error("Error while querying for username!")
+
+        modal.dismissIfNotCanceled {
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
+                "USERNAME_LOOKUP_ERROR_MESSAGE",
+                comment: "A message indicating that username lookup failed."
+            ))
         }
     }
 }

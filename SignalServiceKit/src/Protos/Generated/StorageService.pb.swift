@@ -746,6 +746,15 @@ struct StorageServiceProtos_AccountRecord {
     set {_uniqueStorage()._completedUsernameOnboarding = newValue}
   }
 
+  var usernameLink: StorageServiceProtos_AccountRecord.UsernameLink {
+    get {return _storage._usernameLink ?? StorageServiceProtos_AccountRecord.UsernameLink()}
+    set {_uniqueStorage()._usernameLink = newValue}
+  }
+  /// Returns true if `usernameLink` has been explicitly set.
+  var hasUsernameLink: Bool {return _storage._usernameLink != nil}
+  /// Clears the value of `usernameLink`. Subsequent reads from it will return its default value.
+  mutating func clearUsernameLink() {_uniqueStorage()._usernameLink = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum PhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -872,6 +881,74 @@ struct StorageServiceProtos_AccountRecord {
     init() {}
   }
 
+  struct UsernameLink {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// 32 bytes of entropy used for encryption
+    var entropy: Data = Data()
+
+    /// 16 bytes of encoded UUID provided by the server
+    var serverID: Data = Data()
+
+    /// color of the QR code itself
+    var color: StorageServiceProtos_AccountRecord.UsernameLink.Color = .unknown
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum Color: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case unknown // = 0
+      case blue // = 1
+      case white // = 2
+      case grey // = 3
+      case olive // = 4
+      case green // = 5
+      case orange // = 6
+      case pink // = 7
+      case purple // = 8
+      case UNRECOGNIZED(Int)
+
+      init() {
+        self = .unknown
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .unknown
+        case 1: self = .blue
+        case 2: self = .white
+        case 3: self = .grey
+        case 4: self = .olive
+        case 5: self = .green
+        case 6: self = .orange
+        case 7: self = .pink
+        case 8: self = .purple
+        default: self = .UNRECOGNIZED(rawValue)
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .unknown: return 0
+        case .blue: return 1
+        case .white: return 2
+        case .grey: return 3
+        case .olive: return 4
+        case .green: return 5
+        case .orange: return 6
+        case .pink: return 7
+        case .purple: return 8
+        case .UNRECOGNIZED(let i): return i
+        }
+      }
+
+    }
+
+    init() {}
+  }
+
   init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
@@ -885,6 +962,21 @@ extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: CaseIterabl
     .everybody,
     .contactsOnly,
     .nobody,
+  ]
+}
+
+extension StorageServiceProtos_AccountRecord.UsernameLink.Color: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [StorageServiceProtos_AccountRecord.UsernameLink.Color] = [
+    .unknown,
+    .blue,
+    .white,
+    .grey,
+    .olive,
+    .green,
+    .orange,
+    .pink,
+    .purple,
   ]
 }
 
@@ -935,6 +1027,8 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation: @unchecked Send
 extension StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier: @unchecked Sendable {}
 extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: @unchecked Sendable {}
 extension StorageServiceProtos_AccountRecord.Payments: @unchecked Sendable {}
+extension StorageServiceProtos_AccountRecord.UsernameLink: @unchecked Sendable {}
+extension StorageServiceProtos_AccountRecord.UsernameLink.Color: @unchecked Sendable {}
 extension StorageServiceProtos_StoryDistributionListRecord: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
@@ -1747,6 +1841,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     31: .same(proto: "readOnboardingStory"),
     33: .same(proto: "username"),
     34: .same(proto: "completedUsernameOnboarding"),
+    35: .same(proto: "usernameLink"),
   ]
 
   fileprivate class _StorageClass {
@@ -1781,6 +1876,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _readOnboardingStory: Bool = false
     var _username: String = String()
     var _completedUsernameOnboarding: Bool = false
+    var _usernameLink: StorageServiceProtos_AccountRecord.UsernameLink? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -1818,6 +1914,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _readOnboardingStory = source._readOnboardingStory
       _username = source._username
       _completedUsernameOnboarding = source._completedUsernameOnboarding
+      _usernameLink = source._usernameLink
     }
   }
 
@@ -1867,6 +1964,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 31: try { try decoder.decodeSingularBoolField(value: &_storage._readOnboardingStory) }()
         case 33: try { try decoder.decodeSingularStringField(value: &_storage._username) }()
         case 34: try { try decoder.decodeSingularBoolField(value: &_storage._completedUsernameOnboarding) }()
+        case 35: try { try decoder.decodeSingularMessageField(value: &_storage._usernameLink) }()
         default: break
         }
       }
@@ -1972,6 +2070,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._completedUsernameOnboarding != false {
         try visitor.visitSingularBoolField(value: _storage._completedUsernameOnboarding, fieldNumber: 34)
       }
+      try { if let v = _storage._usernameLink {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 35)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2012,6 +2113,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._readOnboardingStory != rhs_storage._readOnboardingStory {return false}
         if _storage._username != rhs_storage._username {return false}
         if _storage._completedUsernameOnboarding != rhs_storage._completedUsernameOnboarding {return false}
+        if _storage._usernameLink != rhs_storage._usernameLink {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -2181,6 +2283,64 @@ extension StorageServiceProtos_AccountRecord.Payments: SwiftProtobuf.Message, Sw
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension StorageServiceProtos_AccountRecord.UsernameLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".UsernameLink"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "entropy"),
+    2: .same(proto: "serverId"),
+    3: .same(proto: "color"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.entropy) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.serverID) }()
+      case 3: try { try decoder.decodeSingularEnumField(value: &self.color) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.entropy.isEmpty {
+      try visitor.visitSingularBytesField(value: self.entropy, fieldNumber: 1)
+    }
+    if !self.serverID.isEmpty {
+      try visitor.visitSingularBytesField(value: self.serverID, fieldNumber: 2)
+    }
+    if self.color != .unknown {
+      try visitor.visitSingularEnumField(value: self.color, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_AccountRecord.UsernameLink, rhs: StorageServiceProtos_AccountRecord.UsernameLink) -> Bool {
+    if lhs.entropy != rhs.entropy {return false}
+    if lhs.serverID != rhs.serverID {return false}
+    if lhs.color != rhs.color {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension StorageServiceProtos_AccountRecord.UsernameLink.Color: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "UNKNOWN"),
+    1: .same(proto: "BLUE"),
+    2: .same(proto: "WHITE"),
+    3: .same(proto: "GREY"),
+    4: .same(proto: "OLIVE"),
+    5: .same(proto: "GREEN"),
+    6: .same(proto: "ORANGE"),
+    7: .same(proto: "PINK"),
+    8: .same(proto: "PURPLE"),
+  ]
 }
 
 extension StorageServiceProtos_StoryDistributionListRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

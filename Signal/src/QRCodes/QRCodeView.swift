@@ -75,14 +75,20 @@ class QRCodeView: UIView {
 
     // MARK: -
 
+    private enum QRCodeImageMode {
+        case image(UIImage)
+        case templateImage(UIImage, tintColor: UIColor)
+        case error
+    }
+
     /// Generate and display a QR code for the given URL.
     func setQR(url: URL, generator: QRCodeGenerator = BasicDisplayQRCodeGenerator()) {
         guard let qrCodeImage = generator.generateQRCode(url: url) else {
-            owsFailDebug("Failed to generate QR code image!")
+            setQR(imageMode: .error)
             return
         }
 
-        setQR(imageView: UIImageView(image: qrCodeImage))
+        setQR(imageMode: .image(qrCodeImage))
     }
 
     /// Display the given QR code template image, tinted with the given color.
@@ -91,32 +97,52 @@ class QRCodeView: UIView {
     /// The QR code image to display. This image should be a template image. See
     /// ``UIImage.RenderingMode``.
     func setQR(templateImage: UIImage, tintColor: UIColor) {
-        owsAssert(templateImage.renderingMode == .alwaysTemplate)
-
-        let imageView = UIImageView(image: templateImage)
-        imageView.tintColor = tintColor
-
-        setQR(imageView: imageView)
+        setQR(imageMode: .templateImage(templateImage, tintColor: tintColor))
     }
 
-    /// Display the given QR code image.
-    private func setQR(imageView qrCodeImageView: UIImageView) {
+    func setQRError() {
+        setQR(imageMode: .error)
+    }
+
+    private func setQR(imageMode: QRCodeImageMode) {
         qrCodeView?.removeFromSuperview()
         placeholderView.removeFromSuperview()
+
+        let qrCodeImageView: UIImageView = {
+            switch imageMode {
+            case let .image(qrCodeImage):
+                return UIImageView(image: qrCodeImage)
+            case let .templateImage(qrCodeTemplateImage, tintColor):
+                return UIImageView.withTemplateImage(
+                    qrCodeTemplateImage,
+                    tintColor: tintColor
+                )
+            case .error:
+                return UIImageView.withTemplateImageName(
+                    "error-circle",
+                    tintColor: .ows_accentRed
+                )
+            }
+        }()
 
         // Don't antialias QR Codes.
         qrCodeImageView.layer.magnificationFilter = .nearest
         qrCodeImageView.layer.minificationFilter = .nearest
 
         qrCodeWrapper.addSubview(qrCodeImageView)
-        qrCodeImageView.autoPinToSquareAspectRatio()
         qrCodeImageView.autoCenterInSuperview()
-        if useCircularWrapper {
-            qrCodeImageView.autoMatch(.height, to: .height, of: qrCodeWrapper, withMultiplier: 0.6)
-        } else {
-            qrCodeImageView.autoPinEdgesToSuperviewEdges()
-        }
 
-        qrCodeView = qrCodeImageView
+        switch imageMode {
+        case .image, .templateImage:
+            qrCodeImageView.autoPinToSquareAspectRatio()
+
+            if useCircularWrapper {
+                qrCodeImageView.autoMatch(.height, to: .height, of: qrCodeWrapper, withMultiplier: 0.6)
+            } else {
+                qrCodeImageView.autoPinEdgesToSuperviewEdges()
+            }
+        case .error:
+            qrCodeImageView.autoSetDimensions(to: .square(48))
+        }
     }
 }

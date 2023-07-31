@@ -90,9 +90,10 @@ extension ChatListViewController {
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(usernameFailedValidation),
-            name: Usernames.Validation.usernameValidationDidChange,
-            object: nil)
+            selector: #selector(localUsernameStateDidChange),
+            name: Usernames.localUsernameStateChangedNotification,
+            object: nil
+        )
 
         contactsViewHelper.addObserver(self)
 
@@ -232,9 +233,7 @@ extension ChatListViewController {
     }
 
     @objc
-    private func usernameFailedValidation(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
+    private func localUsernameStateDidChange() {
         updateReminderViews()
     }
 }

@@ -104,7 +104,7 @@ extension UsernameLinkScanQRCodeViewController: QRCodeScanDelegate {
         qrCodeString: String?
     ) -> QRCodeScanOutcome {
         guard let qrCodeString else {
-            owsFailDebug("Unexpectedly missing QR code string!")
+            UsernameLogger.shared.error("Unexpectedly missing QR code string!")
             return .continueScanning
         }
 
@@ -112,12 +112,14 @@ extension UsernameLinkScanQRCodeViewController: QRCodeScanDelegate {
             let scannedUrl = URL(string: qrCodeString),
             let scannedUsernameLink = Usernames.UsernameLink(usernameLinkUrl: scannedUrl)
         else {
-            owsFailDebug("Failed to create username link from scanned QR code!")
+            UsernameLogger.shared.error(
+                "Failed to create username link from scanned QR code!"
+            )
             return .continueScanning
         }
 
         guard let scanDelegate else {
-            owsFailDebug("Missing scan delegate!")
+            UsernameLogger.shared.error("Missing scan delegate!")
             return .continueScanning
         }
 

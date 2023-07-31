@@ -521,16 +521,10 @@ extension ExperienceUpgradeManifest {
             return false
         }
 
-        guard let localAci = tsAccountManager.localUuid.map({ UntypedServiceId($0) }) else {
-            owsFailBeta("Missing local ACI!")
-            return false
-        }
-
         guard
-            DependenciesBridge.shared.usernameLookupManager.fetchUsername(
-                forAci: localAci,
-                transaction: transaction.asV2Read
-            ) == nil
+            DependenciesBridge.shared.localUsernameManager.usernameState(
+                tx: transaction.asV2Read
+            ).isExplicitlyUnset
         else {
             // If we have a username, do not show the reminder.
             return false

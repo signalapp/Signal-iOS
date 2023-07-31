@@ -46,16 +46,27 @@ class UsernameLinkQRCodeContentController: OWSViewController, OWSNavigationChild
     private let scanQRCodeViewController: UsernameLinkScanQRCodeViewController
     private var activeViewController: (UIViewController & OWSNavigationChildController)?
 
+    /// Creates a new controller.
+    ///
+    /// - Parameter usernameLink
+    /// The user's current username link, if available. If `nil` is passed, the
+    /// link will be reset when this controller loads.
     init(
         db: DB,
-        kvStoreFactory: KeyValueStoreFactory,
-        usernameLink: Usernames.UsernameLink,
+        localUsernameManager: LocalUsernameManager,
+        schedulers: Schedulers,
+        username: String,
+        usernameLink: Usernames.UsernameLink?,
+        changeDelegate: UsernameChangeDelegate,
         scanDelegate: UsernameLinkScanDelegate
     ) {
         presentQRCodeViewController = UsernameLinkPresentQRCodeViewController(
             db: db,
-            kvStoreFactory: kvStoreFactory,
-            usernameLink: usernameLink
+            localUsernameManager: localUsernameManager,
+            schedulers: schedulers,
+            username: username,
+            usernameLink: usernameLink,
+            usernameChangeDelegate: changeDelegate
         )
 
         scanQRCodeViewController = UsernameLinkScanQRCodeViewController(

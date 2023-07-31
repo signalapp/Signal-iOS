@@ -9,63 +9,89 @@ import SignalMessaging
 import SignalUI
 
 class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
-    private struct ColorStore {
-        static let key = "color"
+    private enum UsernameLinkState {
+        case available(
+            usernameLink: Usernames.UsernameLink,
+            qrCodeTemplateImage: UIImage
+        )
+        case resetting
+        case corrupted
 
-        private let kvStore: KeyValueStore
-
-        init(kvStoreFactory: KeyValueStoreFactory) {
-            kvStore = kvStoreFactory.keyValueStore(collection: "UsernameLinkQRCode")
-        }
-
-        func get(tx: DBReadTransaction) -> UsernameLinkQRCodeColor? {
-            do {
-                return try kvStore.getCodableValue(forKey: Self.key, transaction: tx)
-            } catch let error {
-                owsFailDebug("Failed to load stored color! \(error)")
+        var linkParams: (Usernames.UsernameLink, templateImage: UIImage)? {
+            switch self {
+            case let .available(usernameLink, qrCodeTemplateImage):
+                return (usernameLink, templateImage: qrCodeTemplateImage)
+            case .resetting, .corrupted:
                 return nil
             }
         }
 
-        func set(_ color: UsernameLinkQRCodeColor, tx: DBWriteTransaction) {
-            do {
-                try kvStore.setCodable(color, key: Self.key, transaction: tx)
-            } catch let error {
-                owsFailDebug("Failed to store color! \(error)")
+        static func forUsernameLink(
+            usernameLink: Usernames.UsernameLink
+        ) -> UsernameLinkState {
+            if
+                let qrCodeImage = UsernameLinkQRCodeGenerator(
+                    foregroundColor: .ows_black,
+                    backgroundColor: .clear
+                ).generateQRCode(url: usernameLink.url)
+            {
+                let templateImage = qrCodeImage.withRenderingMode(.alwaysTemplate)
+
+                return .available(
+                    usernameLink: usernameLink,
+                    qrCodeTemplateImage: templateImage
+                )
             }
-        }
-    }
 
-    private struct QRCode {
-        /// The color set to apply to the QR code image.
-        let color: UsernameLinkQRCodeColor
-
-        /// A template image for the QR code, for display.
-        let displayImage: UIImage
-
-        init(color: UsernameLinkQRCodeColor, displayImage: UIImage) {
-            owsAssert(displayImage.renderingMode == .alwaysTemplate)
-
-            self.color = color
-            self.displayImage = displayImage
+            return .corrupted
         }
     }
 
     private let db: DB
-    private let colorStore: ColorStore
+    private let localUsernameManager: LocalUsernameManager
+    private let schedulers: Schedulers
 
-    private let usernameLink: Usernames.UsernameLink
+    private let username: String
+    private let originalUsernameLink: Usernames.UsernameLink?
+    private var shouldResetLinkOnAppear: Bool
 
-    private var currentQRCode: QRCode?
+    private weak var usernameChangeDelegate: UsernameChangeDelegate?
 
+    private var qrCodeColor: Usernames.QRCodeColor!
+    private var _usernameLinkState: UsernameLinkState!
+
+    /// A layer of indirection to avoid needing to handle `nil` in switches,
+    /// which you apparently need to even for implicitly-unwrapped optionals.
+    private var usernameLinkState: UsernameLinkState {
+        get {
+            guard let _usernameLinkState else { owsFail("Should never be unset!") }
+            return _usernameLinkState
+        }
+        set { _usernameLinkState = newValue }
+    }
+
+    /// Create a new controller.
+    ///
+    /// - Parameter usernameLink
+    /// The user's current username link, if available. If `nil` is passed, the
+    /// link will be reset when this controller loads.
     init(
         db: DB,
-        kvStoreFactory: KeyValueStoreFactory,
-        usernameLink: Usernames.UsernameLink
+        localUsernameManager: LocalUsernameManager,
+        schedulers: Schedulers,
+        username: String,
+        usernameLink: Usernames.UsernameLink?,
+        usernameChangeDelegate: UsernameChangeDelegate
     ) {
         self.db = db
-        self.colorStore = ColorStore(kvStoreFactory: kvStoreFactory)
-        self.usernameLink = usernameLink
+        self.localUsernameManager = localUsernameManager
+        self.schedulers = schedulers
+
+        self.username = username
+        self.originalUsernameLink = usernameLink
+        self.shouldResetLinkOnAppear = usernameLink == nil
+
+        self.usernameChangeDelegate = usernameChangeDelegate
 
         super.init()
     }
@@ -98,33 +124,34 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     /// Builds the QR code view, including the QR code, colored background, and
     /// display of the current username.
     private func buildQRCodeView() -> UIView {
-        let qrCodeImage: UIImage? = currentQRCode?.displayImage
-        let qrCodeColor: UsernameLinkQRCodeColor = currentQRCode?.color ?? .grey
-
         let qrCodeView: QRCodeView = {
-            let view = QRCodeView(useCircularWrapper: false)
+            let qrCodeView = QRCodeView(useCircularWrapper: false)
+            qrCodeView.backgroundColor = .ows_white
+            qrCodeView.layoutMargins = UIEdgeInsets(margin: 16)
+            qrCodeView.layer.cornerRadius = 12
+            qrCodeView.layer.borderWidth = 2
+            qrCodeView.layer.borderColor = qrCodeColor.paddingBorder.cgColor
 
-            view.backgroundColor = .ows_white
-            view.layer.borderWidth = 2
-            view.layer.borderColor = qrCodeColor.paddingBorder.cgColor
-            view.layer.cornerRadius = 12
-            view.layoutMargins = UIEdgeInsets(margin: 16)
-
-            if let qrCodeImage {
-                view.setQR(
-                    templateImage: qrCodeImage,
+            switch usernameLinkState {
+            case .resetting:
+                break
+            case let .available(_, qrCodeTemplateImage):
+                qrCodeView.setQR(
+                    templateImage: qrCodeTemplateImage,
                     tintColor: qrCodeColor.foreground
                 )
+            case .corrupted:
+                qrCodeView.setQRError()
             }
 
-            return view
+            return qrCodeView
         }()
 
         let copyUsernameButton: UIButton = {
             let button = OWSButton(block: { [weak self] in
                 guard let self else { return }
 
-                UIPasteboard.general.string = self.usernameLink.username
+                UIPasteboard.general.string = self.username
 
                 self.presentToast(text: OWSLocalizedString(
                     "USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED",
@@ -132,7 +159,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
                 ))
             })
 
-            button.setTitle(usernameLink.username, for: .normal)
+            button.setTitle(username, for: .normal)
             button.setTitleColor(qrCodeColor.username, for: .normal)
             button.titleLabel!.font = .dynamicTypeHeadline.semibold()
 
@@ -210,37 +237,26 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             ),
             icon: .buttonShare,
             block: { [weak self] actionButton in
-                // Generate a color-over-white QR code and share. Show a modal
-                // if it takes a while.
+                guard
+                    let self,
+                    let (usernameLink, _) = self.usernameLinkState.linkParams
+                else { return }
 
-                guard let self else { return }
-
-                guard let currentQRCodeColor = self.currentQRCode?.color else {
-                    owsFailDebug("Missing current QR code color!")
+                // Generate a color-over-white QR code and share.
+                guard
+                    let qrCodeToShare = UsernameLinkQRCodeGenerator(
+                        foregroundColor: self.qrCodeColor.foreground,
+                        backgroundColor: .ows_white
+                    ).generateQRCode(url: usernameLink.url)
+                else {
                     return
                 }
 
-                ModalActivityIndicatorViewController.present(
-                    fromViewController: self,
-                    canCancel: true,
-                    presentationDelay: 1
-                ) { modal in
-                    guard let qrCodeToShare = UsernameLinkQRCodeGenerator(
-                        foregroundColor: currentQRCodeColor.foreground,
-                        backgroundColor: .ows_white
-                    ).generateQRCode(url: self.usernameLink.url) else {
-                        modal.dismissIfNotCanceled()
-                        return
-                    }
-
-                    modal.dismissIfNotCanceled {
-                        ShareActivityUtil.present(
-                            activityItems: [qrCodeToShare],
-                            from: self,
-                            sourceView: actionButton
-                        )
-                    }
-                }
+                ShareActivityUtil.present(
+                    activityItems: [qrCodeToShare],
+                    from: self,
+                    sourceView: actionButton
+                )
             }
         )
 
@@ -251,17 +267,15 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             ),
             icon: .chatSettingsWallpaper,
             block: { [weak self] _ in
-                guard let self else { return }
-
-                guard let currentQRCode = self.currentQRCode else {
-                    owsFailDebug("Missing current QR code!")
-                    return
-                }
+                guard
+                    let self,
+                    let (_, qrCodeImage) = self.usernameLinkState.linkParams
+                else { return }
 
                 let colorPickerVC = UsernameLinkQRCodeColorPickerViewController(
-                    currentColor: currentQRCode.color,
-                    username: self.usernameLink.username,
-                    qrCodeTemplateImage: currentQRCode.displayImage,
+                    currentColor: self.qrCodeColor,
+                    username: self.username,
+                    qrCodeTemplateImage: qrCodeImage,
                     delegate: self
                 )
 
@@ -282,6 +296,62 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         return stackView
     }
 
+    // MARK: Link cell
+
+    private func buildLinkTableItem() -> OWSTableItem {
+        return OWSTableItem(
+            customCellBlock: { [weak self] in
+                guard let self else { return UITableViewCell() }
+
+                let title: String?
+                let opacity: CGFloat
+                let selectable: Bool
+
+                switch self.usernameLinkState {
+                case let .available(usernameLink, _):
+                    title = usernameLink.url.absoluteString
+                    opacity = 1
+                    selectable = true
+                case .resetting:
+                    title = OWSLocalizedString(
+                        "USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL",
+                        comment: "A label indicating that the username link is being reset."
+                    )
+                    opacity = 0.5
+                    selectable = false
+                case .corrupted:
+                    title = ""
+                    opacity = 1
+                    selectable = false
+                }
+
+                let cell = OWSTableItem.buildImageCell(
+                    image: UIImage(named: "link"),
+                    itemName: title ?? "",
+                    maxItemNameLines: 1,
+                    accessoryType: .disclosureIndicator
+                )
+
+                cell.contentView.alpha = opacity
+                cell.selectionStyle = selectable ? .default : .none
+                return cell
+            },
+            actionBlock: { [weak self] in
+                guard let self else { return }
+
+                switch self.usernameLinkState {
+                case let .available(usernameLink, _):
+                    self.present(
+                        UsernameLinkShareSheetViewController(usernameLink: usernameLink),
+                        animated: true
+                    )
+                case .resetting, .corrupted:
+                    break
+                }
+            }
+        )
+    }
+
     // MARK: Disclaimer text
 
     private func buildDisclaimerLabel() -> UILabel {
@@ -300,15 +370,19 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
 
     // MARK: Reset button
 
-    private func buildResetButtonView() -> UIView {
-        let button = OWSRoundedButton(block: {
-            // TODO: Implement button
-        })
-
-        button.setTitle(OWSLocalizedString(
+    private var resetButtonString: String {
+        return OWSLocalizedString(
             "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE",
             comment: "Title for a button that allows users to reset their username link and QR code."
-        ), for: .normal)
+        )
+    }
+
+    private func buildResetButtonView() -> UIView {
+        let button = OWSRoundedButton { [weak self] in
+            self?.tappedResetButton()
+        }
+
+        button.setTitle(resetButtonString, for: .normal)
 
         button.contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
         button.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_whiteAlpha70
@@ -318,8 +392,38 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         button.configureForMultilineTitle()
 
         button.dimsWhenHighlighted = true
+        button.dimsWhenDisabled = true
+
+        switch usernameLinkState {
+        case .resetting:
+            button.isEnabled = false
+        case .available, .corrupted:
+            button.isEnabled = true
+        }
 
         return CenteringStackView(centeredSubviews: [button])
+    }
+
+    private func tappedResetButton() {
+        let actionSheet = ActionSheetController(message: OWSLocalizedString(
+            "USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE",
+            comment: "A message explaining what will happen if the user resets their QR code."
+        ))
+
+        actionSheet.addAction(ActionSheetAction(
+            title: resetButtonString,
+            style: .destructive,
+            handler: { [weak self] _ in
+                self?.resetUsernameLink()
+            }
+        ))
+
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.cancelButton,
+            style: .cancel
+        ))
+
+        OWSActionSheets.showActionSheet(actionSheet, fromViewController: self)
     }
 
     // MARK: Put it all together
@@ -340,28 +444,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             )
         ])
 
-        let linkCellSection = OWSTableSection(items: [
-            OWSTableItem(
-                customCellBlock: { [weak self] in
-                    guard let self else { return UITableViewCell() }
-
-                    return OWSTableItem.buildImageCell(
-                        image: UIImage(named: "link-diagonal"),
-                        itemName: self.usernameLink.url.absoluteString,
-                        maxItemNameLines: 1,
-                        accessoryType: .disclosureIndicator
-                    )
-                },
-                actionBlock: { [weak self] in
-                    guard let self else { return }
-
-                    self.present(
-                        UsernameLinkShareSheetViewController(usernameLink: self.usernameLink),
-                        animated: true
-                    )
-                }
-            )
-        ])
+        let linkCellSection = OWSTableSection(items: [buildLinkTableItem()])
 
         let bottomSection = OWSTableSection(items: [
             .itemWrappingView(
@@ -400,67 +483,89 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        qrCodeColor = db.read { tx in
+            return localUsernameManager.usernameLinkQRCodeColor(tx: tx)
+        }
+
+        if let usernameLink = originalUsernameLink {
+            usernameLinkState = .forUsernameLink(usernameLink: usernameLink)
+        } else {
+            usernameLinkState = .resetting
+        }
+
         buildTableContents()
-        loadQRCodeAndReloadTable()
     }
 
-    /// Asynchronously load the QR code and reload the table view.
-    ///
-    /// These operations may be slow, and so we do them asynchronously off the
-    /// main thread.
-    private func loadQRCodeAndReloadTable() {
-        owsAssert(
-            currentQRCode == nil,
-            "Current QR code was unexpectedly non-nil. How did something else set it?"
-        )
+    override func viewWillAppear(_ animated: Bool) {
+         if shouldResetLinkOnAppear {
+            shouldResetLinkOnAppear = false
 
-        db.asyncRead(
-            block: { tx in
-                let color: UsernameLinkQRCodeColor = self.colorStore.get(tx: tx) ?? .blue
-
-                // Generate a black-on-transparent image for now. We'll tint it
-                // using the appropriate colors once it's in a view.
-                guard let displayImage = UsernameLinkQRCodeGenerator(
-                    foregroundColor: .ows_black,
-                    backgroundColor: .clear
-                ).generateQRCode(url: self.usernameLink.url) else {
-                    return
-                }
-
-                self.currentQRCode = QRCode(
-                    color: color,
-                    displayImage: displayImage.withRenderingMode(.alwaysTemplate)
-                )
-            },
-            completion: { [weak self] in
-                guard let self, self.currentQRCode != nil else {
-                    return
-                }
-
-                self.reloadTableContents()
-            }
-        )
+            // If we have no username link to start, immediately kick off a
+            // reset.
+            resetUsernameLink(shouldReloadTableContents: false)
+        }
     }
 
     private func reloadTableContents() {
         self.tableView.reloadData()
     }
+
+    private func resetUsernameLink(shouldReloadTableContents: Bool = true) {
+        UsernameLogger.shared.info("Resetting username link!")
+
+        usernameLinkState = .resetting
+
+        if shouldReloadTableContents {
+            reloadTableContents()
+        }
+
+        firstly(on: schedulers.global()) { () -> Promise<Usernames.UsernameLink> in
+            return self.db.write { tx in
+                self.localUsernameManager.rotateUsernameLink(tx: tx)
+            }
+        }.ensure(on: schedulers.main) { [weak self] in
+            guard let self else { return }
+
+            let latestUsernameState: Usernames.LocalUsernameState = self.db.read { tx in
+                self.localUsernameManager.usernameState(tx: tx)
+            }
+
+            if let usernameLink = latestUsernameState.usernameLink {
+                self.usernameLinkState = .forUsernameLink(
+                    usernameLink: usernameLink
+                )
+            } else {
+                self.usernameLinkState = .corrupted
+            }
+
+            self.reloadTableContents()
+
+            self.usernameChangeDelegate?.usernameStateDidChange(
+                newState: latestUsernameState
+            )
+        }.catch(on: schedulers.main) { [weak self] error in
+            guard let self else { return }
+
+            OWSActionSheets.showActionSheet(
+                message: CommonStrings.somethingWentWrongTryAgainLaterError,
+                fromViewController: self
+            )
+        }
+    }
 }
 
 extension UsernameLinkPresentQRCodeViewController: UsernameLinkQRCodeColorPickerDelegate {
-    func didFinalizeSelectedColor(color: UsernameLinkQRCodeColor) {
-        guard let currentQRCode else {
-            owsFail("How did we get here without a QR code?")
-        }
-
+    func didFinalizeSelectedColor(color: Usernames.QRCodeColor) {
         db.write { tx in
-            self.colorStore.set(color, tx: tx)
+            localUsernameManager.setUsernameLinkQRCodeColor(
+                color: color,
+                tx: tx
+            )
         }
 
-        self.currentQRCode = QRCode(
-            color: color,
-            displayImage: currentQRCode.displayImage
-        )
+        storageServiceManager.recordPendingLocalAccountUpdates()
+
+        self.qrCodeColor = color
         reloadTableContents()
     }
 }

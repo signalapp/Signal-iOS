@@ -73,8 +73,11 @@ public class DependenciesBridge {
 
     public let signalProtocolStoreManager: SignalProtocolStoreManager
 
+    public let usernameApiClient: UsernameApiClient
     public let usernameLookupManager: UsernameLookupManager
     public let usernameEducationManager: UsernameEducationManager
+    public let usernameLinkManager: UsernameLinkManager
+    public let localUsernameManager: LocalUsernameManager
     public let usernameValidationManager: UsernameValidationManager
 
     let groupMemberUpdater: GroupMemberUpdater
@@ -324,21 +327,34 @@ public class DependenciesBridge {
 
         self.signalProtocolStoreManager = signalProtocolStoreManager
 
+        self.usernameApiClient = UsernameApiClientImpl(
+            networkManager: UsernameApiClientImpl.Wrappers.NetworkManager(networkManager: networkManager),
+            schedulers: schedulers
+        )
         self.usernameLookupManager = UsernameLookupManagerImpl()
         self.usernameEducationManager = UsernameEducationManagerImpl(keyValueStoreFactory: keyValueStoreFactory)
-
-        self.usernameValidationManager = UsernameValidationManagerImpl(
-            context: .init(
-                accountManager: Usernames.Validation.Wrappers.TSAccountManager(tsAccountManager),
-                accountServiceClient: Usernames.Validation.Wrappers.AccountServiceClient(accountServiceClient),
-                database: db,
-                keyValueStoreFactory: keyValueStoreFactory,
-                messageProcessor: Usernames.Validation.Wrappers.MessageProcessor(messageProcessor),
-                networkManager: networkManager,
-                schedulers: schedulers,
-                storageServiceManager: Usernames.Validation.Wrappers.StorageServiceManager(storageServiceManager),
-                usernameLookupManager: usernameLookupManager
-            )
+        self.usernameLinkManager = UsernameLinkManagerImpl(
+            db: db,
+            apiClient: usernameApiClient,
+            schedulers: schedulers
         )
+        self.localUsernameManager = LocalUsernameManagerImpl(
+            db: db,
+            kvStoreFactory: keyValueStoreFactory,
+            schedulers: schedulers,
+            storageServiceManager: storageServiceManager,
+            usernameApiClient: usernameApiClient,
+            usernameLinkManager: usernameLinkManager
+        )
+        self.usernameValidationManager = UsernameValidationManagerImpl(context: .init(
+            accountServiceClient: Usernames.Validation.Wrappers.AccountServiceClient(accountServiceClient),
+            database: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            localUsernameManager: localUsernameManager,
+            messageProcessor: Usernames.Validation.Wrappers.MessageProcessor(messageProcessor),
+            schedulers: schedulers,
+            storageServiceManager: Usernames.Validation.Wrappers.StorageServiceManager(storageServiceManager),
+            usernameLinkManager: usernameLinkManager
+        ))
     }
 }

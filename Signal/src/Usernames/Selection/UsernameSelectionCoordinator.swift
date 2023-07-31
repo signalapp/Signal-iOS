@@ -8,30 +8,27 @@ import SignalUI
 
 class UsernameSelectionCoordinator {
     struct Context {
-        let usernameEducationManager: UsernameEducationManager
-        let networkManager: NetworkManager
         let databaseStorage: SDSDatabaseStorage
-        let usernameLookupManager: UsernameLookupManager
+        let networkManager: NetworkManager
         let schedulers: Schedulers
         let storageServiceManager: StorageServiceManager
+        let usernameEducationManager: UsernameEducationManager
+        let localUsernameManager: LocalUsernameManager
     }
 
-    private let localAci: UntypedServiceId
     private let currentUsername: String?
 
-    private weak var usernameSelectionDelegate: UsernameSelectionDelegate?
+    private weak var usernameChangeDelegate: UsernameChangeDelegate?
 
     private let context: Context
 
     init(
-        localAci: UntypedServiceId,
         currentUsername: String?,
-        usernameSelectionDelegate: UsernameSelectionDelegate? = nil,
+        usernameChangeDelegate: UsernameChangeDelegate? = nil,
         context: Context
     ) {
-        self.localAci = localAci
         self.currentUsername = currentUsername
-        self.usernameSelectionDelegate = usernameSelectionDelegate
+        self.usernameChangeDelegate = usernameChangeDelegate
         self.context = context
     }
 
@@ -72,17 +69,16 @@ class UsernameSelectionCoordinator {
     private func presentUsernameSelection(fromViewController: UIViewController) {
         let vc = UsernameSelectionViewController(
             existingUsername: .init(rawUsername: currentUsername),
-            localAci: localAci,
             context: .init(
                 networkManager: context.networkManager,
                 databaseStorage: context.databaseStorage,
-                usernameLookupManager: context.usernameLookupManager,
+                localUsernameManager: context.localUsernameManager,
                 schedulers: context.schedulers,
                 storageServiceManager: context.storageServiceManager
             )
         )
 
-        vc.usernameSelectionDelegate = usernameSelectionDelegate
+        vc.usernameChangeDelegate = usernameChangeDelegate
 
         fromViewController.presentFormSheet(
             OWSNavigationController(rootViewController: vc),

@@ -20,9 +20,10 @@ public class CLVReminderViews: Dependencies {
     fileprivate var outageView = UIView()
     fileprivate var archiveReminderView = UIView()
     fileprivate let paymentsReminderView = UIView()
-    fileprivate var usernameValidationFailedView = UIView()
+    fileprivate var usernameCorruptedReminderView = UIView()
+    fileprivate var usernameLinkCorruptedReminderView = UIView()
 
-    public weak var viewController: ChatListViewController?
+    public weak var chatListViewController: ChatListViewController?
 
     required init() {
         AssertIsOnMainThread()
@@ -103,57 +104,55 @@ public class CLVReminderViews: Dependencies {
         reminderStackView.addArrangedSubview(paymentsReminderView)
         paymentsReminderView.accessibilityIdentifier = "paymentsReminderView"
 
-        usernameValidationFailedView = ReminderView(
+        usernameCorruptedReminderView = ReminderView(
             style: .warning,
             text: OWSLocalizedString(
-                "UNREGISTERED_USERNAME_WARNING",
-                comment: "Label warning the user that the validation of their username has failed."
+                "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING",
+                comment: "Label warning the user that something is wrong with their username."
             ),
-            tapAction: { [weak self] in self?.didTapFailedUsernameValidationView() }
+            tapAction: { [weak self] in self?.didTapUsernameCorruptedReminderView() }
         )
-        reminderStackView.addArrangedSubview(usernameValidationFailedView)
-        usernameValidationFailedView.accessibilityIdentifier = "usernameValidationFailedView"
+        usernameLinkCorruptedReminderView = ReminderView(
+            style: .warning,
+            text: OWSLocalizedString(
+                "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING",
+                comment: "Label warning the user that something is wrong with their username link."
+            ),
+            tapAction: { [weak self] in self?.didTapUsernameLinkCorruptedReminderView() }
+        )
+        reminderStackView.addArrangedSubviews([
+            usernameCorruptedReminderView,
+            usernameLinkCorruptedReminderView
+        ])
     }
 
     @objc
     private func didTapDeregisteredView() {
         AssertIsOnMainThread()
-        guard let viewController else {
-            owsFailDebug("Missing viewController.")
+
+        guard let chatListViewController else {
             return
         }
-        RegistrationUtils.showReregistrationUI(fromViewController: viewController)
+
+        RegistrationUtils.showReregistrationUI(fromViewController: chatListViewController)
     }
 
     @objc
-    private func didTapFailedUsernameValidationView() {
-        AssertIsOnMainThread()
-        guard let viewController = viewController else {
-            owsFailDebug("Missing viewController.")
-            return
-        }
-        guard let localAci = tsAccountManager.localUuid.map({ UntypedServiceId($0) }) else {
-            owsFailDebug("Missing local ACI.")
+    private func didTapUsernameCorruptedReminderView() {
+        guard let chatListViewController else {
             return
         }
 
-        let usernameSelectionCoordinator = UsernameSelectionCoordinator(
-            localAci: localAci,
-            currentUsername: nil,
-            context: .init(
-                usernameEducationManager: DependenciesBridge.shared.usernameEducationManager,
-                networkManager: self.networkManager,
-                databaseStorage: self.databaseStorage,
-                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
-                schedulers: DependenciesBridge.shared.schedulers,
-                storageServiceManager: self.storageServiceManager
-            )
-        )
-        usernameSelectionCoordinator.present(fromViewController: viewController)
+        chatListViewController.showAppSettings(mode: .corruptedUsernameResolution)
+    }
 
-        databaseStorage.write { transaction in
-            DependenciesBridge.shared.usernameValidationManager.clearUsernameHasFailedValidation(transaction.asV2Write)
+    @objc
+    private func didTapUsernameLinkCorruptedReminderView() {
+        guard let chatListViewController else {
+            return
         }
+
+        chatListViewController.showAppSettings(mode: .corruptedUsernameLinkResolution)
     }
 
     public var hasVisibleReminders: Bool {
@@ -163,7 +162,8 @@ public class CLVReminderViews: Dependencies {
             !self.outageView.isHidden ||
             !self.expiredView.isHidden ||
             !self.paymentsReminderView.isHidden ||
-            !self.usernameValidationFailedView.isHidden
+            !self.usernameCorruptedReminderView.isHidden ||
+            !self.usernameLinkCorruptedReminderView.isHidden
         )
     }
 }
@@ -190,7 +190,8 @@ extension ChatListViewController {
     fileprivate var outageView: UIView { reminderViews.outageView }
     fileprivate var archiveReminderView: UIView { reminderViews.archiveReminderView }
     fileprivate var paymentsReminderView: UIView { reminderViews.paymentsReminderView }
-    fileprivate var usernameValidationFailedView: UIView { reminderViews.usernameValidationFailedView }
+    fileprivate var usernameCorruptedReminderView: UIView { reminderViews.usernameCorruptedReminderView }
+    fileprivate var usernameLinkCorruptedReminderView: UIView { reminderViews.usernameLinkCorruptedReminderView }
 
     public var reminderViews: CLVReminderViews { viewState.reminderViews }
 
@@ -220,8 +221,8 @@ extension ChatListViewController {
                                                        unreadCount: unreadPaymentNotificationsCount)
         }
 
-        databaseStorage.read { transaction in
-            usernameValidationFailedView.isHidden = !DependenciesBridge.shared.usernameValidationManager.hasUsernameFailedValidation(transaction.asV2Read)
+        databaseStorage.read { tx in
+            updateUsernameStateViews(tx: tx)
         }
 
         loadCoordinator.loadIfNecessary()
@@ -251,5 +252,23 @@ extension ChatListViewController {
 
         updateBarButtonItems()
         updateReminderViews()
+    }
+
+    /// Update reminder views as appropriate for the current username state.
+    private func updateUsernameStateViews(tx: SDSAnyReadTransaction) {
+        let currentUsernameState = DependenciesBridge.shared.localUsernameManager
+            .usernameState(tx: tx.asV2Read)
+
+        switch currentUsernameState {
+        case .unset, .available:
+            usernameCorruptedReminderView.isHidden = true
+            usernameLinkCorruptedReminderView.isHidden = true
+        case .linkCorrupted:
+            usernameCorruptedReminderView.isHidden = true
+            usernameLinkCorruptedReminderView.isHidden = false
+        case .usernameAndLinkCorrupted:
+            usernameCorruptedReminderView.isHidden = false
+            usernameLinkCorruptedReminderView.isHidden = true
+        }
     }
 }

@@ -7,10 +7,6 @@ import BonMot
 import SignalMessaging
 import SignalUI
 
-protocol UsernameSelectionDelegate: AnyObject {
-    func usernameDidChange(to newValue: String?)
-}
-
 /// Provides UX allowing a user to select or delete a username for their
 /// account.
 ///
@@ -22,7 +18,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     struct Context {
         let networkManager: NetworkManager
         let databaseStorage: SDSDatabaseStorage
-        let usernameLookupManager: UsernameLookupManager
+        let localUsernameManager: LocalUsernameManager
         let schedulers: Schedulers
         let storageServiceManager: StorageServiceManager
     }
@@ -51,15 +47,6 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         static let learnMoreLink: URL = URL(string: "sgnl://username-selection-learn-more")!
     }
 
-    /// A logger for username-selection-related events.
-    private class UsernameLogger: PrefixedLogger {
-        static let shared: UsernameLogger = .init()
-
-        private init() {
-            super.init(prefix: "[Username Selection]")
-        }
-    }
-
     private enum UsernameSelectionState: Equatable {
         /// The user's existing username is unchanged.
         case noChangesToExisting
@@ -67,7 +54,10 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
         /// potentially-overlapping state updates.
         case pending(id: UUID)
         /// The username has been successfully reserved.
-        case reservationSuccessful(reservation: API.SuccessfulReservation)
+        case reservationSuccessful(
+            username: Usernames.ParsedUsername,
+            hashedUsername: Usernames.HashedUsername
+        )
         /// The username was rejected by the server during reservation.
         case reservationRejected
         /// The reservation failed, for an unknown reason.
@@ -83,7 +73,6 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     }
 
     typealias ParsedUsername = Usernames.ParsedUsername
-    typealias API = Usernames.API
 
     // MARK: Private members
 
@@ -114,32 +103,20 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
     /// A pre-existing username this controller was seeded with.
     private let existingUsername: ParsedUsername?
 
-    /// The local user's ACI.
-    private let localAci: UntypedServiceId
-
     /// Injected dependencies.
     private let context: Context
 
-    private lazy var apiManager: Usernames.API = {
-        .init(
-            networkManager: context.networkManager,
-            schedulers: context.schedulers
-        )
-    }()
-
     // MARK: Public members
 
-    weak var usernameSelectionDelegate: UsernameSelectionDelegate?
+    weak var usernameChangeDelegate: UsernameChangeDelegate?
 
     // MARK: Init
 
     init(
         existingUsername: ParsedUsername?,
-        localAci: UntypedServiceId,
         context: Context
     ) {
         self.existingUsername = existingUsername
-        self.localAci = localAci
         self.context = context
 
         super.init()
@@ -383,8 +360,8 @@ private extension UsernameSelectionViewController {
                     "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER",
                     comment: "When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty."
                 )
-            case let .reservationSuccessful(reservation):
-                return reservation.username.reassembled
+            case let .reservationSuccessful(username, _):
+                return username.reassembled
             case
                     .pending,
                     .reservationRejected,
@@ -410,8 +387,8 @@ private extension UsernameSelectionViewController {
             self.usernameTextFieldWrapper.textField.configure(forConfirmedUsername: self.existingUsername)
         case .pending:
             self.usernameTextFieldWrapper.textField.configureForSomethingPending()
-        case let .reservationSuccessful(reservation):
-            self.usernameTextFieldWrapper.textField.configure(forConfirmedUsername: reservation.username)
+        case let .reservationSuccessful(username, _):
+            self.usernameTextFieldWrapper.textField.configure(forConfirmedUsername: username)
         case
                 .reservationRejected,
                 .reservationFailed,
@@ -541,23 +518,42 @@ private extension UsernameSelectionViewController {
     /// username.
     @objc
     private func didTapDone() {
-        let usernameState = self.currentUsernameState
+        let reservedUsername: Usernames.HashedUsername = {
+            let usernameState = self.currentUsernameState
 
-        switch usernameState {
-        case let .reservationSuccessful(reservation):
+            switch usernameState {
+            case let .reservationSuccessful(_, hashedUsername):
+                return hashedUsername
+            case
+                    .noChangesToExisting,
+                    .pending,
+                    .reservationRejected,
+                    .reservationFailed,
+                    .tooShort,
+                    .tooLong,
+                    .cannotStartWithDigit,
+                    .invalidCharacters:
+                owsFail("Unexpected username state: \(usernameState). Should be impossible from the UI!")
+            }
+        }()
+
+        if existingUsername == nil {
             self.confirmReservationBehindModalActivityIndicator(
-                reservedUsername: reservation.hashedUsername
+                reservedUsername: reservedUsername
             )
-        case
-                .noChangesToExisting,
-                .pending,
-                .reservationRejected,
-                .reservationFailed,
-                .tooShort,
-                .tooLong,
-                .cannotStartWithDigit,
-                .invalidCharacters:
-            owsFail("Unexpected username state: \(usernameState). Should be impossible from the UI!")
+        } else {
+            OWSActionSheets.showConfirmationAlert(
+                message: OWSLocalizedString(
+                    "USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE",
+                    comment: "A message explaining the side effects of changing your username."
+                ),
+                proceedTitle: CommonStrings.continueButton,
+                proceedAction: { [weak self] _ in
+                    self?.confirmReservationBehindModalActivityIndicator(
+                        reservedUsername: reservedUsername
+                    )
+                }
+            )
         }
     }
 
@@ -572,17 +568,27 @@ private extension UsernameSelectionViewController {
         ) { modal in
             UsernameLogger.shared.info("Confirming username.")
 
-            firstly { () -> Promise<API.ConfirmationResult> in
-                self.apiManager.attemptToConfirm(reservedUsername: reservedUsername)
-            }.done(on: self.context.schedulers.main) { result -> Void in
-                switch result {
-                case let .success(confirmedUsername):
+            firstly(on: self.context.schedulers.sync) { () -> Promise<Usernames.ConfirmationResult> in
+                return self.context.databaseStorage.write { tx -> Promise<Usernames.ConfirmationResult> in
+                    return self.context.localUsernameManager.confirmUsername(
+                        reservedUsername: reservedUsername,
+                        tx: tx.asV2Write
+                    )
+                }
+            }.ensure(on: self.context.schedulers.main) {
+                let newState = self.context.databaseStorage.read { tx in
+                    return self.context.localUsernameManager.usernameState(tx: tx.asV2Read)
+                }
+
+                self.usernameChangeDelegate?.usernameStateDidChange(newState: newState)
+            }.done(on: self.context.schedulers.main) { confirmationResult -> Void in
+                switch confirmationResult {
+                case .success:
                     UsernameLogger.shared.info("Confirmed username!")
 
-                    self.persistNewUsernameValueAndDismiss(
-                        usernameValue: confirmedUsername,
-                        presentedModalActivityIndicator: modal
-                    )
+                    modal.dismiss {
+                        self.dismiss(animated: true)
+                    }
                 case .rejected:
                     UsernameLogger.shared.error("Failed to confirm the username, server rejected.")
 
@@ -609,34 +615,6 @@ private extension UsernameSelectionViewController {
         }
     }
 
-    /// Persist the given username value, dismiss the given activity indicator,
-    /// then dismiss the current view.
-    /// - Parameter usernameValue
-    /// A new username value.
-    /// - Parameter presentedModalActivityIndicator
-    /// A currently-presented modal activity indicator to be dismissed.
-    private func persistNewUsernameValueAndDismiss(
-        usernameValue: String,
-        presentedModalActivityIndicator modal: ModalActivityIndicatorViewController
-    ) {
-        context.databaseStorage.write { transaction in
-            context.usernameLookupManager.saveUsername(
-                usernameValue,
-                forAci: localAci,
-                transaction: transaction.asV2Write
-            )
-        }
-
-        // We back up the username in StorageService, so trigger a backup now.
-        context.storageServiceManager.recordPendingLocalAccountUpdates()
-
-        usernameSelectionDelegate?.usernameDidChange(to: usernameValue)
-
-        modal.dismiss {
-            self.dismiss(animated: true)
-        }
-    }
-
     /// Dismiss the given activity indicator and then present an error message
     /// action sheet.
     private func dismiss(
@@ -658,8 +636,6 @@ private extension UsernameSelectionViewController {
     @objc
     private func usernameTextFieldContentsDidChange() {
         AssertIsOnMainThread()
-
-        UsernameLogger.shared.debug("Username text field contents changed...")
 
         let nicknameFromTextField: String? = usernameTextFieldWrapper.textField.normalizedNickname
 
@@ -728,34 +704,31 @@ private extension UsernameSelectionViewController {
     ) {
         AssertIsOnMainThread()
 
-        struct ReservationNotAttemptedError: Error {
-            let attemptId: UUID
-        }
+        struct ReservationNotAttemptedError: Error {}
 
-        firstly { () -> Guarantee<UUID> in
-            let attemptId = UUID()
+        let thisAttemptId = UUID()
 
-            currentUsernameState = .pending(id: attemptId)
+        firstly(on: self.context.schedulers.sync) { () -> Guarantee<Void> in
+            self.currentUsernameState = .pending(id: thisAttemptId)
 
             // Delay to detect multiple rapid consecutive edits.
-            return Guarantee
-                .after(wallInterval: Constants.reservationDebounceTimeInternal)
-                .map(on: self.context.schedulers.main) { attemptId }
-        }.then(on: self.context.schedulers.main) { thisAttemptId throws -> Promise<API.ReservationResult> in
+            return Guarantee.after(
+                wallInterval: Constants.reservationDebounceTimeInternal
+            )
+        }.then(on: self.context.schedulers.main) { () throws -> Promise<Usernames.ReservationResult> in
             // If this attempt is no longer current after debounce, we should
             // bail out without firing a reservation.
             guard
                 case let .pending(id) = self.currentUsernameState,
                 thisAttemptId == id
             else {
-                throw ReservationNotAttemptedError(attemptId: thisAttemptId)
+                throw ReservationNotAttemptedError()
             }
 
             UsernameLogger.shared.info("Attempting to reserve username. Attempt ID: \(thisAttemptId)")
 
-            return self.apiManager.attemptToReserve(
-                fromUsernameCandidates: usernameCandidates,
-                attemptId: thisAttemptId
+            return self.context.localUsernameManager.reserveUsername(
+                usernameCandidates: usernameCandidates
             )
         }.done(on: self.context.schedulers.main) { [weak self] reservationResult -> Void in
             guard let self else { return }
@@ -764,17 +737,20 @@ private extension UsernameSelectionViewController {
             // drop it and bail out.
             guard
                 case let .pending(id) = self.currentUsernameState,
-                reservationResult.attemptId == id
+                thisAttemptId == id
             else {
-                UsernameLogger.shared.info("Dropping reservation result, attempt is outdated. Attempt ID: \(reservationResult.attemptId)")
+                UsernameLogger.shared.info("Dropping reservation result, attempt is outdated. Attempt ID: \(thisAttemptId)")
                 return
             }
 
-            switch reservationResult.state {
-            case let .successful(reservation):
+            switch reservationResult {
+            case let .successful(username, hashedUsername):
                 UsernameLogger.shared.info("Successfully reserved nickname! Attempt ID: \(id)")
 
-                self.currentUsernameState = .reservationSuccessful(reservation: reservation)
+                self.currentUsernameState = .reservationSuccessful(
+                    username: username,
+                    hashedUsername: hashedUsername
+                )
             case .rejected:
                 UsernameLogger.shared.warn("Reservation rejected. Attempt ID: \(id)")
 
@@ -794,11 +770,7 @@ private extension UsernameSelectionViewController {
 
             self.currentUsernameState = .reservationFailed
 
-            if let error = error as? API.ReservationError {
-                UsernameLogger.shared.error("Reservation failed with error \(error.underlying). Attempt ID: \(error.attemptId)")
-            } else {
-                owsFailDebug("Reservation failed with unexpected error \(error)!")
-            }
+            UsernameLogger.shared.error("Reservation failed: \(error)!")
         }
     }
 }
@@ -835,7 +807,6 @@ extension UsernameSelectionViewController: UITextViewDelegate {
             owsFail("Unexpected URL in text view!")
         }
 
-        UsernameLogger.shared.debug("Tapped the Learn More link.")
         presentLearnMoreActionSheet()
 
         return false
@@ -846,13 +817,11 @@ extension UsernameSelectionViewController: UITextViewDelegate {
     private func presentLearnMoreActionSheet() {
         let title = OWSLocalizedString(
             "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE",
-            value: "What is this number?",
             comment: "The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix."
         )
 
         let message = OWSLocalizedString(
             "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE",
-            value: "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.",
             comment: "The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted."
         )
 
@@ -860,22 +829,5 @@ extension UsernameSelectionViewController: UITextViewDelegate {
             title: title,
             message: message
         )
-    }
-}
-
-// MARK: - Recompute table view item heights
-
-private extension OWSTableViewController2 {
-    /// Recompute heights in-place for all table items, headers, and footers.
-    func recomputeItemHeightsWithoutReloadingData() {
-        AssertIsOnMainThread()
-
-        UIView.performWithoutAnimation {
-            // Calling `.beginUpdates()` triggers a height computation for all
-            // items in the table view.
-
-            tableView.beginUpdates()
-            tableView.endUpdates()
-        }
     }
 }

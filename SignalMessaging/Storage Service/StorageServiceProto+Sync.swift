@@ -955,6 +955,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let authedAccount: AuthedAccount
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let legacyChangePhoneNumber: LegacyChangePhoneNumber
+    private let localUsernameManager: LocalUsernameManager
     private let paymentsHelper: PaymentsHelperSwift
     private let preferences: Preferences
     private let profileManager: OWSProfileManager
@@ -965,7 +966,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let tsAccountManager: TSAccountManager
     private let typingIndicators: TypingIndicators
     private let udManager: OWSUDManager
-    private let usernameLookupManager: UsernameLookupManager
     private let usernameEducationManager: UsernameEducationManager
 
     init(
@@ -973,6 +973,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         authedAccount: AuthedAccount,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         legacyChangePhoneNumber: LegacyChangePhoneNumber,
+        localUsernameManager: LocalUsernameManager,
         paymentsHelper: PaymentsHelperSwift,
         preferences: Preferences,
         profileManager: OWSProfileManager,
@@ -983,13 +984,13 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         tsAccountManager: TSAccountManager,
         typingIndicators: TypingIndicators,
         udManager: OWSUDManager,
-        usernameLookupManager: UsernameLookupManager,
         usernameEducationManager: UsernameEducationManager
     ) {
         self.localIdentifiers = localIdentifiers
         self.authedAccount = authedAccount
         self.dmConfigurationStore = dmConfigurationStore
         self.legacyChangePhoneNumber = legacyChangePhoneNumber
+        self.localUsernameManager = localUsernameManager
         self.paymentsHelper = paymentsHelper
         self.preferences = preferences
         self.profileManager = profileManager
@@ -1000,7 +1001,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.tsAccountManager = tsAccountManager
         self.typingIndicators = typingIndicators
         self.udManager = udManager
-        self.usernameLookupManager = usernameLookupManager
         self.usernameEducationManager = usernameEducationManager
     }
 
@@ -1018,14 +1018,28 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         var builder = StorageServiceProtoAccountRecord.builder()
 
         let localAddress = localIdentifiers.aciAddress
-        let localAci = localIdentifiers.aci
 
         if let profileKey = profileManager.profileKeyData(for: localAddress, transaction: transaction) {
             builder.setProfileKey(profileKey)
         }
 
-        if let username = usernameLookupManager.fetchUsername(forAci: localAci, transaction: transaction.asV2Read) {
+        let localUsernameState = localUsernameManager.usernameState(tx: transaction.asV2Read)
+        if let username = localUsernameState.username {
             builder.setUsername(username)
+
+            if let usernameLink = localUsernameState.usernameLink {
+                var usernameLinkProtoBuilder = StorageServiceProtoAccountRecordUsernameLink.builder()
+
+                usernameLinkProtoBuilder.setEntropy(usernameLink.entropy)
+                usernameLinkProtoBuilder.setServerID(usernameLink.handle.data)
+                usernameLinkProtoBuilder.setColor(
+                    localUsernameManager.usernameLinkQRCodeColor(
+                        tx: transaction.asV2Read
+                    ).asProto
+                )
+
+                builder.setUsernameLink(usernameLinkProtoBuilder.buildInfallibly())
+            }
         }
 
         if let profileGivenName = profileManager.unfilteredGivenName(for: localAddress, transaction: transaction) {
@@ -1147,7 +1161,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         var needsUpdate = false
 
         let localAddress = localIdentifiers.aciAddress
-        let localAci = localIdentifiers.aci
 
         // Gather some local contact state to do comparisons against.
         let localProfileKey = profileManager.profileKey(for: localAddress, transaction: transaction)
@@ -1159,7 +1172,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             authedAccount: authedAccount,
             transaction: transaction
         )
-        let localUsername = usernameLookupManager.fetchUsername(forAci: localAci, transaction: transaction.asV2Read)
 
         // On the primary device, we only ever want to
         // take the profile key from storage service if
@@ -1197,8 +1209,37 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             needsUpdate = true
         }
 
-        if localUsername != record.username {
-            usernameLookupManager.saveUsername(record.username, forAci: localAci, transaction: transaction.asV2Write)
+        if let remoteUsername = record.username {
+            if
+                let remoteUsernameLinkProto = record.usernameLink,
+                let remoteUsernameLinkProtoHandleData = remoteUsernameLinkProto.serverID,
+                let remoteUsernameLinkProtoHandle = UUID(data: remoteUsernameLinkProtoHandleData),
+                let remoteUsernameLinkProtoEntropy = remoteUsernameLinkProto.entropy,
+                let remoteUsernameLink = Usernames.UsernameLink(
+                    handle: remoteUsernameLinkProtoHandle,
+                    entropy: remoteUsernameLinkProtoEntropy
+                )
+            {
+                localUsernameManager.setLocalUsername(
+                    username: remoteUsername,
+                    usernameLink: remoteUsernameLink,
+                    tx: transaction.asV2Write
+                )
+
+                if let remoteUsernameLinkColor = remoteUsernameLinkProto.color {
+                    localUsernameManager.setUsernameLinkQRCodeColor(
+                        color: Usernames.QRCodeColor(proto: remoteUsernameLinkColor),
+                        tx: transaction.asV2Write
+                    )
+                }
+            } else {
+                localUsernameManager.setLocalUsernameWithCorruptedLink(
+                    username: remoteUsername,
+                    tx: transaction.asV2Write
+                )
+            }
+        } else {
+            localUsernameManager.clearLocalUsername(tx: transaction.asV2Write)
         }
 
         let localThread = TSContactThread.getOrCreateThread(withContactAddress: localAddress, transaction: transaction)
@@ -1680,5 +1721,36 @@ extension StorageServiceProtoOptionalBool {
 
     init(_ boolValue: Bool) {
         self = boolValue ? .true : .false
+    }
+}
+
+private extension Usernames.QRCodeColor {
+    var asProto: StorageServiceProtoAccountRecordUsernameLinkColor {
+        switch self {
+        case .blue: return .blue
+        case .white: return .white
+        case .grey: return .grey
+        case .olive: return .olive
+        case .green: return .green
+        case .orange: return .orange
+        case .pink: return .pink
+        case .purple: return .purple
+        }
+    }
+
+    init(proto: StorageServiceProtoAccountRecordUsernameLinkColor) {
+        switch proto {
+        case .blue: self = .blue
+        case .white: self = .white
+        case .grey: self = .grey
+        case .olive: self = .olive
+        case .green: self = .green
+        case .orange: self = .orange
+        case .pink: self = .pink
+        case .purple: self = .purple
+        case .unknown, .UNRECOGNIZED:
+            Logger.warn("Unrecognized username link color in proto!")
+            self = .unknown
+        }
     }
 }

@@ -23,23 +23,32 @@ public class ViewControllerContext {
     public let svr: SecureValueRecovery
     public let schedulers: Schedulers
 
-    public let usernameLookupManager: UsernameLookupManager
+    public let usernameApiClient: UsernameApiClient
     public let usernameEducationManager: UsernameEducationManager
+    public let usernameLinkManager: UsernameLinkManager
+    public let usernameLookupManager: UsernameLookupManager
+    public let localUsernameManager: LocalUsernameManager
 
     public init(
         db: DB,
         editManager: EditManager,
         svr: SecureValueRecovery,
         schedulers: Schedulers,
+        usernameApiClient: UsernameApiClient,
+        usernameEducationManager: UsernameEducationManager,
+        usernameLinkManager: UsernameLinkManager,
         usernameLookupManager: UsernameLookupManager,
-        usernameEducationManager: UsernameEducationManager
+        localUsernameManager: LocalUsernameManager
     ) {
         self.db = db
         self.editManager = editManager
         self.svr = svr
         self.schedulers = schedulers
-        self.usernameLookupManager = usernameLookupManager
+        self.usernameApiClient = usernameApiClient
         self.usernameEducationManager = usernameEducationManager
+        self.usernameLinkManager = usernameLinkManager
+        self.usernameLookupManager = usernameLookupManager
+        self.localUsernameManager = localUsernameManager
     }
 
     /// Eventually, this shared instance should not exist. (And DependenciesBridge should not exist, either).
@@ -56,8 +65,11 @@ public class ViewControllerContext {
             editManager: bridge.editManager,
             svr: bridge.svr,
             schedulers: bridge.schedulers,
+            usernameApiClient: bridge.usernameApiClient,
+            usernameEducationManager: bridge.usernameEducationManager,
+            usernameLinkManager: bridge.usernameLinkManager,
             usernameLookupManager: bridge.usernameLookupManager,
-            usernameEducationManager: bridge.usernameEducationManager
+            localUsernameManager: bridge.localUsernameManager
         )
     }()
 }

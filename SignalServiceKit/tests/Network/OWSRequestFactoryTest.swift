@@ -250,14 +250,16 @@ class OWSRequestFactoryTest: XCTestCase {
     func testConfirmReservedUsername() {
         let request = OWSRequestFactory.confirmReservedUsernameRequest(
             reservedUsernameHash: "jango",
-            reservedUsernameZKProof: "fett"
+            reservedUsernameZKProof: "fett",
+            encryptedUsernameForLink: "aa?".data(using: .utf8)! // Force a character that's special in base64Url
         )
 
         XCTAssertEqual(request.url?.path, "v1/accounts/username_hash/confirm")
         XCTAssertEqual(request.httpMethod, "PUT")
         XCTAssertEqual(request.parameters as! [String: String], [
             "usernameHash": "jango",
-            "zkProof": "fett"
+            "zkProof": "fett",
+            "encryptedUsername": "YWE_" // base64Url
         ])
         XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
     }
@@ -277,6 +279,29 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.url?.path, "v1/accounts/username_hash/obi-wan")
         XCTAssertEqual(request.httpMethod, "GET")
         XCTAssertEqual(request.parameters as! [String: String], [:])
-        XCTAssertTrue(!request.shouldHaveAuthorizationHeaders)
+        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
+    }
+
+    func testSetUsernameLink() {
+        let request = OWSRequestFactory.setUsernameLinkRequest(
+            encryptedUsername: "aa?".data(using: .utf8)! // Force a character that's special in base64Url
+        )
+
+        XCTAssertEqual(request.url?.path, "v1/accounts/username_link")
+        XCTAssertEqual(request.httpMethod, "PUT")
+        XCTAssertEqual(request.parameters as! [String: String], [
+            "usernameLinkEncryptedValue": "YWE_" // base64Url
+        ])
+        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
+    }
+
+    func testLookupUsernameLink() {
+        let handle = UUID()
+        let request = OWSRequestFactory.lookupUsernameLinkRequest(handle: handle)
+
+        XCTAssertEqual(request.url?.path, "v1/accounts/username_link/\(handle)")
+        XCTAssertEqual(request.httpMethod, "GET")
+        XCTAssertEqual(request.parameters as! [String: String], [:])
+        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 }

@@ -1514,28 +1514,19 @@ extension RecipientPickerViewController {
     }
 
     private func findByUsername(_ username: String) {
-        let usernameQuerier = UsernameQuerier(
-            contactsManager: contactsManager,
-            databaseStorage: databaseStorage,
-            networkManager: networkManager,
-            profileManager: profileManager,
-            recipientFetcher: DependenciesBridge.shared.recipientFetcher,
-            schedulers: DependenciesBridge.shared.schedulers,
-            storageServiceManager: storageServiceManager,
-            tsAccountManager: tsAccountManager,
-            usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
-        )
+        databaseStorage.read { tx in
+            UsernameQuerier().queryForUsername(
+                username: username,
+                fromViewController: self,
+                tx: tx,
+                onSuccess: { [weak self] aci in
+                    AssertIsOnMainThread()
 
-        usernameQuerier.queryForUsername(
-            username: username,
-            fromViewController: self,
-            onSuccess: { [weak self] aci in
-                AssertIsOnMainThread()
-
-                guard let self else { return }
-                self.tryToSelectRecipient(.for(address: SignalServiceAddress(aci)))
-            }
-        )
+                    guard let self else { return }
+                    self.tryToSelectRecipient(.for(address: SignalServiceAddress(aci)))
+                }
+            )
+        }
     }
 }
 

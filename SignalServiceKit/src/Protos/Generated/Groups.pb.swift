@@ -634,13 +634,13 @@ struct GroupsProtos_GroupChange {
       /// Populated by client when sending to server.
       var presentation: Data = Data()
 
-      /// Populated by server when reciving on client.
+      /// Populated by server when receiving on client.
       var userID: Data = Data()
 
-      /// Populated by server when reciving on client.
+      /// Populated by server when receiving on client.
       var pni: Data = Data()
 
-      /// Populated by server when reciving on client.
+      /// Populated by server when receiving on client.
       var profileKey: Data = Data()
 
       var unknownFields = SwiftProtobuf.UnknownStorage()

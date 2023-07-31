@@ -3,41 +3,33 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
 
 // MARK: - Namespace
 
 extension Usernames {
     fileprivate enum ValidationError: Error {
-        case missingLocalUsername
-        case invalidLocalUsername
-        case missingRemoteUsernameHash
-        case mismatchedUsernameHashes
+        case usernameMismatch
+        case usernameLinkMismatch
     }
 
     public enum Validation {
-        static public let usernameValidationDidChange = Notification.Name("usernameValidationDidChange")
-
         public enum Shims {
             public typealias AccountServiceClient = _UsernameValidationManager_AccountServiceClientShim
             public typealias MessageProcessor = _UsernameValidationManager_MessageProcessorShim
             public typealias StorageServiceManager = _UsernameValidationManager_StorageServiceManagerShim
-            public typealias TSAccountManager = _UsernameValidationManager_TSAccountManagerShim
         }
 
-        internal enum Wrappers {
+        enum Wrappers {
             internal typealias AccountServiceClient = _UsernameValidationManager_AccountServiceClientWrapper
             internal typealias MessageProcessor = _UsernameValidationManager_MessageProcessorWrapper
             internal typealias StorageServiceManager = _UsernameValidationManager_StorageServiceManagerWrapper
-            internal typealias TSAccountManager = _UsernameValidationManager_TSAccountManagerWrapper
         }
     }
 }
 
 public protocol UsernameValidationManager {
     func validateUsernameIfNecessary(_ transaction: DBReadTransaction)
-    func hasUsernameFailedValidation(_ transaction: DBReadTransaction) -> Bool
-    func clearUsernameHasFailedValidation(_ transaction: DBWriteTransaction)
 }
 
 public class UsernameValidationManagerImpl: UsernameValidationManager {
@@ -45,19 +37,17 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
     private enum Constants {
         static let collectionName: String = "UsernameValidation"
         static let lastValidationDateKey: String = "lastValidationDate"
-        static let usernameFailedValidationKey: String = "usernameFailedValidation"
     }
 
     internal struct Context {
-        let accountManager: Usernames.Validation.Shims.TSAccountManager
         let accountServiceClient: Usernames.Validation.Shims.AccountServiceClient
         let database: DB
         let keyValueStoreFactory: KeyValueStoreFactory
+        let localUsernameManager: LocalUsernameManager
         let messageProcessor: Usernames.Validation.Shims.MessageProcessor
-        let networkManager: NetworkManager
         let schedulers: Schedulers
         let storageServiceManager: Usernames.Validation.Shims.StorageServiceManager
-        let usernameLookupManager: UsernameLookupManager
+        let usernameLinkManager: UsernameLinkManager
     }
 
     // MARK: Init
@@ -72,67 +62,65 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
 
     // MARK: Username Validation
 
-    public func validateUsernameIfNecessary(_ transaction: DBReadTransaction) {
-        guard let localAci = context.accountManager.localAci(tx: transaction) else {
-            return
-        }
-        guard shouldValidateUsername(transaction) else {
+    public func validateUsernameIfNecessary(_ syncTx: DBReadTransaction) {
+        guard shouldValidateUsername(syncTx) else {
             return
         }
 
-        let localUsername = context.usernameLookupManager.fetchUsername(
-            forAci: localAci,
-            transaction: transaction
-        )
+        UsernameLogger.shared.info("Validating username.")
 
-        Logger.info("Validating username")
+        firstly(on: context.schedulers.sync) { () -> Promise<Void> in
+            return self.ensureUsernameStateUpToDate()
+        }
+        .then(on: context.schedulers.global()) { () -> Promise<Void> in
+            let localUsernameState = self.context.database.read { tx in
+                return self.context.localUsernameManager.usernameState(tx: tx)
+            }
 
-        // There is a small chance of a race condition between primary and
-        // linked devices if the system is busy at startup.
-        //
-        // One way this could happen is if a linked device
-        // comes online for the first time in a while and is processing a
-        // backlog of messages and hasn't fully updated to the most recent
-        // username. If the validation fires on the linked device before
-        // the backlog is processed (and the username change is realized),
-        // it could result in the linked device thinking the usernames are
-        // out of sync and trigger the deletion of the username.
-        //
-        // To help avoid this scenario the validation logic attempts to
-        // wait for any in-flight message processing & storage service
-        // tasks to finish before starting the validation.
-        firstly(on: context.schedulers.global()) {
-            self.context.messageProcessor.fetchingAndProcessingCompletePromise()
-        }
-        .then(on: context.schedulers.global()) {
-            self.context.storageServiceManager.waitForPendingRestores()
-        }
-        .then(on: context.schedulers.global()) {
-            self.context.accountServiceClient.getAccountWhoAmI()
-        }
-        .then(on: context.schedulers.global()) { whoamiResponse in
-            let result = self.validate(
-                localUsername: localUsername,
-                remoteUsernameHash: whoamiResponse.usernameHash
-            )
-
-            switch result {
-            case .success:
-                Logger.info("Successfully validated username")
-                self.context.database.write { transaction in
-                    self.setLastValidation(date: Date(), transaction)
-                    // Shouldn't be a failure set at this point, but clear
-                    // just to be sure.
-                    self.setUsernameHasFailedValidation(false, transaction: transaction)
+            switch localUsernameState {
+            case .unset:
+                // If we validate that we have no local username we can skip
+                // validating the username link as it's irrelevant.
+                return firstly(on: self.context.schedulers.sync) {
+                    return self.validateLocalUsernameAgainstService(
+                        localUsername: nil
+                    )
                 }
-                return Promise.value(())
-            case .failure(let error):
-                Logger.warn("Username failed validation: \(error)")
-                return self.handleInvalidUsername(for: localAci)
+            case let .available(username, usernameLink):
+                // If we have a username and we're in a good state, try and
+                // validate both the username and the link.
+                return firstly(on: self.context.schedulers.sync) {
+                    return self.validateLocalUsernameAgainstService(
+                        localUsername: username
+                    )
+                }
+                .then(on: self.context.schedulers.sync) { () -> Promise<Void> in
+                    return self.validateLocalUsernameLinkAgainstService(
+                        localUsername: username,
+                        localUsernameLink: usernameLink
+                    )
+                }
+            case let .linkCorrupted(username):
+                // If we have a username but know our link is broken, no need to
+                // validate the link. (What would we even validate?)
+                return firstly(on: self.context.schedulers.sync) {
+                    return self.validateLocalUsernameAgainstService(
+                        localUsername: username
+                    )
+                }
+            case .usernameAndLinkCorrupted:
+                // If we know we're in a bad state, we can bail out.
+                return .value(())
+            }
+        }.done(on: context.schedulers.global()) {
+            // Save the time we last finished validating successfully.
+
+            self.context.database.write { tx in
+                self.setLastValidation(date: Date(), tx)
             }
         }
         .catch(on: context.schedulers.global()) { error in
-            Logger.error("Error validating username: \(error)")
+            UsernameLogger.shared.error("Error validating username: \(error)")
         }
     }
 
@@ -141,88 +129,108 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
             return true
         }
 
-        // check if it's been 12 hours since last validation
-        let checkInterval = 12 * kHourInterval
-        let currentDate = Date()
-        let checkDate =  Date.init(
-            timeInterval: checkInterval,
-            since: lastValidationDate)
-        if currentDate < checkDate {
-            Logger.debug("Skipping; date: \(String(describing: currentDate)) < \(String(describing: checkDate)).")
-            return false
+        if Date() > lastValidationDate.addingTimeInterval(kDayInterval) {
+            // It's been more than a day - check again.
+            return true
         }
 
-        return true
+        return false
     }
 
-    private func validate(
-        localUsername: String?,
-        remoteUsernameHash: String?
-    ) -> Result<Void, Error> {
-        guard let localUsername else {
-            if remoteUsernameHash != nil {
-                // Found a remote hash, expected a local and didn't get one
-                return .failure(Usernames.ValidationError.missingLocalUsername)
+    /// Ensure that we have the latest local state regarding our username.
+    ///
+    /// All of a user's devices can update the username and username link.
+    /// Consequently, before we do any comparison of local and remote state, we
+    /// should ensure we have the latest state from any linked devices.
+    ///
+    /// We first finish message processing, specifically because we might find a
+    /// "fetch latest" sync message telling us to restore from Storage Service.
+    /// We then wait for any in-progress restores.
+    ///
+    /// After these steps, we can be confident that we have the latest on our
+    /// username.
+    private func ensureUsernameStateUpToDate() -> Promise<Void> {
+        return firstly(on: context.schedulers.sync) {
+            self.context.messageProcessor.fetchingAndProcessingCompletePromise()
+        }
+        .then(on: context.schedulers.sync) {
+            self.context.storageServiceManager.waitForPendingRestores()
+        }
+    }
+
+    /// Validate the local username against the value stored on the service.
+    ///
+    /// - Returns
+    /// A promise that resolves with the local username (if any), if the local
+    /// value matches the service. The promise rejects if the local username
+    /// does not match the service.
+    private func validateLocalUsernameAgainstService(
+        localUsername: String?
+    ) -> Promise<Void> {
+        typealias WhoAmIResponse = WhoAmIRequestFactory.Responses.WhoAmI
+
+        return firstly(on: context.schedulers.sync) { () -> Promise<WhoAmIResponse> in
+            return self.context.accountServiceClient.getAccountWhoAmI()
+        }
+        .done(on: context.schedulers.global()) { whoamiResponse throws in
+            let validationSucceeded: Bool = {
+                switch (localUsername, whoamiResponse.usernameHash) {
+                case (nil, nil):
+                    // Both missing -> good
+                    return true
+                case (nil, .some), (.some, nil):
+                    // One missing, one set -> bad
+                    return false
+                case let (.some(localUsername), .some(remoteUsernameHash)):
+                    // Both present -> check the values
+
+                    guard let hashedLocalUsername = try? Usernames.HashedUsername(
+                        forUsername: localUsername
+                    ) else {
+                        return false
+                    }
+
+                    return hashedLocalUsername.hashString == remoteUsernameHash
+                }
+            }()
+
+            if validationSucceeded {
+                UsernameLogger.shared.info("Username validated successfully.")
             } else {
-                // Both missing, ok to return
-                return .success(())
+                self.context.database.write { tx in
+                    self.context.localUsernameManager.setLocalUsernameCorrupted(
+                        tx: tx
+                    )
+                }
+
+                throw Usernames.ValidationError.usernameMismatch
             }
         }
-
-        // In normal usage, this shouldn't fail since the username would
-        // have been validated during initial setup.  But if the username
-        // somehow fails to convert into a valid hashed username, treat it
-        // as if it were a missing user name and go through the cleanup steps.
-        guard
-            let localUserHash = try? Usernames.HashedUsername(forUsername: localUsername)
-        else {
-            return .failure(Usernames.ValidationError.invalidLocalUsername)
-        }
-
-        // Found a local username hash, check that the remote username hash exists
-        guard let remoteUserHash = remoteUsernameHash else {
-            return .failure(Usernames.ValidationError.missingRemoteUsernameHash)
-        }
-
-        // Found both local and remote, check that they match.
-        if localUserHash.hashString != remoteUserHash {
-            return .failure(Usernames.ValidationError.mismatchedUsernameHashes)
-        }
-
-        return .success(())
     }
 
-    /// Clean up the invalid username, both locally and on the server.
-    ///     1. remove the associated username hash (remote)
-    ///     2. remove the username on the account record (local) & save
-    ///     3. post a notification that something has changed
-    ///     4. make a note that the user is in a bad state.
-    private func handleInvalidUsername(for aci: UntypedServiceId) -> Promise<Void> {
-        return firstly(on: context.schedulers.global()) {
-            // Delete remotely
-            Usernames
-                .API(
-                    networkManager: self.context.networkManager,
-                    schedulers: self.context.schedulers
-                )
-                .attemptToDeleteCurrentUsername()
-        }
-        .done(on: context.schedulers.global()) {
-            self.context.database.write { transaction in
-                // Delete locally
-                self.context.usernameLookupManager.saveUsername(
-                    nil,
-                    forAci: aci,
-                    transaction: transaction
-                )
+    private func validateLocalUsernameLinkAgainstService(
+        localUsername: String,
+        localUsernameLink: Usernames.UsernameLink
+    ) -> Promise<Void> {
+        return firstly(on: context.schedulers.sync) { () -> Promise<String?> in
+            self.context.usernameLinkManager.decryptEncryptedLink(
+                link: localUsernameLink
+            )
+        }.map(on: context.schedulers.global()) { usernameForLocalLink throws in
+            if
+                let usernameForLocalLink,
+                usernameForLocalLink == localUsername
+            {
+                UsernameLogger.shared.info("Username link validated successfully.")
+            } else {
+                self.context.database.write { tx in
+                    self.context.localUsernameManager.setLocalUsernameWithCorruptedLink(
+                        username: localUsername,
+                        tx: tx
+                    )
+                }
 
-                // Push local changes to storage service
-                self.context.storageServiceManager.recordPendingLocalAccountUpdates()
-
-                // Mark the username failed validation to signal to the UI
-                // to notify the user.
-                self.setUsernameHasFailedValidation(true, transaction: transaction)
-                self.setLastValidation(date: nil, transaction)
+                throw Usernames.ValidationError.usernameLinkMismatch
             }
         }
     }
@@ -236,49 +244,12 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
         )
     }
 
-    internal func setLastValidation(date: Date?, _ transaction: DBWriteTransaction) {
-        if let date = date {
-            self.keyValueStore.setDate(
-                date,
-                key: Constants.lastValidationDateKey,
-                transaction: transaction
-            )
-        } else {
-            self.keyValueStore.removeValue(
-                forKey: Constants.lastValidationDateKey,
-                transaction: transaction
-            )
-        }
-    }
-
-    private func setUsernameHasFailedValidation(_ didFail: Bool, transaction: DBWriteTransaction) {
-        guard didFail != hasUsernameFailedValidation(transaction) else { return }
-
-        self.keyValueStore.setBool(
-            didFail,
-            key: Constants.usernameFailedValidationKey,
+    internal func setLastValidation(date: Date, _ transaction: DBWriteTransaction) {
+        self.keyValueStore.setDate(
+            date,
+            key: Constants.lastValidationDateKey,
             transaction: transaction
         )
-
-        // Notify on any change of the username validation
-        // to allow any UI to update in response
-        NotificationCenter.default.postNotificationNameAsync(
-            Usernames.Validation.usernameValidationDidChange,
-            object: nil
-        )
-    }
-
-    // MARK: UsernameValidationManager methods
-
-    public func hasUsernameFailedValidation(_ transaction: DBReadTransaction) -> Bool {
-        return self.keyValueStore.getBool(
-            Constants.usernameFailedValidationKey,
-            transaction: transaction
-        ) ?? false
-    }
-
-    public func clearUsernameHasFailedValidation(_ transaction: DBWriteTransaction) {
-        setUsernameHasFailedValidation(false, transaction: transaction)
     }
 }
 
@@ -321,7 +292,6 @@ internal class _UsernameValidationManager_MessageProcessorWrapper: Usernames.Val
 // MARK: StorageServiceManager
 
 public protocol _UsernameValidationManager_StorageServiceManagerShim {
-    func recordPendingLocalAccountUpdates()
     func waitForPendingRestores() -> Promise<Void>
 }
 
@@ -331,26 +301,7 @@ internal class _UsernameValidationManager_StorageServiceManagerWrapper: Username
         self.storageServiceManager = storageServiceManager
     }
 
-    public func recordPendingLocalAccountUpdates() {
-        storageServiceManager.recordPendingLocalAccountUpdates()
-    }
-
     public func waitForPendingRestores() -> Promise<Void> {
         storageServiceManager.waitForPendingRestores().asVoid()
-    }
-}
-
-// MARK: TSAccountManager
-
-public protocol _UsernameValidationManager_TSAccountManagerShim {
-    func localAci(tx: DBReadTransaction) -> UntypedServiceId?
-}
-
-internal class _UsernameValidationManager_TSAccountManagerWrapper: Usernames.Validation.Shims.TSAccountManager {
-    private let accountManager: TSAccountManager
-    public init(_ accountManager: TSAccountManager) { self.accountManager = accountManager }
-
-    public func localAci(tx: DBReadTransaction) -> UntypedServiceId? {
-        return accountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx))?.aci
     }
 }

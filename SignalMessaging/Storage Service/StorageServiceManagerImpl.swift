@@ -1457,6 +1457,7 @@ class StorageServiceOperation: OWSOperation {
                 authedAccount: authedAccount,
                 dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
                 legacyChangePhoneNumber: legacyChangePhoneNumber,
+                localUsernameManager: DependenciesBridge.shared.localUsernameManager,
                 paymentsHelper: paymentsHelperSwift,
                 preferences: preferences,
                 profileManager: profileManagerImpl,
@@ -1467,7 +1468,6 @@ class StorageServiceOperation: OWSOperation {
                 tsAccountManager: tsAccountManager,
                 typingIndicators: typingIndicatorsImpl,
                 udManager: udManager,
-                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
                 usernameEducationManager: DependenciesBridge.shared.usernameEducationManager
             ),
             changeState: \.localAccountChangeState,

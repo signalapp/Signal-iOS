@@ -4,15 +4,16 @@
 //
 
 import SignalCoreKit
+import SignalServiceKit
 import SignalUI
 
 protocol UsernameLinkQRCodeColorPickerDelegate: AnyObject {
-    func didFinalizeSelectedColor(color: UsernameLinkQRCodeColor)
+    func didFinalizeSelectedColor(color: Usernames.QRCodeColor)
 }
 
 class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
-    private let startingColor: UsernameLinkQRCodeColor
-    private var currentColor: UsernameLinkQRCodeColor
+    private let startingColor: Usernames.QRCodeColor
+    private var currentColor: Usernames.QRCodeColor
 
     private let username: String
     private let qrCodeTemplateImage: UIImage
@@ -20,7 +21,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
     private weak var colorPickerDelegate: UsernameLinkQRCodeColorPickerDelegate?
 
     init(
-        currentColor: UsernameLinkQRCodeColor,
+        currentColor: Usernames.QRCodeColor,
         username: String,
         qrCodeTemplateImage: UIImage,
         delegate: UsernameLinkQRCodeColorPickerDelegate
@@ -99,8 +100,8 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
     }
 
     private func buildColorOptionsView() -> UIView {
-        let colorOptionButtons: [UsernameLinkQRCodeColor: ColorOptionButton] = {
-            return UsernameLinkQRCodeColor.allCases.reduce(into: [:]) { partial, color in
+        let colorOptionButtons: [Usernames.QRCodeColor: ColorOptionButton] = {
+            return Usernames.QRCodeColor.allCases.reduce(into: [:]) { partial, color in
                 let button = ColorOptionButton(
                     size: 56,
                     color: color.background,
@@ -113,7 +114,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
             }
         }()
 
-        func stack(colors: [UsernameLinkQRCodeColor]) -> UIStackView {
+        func stack(colors: [Usernames.QRCodeColor]) -> UIStackView {
             let stack = UIStackView(arrangedSubviews: colors.map { color in
                 return colorOptionButtons[color]!
             })
@@ -220,7 +221,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
         dismiss(animated: true)
     }
 
-    private func didSelectColor(color selectedColor: UsernameLinkQRCodeColor) {
+    private func didSelectColor(color selectedColor: Usernames.QRCodeColor) {
         currentColor = selectedColor
         reloadTableContents()
     }
