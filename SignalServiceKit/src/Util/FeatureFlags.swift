@@ -119,15 +119,11 @@ public class FeatureFlags: BaseFlags {
         }
     }
 
-    public static let textFormattingSend = build.includes(.internal)
-
     /// If true, _only_ aci safety numbers will be displayed, and e164 safety numbers will not
     /// be displayed.
     public static let onlyAciSafetyNumbers = false
 
     public static let editMessageSend = build.includes(.beta)
-
-    public static let spoilerAnimations = build.includes(.internal)
 
     /// If true, we will enable recipient hiding, which is like a lighter form of blocking.
     @objc

@@ -24,7 +24,7 @@ public struct StyleDisplayConfiguration: Equatable {
     public let useAnimatedSpoilers: Bool
 
     public var spoilerColor: ThemedColor {
-        if FeatureFlags.spoilerAnimations, let spoilerAnimationColorOverride {
+        if useAnimatedSpoilers, let spoilerAnimationColorOverride {
             return spoilerAnimationColorOverride
         } else {
             return textColor

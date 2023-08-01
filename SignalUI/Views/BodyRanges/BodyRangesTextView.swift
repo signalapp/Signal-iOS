@@ -424,10 +424,6 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
     func customUIMenuShare(_ sender: Any?) { super.perform(uiMenuShareAction, with: sender) }
 
     open override func buildMenu(with builder: UIMenuBuilder) {
-        guard FeatureFlags.textFormattingSend else {
-            super.buildMenu(with: builder)
-            return
-        }
         if builder.menu(for: .lookup) != nil, selectedRange.length > 0 {
             // The lookup action is special; for whatever reason it doesn't go
             // through `canPerformAction` at all, so we have to disable it here
@@ -443,7 +439,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
 
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         // We only mess with actions when there's a selection.
-        guard FeatureFlags.textFormattingSend, selectedRange.length > 0 else {
+        guard selectedRange.length > 0 else {
             return super.canPerformAction(action, withSender: sender)
         }
         // Let our custom style actions through.
@@ -500,9 +496,6 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
     // resign first responder, selection changed, text changed, style option tapped, etc.
     private var isShowingFormatMenu = false {
         didSet {
-            guard FeatureFlags.textFormattingSend else {
-                return
-            }
             if oldValue, !isShowingFormatMenu, UIMenuController.shared.isMenuVisible {
                 UIMenuController.shared.hideMenu(from: self)
             }
@@ -515,9 +508,6 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
     }
 
     fileprivate func updateUIMenuState() {
-        guard FeatureFlags.textFormattingSend else {
-            return
-        }
         if selectedRange.length > 0 {
             if isShowingFormatMenu {
                 let orderedStyles: [MessageBodyRanges.SingleStyle] = [
@@ -574,9 +564,6 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
 
     @objc
     private func didSelectTextFormattingSubmenu(_ sender: UIMenu) {
-        guard FeatureFlags.textFormattingSend else {
-            return
-        }
         isShowingFormatMenu = true
         updateUIMenuState()
         // No way to set a sub-menu in iOS 13. Have to wait for it to dismiss
@@ -620,9 +607,6 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
     func didSelectMonospace() { didSelectStyle(.monospace) }
 
     private func didSelectStyle(_ style: MessageBodyRanges.SingleStyle) {
-        guard FeatureFlags.textFormattingSend else {
-            return
-        }
         Logger.info("Applying style: \(style)")
         isShowingFormatMenu = false
         guard selectedRange.length > 0 else {
@@ -635,9 +619,6 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
 
     @objc
     private func didSelectClearStyles() {
-        guard FeatureFlags.textFormattingSend else {
-            return
-        }
         Logger.info("Clearing styles")
         isShowingFormatMenu = false
         guard selectedRange.length > 0 else {

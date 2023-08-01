@@ -80,7 +80,7 @@ public class SpoilerAnimationManager {
     private static let metalConfig: SpoilerMetalConfiguration? = SpoilerMetalConfiguration()
 
     public static var canRenderAnimatedSpoilers: Bool {
-        return FeatureFlags.spoilerAnimations && metalConfig != nil
+        return metalConfig != nil
     }
 
     private lazy var renderer: SpoilerRenderer? = {
