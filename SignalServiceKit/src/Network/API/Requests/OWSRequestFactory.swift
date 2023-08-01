@@ -244,11 +244,10 @@ extension OWSRequestFactory {
     static func registerPrekeysRequest(
         identity: OWSIdentity,
         identityKey: IdentityKey,
-        signedPreKeyRecord: SignedPreKeyRecord,
-        prekeyRecords: [PreKeyRecord],
+        signedPreKeyRecord: SignedPreKeyRecord?,
+        prekeyRecords: [PreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> TSRequest {
-        owsAssertDebug(prekeyRecords.count > 0)
         owsAssertDebug(identityKey.count > 0)
 
         var path = textSecureKeysAPI
@@ -256,15 +255,20 @@ extension OWSRequestFactory {
             path = path.appending("?\(queryParam)")
         }
 
-        let serializedPrekeys = prekeyRecords.map { self.preKeyRequestParameters($0) }
+        var parameters = [String: Any]()
+
+        parameters["identityKey"] = identityKey.prependKeyType().base64EncodedStringWithoutPadding()
+        if let signedPreKeyRecord {
+            parameters["signedPreKey"] = signedPreKeyRequestParameters(signedPreKeyRecord)
+        }
+        if let prekeyRecords {
+            parameters["preKeys"] = prekeyRecords.map { self.preKeyRequestParameters($0) }
+        }
+
         let request = TSRequest(
             url: URL(string: path)!,
             method: "PUT",
-            parameters: [
-                "preKeys": serializedPrekeys,
-                "signedPreKey": signedPreKeyRequestParameters(signedPreKeyRecord),
-                "identityKey": identityKey.prependKeyType().base64EncodedStringWithoutPadding()
-            ]
+            parameters: parameters
         )
         request.setAuth(auth)
         return request

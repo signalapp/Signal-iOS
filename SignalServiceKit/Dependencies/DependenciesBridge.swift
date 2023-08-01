@@ -203,10 +203,28 @@ public class DependenciesBridge {
             notificationsManager: notificationsManager
         )
 
+        let preKeyOperationFactory: PreKeyManagerImpl.Shims.PreKeyOperationFactory
+        if FeatureFlags.useUpdatePreKeyOperations {
+            preKeyOperationFactory = PreKeyManagerImpl.Wrappers.PreKeyOperationFactory(
+                context: .init(
+                    accountManager: PreKey.Wrappers.AccountManager(accountManager: tsAccountManager),
+                    dateProvider: dateProvider,
+                    db: db,
+                    identityManager: PreKey.Wrappers.IdentityManager(identityManager: identityManager),
+                    messageProcessor: PreKey.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
+                    protocolStoreManager: signalProtocolStoreManager,
+                    schedulers: schedulers,
+                    serviceClient: accountServiceClient
+                )
+            )
+        } else {
+            preKeyOperationFactory = PreKeyManagerImpl.Wrappers.LegacyPreKeyOperationFactory()
+        }
+
         self.preKeyManager = PreKeyManagerImpl(
             accountManager: PreKeyManagerImpl.Wrappers.TSAccountManager(tsAccountManager),
             messageProcessor: PreKeyManagerImpl.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
-            preKeyOperationFactory: PreKeyManagerImpl.Wrappers.PreKeyOperationFactory(),
+            preKeyOperationFactory: preKeyOperationFactory,
             protocolStoreManager: signalProtocolStoreManager
         )
 

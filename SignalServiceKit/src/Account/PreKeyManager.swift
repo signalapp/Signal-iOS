@@ -268,22 +268,15 @@ extension PreKeyManagerImpl {
     public enum Wrappers {
         public typealias TSAccountManager = _PreKeyManager_TSAccountManagerWrapper
         public typealias MessageProcessor = _PreKeyManager_MessageProcessorWrapper
+        public typealias LegacyPreKeyOperationFactory = _PreKeyManager_LegacyPreKeyOperationFactoryWrapper
         public typealias PreKeyOperationFactory = _PreKeyManager_PreKeyOperationFactoryWrapper
     }
 }
 
+// MARK: - AccountManager
+
 public protocol _PreKeyManager_TSAccountManagerShim {
     func isRegisteredAndReady(tx: DBReadTransaction) -> Bool
-}
-
-public protocol _PreKeyManager_MessageProcessorShim {
-    func fetchingAndProcessingCompletePromise() -> Promise<Void>
-}
-
-public protocol _PreKeyManager_PreKeyOperationFactoryShims {
-    func rotateSignedPreKeyOperation(for identity: OWSIdentity, shouldSkipIfRecent: Bool) -> OWSOperation
-    func createPreKeysOperation(for identity: OWSIdentity, auth: ChatServiceAuth) -> OWSOperation
-    func refreshPreKeysOperation(for identity: OWSIdentity, shouldRefreshSignedPreKey: Bool) -> OWSOperation
 }
 
 public class _PreKeyManager_TSAccountManagerWrapper: PreKeyManagerImpl.Shims.TSAccountManager {
@@ -293,6 +286,12 @@ public class _PreKeyManager_TSAccountManagerWrapper: PreKeyManagerImpl.Shims.TSA
     public func isRegisteredAndReady(tx: DBReadTransaction) -> Bool {
         return accountManager.isRegisteredAndReady(transaction: SDSDB.shimOnlyBridge(tx))
     }
+}
+
+// MARK: - MessageProcessor
+
+public protocol _PreKeyManager_MessageProcessorShim {
+    func fetchingAndProcessingCompletePromise() -> Promise<Void>
 }
 
 public struct _PreKeyManager_MessageProcessorWrapper: PreKeyManagerImpl.Shims.MessageProcessor {
@@ -306,7 +305,15 @@ public struct _PreKeyManager_MessageProcessorWrapper: PreKeyManagerImpl.Shims.Me
     }
 }
 
-public struct _PreKeyManager_PreKeyOperationFactoryWrapper: PreKeyManagerImpl.Shims.PreKeyOperationFactory {
+// MARK: - PreKeyOperationFactory
+
+public protocol _PreKeyManager_PreKeyOperationFactoryShims {
+    func rotateSignedPreKeyOperation(for identity: OWSIdentity, shouldSkipIfRecent: Bool) -> OWSOperation
+    func createPreKeysOperation(for identity: OWSIdentity, auth: ChatServiceAuth) -> OWSOperation
+    func refreshPreKeysOperation(for identity: OWSIdentity, shouldRefreshSignedPreKey: Bool) -> OWSOperation
+}
+
+public struct _PreKeyManager_LegacyPreKeyOperationFactoryWrapper: PreKeyManagerImpl.Shims.PreKeyOperationFactory {
     public func rotateSignedPreKeyOperation(for identity: OWSIdentity, shouldSkipIfRecent: Bool) -> OWSOperation {
         RotateSignedPreKeyOperation(for: identity, shouldSkipIfRecent: shouldSkipIfRecent)
     }
@@ -319,6 +326,45 @@ public struct _PreKeyManager_PreKeyOperationFactoryWrapper: PreKeyManagerImpl.Sh
         RefreshPreKeysOperation(for: identity, shouldRefreshSignedPreKey: shouldRefreshSignedPreKey)
     }
 }
+
+public struct _PreKeyManager_PreKeyOperationFactoryWrapper: PreKeyManagerImpl.Shims.PreKeyOperationFactory {
+    private let context: PreKeyTask.Context
+    init(context: PreKeyTask.Context) {
+        self.context = context
+    }
+
+    public func rotateSignedPreKeyOperation(for identity: OWSIdentity, shouldSkipIfRecent: Bool) -> OWSOperation {
+        PreKeyOperation(
+            for: identity,
+            action: .refresh([.signedPreKey], forceRefresh: !shouldSkipIfRecent),
+            context: context
+        )
+    }
+
+    public func createPreKeysOperation(for identity: OWSIdentity, auth: ChatServiceAuth) -> OWSOperation {
+        PreKeyOperation(
+            for: identity,
+            action: .create([.oneTimePreKey, .signedPreKey]),
+            auth: auth,
+            context: context
+        )
+    }
+
+    public func refreshPreKeysOperation(for identity: OWSIdentity, shouldRefreshSignedPreKey: Bool) -> OWSOperation {
+        var target: PreKey.Operation.Target = .oneTimePreKey
+        if shouldRefreshSignedPreKey {
+            target.insert(.signedPreKey)
+        }
+
+        return PreKeyOperation(
+            for: identity,
+            action: .refresh([.oneTimePreKey, .signedPreKey], forceRefresh: false),
+            context: context
+        )
+    }
+}
+
+// MARK: - Default Mock PreKeymanager
 
 internal class MockPreKeyManager: PreKeyManager {
     func isAppLockedDueToPreKeyUpdateFailures(tx: SignalServiceKit.DBReadTransaction) -> Bool { false }

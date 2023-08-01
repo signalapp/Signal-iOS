@@ -23,8 +23,8 @@ public protocol SignalServiceClient {
     func registerPreKeys(
         for identity: OWSIdentity,
         identityKey: IdentityKey,
-        signedPreKeyRecord: SignedPreKeyRecord,
-        preKeyRecords: [PreKeyRecord],
+        signedPreKeyRecord: SignedPreKeyRecord?,
+        preKeyRecords: [PreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void>
@@ -102,8 +102,8 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     public func registerPreKeys(
         for identity: OWSIdentity,
         identityKey: IdentityKey,
-        signedPreKeyRecord: SignedPreKeyRecord,
-        preKeyRecords: [PreKeyRecord],
+        signedPreKeyRecord: SignedPreKeyRecord?,
+        preKeyRecords: [PreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> Promise<Void> {
         Logger.debug("")
