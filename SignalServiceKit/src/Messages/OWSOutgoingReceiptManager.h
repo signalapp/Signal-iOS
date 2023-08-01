@@ -24,11 +24,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 + (SDSKeyValueStore *)deliveryReceiptStore;
 + (SDSKeyValueStore *)readReceiptStore;
 
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithRecipientHidingManager:(id<RecipientHidingManager>)recipientHidingManager
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 // TODO: Make this private.
 @property (nonatomic, readonly) PendingTasks *pendingTasks;

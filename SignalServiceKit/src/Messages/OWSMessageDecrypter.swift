@@ -329,7 +329,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         if
             blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) ||
-            (FeatureFlags.recipientHiding && DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(sourceAddress, tx: transaction))
+            DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(sourceAddress, tx: transaction.asV2Read)
         {
             Logger.info("Ignoring decryption error for blocked or hidden user \(sourceAddress) \(wrappedError).")
             return wrappedError

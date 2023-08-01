@@ -293,12 +293,12 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             return
         }
 
-        let (isPreExistingMember, isExcluded) = databaseStorage.read { readTx -> (Bool, Bool) in
+        let (isPreExistingMember, isExcluded) = databaseStorage.read { tx -> (Bool, Bool) in
             let isPreexisting = memberViewDelegate.memberViewIsPreExistingMember(
                 recipient,
-                transaction: readTx)
-            let isBlocked = blockingManager.isAddressBlocked(address, transaction: readTx)
-            let isHidden = FeatureFlags.recipientHiding && DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: readTx)
+                transaction: tx)
+            let isBlocked = blockingManager.isAddressBlocked(address, transaction: tx)
+            let isHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: tx.asV2Read)
             let isExcluded = isBlocked || isHidden
 
             return (isPreexisting, isExcluded)

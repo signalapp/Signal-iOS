@@ -51,7 +51,7 @@ public class StoryManager: NSObject {
             return
         }
 
-        if FeatureFlags.recipientHiding && DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(author, tx: transaction) {
+        if DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(author, tx: transaction.asV2Read) {
             Logger.warn("Dropping story message with timestamp \(timestamp) from hidden author \(author)")
             return
         }

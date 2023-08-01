@@ -55,8 +55,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage
-                 recipientHidingManager:(id<RecipientHidingManager>)recipientHidingManager NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;
 
 #pragma mark - Local Profile
 

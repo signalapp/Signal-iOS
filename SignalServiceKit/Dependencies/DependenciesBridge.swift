@@ -97,7 +97,6 @@ public class DependenciesBridge {
         notificationsManager: NotificationsProtocol,
         ows2FAManager: OWS2FAManager,
         profileManager: ProfileManagerProtocol,
-        recipientHidingManager: RecipientHidingManager,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
@@ -120,7 +119,6 @@ public class DependenciesBridge {
             notificationsManager: notificationsManager,
             ows2FAManager: ows2FAManager,
             profileManager: profileManager,
-            recipientHidingManager: recipientHidingManager,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
@@ -148,7 +146,6 @@ public class DependenciesBridge {
         notificationsManager: NotificationsProtocol,
         ows2FAManager: OWS2FAManager,
         profileManager: ProfileManagerProtocol,
-        recipientHidingManager: RecipientHidingManager,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
@@ -325,7 +322,11 @@ public class DependenciesBridge {
             storageServiceManager: storageServiceManager
         )
 
-        self.recipientHidingManager = recipientHidingManager
+        self.recipientHidingManager = RecipientHidingManagerImpl(
+            profileManager: profileManager,
+            storageServiceManager: storageServiceManager,
+            tsAccountManager: tsAccountManager
+        )
 
         self.signalProtocolStoreManager = signalProtocolStoreManager
 

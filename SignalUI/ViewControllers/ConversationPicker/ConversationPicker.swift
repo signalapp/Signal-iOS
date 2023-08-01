@@ -339,7 +339,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 case let contactThread as TSContactThread:
                     let isThreadHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
                         contactThread.contactAddress,
-                        tx: transaction
+                        tx: transaction.asV2Read
                     )
                     if isThreadHidden {
                         return
@@ -409,7 +409,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     return
                 }
 
-                let isRecipientHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: transaction)
+                let isRecipientHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
+                    address,
+                    tx: transaction.asV2Read
+                )
                 if isRecipientHidden {
                     return
                 }

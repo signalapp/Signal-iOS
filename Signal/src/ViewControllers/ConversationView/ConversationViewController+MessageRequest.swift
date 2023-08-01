@@ -281,7 +281,11 @@ extension ConversationViewController: MessageRequestDelegate {
                     self.blockingManager.removeBlockedThread(thread, wasLocallyInitiated: true, transaction: transaction)
                 }
                 if FeatureFlags.recipientHiding, unhideRecipient, let thread = thread as? TSContactThread {
-                    DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(thread.contactAddress, wasLocallyInitiated: true, tx: transaction)
+                    DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
+                        thread.contactAddress,
+                        wasLocallyInitiated: true,
+                        tx: transaction.asV2Write
+                    )
                 }
                 if !unblockThread {
                     // If this is an accept (which also unhides a hidden recipient), not an unblock, we should send a

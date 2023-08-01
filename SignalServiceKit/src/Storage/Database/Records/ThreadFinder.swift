@@ -226,9 +226,11 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         if isGroupThread, !isLocalUserInGroup { return false }
 
         if
-            FeatureFlags.recipientHiding,
             let thread = thread as? TSContactThread,
-            DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(thread.contactAddress, tx: transaction.asAnyRead)
+            DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
+                thread.contactAddress,
+                tx: transaction.asAnyRead.asV2Read
+            )
         {
             // If the user hides a contact and said contact subsequently sends an incoming
             // message, we display the message request UI.

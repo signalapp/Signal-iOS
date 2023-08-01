@@ -40,8 +40,6 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
 // This property should only be accessed on the serialQueue.
 @property (nonatomic) BOOL isProcessing;
 
-@property (nonatomic, readonly) id<RecipientHidingManager> recipientHidingManager;
-
 @end
 
 #pragma mark -
@@ -65,7 +63,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
 
 #pragma mark -
 
-- (instancetype)initWithRecipientHidingManager:(id<RecipientHidingManager>)recipientHidingManager
+- (instancetype)init
 {
     self = [super init];
 
@@ -76,7 +74,6 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
     OWSSingletonAssert();
 
     _pendingTasks = [[PendingTasks alloc] initWithLabel:@"Receipt Sends"];
-    _recipientHidingManager = recipientHidingManager;
 
     // We skip any sends to untrusted identities since we know they'll fail anyway. If an identity state changes
     // we should recheck our pendingReceipts to re-attempt a send to formerly untrusted recipients.
@@ -199,7 +196,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
             NSArray *excludedAddresses = [receiptSetsToSend.allKeys filter:^BOOL(SignalServiceAddress *address) {
                 return [self.blockingManager isAddressBlocked:address transaction:transaction]
                     || (SSKFeatureFlags.recipientHiding &&
-                        [self.recipientHidingManager isHiddenAddress:address tx:transaction]);
+                        [RecipientHidingManagerObjcBridge isHiddenAddress:address tx:transaction]);
             }];
 
             for (SignalServiceAddress *address in excludedAddresses) {

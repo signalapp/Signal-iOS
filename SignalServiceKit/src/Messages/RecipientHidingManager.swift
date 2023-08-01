@@ -19,45 +19,40 @@ import SignalCoreKit
 
 // MARK: - Protocol
 
-@objc
-public protocol RecipientHidingManager: NSObjectProtocol {
+public protocol RecipientHidingManager {
 
     // MARK: Read
 
-    /// Returns set of ``SignalServiceAddress``es corresponding with
-    /// all hidden recipients.
+    /// Returns set of all hidden recipients.
     ///
     /// - Parameter tx: The transaction to use for database operations.
-    func hiddenAddresses(tx: SDSAnyReadTransaction) -> Set<SignalServiceAddress>
+    func hiddenRecipients(tx: DBReadTransaction) -> Set<SignalRecipient>
 
-    /// Whether a service address corresponds with a hidden recipient.
+    /// Whether a recipient is hidden.
     ///
-    /// - Parameter address: The service address corresponding with
-    ///   the ``SignalRecipient``.
+    /// - Parameter recipient: A ``SignalRecipient``.
     /// - Parameter tx: The transaction to use for database operations.
     ///
-    /// - Returns: True if the address is hidden.
-    func isHiddenAddress(_ address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool
+    /// - Returns: True if the recipient is hidden.
+    func isHiddenRecipient(_ recipient: SignalRecipient, tx: DBReadTransaction) -> Bool
 
     // MARK: Write
 
     /// Adds a recipient to the hidden recipient table.
     ///
-    /// - Parameter address: The service address corresponding with
-    ///   the ``SignalRecipient``.
+    /// - Parameter recipient: A ``SignalRecipient``.
     /// - Parameter wasLocallyInitiated: Whether the user initiated
     ///   the hide on this device (true) or a linked device (false).
     /// - Parameter tx: The transaction to use for database operations.
-    func addHiddenRecipient(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, tx: SDSAnyWriteTransaction) throws
+    func addHiddenRecipient(_ recipient: SignalRecipient, wasLocallyInitiated: Bool, tx: DBWriteTransaction) throws
 
     /// Removes a recipient from the hidden recipient table.
     ///
-    /// - Parameter address: The service address corresponding with
-    ///   the ``SignalRecipient``.
+    /// - Parameter recipient: A ``SignalRecipient``.
     /// - Parameter wasLocallyInitiated: Whether the user initiated
     ///   the hide on this device (true) or a linked device (false).
     /// - Parameter tx: The transaction to use for database operations.
-    func removeHiddenRecipient(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, tx: SDSAnyWriteTransaction)
+    func removeHiddenRecipient(_ recipient: SignalRecipient, wasLocallyInitiated: Bool, tx: DBWriteTransaction)
 }
 
 // MARK: - Record
@@ -80,10 +75,26 @@ struct HiddenRecipient: Codable, FetchableRecord, PersistableRecord {
 // MARK: - Manager Impl
 
 /// Manager in charge of reading from and writing to the `HiddenRecipient` table.
-@objc
-public final class RecipientHidingManagerImpl: NSObject, RecipientHidingManager {
-    @objc
-    public func hiddenAddresses(tx: SDSAnyReadTransaction) -> Set<SignalServiceAddress> {
+public final class RecipientHidingManagerImpl: RecipientHidingManager {
+
+    private let profileManager: ProfileManagerProtocol
+    private let storageServiceManager: StorageServiceManager
+    private let tsAccountManager: TSAccountManager
+
+    public init(
+        profileManager: ProfileManagerProtocol,
+        storageServiceManager: StorageServiceManager,
+        tsAccountManager: TSAccountManager
+    ) {
+        self.profileManager = profileManager
+        self.storageServiceManager = storageServiceManager
+        self.tsAccountManager = tsAccountManager
+    }
+
+    public func hiddenRecipients(tx: DBReadTransaction) -> Set<SignalRecipient> {
+        guard FeatureFlags.recipientHiding else {
+            return Set()
+        }
         do {
             let sql = """
                 SELECT \(SignalRecipient.databaseTableName).*
@@ -93,38 +104,19 @@ public final class RecipientHidingManagerImpl: NSObject, RecipientHidingManager 
                     ON hiddenRecipient.recipientId = \(signalRecipientColumn: .id)
             """
             return Set(
-                try SignalRecipient.fetchAll(tx.unwrapGrdbRead.database, sql: sql).lazy
-                    .map { $0.address }
-                    .filter { $0.isValid }
+                try SignalRecipient.fetchAll(SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database, sql: sql)
             )
         } catch {
             Logger.warn("Could not fetch hidden recipient records.")
-            return Set<SignalServiceAddress>()
+            return Set()
         }
     }
 
-    /// Returns the id for a recipient, if the recipient exists.
-    ///
-    /// - Parameter address: The service address corresponding with
-    ///   the ``SignalRecipient``.
-    /// - Parameter tx: The transaction to use for database operations.
-    ///
-    /// - Returns: The ``SignalRecipient``'s `id`.
-    private func recipientId(from address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Int64? {
-        return SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: tx)?.id
-    }
+    public func isHiddenRecipient(_ recipient: SignalRecipient, tx: DBReadTransaction) -> Bool {
+        guard FeatureFlags.recipientHiding, let id = recipient.id else {
+            return false
+        }
 
-    @objc
-    public func isHiddenAddress(_ address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
-        guard
-            let localAddress = tsAccountManager.localAddress(with: tx),
-            !localAddress.isEqualToAddress(address) else
-        {
-            return false
-        }
-        guard let id = recipientId(from: address, tx: tx) else {
-            return false
-        }
         do {
             let sql = """
             SELECT EXISTS(
@@ -135,7 +127,7 @@ public final class RecipientHidingManagerImpl: NSObject, RecipientHidingManager 
             )
             """
             let arguments: StatementArguments = [id]
-            return try Bool.fetchOne(tx.unwrapGrdbRead.database, sql: sql, arguments: arguments) ?? false
+            return try Bool.fetchOne(SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database, sql: sql, arguments: arguments) ?? false
         } catch {
             Logger.warn("Could not fetch hidden recipient record.")
             return false
@@ -143,22 +135,11 @@ public final class RecipientHidingManagerImpl: NSObject, RecipientHidingManager 
     }
 
     public func addHiddenRecipient(
-        _ address: SignalServiceAddress,
+        _ recipient: SignalRecipient,
         wasLocallyInitiated: Bool,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws {
-        guard address.isValid else {
-            owsFailDebug("Invalid address: \(address).")
-            return
-        }
-        guard
-            let localAddress = tsAccountManager.localAddress(with: tx),
-            !localAddress.isEqualToAddress(address)
-        else {
-            owsFailDebug("Cannot hide the local address")
-            return
-        }
-        guard !isHiddenAddress(address, tx: tx) else {
+        guard !isHiddenRecipient(recipient, tx: tx) else {
             // This is a perhaps extraneous safeguard against
             // hiding an already-hidden address. I say extraneous
             // because theoretically the UI should not be available to
@@ -167,58 +148,53 @@ public final class RecipientHidingManagerImpl: NSObject, RecipientHidingManager 
             // `didSetAsHidden`.
             return
         }
-        if let id = OWSAccountIdFinder.ensureId(forAddress: address, transaction: tx) {
+        if let id = recipient.id {
             let record = HiddenRecipient(recipientId: id)
-            try record.save(tx.unwrapGrdbWrite.database)
-            didSetAsHidden(address: address, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
+            try record.save(SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database)
+            didSetAsHidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
         } else {
             Logger.warn("Could not find id on recipient to hide.")
         }
     }
 
     public func removeHiddenRecipient(
-        _ address: SignalServiceAddress,
+        _ recipient: SignalRecipient,
         wasLocallyInitiated: Bool,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
-        guard
-            let localAddress = tsAccountManager.localAddress(with: tx),
-            !localAddress.isEqualToAddress(address)
-        else {
-            owsFailDebug("Cannot unhide the local address")
-            return
-        }
-        if let id = recipientId(from: address, tx: tx), isHiddenAddress(address, tx: tx) {
+        if let id = recipient.id, isHiddenRecipient(recipient, tx: tx) {
             let sql = """
                 DELETE FROM \(HiddenRecipient.databaseTableName)
                 WHERE \(HiddenRecipient.CodingKeys.recipientId.stringValue) = ?
             """
-            tx.unwrapGrdbWrite.execute(sql: sql, arguments: [id])
-            didSetAsUnhidden(address: address, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
+            SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.execute(sql: sql, arguments: [id])
+            didSetAsUnhidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
         }
     }
 }
 
 // MARK: - Recipient Hiding Callbacks
 
-private extension RecipientHidingManager {
+private extension RecipientHidingManagerImpl {
     /// Callback performing side effects of committing a hide
     /// to the database.
     ///
-    /// - Parameter address: The service address corresponding
-    ///   with the ``SignalRecipient`` who was just hidden.
+    /// - Parameter recipient: The ``SignalRecipient`` who was just hidden.
     /// - Parameter wasLocallyInitiated: Whether the user initiated
     ///   the hide on this device (true) or a linked device (false).
     /// - Parameter tx: The transaction to use for database operations.
     func didSetAsHidden(
-        address: SignalServiceAddress,
+        recipient: SignalRecipient,
         wasLocallyInitiated: Bool,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
-        if let thread = TSContactThread.getWithContactAddress(address, transaction: tx) {
+        if let thread = TSContactThread.getWithContactAddress(
+            recipient.address,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        ) {
 
             let message = TSInfoMessage(thread: thread, messageType: .contactHidden)
-            message.anyInsert(transaction: tx)
+            message.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
 
             /// TODO recipientHiding:
             /// - Turn off read/delivery receipts.
@@ -227,8 +203,12 @@ private extension RecipientHidingManager {
             /// - Throw away existing Stories from hidden user.
             /// - If this is primary device, rotate own Profile Key if not in group with them.
             if wasLocallyInitiated {
-                SSKEnvironment.shared.profileManagerRef.removeUser(fromProfileWhitelist: address, userProfileWriter: .storageService, transaction: tx)
-                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [address])
+                profileManager.removeUser(
+                    fromProfileWhitelist: recipient.address,
+                    userProfileWriter: .storageService,
+                    transaction: SDSDB.shimOnlyBridge(tx)
+                )
+                storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
             }
         }
     }
@@ -236,8 +216,7 @@ private extension RecipientHidingManager {
     /// Callback performing side effects of removing a hide
     /// from the database.
     ///
-    /// - Parameter address: The service address corresponding
-    ///   with the ``SignalRecipient`` who was just unhidden.
+    /// - Parameter recipient: The ``SignalRecipient`` who was just unhidden.
     /// - Parameter wasLocallyInitiated: Whether the user initiated
     ///   the hide on this device (true) or a linked device (false).
     /// - Parameter tx: The transaction to use for database operations.
@@ -246,27 +225,25 @@ private extension RecipientHidingManager {
     /// rule is in place that will also delete the corresponding
     /// `HiddenRecipient` entry. This method does not get hit in
     /// that case.
-    func didSetAsUnhidden(address: SignalServiceAddress, wasLocallyInitiated: Bool, tx: SDSAnyWriteTransaction) {
+    func didSetAsUnhidden(recipient: SignalRecipient, wasLocallyInitiated: Bool, tx: DBWriteTransaction) {
         if wasLocallyInitiated {
-            SSKEnvironment.shared.profileManagerRef.addUser(toProfileWhitelist: address, userProfileWriter: .storageService, transaction: tx)
-            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [address])
+            profileManager.addUser(
+                toProfileWhitelist: recipient.address,
+                userProfileWriter: .storageService,
+                transaction: SDSDB.shimOnlyBridge(tx)
+            )
+            storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
         }
     }
 }
 
-private extension OWSAccountIdFinder {
-    /// Returns the `id` of a ``SignalRecipient``, creating
-    /// a new recipient for the given service address if one
-    /// does not exist already.
-    ///
-    /// - Parameter address: The service address for the
-    ///   recipient we are looking up.
-    /// - Parameter transaction: The transaction to use for
-    ///   database operations.
-    class func ensureId(
-        forAddress address: SignalServiceAddress,
-        transaction: SDSAnyWriteTransaction
-    ) -> Int64? {
-        return OWSAccountIdFinder.ensureRecipient(forAddress: address, transaction: transaction).id
+// MARK: - Objc-Compat
+
+@objc
+public class RecipientHidingManagerObjcBridge: NSObject {
+
+    @objc
+    public static func isHiddenAddress(_ address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
+        return DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: tx.asV2Read)
     }
 }

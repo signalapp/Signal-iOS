@@ -925,7 +925,7 @@ extension MessageSender {
                 DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
                     thread.contactAddress,
                     wasLocallyInitiated: true,
-                    tx: tx
+                    tx: tx.asV2Write
                 )
             }
             if message.shouldBeSaved {

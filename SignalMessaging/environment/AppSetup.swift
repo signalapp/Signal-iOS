@@ -44,8 +44,6 @@ public class AppSetup {
         owsAssert(OWSFileSystem.ensureDirectoryExists(temporaryDirectory))
         owsAssert(OWSFileSystem.protectFileOrFolder(atPath: temporaryDirectory, fileProtectionType: .completeUntilFirstUserAuthentication))
 
-        let recipientHidingManager = RecipientHidingManagerImpl()
-
         // MARK: DependenciesBridge
 
         let accountServiceClient = AccountServiceClient()
@@ -59,7 +57,7 @@ public class AppSetup {
         let networkManager = NetworkManager()
         let ows2FAManager = OWS2FAManager()
         let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni)
-        let profileManager = OWSProfileManager(databaseStorage: databaseStorage, recipientHidingManager: recipientHidingManager)
+        let profileManager = OWSProfileManager(databaseStorage: databaseStorage)
         let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
             aciProtocolStore: aciSignalProtocolStore,
             pniProtocolStore: pniSignalProtocolStore
@@ -84,7 +82,6 @@ public class AppSetup {
             notificationsManager: notificationPresenter,
             ows2FAManager: ows2FAManager,
             profileManager: profileManager,
-            recipientHidingManager: recipientHidingManager,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
@@ -122,7 +119,7 @@ public class AppSetup {
         let socketManager = SocketManager(appExpiry: appExpiry, db: DependenciesBridge.shared.db)
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
         let receiptManager = OWSReceiptManager()
-        let outgoingReceiptManager = OWSOutgoingReceiptManager(recipientHidingManager: recipientHidingManager)
+        let outgoingReceiptManager = OWSOutgoingReceiptManager()
         let reachabilityManager = SSKReachabilityManagerImpl()
         let typingIndicators = TypingIndicatorsImpl()
         let attachmentDownloads = OWSAttachmentDownloads()

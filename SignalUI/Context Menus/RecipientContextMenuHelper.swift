@@ -48,7 +48,7 @@ class RecipientContextMenuHelper {
         ) { [weak self] _ in
             guard let self else { return }
             do {
-                try self.databaseStorage.write { tx in
+                try DependenciesBridge.shared.db.write { tx in
                     try self.recipientHidingManager.addHiddenRecipient(
                         address,
                         wasLocallyInitiated: true,

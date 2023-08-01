@@ -113,7 +113,10 @@ class MessageRequestView: UIStackView {
         let isThreadBlocked = blockingManager.isThreadBlocked(thread, transaction: transaction)
         var isThreadFromHiddenRecipient = false
         if let thread = thread as? TSContactThread, FeatureFlags.recipientHiding {
-            isThreadFromHiddenRecipient = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(thread.contactAddress, tx: transaction)
+            isThreadFromHiddenRecipient = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
+                thread.contactAddress,
+                tx: transaction.asV2Read
+            )
         }
         let hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
         return MessageRequestType(

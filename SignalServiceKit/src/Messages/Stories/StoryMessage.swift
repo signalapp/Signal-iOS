@@ -194,7 +194,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 Logger.warn("Ignoring StoryMessage from blocked author.")
                 return nil
             }
-            if FeatureFlags.recipientHiding && DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(author, tx: transaction) {
+            if DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(author, tx: transaction.asV2Read) {
                 Logger.warn("Ignoring StoryMessage from hidden author.")
                 return nil
             }

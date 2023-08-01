@@ -752,8 +752,15 @@ extension RecipientPickerViewController {
     /// well as any addresses that have been blocked.
     private func lazyFilteredSignalAccounts() -> LazyFilterSequence<[SignalAccount]> {
         let allSignalAccounts = contactsViewHelper.signalAccounts(includingLocalUser: !shouldHideLocalRecipient)
-        lazy var blockedAddresses = databaseStorage.read { blockingManager.blockedAddresses(transaction: $0) }
-        lazy var hiddenAddresses = FeatureFlags.recipientHiding ? databaseStorage.read { DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: $0) } : Set()
+        guard allSignalAccounts.isEmpty.negated else {
+            return allSignalAccounts.lazy.filter { _ in true }
+        }
+        var (blockedAddresses, hiddenAddresses) = databaseStorage.read { tx in
+            return (
+                blockingManager.blockedAddresses(transaction: tx),
+                DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: tx.asV2Read)
+            )
+        }
         return allSignalAccounts.lazy.filter {
             !blockedAddresses.contains($0.recipientAddress) && !hiddenAddresses.contains($0.recipientAddress)
 
@@ -997,7 +1004,7 @@ extension RecipientPickerViewController {
         var contactsSectionItems = [OWSTableItem]()
         databaseStorage.read { tx in
             let blockedAddresses = self.blockingManager.blockedAddresses(transaction: tx)
-            let hiddenAddresses = FeatureFlags.recipientHiding ? DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: tx) : Set<SignalServiceAddress>()
+            let hiddenAddresses = DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: tx.asV2Read)
             let addressesToSkip = blockedAddresses.union(hiddenAddresses)
             for recipientAddress in searchResults.signalAccounts.map({ $0.recipientAddress }) {
                 guard !addressesToSkip.contains(recipientAddress) else { continue }
