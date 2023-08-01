@@ -57,7 +57,13 @@ public class StyleOnlyMessageBody: NSObject, Codable {
 
     public init(text: String, collapsedStyles: [NSRangedValue<CollapsedStyle>]) {
         self.text = text
-        self.collapsedStyles = collapsedStyles
+        let textRange = NSRange(location: 0, length: (text as NSString).length)
+        self.collapsedStyles = collapsedStyles.compactMap {
+            guard let intersection = $0.range.intersection(textRange), intersection.length > 0 else {
+                return nil
+            }
+            return .init($0.value, range: intersection)
+        }
     }
 
     public func asMessageBody() -> MessageBody {
