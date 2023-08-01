@@ -698,7 +698,7 @@
 "CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ 正在致電群組…";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ 因為來電者已更改安全號碼所以錯過了通話。";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ 因為來電者已更改安全碼所以錯過了通話。";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "返回通話";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "錯誤";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "你與此人交換訊息後，會為其建立一個安全號碼。";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "你與此人交換訊息後，會為其建立一個安全碼。";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "付款卡號碼無效";
@@ -2540,7 +2540,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "無法接收 %1$@ 的音訊和影片";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "這可能是由於有人未驗證你的安全號碼變更、對方的裝置有問題，或者對方已經將你封鎖。";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "這可能是由於有人未驗證你的安全碼變更、對方的裝置有問題，或者對方已經將你封鎖。";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "無法接收 %1$@ 的音訊和影片";
@@ -3326,7 +3326,7 @@
 "INCOMING_VIDEO_CALL" = "視訊通話來電";
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "You have removed this person, messaging them again will add them back to your list.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "你已移除此人，再次傳送訊息給他們會將對方加回你的清單。";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3854,7 +3854,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "要加入此群組嗎？在您接受之前，對方不會知道您已看過其訊息。";
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Let %1$@ message you and share your name and photo with them? You have removed this person in the past.";
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "你是否允許 %1$@ 與你通訊，並分享你的名字及照片？你之前曾移除此人。";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "解除封鎖";
@@ -5495,19 +5495,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "我們的 Signal 安全碼：\n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "安全號碼正在更新中。";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "安全碼正在更新中。";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
 "SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "需要幫助嗎？";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "安全號碼會在過渡期間進行更新，以啟用 Signal 即將推出的隱私功能。";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "安全碼會在過渡期間進行更新，以啟用 Signal 即將推出的隱私功能。";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "要驗證安全號碼，請將色卡與聯絡人的裝置配對。如果這些無法匹配，請滑動並嘗試另一組安全號碼。只需要匹配一對。";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "要驗證安全碼，請將色卡與聯絡人的裝置配對。如果這些無法匹配，請滑動並嘗試另一組安全碼。只需要匹配一對。";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "安全號碼變更";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "安全碼變更";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "您與 %1$@ 之間的安全碼已變更，須重新驗證。";
@@ -6908,7 +6908,7 @@
 "STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "回覆群組";
 
 /* placeholder text for replying to a private story. Embeds {{author name}} */
-"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Reply to %1$@";
+"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "回覆 %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "無法發送限時動態。請檢查你的網路連線，然後再試一次";
@@ -7457,7 +7457,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "檢查安全碼";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "若要驗證你與 %1$@ 之間的端對端加密，請比對上方色卡與對方裝置上的色卡是否匹配，以及比較數字。如果這些無法匹配，請滑動並嘗試另一組安全號碼。只需要匹配一對。";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "若要驗證你與 %1$@ 之間的端對端加密，請比對上方色卡與對方裝置上的色卡是否匹配，以及比較數字。如果這些無法匹配，請滑動並嘗試另一組安全碼。只需要匹配一對。";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "無法播放此影片";

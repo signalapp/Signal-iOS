@@ -2540,7 +2540,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "收唔到 %1$@ 嘅聲同畫";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "可能係因為對方仲未驗證你嘅安全號碼變更、佢部裝置有問題，又或者佢封鎖咗你。";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "可能係因為對方仲未驗證你嘅安全碼變更、佢部裝置有問題，又或者佢封鎖咗你。";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "收唔到 %1$@ 嘅聲同畫";
@@ -2573,10 +2573,10 @@
 "GROUP_CALL_RECONNECTING" = "重新連緊線";
 
 /* notification body when you join a group call and an already-joined participant has an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "一位通話參與者嘅安全號碼有變。㩒一下嚟睇吓。";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "一位通話參與者嘅安全碼有變。㩒一下嚟睇吓。";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "群組入面有一位通話參與者嘅安全號碼有變。㩒一下嚟睇吓。";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "群組入面有一位通話參與者嘅安全碼有變。㩒一下嚟睇吓。";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "向上滑去睇畫面分享";
@@ -3326,7 +3326,7 @@
 "INCOMING_VIDEO_CALL" = "打入嚟嘅視像通話";
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "You have removed this person, messaging them again will add them back to your list.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "你已經移除咗呢個人。如果宜家傳送訊息俾佢嘅話，佢就會重新加返入你嘅聯絡人清單。";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3854,7 +3854,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "係咪要加入呢個谷？您話䎺之前，佢哋都唔會知您睇過個訊息嘅。";
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Let %1$@ message you and share your name and photo with them? You have removed this person in the past.";
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "你係咪想俾 %1$@ 傳送訊息俾你，同埋同佢分享你嘅名同相呀？你之前已經移除咗呢個人。";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "解除封鎖";
@@ -6908,7 +6908,7 @@
 "STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "回覆群組";
 
 /* placeholder text for replying to a private story. Embeds {{author name}} */
-"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Reply to %1$@";
+"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "回覆 %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "傳送唔到限時動態。請你檢查吓網絡連線然後再試過啦。";
