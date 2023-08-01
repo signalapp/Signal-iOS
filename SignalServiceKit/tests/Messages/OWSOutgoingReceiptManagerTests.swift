@@ -16,7 +16,7 @@ class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
         let uuidReceiptSet = MessageReceiptSet()
         uuidReceiptSet.insert(timestamp: 1234, messageUniqueId: "uuid")
 
-        let e164Address = SignalServiceAddress(serviceId: nil, phoneNumber: "+1234567890")
+        let e164Address = SignalServiceAddress(phoneNumber: "+1234567890")
         let e164ReceiptSet = MessageReceiptSet()
         e164ReceiptSet.insert(timestamp: 5678, messageUniqueId: "e164")
 
@@ -44,7 +44,7 @@ class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
         let uuidReceiptSet = MessageReceiptSet()
         uuidReceiptSet.insert(timestamp: 1234, messageUniqueId: "uuid")
 
-        let e164Address = SignalServiceAddress(serviceId: nil, phoneNumber: "+1234567890")
+        let e164Address = SignalServiceAddress(phoneNumber: "+1234567890")
         let e164ReceiptSet = MessageReceiptSet()
         e164ReceiptSet.insert(timestamp: 5678, messageUniqueId: "e164")
 

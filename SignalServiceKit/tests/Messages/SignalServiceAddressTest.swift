@@ -847,4 +847,119 @@ class SignalServiceAddressTest: XCTestCase {
 
         XCTAssertEqual(addresses.count, iterations)
     }
+
+}
+
+class SignalServiceAddress2Test: SSKBaseTestSwift {
+    func testPersistence() throws {
+        struct TestCase {
+            var originalAddress: SignalServiceAddress
+            var decodedServiceId: ServiceId?
+            var decodedPhoneNumber: String?
+        }
+
+        let aci = Aci.constantForTesting("00000000-0000-4000-8000-000000000ABC")
+        let pni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-000000000DEF")
+        let phoneNumber = "+16505550100"
+
+        let testCases: [TestCase] = [
+            TestCase(
+                originalAddress: SignalServiceAddress(serviceId: aci, phoneNumber: phoneNumber),
+                decodedServiceId: aci,
+                decodedPhoneNumber: nil
+            ),
+            TestCase(
+                originalAddress: SignalServiceAddress(phoneNumber: phoneNumber),
+                decodedServiceId: nil,
+                decodedPhoneNumber: phoneNumber
+            ),
+            TestCase(
+                originalAddress: SignalServiceAddress(serviceId: pni, phoneNumber: nil),
+                decodedServiceId: pni,
+                decodedPhoneNumber: nil
+            )
+        ]
+
+        for testCase in testCases {
+            do {
+                let encodedValue = try JSONEncoder().encode(testCase.originalAddress)
+                let decodedValue = try JSONDecoder().decode(SignalServiceAddress.self, from: encodedValue)
+                XCTAssertEqual(decodedValue.serviceId, testCase.decodedServiceId)
+                XCTAssertEqual(decodedValue.phoneNumber, testCase.decodedPhoneNumber)
+            }
+            do {
+                let encodedValue = try NSKeyedArchiver.archivedData(
+                    withRootObject: testCase.originalAddress,
+                    requiringSecureCoding: true
+                )
+                let decodedValue = try NSKeyedUnarchiver.unarchivedObject(
+                    ofClass: SignalServiceAddress.self,
+                    from: encodedValue,
+                    requiringSecureCoding: true
+                )!
+                XCTAssertEqual(decodedValue.serviceId, testCase.decodedServiceId)
+                XCTAssertEqual(decodedValue.phoneNumber, testCase.decodedPhoneNumber)
+            }
+        }
+    }
+
+    func testBackwardsCompatiblePersistence() throws {
+        struct TestCase {
+            var jsonValue: String
+            var keyedArchiverValue: String
+            var decodedServiceId: ServiceId?
+            var decodedPhoneNumber: String?
+        }
+
+        let aci = Aci.constantForTesting("00000000-0000-4000-8000-000000000ABC")
+        let pni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-000000000DEF")
+        let phoneNumber = "+16505550100"
+
+        let testCases: [TestCase] = [
+            TestCase(
+                jsonValue: #"{"backingUuid":"00000000-0000-4000-8000-000000000ABC","backingPhoneNumber":null}"#,
+                keyedArchiverValue: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGlCwwTFx1VJG51bGzTDQ4PEBESViRjbGFzc1tiYWNraW5nVXVpZF8QEmJhY2tpbmdQaG9uZU51bWJlcoAEgAKAANIUDRUWXE5TLnV1aWRieXRlc08QEAAAAAAAAEAAgAAAAAAACryAA9IYGRobWiRjbGFzc25hbWVYJGNsYXNzZXNWTlNVVUlEohocWE5TT2JqZWN00hgZHh9fECVTaWduYWxTZXJ2aWNlS2l0LlNpZ25hbFNlcnZpY2VBZGRyZXNzoiAcXxAlU2lnbmFsU2VydmljZUtpdC5TaWduYWxTZXJ2aWNlQWRkcmVzcwAIABEAGgAkACkAMgA3AEkATABRAFMAWQBfAGYAbQB5AI4AkACSAJQAmQCmALkAuwDAAMsA1ADbAN4A5wDsARQBFwAAAAAAAAIBAAAAAAAAACEAAAAAAAAAAAAAAAAAAAE/",
+                decodedServiceId: aci,
+                decodedPhoneNumber: nil
+            ),
+            TestCase(
+                jsonValue: #"{"backingUuid":"00000000-0000-4000-8000-000000000ABC","backingPhoneNumber":"+16505550100"}"#,
+                keyedArchiverValue: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGmCwwTFx0eVSRudWxs0w0ODxARElYkY2xhc3NbYmFja2luZ1V1aWRfEBJiYWNraW5nUGhvbmVOdW1iZXKABYACgATSFA0VFlxOUy51dWlkYnl0ZXNPEBAAAAAAAABAAIAAAAAAAAq8gAPSGBkaG1okY2xhc3NuYW1lWCRjbGFzc2VzVk5TVVVJRKIaHFhOU09iamVjdFwrMTY1MDU1NTAxMDDSGBkfIF8QJVNpZ25hbFNlcnZpY2VLaXQuU2lnbmFsU2VydmljZUFkZHJlc3OiIRxfECVTaWduYWxTZXJ2aWNlS2l0LlNpZ25hbFNlcnZpY2VBZGRyZXNzAAgAEQAaACQAKQAyADcASQBMAFEAUwBaAGAAZwBuAHoAjwCRAJMAlQCaAKcAugC8AMEAzADVANwA3wDoAPUA+gEiASUAAAAAAAACAQAAAAAAAAAiAAAAAAAAAAAAAAAAAAABTQ==",
+                decodedServiceId: aci,
+                decodedPhoneNumber: phoneNumber
+            ),
+            TestCase(
+                jsonValue: #"{"backingPhoneNumber":"+16505550100"}"#,
+                keyedArchiverValue: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGkCwwRElUkbnVsbNINDg8QViRjbGFzc18QEmJhY2tpbmdQaG9uZU51bWJlcoADgAJcKzE2NTA1NTUwMTAw0hMUFRZaJGNsYXNzbmFtZVgkY2xhc3Nlc18QJVNpZ25hbFNlcnZpY2VLaXQuU2lnbmFsU2VydmljZUFkZHJlc3OiFxhfECVTaWduYWxTZXJ2aWNlS2l0LlNpZ25hbFNlcnZpY2VBZGRyZXNzWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBYAF4AYwBqAH8AgQCDAJAAlQCgAKkA0QDUAPwAAAAAAAACAQAAAAAAAAAZAAAAAAAAAAAAAAAAAAABBQ==",
+                decodedServiceId: nil,
+                decodedPhoneNumber: phoneNumber
+            ),
+            TestCase(
+                jsonValue: #"{"backingUuid":"PNI:00000000-0000-4000-8000-000000000DEF"}"#,
+                keyedArchiverValue: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGkCwwRElUkbnVsbNINDg8QW2JhY2tpbmdVdWlkViRjbGFzc4ACgANPEBEBAAAAAAAAQACAAAAAAAAN79ITFBUWWiRjbGFzc25hbWVYJGNsYXNzZXNfECVTaWduYWxTZXJ2aWNlS2l0LlNpZ25hbFNlcnZpY2VBZGRyZXNzohcYXxAlU2lnbmFsU2VydmljZUtpdC5TaWduYWxTZXJ2aWNlQWRkcmVzc1hOU09iamVjdAAIABEAGgAkACkAMgA3AEkATABRAFMAWABeAGMAbwB2AHgAegCOAJMAngCnAM8A0gD6AAAAAAAAAgEAAAAAAAAAGQAAAAAAAAAAAAAAAAAAAQM=",
+                decodedServiceId: pni,
+                decodedPhoneNumber: nil
+            )
+        ]
+
+        for testCase in testCases {
+            do {
+                let decodedValue = try JSONDecoder().decode(
+                    SignalServiceAddress.self,
+                    from: testCase.jsonValue.data(using: .utf8)!
+                )
+                XCTAssertEqual(decodedValue.serviceId, testCase.decodedServiceId)
+                XCTAssertEqual(decodedValue.phoneNumber, testCase.decodedPhoneNumber)
+            }
+            do {
+                let decodedValue = try NSKeyedUnarchiver.unarchivedObject(
+                    ofClass: SignalServiceAddress.self,
+                    from: Data(base64Encoded: testCase.keyedArchiverValue)!,
+                    requiringSecureCoding: true
+                )!
+                XCTAssertEqual(decodedValue.serviceId, testCase.decodedServiceId)
+                XCTAssertEqual(decodedValue.phoneNumber, testCase.decodedPhoneNumber)
+            }
+        }
+    }
 }

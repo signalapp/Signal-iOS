@@ -55,7 +55,7 @@ class SignalAccountFinderTest: SSKBaseTestSwift {
             // In practice, every SignalAccount has a UUID, and we should be populating
             // the UUID for phone number-only addresses. However, keep this around for
             // historical purposes (for now).
-            SignalServiceAddress(serviceId: nil, phoneNumber: pn1.stringValue, ignoreCache: true)
+            SignalServiceAddress(serviceId: nil as ServiceId?, phoneNumber: pn1.stringValue, ignoreCache: true)
         ]
 
         let expectedAccounts: [SignalAccount?] = [

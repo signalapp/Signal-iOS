@@ -32,8 +32,12 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     ///
     /// * When doing "find by phone number", there will be a window of time
     /// where all we know about a recipient is their e164.
-    public var untypedServiceId: UntypedServiceId? {
+    public var serviceId: ServiceId? {
         cachedAddress.identifiers.get().serviceId
+    }
+
+    public var untypedServiceId: UntypedServiceId? {
+        serviceId.map { UntypedServiceId($0.rawUUID) }
     }
 
     @objc
@@ -44,6 +48,30 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     public var uuidString: String? { uuid?.uuidString }
+
+    /// Returns the `serviceId` if it's an ACI.
+    ///
+    /// - Note: Call this only if you **expect** an `Aci` (or nil). If the
+    /// result could be a `Pni`, you shouldn't call this method.
+    public var aci: Aci? {
+        guard let result = serviceId as? Aci? else {
+            owsFailDebug("Expected an ACI but found something else.")
+            return nil
+        }
+        return result
+    }
+
+    @objc
+    public var aciString: String? { aci?.serviceIdString }
+
+    @objc
+    public var aciUppercaseString: String? { aci?.serviceIdUppercaseString }
+
+    @objc
+    public var serviceIdString: String? { serviceId?.serviceIdString }
+
+    @objc
+    public var serviceIdUppercaseString: String? { serviceId?.serviceIdUppercaseString }
 
     // MARK: - Initializers
 
@@ -58,7 +86,72 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     public convenience init(phoneNumber: String) {
-        self.init(uuidString: nil, phoneNumber: phoneNumber)
+        self.init(serviceId: nil as ServiceId?, phoneNumber: phoneNumber)
+    }
+
+    /// Initializes an address that should refer to an Aci.
+    ///
+    /// - Note: Call this only if you **expect** an `Aci` in all cases. If the
+    /// value might be a Pni, you shouldn't call this method.
+    @objc
+    public convenience init(aciString: String) {
+        self.init(aciString: aciString, phoneNumber: nil)
+    }
+
+    /// Initializes an address that should refer to an Aci.
+    ///
+    /// - Note: Call this only if you **expect** an `Aci` (or nil) in all cases.
+    /// If the value might be a Pni, you shouldn't call this method.
+    @objc
+    public convenience init(aciString: String?, phoneNumber: String?) {
+        self.init(serviceIdString: aciString, allowPni: false, phoneNumber: phoneNumber)
+    }
+
+    /// Initializes an address for an Aci or Pni.
+    ///
+    /// - Warning: This method will only parse Pnis if
+    /// `FeatureFlags.phoneNumberIdentifiers` is true.
+    @objc
+    public convenience init(serviceIdString: String) {
+        self.init(serviceIdString: serviceIdString, allowPni: FeatureFlags.phoneNumberIdentifiers)
+    }
+
+    /// Initializes an address for an Aci or Pni.
+    ///
+    /// - Parameter allowPni: If false, PNIs will be treated as invalid.
+    @objc
+    public convenience init(serviceIdString: String, allowPni: Bool) {
+        self.init(serviceIdString: serviceIdString, allowPni: allowPni, phoneNumber: nil)
+    }
+
+    /// Initializes an address for an Aci or Pni.
+    ///
+    /// - Warning: This method will only parse Pnis if
+    /// `FeatureFlags.phoneNumberIdentifiers` is true.
+    @objc
+    public convenience init(serviceIdString: String?, phoneNumber: String?) {
+        self.init(serviceIdString: serviceIdString, allowPni: FeatureFlags.phoneNumberIdentifiers, phoneNumber: phoneNumber)
+    }
+
+    /// Initializes an address for an Aci or Pni.
+    ///
+    /// - Parameter allowPni: If false, PNIs will be treated as invalid.
+    @objc
+    public convenience init(serviceIdString: String?, allowPni: Bool, phoneNumber: String?) {
+        self.init(
+            serviceId: serviceIdString.flatMap {
+                let serviceId = try? ServiceId.parseFrom(serviceIdString: $0)
+                if serviceId is Aci {
+                    return serviceId
+                }
+                if serviceId is Pni, allowPni {
+                    return serviceId
+                }
+                owsFailDebug("Unexpectedly initialized SignalServiceAddress with invalid serviceIdString.")
+                return nil
+            },
+            phoneNumber: phoneNumber
+        )
     }
 
     @objc
@@ -67,8 +160,17 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     @objc
+    public convenience init(serviceIdObjC: ServiceIdObjC) {
+        self.init(serviceIdObjC.wrappedValue)
+    }
+
+    @objc
     public convenience init(untypedServiceIdObjC: UntypedServiceIdObjC) {
         self.init(untypedServiceIdObjC.wrappedValue)
+    }
+
+    public convenience init(_ serviceId: ServiceId) {
+        self.init(serviceId: serviceId, phoneNumber: nil)
     }
 
     public convenience init(_ serviceId: UntypedServiceId) {
@@ -99,6 +201,10 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(uuid: uuid, phoneNumber: phoneNumber, ignoreCache: false)
     }
 
+    public convenience init(serviceId: ServiceId?, phoneNumber: String?) {
+        self.init(serviceId: serviceId, phoneNumber: phoneNumber, ignoreCache: false)
+    }
+
     public convenience init(serviceId: UntypedServiceId?, phoneNumber: String?) {
         self.init(uuid: serviceId?.uuidValue, phoneNumber: phoneNumber)
     }
@@ -111,9 +217,9 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(uuidString: address.name)
     }
 
-    private convenience init(decodedUuid: UUID?, decodedPhoneNumber: String?) {
+    private convenience init(decodedServiceId: ServiceId?, decodedPhoneNumber: String?) {
         self.init(
-            uuid: decodedUuid,
+            serviceId: decodedServiceId,
             phoneNumber: decodedPhoneNumber,
             cache: Self.signalServiceAddressCache,
             // If we know the UUID, let the cache fill in the phone number when
@@ -128,6 +234,15 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             serviceId: uuid.map { UntypedServiceId($0) },
             phoneNumber: phoneNumber,
             ignoreCache: ignoreCache
+        )
+    }
+
+    public convenience init(serviceId: ServiceId?, phoneNumber: String?, ignoreCache: Bool) {
+        self.init(
+            serviceId: serviceId,
+            phoneNumber: phoneNumber,
+            cache: Self.signalServiceAddressCache,
+            cachePolicy: ignoreCache ? .ignoreCache : .preferInitialPhoneNumberAndListenForUpdates
         )
     }
 
@@ -154,8 +269,22 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         )
     }
 
-    public init(
+    public convenience init(
         serviceId: UntypedServiceId?,
+        phoneNumber: String?,
+        cache: SignalServiceAddressCache,
+        cachePolicy: SignalServiceAddressCache.CachePolicy
+    ) {
+        self.init(
+            serviceId: serviceId.map { Aci(fromUUID: $0.uuidValue) },
+            phoneNumber: phoneNumber,
+            cache: cache,
+            cachePolicy: cachePolicy
+        )
+    }
+
+    public init(
+        serviceId: ServiceId?,
         phoneNumber: String?,
         cache: SignalServiceAddressCache,
         cachePolicy: SignalServiceAddressCache.CachePolicy
@@ -188,16 +317,18 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         let identifiers = cachedAddress.identifiers.get()
-        try container.encode(identifiers.serviceId?.uuidValue, forKey: .backingUuid)
+        try container.encode(identifiers.serviceId?.serviceIdUppercaseString, forKey: .backingUuid)
         // Only encode the backingPhoneNumber if we don't know the UUID
         try container.encode(identifiers.serviceId != nil ? nil : identifiers.phoneNumber, forKey: .backingPhoneNumber)
     }
 
     public required convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let decodedUuid: UUID? = try container.decodeIfPresent(UUID.self, forKey: .backingUuid)
+        let decodedServiceId = try container.decodeIfPresent(String.self, forKey: .backingUuid).map {
+            return try ServiceId.parseFrom(serviceIdString: $0)
+        }
         let decodedPhoneNumber = try container.decodeIfPresent(String.self, forKey: .backingPhoneNumber)
-        self.init(decodedUuid: decodedUuid, decodedPhoneNumber: decodedPhoneNumber)
+        self.init(decodedServiceId: decodedServiceId, decodedPhoneNumber: decodedPhoneNumber)
     }
 
     // MARK: - NSSecureCoding
@@ -206,15 +337,39 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     public func encode(with aCoder: NSCoder) {
         let identifiers = cachedAddress.identifiers.get()
-        aCoder.encode(identifiers.serviceId?.uuidValue, forKey: "backingUuid")
+        aCoder.encode(identifiers.serviceId.map { serviceId -> Any in
+            // For now, encode Acis in a backwards-compatible manner. This can be
+            // changed in the future, but it will prevent downgrades.
+            switch serviceId {
+            case is Aci:
+                return serviceId.rawUUID
+            default:
+                return Data(serviceId.serviceIdBinary)
+            }
+        }, forKey: "backingUuid")
         // Only encode the backingPhoneNumber if we don't know the UUID
         aCoder.encode(identifiers.serviceId != nil ? nil : identifiers.phoneNumber, forKey: "backingPhoneNumber")
     }
 
     public convenience required init?(coder aDecoder: NSCoder) {
-        let decodedUuid = aDecoder.decodeObject(of: NSUUID.self, forKey: "backingUuid") as UUID?
+        let decodedServiceId: ServiceId?
+        switch aDecoder.decodeObject(of: [NSUUID.self, NSData.self], forKey: "backingUuid") {
+        case nil:
+            decodedServiceId = nil
+        case let serviceIdBinary as Data:
+            do {
+                decodedServiceId = try ServiceId.parseFrom(serviceIdBinary: serviceIdBinary)
+            } catch {
+                owsFailDebug("Couldn't parse serviceIdBinary.")
+                return nil
+            }
+        case let deprecatedUuid as NSUUID:
+            decodedServiceId = Aci(fromUUID: deprecatedUuid as UUID)
+        default:
+            return nil
+        }
         let decodedPhoneNumber = aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?
-        self.init(decodedUuid: decodedUuid, decodedPhoneNumber: decodedPhoneNumber)
+        self.init(decodedServiceId: decodedServiceId, decodedPhoneNumber: decodedPhoneNumber)
     }
 
     // MARK: -
@@ -294,7 +449,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         if let phoneNumber = identifiers.phoneNumber {
             return phoneNumber
         } else if let serviceId = identifiers.serviceId {
-            return serviceId.uuidValue.uuidString
+            return serviceId.serviceIdUppercaseString
         }
 
         owsFailDebug("unexpectedly have no backing value")
@@ -307,7 +462,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         let identifiers = cachedAddress.identifiers.get()
 
         if let serviceId = identifiers.serviceId {
-            return serviceId.uuidValue.uuidString
+            return serviceId.serviceIdUppercaseString
         }
         if let phoneNumber = identifiers.phoneNumber {
             return phoneNumber
@@ -331,7 +486,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     override public var description: String {
         let identifiers = cachedAddress.identifiers.get()
         return Self.addressComponentsDescription(
-            uuidString: identifiers.serviceId?.uuidValue.uuidString,
+            uuidString: identifiers.serviceId?.logString,
             phoneNumber: identifiers.phoneNumber
         )
     }
@@ -361,7 +516,7 @@ public extension Array where Element == SignalServiceAddress {
 
 private class CachedAddress {
     struct Identifiers: Equatable {
-        var serviceId: UntypedServiceId?
+        var serviceId: ServiceId?
         var phoneNumber: String?
     }
 
@@ -380,13 +535,13 @@ public class SignalServiceAddressCache: NSObject {
     private let state = AtomicValue(CacheState(), lock: AtomicLock())
 
     private struct CacheState {
-        var serviceIdHashValues = [UntypedServiceId: Int]()
+        var serviceIdHashValues = [ServiceId: Int]()
         var phoneNumberHashValues = [String: Int]()
 
-        var serviceIdToPhoneNumber = [UntypedServiceId: String]()
-        var phoneNumberToServiceIds = [String: [UntypedServiceId]]()
+        var serviceIdToPhoneNumber = [ServiceId: String]()
+        var phoneNumberToServiceIds = [String: [ServiceId]]()
 
-        var serviceIdCachedAddresses = [UntypedServiceId: [CachedAddress]]()
+        var serviceIdCachedAddresses = [ServiceId: [CachedAddress]]()
         var phoneNumberOnlyCachedAddresses = [String: [CachedAddress]]()
     }
 
@@ -397,13 +552,13 @@ public class SignalServiceAddressCache: NSObject {
         databaseStorage.read { transaction in
             if let localAddress = tsAccountManager.localAddress(with: transaction) {
                 updateRecipient(
-                    serviceId: localAddress.untypedServiceId,
+                    aci: localAddress.untypedServiceId,
                     // PNI TODO: Fetch our own PNI once it's stored on our SignalRecipient.
                     //
                     // (Even though our own PNI may be available at this point, we should have
                     // a recipient for ourselves, so we'd immediately overwrite it during the
                     // `anyEnumerate` below.)
-                    pniString: nil,
+                    pni: nil,
                     phoneNumber: localAddress.phoneNumber
                 )
             }
@@ -416,14 +571,14 @@ public class SignalServiceAddressCache: NSObject {
 
     func updateRecipient(_ signalRecipient: SignalRecipient) {
         updateRecipient(
-            serviceId: signalRecipient.serviceId,
+            aci: signalRecipient.serviceId,
             // PNI TODO: Fetch the recipientPNI once that property is available.
-            pniString: nil,
+            pni: nil,
             phoneNumber: signalRecipient.phoneNumber
         )
     }
 
-    private func updateRecipient(serviceId: UntypedServiceId?, pniString: String?, phoneNumber: String?) {
+    private func updateRecipient(aci: UntypedServiceId?, pni: UntypedServiceId?, phoneNumber: String?) {
         state.update { cacheState in
             // This cache associates phone numbers to the other identifiers. If we
             // don't have a phone number, there's nothing to associate.
@@ -436,10 +591,10 @@ public class SignalServiceAddressCache: NSObject {
                 return
             }
 
-            let oldServiceIds: [UntypedServiceId] = cacheState.phoneNumberToServiceIds[phoneNumber] ?? []
-            let newServiceIds: [UntypedServiceId] = [
-                serviceId,
-                UntypedServiceId(uuidString: pniString)
+            let oldServiceIds: [ServiceId] = cacheState.phoneNumberToServiceIds[phoneNumber] ?? []
+            let newServiceIds: [ServiceId] = [
+                aci.map { Aci(fromUUID: $0.uuidValue) },
+                pni.map { Pni(fromUUID: $0.uuidValue) }
             ].compacted()
 
             // If this phone number still points at the same ServiceIds, there's
@@ -608,7 +763,7 @@ public class SignalServiceAddressCache: NSObject {
     /// identifier to be considered valid, and addresses without identifiers
     /// always return `false` from `isEqual:`, so it's perfectly acceptable for
     /// each of these addresses to have its own hash value.
-    private func hashValue(cacheState: inout CacheState, serviceId: UntypedServiceId?, phoneNumber: String?) -> Int {
+    private func hashValue(cacheState: inout CacheState, serviceId: ServiceId?, phoneNumber: String?) -> Int {
         let hashValue = (
             serviceId.flatMap { cacheState.serviceIdHashValues[$0] }
             ?? phoneNumber.flatMap { cacheState.phoneNumberHashValues[$0] }
