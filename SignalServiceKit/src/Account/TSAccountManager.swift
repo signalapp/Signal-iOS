@@ -475,7 +475,7 @@ public extension TSAccountManager {
         let currentDeviceCapabilities: [String: NSNumber] = OWSRequestFactory.deviceCapabilitiesForLocalDevice(
             withHasBackedUpMasterKey: hasBackedUpMasterKey
         )
-        let currentAppVersion4 = AppVersion.shared.currentAppVersion4
+        let currentAppVersion4 = AppVersionImpl.shared.currentAppVersion4
 
         var lastAttributeRequest: Date?
         let shouldUpdateAttributes = Self.databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in

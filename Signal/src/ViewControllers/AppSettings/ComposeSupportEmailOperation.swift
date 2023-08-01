@@ -36,8 +36,8 @@ struct SupportEmailModel: Dependencies {
     )
     var deviceType: String = UIDevice.current.model
     var deviceIdentifier: String = String(sysctlKey: "hw.machine")?.replacingOccurrences(of: UIDevice.current.model, with: "") ?? "Unknown"
-    var iosVersion: String = AppVersion.iosVersionString
-    var signalVersion4: String = AppVersion.shared.currentAppVersion4
+    var iosVersion: String = AppVersionImpl.shared.iosVersionString
+    var signalVersion4: String = AppVersionImpl.shared.currentAppVersion4
     var locale: String = NSLocale.current.identifier
 
     var userDescription: String? = OWSLocalizedString(

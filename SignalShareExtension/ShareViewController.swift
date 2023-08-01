@@ -56,7 +56,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         let databaseContinuation = AppSetup().start(
             appContext: appContext,
-            appVersion: AppVersion.shared,
+            appVersion: AppVersionImpl.shared,
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             webSocketFactory: WebSocketFactoryNative(),
@@ -195,7 +195,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        AppVersion.shared.saeLaunchDidComplete()
+        AppVersionImpl.shared.saeLaunchDidComplete()
 
         ensureRootViewController()
 

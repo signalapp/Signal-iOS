@@ -42,6 +42,8 @@ class SecureValueRecovery2Tests: XCTestCase {
         mockTSConstants = TSConstantsMock()
 
         self.svr = SecureValueRecovery2Impl(
+            appReadiness: SVR2.Mocks.AppReadiness(),
+            appVersion: MockAppVerion(),
             clientWrapper: MockSVR2ClientWrapper(),
             connectionFactory: mockConnectionFactory,
             credentialStorage: credentialStorage,

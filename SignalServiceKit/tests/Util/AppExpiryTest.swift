@@ -7,7 +7,7 @@ import XCTest
 @testable import SignalServiceKit
 
 final class AppExpiryTest: XCTestCase {
-    private let appVersion = AppVersion.shared
+    private let appVersion = AppVersionImpl.shared
     private var date: Date!
     private var db: DB!
     private var keyValueStoreFactory: InMemoryKeyValueStoreFactory!

@@ -27,7 +27,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }
 
         return databaseStorage.write(.promise) { (transaction) -> Promise<Void> in
-            let currentAppVersion = AppVersion.shared.currentAppVersion4
+            let currentAppVersion = AppVersionImpl.shared.currentAppVersion4
             let syncRequestedAppVersion = {
                 Self.keyValueStore().getString(
                     OWSSyncManagerSyncRequestedAppVersionKey,

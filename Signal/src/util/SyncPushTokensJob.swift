@@ -76,7 +76,7 @@ class SyncPushTokensJob: NSObject {
             } else if self.mode == .forceUpload {
                 Logger.info("Forced uploading, even though tokens didn't change.")
                 shouldUploadTokens = true
-            } else if AppVersion.shared.lastAppVersion != AppVersion.shared.currentAppReleaseVersion {
+            } else if AppVersionImpl.shared.lastAppVersion != AppVersionImpl.shared.currentAppReleaseVersion {
                 Logger.info("Uploading due to fresh install or app upgrade.")
                 shouldUploadTokens = true
             } else if !Self.hasUploadedTokensOnce.get() {

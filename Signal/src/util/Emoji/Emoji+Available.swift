@@ -21,7 +21,7 @@ extension Emoji {
         var availableCache = [Emoji: Bool]()
         var uncachedEmoji = [Emoji]()
 
-        let iosVersion = AppVersion.iosVersionString
+        let iosVersion = AppVersionImpl.shared.iosVersionString
 
         // Use an NSMutableDictionary for built-in plist serialization and heterogeneous values.
         var availableMap = NSMutableDictionary()

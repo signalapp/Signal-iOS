@@ -17,7 +17,7 @@ class AppUpdateNag: NSObject {
     }()
 
     public func showAppUpgradeNagIfNecessary() {
-        let currentVersion = AppVersion.shared.currentAppReleaseVersion
+        let currentVersion = AppVersionImpl.shared.currentAppReleaseVersion
 
         guard let bundleIdentifier = self.bundleIdentifier else {
             owsFailDebug("bundleIdentifier was unexpectedly nil")

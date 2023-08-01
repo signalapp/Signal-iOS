@@ -52,7 +52,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
 
         let appVersionKey = "appVersion"
-        let currentAppVersion4 = AppVersion.shared.currentAppVersion4
+        let currentAppVersion4 = AppVersionImpl.shared.currentAppVersion4
 
         let shouldUpdate = Self.databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
             // Check if the app version has changed.

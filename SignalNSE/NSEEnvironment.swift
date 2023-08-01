@@ -134,7 +134,7 @@ class NSEEnvironment: Dependencies {
 
         let databaseContinuation = AppSetup().start(
             appContext: CurrentAppContext(),
-            appVersion: AppVersion.shared,
+            appVersion: AppVersionImpl.shared,
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             webSocketFactory: WebSocketFactoryNative(),
@@ -182,6 +182,6 @@ class NSEEnvironment: Dependencies {
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
 
-        AppVersion.shared.nseLaunchDidComplete()
+        AppVersionImpl.shared.nseLaunchDidComplete()
     }
 }

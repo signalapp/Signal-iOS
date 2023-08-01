@@ -78,7 +78,7 @@ public class MockSSKEnvironment: SSKEnvironment {
 
         let dependenciesBridge = DependenciesBridge.setupSingleton(
             accountServiceClient: accountServiceClient,
-            appVersion: AppVersion.shared,
+            appVersion: AppVersionImpl.shared,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,

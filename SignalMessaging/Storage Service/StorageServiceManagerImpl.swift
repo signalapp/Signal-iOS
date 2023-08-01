@@ -1332,10 +1332,10 @@ class StorageServiceOperation: OWSOperation {
     }
 
     private func cleanUpRecordsWithUnknownFields(in state: inout State) {
-        guard state.unknownFieldLastCheckedAppVersion != AppVersion.shared.currentAppVersion4 else {
+        guard state.unknownFieldLastCheckedAppVersion != AppVersionImpl.shared.currentAppVersion4 else {
             return
         }
-        state.unknownFieldLastCheckedAppVersion = AppVersion.shared.currentAppVersion4
+        state.unknownFieldLastCheckedAppVersion = AppVersionImpl.shared.currentAppVersion4
 
         // For any cached records with unknown fields, optimistically try to merge
         // with our local data to see if we now understand those fields. Note: It's

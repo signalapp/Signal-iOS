@@ -217,6 +217,8 @@ public class DependenciesBridge {
         self.svr = OrchestratingSVRImpl(
             accountManager: SVR.Wrappers.TSAccountManager(tsAccountManager),
             appContext: CurrentAppContext(),
+            appReadiness: SVR2.Wrappers.AppReadiness(),
+            appVersion: appVersion,
             connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: websocketFactory),
             credentialStorage: svrCredentialStorage,
             databaseStorage: db,

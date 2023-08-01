@@ -5,7 +5,57 @@
 
 import Foundation
 
-public class AppVersion {
+public protocol AppVersion {
+
+    var hardwareInfoString: String { get }
+    var iosVersionString: String { get }
+
+    /// The version of the app when it was first launched. If this is the first launch, this will
+    /// match `currentAppReleaseVersion`.
+    var firstAppVersion: String { get }
+
+    /// The version of the app the last time it was launched. `nil` if the app hasn't been launched.
+    var lastAppVersion: String? { get }
+
+    /// Internally, we use a version format with 4 dotted values
+    /// to uniquely identify builds. The first three values are the
+    /// the release version, the fourth value is the last value from
+    /// the build version.
+    ///
+    /// For example, `3.4.5.6`.
+    var currentAppVersion4: String { get }
+
+    /// Uniquely identifies the build within the release track, in the format specified by Apple.
+    /// For example, `6`.
+    ///
+    /// See:
+    ///
+    /// * https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring
+    /// * https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion
+    /// * https://developer.apple.com/library/archive/technotes/tn2420/_index.html
+    var currentAppBuildVersion: String { get }
+
+    /// The release track, such as `3.4.5`.
+    var currentAppReleaseVersion: String { get }
+
+    var lastCompletedLaunchAppVersion: String? { get }
+    var lastCompletedLaunchMainAppVersion: String? { get }
+    var lastCompletedLaunchSAEAppVersion: String? { get }
+    var lastCompletedLaunchNSEAppVersion: String? { get }
+
+    var buildDate: Date { get }
+
+    /// Compares the two given version strings. Parses each string as a dot-separated list of
+    /// components, and does a pairwise comparison of each string's corresponding components. If any
+    /// component is not interpretable as an unsigned integer, the value `0` will be used.
+    func compare(_ lhs: String, with rhs: String) -> ComparisonResult
+
+    func mainAppLaunchDidComplete()
+    func saeLaunchDidComplete()
+    func nseLaunchDidComplete()
+}
+
+public class AppVersionImpl: AppVersion {
     private let firstVersionKey = "kNSUserDefaults_FirstAppVersion"
     private let lastVersionKey = "kNSUserDefaults_LastVersion"
     private let lastCompletedLaunchVersionKey = "kNSUserDefaults_LastCompletedLaunchAppVersion"
@@ -14,7 +64,7 @@ public class AppVersion {
     private let lastCompletedNSELaunchVersionKey = "kNSUserDefaults_LastCompletedLaunchAppVersion_NSE"
 
     public static let shared: AppVersion = {
-        let result = AppVersion(
+        let result = AppVersionImpl(
             bundle: Bundle.main,
             userDefaults: CurrentAppContext().appUserDefaults()
         )
@@ -25,14 +75,14 @@ public class AppVersion {
 
     // MARK: - Properties
 
-    public static var hardwareInfoString: String {
+    public var hardwareInfoString: String {
         let marketingString = UIDevice.current.model
         let machineString = String(sysctlKey: "hw.machine") ?? "nil"
         let modelString = String(sysctlKey: "hw.model") ?? "nil"
         return "\(marketingString) (\(machineString); \(modelString))"
     }
 
-    public static var iosVersionString: String {
+    public var iosVersionString: String {
         let majorMinor = UIDevice.current.systemVersion
         let buildNumber = String(sysctlKey: "kern.osversion") ?? "nil"
         return "\(majorMinor) (\(buildNumber))"
@@ -145,7 +195,7 @@ public class AppVersion {
         let databaseCorruptionState = DatabaseCorruptionState(userDefaults: userDefaults)
         Logger.info("Database corruption state: \(databaseCorruptionState)")
 
-        Logger.info("iOS Version: \(Self.iosVersionString)")
+        Logger.info("iOS Version: \(iosVersionString)")
 
         let locale = Locale.current
         Logger.info("Locale Identifier: \(locale.identifier)")
@@ -156,7 +206,7 @@ public class AppVersion {
             Logger.info("Language Code: \(languageCode)")
         }
 
-        Logger.info("Device Model: \(Self.hardwareInfoString)")
+        Logger.info("Device Model: \(hardwareInfoString)")
 
         if DebugFlags.internalLogging {
             if let bundleName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String {
@@ -204,7 +254,7 @@ public class AppVersion {
     /// Compares the two given version strings. Parses each string as a dot-separated list of
     /// components, and does a pairwise comparison of each string's corresponding components. If any
     /// component is not interpretable as an unsigned integer, the value `0` will be used.
-    public static func compare(_ lhs: String, with rhs: String) -> ComparisonResult {
+    public func compare(_ lhs: String, with rhs: String) -> ComparisonResult {
         let lhsComponents = lhs.components(separatedBy: ".")
         let rhsComponents = rhs.components(separatedBy: ".")
 
@@ -220,7 +270,7 @@ public class AppVersion {
         return .orderedSame
     }
 
-    private static func parseVersionComponent(_ versionComponent: String?) -> UInt {
+    private func parseVersionComponent(_ versionComponent: String?) -> UInt {
         guard let versionComponent else { return 0 }
         return UInt(versionComponent) ?? 0
     }
@@ -231,7 +281,7 @@ public class AppVersion {
 @objc(AppVersion)
 @objcMembers
 public class AppVersionForObjC: NSObject {
-    public static var shared: AppVersionForObjC { .init(AppVersion.shared) }
+    public static var shared: AppVersionForObjC { .init(AppVersionImpl.shared) }
 
     private var appVersion: AppVersion
 
@@ -273,3 +323,49 @@ fileprivate extension UserDefaults {
         }
     }
 }
+
+// MARK: - Mock
+
+#if TESTABLE_BUILD
+
+public class MockAppVerion: AppVersion {
+
+    public init() {}
+
+    public var hardwareInfoString: String = ""
+
+    public var iosVersionString: String = "16.0"
+
+    public var firstAppVersion: String = "1.0"
+
+    public var lastAppVersion: String? = "1.0"
+
+    public var currentAppVersion4: String = "1.0.0.0"
+
+    public var currentAppBuildVersion: String = "1"
+
+    public var currentAppReleaseVersion: String = "1.0.0"
+
+    public var lastCompletedLaunchAppVersion: String?
+
+    public var lastCompletedLaunchMainAppVersion: String?
+
+    public var lastCompletedLaunchSAEAppVersion: String?
+
+    public var lastCompletedLaunchNSEAppVersion: String?
+
+    public var buildDate: Date = Date()
+
+    public func compare(_ lhs: String, with rhs: String) -> ComparisonResult {
+        // TODO: Stub for testing
+        return .orderedSame
+    }
+
+    public func mainAppLaunchDidComplete() {}
+
+    public func saeLaunchDidComplete() {}
+
+    public func nseLaunchDidComplete() {}
+}
+
+#endif

@@ -11,12 +11,12 @@ extension DebugLogger {
     func postLaunchLogCleanup(appContext: MainAppContext) {
         // This must be a 3-part version number.
         let shouldWipeLogs: Bool = {
-            guard let lastLaunchVersion = AppVersion.shared.lastCompletedLaunchMainAppVersion else {
+            guard let lastLaunchVersion = AppVersionImpl.shared.lastCompletedLaunchMainAppVersion else {
                 // This is probably a new version, but perhaps it's a really old version.
                 return true
             }
             let firstValidVersion = "6.16.0"
-            return AppVersion.compare(lastLaunchVersion, with: firstValidVersion) == .orderedAscending
+            return AppVersionImpl.shared.compare(lastLaunchVersion, with: firstValidVersion) == .orderedAscending
         }()
         if shouldWipeLogs {
             wipeLogsAlways(appContext: appContext)

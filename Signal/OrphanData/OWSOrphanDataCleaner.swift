@@ -23,7 +23,7 @@ extension OWSOrphanDataCleaner {
 
     private static func shouldAuditWithSneakyTransaction() -> Bool {
         let kvs = keyValueStore()
-        let currentAppVersion = AppVersion.shared.currentAppReleaseVersion
+        let currentAppVersion = AppVersionImpl.shared.currentAppReleaseVersion
 
         return databaseStorage.read { transaction -> Bool in
             guard TSAccountManager.shared.isRegistered(transaction: transaction) else {

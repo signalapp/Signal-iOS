@@ -98,11 +98,11 @@ class InternalSettingsViewController: OWSTableViewController2 {
         let infoSection = OWSTableSection()
         infoSection.add(.label(withText: "Environment: \(TSConstants.isUsingProductionService ? "Production" : "Staging")"))
         infoSection.add(.copyableItem(label: "Build variant", value: FeatureFlags.buildVariantString))
-        infoSection.add(.copyableItem(label: "App Release Version", value: AppVersion.shared.currentAppReleaseVersion))
-        infoSection.add(.copyableItem(label: "App Build Version", value: AppVersion.shared.currentAppBuildVersion))
-        infoSection.add(.copyableItem(label: "App Version 4", value: AppVersion.shared.currentAppVersion4))
+        infoSection.add(.copyableItem(label: "App Release Version", value: AppVersionImpl.shared.currentAppReleaseVersion))
+        infoSection.add(.copyableItem(label: "App Build Version", value: AppVersionImpl.shared.currentAppBuildVersion))
+        infoSection.add(.copyableItem(label: "App Version 4", value: AppVersionImpl.shared.currentAppVersion4))
         // The first version of the app that was run on this device.
-        infoSection.add(.copyableItem(label: "First Version", value: AppVersion.shared.firstAppVersion))
+        infoSection.add(.copyableItem(label: "First Version", value: AppVersionImpl.shared.firstAppVersion))
 
         infoSection.add(.copyableItem(label: "Local Phone Number", value: tsAccountManager.localNumber))
 
@@ -165,8 +165,8 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         }
 
-        infoSection.add(.copyableItem(label: "iOS Version", value: AppVersion.iosVersionString))
-        infoSection.add(.copyableItem(label: "Device Model", value: AppVersion.hardwareInfoString))
+        infoSection.add(.copyableItem(label: "iOS Version", value: AppVersionImpl.shared.iosVersionString))
+        infoSection.add(.copyableItem(label: "Device Model", value: AppVersionImpl.shared.hardwareInfoString))
 
         infoSection.add(.copyableItem(label: "Locale Identifier", value: Locale.current.identifier.nilIfEmpty))
         let countryCode = (Locale.current as NSLocale).object(forKey: .countryCode) as? String

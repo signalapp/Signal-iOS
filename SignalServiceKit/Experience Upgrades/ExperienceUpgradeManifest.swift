@@ -560,12 +560,12 @@ extension ExperienceUpgradeManifest {
 
     private static func checkPreconditionsForRemoteMegaphone(_ megaphone: RemoteMegaphoneModel) -> Bool {
         guard
-            AppVersion.compare(
+            AppVersionImpl.shared.compare(
                 megaphone.manifest.minAppVersion,
-                with: AppVersion.shared.currentAppVersion4
+                with: AppVersionImpl.shared.currentAppVersion4
             ) != .orderedDescending
         else {
-            Logger.debug("App version \(AppVersion.shared.currentAppVersion4) lower than required \(megaphone.manifest.minAppVersion)!")
+            Logger.debug("App version \(AppVersionImpl.shared.currentAppVersion4) lower than required \(megaphone.manifest.minAppVersion)!")
             return false
         }
 

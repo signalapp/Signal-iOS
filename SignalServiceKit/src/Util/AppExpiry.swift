@@ -156,7 +156,7 @@ public class AppExpiryImpl: AppExpiry {
         let newState: ExpirationState
         if let newExpirationDate = newExpirationDate {
             // Ignore any expiration date that is later than when the app expires by default.
-            guard newExpirationDate < AppVersion.shared.defaultExpirationDate else { return }
+            guard newExpirationDate < AppVersionImpl.shared.defaultExpirationDate else { return }
             newState = .init(
                 version4: appVersion.currentAppVersion4,
                 mode: .atDate,

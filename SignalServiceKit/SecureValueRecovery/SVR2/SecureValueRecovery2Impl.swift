@@ -9,6 +9,8 @@ import LibSignalClient
 /// Implementation of `SecureValueRecovery` that talks to the SVR2 server.
 public class SecureValueRecovery2Impl: SecureValueRecovery {
 
+    private let appReadiness: SVR2.Shims.AppReadiness
+    private let appVersion: AppVersion
     private let clientWrapper: SVR2ClientWrapper
     private let connectionFactory: SgxWebsocketConnectionFactory
     private let credentialStorage: SVRAuthCredentialStorage
@@ -23,6 +25,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let twoFAManager: SVR.Shims.OWS2FAManager
 
     public convenience init(
+        appReadiness: SVR2.Shims.AppReadiness,
+        appVersion: AppVersion,
         connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
         db: DB,
@@ -35,6 +39,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         twoFAManager: SVR.Shims.OWS2FAManager
     ) {
         self.init(
+            appReadiness: appReadiness,
+            appVersion: appVersion,
             clientWrapper: SVR2ClientWrapperImpl(),
             connectionFactory: connectionFactory,
             credentialStorage: credentialStorage,
@@ -52,6 +58,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let scheduler: Scheduler
 
     internal init(
+        appReadiness: SVR2.Shims.AppReadiness,
+        appVersion: AppVersion,
         clientWrapper: SVR2ClientWrapper,
         connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
@@ -64,6 +72,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         tsConstants: TSConstantsProtocol,
         twoFAManager: SVR.Shims.OWS2FAManager
     ) {
+        self.appReadiness = appReadiness
+        self.appVersion = appVersion
         self.clientWrapper = clientWrapper
         self.connectionFactory = connectionFactory
         self.credentialStorage = credentialStorage
@@ -88,8 +98,75 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         migrateEnclavesIfNecessary()
             .done(on: scheduler) { [weak self] in
                 self?.wipeOldEnclavesIfNeeded(auth: .implicit)
+                self?.periodicRefreshCredentialIfNecessary()
             }
             .cauterize()
+    }
+
+    // MARK: - Periodic Backups
+
+    private static let periodicCredentialRefreshAppVersionKey = "periodicCredentialRefreshAppVersion"
+
+    private func getNeedsCredentialRefreshBasedOnVersion(tx: DBReadTransaction) -> Bool {
+        guard
+            let lastAppVersion = self.kvStore.getString(
+                Self.periodicCredentialRefreshAppVersionKey,
+                transaction: tx
+            )
+        else {
+            return true
+        }
+        return lastAppVersion != appVersion.currentAppVersion4
+    }
+
+    private func didRefreshCredentialInCurrentVersion(tx: DBWriteTransaction) {
+        self.kvStore.setString(
+            appVersion.currentAppVersion4,
+            key: Self.periodicCredentialRefreshAppVersionKey,
+            transaction: tx
+        )
+    }
+
+    private func periodicRefreshCredentialIfNecessary() {
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
+            guard let self else {
+                return
+            }
+            let needsRefresh = self.db.read { tx -> Bool in
+                guard self.tsAccountManager.isRegisteredAndReady(transaction: tx) else {
+                    // Only refresh if registered.
+                    return false
+                }
+                guard self.hasBackedUpMasterKey(transaction: tx) else {
+                    // If we've never backed up, don't refresh periodically.
+                    return false
+                }
+                return self.getNeedsCredentialRefreshBasedOnVersion(tx: tx)
+            }
+            guard needsRefresh else {
+                Logger.info("No periodic credential refresh necessary.")
+                return
+            }
+            // Force refresh a credential, even if we have one cached, to ensure we
+            // have a fresh credential to back up.
+            Logger.info("Refreshing auth credential for periodic backup")
+            RemoteAttestation.authForSVR2(chatServiceAuth: .implicit())
+                .observe(on: self.scheduler) { [weak self] result in
+                    switch result {
+                    case .success(let credential):
+                        Logger.info("Storing refreshed credential")
+                        self?.db.write { tx in
+                            self?.credentialStorage.storeAuthCredentialForCurrentUsername(
+                                SVR2AuthCredential(credential: credential),
+                                tx
+                            )
+                            self?.didRefreshCredentialInCurrentVersion(tx: tx)
+                        }
+                    case .failure:
+                        Logger.warn("Unable to fetch auth credential")
+                    }
+                }
+        }
     }
 
     // MARK: - Key Existence

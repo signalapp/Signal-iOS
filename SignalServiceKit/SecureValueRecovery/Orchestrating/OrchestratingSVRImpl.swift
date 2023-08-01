@@ -17,6 +17,8 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
     public init(
         accountManager: SVR.Shims.TSAccountManager,
         appContext: AppContext,
+        appReadiness: SVR2.Shims.AppReadiness,
+        appVersion: AppVersion,
         connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
         databaseStorage: DB,
@@ -30,6 +32,8 @@ public class OrchestratingSVRImpl: SecureValueRecovery {
         twoFAManager: SVR.Shims.OWS2FAManager
     ) {
         self.svr2 = SecureValueRecovery2Impl(
+            appReadiness: appReadiness,
+            appVersion: appVersion,
             connectionFactory: connectionFactory,
             credentialStorage: credentialStorage,
             db: databaseStorage,

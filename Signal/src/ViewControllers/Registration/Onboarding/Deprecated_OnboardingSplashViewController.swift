@@ -54,7 +54,7 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"
 
         if !TSConstants.isUsingProductionService {
-            titleLabel.text = "Internal Staging Build" + "\n" + "\(AppVersion.shared.currentAppVersion4)"
+            titleLabel.text = "Internal Staging Build" + "\n" + "\(AppVersionImpl.shared.currentAppVersion4)"
         }
 
         let explanationLabel = UILabel()

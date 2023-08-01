@@ -6,6 +6,31 @@
 import Foundation
 import LibSignalClient
 
+extension SVR2 {
+    public enum Shims {
+        public typealias AppReadiness = _SVR2_AppReadinessShim
+    }
+    public enum Wrappers {
+        public typealias AppReadiness = _SVR2_AppReadinessWrapper
+    }
+}
+
+public protocol _SVR2_AppReadinessShim {
+    func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void)
+}
+
+public class _SVR2_AppReadinessWrapper: _SVR2_AppReadinessShim {
+
+    public init() {}
+
+    public func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync(block)
+    }
+}
+
+// NOTE: The below aren't shims/wrappers in the normal sense; they
+// wrap libsignal stuff that we will _always_ need to wrap.
+
 protocol SVR2PinHash {
     // The thing we use as the "pin" in SVR2 backup/restore requests.
     var accessKey: Data { get }
@@ -79,6 +104,19 @@ internal class SVR2ClientWrapperImpl: SVR2ClientWrapper {
 }
 
 #if TESTABLE_BUILD
+
+extension SVR2 {
+    enum Mocks {
+        typealias AppReadiness = _SVR2_AppReadinessMock
+    }
+}
+
+internal class _SVR2_AppReadinessMock: _SVR2_AppReadinessShim {
+
+    init() {}
+
+    func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {}
+}
 
 internal class MockSVR2ClientWrapper: SVR2ClientWrapper {
 

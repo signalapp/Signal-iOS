@@ -40,10 +40,10 @@ final class AppVersionTests: XCTestCase {
         ]
 
         testCases.forEach { (lhs, rhs, expected) in
-            let lCompR = AppVersion.compare(lhs, with: rhs)
+            let lCompR = AppVersionImpl.shared.compare(lhs, with: rhs)
             XCTAssertEqual(lCompR, expected, "\(lhs) compared with \(rhs)")
 
-            let rCompL = AppVersion.compare(rhs, with: lhs)
+            let rCompL = AppVersionImpl.shared.compare(rhs, with: lhs)
             XCTAssertEqual(rCompL, expected.inverted, "\(rhs) compared with \(lhs)")
         }
     }

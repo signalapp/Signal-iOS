@@ -107,7 +107,7 @@ extension AppDelegate {
         }
 
         // Do this even if `appVersion` isn't used -- there's side effects.
-        let appVersion = AppVersion.shared
+        let appVersion = AppVersionImpl.shared
 
         // We need to do this _after_ we set up logging, when the keychain is unlocked,
         // but before we access the database or files on disk.
@@ -180,7 +180,7 @@ extension AppDelegate {
 
         let databaseContinuation = AppSetup().start(
             appContext: CurrentAppContext(),
-            appVersion: AppVersion.shared,
+            appVersion: AppVersionImpl.shared,
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
             webSocketFactory: WebSocketFactoryNative(),
@@ -350,7 +350,7 @@ extension AppDelegate {
         }
 
         DebugLogger.shared().postLaunchLogCleanup(appContext: appContext)
-        AppVersion.shared.mainAppLaunchDidComplete()
+        AppVersionImpl.shared.mainAppLaunchDidComplete()
 
         enableBackgroundRefreshIfNecessary()
         Self.updateApplicationShortcutItems(isRegisteredAndReady: tsAccountManager.isRegisteredAndReady)

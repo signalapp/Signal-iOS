@@ -30,6 +30,8 @@ class SVR2ConcurrencyTests: XCTestCase {
         let mockClientWrapper = MockSVR2ClientWrapper()
 
         self.svr = SecureValueRecovery2Impl(
+            appReadiness: SVR2.Mocks.AppReadiness(),
+            appVersion: MockAppVerion(),
             clientWrapper: mockClientWrapper,
             connectionFactory: mockConnectionFactory,
             credentialStorage: credentialStorage,
@@ -321,6 +323,8 @@ class SVR2ConcurrencyTests: XCTestCase {
             }
 
             let svr = SecureValueRecovery2Impl(
+                appReadiness: SVR2.Mocks.AppReadiness(),
+                appVersion: MockAppVerion(),
                 clientWrapper: MockSVR2ClientWrapper(),
                 connectionFactory: mockConnectionFactory,
                 credentialStorage: credentialStorage,
