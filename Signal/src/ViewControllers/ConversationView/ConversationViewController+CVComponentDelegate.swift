@@ -217,18 +217,23 @@ extension ConversationViewController: CVComponentDelegate {
 
     // MARK: - Messages
 
-    public func didTapBodyMedia(itemViewModel: CVItemViewModelImpl,
-                                attachmentStream: TSAttachmentStream,
-                                imageView: UIView) {
+    public func didTapBodyMedia(
+        itemViewModel: CVItemViewModelImpl,
+        attachmentStream: TSAttachmentStream,
+        imageView: UIView
+    ) {
         AssertIsOnMainThread()
 
         dismissKeyBoard()
 
-        let pageVC = MediaPageViewController(
+        guard let pageVC = MediaPageViewController(
             initialMediaAttachment: attachmentStream,
             thread: self.thread,
             spoilerState: self.viewState.spoilerState
-        )
+        ) else {
+            return
+        }
+
         self.present(pageVC, animated: true, completion: nil)
     }
 

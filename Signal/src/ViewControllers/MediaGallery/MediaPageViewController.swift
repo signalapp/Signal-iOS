@@ -15,9 +15,9 @@ class MediaPageViewController: UIPageViewController {
     let mediaGallery: MediaGallery
     let spoilerState: SpoilerRenderState
 
-    private var initialGalleryItem: MediaGalleryItem?
+    private let initialGalleryItem: MediaGalleryItem
 
-    convenience init(
+    convenience init?(
         initialMediaAttachment: TSAttachment,
         thread: TSThread,
         spoilerState: SpoilerRenderState,
@@ -31,7 +31,7 @@ class MediaPageViewController: UIPageViewController {
         )
     }
 
-    init(
+    init?(
         initialMediaAttachment: TSAttachment,
         mediaGallery: MediaGallery,
         spoilerState: SpoilerRenderState,
@@ -40,6 +40,15 @@ class MediaPageViewController: UIPageViewController {
         self.mediaGallery = mediaGallery
         self.spoilerState = spoilerState
         self.isShowingSingleMessage = showingSingleMessage
+
+        Logger.info("will ensureLoadedForDetailView")
+        guard let initialItem = mediaGallery.ensureLoadedForDetailView(focusedAttachment: initialMediaAttachment) else {
+            owsFailDebug("unexpectedly failed to build initialDetailItem.")
+            return nil
+        }
+        Logger.info("ensureLoadedForDetailView done")
+
+        self.initialGalleryItem = initialItem
 
         super.init(
             transitionStyle: .scroll,
@@ -53,15 +62,6 @@ class MediaPageViewController: UIPageViewController {
         dataSource = self
         delegate = self
         transitioningDelegate = self
-
-        Logger.info("will ensureLoadedForDetailView")
-        guard let initialItem = mediaGallery.ensureLoadedForDetailView(focusedAttachment: initialMediaAttachment) else {
-            owsFailDebug("unexpectedly failed to build initialDetailItem.")
-            return
-        }
-        Logger.info("ensureLoadedForDetailView done")
-
-        initialGalleryItem = initialItem
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -159,8 +159,7 @@ class MediaPageViewController: UIPageViewController {
         updateControlsForCurrentOrientation()
 
         // Load initial page and update all UI to reflect it.
-        setCurrentItem(initialGalleryItem!, direction: .forward, shouldAutoPlayVideo: true, animated: false)
-        self.initialGalleryItem = nil
+        setCurrentItem(initialGalleryItem, direction: .forward, shouldAutoPlayVideo: true, animated: false)
 
         mediaGallery.addDelegate(self)
     }

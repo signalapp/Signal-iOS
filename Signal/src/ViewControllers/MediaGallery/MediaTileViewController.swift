@@ -603,11 +603,14 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
         } else {
             collectionView.deselectItem(at: indexPath, animated: true)
 
-            let pageVC = MediaPageViewController(
+            guard let pageVC = MediaPageViewController(
                 initialMediaAttachment: attachmentStream,
                 mediaGallery: mediaGallery,
                 spoilerState: spoilerState
-            )
+            ) else {
+                return
+            }
+
             present(pageVC, animated: true)
         }
     }

@@ -1052,12 +1052,15 @@ extension MessageDetailViewController: CVComponentDelegate {
             owsFailDebug("Missing thread.")
             return
         }
-        let mediaPageVC = MediaPageViewController(
+        guard let mediaPageVC = MediaPageViewController(
             initialMediaAttachment: attachmentStream,
             thread: thread,
             spoilerState: self.spoilerState,
             showingSingleMessage: true
-        )
+        ) else {
+            return
+        }
+
         mediaPageVC.mediaGallery.addDelegate(self)
         present(mediaPageVC, animated: true)
     }
