@@ -324,7 +324,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDataSource {
 
 extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 
-    func imagePickerDidRequestSendMedia(_ imagePicker: ImagePickerGridController) {
+    func imagePickerDidComplete(_ imagePicker: ImagePickerGridController) {
         if let navigationController = presentedViewController as? OWSNavigationController,
            navigationController.viewControllers.contains(imagePicker) {
             dismiss(animated: true) {

@@ -122,7 +122,10 @@ class AppSettingsViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     guard let self else { return }
-                    let vc = ProfileSettingsViewController(usernameChangeDelegate: self)
+                    let vc = ProfileSettingsViewController(
+                        usernameChangeDelegate: self,
+                        usernameLinkScanDelegate: self
+                    )
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             )
@@ -536,16 +539,16 @@ extension AppSettingsViewController: UsernameChangeDelegate {
 
 extension AppSettingsViewController: UsernameLinkScanDelegate {
     func usernameLinkScanned(_ usernameLink: Usernames.UsernameLink) {
-        guard presentedViewController != nil else {
-            owsFailDebug("Username link was scanned, but there's no presented view?")
+        guard let presentingViewController else {
+            owsFailDebug("Missing presenting view controller!")
             return
         }
 
-        dismiss(animated: true) {
+        presentingViewController.dismiss(animated: true) {
             self.databaseStorage.read { tx in
                 UsernameQuerier().queryForUsernameLink(
                     link: usernameLink,
-                    fromViewController: self,
+                    fromViewController: presentingViewController,
                     tx: tx
                 ) { aci in
                     SignalApp.shared.presentConversationForAddress(

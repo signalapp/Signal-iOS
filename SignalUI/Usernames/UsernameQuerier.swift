@@ -91,7 +91,10 @@ public struct UsernameQuerier {
                 usernameLinkManager.decryptEncryptedLink(link: link)
             }.done(on: schedulers.main) { username in
                 guard let username else {
-                    showUsernameLinkOutdatedError()
+                    modal.dismissIfNotCanceled {
+                        showUsernameLinkOutdatedError()
+                    }
+
                     return
                 }
 

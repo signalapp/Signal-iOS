@@ -1077,21 +1077,24 @@ extension ChatListViewController {
             viewControllers += [ appearance ]
         case .avatarBuilder:
             let profile = ProfileSettingsViewController(
-                usernameChangeDelegate: appSettingsViewController
+                usernameChangeDelegate: appSettingsViewController,
+                usernameLinkScanDelegate: appSettingsViewController
             )
 
             viewControllers += [ profile ]
             completion = { profile.presentAvatarSettingsView() }
         case .corruptedUsernameResolution:
             let profile = ProfileSettingsViewController(
-                usernameChangeDelegate: appSettingsViewController
+                usernameChangeDelegate: appSettingsViewController,
+                usernameLinkScanDelegate: appSettingsViewController
             )
 
             viewControllers += [ profile ]
             completion = { profile.presentUsernameCorruptedResolution() }
         case .corruptedUsernameLinkResolution:
             let profile = ProfileSettingsViewController(
-                usernameChangeDelegate: appSettingsViewController
+                usernameChangeDelegate: appSettingsViewController,
+                usernameLinkScanDelegate: appSettingsViewController
             )
 
             viewControllers += [ profile ]

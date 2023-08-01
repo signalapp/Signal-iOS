@@ -27,9 +27,14 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     private var currentUsernameLinkTooltip: UsernameLinkTooltipView?
 
     weak private var usernameChangeDelegate: UsernameChangeDelegate?
+    weak private var usernameLinkScanDelegate: UsernameLinkScanDelegate?
 
-    init(usernameChangeDelegate: UsernameChangeDelegate) {
+    init(
+        usernameChangeDelegate: UsernameChangeDelegate,
+        usernameLinkScanDelegate: UsernameLinkScanDelegate
+    ) {
         self.usernameChangeDelegate = usernameChangeDelegate
+        self.usernameLinkScanDelegate = usernameLinkScanDelegate
 
         super.init()
     }
@@ -808,23 +813,6 @@ extension ProfileSettingsViewController: UsernameChangeDelegate {
 
 extension ProfileSettingsViewController: UsernameLinkScanDelegate {
     func usernameLinkScanned(_ usernameLink: Usernames.UsernameLink) {
-        guard let presentingViewController else {
-            return
-        }
-
-        presentingViewController.dismiss(animated: true) {
-            self.databaseStorage.read { tx in
-                UsernameQuerier().queryForUsernameLink(
-                    link: usernameLink,
-                    fromViewController: presentingViewController,
-                    tx: tx
-                ) { aci in
-                    SignalApp.shared.presentConversationForAddress(
-                        SignalServiceAddress(aci),
-                        animated: true
-                    )
-                }
-            }
-        }
+        usernameLinkScanDelegate?.usernameLinkScanned(usernameLink)
     }
 }

@@ -16,7 +16,7 @@ public class PaymentsQRScanViewController: OWSViewController {
 
     private weak var delegate: PaymentsQRScanDelegate?
 
-    private let qrCodeScanViewController = QRCodeScanViewController(appearance: .normal)
+    private let qrCodeScanViewController = QRCodeScanViewController(appearance: .masked())
 
     public required init(delegate: PaymentsQRScanDelegate) {
         self.delegate = delegate

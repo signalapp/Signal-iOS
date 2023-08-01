@@ -8,7 +8,7 @@ import SignalMessaging
 import SignalUI
 
 protocol ImagePickerGridControllerDelegate: AnyObject {
-    func imagePickerDidRequestSendMedia(_ imagePicker: ImagePickerGridController)
+    func imagePickerDidComplete(_ imagePicker: ImagePickerGridController)
     func imagePickerDidCancel(_ imagePicker: ImagePickerGridController)
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>)
@@ -319,7 +319,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     @objc
     private func didTapDoneButton() {
-        delegate?.imagePickerDidRequestSendMedia(self)
+        delegate?.imagePickerDidComplete(self)
     }
 
     // MARK: - Layout

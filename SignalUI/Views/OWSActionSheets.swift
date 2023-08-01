@@ -89,8 +89,15 @@ public enum OWSActionSheets {
         CurrentAppContext().frontmostViewController()?.present(actionSheet, animated: true)
     }
 
-    public static func showErrorAlert(message: String) {
-        showActionSheet(title: CommonStrings.errorAlertTitle, message: message)
+    public static func showErrorAlert(
+        message: String,
+        fromViewController: UIViewController? = nil
+    ) {
+        showActionSheet(
+            title: CommonStrings.errorAlertTitle,
+            message: message,
+            fromViewController: fromViewController
+        )
     }
 
     public static var okayAction: ActionSheetAction {

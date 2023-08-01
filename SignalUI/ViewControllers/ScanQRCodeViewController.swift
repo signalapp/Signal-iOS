@@ -55,25 +55,16 @@ public protocol QRCodeScanDelegate: AnyObject {
 
 public class QRCodeScanViewController: OWSViewController {
 
-    public enum Appearance: UInt {
-        case normal
+    public enum Appearance {
+        case masked(maskWindowOffset: CGPoint = .zero)
         case unadorned
 
         fileprivate var backgroundColor: UIColor {
             switch self {
-            case .normal:
+            case .masked:
                 return .ows_black
             case .unadorned:
                 return .clear
-            }
-        }
-
-        fileprivate var shouldMaskView: Bool {
-            switch self {
-            case .normal:
-                return true
-            case .unadorned:
-                return false
             }
         }
     }
@@ -208,27 +199,38 @@ public class QRCodeScanViewController: OWSViewController {
         view.addSubview(previewView)
         previewView.autoPinEdgesToSuperviewEdges()
 
-        if appearance.shouldMaskView {
+        switch appearance {
+        case .unadorned:
+            break
+        case let .masked(maskWindowOffset):
             let maskingView = BezierPathView { layer, bounds in
-                // Add a circular mask
-                let path = UIBezierPath(rect: bounds)
-                let margin = CGFloat.scaleFromIPhone5To7Plus(8, 16)
+                // Add a mask with a rounded-rectangular window.
+                let rectSize: CGSize = .square(232)
+                let rectOrigin: CGPoint = {
+                    let unadjusted = (bounds.size - rectSize).asPoint * 0.5
+                    return unadjusted + maskWindowOffset
+                }()
 
-                // Center the circle's bounding rectangle
-                let circleDiameter = bounds.size.smallerAxis - margin * 2
-                let circleSize = CGSize.square(circleDiameter)
-                let circleRect = CGRect(origin: (bounds.size - circleSize).asPoint * 0.5,
-                                        size: circleSize)
-                let circlePath = UIBezierPath(roundedRect: circleRect,
-                                              cornerRadius: circleDiameter / 2)
-                path.append(circlePath)
+                let rect = CGRect(
+                    origin: rectOrigin,
+                    size: rectSize
+                )
+
+                let path = UIBezierPath(rect: bounds)
+                let rectPath = UIBezierPath(
+                    roundedRect: rect,
+                    cornerRadius: 32
+                )
+
+                path.append(rectPath)
                 path.usesEvenOddFillRule = true
 
                 layer.path = path.cgPath
                 layer.fillRule = .evenOdd
-                layer.fillColor = UIColor.gray.cgColor
-                layer.opacity = 0.5
+                layer.fillColor = UIColor.black.cgColor
+                layer.opacity = 0.4
             }
+
             self.view.addSubview(maskingView)
             maskingView.autoPinEdgesToSuperviewEdges()
         }

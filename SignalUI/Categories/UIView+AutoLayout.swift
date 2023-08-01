@@ -20,6 +20,13 @@ public extension UIView {
         return autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: edge)
     }
 
+    // MARK: Superview safe area
+
+    @discardableResult
+    func autoPinEdges(toSuperviewSafeAreaExcludingEdge edge: ALEdge) -> [NSLayoutConstraint] {
+        return autoPinEdgesToSuperviewSafeArea(with: .zero, excludingEdge: edge)
+    }
+
     // MARK: Horizontal edges to superview margins
 
     @discardableResult
