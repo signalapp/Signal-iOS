@@ -231,7 +231,7 @@ final class OWSScrubbingLogFormatterTest: XCTestCase {
         XCTAssertEqual(stripDate(fromRawMessage: result), input, "Shouldn't touch this string")
     }
 
-    func testIPAddressesScrubbed() {
+    func testIPv4AddressesScrubbed() {
         let valueMap: [String: String] = [
             "0.0.0.0": "[ REDACTED_IPV4_ADDRESS:...0 ]",
             "127.0.0.1": "[ REDACTED_IPV4_ADDRESS:...1 ]",
@@ -263,6 +263,101 @@ final class OWSScrubbingLogFormatterTest: XCTestCase {
                     result.contains(ipAddress),
                     "Failed to redact IP address input: \(input)"
                 )
+            }
+        }
+    }
+
+    /// IPv6 addresses are _hard_.
+    ///
+    /// The test cases here were borrowed from RingRTC:
+    /// - https://github.com/signalapp/ringrtc/blob/cfe07c57888d930d1114ddccbdd73d3f556b3b40/src/rust/src/core/util.rs#L149-L197
+    /// - https://github.com/signalapp/ringrtc/blob/cfe07c57888d930d1114ddccbdd73d3f556b3b40/src/rust/src/core/util.rs#L364-L413
+    func testIPv6AddressesScrubbed() {
+        func runTest(messageFormat: String, ipAddress: String) {
+            let input = messageFormat.replacingOccurrences(of: "%@", with: ipAddress)
+            let expectedOutput = messageFormat.replacingOccurrences(of: "%@", with: "[ REDACTED_IPV6_ADDRESS ]")
+
+            let result = format(input)
+
+            XCTAssertEqual(
+                stripDate(fromRawMessage: result),
+                expectedOutput,
+                "Failed to redact IP address input: \(input)"
+            )
+            XCTAssertFalse(
+                result.contains(ipAddress),
+                "Failed to redact IP address input: \(input)"
+            )
+        }
+
+        let testAddresses: [String] = [
+            "Fe80::2d8:61ff:fe57:83f6",
+            "fE80::2d8:61ff:fe57:83f6",
+            "fe80::2d8:61ff:fe57:83f6",
+            "2001:db8:3:4::192.0.2.33",
+            "2021:0db8:85a3:0000:0000:8a2e:0370:7334",
+            "2301:db8:85a3::8a2e:370:7334",
+            "4601:746:9600:dec1:2d8:61ff:fe57:83f6",
+            "64:ff9b::192.0.2.33",
+            "1:2:3:4:5:6:7:8",
+            "1::3:4:5:6:7:8",
+            "1::4:5:6:7:8",
+            "1::5:6:7:8",
+            "1::6:7:8",
+            "1::7:8",
+            "1::8",
+            "1::",
+            "1:2::8",
+            "1:2:3::8",
+            "1:2:3:4::8",
+            "1:2:3:4:5::8",
+            "1:2:3:4:5:6::8",
+            "1:2:3:4:5:6:7::",
+            "1::3:4:5:6:7:8",
+            "1:2::4:5:6:7:8",
+            "1:2:3::5:6:7:8",
+            "1:2:3:4::6:7:8",
+            "1:2:3:4:5::7:8",
+            "1:2:3:4:5:6::8",
+            "::255.255.255.255",
+            "::ffff:255.255.255.255",
+            "::ffff:0:255.255.255.255",
+            "::ffff:192.0.2.128",
+            "::ffff:0:192.0.2.128",
+            "::2:3:4:5:6:7:8",
+            "::2:3:4:5:6:7:8",
+            "::",
+            "::0",
+            "::1",
+            "::8",
+        ]
+
+        // IPv6 addresses with a zone index will absorb any trailing characters
+        // into the zone index, so we need to test them slightly differently.
+        let testAddressesWithZoneIndex: [String] = [
+            "fe80::7:8%eth0",
+            "fe80::7:8%1",
+        ]
+
+        let messageFormats: [String] = [
+            "http://[%@]",
+            "http://[%@]/",
+            "%@ and %@ and %@",
+            "%@",
+            "%@ %@",
+            "no ip address!",
+            ""
+        ]
+
+        for ipAddress in testAddresses {
+            for messageFormat in (messageFormats + ["x%@y"]) {
+                runTest(messageFormat: messageFormat, ipAddress: ipAddress)
+            }
+        }
+
+        for ipAddress in testAddressesWithZoneIndex {
+            for messageFormat in (messageFormats + ["x%@"]) {
+                runTest(messageFormat: messageFormat, ipAddress: ipAddress)
             }
         }
     }
