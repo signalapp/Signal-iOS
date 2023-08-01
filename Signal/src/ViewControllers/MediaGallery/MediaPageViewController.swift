@@ -259,11 +259,6 @@ class MediaPageViewController: UIPageViewController {
             videoPlayer: currentViewController.videoPlayer,
             animated: animated
         )
-        if animated {
-            UIView.animate(withDuration: 0.2) {
-                self.view.layoutIfNeeded()
-            }
-        }
 
         updateScreenTitle(using: currentViewController.galleryItem)
         updateContextMenuActions()
