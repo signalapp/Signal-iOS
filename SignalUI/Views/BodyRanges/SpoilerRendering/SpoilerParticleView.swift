@@ -425,8 +425,8 @@ extension SpoilerParticleView.Fidelity {
 
     fileprivate var numLayers: UInt8 {
         switch self {
-        case .high: return 3
-        case .low: return 2
+        case .high: return 4
+        case .low: return 3
         }
     }
 
