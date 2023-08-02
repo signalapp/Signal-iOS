@@ -159,6 +159,9 @@ public protocol OWSUDManager: AnyObject {
     @objc
     func storySendingAccess(for serviceId: UntypedServiceIdObjC, senderCertificates: SenderCertificates) -> OWSUDSendingAccess
 
+    @objc
+    func fetchAllAciUakPairs(tx: SDSAnyReadTransaction) -> [AciObjC: SMKUDAccessKey]
+
     // MARK: Sender Certificate
 
     // We use completion handlers instead of a promise so that message sending
@@ -224,6 +227,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     //
     // TODO: We might not want to use comprehensive caches here.
     private var phoneNumberAccessCache = [String: UnidentifiedAccessMode]()
+    // PNI TODO: Change this type to Aci or ServiceId.
     private var uuidAccessCache = [UUID: UnidentifiedAccessMode]()
 
     @objc
@@ -428,21 +432,37 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
     }
 
+    public func fetchAllAciUakPairs(tx: SDSAnyReadTransaction) -> [AciObjC: SMKUDAccessKey] {
+        let acis = self.unfairLock.withLock {
+            self.uuidAccessCache.compactMap { (serviceId, mode) -> Aci? in
+                switch mode {
+                case .enabled, .unrestricted, .unknown:
+                    return Aci(fromUUID: serviceId)
+                case .disabled:
+                    return nil
+                }
+            }
+        }
+        var result = [AciObjC: SMKUDAccessKey]()
+        for aci in acis {
+            result[AciObjC(aci)] = udAccessKey(for: SignalServiceAddress(aci), tx: tx)
+        }
+        return result
+    }
+
     // Returns the UD access key for a given recipient
     // if we have a valid profile key for them.
     @objc
     public func udAccessKey(forAddress address: SignalServiceAddress) -> SMKUDAccessKey? {
-        let profileKeyData = databaseStorage.read { transaction in
-            return self.profileManager.profileKeyData(for: address,
-                                                      transaction: transaction)
-        }
-        guard let profileKey = profileKeyData else {
-            // Mark as "not a UD recipient".
+        return databaseStorage.read { tx in udAccessKey(for: address, tx: tx) }
+    }
+
+    private func udAccessKey(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> SMKUDAccessKey? {
+        guard let profileKey = profileManager.profileKeyData(for: address, transaction: tx) else {
             return nil
         }
         do {
-            let udAccessKey = try SMKUDAccessKey(profileKey: profileKey)
-            return udAccessKey
+            return try SMKUDAccessKey(profileKey: profileKey)
         } catch {
             Logger.error("Could not determine udAccessKey: \(error)")
             return nil

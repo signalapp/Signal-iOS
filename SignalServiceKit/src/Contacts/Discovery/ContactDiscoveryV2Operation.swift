@@ -5,54 +5,13 @@
 
 import GRDB
 import Foundation
+import LibSignalClient
+import SignalCoreKit
 
 // MARK: -
 
 private enum Constant {
     static let defaultRetryAfter: TimeInterval = 60
-}
-
-// MARK: -
-
-/// Runs a CDSv1-compatible operation against the CDSv2 backend.
-final class ContactDiscoveryV2CompatibilityOperation: ContactDiscoveryOperation {
-    let e164sToLookup: Set<E164>
-    let mode: ContactDiscoveryMode
-    let websocketFactory: WebSocketFactory
-
-    init(e164sToLookup: Set<E164>, mode: ContactDiscoveryMode, websocketFactory: WebSocketFactory) {
-        self.e164sToLookup = e164sToLookup
-        self.mode = mode
-        self.websocketFactory = websocketFactory
-    }
-
-    func perform(on queue: DispatchQueue) -> Promise<Set<DiscoveredContactInfo>> {
-        let operation = ContactDiscoveryV2Operation(
-            e164sToLookup: e164sToLookup,
-            mode: mode,
-            compatibilityMode: .fetchAllACIs,
-            websocketFactory: websocketFactory
-        )
-        return firstly {
-            operation.perform(on: queue)
-        }.map(on: queue) { discoveryResults in
-            var results = Set<DiscoveredContactInfo>()
-            for discoveryResult in discoveryResults {
-                guard self.e164sToLookup.contains(discoveryResult.e164) else {
-                    // In v2, we get back results for previous lookups as well. The API
-                    // contract expects only those that were explicitly requested, so filter to
-                    // include only those.
-                    continue
-                }
-                guard let aci = discoveryResult.aci else {
-                    owsFailDebug("CDSv2: All discovery results should have an ACI")
-                    continue
-                }
-                results.insert(DiscoveredContactInfo(e164: discoveryResult.e164, uuid: aci))
-            }
-            return results
-        }
-    }
 }
 
 // MARK: -
@@ -86,14 +45,7 @@ final class ContactDiscoveryV2Operation {
 
     let e164sToLookup: Set<E164>
 
-    let compatibilityMode: CompatibilityMode
-    enum CompatibilityMode {
-        /// Send a request that returns a CDSv1-equivalent response.
-        case fetchAllACIs
-
-        /// Send a PNP-aware request. Requires full support for PNI-only contacts.
-        case fetchKnownACIs
-    }
+    let tryToReturnAcisWithoutUaks: Bool
 
     /// If non-nil, requests will include prevE164s & a token, so we'll only
     /// consume quota for new E164s.
@@ -104,24 +56,29 @@ final class ContactDiscoveryV2Operation {
     /// consume too much quota without the user's consent.
     let persistentState: ContactDiscoveryV2PersistentState?
 
+    let udManager: Shims.UDManager
+
     let connectionFactory: SgxWebsocketConnectionFactory
 
     init(
         e164sToLookup: Set<E164>,
-        compatibilityMode: CompatibilityMode,
+        tryToReturnAcisWithoutUaks: Bool,
         persistentState: ContactDiscoveryV2PersistentState?,
+        udManager: Shims.UDManager,
         connectionFactory: SgxWebsocketConnectionFactory
     ) {
         self.e164sToLookup = e164sToLookup
-        self.compatibilityMode = compatibilityMode
+        self.tryToReturnAcisWithoutUaks = tryToReturnAcisWithoutUaks
         self.persistentState = persistentState
+        self.udManager = udManager
         self.connectionFactory = connectionFactory
     }
 
     convenience init(
         e164sToLookup: Set<E164>,
         mode: ContactDiscoveryMode,
-        compatibilityMode: CompatibilityMode,
+        tryToReturnAcisWithoutUaks: Bool,
+        udManager: Shims.UDManager,
         websocketFactory: WebSocketFactory
     ) {
         let persistentState: ContactDiscoveryV2PersistentState?
@@ -132,8 +89,9 @@ final class ContactDiscoveryV2Operation {
         }
         self.init(
             e164sToLookup: e164sToLookup,
-            compatibilityMode: compatibilityMode,
+            tryToReturnAcisWithoutUaks: tryToReturnAcisWithoutUaks,
             persistentState: persistentState,
+            udManager: udManager,
             connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: websocketFactory)
         )
     }
@@ -207,14 +165,15 @@ final class ContactDiscoveryV2Operation {
         request.token = prevToken
         request.prevE164S = prevE164s
         request.newE164S = ContactDiscoveryE164Collection(newE164s).encodedValues
-
-        switch compatibilityMode {
-        case .fetchAllACIs:
-            request.returnAcisWithoutUaks = true
-        case .fetchKnownACIs:
-            request.returnAcisWithoutUaks = false
-            // TODO: Fetch all ACI-UAK pairs.
-        }
+        request.returnAcisWithoutUaks = tryToReturnAcisWithoutUaks
+        request.aciUakPairs = { () -> Data in
+            var result = Data()
+            for (aci, uak) in udManager.fetchAllAciUakPairsWithSneakyTransaction() {
+                result.append(contentsOf: aci.wrappedAciValue.serviceIdBinary)
+                result.append(uak.keyData)
+            }
+            return result
+        }()
 
         return InitialRequest(
             hasToken: !prevToken.isEmpty,
@@ -357,11 +316,11 @@ final class ContactDiscoveryV2Operation {
         /// If the lookup succeeds, we'll get back a PNI. If it doesn't succeed, the
         /// user with a particular e164 may not be registered, or they may have
         /// chosen to hide their phone number.
-        var pni: UUID
+        var pni: Pni
 
         /// If we provide the correct ACI-UAK pair, we'll also get back the ACI
         /// associated with the e164/PNI.
-        var aci: UUID?
+        var aci: Aci?
     }
 
     static func decodePniAciResult(_ data: Data) throws -> [DiscoveryResult] {
@@ -383,17 +342,17 @@ final class ContactDiscoveryV2Operation {
         }
         remainingData = remainingData.dropFirst(rawE164Count)
 
-        guard let (pni, pniCount) = UUID.from(data: remainingData) else {
+        guard let (pniUuid, pniCount) = UUID.from(data: remainingData) else {
             throw ContactDiscoveryError.assertionError(description: "malformed e164/aci/pni triples")
         }
         remainingData = remainingData.dropFirst(pniCount)
 
-        guard let (aci, aciCount) = UUID.from(data: remainingData) else {
+        guard let (aciUuid, aciCount) = UUID.from(data: remainingData) else {
             throw ContactDiscoveryError.assertionError(description: "malformed e164/aci/pni triples")
         }
         remainingData = remainingData.dropFirst(aciCount)
 
-        guard pni != UUID.allZeros else {
+        guard pniUuid != UUID.allZeros else {
             return nil
         }
         guard let e164 = E164("+\(rawE164)") else {
@@ -401,8 +360,8 @@ final class ContactDiscoveryV2Operation {
         }
         return DiscoveryResult(
             e164: e164,
-            pni: pni,
-            aci: aci == UUID.allZeros ? nil : aci
+            pni: Pni(fromUUID: pniUuid),
+            aci: aciUuid == UUID.allZeros ? nil : Aci(fromUUID: aciUuid)
         )
     }
 }
@@ -484,4 +443,34 @@ extension UUID {
     static let allZeros: Self = {
         Self(data: Data(count: 16))!
     }()
+}
+
+// MARK: - Shims
+
+extension ContactDiscoveryV2Operation {
+    enum Shims {
+        typealias UDManager = _ContactDiscoveryV2Operation_UDManagerShim
+    }
+
+    enum Wrappers {
+        typealias UDManager = _ContactDiscoveryV2Operation_UDManagerWrapper
+    }
+}
+
+protocol _ContactDiscoveryV2Operation_UDManagerShim {
+    func fetchAllAciUakPairsWithSneakyTransaction() -> [AciObjC: SMKUDAccessKey]
+}
+
+class _ContactDiscoveryV2Operation_UDManagerWrapper: _ContactDiscoveryV2Operation_UDManagerShim {
+    private let db: DB
+    private let udManager: OWSUDManager
+
+    init(db: DB, udManager: OWSUDManager) {
+        self.db = db
+        self.udManager = udManager
+    }
+
+    func fetchAllAciUakPairsWithSneakyTransaction() -> [AciObjC: SMKUDAccessKey] {
+        db.read { tx in udManager.fetchAllAciUakPairs(tx: SDSDB.shimOnlyBridge(tx)) }
+    }
 }

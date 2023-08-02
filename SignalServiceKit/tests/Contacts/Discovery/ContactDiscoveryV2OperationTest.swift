@@ -3,12 +3,18 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
+
 @testable import SignalServiceKit
 
 final class ContactDiscoveryV2OperationTest: XCTestCase {
 
     // MARK: - Mocks
+
+    private class MockUDManager: ContactDiscoveryV2Operation.Shims.UDManager {
+        func fetchAllAciUakPairsWithSneakyTransaction() -> [AciObjC: SMKUDAccessKey] { return [:] }
+    }
 
     private class MockContactDiscoveryV2PersistentState: ContactDiscoveryV2PersistentState {
         var token: Data?
@@ -41,13 +47,14 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
 
     /// In .oneOffUserRequest mode, we should disregard tokens entirely.
     func testOneOffRequest() throws {
-        let aci = UUID()
-        let pni = UUID()
+        let aci = Aci.randomForTesting()
+        let pni = Pni.randomForTesting()
 
         let operation = ContactDiscoveryV2Operation(
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
-            compatibilityMode: .fetchAllACIs,
+            tryToReturnAcisWithoutUaks: true,
             persistentState: nil,
+            udManager: MockUDManager(),
             connectionFactory: connectionFactory
         )
 
@@ -68,7 +75,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
             XCTAssertTrue(request.tokenAck)
 
             var response = CDSI_ClientResponse()
-            response.e164PniAciTriples = newE164s! + pni.data + aci.data
+            response.e164PniAciTriples = newE164s! + pni.rawUUID.data + aci.rawUUID.data
             return .value([response])
         }
         connectionFactory.setOnConnectAndPerformHandshake({ _ in
@@ -94,8 +101,9 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     func testNotDiscoverable() throws {
         let operation = ContactDiscoveryV2Operation(
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
-            compatibilityMode: .fetchAllACIs,
+            tryToReturnAcisWithoutUaks: true,
             persistentState: nil,
+            udManager: MockUDManager(),
             connectionFactory: connectionFactory
         )
 
@@ -132,8 +140,9 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     func testRateLimitError() throws {
         let operation = ContactDiscoveryV2Operation(
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
-            compatibilityMode: .fetchAllACIs,
+            tryToReturnAcisWithoutUaks: true,
             persistentState: persistentState,
+            udManager: MockUDManager(),
             connectionFactory: connectionFactory
         )
 
@@ -177,8 +186,9 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     func testInvalidTokenError() throws {
         let operation = ContactDiscoveryV2Operation(
             e164sToLookup: [try XCTUnwrap(E164("+16505550100"))],
-            compatibilityMode: .fetchAllACIs,
+            tryToReturnAcisWithoutUaks: true,
             persistentState: persistentState,
+            udManager: MockUDManager(),
             connectionFactory: connectionFactory
         )
 

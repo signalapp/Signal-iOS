@@ -104,6 +104,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         recipientFetcher: RecipientFetcher,
         recipientMerger: RecipientMerger,
         tsAccountManager: TSAccountManager,
+        udManager: OWSUDManager,
         websocketFactory: WebSocketFactory
     ) {
         self.init(
@@ -112,6 +113,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
                 recipientFetcher: recipientFetcher,
                 recipientMerger: recipientMerger,
                 tsAccountManager: tsAccountManager,
+                udManager: udManager,
                 websocketFactory: websocketFactory
             )
         )

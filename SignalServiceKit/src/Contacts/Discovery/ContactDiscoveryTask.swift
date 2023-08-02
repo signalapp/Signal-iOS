@@ -16,6 +16,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     private let recipientFetcher: RecipientFetcher
     private let recipientMerger: RecipientMerger
     private let tsAccountManager: TSAccountManager
+    private let udManager: OWSUDManager
     private let websocketFactory: WebSocketFactory
 
     init(
@@ -23,12 +24,14 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         recipientFetcher: RecipientFetcher,
         recipientMerger: RecipientMerger,
         tsAccountManager: TSAccountManager,
+        udManager: OWSUDManager,
         websocketFactory: WebSocketFactory
     ) {
         self.db = db
         self.recipientFetcher = recipientFetcher
         self.recipientMerger = recipientMerger
         self.tsAccountManager = tsAccountManager
+        self.udManager = udManager
         self.websocketFactory = websocketFactory
     }
 
@@ -46,41 +49,29 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         )
 
         return firstly {
-            Self.createContactDiscoveryOperation(
-                for: e164s,
+            ContactDiscoveryV2Operation(
+                e164sToLookup: e164s,
                 mode: mode,
+                tryToReturnAcisWithoutUaks: RemoteConfig.tryToReturnAcisWithoutUaks,
+                udManager: ContactDiscoveryV2Operation.Wrappers.UDManager(db: db, udManager: udManager),
                 websocketFactory: websocketFactory
             ).perform(on: workQueue)
-        }.map(on: workQueue) { (discoveredContacts: Set<DiscoveredContactInfo>) -> Set<SignalRecipient> in
-            try self.processResults(requestedPhoneNumbers: e164s, discoveryResults: discoveredContacts)
+        }.map(on: workQueue) { (discoveryResults: [ContactDiscoveryV2Operation.DiscoveryResult]) -> Set<SignalRecipient> in
+            try self.processResults(requestedPhoneNumbers: e164s, discoveryResults: discoveryResults)
         }
-    }
-
-    private static func createContactDiscoveryOperation(
-        for e164s: Set<E164>,
-        mode: ContactDiscoveryMode,
-        websocketFactory: WebSocketFactory
-    ) -> ContactDiscoveryOperation {
-        return ContactDiscoveryV2CompatibilityOperation(
-            e164sToLookup: e164s,
-            mode: mode,
-            websocketFactory: websocketFactory
-        )
     }
 
     private func processResults(
         requestedPhoneNumbers: Set<E164>,
-        discoveryResults: Set<DiscoveredContactInfo>
+        discoveryResults: [ContactDiscoveryV2Operation.DiscoveryResult]
     ) throws -> Set<SignalRecipient> {
-        let undiscoverableE164s = requestedPhoneNumbers.subtracting(discoveryResults.lazy.map { $0.e164 })
-
         return try db.write { tx in
             guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx)) else {
                 throw OWSAssertionError("Not registered.")
             }
             return storeResults(
-                discoveredContacts: discoveryResults,
-                undiscoverableE164s: undiscoverableE164s,
+                requestedPhoneNumbers: requestedPhoneNumbers,
+                discoveryResults: discoveryResults,
                 localIdentifiers: localIdentifiers,
                 tx: tx
             )
@@ -88,45 +79,56 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     }
 
     private func storeResults(
-        discoveredContacts: Set<DiscoveredContactInfo>,
-        undiscoverableE164s: Set<E164>,
+        requestedPhoneNumbers: Set<E164>,
+        discoveryResults: [ContactDiscoveryV2Operation.DiscoveryResult],
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) -> Set<SignalRecipient> {
-        let registeredRecipients = Set(discoveredContacts.map { discoveredContact -> SignalRecipient in
+        var registeredRecipients = Set<SignalRecipient>()
+        for discoveryResult in discoveryResults {
+            // PNI TODO: Pass the PNI into the merging logic.
+            guard let aci = discoveryResult.aci else {
+                continue
+            }
             let recipient = recipientMerger.applyMergeFromContactDiscovery(
                 localIdentifiers: localIdentifiers,
-                aci: UntypedServiceId(discoveredContact.uuid),
-                phoneNumber: discoveredContact.e164,
+                aci: aci.untypedServiceId,
+                phoneNumber: discoveryResult.e164,
                 tx: tx
             )
             recipient.markAsRegisteredAndSave(tx: SDSDB.shimOnlyBridge(tx))
-            return recipient
-        })
 
-        for undiscoverableE164 in undiscoverableE164s {
-            let address = SignalServiceAddress(undiscoverableE164)
+            // We process all the results that we were provided, but we only return the
+            // recipients that were specifically requested as part of this operation.
+            if requestedPhoneNumbers.contains(discoveryResult.e164) {
+                registeredRecipients.insert(recipient)
+            }
+        }
 
-            // It's possible we have an undiscoverable address that has a UUID in a
-            // number of scenarios, such as (but not exclusive to) the following:
+        let undiscoverablePhoneNumbers = requestedPhoneNumbers.subtracting(discoveryResults.lazy.map { $0.e164 })
+        for phoneNumber in undiscoverablePhoneNumbers {
+            // It's possible we have an undiscoverable phone number that already has an
+            // ACI or PNI in a number of scenarios, such as (but not exclusive to) the
+            // following:
             //
             // * You do "find by phone number" for someone you've previously interacted
-            //   with (and had a UUID for) who is no longer registered.
+            // with (and had an ACI or PNI for) who is no longer registered.
             //
             // * You do an intersection to look up someone who has shared their phone
-            //   number with you (via message send) but has chosen to be undiscoverable
-            //   by CDS lookups.
+            // number with you (via message send) but has chosen to be undiscoverable
+            // by CDS lookups.
             //
             // When any of these scenarios occur, we cannot know with certainty if the
             // user is unregistered or has only turned off discoverability, so we
             // *only* mark the addresses without any UUIDs as unregistered. Everything
             // else we ignore; we will identify their current registration status
             // either when attempting to send a message or when fetching their profile.
-            guard address.uuid == nil else {
+            let finder = AnySignalRecipientFinder()
+            let recipient = finder.signalRecipientForPhoneNumber(phoneNumber.stringValue, transaction: SDSDB.shimOnlyBridge(tx))
+            // PNI TODO: Also check for PNIs here.
+            guard let recipient, recipient.serviceId == nil else {
                 continue
             }
-
-            let recipient = recipientFetcher.fetchOrCreate(phoneNumber: undiscoverableE164, tx: tx)
             recipient.markAsUnregisteredAndSave(tx: SDSDB.shimOnlyBridge(tx))
         }
 

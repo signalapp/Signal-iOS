@@ -256,6 +256,22 @@ public class RemoteConfig: BaseFlags {
         return .mirroring
     }
 
+    static var tryToReturnAcisWithoutUaks: Bool {
+        if !FeatureFlags.phoneNumberIdentifiers {
+            return true
+        }
+        if TSConstants.isUsingProductionService {
+            return true
+        }
+        if OWSIsDebugBuild() {
+            return true
+        }
+        if !isEnabled(.cdsDisableCompatibilityMode) {
+            return true
+        }
+        return false
+    }
+
     // MARK: UInt values
 
     private static func getUIntValue(
@@ -555,6 +571,7 @@ private struct Flags {
         case ringrtcNwPathMonitorTrialKillSwitch
         case stopMirroringToSVR2Override
         case exclusiveSVR2
+        case cdsDisableCompatibilityMode
     }
 
     // Values defined in this array remain set once they are
@@ -640,6 +657,7 @@ private extension FlagType {
         case "minNicknameLength": return "global.nicknames.min"
         case "maxNicknameLength": return "global.nicknames.max"
         case "safetyNumberAci": return "global.safetyNumberAci"
+        case "cdsDisableCompatibilityMode": return "cds.disableCompatibilityMode"
         default: return Flags.prefix + rawValue
         }
     }
