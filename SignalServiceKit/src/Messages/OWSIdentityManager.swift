@@ -264,7 +264,7 @@ extension OWSIdentityManager {
             return
         }
 
-        guard let localAci = tsAccountManager.localUuid(with: transaction) else {
+        guard let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci else {
             owsFailDebug("Missing ACI while processing incoming PNI change-number sync message!")
             return
         }
@@ -302,8 +302,8 @@ extension OWSIdentityManager {
 
         tsAccountManager.updateLocalPhoneNumber(
             E164ObjC(newE164),
-            aci: localAci,
-            pni: updatedPni,
+            aci: AciObjC(localAci),
+            pni: PniObjC(Pni(fromUUID: updatedPni)),
             transaction: transaction
         )
 

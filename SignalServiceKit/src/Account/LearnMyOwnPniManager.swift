@@ -4,6 +4,7 @@
 //
 
 import Curve25519Kit
+import LibSignalClient
 import SignalCoreKit
 
 /// It is possible that a user does not know their own PNI. However, in order to
@@ -101,13 +102,13 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
             self.accountServiceClient.getAccountWhoAmI()
         }.map(on: schedulers.global()) { whoAmI -> UntypedServiceId in
             let remoteE164 = whoAmI.e164
-            let remoteAci: UntypedServiceId = UntypedServiceId(whoAmI.aci)
-            let remotePni: UntypedServiceId = UntypedServiceId(whoAmI.pni)
+            let remoteAci = Aci(fromUUID: whoAmI.aci)
+            let remotePni = Pni(fromUUID: whoAmI.pni)
 
             self.logger.info("Successfully fetched PNI: \(remotePni)")
 
             guard
-                localIdentifiers.aci.untypedServiceId == remoteAci,
+                localIdentifiers.aci == remoteAci,
                 localIdentifiers.contains(phoneNumber: remoteE164)
             else {
                 throw OWSGenericError(
@@ -124,7 +125,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
                 )
             }
 
-            return remotePni
+            return remotePni.untypedServiceId
         }
     }
 
@@ -295,7 +296,7 @@ class _LearnMyOwnPniManagerImpl_ProfileFetcher_Wrapper: _LearnMyOwnPniManagerImp
 protocol _LearnMyOwnPniManagerImpl_TSAccountManager_Shim {
     func isPrimaryDevice(tx: DBReadTransaction) -> Bool
     func localIdentifiers(tx: DBReadTransaction) -> LocalIdentifiers?
-    func updateLocalIdentifiers(e164: E164, aci: UntypedServiceId, pni: UntypedServiceId, tx: DBWriteTransaction)
+    func updateLocalIdentifiers(e164: E164, aci: Aci, pni: Pni, tx: DBWriteTransaction)
 }
 
 class _LearnMyOwnPniManagerImpl_TSAccountManager_Wrapper: _LearnMyOwnPniManagerImpl_TSAccountManager_Shim {
@@ -313,11 +314,11 @@ class _LearnMyOwnPniManagerImpl_TSAccountManager_Wrapper: _LearnMyOwnPniManagerI
         return tsAccountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    func updateLocalIdentifiers(e164: E164, aci: UntypedServiceId, pni: UntypedServiceId, tx: DBWriteTransaction) {
+    func updateLocalIdentifiers(e164: E164, aci: Aci, pni: Pni, tx: DBWriteTransaction) {
         tsAccountManager.updateLocalPhoneNumber(
             E164ObjC(e164),
-            aci: aci.uuidValue,
-            pni: pni.uuidValue,
+            aci: AciObjC(aci),
+            pni: PniObjC(pni),
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }

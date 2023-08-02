@@ -5,6 +5,7 @@
 
 import Contacts
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 
 public protocol RegistrationCoordinatorLoaderDelegate: AnyObject {
@@ -902,8 +903,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             deps.tsAccountManager.didRegister(
                 e164: accountIdentity.e164,
-                aci: accountIdentity.aci,
-                pni: accountIdentity.pni,
+                aci: Aci(fromUUID: accountIdentity.aci),
+                pni: Pni(fromUUID: accountIdentity.pni),
                 authToken: accountIdentity.authPassword,
                 tx
             )
@@ -3297,8 +3298,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // syncing out-of-date state to storage service.
                     strongSelf.deps.tsAccountManager.updateLocalPhoneNumber(
                         e164: accountIdentity.e164,
-                        aci: accountIdentity.aci,
-                        pni: accountIdentity.pni,
+                        aci: Aci(fromUUID: accountIdentity.aci),
+                        pni: Pni(fromUUID: accountIdentity.pni),
                         tx
                     )
                     // Make sure we update our local account.
@@ -3352,7 +3353,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 db.write { tx in
                     deps.tsAccountManager.resetForReregistration(
                         e164: state.e164,
-                        aci: state.aci,
+                        aci: Aci(fromUUID: state.aci),
                         tx
                     )
                     updatePersistedState(tx) {

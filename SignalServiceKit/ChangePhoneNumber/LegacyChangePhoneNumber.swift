@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 @objc
@@ -156,8 +157,8 @@ public class LegacyChangePhoneNumber: NSObject {
         if let successfulChangeParams {
             do {
                 try updateLocalPhoneNumber(
-                    forServiceAci: successfulChangeParams.serviceAci,
-                    servicePni: successfulChangeParams.servicePni,
+                    forServiceAci: Aci(fromUUID: successfulChangeParams.serviceAci),
+                    servicePni: Pni(fromUUID: successfulChangeParams.servicePni),
                     serviceE164: successfulChangeParams.newServiceE164,
                     transaction: transaction
                 )
@@ -268,8 +269,8 @@ public class LegacyChangePhoneNumber: NSObject {
         }.map(on: DispatchQueue.global()) { whoAmIResponse throws in
             try self.databaseStorage.write { transaction in
                 try self.updateLocalPhoneNumber(
-                    forServiceAci: whoAmIResponse.aci,
-                    servicePni: whoAmIResponse.pni,
+                    forServiceAci: Aci(fromUUID: whoAmIResponse.aci),
+                    servicePni: Pni(fromUUID: whoAmIResponse.pni),
                     serviceE164: whoAmIResponse.e164,
                     transaction: transaction
                 )
@@ -286,19 +287,20 @@ public class LegacyChangePhoneNumber: NSObject {
     /// The persisted local phone number.
     @discardableResult
     fileprivate func updateLocalPhoneNumber(
-        forServiceAci serviceAci: UUID,
-        servicePni: UUID,
+        forServiceAci serviceAci: Aci,
+        servicePni: Pni,
         serviceE164: E164,
         transaction: SDSAnyWriteTransaction
     ) throws -> E164 {
         guard
-            let localAci = tsAccountManager.localUuid,
-            let localE164 = E164(tsAccountManager.localNumber)
+            let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction),
+            let localE164 = E164(localIdentifiers.phoneNumber)
         else {
             throw OWSAssertionError("Missing or invalid local parameters!")
         }
 
-        let localPni = tsAccountManager.localPni
+        let localAci = localIdentifiers.aci
+        let localPni = localIdentifiers.pni
 
         guard serviceAci == localAci else {
             throw OWSAssertionError("Service ACI \(serviceAci) unexpectedly did not match local ACI!")
@@ -307,7 +309,7 @@ public class LegacyChangePhoneNumber: NSObject {
         Logger.info(
             """
             localAci: \(localAci),
-            localPni: \(localPni?.uuidString ?? "nil"),
+            localPni: \(localPni?.logString ?? "nil"),
             localE164: \(localE164),
             serviceAci: \(serviceAci),
             servicePni: \(servicePni),
@@ -317,8 +319,8 @@ public class LegacyChangePhoneNumber: NSObject {
 
         let recipientMerger = DependenciesBridge.shared.recipientMerger
         let localRecipient = recipientMerger.applyMergeForLocalAccount(
-            aci: UntypedServiceId(serviceAci),
-            pni: UntypedServiceId(servicePni),
+            aci: serviceAci.untypedServiceId,
+            pni: servicePni.untypedServiceId,
             phoneNumber: serviceE164,
             tx: transaction.asV2Write
         )
@@ -334,8 +336,8 @@ public class LegacyChangePhoneNumber: NSObject {
 
             self.tsAccountManager.updateLocalPhoneNumber(
                E164ObjC(serviceE164),
-                aci: serviceAci, // Verified equal to `localAci` above
-                pni: servicePni,
+                aci: AciObjC(serviceAci), // Verified equal to `localAci` above
+                pni: PniObjC(servicePni),
                 transaction: transaction
             )
 

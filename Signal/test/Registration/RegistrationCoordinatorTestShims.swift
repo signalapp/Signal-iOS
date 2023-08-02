@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 @testable import SignalServiceKit
 @testable import Signal
@@ -328,12 +329,12 @@ public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordin
 
     public var resetForReregistrationMock: ((
         _ e164: E164,
-        _ aci: UUID
+        _ aci: Aci
     ) -> Void)?
 
     public func resetForReregistration(
         e164: E164,
-        aci: UUID,
+        aci: Aci,
         _ tx: DBWriteTransaction
     ) {
         resetForReregistrationMock?(e164, aci)
@@ -341,15 +342,15 @@ public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordin
 
     public var didRegisterMock: ((
         _ e164: E164,
-        _ aci: UUID,
-        _ pni: UUID,
+        _ aci: Aci,
+        _ pni: Pni,
         _ authToken: String
     ) -> Void)?
 
     public func didRegister(
         e164: E164,
-        aci: UUID,
-        pni: UUID,
+        aci: Aci,
+        pni: Pni,
         authToken: String,
         _ tx: DBWriteTransaction
     ) {
@@ -358,14 +359,14 @@ public class _RegistrationCoordinator_TSAccountManagerMock: _RegistrationCoordin
 
     public var updateLocalPhoneNumberMock: ((
         _ e164: E164,
-        _ aci: UUID,
-        _ pni: UUID
+        _ aci: Aci,
+        _ pni: Pni
     ) -> Void)?
 
     public func updateLocalPhoneNumber(
         e164: E164,
-        aci: UUID,
-        pni: UUID,
+        aci: Aci,
+        pni: Pni,
         _ tx: DBWriteTransaction
     ) {
         updateLocalPhoneNumberMock?(e164, aci, pni)

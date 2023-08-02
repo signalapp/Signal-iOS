@@ -5,6 +5,7 @@
 
 import Contacts
 import Foundation
+import LibSignalClient
 import SignalMessaging
 import SignalServiceKit
 
@@ -411,22 +412,22 @@ public protocol _RegistrationCoordinator_TSAccountManagerShim {
 
     func resetForReregistration(
         e164: E164,
-        aci: UUID,
+        aci: Aci,
         _ tx: DBWriteTransaction
     )
 
     func didRegister(
         e164: E164,
-        aci: UUID,
-        pni: UUID,
+        aci: Aci,
+        pni: Pni,
         authToken: String,
         _ tx: DBWriteTransaction
     )
 
     func updateLocalPhoneNumber(
         e164: E164,
-        aci: UUID,
-        pni: UUID,
+        aci: Aci,
+        pni: Pni,
         _ tx: DBWriteTransaction
     )
 
@@ -478,12 +479,12 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
 
     public func resetForReregistration(
         e164: E164,
-        aci: UUID,
+        aci: Aci,
         _ tx: DBWriteTransaction
     ) {
         manager.resetForReregistration(
             withLocalPhoneNumber: .init(e164),
-            localAci: aci,
+            localAci: AciObjC(aci),
             wasPrimaryDevice: true,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
@@ -491,15 +492,15 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
 
     public func didRegister(
         e164: E164,
-        aci: UUID,
-        pni: UUID,
+        aci: Aci,
+        pni: Pni,
         authToken: String,
         _ tx: DBWriteTransaction
     ) {
         manager.didRegisterPrimary(
             withE164: E164ObjC(e164),
-            aci: aci,
-            pni: pni,
+            aci: AciObjC(aci),
+            pni: PniObjC(pni),
             authToken: authToken,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
@@ -507,14 +508,14 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
 
     public func updateLocalPhoneNumber(
         e164: E164,
-        aci: UUID,
-        pni: UUID,
+        aci: Aci,
+        pni: Pni,
         _ tx: DBWriteTransaction
     ) {
         manager.updateLocalPhoneNumber(
             E164ObjC(e164),
-            aci: aci,
-            pni: pni,
+            aci: AciObjC(aci),
+            pni: PniObjC(pni),
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }

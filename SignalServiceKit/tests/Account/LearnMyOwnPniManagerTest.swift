@@ -106,10 +106,10 @@ class LearnMyOwnPniManagerTest: XCTestCase {
     func testFetchesPniIfMissing() {
         let localAci = Aci.randomForTesting()
         let localE164 = E164("+17735550199")!
-        let remotePni = FuturePni.randomForTesting()
+        let remotePni = Pni.randomForTesting()
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: nil, e164: localE164)
-        accountServiceClientMock.mockWhoAmI = .init(aci: localAci.untypedServiceId, pni: remotePni, e164: localE164)
+        accountServiceClientMock.mockWhoAmI = .init(aci: localAci, pni: remotePni, e164: localE164)
 
         db.read { tx in
             _ = learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
@@ -144,8 +144,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
         let localAci = Aci.randomForTesting()
         let localE164 = E164("+17735550199")!
 
-        let remoteAci = FutureAci.randomForTesting()
-        let remotePni = FuturePni.randomForTesting()
+        let remoteAci = Aci.randomForTesting()
+        let remotePni = Pni.randomForTesting()
 
         tsAccountManagerMock.mockIdentifiers = .init(aci: localAci, pni: nil, e164: localE164)
         accountServiceClientMock.mockWhoAmI = .init(aci: remoteAci, pni: remotePni, e164: localE164)
@@ -262,8 +262,8 @@ class LearnMyOwnPniManagerTest: XCTestCase {
 }
 
 private extension WhoAmIRequestFactory.Responses.WhoAmI {
-    init(aci: UntypedServiceId, pni: UntypedServiceId, e164: E164) {
-        self.init(aci: aci.uuidValue, pni: pni.uuidValue, e164: e164, usernameHash: nil)
+    init(aci: Aci, pni: Pni, e164: E164) {
+        self.init(aci: aci.rawUUID, pni: pni.rawUUID, e164: e164, usernameHash: nil)
     }
 }
 
@@ -397,7 +397,7 @@ private class ProfileFetcherMock: LearnMyOwnPniManagerImpl.Shims.ProfileFetcher 
 private class TSAccountManagerMock: LearnMyOwnPniManagerImpl.Shims.TSAccountManager {
     var isPrimaryDevice: Bool = true
     var mockIdentifiers: LocalIdentifiers?
-    var updatedPni: UntypedServiceId?
+    var updatedPni: Pni?
 
     func isPrimaryDevice(tx _: DBReadTransaction) -> Bool {
         return isPrimaryDevice
@@ -407,7 +407,7 @@ private class TSAccountManagerMock: LearnMyOwnPniManagerImpl.Shims.TSAccountMana
         return mockIdentifiers
     }
 
-    func updateLocalIdentifiers(e164 _: E164, aci _: UntypedServiceId, pni: UntypedServiceId, tx _: DBWriteTransaction) {
+    func updateLocalIdentifiers(e164 _: E164, aci _: Aci, pni: Pni, tx _: DBWriteTransaction) {
         updatedPni = pni
     }
 }

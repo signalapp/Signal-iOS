@@ -225,8 +225,8 @@ public extension TSAccountManager {
     @objc
     func storeLocalNumber(
         _ newLocalNumber: E164ObjC,
-        aci newAci: UntypedServiceIdObjC,
-        pni newPni: UntypedServiceIdObjC?,
+        aci newAci: AciObjC,
+        pni newPni: PniObjC?,
         transaction: SDSAnyWriteTransaction
     ) {
         func setIdentifier(_ newValue: String, for key: String) {
@@ -242,9 +242,10 @@ public extension TSAccountManager {
             defer { objc_sync_exit(self) }
 
             setIdentifier(newLocalNumber.stringValue, for: TSAccountManager_RegisteredNumberKey)
-            setIdentifier(newAci.uuidValue.uuidString, for: TSAccountManager_RegisteredUUIDKey)
+            setIdentifier(newAci.serviceIdUppercaseString, for: TSAccountManager_RegisteredUUIDKey)
             if let newPni {
-                setIdentifier(newPni.uuidValue.uuidString, for: TSAccountManager_RegisteredPNIKey)
+                // Encoded without the "PNI:" prefix for backwards compatibility.
+                setIdentifier(newPni.wrappedValue.rawUUID.uuidString, for: TSAccountManager_RegisteredPNIKey)
             }
 
             keyValueStore.setDate(Date(), key: TSAccountManager_RegistrationDateKey, transaction: transaction)
@@ -266,14 +267,14 @@ public extension TSAccountManager {
         }
 
         didStoreLocalNumber?(LocalIdentifiersObjC(LocalIdentifiers(
-            aci: Aci(fromUUID: newAci.wrappedValue.uuidValue),
-            pni: newPni.map { Pni(fromUUID: $0.wrappedValue.uuidValue) },
+            aci: newAci.wrappedAciValue,
+            pni: newPni?.wrappedPniValue,
             phoneNumber: newLocalNumber.stringValue
         )))
 
         let localRecipient = DependenciesBridge.shared.recipientMerger.applyMergeForLocalAccount(
-            aci: newAci.wrappedValue,
-            pni: newPni?.wrappedValue,
+            aci: newAci.wrappedAciValue.untypedServiceId,
+            pni: newPni?.wrappedPniValue.untypedServiceId,
             phoneNumber: newLocalNumber.wrappedValue,
             tx: transaction.asV2Write
         )

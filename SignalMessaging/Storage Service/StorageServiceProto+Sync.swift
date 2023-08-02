@@ -1432,13 +1432,13 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                         // the primary needs to update the storage service.
                         self.storageServiceManager.recordPendingLocalAccountUpdates()
                     }
-                } else if let localAci = tsAccountManager.localUuid(with: transaction) {
+                } else if let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) {
                     // If we're a linked device, we should always take the e164
                     // from StorageService.
                     tsAccountManager.updateLocalPhoneNumber(
                         E164ObjC(serviceLocalE164),
-                        aci: localAci,
-                        pni: tsAccountManager.localPni(with: transaction),
+                        aci: AciObjC(localIdentifiers.aci),
+                        pni: localIdentifiers.pni.map { PniObjC($0) },
                         transaction: transaction
                     )
                 } else {

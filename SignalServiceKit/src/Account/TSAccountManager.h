@@ -30,9 +30,11 @@ extern NSString *const TSAccountManager_ManualMessageFetchKey;
 
 extern NSString *const TSAccountManager_DeviceIdKey;
 
+@class AciObjC;
 @class AnyPromise;
 @class E164ObjC;
 @class LocalIdentifiersObjC;
+@class PniObjC;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
@@ -117,8 +119,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 // - uploaded push tokens
 - (void)didRegister;
 - (void)didRegisterPrimaryWithE164:(E164ObjC *)e164
-                               aci:(NSUUID *)aci
-                               pni:(NSUUID *)pni
+                               aci:(AciObjC *)aci
+                               pni:(PniObjC *)pni
                          authToken:(NSString *)authToken
                        transaction:(SDSAnyWriteTransaction *)transaction;
 
@@ -131,7 +133,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 // Returns YES on success.
 - (BOOL)resetForReregistration;
 - (void)resetForReregistrationWithLocalPhoneNumber:(E164ObjC *)localPhoneNumber
-                                          localAci:(NSUUID *)localAci
+                                          localAci:(AciObjC *)localAci
                                   wasPrimaryDevice:(BOOL)wasPrimaryDevice
                                        transaction:(SDSAnyWriteTransaction *)transaction;
 
@@ -143,8 +145,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 ///
 // PNI TODO: once all devices are PNI-capable, remove PNI nullability here.
 - (void)updateLocalPhoneNumber:(E164ObjC *)e164
-                           aci:(NSUUID *)uuid
-                           pni:(NSUUID *_Nullable)pni
+                           aci:(AciObjC *)aci
+                           pni:(PniObjC *_Nullable)pni
                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Manual Message Fetch
