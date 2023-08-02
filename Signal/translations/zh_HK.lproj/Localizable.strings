@@ -698,7 +698,7 @@
 "CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ 正在致電群組…";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ 因為來電者已更改安全號碼所以錯過了通話。";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ 因為來電者已更改安全碼所以錯過了通話。";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "返回通話";
@@ -848,7 +848,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "錯誤";
 
 /* Alert shown when the user needs to exchange messages to see the safety number. */
-"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "你與此人交換訊息後，會為其建立一個安全號碼。";
+"CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES" = "你與此人交換訊息後，會為其建立一個安全碼。";
 
 /* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "付款卡號碼無效";
@@ -2540,7 +2540,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "無法接收 %1$@ 的音訊和影片";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "這可能是由於有人未驗證你的安全號碼變更、對方的裝置有問題，或者對方已經將你封鎖。";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "這可能是由於有人未驗證你的安全碼變更、對方的裝置有問題，或者對方已經將你封鎖。";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "無法接收 %1$@ 的音訊和影片";
@@ -3326,7 +3326,7 @@
 "INCOMING_VIDEO_CALL" = "視訊通話來電";
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "You have removed this person, messaging them again will add them back to your list.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "你已移除此人，再次傳送訊息給他們會將對方加回你的清單。";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3640,6 +3640,12 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "轉寄選取的訊息";
 
+/* A label for a button that will open an address in Apple Maps. \"Maps\" is a proper noun referring to the Apple Maps app, and should be translated as such. */
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "Open in Maps";
+
+/* A label for a button that will open an address in Google Maps. \"Google Maps\" is a proper noun referring to the Google Maps app, and should be translated as such. */
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "Open in Google Maps";
+
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "開啟群組邀請";
 
@@ -3854,7 +3860,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "要加入此群組嗎？在您接受之前，對方不會知道您已看過其訊息。";
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Let %1$@ message you and share your name and photo with them? You have removed this person in the past.";
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "你是否允許 %1$@ 與你通訊，並分享你的名字及照片？你之前曾移除此人。";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "解除封鎖";
@@ -5077,6 +5083,21 @@
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "名稱";
 
+/* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account.";
+
+/* Title for an action sheet button allowing users to create a new username when their current one is corrupted. */
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "Create Username";
+
+/* Title for an action sheet button allowing users to delete their corrupted username. */
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+
+/* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "This will remove your username and disable your QR code and link. \"%1$@\" will be avaliable for others to claim. Are you sure?";
+
+/* The title of an action sheet button that will delete a user's username. */
+"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Delete Username";
+
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "編輯用戶名稱";
 
@@ -5220,6 +5241,12 @@
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "已讀取";
+
+/* The title for a context menu item that blocks a recipient from your recipient picker list. */
+"RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "Block";
+
+/* The title for a context menu item that removes a recipient from your recipient picker list. */
+"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Remove";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "無法選擇使用者。";
@@ -5443,6 +5470,12 @@
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "你個電話已經響另一個server登記咗喇，你要取消咗登記先得。";
 
+/* Label warning the user that something is wrong with their username. */
+"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+
+/* Label warning the user that something is wrong with their username link. */
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Something went wrong with your username QR code and link, it’s no longer valid. Create a new link to share with others.";
+
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "移除預覽";
 
@@ -5495,19 +5528,19 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "我們的 Signal 安全碼：\n%1$@";
 
 /* Header informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "安全號碼正在更新中。";
+"SAFETY_NUMBER_TRANSITION_HEADER_ALERT" = "安全碼正在更新中。";
 
 /* Button text for a sheet informing the user about the transition from phone number to user identifier based. */
 "SAFETY_NUMBER_TRANSITION_SHEET_HELP_TEXT" = "需要幫助嗎？";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "安全號碼會在過渡期間進行更新，以啟用 Signal 即將推出的隱私功能。";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_1" = "安全碼會在過渡期間進行更新，以啟用 Signal 即將推出的隱私功能。";
 
 /* Informs the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "要驗證安全號碼，請將色卡與聯絡人的裝置配對。如果這些無法匹配，請滑動並嘗試另一組安全號碼。只需要匹配一對。";
+"SAFETY_NUMBER_TRANSITION_SHEET_PARAGRAPH_2" = "要驗證安全碼，請將色卡與聯絡人的裝置配對。如果這些無法匹配，請滑動並嘗試另一組安全碼。只需要匹配一對。";
 
 /* Title for a sheet informing the user about the transition from phone number to user identifier based. */
-"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "安全號碼變更";
+"SAFETY_NUMBER_TRANSITION_SHEET_TITLE" = "安全碼變更";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "您與 %1$@ 之間的安全碼已變更，須重新驗證。";
@@ -6908,7 +6941,7 @@
 "STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "回覆群組";
 
 /* placeholder text for replying to a private story. Embeds {{author name}} */
-"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Reply to %1$@";
+"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "回覆 %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "無法發送限時動態。請檢查你的網路連線，然後再試一次";
@@ -7297,9 +7330,6 @@
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "標記為未讀";
 
-/* Label warning the user that the validation of their username has failed. */
-"UNREGISTERED_USERNAME_WARNING" = "你的用戶名稱發生問題，不再被指定到你的帳戶。你可以嘗試重設或選擇一個新的。";
-
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "收到不支援的附件格式";
 
@@ -7351,6 +7381,12 @@
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "重設";
 
+/* A message explaining what will happen if the user resets their QR code. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code, your existing QR code and link will no longer work.";
+
+/* A label indicating that the username link is being reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Resetting link...";
+
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "共享";
 
@@ -7387,6 +7423,9 @@
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "用戶名稱無效";
 
+/* A message indicating that a username link the user attempted to query is no longer valid. */
+"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "This username link is no longer valid.";
+
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ 不是 Signal 使用者。請確保您已輸入完整的使用者名稱。";
 
@@ -7396,11 +7435,8 @@
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "用戶名稱不得以數字開頭。";
 
-/* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "刪除用戶名稱";
-
-/* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "這將移除您的用戶名稱，讓其他用戶使用。您確定嗎？";
+/* A message explaining the side effects of changing your username. */
+"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Changing your username will reset your existing QR code and link. Are you sure?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
 "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "用戶名稱讓其他人無需透過電話號碼也可以向您傳送訊息。系統會將用戶名稱與一組數字配對，為您的地址保密。%1$@";
@@ -7457,7 +7493,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "檢查安全碼";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "若要驗證你與 %1$@ 之間的端對端加密，請比對上方色卡與對方裝置上的色卡是否匹配，以及比較數字。如果這些無法匹配，請滑動並嘗試另一組安全號碼。只需要匹配一對。";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "若要驗證你與 %1$@ 之間的端對端加密，請比對上方色卡與對方裝置上的色卡是否匹配，以及比較數字。如果這些無法匹配，請滑動並嘗試另一組安全碼。只需要匹配一對。";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "無法播放此影片";

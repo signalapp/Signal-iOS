@@ -3326,7 +3326,7 @@
 "INCOMING_VIDEO_CALL" = "تماس تصویری دریافتی";
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "You have removed this person, messaging them again will add them back to your list.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "این شخص را حذف کرده‌اید، ارسال مجدد پیام به او موجب افزودن دوباره او به لیست شما می‌شود.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3640,6 +3640,12 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "بازارسال پیام‌های انتخاب شده";
 
+/* A label for a button that will open an address in Apple Maps. \"Maps\" is a proper noun referring to the Apple Maps app, and should be translated as such. */
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "Open in Maps";
+
+/* A label for a button that will open an address in Google Maps. \"Google Maps\" is a proper noun referring to the Google Maps app, and should be translated as such. */
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "Open in Google Maps";
+
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "باز کردن دعوت گروه";
 
@@ -3854,7 +3860,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "به این گروه می‌پیوندید؟ تا زمانی که نپذیرید آن‌ها متوجه نخواهند شد که پیام‌شان را خوانده‌اید.";
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Let %1$@ message you and share your name and photo with them? You have removed this person in the past.";
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "اجازه می‌دهید که %1$@ به شما پیام بفرستد و نام و عکس‌تان با او به اشتراک گذاشته شود؟ این شخص را در گذشته حذف کرده‌اید.";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "رفع مسدودیت";
@@ -5077,6 +5083,21 @@
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "نام";
 
+/* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account.";
+
+/* Title for an action sheet button allowing users to create a new username when their current one is corrupted. */
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "Create Username";
+
+/* Title for an action sheet button allowing users to delete their corrupted username. */
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+
+/* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "This will remove your username and disable your QR code and link. \"%1$@\" will be avaliable for others to claim. Are you sure?";
+
+/* The title of an action sheet button that will delete a user's username. */
+"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Delete Username";
+
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "ویرایش نام کاربری";
 
@@ -5220,6 +5241,12 @@
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "خوانده شد";
+
+/* The title for a context menu item that blocks a recipient from your recipient picker list. */
+"RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "Block";
+
+/* The title for a context menu item that removes a recipient from your recipient picker list. */
+"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Remove";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "این کاربر قابل انتخاب شدن نیست.";
@@ -5442,6 +5469,12 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "شماره تلفنی که سعی در ثبت آن دارید ، قبلاً روی سرور دیگری ثبت شده ، لطفاً از آن‌جا بیرون آمده و دوباره امتحان کنید.";
+
+/* Label warning the user that something is wrong with their username. */
+"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+
+/* Label warning the user that something is wrong with their username link. */
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Something went wrong with your username QR code and link, it’s no longer valid. Create a new link to share with others.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "حذف پیش‌نمایش";
@@ -6908,7 +6941,7 @@
 "STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "پاسخ به گروه";
 
 /* placeholder text for replying to a private story. Embeds {{author name}} */
-"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Reply to %1$@";
+"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "پاسخ به %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "استوری ارسال نشد. اتصال خود را بررسی نموده و دوباره سعی کنید.";
@@ -7297,9 +7330,6 @@
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "خوانده نشده";
 
-/* Label warning the user that the validation of their username has failed. */
-"UNREGISTERED_USERNAME_WARNING" = "خطایی در مورد نام کاربری شما رخ داد و این نام دیگر به حساب شما تعلق ندارد. می‌توانید تنظیم دوباره آن را امتحان کنید یا نام کاربری جدیدی انتخاب کنید.";
-
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "نوع پیوست دریافت شده پشتیانی نشده است.";
 
@@ -7351,6 +7381,12 @@
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "بازنشانی";
 
+/* A message explaining what will happen if the user resets their QR code. */
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code, your existing QR code and link will no longer work.";
+
+/* A label indicating that the username link is being reset. */
+"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Resetting link...";
+
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "اشتراک‌گذاری";
 
@@ -7387,6 +7423,9 @@
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "نام کاربری نامعتبر";
 
+/* A message indicating that a username link the user attempted to query is no longer valid. */
+"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "This username link is no longer valid.";
+
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ کاربر سیگنال نیست. اطمینان حاصل کنید که نام کاربری را کامل وارد کرده‌اید.";
 
@@ -7396,11 +7435,8 @@
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "نام کاربری نمی‌تواند با عدد آغاز شود.";
 
-/* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "پاک کردن نام کاربری";
-
-/* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "با این کار، نام کاربری شما حذف می‌شود و سایر کاربران می‌توانند آن را برای خود برگزینند. آیا مطمئن هستید؟";
+/* A message explaining the side effects of changing your username. */
+"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Changing your username will reset your existing QR code and link. Are you sure?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
 "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "نام کاربری به دیگران امکان می‌دهد که بدون نیاز به شماره تلفنتان به شما پیام بدهند. نام کاربری با مجموعه‌ای از اعداد جفت‌سازی می‌شود تا آدرس شما خصوصی بماند. %1$@";
