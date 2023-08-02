@@ -77,6 +77,24 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *signedSignatureString = [signedPrekey objectForKey:@"signature"];
         NSString *signedPublicKeyString = [signedPrekey objectForKey:@"publicKey"];
 
+        int pqPreKeyId;
+        NSData *_Nullable pqPreKeyPublic;
+        NSData *_Nullable pqPreKeySignature;
+
+        NSDictionary *pqPreKeyDict = [deviceDict objectForKey:@"pqPreKey"];
+        if (![pqPreKeyDict isKindOfClass:[NSDictionary class]]) {
+            OWSLogInfo(@"No one-time pq prekey included in the bundle.");
+            pqPreKeyId = -1;
+        } else {
+            pqPreKeyId = [[pqPreKeyDict objectForKey:@"keyId"] intValue];
+
+            NSString *pqPreKeyPublicString = [pqPreKeyDict objectForKey:@"publicKey"];
+            pqPreKeyPublic = [NSData dataFromBase64StringNoPadding:pqPreKeyPublicString];
+
+            NSString *pqPreKeySignatureString = [pqPreKeyDict objectForKey:@"signature"];
+            pqPreKeySignature = [NSData dataFromBase64StringNoPadding:pqPreKeySignatureString];
+        }
+
 
         if (!(signedKeyIdNumber && signedPublicKeyString && signedSignatureString)) {
             OWSLogError(@"Missing signed key material");
@@ -100,6 +118,9 @@ NS_ASSUME_NONNULL_BEGIN
                                    signedPreKeyPublic:signedPrekeyPublic
                                        signedPreKeyId:signedPreKeyId
                                 signedPreKeySignature:signedPreKeySignature
+                                           pqPreKeyId:pqPreKeyId
+                                       pqPreKeyPublic:pqPreKeyPublic
+                                    pqPreKeySignature:pqPreKeySignature
                                           identityKey:identityKey];
     }
 

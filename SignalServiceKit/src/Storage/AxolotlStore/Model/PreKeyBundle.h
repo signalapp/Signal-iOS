@@ -17,6 +17,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) int      preKeyId;
 @property (nonatomic, readonly) int      signedPreKeyId;
 @property (nonatomic, readonly) NSData   *signedPreKeySignature;
+@property (nonatomic, readonly) int pqPreKeyId;
+@property (nonatomic, readonly) NSData *pqPreKeyPublic;
+@property (nonatomic, readonly) NSData *pqPreKeySignature;
+
 
 - (nullable instancetype)initWithRegistrationId:(int)registrationId
                                        deviceId:(int)deviceId
@@ -25,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
                              signedPreKeyPublic:(NSData *)signedPreKeyPublic
                                  signedPreKeyId:(int)signedPreKeyId
                           signedPreKeySignature:(NSData *)signedPreKeySignature
+                                     pqPreKeyId:(int)pqPreKeyId
+                                 pqPreKeyPublic:(NSData *)pqPreKeyPublic
+                              pqPreKeySignature:(NSData *)pqPreKeySignature
                                     identityKey:(NSData *)identityKey;
 
 @end

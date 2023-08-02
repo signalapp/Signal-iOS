@@ -120,6 +120,7 @@ private extension MessageSender {
 
         // Don't use UD for story preKey fetches, we don't have a valid UD auth key
         let udAccess = isStoryMessage ? nil : udSendingParamsProvider?.udSendingAccess?.udAccess
+        let requestPqKeys = FeatureFlags.enablePQXDH
 
         let requestMaker = RequestMaker(
             label: "Prekey Fetch",
@@ -128,7 +129,8 @@ private extension MessageSender {
                 return OWSRequestFactory.recipientPreKeyRequest(
                     withServiceId: UntypedServiceIdObjC(serviceId),
                     deviceId: deviceId,
-                    udAccessKey: udAccessKeyForRequest
+                    udAccessKey: udAccessKeyForRequest,
+                    requestPqKeys: requestPqKeys
                 )
             },
             udAuthFailureBlock: {
@@ -213,23 +215,53 @@ private extension MessageSender {
 
         let bundle: LibSignalClient.PreKeyBundle
         if preKeyBundle.preKeyPublic.isEmpty {
-            bundle = try LibSignalClient.PreKeyBundle(
-                registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
-                deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
-                signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
-                signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
-                signedPrekeySignature: preKeyBundle.signedPreKeySignature,
-                identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
+            if preKeyBundle.pqPreKeyPublic.isEmpty {
+                bundle = try LibSignalClient.PreKeyBundle(
+                    registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
+                    deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
+                    signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
+                    signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
+                    signedPrekeySignature: preKeyBundle.signedPreKeySignature,
+                    identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
+            } else {
+                bundle = try LibSignalClient.PreKeyBundle(
+                    registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
+                    deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
+                    signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
+                    signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
+                    signedPrekeySignature: preKeyBundle.signedPreKeySignature,
+                    identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey),
+                    kyberPrekeyId: UInt32(bitPattern: preKeyBundle.pqPreKeyId),
+                    kyberPrekey: try KEMPublicKey(preKeyBundle.pqPreKeyPublic),
+                    kyberPrekeySignature: preKeyBundle.pqPreKeySignature
+                )
+            }
         } else {
-            bundle = try LibSignalClient.PreKeyBundle(
-                registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
-                deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
-                prekeyId: UInt32(bitPattern: preKeyBundle.preKeyId),
-                prekey: try PublicKey(preKeyBundle.preKeyPublic),
-                signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
-                signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
-                signedPrekeySignature: preKeyBundle.signedPreKeySignature,
-                identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
+            if preKeyBundle.pqPreKeyPublic.isEmpty {
+                bundle = try LibSignalClient.PreKeyBundle(
+                    registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
+                    deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
+                    prekeyId: UInt32(bitPattern: preKeyBundle.preKeyId),
+                    prekey: try PublicKey(preKeyBundle.preKeyPublic),
+                    signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
+                    signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
+                    signedPrekeySignature: preKeyBundle.signedPreKeySignature,
+                    identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
+            } else {
+                bundle = try LibSignalClient.PreKeyBundle(
+                    registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
+                    deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
+                    prekeyId: UInt32(bitPattern: preKeyBundle.preKeyId),
+                    prekey: try PublicKey(preKeyBundle.preKeyPublic),
+                    signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
+                    signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
+                    signedPrekeySignature: preKeyBundle.signedPreKeySignature,
+                    identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey),
+                    kyberPrekeyId: UInt32(bitPattern: preKeyBundle.pqPreKeyId),
+                    kyberPrekey: try KEMPublicKey(preKeyBundle.pqPreKeyPublic),
+                    kyberPrekeySignature: preKeyBundle.pqPreKeySignature
+                )
+            }
         }
 
         do {

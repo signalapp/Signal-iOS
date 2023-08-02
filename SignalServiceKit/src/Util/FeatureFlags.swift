@@ -133,6 +133,8 @@ public class FeatureFlags: BaseFlags {
     public static let recipientHiding = false
 
     public static let useUpdatePreKeyOperations = build.includes(.dev)
+
+    public static let enablePQXDH = false
 }
 
 // MARK: -
