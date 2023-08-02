@@ -36,6 +36,9 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         cachedAddress.identifiers.get().serviceId
     }
 
+    @objc
+    public var serviceIdObjC: ServiceIdObjC? { serviceId.map { ServiceIdObjC.wrapValue($0) } }
+
     public var untypedServiceId: UntypedServiceId? {
         serviceId.map { UntypedServiceId($0.rawUUID) }
     }

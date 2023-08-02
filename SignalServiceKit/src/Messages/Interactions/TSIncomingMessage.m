@@ -62,7 +62,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
         return self;
     }
 
-    _authorUUID = incomingMessageBuilder.authorAci.uuidValue.UUIDString;
+    _authorUUID = incomingMessageBuilder.authorAci.serviceIdUppercaseString;
     _sourceDeviceId = incomingMessageBuilder.sourceDeviceId;
     _read = incomingMessageBuilder.read;
     _serverTimestamp = incomingMessageBuilder.serverTimestamp;

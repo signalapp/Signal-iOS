@@ -227,7 +227,7 @@ public class ReactionManager: NSObject {
                 message = builder.build(transaction: transaction)
             } else {
                 let builder = TSIncomingMessageBuilder(thread: thread)
-                builder.authorAci = UntypedServiceIdObjC(reactor.untypedServiceId)
+                builder.authorAci = AciObjC(reactor)
                 builder.serverTimestamp = NSNumber(value: serverTimestamp)
                 populateStoryContext(on: builder)
                 message = builder.build()

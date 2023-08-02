@@ -114,7 +114,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
         let (databaseStorage, url) = database()
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
 
-        let contactAci = FutureAci.randomForTesting()
+        let contactAci = Aci.randomForTesting()
 
         guard let localAci = tsAccountManager.localIdentifiers?.aci else {
             XCTFail("No local address. Test is not set up correctly")
@@ -138,7 +138,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
                 messageBody: "test outgoing message"
             )
             messageBuilder.timestamp = 1234
-            messageBuilder.authorAci = UntypedServiceIdObjC(contactAci)
+            messageBuilder.authorAci = AciObjC(contactAci)
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)
 
@@ -158,7 +158,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
                 messageTimestamp: Int64(message.timestamp),
                 messageUniqueId: message.uniqueId,
                 authorPhoneNumber: nil,
-                authorUuid: contactAci.uuidValue.uuidString
+                authorUuid: contactAci.serviceIdUppercaseString
             )
             try pendingReadReceipt.insert(transaction.unwrapGrdbWrite.database)
         }
@@ -277,7 +277,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
 
         databaseStorage.write { transaction in
-            let contactAci = FutureAci.randomForTesting()
+            let contactAci = Aci.randomForTesting()
 
             let contactThread = insertContactThread(
                 contactAddress: SignalServiceAddress(contactAci),
@@ -289,7 +289,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
                 messageBody: "foo bar"
             )
             messageBuilder.timestamp = 1234
-            messageBuilder.authorAci = UntypedServiceIdObjC(contactAci)
+            messageBuilder.authorAci = AciObjC(contactAci)
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)
         }

@@ -10,13 +10,13 @@ import XCTest
 
 class EditManagerTests: SSKBaseTestSwift {
     var db: DB!
-    var authorAci: UntypedServiceIdObjC!
+    var authorAci: AciObjC!
     var thread: TSThread!
 
     override func setUp() {
         super.setUp()
         db = MockDB()
-        authorAci = UntypedServiceIdObjC(FutureAci.constantForTesting("00000000-0000-4000-8000-000000000000"))
+        authorAci = AciObjC(Aci.constantForTesting("00000000-0000-4000-8000-000000000000"))
         thread = TSThread(uniqueId: "1")
     }
 
@@ -44,7 +44,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 thread: thread,
                 editTarget: .incomingMessage(IncomingEditMessageWrapper(
                     message: targetMessage,
-                    authorAci: authorAci.wrappedValue
+                    authorAci: authorAci.wrappedAciValue
                 )),
                 serverTimestamp: 1,
                 tx: tx
@@ -88,7 +88,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 thread: thread,
                 editTarget: .incomingMessage(IncomingEditMessageWrapper(
                     message: targetMessage,
-                    authorAci: authorAci.wrappedValue
+                    authorAci: authorAci.wrappedAciValue
                 )),
                 serverTimestamp: 1,
                 tx: tx
@@ -120,7 +120,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 thread: thread,
                 editTarget: .incomingMessage(IncomingEditMessageWrapper(
                     message: targetMessage,
-                    authorAci: authorAci.wrappedValue
+                    authorAci: authorAci.wrappedAciValue
                 )),
                 serverTimestamp: 1,
                 tx: tx
@@ -153,7 +153,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 thread: thread,
                 editTarget: .incomingMessage(IncomingEditMessageWrapper(
                     message: targetMessage,
-                    authorAci: authorAci.wrappedValue
+                    authorAci: authorAci.wrappedAciValue
                 )),
                 serverTimestamp: expiredTS,
                 tx: tx
@@ -186,7 +186,7 @@ class EditManagerTests: SSKBaseTestSwift {
                 thread: thread,
                 editTarget: .incomingMessage(IncomingEditMessageWrapper(
                     message: targetMessage,
-                    authorAci: authorAci.wrappedValue
+                    authorAci: authorAci.wrappedAciValue
                 )),
                 serverTimestamp: bigInt + 1,
                 tx: tx
@@ -293,7 +293,7 @@ class EditManagerTests: SSKBaseTestSwift {
 
         func findEditTarget(
             timestamp: UInt64,
-            authorAci: UntypedServiceId?,
+            authorAci: Aci?,
             tx: DBReadTransaction
         ) -> EditMessageTarget? {
             return nil

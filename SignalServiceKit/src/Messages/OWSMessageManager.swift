@@ -472,7 +472,7 @@ extension OWSMessageManager {
         // return and enqueue the message to be handled as early delivery
         guard let targetMessage = EditMessageFinder.editTarget(
             timestamp: editMessage.targetSentTimestamp,
-            authorAci: decryptedEnvelope.sourceAci.untypedServiceId,
+            authorAci: decryptedEnvelope.sourceAci,
             transaction: tx
         ) else {
             Logger.warn("Edit cannot find the target message")

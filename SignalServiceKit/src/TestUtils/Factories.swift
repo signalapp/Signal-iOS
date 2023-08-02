@@ -363,7 +363,7 @@ public class IncomingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var authorAciBuilder: (TSThread) -> UntypedServiceIdObjC = { thread in
+    public var authorAciBuilder: (TSThread) -> AciObjC = { thread in
         return { () -> SignalServiceAddress in
             switch thread {
             case let contactThread as TSContactThread:
@@ -375,7 +375,7 @@ public class IncomingMessageFactory: NSObject, Factory {
                 owsFailDebug("unexpected thread type")
                 return CommonGenerator.address()
             }
-        }().untypedServiceIdObjC!
+        }().aci.map { AciObjC($0) }!
     }
 
     @objc

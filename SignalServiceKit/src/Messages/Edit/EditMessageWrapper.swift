@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 /// Wrapper that preserves the type information of the message
 /// being targeted for editing.  This wrapper prevents a lot of unecessary
@@ -36,7 +37,7 @@ public protocol EditMessageWrapper {
 public struct IncomingEditMessageWrapper: EditMessageWrapper {
 
     public let message: TSIncomingMessage
-    public let authorAci: UntypedServiceId?
+    public let authorAci: Aci?
 
     public func createMessageCopy(
         dataStore: EditManager.Shims.DataStore,

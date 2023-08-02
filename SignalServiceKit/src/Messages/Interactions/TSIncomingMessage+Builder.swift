@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 // Every time we add a new property to TSIncomingMessage, we should:
 //
@@ -12,7 +13,7 @@ import Foundation
 @objc
 public class TSIncomingMessageBuilder: TSMessageBuilder {
     @objc
-    public var authorAci: UntypedServiceIdObjC?
+    public var authorAci: AciObjC?
     @objc
     public var sourceDeviceId: UInt32 = OWSDevice.primaryDeviceId
     @objc
@@ -26,7 +27,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
 
     public required init(thread: TSThread,
                          timestamp: UInt64? = nil,
-                         authorAci: UntypedServiceId? = nil,
+                         authorAci: Aci? = nil,
                          sourceDeviceId: UInt32 = 0,
                          messageBody: String? = nil,
                          bodyRanges: MessageBodyRanges? = nil,
@@ -69,7 +70,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                    storyReactionEmoji: storyReactionEmoji,
                    giftBadge: giftBadge)
 
-        self.authorAci = authorAci.map { UntypedServiceIdObjC($0) }
+        self.authorAci = authorAci.map { AciObjC($0) }
         self.sourceDeviceId = sourceDeviceId
         self.serverTimestamp = serverTimestamp
         self.serverDeliveryTimestamp = serverDeliveryTimestamp
@@ -95,7 +96,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     @objc
     public class func builder(thread: TSThread,
                               timestamp: UInt64,
-                              authorAci: UntypedServiceIdObjC?,
+                              authorAci: AciObjC?,
                               sourceDeviceId: UInt32,
                               messageBody: String?,
                               bodyRanges: MessageBodyRanges?,
@@ -117,7 +118,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                               giftBadge: OWSGiftBadge?) -> TSIncomingMessageBuilder {
         return TSIncomingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
-                                        authorAci: authorAci?.wrappedValue,
+                                        authorAci: authorAci?.wrappedAciValue,
                                         sourceDeviceId: sourceDeviceId,
                                         messageBody: messageBody,
                                         bodyRanges: bodyRanges,

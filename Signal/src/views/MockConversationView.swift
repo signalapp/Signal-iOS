@@ -199,7 +199,7 @@ private class MockIncomingMessage: TSIncomingMessage {
     init(messageBody: String, thread: MockThread) {
         let builder = TSIncomingMessageBuilder(
             thread: thread,
-            authorAci: thread.contactAddress.untypedServiceId!,
+            authorAci: thread.contactAddress.aci!,
             sourceDeviceId: 1,
             messageBody: messageBody
         )

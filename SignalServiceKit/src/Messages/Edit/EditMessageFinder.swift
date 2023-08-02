@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 
 public enum EditMessageTarget {
     case outgoingMessage(OutgoingEditMessageWrapper)
@@ -23,7 +24,7 @@ public enum EditMessageTarget {
 public class EditMessageFinder {
     public static func editTarget(
         timestamp: UInt64,
-        authorAci: UntypedServiceId?,
+        authorAci: Aci?,
         transaction: SDSAnyReadTransaction
     ) -> EditMessageTarget? {
         let sql = """
@@ -35,7 +36,7 @@ public class EditMessageFinder {
         """
         let interaction = TSInteraction.grdbFetchOne(
             sql: sql,
-            arguments: [timestamp, authorAci?.uuidValue.uuidString],
+            arguments: [timestamp, authorAci?.serviceIdUppercaseString],
             transaction: transaction.unwrapGrdbRead
         )
         switch (interaction, authorAci) {

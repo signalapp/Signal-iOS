@@ -32,10 +32,9 @@
 
 - (void)testDeletingThreadDeletesInteractions
 {
-    UntypedServiceIdObjC *aci =
-        [[UntypedServiceIdObjC alloc] initWithUuidString:@"00000000-0000-4000-8000-000000000000"];
-    TSContactThread *thread = [[TSContactThread alloc]
-        initWithContactAddress:[[SignalServiceAddress alloc] initWithUntypedServiceIdObjC:aci]];
+    AciObjC *aci = [[AciObjC alloc] initWithAciString:@"00000000-0000-4000-8000-000000000000"];
+    TSContactThread *thread =
+        [[TSContactThread alloc] initWithContactAddress:[[SignalServiceAddress alloc] initWithServiceIdObjC:aci]];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [thread anyInsertWithTransaction:transaction];
     }];
@@ -75,10 +74,9 @@
 
 - (void)testDeletingThreadDeletesAttachmentFiles
 {
-    UntypedServiceIdObjC *aci =
-        [[UntypedServiceIdObjC alloc] initWithUuidString:@"00000000-0000-4000-8000-000000000000"];
-    TSContactThread *thread = [[TSContactThread alloc]
-        initWithContactAddress:[[SignalServiceAddress alloc] initWithUntypedServiceIdObjC:aci]];
+    AciObjC *aci = [[AciObjC alloc] initWithAciString:@"00000000-0000-4000-8000-000000000000"];
+    TSContactThread *thread =
+        [[TSContactThread alloc] initWithContactAddress:[[SignalServiceAddress alloc] initWithServiceIdObjC:aci]];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [thread anyInsertWithTransaction:transaction];
     }];

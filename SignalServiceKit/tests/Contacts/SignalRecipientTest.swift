@@ -116,7 +116,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
     }
 
     func testHighTrustPhoneNumberChange() {
-        let aci = FutureAci.randomForTesting()
+        let aci = Aci.randomForTesting()
         let oldPhoneNumber = E164("+16505550101")!
         let newPhoneNumber = E164("+16505550102")!
         let oldAddress = SignalServiceAddress(serviceId: aci, phoneNumber: oldPhoneNumber.stringValue)
@@ -151,8 +151,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let oldAccount = SignalAccount(address: oldAddress)
             oldAccount.anyInsert(transaction: transaction)
 
-            mergeHighTrust(serviceId: aci, phoneNumber: oldPhoneNumber, transaction: transaction)
-            mergeHighTrust(serviceId: aci, phoneNumber: newPhoneNumber, transaction: transaction)
+            mergeHighTrust(serviceId: aci.untypedServiceId, phoneNumber: oldPhoneNumber, transaction: transaction)
+            mergeHighTrust(serviceId: aci.untypedServiceId, phoneNumber: newPhoneNumber, transaction: transaction)
 
             let newAddress = SignalServiceAddress(serviceId: aci, phoneNumber: newPhoneNumber.stringValue)
 
@@ -191,7 +191,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             XCTAssertEqual(newProfile.uniqueId, oldPhoneNumberProfile.uniqueId)
             XCTAssertEqual(newProfile.recipientPhoneNumber, newPhoneNumber.stringValue)
-            XCTAssertEqual(newProfile.recipientUUID, aci.uuidValue.uuidString)
+            XCTAssertEqual(newProfile.recipientUUID, aci.serviceIdUppercaseString)
             XCTAssertNil(OWSUserProfile.anyFetch(uniqueId: newPhoneNumberProfile.uniqueId, transaction: transaction))
 
             XCTAssertNil(newAccount)
@@ -199,8 +199,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
     }
 
     func testHighTrustUUIDChange() {
-        let oldAci = FutureAci.randomForTesting()
-        let newAci = FutureAci.randomForTesting()
+        let oldAci = Aci.randomForTesting()
+        let newAci = Aci.randomForTesting()
         let phoneNumber = E164("+16505550101")!
         let oldAddress = SignalServiceAddress(serviceId: oldAci, phoneNumber: phoneNumber.stringValue)
 
@@ -228,8 +228,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let oldAccount = SignalAccount(address: oldAddress)
             oldAccount.anyInsert(transaction: transaction)
 
-            mergeHighTrust(serviceId: oldAci, phoneNumber: phoneNumber, transaction: transaction)
-            mergeHighTrust(serviceId: newAci, phoneNumber: phoneNumber, transaction: transaction)
+            mergeHighTrust(serviceId: oldAci.untypedServiceId, phoneNumber: phoneNumber, transaction: transaction)
+            mergeHighTrust(serviceId: newAci.untypedServiceId, phoneNumber: phoneNumber, transaction: transaction)
 
             let newAddress = SignalServiceAddress(serviceId: newAci, phoneNumber: phoneNumber.stringValue)
 
@@ -276,7 +276,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             XCTAssertEqual(newAccount.uniqueId, oldAccount.uniqueId)
             XCTAssertEqual(newAccount.recipientPhoneNumber, phoneNumber.stringValue)
-            XCTAssertEqual(newAccount.recipientUUID, newAci.uuidValue.uuidString)
+            XCTAssertEqual(newAccount.recipientUUID, newAci.serviceIdUppercaseString)
         }
     }
 

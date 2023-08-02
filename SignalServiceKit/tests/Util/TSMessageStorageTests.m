@@ -34,14 +34,14 @@
     return [[SignalServiceAddress alloc] initWithUntypedServiceIdObjC:[self localAci]];
 }
 
-- (UntypedServiceIdObjC *)otherAci
+- (AciObjC *)otherAci
 {
-    return [[UntypedServiceIdObjC alloc] initWithUuidString:@"00000000-0000-4000-8000-000000000001"];
+    return [[AciObjC alloc] initWithAciString:@"00000000-0000-4000-8000-000000000001"];
 }
 
 - (SignalServiceAddress *)otherAddress
 {
-    return [[SignalServiceAddress alloc] initWithUntypedServiceIdObjC:[self otherAci]];
+    return [[SignalServiceAddress alloc] initWithServiceIdObjC:[self otherAci]];
 }
 
 - (void)setUp
@@ -156,7 +156,7 @@
             TSIncomingMessageBuilder *incomingMessageBuilder =
                 [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:body];
             incomingMessageBuilder.timestamp = i + 1;
-            incomingMessageBuilder.authorAci = authorAddress.untypedServiceIdObjC;
+            incomingMessageBuilder.authorAci = (AciObjC *)authorAddress.serviceIdObjC;
             incomingMessageBuilder.sourceDeviceId = 1;
             TSIncomingMessage *newMessage = [incomingMessageBuilder build];
             [newMessage anyInsertWithTransaction:transaction];
