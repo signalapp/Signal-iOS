@@ -45,7 +45,7 @@ public class OutgoingEditMessage: TSOutgoingMessage {
         self.targetMessageTimestamp = targetMessageTimestamp
         self.editedMessage = editMessage
 
-        let builder = TSOutgoingMessageBuilder(thread: thread)
+        let builder = TSOutgoingMessageBuilder(thread: thread, timestamp: editMessage.timestamp)
         super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
     }
 
