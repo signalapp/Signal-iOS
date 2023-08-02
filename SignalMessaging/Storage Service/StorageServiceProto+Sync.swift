@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SwiftProtobuf
 import SignalServiceKit
 
@@ -81,8 +82,8 @@ struct StorageServiceContact {
         static let storageServiceUnregisteredThreshold = kMonthInterval
     }
 
-    /// All contact records must have a UUID.
-    var serviceId: UntypedServiceId
+    /// All contact records must have an ACI.
+    var aci: Aci
 
     /// Contact records may have a phone number.
     var serviceE164: E164?
@@ -90,11 +91,11 @@ struct StorageServiceContact {
     /// Contact records may be unregistered.
     var unregisteredAtTimestamp: UInt64?
 
-    init?(serviceId: UntypedServiceId?, serviceE164: E164?, unregisteredAtTimestamp: UInt64?) {
-        guard let serviceId else {
+    init?(aci: Aci?, serviceE164: E164?, unregisteredAtTimestamp: UInt64?) {
+        guard let aci else {
             return nil
         }
-        self.serviceId = serviceId
+        self.aci = aci
         self.serviceE164 = serviceE164
         self.unregisteredAtTimestamp = unregisteredAtTimestamp
     }
@@ -126,7 +127,7 @@ struct StorageServiceContact {
             unregisteredAtTimestamp = contactRecord.unregisteredAtTimestamp
         }
         self.init(
-            serviceId: UntypedServiceId.expectNilOrValid(uuidString: contactRecord.serviceUuid),
+            aci: Aci.parseFrom(aciString: contactRecord.aci),
             serviceE164: E164.expectNilOrValid(stringValue: contactRecord.serviceE164),
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )
@@ -146,7 +147,7 @@ struct StorageServiceContact {
             )
         }
         self.init(
-            serviceId: signalRecipient.serviceId,
+            aci: signalRecipient.serviceId.map { Aci(fromUUID: $0.uuidValue) },
             serviceE164: E164.expectNilOrValid(stringValue: signalRecipient.phoneNumber),
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )
@@ -232,7 +233,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         /// this address.
         var usernameBetterIdentifierChecker = Usernames.BetterIdentifierChecker(forRecipient: recipient)
 
-        builder.setServiceUuid(contact.serviceId.uuidValue.uuidString)
+        builder.setAci(contact.aci.serviceIdString)
 
         if let serviceE164 = contact.serviceE164 {
             builder.setServiceE164(serviceE164.stringValue)
@@ -331,7 +332,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         if
             usernameBetterIdentifierChecker.usernameIsBestIdentifier(),
             let username = usernameLookupManager.fetchUsername(
-                forAci: contact.serviceId,
+                forAci: contact.aci.untypedServiceId,
                 transaction: transaction.asV2Read
             )
         {
@@ -358,7 +359,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         transaction: SDSAnyWriteTransaction
     ) -> StorageServiceMergeResult<AccountId> {
         let immutableAddress = SignalServiceAddress(
-            uuid: UntypedServiceId(uuidString: record.serviceUuid)?.uuidValue,
+            serviceId: Aci.parseFrom(aciString: record.aci),
             phoneNumber: E164(record.serviceE164)?.stringValue,
             ignoreCache: true
         )
@@ -366,7 +367,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             owsFailDebug("address unexpectedly missing for contact")
             return .invalid
         }
-        if localIdentifiers.aci.untypedServiceId == contact.serviceId {
+        if localIdentifiers.aci == contact.aci {
             owsFailDebug("Trying to merge contact with our own serviceId.")
             return .invalid
         }
@@ -377,7 +378,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         let recipient = recipientMerger.applyMergeFromLinkedDevice(
             localIdentifiers: localIdentifiers,
-            serviceId: contact.serviceId,
+            serviceId: contact.aci.untypedServiceId,
             phoneNumber: contact.serviceE164,
             tx: transaction.asV2Write
         )
@@ -502,7 +503,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         }
 
         let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
-            sourceContext: .contact(contactUuid: contact.serviceId.uuidValue),
+            sourceContext: .contact(contactUuid: contact.aci.temporary_rawUUID),
             transaction: transaction
         )
         if record.hideStory != localStoryContextAssociatedData.isHidden {
@@ -524,7 +525,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         usernameLookupManager.saveUsername(
             usernameIsBestIdentifierOnRecord ? record.username : nil,
-            forAci: contact.serviceId,
+            forAci: contact.aci.untypedServiceId,
             transaction: transaction.asV2Write
         )
 
@@ -1506,7 +1507,7 @@ extension PinnedThreadManager {
         for pinnedConversation in pinnedConversations {
             switch pinnedConversation.identifier {
             case .contact(let contact)?:
-                let address = SignalServiceAddress(uuidString: contact.uuid, phoneNumber: contact.e164)
+                let address = SignalServiceAddress(serviceIdString: contact.serviceID, phoneNumber: contact.e164)
                 guard address.isValid else {
                     owsFailDebug("Dropping pinned thread with invalid address \(address)")
                     continue
@@ -1560,8 +1561,8 @@ extension PinnedThreadManager {
 
             } else if let contactThread = pinnedThread as? TSContactThread {
                 var contactBuilder = StorageServiceProtoAccountRecordPinnedConversationContact.builder()
-                if let uuidString = contactThread.contactAddress.uuidString {
-                    contactBuilder.setUuid(uuidString)
+                if let serviceIdString = contactThread.contactAddress.serviceIdString {
+                    contactBuilder.setServiceID(serviceIdString)
                 } else if let e164 = contactThread.contactAddress.phoneNumber {
                     contactBuilder.setE164(e164)
                 } else {
@@ -1618,7 +1619,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             transaction: transaction
         ) {
             builder.setName(story.name)
-            builder.setRecipientUuids(story.addresses.compactMap { $0.uuidString })
+            builder.setRecipientServiceIds(story.addresses.compactMap { $0.serviceId?.serviceIdString })
             builder.setAllowsReplies(story.allowsReplies)
             builder.setIsBlockList(story.storyViewMode == .blockList)
         } else {
@@ -1664,6 +1665,16 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
 
         var needsUpdate = false
 
+        let remoteRecipientServiceIds = record.recipientServiceIds.compactMap { (serviceIdString) -> ServiceId? in
+            guard let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString) else {
+                return nil
+            }
+            if !FeatureFlags.phoneNumberIdentifiers, serviceId is Pni {
+                return nil
+            }
+            return serviceId
+        }
+
         if let story = existingStory {
             // My Story has a hardcoded, localized name that we don't sync
             if !story.isMyStory {
@@ -1681,11 +1692,11 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             }
 
             let localStoryIsBlocklist = story.storyViewMode == .blockList
-            let localStoryAddressUuidStrings = story.addresses.compactMap { $0.uuidString }
-            if localStoryIsBlocklist != record.isBlockList || Set(localStoryAddressUuidStrings) != Set(record.recipientUuids) {
+            let localRecipientServiceIds = story.addresses.compactMap { $0.serviceId }
+            if localStoryIsBlocklist != record.isBlockList || Set(localRecipientServiceIds) != Set(remoteRecipientServiceIds) {
                 story.updateWithStoryViewMode(
                     record.isBlockList ? .blockList : .explicit,
-                    addresses: record.recipientUuids.map { SignalServiceAddress(uuidString: $0) },
+                    addresses: remoteRecipientServiceIds.map { SignalServiceAddress($0) },
                     updateStorageService: false,
                     transaction: transaction
                 )
@@ -1699,7 +1710,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
                 uniqueId: uniqueId,
                 name: name,
                 allowsReplies: record.allowsReplies,
-                addresses: record.recipientUuids.map { SignalServiceAddress(uuidString: $0) },
+                addresses: remoteRecipientServiceIds.map { SignalServiceAddress($0) },
                 viewMode: record.isBlockList ? .blockList : .explicit
             )
             newStory.anyInsert(transaction: transaction)

@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 import SignalCoreKit
 
 struct ReceiptForLinkedDevice: Codable {
@@ -268,7 +269,7 @@ public extension OWSReceiptManager {
     @nonobjc
     private func processReceiptsFromLinkedDevice<T>(
         _ receiptProtos: [T],
-        senderServiceId: KeyPath<T, String?>,
+        senderAci: KeyPath<T, String?>,
         messageTimestamp: KeyPath<T, UInt64>,
         tx: SDSAnyWriteTransaction,
         markMessage: (TSMessage) -> Void,
@@ -276,8 +277,8 @@ public extension OWSReceiptManager {
     ) -> [T] {
         var earlyReceiptProtos = [T]()
         for receiptProto in receiptProtos {
-            guard let senderServiceId = UntypedServiceId(uuidString: receiptProto[keyPath: senderServiceId]) else {
-                owsFailDebug("Missing serviceId.")
+            guard let senderAci = Aci.parseFrom(aciString: receiptProto[keyPath: senderAci]) else {
+                owsFailDebug("Missing ACI.")
                 continue
             }
             let messageTimestamp = receiptProto[keyPath: messageTimestamp]
@@ -301,9 +302,9 @@ public extension OWSReceiptManager {
             let messages = interactions.compactMap({ $0 as? TSMessage }).filter {
                 switch $0 {
                 case is TSOutgoingMessage:
-                    return senderServiceId == tsAccountManager.localIdentifiers(transaction: tx)?.aci.untypedServiceId
+                    return senderAci == tsAccountManager.localIdentifiers(transaction: tx)?.aci
                 case let incomingMessage as TSIncomingMessage:
-                    return senderServiceId == incomingMessage.authorAddress.untypedServiceId
+                    return senderAci == incomingMessage.authorAddress.serviceId
                 default:
                     return false
                 }
@@ -316,7 +317,7 @@ public extension OWSReceiptManager {
                 continue
             }
 
-            let senderAddress = SignalServiceAddress(senderServiceId)
+            let senderAddress = SignalServiceAddress(senderAci)
             let storyMessage = StoryFinder.story(timestamp: messageTimestamp, author: senderAddress, transaction: tx)
             if let storyMessage {
                 markStoryMessage(storyMessage)
@@ -335,7 +336,7 @@ public extension OWSReceiptManager {
     ) -> [SSKProtoSyncMessageRead] {
         return processReceiptsFromLinkedDevice(
             readReceiptProtos,
-            senderServiceId: \.senderUuid,
+            senderAci: \.senderAci,
             messageTimestamp: \.timestamp,
             tx: tx,
             markMessage: {
@@ -354,7 +355,7 @@ public extension OWSReceiptManager {
     ) -> [SSKProtoSyncMessageViewed] {
         return processReceiptsFromLinkedDevice(
             viewedReceiptProtos,
-            senderServiceId: \.senderUuid,
+            senderAci: \.senderAci,
             messageTimestamp: \.timestamp,
             tx: tx,
             markMessage: {

@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
                   phoneNumbers:(NSArray<NSString *> *)phoneNumbers
-                         uuids:(NSArray<NSString *> *)uuids
+                    aciStrings:(NSArray<NSString *> *)aciStrings
                       groupIds:(NSArray<NSData *> *)groupIds
                    transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _phoneNumbers = [phoneNumbers copy];
-    _uuids = [uuids copy];
+    _uuids = [aciStrings copy];
     _groupIds = [groupIds copy];
 
     return self;
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     SSKProtoSyncMessageBlockedBuilder *blockedBuilder = [SSKProtoSyncMessageBlocked builder];
     [blockedBuilder setNumbers:_phoneNumbers];
-    [blockedBuilder setUuids:_uuids];
+    [blockedBuilder setAcis:_uuids];
     [blockedBuilder setGroupIds:_groupIds];
 
     NSError *error;

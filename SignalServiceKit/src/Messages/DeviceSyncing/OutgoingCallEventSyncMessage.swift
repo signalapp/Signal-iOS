@@ -15,12 +15,12 @@ public extension OutgoingCallEventSyncMessage {
     ) -> SSKProtoSyncMessageBuilder? {
         do {
             let callEventBuilder = SSKProtoSyncMessageCallEvent.builder()
-            callEventBuilder.setId(event.callId)
+            callEventBuilder.setCallID(event.callId)
             callEventBuilder.setType(event.type.protoValue)
             callEventBuilder.setDirection(event.direction.protoValue)
             callEventBuilder.setEvent(event.event.protoValue)
             callEventBuilder.setTimestamp(event.timestamp)
-            callEventBuilder.setPeerUuid(event.peerUuid)
+            callEventBuilder.setConversationID(event.peerUuid)
 
             let builder = SSKProtoSyncMessage.builder()
             builder.setCallEvent(try callEventBuilder.build())

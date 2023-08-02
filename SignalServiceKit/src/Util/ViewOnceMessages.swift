@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 @objc
@@ -170,7 +171,7 @@ public class ViewOnceMessages: NSObject {
         envelope: SSKProtoEnvelope,
         transaction: SDSAnyWriteTransaction
     ) -> ViewOnceSyncMessageProcessingResult {
-        guard let messageSender = UntypedServiceId(uuidString: message.senderUuid) else {
+        guard let messageSender = Aci.parseFrom(aciString: message.senderAci) else {
             owsFailDebug("Invalid messageSender.")
             return .invalidSyncMessage
         }
@@ -192,7 +193,7 @@ public class ViewOnceMessages: NSObject {
                 owsFailDebug("Could not process sync message; no local number.")
                 return false
             }
-            guard senderAddress.untypedServiceId == messageSender else {
+            guard senderAddress.serviceId == messageSender else {
                 return false
             }
             guard message.isViewOnceMessage else {

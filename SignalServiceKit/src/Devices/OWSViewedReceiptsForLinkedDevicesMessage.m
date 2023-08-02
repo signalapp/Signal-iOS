@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
         SSKProtoSyncMessageViewedBuilder *viewedProtoBuilder =
             [SSKProtoSyncMessageViewed builderWithTimestamp:viewedReceipt.messageIdTimestamp];
 
-        [viewedProtoBuilder setSenderUuid:viewedReceipt.senderAddress.uuidString];
+        [viewedProtoBuilder setSenderAci:viewedReceipt.senderAddress.aciString];
 
         NSError *error;
         SSKProtoSyncMessageViewed *_Nullable viewedProto = [viewedProtoBuilder buildAndReturnError:&error];

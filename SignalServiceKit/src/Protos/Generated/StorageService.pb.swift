@@ -342,9 +342,9 @@ struct StorageServiceProtos_ContactRecord {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var serviceUuid: String {
-    get {return _storage._serviceUuid}
-    set {_uniqueStorage()._serviceUuid = newValue}
+  var aci: String {
+    get {return _storage._aci}
+    set {_uniqueStorage()._aci = newValue}
   }
 
   var serviceE164: String {
@@ -855,7 +855,7 @@ struct StorageServiceProtos_AccountRecord {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var uuid: String = String()
+      var serviceID: String = String()
 
       var e164: String = String()
 
@@ -991,7 +991,7 @@ struct StorageServiceProtos_StoryDistributionListRecord {
 
   var name: String = String()
 
-  var recipientUuids: [String] = []
+  var recipientServiceIds: [String] = []
 
   var deletedAtTimestamp: UInt64 = 0
 
@@ -1458,7 +1458,7 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
 extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ContactRecord"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "serviceUuid"),
+    1: .same(proto: "aci"),
     2: .same(proto: "serviceE164"),
     3: .same(proto: "profileKey"),
     4: .same(proto: "identityKey"),
@@ -1479,7 +1479,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
   ]
 
   fileprivate class _StorageClass {
-    var _serviceUuid: String = String()
+    var _aci: String = String()
     var _serviceE164: String = String()
     var _profileKey: Data = Data()
     var _identityKey: Data = Data()
@@ -1503,7 +1503,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     private init() {}
 
     init(copying source: _StorageClass) {
-      _serviceUuid = source._serviceUuid
+      _aci = source._aci
       _serviceE164 = source._serviceE164
       _profileKey = source._profileKey
       _identityKey = source._identityKey
@@ -1539,7 +1539,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         // allocates stack space for every case branch when no optimizations are
         // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
-        case 1: try { try decoder.decodeSingularStringField(value: &_storage._serviceUuid) }()
+        case 1: try { try decoder.decodeSingularStringField(value: &_storage._aci) }()
         case 2: try { try decoder.decodeSingularStringField(value: &_storage._serviceE164) }()
         case 3: try { try decoder.decodeSingularBytesField(value: &_storage._profileKey) }()
         case 4: try { try decoder.decodeSingularBytesField(value: &_storage._identityKey) }()
@@ -1565,8 +1565,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      if !_storage._serviceUuid.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._serviceUuid, fieldNumber: 1)
+      if !_storage._aci.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._aci, fieldNumber: 1)
       }
       if !_storage._serviceE164.isEmpty {
         try visitor.visitSingularStringField(value: _storage._serviceE164, fieldNumber: 2)
@@ -1628,7 +1628,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
         let _storage = _args.0
         let rhs_storage = _args.1
-        if _storage._serviceUuid != rhs_storage._serviceUuid {return false}
+        if _storage._aci != rhs_storage._aci {return false}
         if _storage._serviceE164 != rhs_storage._serviceE164 {return false}
         if _storage._profileKey != rhs_storage._profileKey {return false}
         if _storage._identityKey != rhs_storage._identityKey {return false}
@@ -2212,7 +2212,7 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.M
 extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = StorageServiceProtos_AccountRecord.PinnedConversation.protoMessageName + ".Contact"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "uuid"),
+    1: .same(proto: "serviceId"),
     2: .same(proto: "e164"),
   ]
 
@@ -2222,7 +2222,7 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: SwiftPr
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.uuid) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self.serviceID) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.e164) }()
       default: break
       }
@@ -2230,8 +2230,8 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: SwiftPr
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.uuid.isEmpty {
-      try visitor.visitSingularStringField(value: self.uuid, fieldNumber: 1)
+    if !self.serviceID.isEmpty {
+      try visitor.visitSingularStringField(value: self.serviceID, fieldNumber: 1)
     }
     if !self.e164.isEmpty {
       try visitor.visitSingularStringField(value: self.e164, fieldNumber: 2)
@@ -2240,7 +2240,7 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: SwiftPr
   }
 
   static func ==(lhs: StorageServiceProtos_AccountRecord.PinnedConversation.Contact, rhs: StorageServiceProtos_AccountRecord.PinnedConversation.Contact) -> Bool {
-    if lhs.uuid != rhs.uuid {return false}
+    if lhs.serviceID != rhs.serviceID {return false}
     if lhs.e164 != rhs.e164 {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -2348,7 +2348,7 @@ extension StorageServiceProtos_StoryDistributionListRecord: SwiftProtobuf.Messag
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "identifier"),
     2: .same(proto: "name"),
-    3: .same(proto: "recipientUuids"),
+    3: .same(proto: "recipientServiceIds"),
     4: .same(proto: "deletedAtTimestamp"),
     5: .same(proto: "allowsReplies"),
     6: .same(proto: "isBlockList"),
@@ -2362,7 +2362,7 @@ extension StorageServiceProtos_StoryDistributionListRecord: SwiftProtobuf.Messag
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBytesField(value: &self.identifier) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
-      case 3: try { try decoder.decodeRepeatedStringField(value: &self.recipientUuids) }()
+      case 3: try { try decoder.decodeRepeatedStringField(value: &self.recipientServiceIds) }()
       case 4: try { try decoder.decodeSingularUInt64Field(value: &self.deletedAtTimestamp) }()
       case 5: try { try decoder.decodeSingularBoolField(value: &self.allowsReplies) }()
       case 6: try { try decoder.decodeSingularBoolField(value: &self.isBlockList) }()
@@ -2378,8 +2378,8 @@ extension StorageServiceProtos_StoryDistributionListRecord: SwiftProtobuf.Messag
     if !self.name.isEmpty {
       try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
     }
-    if !self.recipientUuids.isEmpty {
-      try visitor.visitRepeatedStringField(value: self.recipientUuids, fieldNumber: 3)
+    if !self.recipientServiceIds.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.recipientServiceIds, fieldNumber: 3)
     }
     if self.deletedAtTimestamp != 0 {
       try visitor.visitSingularUInt64Field(value: self.deletedAtTimestamp, fieldNumber: 4)
@@ -2396,7 +2396,7 @@ extension StorageServiceProtos_StoryDistributionListRecord: SwiftProtobuf.Messag
   static func ==(lhs: StorageServiceProtos_StoryDistributionListRecord, rhs: StorageServiceProtos_StoryDistributionListRecord) -> Bool {
     if lhs.identifier != rhs.identifier {return false}
     if lhs.name != rhs.name {return false}
-    if lhs.recipientUuids != rhs.recipientUuids {return false}
+    if lhs.recipientServiceIds != rhs.recipientServiceIds {return false}
     if lhs.deletedAtTimestamp != rhs.deletedAtTimestamp {return false}
     if lhs.allowsReplies != rhs.allowsReplies {return false}
     if lhs.isBlockList != rhs.isBlockList {return false}

@@ -64,6 +64,7 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let phoneNumberDiscoverability = build.includes(.internal)
 
+    @objc
     public static let phoneNumberIdentifiers = false
 
     @objc

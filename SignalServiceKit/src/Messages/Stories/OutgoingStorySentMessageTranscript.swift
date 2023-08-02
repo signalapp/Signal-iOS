@@ -86,7 +86,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
     private func applyRecipientStates(_ recipientStates: [UUID: StoryRecipientState], sentBuilder: SSKProtoSyncMessageSentBuilder) {
         for (uuid, state) in recipientStates {
             let builder = SSKProtoSyncMessageSentStoryMessageRecipient.builder()
-            builder.setDestinationUuid(uuid.uuidString)
+            builder.setDestinationServiceID(uuid.uuidString)
             builder.setDistributionListIds(state.contexts.map { $0.uuidString })
             builder.setIsAllowedToReply(state.allowsReplies)
             sentBuilder.addStoryMessageRecipients(builder.buildInfallibly())

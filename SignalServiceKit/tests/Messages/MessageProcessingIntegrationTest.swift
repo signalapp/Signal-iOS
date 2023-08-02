@@ -106,7 +106,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         observer.appendDatabaseWriteDelegate(snapshotDelegate)
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
-        envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
+        envelopeBuilder.setSourceServiceID(bobClient.uuidIdentifier)
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setServerGuid(UUID().uuidString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
@@ -142,10 +142,10 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         }
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
-        envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
+        envelopeBuilder.setSourceServiceID(bobClient.uuidIdentifier)
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setServerGuid(UUID().uuidString)
-        envelopeBuilder.setDestinationUuid(UUID().uuidString)
+        envelopeBuilder.setDestinationServiceID(Aci.randomForTesting().serviceIdString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageProcessor.processReceivedEnvelopeData(
             envelopeData,
@@ -194,11 +194,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: 100)
         envelopeBuilder.setContent(Data(ciphertext.serialize()))
         envelopeBuilder.setType(.prekeyBundle)
-        envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
+        envelopeBuilder.setSourceServiceID(bobClient.uuidIdentifier)
         envelopeBuilder.setSourceDevice(1)
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setServerGuid(UUID().uuidString)
-        envelopeBuilder.setDestinationUuid(tsAccountManager.localIdentifiers!.pni!.serviceIdString)
+        envelopeBuilder.setDestinationServiceID(tsAccountManager.localIdentifiers!.pni!.serviceIdString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageProcessor.processReceivedEnvelopeData(
             envelopeData,
@@ -235,7 +235,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         envelopeBuilder.setType(.receipt)
         envelopeBuilder.setServerTimestamp(103)
         envelopeBuilder.setSourceDevice(2)
-        envelopeBuilder.setSourceUuid(self.bobClient.uuidIdentifier)
+        envelopeBuilder.setSourceServiceID(self.bobClient.uuidIdentifier)
         let envelopeData = try envelopeBuilder.buildSerializedData()
         messageProcessor.processReceivedEnvelopeData(
             envelopeData,
@@ -262,11 +262,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: timestamp)
             envelopeBuilder.setContent(Data(ciphertext.serialize()))
             envelopeBuilder.setType(.prekeyBundle)
-            envelopeBuilder.setSourceUuid(self.linkedClient.uuidIdentifier)
+            envelopeBuilder.setSourceServiceID(self.linkedClient.uuidIdentifier)
             envelopeBuilder.setSourceDevice(2)
             envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
             envelopeBuilder.setServerGuid(UUID().uuidString)
-            envelopeBuilder.setDestinationUuid(self.localClient.uuidIdentifier)
+            envelopeBuilder.setDestinationServiceID(self.localClient.uuidIdentifier)
             let envelopeData = try! envelopeBuilder.buildSerializedData()
 
             // Process the message
@@ -321,11 +321,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: deliveryTimestamp)
         envelopeBuilder.setContent(ciphertextData)
         envelopeBuilder.setType(.ciphertext)
-        envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
+        envelopeBuilder.setSourceServiceID(bobClient.uuidIdentifier)
         envelopeBuilder.setSourceDevice(1)
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setServerGuid(UUID().uuidString)
-        envelopeBuilder.setDestinationUuid(self.localClient.uuidIdentifier)
+        envelopeBuilder.setDestinationServiceID(self.localClient.uuidIdentifier)
         let envelopeData = try envelopeBuilder.buildSerializedData()
 
         messageProcessor.processReceivedEnvelopeData(
@@ -353,11 +353,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: timestamp)
             envelopeBuilder.setContent(Data(ciphertext.serialize()))
             envelopeBuilder.setType(.ciphertext)
-            envelopeBuilder.setSourceUuid(self.linkedClient.uuidIdentifier)
+            envelopeBuilder.setSourceServiceID(self.linkedClient.uuidIdentifier)
             envelopeBuilder.setSourceDevice(2)
             envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
             envelopeBuilder.setServerGuid(UUID().uuidString)
-            envelopeBuilder.setDestinationUuid(self.localClient.uuidIdentifier)
+            envelopeBuilder.setDestinationServiceID(self.localClient.uuidIdentifier)
             let envelopeData = try! envelopeBuilder.buildSerializedData()
 
             // Process the message

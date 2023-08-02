@@ -253,8 +253,17 @@ public final class CallRecord: NSObject, SDSCodableModel, Decodable {
         messageTimestamp: UInt64,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard let peerUUIDData = callEvent.peerUuid, let peerUUID = UUID(data: peerUUIDData) else {
+        guard
+            let conversationIdData = callEvent.conversationID,
+            let peerServiceId = try? ServiceId.parseFrom(serviceIdBinary: conversationIdData)
+        else {
             Logger.warn("Got invalid peer UUID from call event sync message")
+            return
+        }
+
+        // PNI TODO: Support PNIs in this flow.
+        if peerServiceId is Pni {
+            owsFailDebug("Got unexpected Pni from call event sync message.")
             return
         }
 
@@ -286,7 +295,7 @@ public final class CallRecord: NSObject, SDSCodableModel, Decodable {
             callType = .outgoingMissed
         }
 
-        let callId = callEvent.id
+        let callId = callEvent.callID
         if let existingCallRecord = Self.fetch(forCallId: callId, transaction: transaction) {
             if isAllowedTransition(from: existingCallRecord.status, to: newStatus) {
                 existingCallRecord.anyUpdate(transaction: transaction) {
@@ -330,7 +339,7 @@ public final class CallRecord: NSObject, SDSCodableModel, Decodable {
         } else {
             // Create a new call record, and a TSCall interaction so it renders in chats.
             let finder = AnyContactThreadFinder()
-            guard let thread = finder.contactThreads(for: UntypedServiceId(peerUUID), tx: transaction).first else {
+            guard let thread = finder.contactThreads(for: peerServiceId.untypedServiceId, tx: transaction).first else {
                 Logger.error("Got a call sync message for a contact without a thread, dropping.")
                 return
             }

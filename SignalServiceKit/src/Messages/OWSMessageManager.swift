@@ -638,7 +638,7 @@ extension OWSMessageManager {
 extension SSKProtoEnvelope {
     @objc
     var formattedAddress: String {
-        return "\(String(describing: sourceServiceId)).\(sourceDevice)"
+        return "\(String(describing: sourceServiceID)).\(sourceDevice)"
     }
 }
 

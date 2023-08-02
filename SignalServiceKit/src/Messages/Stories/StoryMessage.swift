@@ -270,13 +270,20 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
 
         let manifest = StoryManifest.outgoing(recipientStates: Dictionary(uniqueKeysWithValues: try proto.storyMessageRecipients.map { recipient in
-            guard let uuidString = recipient.destinationUuid,
-                  let uuid = UUID(uuidString: uuidString) else {
-                throw OWSAssertionError("Invalid UUID on story recipient \(String(describing: recipient.destinationUuid))")
+            guard
+                let serviceIdString = recipient.destinationServiceID,
+                let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString)
+            else {
+                throw OWSAssertionError("Invalid UUID on story recipient \(String(describing: recipient.destinationServiceID))")
+            }
+
+            // PNI TODO: Support PNIs in this flow.
+            guard serviceId is Aci else {
+                throw OWSAssertionError("Unsupported PNI on story recipient")
             }
 
             return (
-                key: uuid,
+                key: serviceId.temporary_rawUUID,
                 value: StoryRecipientState(
                     allowsReplies: recipient.isAllowedToReply,
                     contexts: recipient.distributionListIds.compactMap { UUID(uuidString: $0) },
@@ -537,18 +544,27 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             var newRecipientStates = [UUID: StoryRecipientState]()
 
             for recipient in recipients {
-                guard let uuidString = recipient.destinationUuid, let uuid = UUID(uuidString: uuidString) else {
+                guard
+                    let serviceIdString = recipient.destinationServiceID,
+                    let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString)
+                else {
                     owsFailDebug("Missing UUID for story recipient")
+                    continue
+                }
+
+                // PNI TODO: Support PNIs in this flow.
+                guard serviceId is Aci else {
+                    owsFailDebug("Unsupported PNI for story recipient")
                     continue
                 }
 
                 let newContexts = recipient.distributionListIds.compactMap { UUID(uuidString: $0) }
 
-                if var recipientState = recipientStates[uuid] {
+                if var recipientState = recipientStates[serviceId.temporary_rawUUID] {
                     recipientState.contexts = newContexts
-                    newRecipientStates[uuid] = recipientState
+                    newRecipientStates[serviceId.temporary_rawUUID] = recipientState
                 } else {
-                    newRecipientStates[uuid] = .init(
+                    newRecipientStates[serviceId.temporary_rawUUID] = .init(
                         allowsReplies: recipient.isAllowedToReply,
                         contexts: newContexts,
                         sendingState: .sent // This was sent by our linked device

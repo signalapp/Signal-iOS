@@ -46,7 +46,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
     OWSCAssertDebug(verificationState != OWSVerificationStateNoLongerVerified);
 
     SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerified builder];
-    verifiedBuilder.destinationUuid = address.uuidString;
+    verifiedBuilder.destinationAci = address.aciString;
     verifiedBuilder.identityKey = identityKey;
     verifiedBuilder.state = OWSVerificationStateToProtoState(verificationState);
 

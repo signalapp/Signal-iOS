@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 
 extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
@@ -120,8 +121,8 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                 TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
                 return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
             }
-            if let serviceId = UntypedServiceId(uuidString: syncMessage.threadUuid) {
-                return TSContactThread.getWithContactAddress(SignalServiceAddress(serviceId), transaction: transaction)
+            if let threadAci = Aci.parseFrom(aciString: syncMessage.threadAci) {
+                return TSContactThread.getWithContactAddress(SignalServiceAddress(threadAci), transaction: transaction)
             }
             return nil
         }() else {

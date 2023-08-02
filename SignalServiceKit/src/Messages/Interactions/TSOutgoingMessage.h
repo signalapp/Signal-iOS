@@ -71,6 +71,7 @@ typedef NS_ENUM(NSInteger, EncryptionStyle) {
 @class SSKProtoAttachmentPointer;
 @class SSKProtoContentBuilder;
 @class SSKProtoDataMessageBuilder;
+@class ServiceIdObjC;
 @class SignalServiceAddress;
 @class TSOutgoingMessageBuilder;
 @class UntypedServiceIdObjC;
@@ -326,8 +327,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                              context:(id<DeliveryReceiptContext>)deliveryReceiptContext
                          transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<UntypedServiceIdObjC *> *)udRecipients
-                                          nonUdRecipients:(nullable NSArray<UntypedServiceIdObjC *> *)nonUdRecipients
+- (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<ServiceIdObjC *> *)udRecipients
+                                          nonUdRecipients:(nullable NSArray<ServiceIdObjC *> *)nonUdRecipients
                                              isSentUpdate:(BOOL)isSentUpdate
                                               transaction:(SDSAnyWriteTransaction *)transaction;
 

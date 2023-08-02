@@ -423,13 +423,13 @@ public class MessageFetcherJob: NSObject {
             let builder = SSKProtoEnvelope.builder(timestamp: timestamp)
             builder.setType(type)
             if let sourceUuid: String = try params.optional(key: "sourceUuid") {
-                builder.setSourceUuid(sourceUuid)
+                builder.setSourceServiceID(sourceUuid)
             }
             if let sourceDevice: UInt32 = try params.optional(key: "sourceDevice") {
                 builder.setSourceDevice(sourceDevice)
             }
             if let destinationUuid: String = try params.optional(key: "destinationUuid") {
-                builder.setDestinationUuid(destinationUuid)
+                builder.setDestinationServiceID(destinationUuid)
             }
             if let content = try params.optionalBase64EncodedData(key: "content") {
                 builder.setContent(content)

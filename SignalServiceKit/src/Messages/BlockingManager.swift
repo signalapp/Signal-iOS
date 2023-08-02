@@ -301,7 +301,7 @@ extension BlockingManager {
 
 extension BlockingManager {
     @objc
-    public func processIncomingSync(blockedPhoneNumbers: Set<String>, blockedUUIDs: Set<UUID>, blockedGroupIds: Set<Data>, transaction: SDSAnyWriteTransaction) {
+    public func processIncomingSync(blockedPhoneNumbers: Set<String>, blockedAcis: Set<AciObjC>, blockedGroupIds: Set<Data>, transaction: SDSAnyWriteTransaction) {
         Logger.info("")
         transaction.addAsyncCompletionOnMain {
             NotificationCenter.default.post(name: Self.blockedSyncDidComplete, object: nil)
@@ -315,11 +315,8 @@ extension BlockingManager {
                     newBlockedAddresses.insert(blockedAddress)
                 }
             }
-            blockedUUIDs.forEach { uuid in
-                let blockedAddress = SignalServiceAddress(uuid: uuid)
-                if blockedAddress.isValid, blockedAddress.uuidString != nil {
-                    newBlockedAddresses.insert(blockedAddress)
-                }
+            blockedAcis.forEach { aci in
+                newBlockedAddresses.insert(SignalServiceAddress(aci.wrappedAciValue))
             }
 
             // We store the list of blocked groups as GroupModels (not group ids)
@@ -380,8 +377,10 @@ extension BlockingManager {
                 let message = OWSBlockedPhoneNumbersMessage(
                     thread: thread,
                     phoneNumbers: Array(state.blockedPhoneNumbers),
-                    uuids: Array(state.blockedUUIDStrings),
-                    groupIds: Array(state.blockedGroupMap.keys), transaction: transaction)
+                    aciStrings: Array(state.blockedUUIDStrings),
+                    groupIds: Array(state.blockedGroupMap.keys),
+                    transaction: transaction
+                )
 
                 if TestingFlags.optimisticallyCommitSyncToken {
                     // Tests can opt in to setting this token early. This won't be executed in production.
@@ -444,6 +443,7 @@ extension BlockingManager {
         private(set) var isDirty: Bool
         private(set) var changeToken: UInt64
         private(set) var blockedPhoneNumbers: Set<String>
+        // ACI TODO: Rename this to `blockedAciStrings`.
         private(set) var blockedUUIDStrings: Set<String>
         private(set) var blockedGroupMap: [Data: TSGroupModel]   // GroupId -> GroupModel
 

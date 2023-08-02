@@ -24,7 +24,7 @@ class StorageServiceContactTest: XCTestCase {
 
         for (unregisteredAtTimestamp, expectedValue) in testCases {
             let storageServiceContact = try XCTUnwrap(StorageServiceContact(
-                serviceId: FutureAci.randomForTesting(),
+                aci: Aci.randomForTesting(),
                 serviceE164: nil,
                 unregisteredAtTimestamp: unregisteredAtTimestamp
             ))
@@ -48,7 +48,7 @@ class StorageServiceContactTest: XCTestCase {
 
         for (unregisteredAtTimestamp, expectedValue) in testCases {
             let storageServiceContact = try XCTUnwrap(StorageServiceContact(
-                serviceId: FutureAci.randomForTesting(),
+                aci: Aci.randomForTesting(),
                 serviceE164: nil,
                 unregisteredAtTimestamp: unregisteredAtTimestamp
             ))

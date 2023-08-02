@@ -187,7 +187,7 @@ public class EarlyMessageManager: NSObject {
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
         associatedMessageTimestamp: UInt64,
-        associatedMessageAuthor: UntypedServiceIdObjC?,
+        associatedMessageAuthor: AciObjC?,
         transaction: SDSAnyWriteTransaction
     ) {
         guard plainTextData.count <= Self.maxEarlyEnvelopeSize else {
@@ -265,7 +265,7 @@ public class EarlyMessageManager: NSObject {
     public func recordEarlyReadReceiptFromLinkedDevice(
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
-        associatedMessageAuthor: UntypedServiceIdObjC?,
+        associatedMessageAuthor: AciObjC?,
         transaction: SDSAnyWriteTransaction
     ) {
         guard let associatedMessageAuthor else {
@@ -290,7 +290,7 @@ public class EarlyMessageManager: NSObject {
     public func recordEarlyViewedReceiptFromLinkedDevice(
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
-        associatedMessageAuthor: UntypedServiceIdObjC?,
+        associatedMessageAuthor: AciObjC?,
         transaction: SDSAnyWriteTransaction
     ) {
         guard let associatedMessageAuthor else {
@@ -299,7 +299,7 @@ public class EarlyMessageManager: NSObject {
 
         let identifier = MessageIdentifier(
             timestamp: associatedMessageTimestamp,
-            author: SignalServiceAddress(associatedMessageAuthor.wrappedValue)
+            author: SignalServiceAddress(associatedMessageAuthor.wrappedAciValue)
         )
 
         Logger.info("Recording early viewed receipt from linked device for message \(identifier)")

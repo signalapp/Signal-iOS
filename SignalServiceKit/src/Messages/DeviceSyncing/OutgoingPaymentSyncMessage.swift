@@ -43,7 +43,7 @@ public extension OutgoingPaymentSyncMessage {
 
             let outgoingPaymentBuilder = SSKProtoSyncMessageOutgoingPayment.builder()
             if let recipientUuidString = mobileCoin.recipientUuidString {
-                outgoingPaymentBuilder.setRecipientUuid(recipientUuidString)
+                outgoingPaymentBuilder.setRecipientServiceID(recipientUuidString)
             }
             outgoingPaymentBuilder.setMobileCoin(try mobileCoinBuilder.build())
             if let memoMessage = mobileCoin.memoMessage {

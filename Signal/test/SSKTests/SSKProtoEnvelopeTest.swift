@@ -8,7 +8,7 @@ import XCTest
 @testable import SignalServiceKit
 import SwiftProtobuf
 
-class SSKProtoEnvelopeTest: SignalBaseTest {
+class SSKProtoEnvelopeTest: XCTestCase {
     func testParse_EmptyData() {
         let data = Data()
         XCTAssertThrowsError(try SSKProtoEnvelope(serializedData: data))
@@ -59,7 +59,7 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
     func testParse_roundtrip() {
         let builder = SSKProtoEnvelope.builder(timestamp: 123)
         builder.setType(SSKProtoEnvelopeType.prekeyBundle)
-        builder.setSourceUuid("CE599F9B-8C64-4C58-B5D0-E8014501C8A3")
+        builder.setSourceServiceID("CE599F9B-8C64-4C58-B5D0-E8014501C8A3")
         builder.setSourceDevice(1)
 
         let phonyContent = "phony data".data(using: .utf8)!
@@ -84,7 +84,7 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
 
         XCTAssertEqual(envelope.type, SSKProtoEnvelopeType.prekeyBundle)
         XCTAssertEqual(envelope.timestamp, 123)
-        XCTAssertEqual(envelope.sourceUuid, "CE599F9B-8C64-4C58-B5D0-E8014501C8A3")
+        XCTAssertEqual(envelope.sourceServiceID, "CE599F9B-8C64-4C58-B5D0-E8014501C8A3")
         XCTAssertEqual(envelope.sourceDevice, 1)
         XCTAssertTrue(envelope.hasContent)
         XCTAssertEqual(envelope.content, phonyContent)

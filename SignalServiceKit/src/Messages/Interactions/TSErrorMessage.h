@@ -138,9 +138,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                                           address:(SignalServiceAddress *)address
                               wasIdentityVerified:(BOOL)wasIdentityVerified;
 
-+ (instancetype)failedDecryptionForEnvelope:(SSKProtoEnvelope *)envelope
-                           untrustedGroupId:(nullable NSData *)untrustedGroupId
-                            withTransaction:(SDSAnyWriteTransaction *)transaction;
++ (instancetype)failedDecryptionForSender:(SignalServiceAddress *)sender
+                         untrustedGroupId:(nullable NSData *)untrustedGroupId
+                                timestamp:(uint64_t)timestamp
+                              transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)failedDecryptionForSender:(nullable SignalServiceAddress *)sender
                                    thread:(TSThread *)thread

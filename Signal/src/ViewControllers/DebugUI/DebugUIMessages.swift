@@ -3321,7 +3321,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setType(.ciphertext)
-        envelopeBuilder.setSourceUuid(source.uuidString!)
+        envelopeBuilder.setSourceServiceID(source.aci!.serviceIdString)
         envelopeBuilder.setSourceDevice(1)
 
         let envelope = try! envelopeBuilder.build()
@@ -3343,7 +3343,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         }
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: senderClient)
-        envelopeBuilder.setSourceUuid(senderClient.uuidIdentifier)
+        envelopeBuilder.setSourceServiceID(senderClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageProcessor.processReceivedEnvelopeData(
             envelopeData,
@@ -3533,7 +3533,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setType(.ciphertext)
-        envelopeBuilder.setSourceUuid(address.uuidString!)
+        envelopeBuilder.setSourceServiceID(address.aci!.serviceIdString)
         envelopeBuilder.setSourceDevice(1)
         envelopeBuilder.setContent(plaintextData)
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalCoreKit
 import SignalServiceKit
 
@@ -399,12 +400,15 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             guard let mobileCoinProto = paymentProto.mobileCoin else {
                 throw OWSAssertionError("Invalid payment sync message: Missing mobileCoinProto.")
             }
-            var recipientUuid: UUID?
-            if let recipientUuidString = paymentProto.recipientUuid {
-                guard let uuid = UUID(uuidString: recipientUuidString) else {
-                    throw OWSAssertionError("Invalid payment sync message: Missing recipientUuid.")
+            var recipientServiceId: ServiceId?
+            if let recipientServiceIdString = paymentProto.recipientServiceID {
+                guard let serviceId = try? ServiceId.parseFrom(serviceIdString: recipientServiceIdString) else {
+                    throw OWSAssertionError("Invalid payment sync message: Missing recipientServiceId.")
                 }
-                recipientUuid = uuid
+                if !FeatureFlags.phoneNumberIdentifiers, serviceId is Pni {
+                    throw OWSAssertionError("Invalid payment sync message: Unexpected Pni.")
+                }
+                recipientServiceId = serviceId
             }
             let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: mobileCoinProto.amountPicoMob)
             guard paymentAmount.isValidAmount(canBeEmpty: true) else {
@@ -445,7 +449,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             let paymentType: TSPaymentType
             if recipientPublicAddressData == nil {
                 // Possible defragmentation.
-                guard recipientUuid == nil else {
+                guard recipientServiceId == nil else {
                     throw OWSAssertionError("Invalid payment sync message: unexpected recipientUuid.")
                 }
                 guard recipientPublicAddressData == nil else {
@@ -461,7 +465,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                 paymentType = .outgoingDefragmentationFromLinkedDevice
             } else {
                 // Possible outgoing payment.
-                guard recipientUuid != nil else {
+                guard recipientServiceId != nil else {
                     throw OWSAssertionError("Invalid payment sync message: missing recipientUuid.")
                 }
                 guard paymentAmount.isValidAmount(canBeEmpty: false) else {
@@ -483,7 +487,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                                               paymentState: paymentState,
                                               paymentAmount: paymentAmount,
                                               createdDate: NSDate.ows_date(withMillisecondsSince1970: messageTimestamp),
-                                              addressUuidString: recipientUuid?.uuidString,
+                                              addressUuidString: recipientServiceId?.serviceIdUppercaseString,
                                               memoMessage: memoMessage,
                                               requestUuidString: requestUuidString,
                                               isUnread: false,

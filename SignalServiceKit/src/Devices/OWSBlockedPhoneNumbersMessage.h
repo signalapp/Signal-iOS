@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
                   phoneNumbers:(NSArray<NSString *> *)phoneNumbers
-                         uuids:(NSArray<NSString *> *)uuids
+                    aciStrings:(NSArray<NSString *> *)aciStrings
                       groupIds:(NSArray<NSData *> *)groupIds
                    transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

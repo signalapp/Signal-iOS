@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
         TSContactThread *contactThread = (TSContactThread *)thread;
-        messageRequestResponseBuilder.threadUuid = contactThread.contactAddress.uuidString;
+        messageRequestResponseBuilder.threadAci = contactThread.contactAddress.aciString;
     }
 
     SSKProtoSyncMessageBuilder *builder = [SSKProtoSyncMessage builder];

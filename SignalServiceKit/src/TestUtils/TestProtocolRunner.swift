@@ -402,7 +402,7 @@ public struct FakeService: Dependencies {
     public func buildSyncSentMessage(bodyText: String,
                                      recipient: SignalServiceAddress,
                                      timestamp: UInt64) throws -> Data {
-        guard let destinationUuid = recipient.uuidString else {
+        guard let destinationServiceId = recipient.serviceId else {
             owsFail("Cannot build sync message without a recipient UUID. Test is not set up correctly")
         }
 
@@ -413,7 +413,7 @@ public struct FakeService: Dependencies {
         let sentBuilder = SSKProtoSyncMessageSent.builder()
         sentBuilder.setMessage(try dataMessageBuilder.build())
         sentBuilder.setTimestamp(timestamp)
-        sentBuilder.setDestinationUuid(destinationUuid)
+        sentBuilder.setDestinationServiceID(destinationServiceId.serviceIdString)
         let syncMessageBuilder = SSKProtoSyncMessage.builder()
         syncMessageBuilder.setSent(try sentBuilder.build())
 

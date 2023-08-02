@@ -7,11 +7,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AciObjC;
 @class SSKProtoEnvelope;
 
 @interface OWSOutgoingResendRequest : TSOutgoingMessage
 
 - (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
+                                      sourceAci:(AciObjC *)sourceAci
                                      cipherType:(uint8_t)cipherType
                           failedEnvelopeGroupId:(nullable NSData *)failedEnvelopeGroupId
                                     transaction:(SDSAnyWriteTransaction *)transaction;

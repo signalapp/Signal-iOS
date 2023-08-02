@@ -84,8 +84,14 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Invalid groupId.");
             return nil;
         }
-    } else if (sentProto.destinationAddress) {
-        _recipientAddress = sentProto.destinationAddress;
+    } else if (sentProto.destinationServiceID) {
+        SignalServiceAddress *destinationAddress =
+            [[SignalServiceAddress alloc] initWithServiceIdString:sentProto.destinationServiceID];
+        if (!destinationAddress.isValid) {
+            OWSFailDebug(@"Invalid serviceID.");
+            return nil;
+        }
+        _recipientAddress = destinationAddress;
     } else {
         OWSFailDebug(@"Neither a group ID nor recipient address found!");
         return nil;
@@ -191,10 +197,9 @@ NS_ASSUME_NONNULL_BEGIN
         _paymentCancellation = paymentModels.cancellation;
 
         if (_dataMessage.storyContext != nil && _dataMessage.storyContext.hasSentTimestamp
-            && _dataMessage.storyContext.hasAuthorUuid) {
+            && _dataMessage.storyContext.hasAuthorAci) {
             _storyTimestamp = @(_dataMessage.storyContext.sentTimestamp);
-            _storyAuthorAddress =
-                [[SignalServiceAddress alloc] initWithUuidString:_dataMessage.storyContext.authorUuid];
+            _storyAuthorAddress = [[SignalServiceAddress alloc] initWithAciString:_dataMessage.storyContext.authorAci];
 
             if (!_storyAuthorAddress.isValid) {
                 OWSFailDebug(@"Discarding story reply transcript with invalid address %@", _storyAuthorAddress);
@@ -204,11 +209,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (sentProto.unidentifiedStatus.count > 0) {
-        NSMutableArray<UntypedServiceIdObjC *> *nonUdRecipients = [NSMutableArray new];
-        NSMutableArray<UntypedServiceIdObjC *> *udRecipients = [NSMutableArray new];
+        NSMutableArray<ServiceIdObjC *> *nonUdRecipients = [NSMutableArray new];
+        NSMutableArray<ServiceIdObjC *> *udRecipients = [NSMutableArray new];
         for (SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *statusProto in sentProto.unidentifiedStatus) {
-            UntypedServiceIdObjC *serviceId =
-                [[UntypedServiceIdObjC alloc] initWithUuidString:statusProto.destinationUuid];
+            ServiceIdObjC *serviceId = [ServiceIdObjC parseFromServiceIdString:statusProto.destinationServiceID];
+            if (!SSKFeatureFlags.phoneNumberIdentifiers && [serviceId isKindOfClass:[PniObjC class]]) {
+                OWSFailDebug(@"Delivery status proto has PNI.");
+                continue;
+            }
             if (serviceId == nil) {
                 OWSFailDebug(@"Delivery status proto is missing destination.");
                 continue;

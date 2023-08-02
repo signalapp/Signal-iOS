@@ -5,12 +5,15 @@
 
 #import <SignalServiceKit/TSErrorMessage.h>
 
+@class AciObjC;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSRecoverableDecryptionPlaceholder : TSErrorMessage <OWSReadTracking>
 
 - (instancetype)initErrorMessageWithBuilder:(TSErrorMessageBuilder *)errorMessageBuilder NS_UNAVAILABLE;
 - (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
+                                      sourceAci:(AciObjC *)sourceAci
                                untrustedGroupId:(nullable NSData *)untrustedGroupId
                                     transaction:(SDSAnyWriteTransaction *)writeTx NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

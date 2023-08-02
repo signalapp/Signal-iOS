@@ -853,8 +853,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                             }];
 }
 
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<UntypedServiceIdObjC *> *)udRecipients
-                                          nonUdRecipients:(nullable NSArray<UntypedServiceIdObjC *> *)nonUdRecipients
+- (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<ServiceIdObjC *> *)udRecipients
+                                          nonUdRecipients:(nullable NSArray<ServiceIdObjC *> *)nonUdRecipients
                                              isSentUpdate:(BOOL)isSentUpdate
                                               transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -869,10 +869,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                   NSMutableDictionary<SignalServiceAddress *,
                                                       TSOutgoingMessageRecipientState *> *recipientAddressStates
                                                       = [NSMutableDictionary new];
-                                                  for (UntypedServiceIdObjC *serviceId in udRecipients) {
+                                                  for (ServiceIdObjC *serviceId in udRecipients) {
                                                       SignalServiceAddress *recipientAddress =
                                                           [[SignalServiceAddress alloc]
-                                                              initWithUntypedServiceIdObjC:serviceId];
+                                                              initWithServiceIdObjC:serviceId];
                                                       if (recipientAddressStates[recipientAddress]) {
                                                           OWSFailDebug(@"recipient appears more than once in recipient "
                                                                        @"lists: %@",
@@ -885,10 +885,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                       recipientState.wasSentByUD = YES;
                                                       recipientAddressStates[recipientAddress] = recipientState;
                                                   }
-                                                  for (UntypedServiceIdObjC *serviceId in nonUdRecipients) {
+                                                  for (ServiceIdObjC *serviceId in nonUdRecipients) {
                                                       SignalServiceAddress *recipientAddress =
                                                           [[SignalServiceAddress alloc]
-                                                              initWithUntypedServiceIdObjC:serviceId];
+                                                              initWithServiceIdObjC:serviceId];
                                                       if (recipientAddressStates[recipientAddress]) {
                                                           OWSFailDebug(@"recipient appears more than once in recipient "
                                                                        @"lists: %@",
@@ -1043,7 +1043,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             SSKProtoDataMessageReactionBuilder *reactionBuilder =
                 [SSKProtoDataMessageReaction builderWithEmoji:self.storyReactionEmoji
                                                     timestamp:self.storyTimestamp.unsignedLongLongValue];
-            [reactionBuilder setAuthorUuid:self.storyAuthorUuidString];
+            // ACI TODO: Use `serviceIdString` to populate this value.
+            [reactionBuilder setTargetAuthorAci:self.storyAuthorUuidString];
 
             NSError *error;
             SSKProtoDataMessageReaction *_Nullable reaction = [reactionBuilder buildAndReturnError:&error];
@@ -1059,7 +1060,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
 
         SSKProtoDataMessageStoryContextBuilder *storyContextBuilder = [SSKProtoDataMessageStoryContext builder];
-        [storyContextBuilder setAuthorUuid:self.storyAuthorUuidString];
+        // ACI TODO: Use `serviceIdString` to populate this value.
+        [storyContextBuilder setAuthorAci:self.storyAuthorUuidString];
         [storyContextBuilder setSentTimestamp:self.storyTimestamp.unsignedLongLongValue];
 
         [builder setStoryContext:[storyContextBuilder buildInfallibly]];
@@ -1248,8 +1250,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     SSKProtoDataMessageQuoteBuilder *quoteBuilder = [SSKProtoDataMessageQuote builderWithId:quotedMessage.timestamp];
 
-    if (quotedMessage.authorAddress.uuidString) {
-        quoteBuilder.authorUuid = quotedMessage.authorAddress.uuidString;
+    if (quotedMessage.authorAddress.aciString) {
+        [quoteBuilder setAuthorAci:quotedMessage.authorAddress.aciString];
     } else {
         OWSFailDebug(@"It should be impossible to quote a message without a UUID");
         return nil;

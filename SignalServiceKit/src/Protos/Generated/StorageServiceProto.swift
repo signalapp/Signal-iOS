@@ -1297,14 +1297,14 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
 
     fileprivate let proto: StorageServiceProtos_ContactRecord
 
-    public var serviceUuid: String? {
-        guard hasServiceUuid else {
+    public var aci: String? {
+        guard hasAci else {
             return nil
         }
-        return proto.serviceUuid
+        return proto.aci
     }
-    public var hasServiceUuid: Bool {
-        return !proto.serviceUuid.isEmpty
+    public var hasAci: Bool {
+        return !proto.aci.isEmpty
     }
 
     public var serviceE164: String? {
@@ -1512,8 +1512,8 @@ extension StorageServiceProtoContactRecord {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> StorageServiceProtoContactRecordBuilder {
         var builder = StorageServiceProtoContactRecordBuilder()
-        if let _value = serviceUuid {
-            builder.setServiceUuid(_value)
+        if let _value = aci {
+            builder.setAci(_value)
         }
         if let _value = serviceE164 {
             builder.setServiceE164(_value)
@@ -1580,13 +1580,13 @@ public struct StorageServiceProtoContactRecordBuilder {
     fileprivate init() {}
 
     @available(swift, obsoleted: 1.0)
-    public mutating func setServiceUuid(_ valueParam: String?) {
+    public mutating func setAci(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.serviceUuid = valueParam
+        proto.aci = valueParam
     }
 
-    public mutating func setServiceUuid(_ valueParam: String) {
-        proto.serviceUuid = valueParam
+    public mutating func setAci(_ valueParam: String) {
+        proto.aci = valueParam
     }
 
     @available(swift, obsoleted: 1.0)
@@ -2231,14 +2231,14 @@ public struct StorageServiceProtoAccountRecordPinnedConversationContact: Codable
 
     fileprivate let proto: StorageServiceProtos_AccountRecord.PinnedConversation.Contact
 
-    public var uuid: String? {
-        guard hasUuid else {
+    public var serviceID: String? {
+        guard hasServiceID else {
             return nil
         }
-        return proto.uuid
+        return proto.serviceID
     }
-    public var hasUuid: Bool {
-        return !proto.uuid.isEmpty
+    public var hasServiceID: Bool {
+        return !proto.serviceID.isEmpty
     }
 
     public var e164: String? {
@@ -2299,8 +2299,8 @@ extension StorageServiceProtoAccountRecordPinnedConversationContact {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> StorageServiceProtoAccountRecordPinnedConversationContactBuilder {
         var builder = StorageServiceProtoAccountRecordPinnedConversationContactBuilder()
-        if let _value = uuid {
-            builder.setUuid(_value)
+        if let _value = serviceID {
+            builder.setServiceID(_value)
         }
         if let _value = e164 {
             builder.setE164(_value)
@@ -2319,13 +2319,13 @@ public struct StorageServiceProtoAccountRecordPinnedConversationContactBuilder {
     fileprivate init() {}
 
     @available(swift, obsoleted: 1.0)
-    public mutating func setUuid(_ valueParam: String?) {
+    public mutating func setServiceID(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.uuid = valueParam
+        proto.serviceID = valueParam
     }
 
-    public mutating func setUuid(_ valueParam: String) {
-        proto.uuid = valueParam
+    public mutating func setServiceID(_ valueParam: String) {
+        proto.serviceID = valueParam
     }
 
     @available(swift, obsoleted: 1.0)
@@ -3652,8 +3652,8 @@ public struct StorageServiceProtoStoryDistributionListRecord: Codable, CustomDeb
         return !proto.name.isEmpty
     }
 
-    public var recipientUuids: [String] {
-        return proto.recipientUuids
+    public var recipientServiceIds: [String] {
+        return proto.recipientServiceIds
     }
 
     public var deletedAtTimestamp: UInt64 {
@@ -3731,7 +3731,7 @@ extension StorageServiceProtoStoryDistributionListRecord {
         if let _value = name {
             builder.setName(_value)
         }
-        builder.setRecipientUuids(recipientUuids)
+        builder.setRecipientServiceIds(recipientServiceIds)
         if hasDeletedAtTimestamp {
             builder.setDeletedAtTimestamp(deletedAtTimestamp)
         }
@@ -3774,12 +3774,12 @@ public struct StorageServiceProtoStoryDistributionListRecordBuilder {
         proto.name = valueParam
     }
 
-    public mutating func addRecipientUuids(_ valueParam: String) {
-        proto.recipientUuids.append(valueParam)
+    public mutating func addRecipientServiceIds(_ valueParam: String) {
+        proto.recipientServiceIds.append(valueParam)
     }
 
-    public mutating func setRecipientUuids(_ wrappedItems: [String]) {
-        proto.recipientUuids = wrappedItems
+    public mutating func setRecipientServiceIds(_ wrappedItems: [String]) {
+        proto.recipientServiceIds = wrappedItems
     }
 
     public mutating func setDeletedAtTimestamp(_ valueParam: UInt64) {

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 @objc
 public extension SSKProtoSyncMessageSent {
@@ -13,12 +14,16 @@ public extension SSKProtoSyncMessageSent {
 }
 
 public extension SSKProtoEnvelope {
-    var sourceServiceId: UntypedServiceId? {
-        UntypedServiceId(uuidString: sourceUuid)
-    }
-
     @objc
-    var sourceServiceIdObjC: UntypedServiceIdObjC? {
-        sourceServiceId.map { UntypedServiceIdObjC($0) }
+    var sourceAddress: SignalServiceAddress? {
+        return sourceServiceID.flatMap { (serviceIdString) -> SignalServiceAddress? in
+            guard let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString) else {
+                return nil
+            }
+            if !FeatureFlags.phoneNumberIdentifiers, serviceId is Pni {
+                return nil
+            }
+            return SignalServiceAddress(serviceId)
+        }
     }
 }

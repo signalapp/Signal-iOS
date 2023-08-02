@@ -93,15 +93,15 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public var destinationUuid: String? {
-        guard hasDestinationUuid else {
+    public var destinationServiceID: String? {
+        guard hasDestinationServiceID else {
             return nil
         }
-        return proto.destinationUuid
+        return proto.destinationServiceID
     }
     @objc
-    public var hasDestinationUuid: Bool {
-        return proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
+    public var hasDestinationServiceID: Bool {
+        return proto.hasDestinationServiceID
     }
 
     @objc
@@ -138,15 +138,15 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public var sourceUuid: String? {
-        guard hasSourceUuid else {
+    public var sourceServiceID: String? {
+        guard hasSourceServiceID else {
             return nil
         }
-        return proto.sourceUuid
+        return proto.sourceServiceID
     }
     @objc
-    public var hasSourceUuid: Bool {
-        return proto.hasSourceUuid && !proto.sourceUuid.isEmpty
+    public var hasSourceServiceID: Bool {
+        return proto.hasSourceServiceID
     }
 
     @objc
@@ -182,13 +182,6 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
         return proto.hasSpamReportingToken
     }
 
-    @objc
-    public var hasValidSource: Bool {
-        return sourceAddress != nil
-    }
-    @objc
-    public let sourceAddress: SignalServiceAddress?
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -201,33 +194,6 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
                  timestamp: UInt64) {
         self.proto = proto
         self.timestamp = timestamp
-
-        let hasSourceUuid = proto.hasSourceUuid && !proto.sourceUuid.isEmpty
-        let sourceUuid: String? = proto.sourceUuid
-        self.sourceAddress = {
-            guard hasSourceUuid else { return nil }
-
-            let uuidString: String? = {
-                guard hasSourceUuid else { return nil }
-
-                guard let sourceUuid = sourceUuid else {
-                    owsFailDebug("sourceUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return sourceUuid
-            }()
-
-            guard let uuidString = uuidString else { return nil }
-
-            let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -303,8 +269,8 @@ extension SSKProtoEnvelope {
         if hasSourceDevice {
             builder.setSourceDevice(sourceDevice)
         }
-        if let _value = destinationUuid {
-            builder.setDestinationUuid(_value)
+        if let _value = destinationServiceID {
+            builder.setDestinationServiceID(_value)
         }
         if let _value = content {
             builder.setContent(_value)
@@ -315,8 +281,8 @@ extension SSKProtoEnvelope {
         if hasServerTimestamp {
             builder.setServerTimestamp(serverTimestamp)
         }
-        if let _value = sourceUuid {
-            builder.setSourceUuid(_value)
+        if let _value = sourceServiceID {
+            builder.setSourceServiceID(_value)
         }
         if let _value = updatedPni {
             builder.setUpdatedPni(_value)
@@ -361,13 +327,13 @@ public class SSKProtoEnvelopeBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setDestinationUuid(_ valueParam: String?) {
+    public func setDestinationServiceID(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.destinationUuid = valueParam
+        proto.destinationServiceID = valueParam
     }
 
-    public func setDestinationUuid(_ valueParam: String) {
-        proto.destinationUuid = valueParam
+    public func setDestinationServiceID(_ valueParam: String) {
+        proto.destinationServiceID = valueParam
     }
 
     @objc
@@ -404,13 +370,13 @@ public class SSKProtoEnvelopeBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setSourceUuid(_ valueParam: String?) {
+    public func setSourceServiceID(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.sourceUuid = valueParam
+        proto.sourceServiceID = valueParam
     }
 
-    public func setSourceUuid(_ valueParam: String) {
-        proto.sourceUuid = valueParam
+    public func setSourceServiceID(_ valueParam: String) {
+        proto.sourceServiceID = valueParam
     }
 
     @objc
@@ -4051,15 +4017,15 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
     public let bodyRanges: [SSKProtoBodyRange]
 
     @objc
-    public var authorUuid: String? {
-        guard hasAuthorUuid else {
+    public var authorAci: String? {
+        guard hasAuthorAci else {
             return nil
         }
-        return proto.authorUuid
+        return proto.authorAci
     }
     @objc
-    public var hasAuthorUuid: Bool {
-        return proto.hasAuthorUuid && !proto.authorUuid.isEmpty
+    public var hasAuthorAci: Bool {
+        return proto.hasAuthorAci
     }
 
     @objc
@@ -4187,8 +4153,8 @@ extension SSKProtoDataMessageQuote {
     @objc
     public func asBuilder() -> SSKProtoDataMessageQuoteBuilder {
         let builder = SSKProtoDataMessageQuoteBuilder(id: id)
-        if let _value = authorUuid {
-            builder.setAuthorUuid(_value)
+        if let _value = authorAci {
+            builder.setAuthorAci(_value)
         }
         if let _value = text {
             builder.setText(_value)
@@ -4227,13 +4193,13 @@ public class SSKProtoDataMessageQuoteBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setAuthorUuid(_ valueParam: String?) {
+    public func setAuthorAci(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.authorUuid = valueParam
+        proto.authorAci = valueParam
     }
 
-    public func setAuthorUuid(_ valueParam: String) {
-        proto.authorUuid = valueParam
+    public func setAuthorAci(_ valueParam: String) {
+        proto.authorAci = valueParam
     }
 
     @objc
@@ -6183,15 +6149,15 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public var authorUuid: String? {
-        guard hasAuthorUuid else {
+    public var targetAuthorAci: String? {
+        guard hasTargetAuthorAci else {
             return nil
         }
-        return proto.authorUuid
+        return proto.targetAuthorAci
     }
     @objc
-    public var hasAuthorUuid: Bool {
-        return proto.hasAuthorUuid && !proto.authorUuid.isEmpty
+    public var hasTargetAuthorAci: Bool {
+        return proto.hasTargetAuthorAci
     }
 
     public var hasUnknownFields: Bool {
@@ -6286,8 +6252,8 @@ extension SSKProtoDataMessageReaction {
         if hasRemove {
             builder.setRemove(remove)
         }
-        if let _value = authorUuid {
-            builder.setAuthorUuid(_value)
+        if let _value = targetAuthorAci {
+            builder.setTargetAuthorAci(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -6330,13 +6296,13 @@ public class SSKProtoDataMessageReactionBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setAuthorUuid(_ valueParam: String?) {
+    public func setTargetAuthorAci(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.authorUuid = valueParam
+        proto.targetAuthorAci = valueParam
     }
 
-    public func setAuthorUuid(_ valueParam: String) {
-        proto.authorUuid = valueParam
+    public func setTargetAuthorAci(_ valueParam: String) {
+        proto.targetAuthorAci = valueParam
     }
 
     @objc
@@ -8083,15 +8049,15 @@ public class SSKProtoDataMessageStoryContext: NSObject, Codable, NSSecureCoding 
     fileprivate let proto: SignalServiceProtos_DataMessage.StoryContext
 
     @objc
-    public var authorUuid: String? {
-        guard hasAuthorUuid else {
+    public var authorAci: String? {
+        guard hasAuthorAci else {
             return nil
         }
-        return proto.authorUuid
+        return proto.authorAci
     }
     @objc
-    public var hasAuthorUuid: Bool {
-        return proto.hasAuthorUuid && !proto.authorUuid.isEmpty
+    public var hasAuthorAci: Bool {
+        return proto.hasAuthorAci
     }
 
     @objc
@@ -8176,8 +8142,8 @@ extension SSKProtoDataMessageStoryContext {
     @objc
     public func asBuilder() -> SSKProtoDataMessageStoryContextBuilder {
         let builder = SSKProtoDataMessageStoryContextBuilder()
-        if let _value = authorUuid {
-            builder.setAuthorUuid(_value)
+        if let _value = authorAci {
+            builder.setAuthorAci(_value)
         }
         if hasSentTimestamp {
             builder.setSentTimestamp(sentTimestamp)
@@ -8199,13 +8165,13 @@ public class SSKProtoDataMessageStoryContextBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setAuthorUuid(_ valueParam: String?) {
+    public func setAuthorAci(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.authorUuid = valueParam
+        proto.authorAci = valueParam
     }
 
-    public func setAuthorUuid(_ valueParam: String) {
-        proto.authorUuid = valueParam
+    public func setAuthorAci(_ valueParam: String) {
+        proto.authorAci = valueParam
     }
 
     @objc
@@ -9439,15 +9405,15 @@ public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
     fileprivate let proto: SignalServiceProtos_Verified
 
     @objc
-    public var destinationUuid: String? {
-        guard hasDestinationUuid else {
+    public var destinationAci: String? {
+        guard hasDestinationAci else {
             return nil
         }
-        return proto.destinationUuid
+        return proto.destinationAci
     }
     @objc
-    public var hasDestinationUuid: Bool {
-        return proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
+    public var hasDestinationAci: Bool {
+        return proto.hasDestinationAci
     }
 
     @objc
@@ -9567,8 +9533,8 @@ extension SSKProtoVerified {
     @objc
     public func asBuilder() -> SSKProtoVerifiedBuilder {
         let builder = SSKProtoVerifiedBuilder()
-        if let _value = destinationUuid {
-            builder.setDestinationUuid(_value)
+        if let _value = destinationAci {
+            builder.setDestinationAci(_value)
         }
         if let _value = identityKey {
             builder.setIdentityKey(_value)
@@ -9596,13 +9562,13 @@ public class SSKProtoVerifiedBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setDestinationUuid(_ valueParam: String?) {
+    public func setDestinationAci(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.destinationUuid = valueParam
+        proto.destinationAci = valueParam
     }
 
-    public func setDestinationUuid(_ valueParam: String) {
-        proto.destinationUuid = valueParam
+    public func setDestinationAci(_ valueParam: String) {
+        proto.destinationAci = valueParam
     }
 
     @objc
@@ -9678,15 +9644,15 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
     fileprivate let proto: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus
 
     @objc
-    public var destinationUuid: String? {
-        guard hasDestinationUuid else {
+    public var destinationServiceID: String? {
+        guard hasDestinationServiceID else {
             return nil
         }
-        return proto.destinationUuid
+        return proto.destinationServiceID
     }
     @objc
-    public var hasDestinationUuid: Bool {
-        return proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
+    public var hasDestinationServiceID: Bool {
+        return proto.hasDestinationServiceID
     }
 
     @objc
@@ -9771,8 +9737,8 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder {
         let builder = SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder()
-        if let _value = destinationUuid {
-            builder.setDestinationUuid(_value)
+        if let _value = destinationServiceID {
+            builder.setDestinationServiceID(_value)
         }
         if hasUnidentified {
             builder.setUnidentified(unidentified)
@@ -9794,13 +9760,13 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder: NSObject 
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setDestinationUuid(_ valueParam: String?) {
+    public func setDestinationServiceID(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.destinationUuid = valueParam
+        proto.destinationServiceID = valueParam
     }
 
-    public func setDestinationUuid(_ valueParam: String) {
-        proto.destinationUuid = valueParam
+    public func setDestinationServiceID(_ valueParam: String) {
+        proto.destinationServiceID = valueParam
     }
 
     @objc
@@ -9854,15 +9820,15 @@ public class SSKProtoSyncMessageSentStoryMessageRecipient: NSObject, Codable, NS
     fileprivate let proto: SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient
 
     @objc
-    public var destinationUuid: String? {
-        guard hasDestinationUuid else {
+    public var destinationServiceID: String? {
+        guard hasDestinationServiceID else {
             return nil
         }
-        return proto.destinationUuid
+        return proto.destinationServiceID
     }
     @objc
-    public var hasDestinationUuid: Bool {
-        return proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
+    public var hasDestinationServiceID: Bool {
+        return proto.hasDestinationServiceID
     }
 
     @objc
@@ -9952,8 +9918,8 @@ extension SSKProtoSyncMessageSentStoryMessageRecipient {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageSentStoryMessageRecipientBuilder {
         let builder = SSKProtoSyncMessageSentStoryMessageRecipientBuilder()
-        if let _value = destinationUuid {
-            builder.setDestinationUuid(_value)
+        if let _value = destinationServiceID {
+            builder.setDestinationServiceID(_value)
         }
         builder.setDistributionListIds(distributionListIds)
         if hasIsAllowedToReply {
@@ -9976,13 +9942,13 @@ public class SSKProtoSyncMessageSentStoryMessageRecipientBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setDestinationUuid(_ valueParam: String?) {
+    public func setDestinationServiceID(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.destinationUuid = valueParam
+        proto.destinationServiceID = valueParam
     }
 
-    public func setDestinationUuid(_ valueParam: String) {
-        proto.destinationUuid = valueParam
+    public func setDestinationServiceID(_ valueParam: String) {
+        proto.destinationServiceID = valueParam
     }
 
     @objc
@@ -10073,15 +10039,15 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public var destinationUuid: String? {
-        guard hasDestinationUuid else {
+    public var destinationServiceID: String? {
+        guard hasDestinationServiceID else {
             return nil
         }
-        return proto.destinationUuid
+        return proto.destinationServiceID
     }
     @objc
-    public var hasDestinationUuid: Bool {
-        return proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
+    public var hasDestinationServiceID: Bool {
+        return proto.hasDestinationServiceID
     }
 
     @objc
@@ -10111,13 +10077,6 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
         return proto.hasIsRecipientUpdate
     }
 
-    @objc
-    public var hasValidDestination: Bool {
-        return destinationAddress != nil
-    }
-    @objc
-    public let destinationAddress: SignalServiceAddress?
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -10138,44 +10097,6 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
         self.storyMessage = storyMessage
         self.storyMessageRecipients = storyMessageRecipients
         self.editMessage = editMessage
-
-        let hasDestinationUuid = proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
-        let hasDestinationE164 = proto.hasDestinationE164 && !proto.destinationE164.isEmpty
-        let destinationUuid: String? = proto.destinationUuid
-        let destinationE164: String? = proto.destinationE164
-        self.destinationAddress = {
-            guard hasDestinationUuid || hasDestinationE164 else { return nil }
-
-            let uuidString: String? = {
-                guard hasDestinationUuid else { return nil }
-
-                guard let destinationUuid = destinationUuid else {
-                    owsFailDebug("destinationUuid was unexpectedly nil")
-                    return nil
-                }
-
-                return destinationUuid
-            }()
-
-            let phoneNumber: String? = {
-                guard hasDestinationE164 else {
-                    return nil
-                }
-
-                return ProtoUtils.parseProtoE164(destinationE164, name: "SignalServiceProtos_SyncMessage.Sent.destinationE164")
-            }()
-
-            let address = SignalServiceAddress(
-                uuidString: uuidString,
-                phoneNumber: phoneNumber
-            )
-            guard address.isValid else {
-                owsFailDebug("address was unexpectedly invalid")
-                return nil
-            }
-
-            return address
-        }()
     }
 
     @objc
@@ -10268,8 +10189,8 @@ extension SSKProtoSyncMessageSent {
         if let _value = destinationE164 {
             builder.setDestinationE164(_value)
         }
-        if let _value = destinationUuid {
-            builder.setDestinationUuid(_value)
+        if let _value = destinationServiceID {
+            builder.setDestinationServiceID(_value)
         }
         if hasTimestamp {
             builder.setTimestamp(timestamp)
@@ -10327,13 +10248,13 @@ public class SSKProtoSyncMessageSentBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setDestinationUuid(_ valueParam: String?) {
+    public func setDestinationServiceID(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.destinationUuid = valueParam
+        proto.destinationServiceID = valueParam
     }
 
-    public func setDestinationUuid(_ valueParam: String) {
-        proto.destinationUuid = valueParam
+    public func setDestinationServiceID(_ valueParam: String) {
+        proto.destinationServiceID = valueParam
     }
 
     @objc
@@ -10624,13 +10545,13 @@ public class SSKProtoSyncMessageBlocked: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public var groupIds: [Data] {
-        return proto.groupIds
+    public var acis: [String] {
+        return proto.acis
     }
 
     @objc
-    public var uuids: [String] {
-        return proto.uuids
+    public var groupIds: [Data] {
+        return proto.groupIds
     }
 
     public var hasUnknownFields: Bool {
@@ -10707,8 +10628,8 @@ extension SSKProtoSyncMessageBlocked {
     public func asBuilder() -> SSKProtoSyncMessageBlockedBuilder {
         let builder = SSKProtoSyncMessageBlockedBuilder()
         builder.setNumbers(numbers)
+        builder.setAcis(acis)
         builder.setGroupIds(groupIds)
-        builder.setUuids(uuids)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -10735,6 +10656,16 @@ public class SSKProtoSyncMessageBlockedBuilder: NSObject {
     }
 
     @objc
+    public func addAcis(_ valueParam: String) {
+        proto.acis.append(valueParam)
+    }
+
+    @objc
+    public func setAcis(_ wrappedItems: [String]) {
+        proto.acis = wrappedItems
+    }
+
+    @objc
     public func addGroupIds(_ valueParam: Data) {
         proto.groupIds.append(valueParam)
     }
@@ -10742,16 +10673,6 @@ public class SSKProtoSyncMessageBlockedBuilder: NSObject {
     @objc
     public func setGroupIds(_ wrappedItems: [Data]) {
         proto.groupIds = wrappedItems
-    }
-
-    @objc
-    public func addUuids(_ valueParam: String) {
-        proto.uuids.append(valueParam)
-    }
-
-    @objc
-    public func setUuids(_ wrappedItems: [String]) {
-        proto.uuids = wrappedItems
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -10995,15 +10916,15 @@ public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
     public let timestamp: UInt64
 
     @objc
-    public var senderUuid: String? {
-        guard hasSenderUuid else {
+    public var senderAci: String? {
+        guard hasSenderAci else {
             return nil
         }
-        return proto.senderUuid
+        return proto.senderAci
     }
     @objc
-    public var hasSenderUuid: Bool {
-        return proto.hasSenderUuid && !proto.senderUuid.isEmpty
+    public var hasSenderAci: Bool {
+        return proto.hasSenderAci
     }
 
     public var hasUnknownFields: Bool {
@@ -11087,8 +11008,8 @@ extension SSKProtoSyncMessageRead {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageReadBuilder {
         let builder = SSKProtoSyncMessageReadBuilder(timestamp: timestamp)
-        if let _value = senderUuid {
-            builder.setSenderUuid(_value)
+        if let _value = senderAci {
+            builder.setSenderAci(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -11114,13 +11035,13 @@ public class SSKProtoSyncMessageReadBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setSenderUuid(_ valueParam: String?) {
+    public func setSenderAci(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.senderUuid = valueParam
+        proto.senderAci = valueParam
     }
 
-    public func setSenderUuid(_ valueParam: String) {
-        proto.senderUuid = valueParam
+    public func setSenderAci(_ valueParam: String) {
+        proto.senderAci = valueParam
     }
 
     @objc
@@ -11172,15 +11093,15 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
     public let timestamp: UInt64
 
     @objc
-    public var senderUuid: String? {
-        guard hasSenderUuid else {
+    public var senderAci: String? {
+        guard hasSenderAci else {
             return nil
         }
-        return proto.senderUuid
+        return proto.senderAci
     }
     @objc
-    public var hasSenderUuid: Bool {
-        return proto.hasSenderUuid && !proto.senderUuid.isEmpty
+    public var hasSenderAci: Bool {
+        return proto.hasSenderAci
     }
 
     public var hasUnknownFields: Bool {
@@ -11264,8 +11185,8 @@ extension SSKProtoSyncMessageViewed {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageViewedBuilder {
         let builder = SSKProtoSyncMessageViewedBuilder(timestamp: timestamp)
-        if let _value = senderUuid {
-            builder.setSenderUuid(_value)
+        if let _value = senderAci {
+            builder.setSenderAci(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -11291,13 +11212,13 @@ public class SSKProtoSyncMessageViewedBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setSenderUuid(_ valueParam: String?) {
+    public func setSenderAci(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.senderUuid = valueParam
+        proto.senderAci = valueParam
     }
 
-    public func setSenderUuid(_ valueParam: String) {
-        proto.senderUuid = valueParam
+    public func setSenderAci(_ valueParam: String) {
+        proto.senderAci = valueParam
     }
 
     @objc
@@ -11797,15 +11718,15 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding 
     public let timestamp: UInt64
 
     @objc
-    public var senderUuid: String? {
-        guard hasSenderUuid else {
+    public var senderAci: String? {
+        guard hasSenderAci else {
             return nil
         }
-        return proto.senderUuid
+        return proto.senderAci
     }
     @objc
-    public var hasSenderUuid: Bool {
-        return proto.hasSenderUuid && !proto.senderUuid.isEmpty
+    public var hasSenderAci: Bool {
+        return proto.hasSenderAci
     }
 
     public var hasUnknownFields: Bool {
@@ -11889,8 +11810,8 @@ extension SSKProtoSyncMessageViewOnceOpen {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageViewOnceOpenBuilder {
         let builder = SSKProtoSyncMessageViewOnceOpenBuilder(timestamp: timestamp)
-        if let _value = senderUuid {
-            builder.setSenderUuid(_value)
+        if let _value = senderAci {
+            builder.setSenderAci(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -11916,13 +11837,13 @@ public class SSKProtoSyncMessageViewOnceOpenBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setSenderUuid(_ valueParam: String?) {
+    public func setSenderAci(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.senderUuid = valueParam
+        proto.senderAci = valueParam
     }
 
-    public func setSenderUuid(_ valueParam: String) {
-        proto.senderUuid = valueParam
+    public func setSenderAci(_ valueParam: String) {
+        proto.senderAci = valueParam
     }
 
     @objc
@@ -12350,15 +12271,15 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSec
     fileprivate let proto: SignalServiceProtos_SyncMessage.MessageRequestResponse
 
     @objc
-    public var threadUuid: String? {
-        guard hasThreadUuid else {
+    public var threadAci: String? {
+        guard hasThreadAci else {
             return nil
         }
-        return proto.threadUuid
+        return proto.threadAci
     }
     @objc
-    public var hasThreadUuid: Bool {
-        return proto.hasThreadUuid && !proto.threadUuid.isEmpty
+    public var hasThreadAci: Bool {
+        return proto.hasThreadAci
     }
 
     @objc
@@ -12466,8 +12387,8 @@ extension SSKProtoSyncMessageMessageRequestResponse {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageMessageRequestResponseBuilder {
         let builder = SSKProtoSyncMessageMessageRequestResponseBuilder()
-        if let _value = threadUuid {
-            builder.setThreadUuid(_value)
+        if let _value = threadAci {
+            builder.setThreadAci(_value)
         }
         if let _value = groupID {
             builder.setGroupID(_value)
@@ -12492,13 +12413,13 @@ public class SSKProtoSyncMessageMessageRequestResponseBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setThreadUuid(_ valueParam: String?) {
+    public func setThreadAci(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.threadUuid = valueParam
+        proto.threadAci = valueParam
     }
 
-    public func setThreadUuid(_ valueParam: String) {
-        proto.threadUuid = valueParam
+    public func setThreadAci(_ valueParam: String) {
+        proto.threadAci = valueParam
     }
 
     @objc
@@ -12852,15 +12773,15 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable, NSSecureCodi
     public let mobileCoin: SSKProtoSyncMessageOutgoingPaymentMobileCoin?
 
     @objc
-    public var recipientUuid: String? {
-        guard hasRecipientUuid else {
+    public var recipientServiceID: String? {
+        guard hasRecipientServiceID else {
             return nil
         }
-        return proto.recipientUuid
+        return proto.recipientServiceID
     }
     @objc
-    public var hasRecipientUuid: Bool {
-        return proto.hasRecipientUuid && !proto.recipientUuid.isEmpty
+    public var hasRecipientServiceID: Bool {
+        return proto.hasRecipientServiceID
     }
 
     @objc
@@ -12956,8 +12877,8 @@ extension SSKProtoSyncMessageOutgoingPayment {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageOutgoingPaymentBuilder {
         let builder = SSKProtoSyncMessageOutgoingPaymentBuilder()
-        if let _value = recipientUuid {
-            builder.setRecipientUuid(_value)
+        if let _value = recipientServiceID {
+            builder.setRecipientServiceID(_value)
         }
         if let _value = note {
             builder.setNote(_value)
@@ -12982,13 +12903,13 @@ public class SSKProtoSyncMessageOutgoingPaymentBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setRecipientUuid(_ valueParam: String?) {
+    public func setRecipientServiceID(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.recipientUuid = valueParam
+        proto.recipientServiceID = valueParam
     }
 
-    public func setRecipientUuid(_ valueParam: String) {
-        proto.recipientUuid = valueParam
+    public func setRecipientServiceID(_ valueParam: String) {
+        proto.recipientServiceID = valueParam
     }
 
     @objc
@@ -13129,24 +13050,24 @@ public class SSKProtoSyncMessageCallEvent: NSObject, Codable, NSSecureCoding {
     fileprivate let proto: SignalServiceProtos_SyncMessage.CallEvent
 
     @objc
-    public var peerUuid: Data? {
-        guard hasPeerUuid else {
+    public var conversationID: Data? {
+        guard hasConversationID else {
             return nil
         }
-        return proto.peerUuid
+        return proto.conversationID
     }
     @objc
-    public var hasPeerUuid: Bool {
-        return proto.hasPeerUuid && !proto.peerUuid.isEmpty
+    public var hasConversationID: Bool {
+        return proto.hasConversationID
     }
 
     @objc
-    public var id: UInt64 {
-        return proto.id
+    public var callID: UInt64 {
+        return proto.callID
     }
     @objc
-    public var hasID: Bool {
-        return proto.hasID
+    public var hasCallID: Bool {
+        return proto.hasCallID
     }
 
     @objc
@@ -13291,11 +13212,11 @@ extension SSKProtoSyncMessageCallEvent {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageCallEventBuilder {
         let builder = SSKProtoSyncMessageCallEventBuilder()
-        if let _value = peerUuid {
-            builder.setPeerUuid(_value)
+        if let _value = conversationID {
+            builder.setConversationID(_value)
         }
-        if hasID {
-            builder.setId(id)
+        if hasCallID {
+            builder.setCallID(callID)
         }
         if hasTimestamp {
             builder.setTimestamp(timestamp)
@@ -13326,18 +13247,18 @@ public class SSKProtoSyncMessageCallEventBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setPeerUuid(_ valueParam: Data?) {
+    public func setConversationID(_ valueParam: Data?) {
         guard let valueParam = valueParam else { return }
-        proto.peerUuid = valueParam
+        proto.conversationID = valueParam
     }
 
-    public func setPeerUuid(_ valueParam: Data) {
-        proto.peerUuid = valueParam
+    public func setConversationID(_ valueParam: Data) {
+        proto.conversationID = valueParam
     }
 
     @objc
-    public func setId(_ valueParam: UInt64) {
-        proto.id = valueParam
+    public func setCallID(_ valueParam: UInt64) {
+        proto.callID = valueParam
     }
 
     @objc
@@ -15062,15 +14983,15 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public var contactUuid: String? {
-        guard hasContactUuid else {
+    public var aci: String? {
+        guard hasAci else {
             return nil
         }
-        return proto.contactUuid
+        return proto.aci
     }
     @objc
-    public var hasContactUuid: Bool {
-        return proto.hasContactUuid && !proto.contactUuid.isEmpty
+    public var hasAci: Bool {
+        return proto.hasAci
     }
 
     @objc
@@ -15237,8 +15158,8 @@ extension SSKProtoContactDetails {
         if let _value = contactE164 {
             builder.setContactE164(_value)
         }
-        if let _value = contactUuid {
-            builder.setContactUuid(_value)
+        if let _value = aci {
+            builder.setAci(_value)
         }
         if let _value = name {
             builder.setName(_value)
@@ -15303,13 +15224,13 @@ public class SSKProtoContactDetailsBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setContactUuid(_ valueParam: String?) {
+    public func setAci(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.contactUuid = valueParam
+        proto.aci = valueParam
     }
 
-    public func setContactUuid(_ valueParam: String) {
-        proto.contactUuid = valueParam
+    public func setAci(_ valueParam: String) {
+        proto.aci = valueParam
     }
 
     @objc
@@ -16624,15 +16545,15 @@ public class SSKProtoBodyRange: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public var mentionUuid: String? {
-        guard hasMentionUuid else {
+    public var mentionAci: String? {
+        guard hasMentionAci else {
             return nil
         }
-        return proto.mentionUuid
+        return proto.mentionAci
     }
     @objc
-    public var hasMentionUuid: Bool {
-        return proto.hasMentionUuid && !proto.mentionUuid.isEmpty
+    public var hasMentionAci: Bool {
+        return proto.hasMentionAci
     }
 
     public var style: SSKProtoBodyRangeStyle? {
@@ -16734,8 +16655,8 @@ extension SSKProtoBodyRange {
         if hasLength {
             builder.setLength(length)
         }
-        if let _value = mentionUuid {
-            builder.setMentionUuid(_value)
+        if let _value = mentionAci {
+            builder.setMentionAci(_value)
         }
         if let _value = style {
             builder.setStyle(_value)
@@ -16767,13 +16688,13 @@ public class SSKProtoBodyRangeBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setMentionUuid(_ valueParam: String?) {
+    public func setMentionAci(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.mentionUuid = valueParam
+        proto.mentionAci = valueParam
     }
 
-    public func setMentionUuid(_ valueParam: String) {
-        proto.mentionUuid = valueParam
+    public func setMentionAci(_ valueParam: String) {
+        proto.mentionAci = valueParam
     }
 
     @objc

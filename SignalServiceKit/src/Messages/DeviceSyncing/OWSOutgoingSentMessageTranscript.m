@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSent builder];
     [sentBuilder setTimestamp:self.timestamp];
     [sentBuilder setDestinationE164:self.sentRecipientAddress.phoneNumber];
-    [sentBuilder setDestinationUuid:self.sentRecipientAddress.uuidString];
+    [sentBuilder setDestinationServiceID:self.sentRecipientAddress.serviceIdString];
     [sentBuilder setIsRecipientUpdate:self.isRecipientUpdate];
 
     if (![self prepareDataSyncMessageContentWithSentBuilder:sentBuilder transaction:transaction]) {
@@ -114,7 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder *statusBuilder =
             [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus builder];
-        [statusBuilder setDestinationUuid:recipientAddress.uuidString];
+        [statusBuilder setDestinationServiceID:recipientAddress.serviceIdString];
         [statusBuilder setUnidentified:recipientState.wasSentByUD];
         SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *_Nullable status =
             [statusBuilder buildAndReturnError:&error];

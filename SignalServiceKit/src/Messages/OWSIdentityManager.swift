@@ -115,12 +115,12 @@ extension OWSIdentityManager {
 extension OWSIdentityManager {
     @objc
     public func processIncomingVerifiedProto(_ verified: SSKProtoVerified, transaction: SDSAnyWriteTransaction) throws {
-        guard let serviceId = UntypedServiceId(uuidString: verified.destinationUuid) else {
+        guard let aci = Aci.parseFrom(aciString: verified.destinationAci) else {
             return owsFailDebug("Verification state sync message missing destination.")
         }
-        Logger.info("Received verification state message for \(serviceId)")
+        Logger.info("Received verification state message for \(aci)")
         guard let rawIdentityKey = verified.identityKey, rawIdentityKey.count == kIdentityKeyLength else {
-            return owsFailDebug("Verification state sync message for \(serviceId) with malformed identityKey")
+            return owsFailDebug("Verification state sync message for \(aci) with malformed identityKey")
         }
         let identityKey = try rawIdentityKey.removeKeyType()
 
@@ -128,7 +128,7 @@ extension OWSIdentityManager {
         case .default:
             applyVerificationState(
                 .default,
-                serviceId: serviceId,
+                serviceId: aci.untypedServiceId,
                 identityKey: identityKey,
                 overwriteOnConflict: false,
                 transaction: transaction
@@ -136,15 +136,15 @@ extension OWSIdentityManager {
         case .verified:
             applyVerificationState(
                 .verified,
-                serviceId: serviceId,
+                serviceId: aci.untypedServiceId,
                 identityKey: identityKey,
                 overwriteOnConflict: true,
                 transaction: transaction
             )
         case .unverified:
-            return owsFailDebug("Verification state sync message for \(serviceId) has unverified state")
+            return owsFailDebug("Verification state sync message for \(aci) has unverified state")
         case .none:
-            return owsFailDebug("Verification state sync message for \(serviceId) has no state")
+            return owsFailDebug("Verification state sync message for \(aci) has no state")
         }
     }
 

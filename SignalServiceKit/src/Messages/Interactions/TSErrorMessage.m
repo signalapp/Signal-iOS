@@ -325,16 +325,11 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     return [builder build];
 }
 
-+ (instancetype)failedDecryptionForEnvelope:(SSKProtoEnvelope *)envelope
-                           untrustedGroupId:(nullable NSData *)untrustedGroupId
-                            withTransaction:(SDSAnyWriteTransaction *)transaction
++ (instancetype)failedDecryptionForSender:(SignalServiceAddress *)sender
+                         untrustedGroupId:(nullable NSData *)untrustedGroupId
+                                timestamp:(uint64_t)timestamp
+                              transaction:(SDSAnyWriteTransaction *)transaction
 {
-    SignalServiceAddress *sender = [[SignalServiceAddress alloc] initWithUuidString:envelope.sourceUuid];
-    if (!sender) {
-        OWSFailDebug(@"Invalid UUID");
-        return nil;
-    }
-
     TSThread *_Nullable thread = nil;
     if (untrustedGroupId.length > 0) {
         [TSGroupThread ensureGroupIdMappingForGroupId:untrustedGroupId transaction:transaction];
@@ -354,7 +349,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     if (!thread) {
         return nil;
     }
-    return [self failedDecryptionForSender:sender thread:thread timestamp:envelope.timestamp transaction:transaction];
+    return [self failedDecryptionForSender:sender thread:thread timestamp:timestamp transaction:transaction];
 }
 
 #pragma mark - OWSReadTracking

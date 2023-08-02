@@ -23,7 +23,7 @@ class ContactStreamTest: SignalBaseTest {
 
     // MARK: -
 
-    let outputContactSyncData = "GwoMKzEzMjMxMTExMTExEgdBbGljZS0xQABYADMSB0FsaWNlLTJAAEokMzFDRTE0MTItOUEyOC00RTZGLUI0RUUtMjIyMjIyMjIyMjIyWABBCgwrMTMyMTMzMzMzMzMSB0FsaWNlLTNAAEokMUQ0QUIwNDUtODhGQi00QzRFLTlGNkEtMzMzMzMzMzMzMzMzWAA="
+    let outputContactSyncData = "GwoMKzEzMjMxMTExMTExEgdBbGljZS0xQABYADMSB0FsaWNlLTJAAEokMzFjZTE0MTItOWEyOC00ZTZmLWI0ZWUtMjIyMjIyMjIyMjIyWABBCgwrMTMyMTMzMzMzMzMSB0FsaWNlLTNAAEokMWQ0YWIwNDUtODhmYi00YzRlLTlmNmEtMzMzMzMzMzMzMzMzWAA="
 
     func test_writeContactSync() throws {
         let signalAccounts = [
@@ -60,7 +60,7 @@ class ContactStreamTest: SignalBaseTest {
         do {
             let contact = contacts[0]
             XCTAssertEqual("+13231111111", contact.phoneNumber?.stringValue)
-            XCTAssertNil(contact.serviceId)
+            XCTAssertNil(contact.aci)
             XCTAssertNil(contact.verifiedProto)
             XCTAssertNil(contact.profileKey)
             XCTAssertEqual(false, contact.isBlocked)
@@ -72,7 +72,7 @@ class ContactStreamTest: SignalBaseTest {
         do {
             let contact = contacts[1]
             XCTAssertNil(contact.phoneNumber)
-            XCTAssertEqual("31CE1412-9A28-4E6F-B4EE-222222222222", contact.serviceId?.uuidValue.uuidString)
+            XCTAssertEqual("31CE1412-9A28-4E6F-B4EE-222222222222", contact.aci?.serviceIdUppercaseString)
             XCTAssertNil(contact.verifiedProto)
             XCTAssertNil(contact.profileKey)
             XCTAssertEqual(false, contact.isBlocked)
@@ -84,7 +84,7 @@ class ContactStreamTest: SignalBaseTest {
         do {
             let contact = contacts[2]
             XCTAssertEqual("+13213333333", contact.phoneNumber?.stringValue)
-            XCTAssertEqual("1D4AB045-88FB-4C4E-9F6A-333333333333", contact.serviceId?.uuidValue.uuidString)
+            XCTAssertEqual("1D4AB045-88FB-4C4E-9F6A-333333333333", contact.aci?.serviceIdUppercaseString)
             XCTAssertNil(contact.verifiedProto)
             XCTAssertNil(contact.profileKey)
             XCTAssertEqual(false, contact.isBlocked)

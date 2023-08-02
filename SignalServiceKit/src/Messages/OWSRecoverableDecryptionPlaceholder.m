@@ -12,15 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSRecoverableDecryptionPlaceholder
 
 - (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
+                                      sourceAci:(AciObjC *)sourceAci
                                untrustedGroupId:(nullable NSData *)untrustedGroupId
                                     transaction:(SDSAnyWriteTransaction *)writeTx
 {
-    SignalServiceAddress *sender = [[SignalServiceAddress alloc] initWithUuidString:envelope.sourceUuid];
-    if (!sender) {
-        OWSFailDebug(@"Invalid UUID");
-        return nil;
-    }
-
+    SignalServiceAddress *sender = [[SignalServiceAddress alloc] initWithServiceIdObjC:sourceAci];
     TSThread *thread;
     if (untrustedGroupId.length > 0) {
         [TSGroupThread ensureGroupIdMappingForGroupId:untrustedGroupId transaction:writeTx];

@@ -89,7 +89,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
 
             let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: Date.ows_millisecondTimestamp())
             envelopeBuilder.setType(type)
-            envelopeBuilder.setDestinationUuid((destinationServiceId ?? localDestinationServiceId).serviceIdString)
+            envelopeBuilder.setDestinationServiceID((destinationServiceId ?? localDestinationServiceId).serviceIdString)
             envelopeBuilder.setServerTimestamp(Date.ows_millisecondTimestamp())
 
             if type == .unidentifiedSender {
@@ -110,7 +110,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
                                                                          context: transaction)))
                 envelopeBuilder.setServerTimestamp(13336)
             } else {
-                envelopeBuilder.setSourceUuid(remoteClient.uuidIdentifier)
+                envelopeBuilder.setSourceServiceID(remoteClient.uuidIdentifier)
                 envelopeBuilder.setSourceDevice(remoteClient.deviceId)
                 envelopeBuilder.setContent(Data(ciphertext.serialize()))
             }

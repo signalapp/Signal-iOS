@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 /// MessageBodyRanges is the result of parsing `SSKProtoBodyRange` from a message;
 /// it performs some cleanups for overlaps and such, ensuring that we have a standard
@@ -71,11 +72,8 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                 continue
             }
             let range = NSRange(location: Int(proto.start), length: Int(proto.length))
-            if
-                let mentionUuidString = proto.mentionUuid,
-                let mentionUuid = UUID(uuidString: mentionUuidString)
-            {
-                mentions[range] = mentionUuid
+            if let mentionAciString = proto.mentionAci, let mentionAci = Aci.parseFrom(aciString: mentionAciString) {
+                mentions[range] = mentionAci.temporary_rawUUID
             } else if
                 let protoStyle = proto.style,
                 let style = SingleStyle.from(protoStyle)
@@ -424,7 +422,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             guard let builder = self.protoBuilder(mention.range, maxBodyLength: maxBodyLength) else {
                 return
             }
-            builder.setMentionUuid(mention.value.uuidString)
+            builder.setMentionAci(Aci(fromUUID: mention.value).serviceIdString)
             do {
                 try protos.append(builder.build())
             } catch {

@@ -138,7 +138,7 @@ public class ReactionManager: NSObject {
             owsFailDebug("Received invalid emoji")
             return .invalidReaction
         }
-        guard let messageAuthor = Aci.parseFrom(aciString: reaction.authorUuid) else {
+        guard let messageAuthor = Aci.parseFrom(aciString: reaction.targetAuthorAci) else {
             owsFailDebug("reaction missing message author")
             return .invalidReaction
         }

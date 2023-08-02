@@ -25,26 +25,26 @@ message Envelope {
     PLAINTEXT_CONTENT   = 8;
   }
 
-  optional Type   type               = 1;
-  reserved /* sourceE164 */            2;
-  optional uint32 sourceDevice       = 7;
-  optional string destinationUuid    = 13;
-  reserved /* relay */                 3;
+  optional Type   type                 = 1;
+  reserved /* sourceE164 */              2;
+  optional uint32 sourceDevice         = 7;
+  optional string destinationServiceId = 13;
+  reserved /* relay */                   3;
   // @required
-  optional uint64 timestamp          = 5;
+  optional uint64 timestamp            = 5;
   reserved 6;  // formerly optional bytes legacyMessage = 6; // Contains an encrypted DataMessage; this field could have been set historically for type 1 or 3 messages; no longer in use
-  optional bytes  content            = 8; // Contains an encrypted Content
+  optional bytes  content              = 8; // Contains an encrypted Content
   // We may eventually want to make this required.
-  optional string serverGuid         = 9;
+  optional string serverGuid           = 9;
   // We may eventually want to make this required.
-  optional uint64 serverTimestamp    = 10;
-  optional string sourceUuid         = 11;
-  reserved /* urgent */                14;
+  optional uint64 serverTimestamp      = 10;
+  optional string sourceServiceId      = 11;
+  reserved /* urgent */                  14;
   // On change-number sync messages delivered to linked devices, this will
   // contain the account's new PNI.
-  optional string updatedPni         = 15;
-  optional bool   story              = 16;
-  optional bytes  spamReportingToken = 17;
+  optional string updatedPni           = 15;
+  optional bool   story                = 16;
+  optional bytes  spamReportingToken   = 17;
 }
 
 message TypingMessage {
@@ -223,7 +223,7 @@ message DataMessage {
     // @required
     optional uint64            id          = 1;
     reserved /* authorE164 */                2;
-    optional string            authorUuid  = 5;
+    optional string            authorAci   = 5;
     optional string            text        = 3;
     repeated QuotedAttachment  attachments = 4;
     repeated BodyRange         bodyRanges  = 6;
@@ -311,12 +311,12 @@ message DataMessage {
 
   message Reaction {
     // @required
-    optional string emoji      = 1;
-    optional bool   remove     = 2;
-    reserved /* authorE164 */    3;
-    optional string authorUuid = 4;
+    optional string emoji           = 1;
+    optional bool   remove          = 2;
+    reserved /* authorE164 */         3;
+    optional string targetAuthorAci = 4;
     // @required
-    optional uint64 timestamp  = 5;
+    optional uint64 timestamp       = 5;
   }
 
   message Delete {
@@ -384,7 +384,7 @@ message DataMessage {
   }
 
   message StoryContext {
-    optional string authorUuid = 1;
+    optional string authorAci = 1;
     optional uint64 sentTimestamp = 2;
   }
 
@@ -452,7 +452,7 @@ message Verified {
   }
 
   reserved /*destinationE164*/      1;
-  optional string destinationUuid = 5;
+  optional string destinationAci  = 5;
   optional bytes  identityKey     = 2;
   optional State  state           = 3;
   optional bytes  nullMessage     = 4;
@@ -461,19 +461,19 @@ message Verified {
 message SyncMessage {
   message Sent {
     message UnidentifiedDeliveryStatus {
-      reserved /*destinationE164*/      1;
-      optional string destinationUuid = 3;
-      optional bool   unidentified    = 2;
+      reserved /*destinationE164*/           1;
+      optional string destinationServiceId = 3;
+      optional bool   unidentified         = 2;
     }
 
     message StoryMessageRecipient {
-      optional string destinationUuid     = 1;
-      repeated string distributionListIds = 2;
-      optional bool   isAllowedToReply    = 3;
+      optional string destinationServiceId = 1;
+      repeated string distributionListIds  = 2;
+      optional bool   isAllowedToReply     = 3;
     }
 
     optional string                     destinationE164          = 1;
-    optional string                     destinationUuid          = 7;
+    optional string                     destinationServiceId     = 7;
     optional uint64                     timestamp                = 2;
     optional DataMessage                message                  = 3;
     optional uint64                     expirationStartTimestamp = 4;
@@ -493,8 +493,8 @@ message SyncMessage {
 
   message Blocked {
     repeated string numbers = 1;
+    repeated string acis = 3;
     repeated bytes groupIds = 2;
-    repeated string uuids = 3;
   }
 
   message Request {
@@ -512,17 +512,17 @@ message SyncMessage {
   }
 
   message Read {
-    reserved /*senderE164*/      1;
-    optional string senderUuid = 3;
+    reserved /*senderE164*/     1;
+    optional string senderAci = 3;
     // @required
-    optional uint64 timestamp  = 2;
+    optional uint64 timestamp = 2;
   }
 
   message Viewed {
-    reserved /*senderE164*/      1;
-    optional string senderUuid = 3;
+    reserved /*senderE164*/     1;
+    optional string senderAci = 3;
     // @required
-    optional uint64 timestamp  = 2;
+    optional uint64 timestamp = 2;
   }
 
   message Configuration {
@@ -547,10 +547,10 @@ message SyncMessage {
   }
 
   message ViewOnceOpen {
-      reserved /*senderE164*/      1;
-      optional string senderUuid = 3;
+      reserved /*senderE164*/     1;
+      optional string senderAci = 3;
       // @required
-      optional uint64 timestamp  = 2;
+      optional uint64 timestamp = 2;
   }
 
   message FetchLatest {
@@ -577,10 +577,10 @@ message SyncMessage {
       BLOCK_AND_DELETE = 4;
     }
 
-    reserved /*threadE164*/      1;
-    optional string threadUuid = 2;
-    optional bytes  groupId    = 3;
-    optional Type   type       = 4;
+    reserved /*threadE164*/     1;
+    optional string threadAci = 2;
+    optional bytes  groupId   = 3;
+    optional Type   type      = 4;
   }
 
   message OutgoingPayment {
@@ -597,10 +597,10 @@ message SyncMessage {
       repeated bytes  spentKeyImages       = 7;
       repeated bytes  outputPublicKeys     = 8;
     }
-    optional string     recipientUuid = 1;
-    optional string     note          = 2;
+    optional string     recipientServiceId = 1;
+    optional string     note               = 2;
     // oneof attachment_identifier {
-    optional MobileCoin mobileCoin    = 3;
+    optional MobileCoin mobileCoin         = 3;
     // }
   }
 
@@ -623,12 +623,12 @@ message SyncMessage {
       NOT_ACCEPTED   = 2;
     }
 
-    optional bytes     peerUuid  = 1;
-    optional uint64    id        = 2;
-    optional uint64    timestamp = 3;
-    optional Type      type      = 4;
-    optional Direction direction = 5;
-    optional Event     event     = 6;
+    optional bytes     conversationId = 1;
+    optional uint64    callId         = 2;
+    optional uint64    timestamp      = 3;
+    optional Type      type           = 4;
+    optional Direction direction      = 5;
+    optional Event     event          = 6;
   }
 
   message PniChangeNumber {
@@ -704,7 +704,7 @@ message ContactDetails {
   }
 
   optional string   contactE164 = 1;
-  optional string   contactUuid = 9;
+  optional string   aci         = 9;
   optional string   name        = 2;
   optional Avatar   avatar      = 3;
   optional string   color       = 4;
@@ -774,7 +774,7 @@ message BodyRange {
   // to objc representation
   //
   // oneof associatedValue {
-    optional string mentionUuid = 3;
+    optional string mentionAci = 3;
     optional Style style = 4;
   // }
 }

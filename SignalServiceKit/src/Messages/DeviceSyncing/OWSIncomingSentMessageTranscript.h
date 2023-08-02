@@ -15,13 +15,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoAttachmentPointer;
 @class SSKProtoDataMessage;
 @class SSKProtoSyncMessageSent;
+@class ServiceIdObjC;
 @class SignalServiceAddress;
 @class TSPaymentCancellation;
 @class TSPaymentNotification;
 @class TSPaymentRequest;
 @class TSQuotedMessage;
 @class TSThread;
-@class UntypedServiceIdObjC;
 
 /**
  * Represents notification of a message sent on our behalf from another device.
@@ -63,8 +63,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // If either nonUdRecipients or udRecipients is nil, this is either a
 // legacy transcript or it reflects a legacy sync message.
-@property (nonatomic, readonly, nullable) NSArray<UntypedServiceIdObjC *> *nonUdRecipients;
-@property (nonatomic, readonly, nullable) NSArray<UntypedServiceIdObjC *> *udRecipients;
+@property (nonatomic, readonly, nullable) NSArray<ServiceIdObjC *> *nonUdRecipients;
+@property (nonatomic, readonly, nullable) NSArray<ServiceIdObjC *> *udRecipients;
 
 @end
 

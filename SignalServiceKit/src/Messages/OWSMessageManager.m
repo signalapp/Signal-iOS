@@ -206,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   wasReceivedByUD:request.wasReceivedByUD
                                           serverDeliveryTimestamp:request.serverDeliveryTimestamp
                                        associatedMessageTimestamp:contentProto.editMessage.targetSentTimestamp
-                                          associatedMessageAuthor:request.envelope.sourceServiceIdObjC
+                                          associatedMessageAuthor:request.decryptedEnvelope.sourceAciObjC
                                                       transaction:transaction];
                 }
             }
@@ -303,7 +303,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"Ignoring message (author: %@, timestamp: %llu) related to story (author: %@, timestamp: %llu)",
             decryptedEnvelope.sourceServiceIdObjC,
             dataMessage.timestamp,
-            dataMessage.storyContext.authorUuid,
+            dataMessage.storyContext.authorAci,
             dataMessage.storyContext.sentTimestamp);
         return;
     }
@@ -898,14 +898,15 @@ NS_ASSUME_NONNULL_BEGIN
 
             // If we observe a linked device sending our profile key to another user,
             // we can infer that that user belongs in our profile whitelist.
-            SignalServiceAddress *destination = syncMessage.sent.destinationAddress;
-            if (dataMessage && destination.isValid && dataMessage.hasProfileKey) {
+            SignalServiceAddress *destinationAddress =
+                [[SignalServiceAddress alloc] initWithServiceIdString:syncMessage.sent.destinationServiceID];
+            if (dataMessage && destinationAddress.isValid && dataMessage.hasProfileKey) {
                 if (groupId != nil) {
                     [self.profileManager addGroupIdToProfileWhitelist:groupId
                                                     userProfileWriter:UserProfileWriter_LocalUser
                                                           transaction:transaction];
                 } else {
-                    [self.profileManager addUserToProfileWhitelist:destination
+                    [self.profileManager addUserToProfileWhitelist:destinationAddress
                                                  userProfileWriter:UserProfileWriter_LocalUser
                                                        transaction:transaction];
                 }
@@ -930,8 +931,8 @@ NS_ASSUME_NONNULL_BEGIN
                     case OWSReactionProcessingResultInvalidReaction:
                         break;
                     case OWSReactionProcessingResultAssociatedMessageMissing: {
-                        UntypedServiceIdObjC *messageAuthor =
-                            [[UntypedServiceIdObjC alloc] initWithUuidString:dataMessage.reaction.authorUuid];
+                        AciObjC *messageAuthor =
+                            [[AciObjC alloc] initWithAciString:dataMessage.reaction.targetAuthorAci];
                         [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                         plainTextData:plaintextData
                                                       wasReceivedByUD:wasReceivedByUD
@@ -962,7 +963,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       wasReceivedByUD:wasReceivedByUD
                                               serverDeliveryTimestamp:serverDeliveryTimestamp
                                            associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
-                                              associatedMessageAuthor:envelope.sourceServiceIdObjC
+                                              associatedMessageAuthor:decryptedEnvelope.sourceAciObjC
                                                           transaction:transaction];
                         break;
                     }
@@ -1007,7 +1008,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   wasReceivedByUD:wasReceivedByUD
                                           serverDeliveryTimestamp:serverDeliveryTimestamp
                                        associatedMessageTimestamp:syncMessage.sent.editMessage.targetSentTimestamp
-                                          associatedMessageAuthor:envelope.sourceServiceIdObjC
+                                          associatedMessageAuthor:decryptedEnvelope.sourceAciObjC
                                                       transaction:transaction];
                 }
             }
@@ -1024,8 +1025,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        readTimestamp:envelope.timestamp
                                                                   tx:transaction];
         for (SSKProtoSyncMessageRead *readReceiptProto in earlyReceipts) {
-            UntypedServiceIdObjC *messageAuthor =
-                [[UntypedServiceIdObjC alloc] initWithUuidString:readReceiptProto.senderUuid];
+            AciObjC *messageAuthor = [[AciObjC alloc] initWithAciString:readReceiptProto.senderAci];
             [self.earlyMessageManager recordEarlyReadReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
                                                                associatedMessageTimestamp:readReceiptProto.timestamp
                                                                   associatedMessageAuthor:messageAuthor
@@ -1038,8 +1038,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        viewedTimestamp:envelope.timestamp
                                                                     tx:transaction];
         for (SSKProtoSyncMessageViewed *viewedReceiptProto in earlyReceipts) {
-            UntypedServiceIdObjC *messageAuthor =
-                [[UntypedServiceIdObjC alloc] initWithUuidString:viewedReceiptProto.senderUuid];
+            AciObjC *messageAuthor = [[AciObjC alloc] initWithAciString:viewedReceiptProto.senderAci];
             [self.earlyMessageManager recordEarlyViewedReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
                                                                  associatedMessageTimestamp:viewedReceiptProto.timestamp
                                                                     associatedMessageAuthor:messageAuthor
@@ -1072,8 +1071,7 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSViewOnceSyncMessageProcessingResultInvalidSyncMessage:
                 break;
             case OWSViewOnceSyncMessageProcessingResultAssociatedMessageMissing: {
-                UntypedServiceIdObjC *messageAuthor =
-                    [[UntypedServiceIdObjC alloc] initWithUuidString:syncMessage.viewOnceOpen.senderUuid];
+                AciObjC *messageAuthor = [[AciObjC alloc] initWithAciString:syncMessage.viewOnceOpen.senderAci];
                 [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                 plainTextData:plaintextData
                                               wasReceivedByUD:wasReceivedByUD
@@ -1118,14 +1116,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleSyncedBlockList:(SSKProtoSyncMessageBlocked *)blocked transaction:(SDSAnyWriteTransaction *)transaction
 {
     NSSet<NSString *> *blockedPhoneNumbers = [NSSet setWithArray:blocked.numbers];
-    NSMutableSet<NSUUID *> *blockedUUIDs = [NSMutableSet new];
-    for (NSString *uuidString in blocked.uuids) {
-        NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
-        if (uuid == nil) {
-            OWSFailDebug(@"uuid was unexpectedly nil");
+    NSMutableSet<AciObjC *> *blockedAcis = [NSMutableSet new];
+    for (NSString *aciString in blocked.acis) {
+        AciObjC *aci = [[AciObjC alloc] initWithAciString:aciString];
+        if (aci == nil) {
+            OWSFailDebug(@"ACI was unexpectedly nil");
             continue;
         }
-        [blockedUUIDs addObject:uuid];
+        [blockedAcis addObject:aci];
     }
     NSSet<NSData *> *groupIds = [NSSet setWithArray:blocked.groupIds];
     for (NSData *groupId in groupIds) {
@@ -1133,7 +1131,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self.blockingManager processIncomingSyncWithBlockedPhoneNumbers:blockedPhoneNumbers
-                                                        blockedUUIDs:blockedUUIDs
+                                                         blockedAcis:blockedAcis
                                                      blockedGroupIds:groupIds
                                                          transaction:transaction];
 }
@@ -1260,8 +1258,7 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSReactionProcessingResultInvalidReaction:
                 break;
             case OWSReactionProcessingResultAssociatedMessageMissing: {
-                UntypedServiceIdObjC *messageAuthor =
-                    [[UntypedServiceIdObjC alloc] initWithUuidString:dataMessage.reaction.authorUuid];
+                AciObjC *messageAuthor = [[AciObjC alloc] initWithAciString:dataMessage.reaction.targetAuthorAci];
                 [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                 plainTextData:plaintextData
                                               wasReceivedByUD:wasReceivedByUD
@@ -1296,7 +1293,7 @@ NS_ASSUME_NONNULL_BEGIN
                                               wasReceivedByUD:wasReceivedByUD
                                       serverDeliveryTimestamp:serverDeliveryTimestamp
                                    associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
-                                      associatedMessageAuthor:envelope.sourceServiceIdObjC
+                                      associatedMessageAuthor:decryptedEnvelope.sourceAciObjC
                                                   transaction:transaction];
                 break;
         }
@@ -1407,15 +1404,15 @@ NS_ASSUME_NONNULL_BEGIN
     NSNumber *_Nullable storyTimestamp;
     SignalServiceAddress *_Nullable storyAuthorAddress;
     if (dataMessage.storyContext != nil && dataMessage.storyContext.hasSentTimestamp
-        && dataMessage.storyContext.hasAuthorUuid) {
+        && dataMessage.storyContext.hasAuthorAci) {
         OWSLogInfo(
             @"Processing storyContext for message with timestamp: %llu, storyTimestamp: %llu, and author uuid: %@",
             envelope.timestamp,
             dataMessage.storyContext.sentTimestamp,
-            dataMessage.storyContext.authorUuid);
+            dataMessage.storyContext.authorAci);
 
         storyTimestamp = @(dataMessage.storyContext.sentTimestamp);
-        storyAuthorAddress = [[SignalServiceAddress alloc] initWithUuidString:dataMessage.storyContext.authorUuid];
+        storyAuthorAddress = [[SignalServiceAddress alloc] initWithAciString:dataMessage.storyContext.authorAci];
 
         if (!storyAuthorAddress.isValid) {
             OWSFailDebug(@"Discarding story reply with invalid address %@", storyAuthorAddress);

@@ -25,23 +25,6 @@ reserved_regex = re.compile(r'^reserved\s+(?:/*[^*]*\*/)?\s*\d+;$')
 syntax_regex = re.compile(r'^syntax\s+=\s+"(.+)";')
 validation_start_regex = re.compile(r'// MARK: - Begin Validation Logic for ([^ ]+) -')
 
-skip_signal_service_address_types = [
-    "StorageServiceProtoContactRecord",
-    "SSKProtoContactDetails",
-    "SSKProtoBodyRange",
-    "SSKProtoDataMessageQuote",
-    "SSKProtoVerified",
-    "SSKProtoSyncMessageSentUnidentifiedDeliveryStatus",
-    "SSKProtoSyncMessageRead",
-    "SSKProtoSyncMessageViewed",
-    "SSKProtoSyncMessageViewOnceOpen",
-    "SSKProtoSyncMessageMessageRequestResponse",
-    "SSKProtoDataMessageReaction",
-    "SSKProtoSyncMessageOutgoingPayment",
-    "SSKProtoDataMessageStoryContext",
-    "SSKProtoSyncMessageSentStoryMessageRecipient",
-]
-
 proto_syntax = None
 
 def lower_camel_case(name):
@@ -553,8 +536,6 @@ class MessageContext(BaseContext):
         # Prepare fields
         explict_fields = []
         implict_fields = []
-        uuid_field = None
-        e164_field = None
         for field in self.fields():
             field.type_swift = self.swift_type_for_field(field)
             field.type_swift_not_optional = self.swift_type_for_field(field, suppress_optional=True)
@@ -569,14 +550,6 @@ class MessageContext(BaseContext):
                 explict_fields.append(field)
             else:
                 implict_fields.append(field)
-
-            # See if we need to add SignalServiceAddress helpers
-            if self.swift_name in skip_signal_service_address_types:
-                pass
-            elif field.name.endswith('Uuid') and field.proto_type == 'string':
-                uuid_field = field
-            elif field.name.endswith('E164') and field.proto_type == 'string':
-                e164_field = field
 
             # Ensure that no enum are required.
             if proto_syntax == 'proto2' and self.is_field_an_enum(field) and field.is_required:
@@ -683,6 +656,7 @@ class MessageContext(BaseContext):
                     else:
                         is_uuid_or_e164 = field.name.endswith('Uuid') or field.name.endswith('E164')
                         if is_uuid_or_e164:
+                            print("BLAH!")
                             writer.add('return proto.%s && !proto.%s.isEmpty' % ( field.has_accessor_name(), field.name_swift, ) ) 
                         else:
                             writer.add('return proto.%s' % field.has_accessor_name() ) 
@@ -712,25 +686,6 @@ class MessageContext(BaseContext):
                     writer.pop_indent()
                     writer.add('}')
                     writer.newline()
-
-        address_accessor = ''
-        if uuid_field is not None:
-            accessor_prefix = uuid_field.name.replace('Uuid', '')
-            address_accessor = accessor_prefix + 'Address'
-            address_has_accessor = 'hasValid' + accessor_prefix[0].upper() + accessor_prefix[1:]
-
-            # hasValidAddress
-            writer.add_objc()
-            writer.add('public var %s: Bool {' % address_has_accessor)
-            writer.push_indent()
-            writer.add('return %s != nil' % address_accessor)
-            writer.pop_indent()
-            writer.add('}')
-
-            # address accessor
-            writer.add_objc()
-            writer.add('public let %s: SignalServiceAddress?' % address_accessor)
-            writer.newline()
 
         # Unknown fields
         writer.add('public var hasUnknownFields: Bool {')
@@ -762,84 +717,6 @@ class MessageContext(BaseContext):
         writer.add('self.proto = proto')
         for field in explict_fields:
             writer.add('self.%s = %s' % (field.name_swift, field.name_swift))
-
-        if uuid_field:
-            writer.newline()
-
-            if proto_syntax == 'proto3':
-                writer.add('let %s = !proto.%s.isEmpty' % (uuid_field.has_accessor_name(), uuid_field.name_swift))
-                if e164_field:
-                    writer.add('let %s = !proto.%s.isEmpty' % (e164_field.has_accessor_name(), e164_field.name_swift))
-            else:
-                writer.add('let %s = proto.%s && !proto.%s.isEmpty' % (uuid_field.has_accessor_name(), uuid_field.has_accessor_name(), uuid_field.name_swift))
-                if e164_field:
-                    writer.add('let %s = proto.%s && !proto.%s.isEmpty' % (e164_field.has_accessor_name(), e164_field.has_accessor_name(), e164_field.name_swift))
-
-            writer.add('let %s: String? = proto.%s' % (uuid_field.name_swift, uuid_field.name_swift))
-            if e164_field:
-                writer.add('let %s: String? = proto.%s' % (e164_field.name_swift, e164_field.name_swift))
-
-            writer.add('self.%s = {' % address_accessor)
-            writer.push_indent()
-
-            if e164_field:
-                writer.add(f"guard {uuid_field.has_accessor_name()} || {e164_field.has_accessor_name()} else {{ return nil }}")
-            else:
-                writer.add(f"guard {uuid_field.has_accessor_name()} else {{ return nil }}")
-            writer.newline()
-
-            writer.add('let uuidString: String? = {')
-            writer.push_indent()
-            writer.add('guard %s else { return nil }' % uuid_field.has_accessor_name())
-            writer.newline()
-            writer.add('guard let %s = %s else {' % (uuid_field.name_swift, uuid_field.name_swift))
-            writer.push_indent()
-            writer.add('owsFailDebug("%s was unexpectedly nil")' % uuid_field.name_swift)
-            writer.add('return nil')
-            writer.pop_indent()
-            writer.add('}')
-            writer.newline()
-            writer.add('return %s' % uuid_field.name_swift)
-            writer.pop_indent()
-            writer.add('}()')
-            writer.newline()
-
-            if e164_field:
-                writer.add('let phoneNumber: String? = {')
-                writer.push_indent()
-                writer.add('guard %s else {' % e164_field.has_accessor_name())
-                writer.push_indent()
-                writer.add('return nil')
-                writer.pop_indent()
-                writer.add('}')
-                writer.newline()
-                writer.add('return ProtoUtils.parseProtoE164(%s, name: "%s.%s")' % (e164_field.name_swift, wrapped_swift_name, e164_field.name_swift))
-                writer.pop_indent()
-                writer.add('}()')
-                writer.newline()
-
-                writer.add("let address = SignalServiceAddress(")
-                writer.push_indent()
-                writer.add("uuidString: uuidString,")
-                writer.add("phoneNumber: phoneNumber")
-                writer.pop_indent()
-                writer.add(")")
-            else:
-                writer.add("guard let uuidString = uuidString else { return nil }")
-                writer.newline()
-
-                writer.add("let address = SignalServiceAddress(uuidString: uuidString)")
-
-            writer.add("guard address.isValid else {")
-            writer.push_indent()
-            writer.add('owsFailDebug("address was unexpectedly invalid")')
-            writer.add("return nil")
-            writer.pop_indent()
-            writer.add("}")
-            writer.newline()
-            writer.add('return address')
-            writer.pop_indent()
-            writer.add('}()')
 
         writer.pop_indent()
         writer.add('}')

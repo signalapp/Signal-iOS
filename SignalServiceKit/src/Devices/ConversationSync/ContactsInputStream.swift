@@ -4,9 +4,10 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public struct ContactDetails {
-    public let serviceId: UntypedServiceId?
+    public let aci: Aci?
     public let phoneNumber: E164?
     public let verifiedProto: SSKProtoVerified?
     public let profileKey: Data?
@@ -47,11 +48,11 @@ public class ContactsInputStream {
             try inputStream.decodeData(value: &decodedData, count: Int(avatar.length))
         }
 
-        let serviceId = UntypedServiceId.expectNilOrValid(uuidString: contactDetails.contactUuid)
+        let aci = Aci.parseFrom(aciString: contactDetails.aci)
         let phoneNumber = E164.expectNilOrValid(stringValue: contactDetails.contactE164)
 
         return ContactDetails(
-            serviceId: serviceId,
+            aci: aci,
             phoneNumber: phoneNumber,
             verifiedProto: contactDetails.verified,
             profileKey: contactDetails.profileKey,

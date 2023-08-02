@@ -71,7 +71,7 @@ class DebugUIStress: DebugUIPage, Dependencies {
                     let contentBuilder = SSKProtoContent.builder()
                     let syncMessageBuilder = SSKProtoSyncMessage.builder()
                     let syncSentMessageBuilder = SSKProtoSyncMessageSent.builder()
-                    syncSentMessageBuilder.setDestinationUuid("abc")
+                    syncSentMessageBuilder.setDestinationServiceID("abc")
                     syncSentMessageBuilder.setTimestamp(.random(in: 1...32))
                     if let message = SSKProtoDataMessage.builder().buildIgnoringErrors() {
                         syncSentMessageBuilder.setMessage(message)
@@ -90,7 +90,7 @@ class DebugUIStress: DebugUIPage, Dependencies {
                     let contentBuilder = SSKProtoContent.builder()
                     let syncMessageBuilder = SSKProtoSyncMessage.builder()
                     let syncSentMessageBuilder = SSKProtoSyncMessageSent.builder()
-                    syncSentMessageBuilder.setDestinationUuid("abc")
+                    syncSentMessageBuilder.setDestinationServiceID("abc")
                     syncSentMessageBuilder.setTimestamp(0)
                     if let message = SSKProtoDataMessage.builder().buildIgnoringErrors() {
                         syncSentMessageBuilder.setMessage(message)
@@ -109,7 +109,7 @@ class DebugUIStress: DebugUIPage, Dependencies {
                     let contentBuilder = SSKProtoContent.builder()
                     let syncMessageBuilder = SSKProtoSyncMessage.builder()
                     let syncSentMessageBuilder = SSKProtoSyncMessageSent.builder()
-                    syncSentMessageBuilder.setDestinationUuid("abc")
+                    syncSentMessageBuilder.setDestinationServiceID("abc")
                     syncSentMessageBuilder.setTimestamp(0)
                     let dataMessageBuilder = SSKProtoDataMessage.builder()
                     dataMessageBuilder.setBody(" ")
@@ -130,7 +130,7 @@ class DebugUIStress: DebugUIPage, Dependencies {
                     let contentBuilder = SSKProtoContent.builder()
                     let syncMessageBuilder = SSKProtoSyncMessage.builder()
                     let syncSentMessageBuilder = SSKProtoSyncMessageSent.builder()
-                    syncSentMessageBuilder.setDestinationUuid("abc")
+                    syncSentMessageBuilder.setDestinationServiceID("abc")
                     if let syncSentMessage = syncSentMessageBuilder.buildIgnoringErrors() {
                         syncMessageBuilder.setSent(syncSentMessage)
                     }

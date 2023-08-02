@@ -229,10 +229,10 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         let recipientMerger = DependenciesBridge.shared.recipientMerger
 
         let recipient: SignalRecipient
-        if let serviceId = contactDetails.serviceId {
+        if let aci = contactDetails.aci {
             recipient = recipientMerger.applyMergeFromLinkedDevice(
                 localIdentifiers: localIdentifiers,
-                serviceId: serviceId,
+                serviceId: aci.untypedServiceId,
                 phoneNumber: contactDetails.phoneNumber,
                 tx: transaction.asV2Write
             )
