@@ -4,6 +4,9 @@
 //
 
 import Foundation
+import LibSignalClient
+import SignalCoreKit
+import SignalServiceKit
 
 public class CallMessagePushPayload: CustomStringConvertible {
     private static let identifierKey = "CallMessageRelayPayload"
@@ -48,6 +51,11 @@ public class CallMessageRelay: Dependencies {
                 return
             }
 
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+                owsFailDebug("Can't process VoIP payload when not registered.")
+                return
+            }
+
             Logger.info("Processing \(pendingPayloads.count) call messages relayed from the NSE.")
             owsAssertDebug(pendingPayloads.count == 1, "Unexpectedly processing multiple messages from the NSE at once")
 
@@ -66,6 +74,7 @@ public class CallMessageRelay: Dependencies {
                     wasReceivedByUD: payload.wasReceivedByUD,
                     serverDeliveryTimestamp: adjustedDeliveryTimestamp,
                     shouldDiscardVisibleMessages: false,
+                    localIdentifiers: localIdentifiers,
                     tx: transaction
                 )
             }

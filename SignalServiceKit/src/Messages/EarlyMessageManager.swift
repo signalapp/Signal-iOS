@@ -22,6 +22,8 @@ public class EarlyMessageManager: NSObject {
 
     private struct EarlyEnvelope: Codable {
         let envelope: SSKProtoEnvelope
+        // This is optional for historical purposes, but no early envelopes should
+        // be missing this value.
         let plainTextData: Data?
         let wasReceivedByUD: Bool
         let serverDeliveryTimestamp: UInt64
@@ -181,14 +183,14 @@ public class EarlyMessageManager: NSObject {
     @objc
     public func recordEarlyEnvelope(
         _ envelope: SSKProtoEnvelope,
-        plainTextData: Data?,
+        plainTextData: Data,
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
         associatedMessageTimestamp: UInt64,
         associatedMessageAuthor: UntypedServiceIdObjC?,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard plainTextData?.count ?? 0 <= Self.maxEarlyEnvelopeSize else {
+        guard plainTextData.count <= Self.maxEarlyEnvelopeSize else {
             return owsFailDebug("unexpectedly tried to record an excessively large early envelope")
         }
 
@@ -343,12 +345,13 @@ public class EarlyMessageManager: NSObject {
 
     @objc
     public func applyPendingMessages(for message: TSMessage, transaction: SDSAnyWriteTransaction) {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+            owsFailDebug("Can't process messages when not registered.")
+            return
+        }
         let identifier: MessageIdentifier
         if let message = message as? TSOutgoingMessage {
-            guard let localAddress = TSAccountManager.localAddress else {
-                return owsFailDebug("missing local address")
-            }
-            identifier = MessageIdentifier(timestamp: message.timestamp, author: localAddress)
+            identifier = MessageIdentifier(timestamp: message.timestamp, author: localIdentifiers.aciAddress)
         } else if let message = message as? TSIncomingMessage {
             guard message.authorUUID != nil else {
                 return owsFailDebug("Attempted to apply pending messages for message missing sender uuid with type \(message.interactionType) from \(message.authorAddress)")
@@ -360,7 +363,7 @@ public class EarlyMessageManager: NSObject {
             return owsFailDebug("attempted to apply pending messages for unsupported message type \(message.interactionType)")
         }
 
-        applyPendingMessages(for: identifier, transaction: transaction) { earlyReceipt in
+        applyPendingMessages(for: identifier, localIdentifiers: localIdentifiers, tx: transaction) { earlyReceipt in
             switch earlyReceipt {
             case .outgoingMessageRead(let sender, let deviceId, let timestamp):
                 Logger.info("Applying early read receipt from \(sender):\(deviceId) for outgoing message \(identifier)")
@@ -428,8 +431,12 @@ public class EarlyMessageManager: NSObject {
             Logger.info("Not processing viewed receipt for system story")
             return
         }
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+            owsFailDebug("Can't process messages when not registered.")
+            return
+        }
         let identifier = MessageIdentifier(timestamp: storyMessage.timestamp, author: storyMessage.authorAddress)
-        applyPendingMessages(for: identifier, transaction: transaction) { earlyReceipt in
+        applyPendingMessages(for: identifier, localIdentifiers: localIdentifiers, tx: transaction) { earlyReceipt in
             switch earlyReceipt {
             case .outgoingMessageRead(let sender, let deviceId, _):
                 owsFailDebug("Unexpectedly received early read receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
@@ -465,7 +472,8 @@ public class EarlyMessageManager: NSObject {
 
     private func applyPendingMessages(
         for identifier: MessageIdentifier,
-        transaction: SDSAnyWriteTransaction,
+        localIdentifiers: LocalIdentifiers,
+        tx transaction: SDSAnyWriteTransaction,
         earlyReceiptProcessor: (EarlyReceipt) -> Void
     ) {
         let earlyReceipts: [EarlyReceipt]?
@@ -495,12 +503,18 @@ public class EarlyMessageManager: NSObject {
         for earlyEnvelope in earlyEnvelopes ?? [] {
             Logger.info("Reprocessing early envelope \(OWSMessageManager.description(for: earlyEnvelope.envelope)) for \(identifier)")
 
+            guard let plaintextData = earlyEnvelope.plainTextData else {
+                Logger.warn("Dropping early envelope without plaintextData.")
+                continue
+            }
+
             Self.messageManager.processEnvelope(
                 earlyEnvelope.envelope,
-                plaintextData: earlyEnvelope.plainTextData,
+                plaintextData: plaintextData,
                 wasReceivedByUD: earlyEnvelope.wasReceivedByUD,
                 serverDeliveryTimestamp: earlyEnvelope.serverDeliveryTimestamp,
                 shouldDiscardVisibleMessages: false,
+                localIdentifiers: localIdentifiers,
                 tx: transaction
             )
         }

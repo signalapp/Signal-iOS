@@ -840,3 +840,19 @@ public extension TSAccountManager {
         objc_sync_exit(self)
     }
 }
+
+// MARK: - Unit Tests
+
+#if TESTABLE_BUILD
+
+extension TSAccountManager {
+    public func registerForTests(localIdentifiers: LocalIdentifiers) {
+        registerForTests(
+            withLocalNumber: localIdentifiers.phoneNumber,
+            uuid: localIdentifiers.aci.rawUUID,
+            pni: localIdentifiers.pni?.rawUUID
+        )
+    }
+}
+
+#endif

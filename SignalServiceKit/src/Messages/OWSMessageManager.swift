@@ -4,6 +4,7 @@
 //
 
 import LibSignalClient
+import SignalCoreKit
 
 /// An ObjC wrapper around UnidentifiedSenderMessageContent.ContentHint
 @objc
@@ -97,34 +98,19 @@ extension OWSMessageManager {
     /// message was decrypted. It's important to keep in mind that the NSE could
     /// race with the main app when processing messages. The write transaction
     /// is used to protect us from any races.
-    @objc
     func preprocessEnvelope(
-        _ identifiedEnvelope: IdentifiedIncomingEnvelope,
-        plaintext: Data?,
-        transaction: SDSAnyWriteTransaction
+        _ decryptedEnvelope: DecryptedIncomingEnvelope,
+        tx: SDSAnyWriteTransaction
     ) {
-        guard let plaintext else {
-            Logger.warn("No plaintext")
-            return
-        }
-
-        // Currently, this function is only used for SKDM processing
-        // Since this is idempotent, we don't need to check for a duplicate envelope.
+        // Currently, this function is only used for SKDM processing. Since this is
+        // idempotent, we don't need to check for a duplicate envelope.
         //
-        // SKDM proecessing is also not user-visible, so we don't want to skip if the sender is
-        // blocked. This ensures that we retain session info to decrypt future messages from a blocked
-        // sender if they're ever unblocked.
-        let contentProto: SSKProtoContent
-        do {
-            contentProto = try SSKProtoContent(serializedData: plaintext)
-        } catch {
-            owsFailDebug("Failed to deserialize content proto: \(error)")
-            return
-        }
+        // SKDM processing is also not user-visible, so we don't want to skip if
+        // the sender is blocked. This ensures that we retain session info to
+        // decrypt future messages from a blocked sender if they're ever unblocked.
 
-        if let skdmBytes = contentProto.senderKeyDistributionMessage {
-            Logger.info("Preprocessing content: \(description(for: contentProto))")
-            handleIncomingEnvelope(identifiedEnvelope, withSenderKeyDistributionMessage: skdmBytes, transaction: transaction)
+        if let skdmBytes = decryptedEnvelope.content?.senderKeyDistributionMessage {
+            handleIncomingEnvelope(decryptedEnvelope, withSenderKeyDistributionMessage: skdmBytes, transaction: tx)
         }
     }
 
@@ -134,47 +120,54 @@ extension OWSMessageManager {
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
         shouldDiscardVisibleMessages: Bool,
+        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
-        let identifiedEnvelope: IdentifiedIncomingEnvelope
         do {
-            let validatedEnvelope = try ValidatedIncomingEnvelope(envelope)
-            identifiedEnvelope = try IdentifiedIncomingEnvelope(validatedEnvelope: validatedEnvelope)
+            let validatedEnvelope = try ValidatedIncomingEnvelope(envelope, localIdentifiers: localIdentifiers)
+            switch validatedEnvelope.kind {
+            case .unidentifiedSender, .identifiedSender:
+                // At this point, unidentifiedSender envelopes have already been updated
+                // with the sourceAci, so we should be able to parse it from the envelope.
+                let (sourceAci, sourceDeviceId) = try validatedEnvelope.validateSource(Aci.self)
+                if blockingManager.isAddressBlocked(SignalServiceAddress(sourceAci), transaction: tx) {
+                    return
+                }
+                guard let plaintextData else {
+                    throw OWSAssertionError("Missing plaintextData.")
+                }
+                let decryptedEnvelope = DecryptedIncomingEnvelope(
+                    validatedEnvelope: validatedEnvelope,
+                    updatedEnvelope: validatedEnvelope.envelope,
+                    sourceAci: sourceAci,
+                    sourceDeviceId: sourceDeviceId,
+                    wasReceivedByUD: wasReceivedByUD,
+                    plaintextData: plaintextData
+                )
+                checkForUnknownLinkedDevice(in: decryptedEnvelope, tx: tx)
+                let buildResult = MessageManagerRequest.buildRequest(
+                    for: decryptedEnvelope,
+                    serverDeliveryTimestamp: serverDeliveryTimestamp,
+                    shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
+                    tx: tx
+                )
+                switch buildResult {
+                case .discard:
+                    break
+                case .request(let messageManagerRequest):
+                    handle(messageManagerRequest, context: PassthroughDeliveryReceiptContext(), transaction: tx)
+                    fallthrough
+                case .noContent:
+                    finishProcessingEnvelope(decryptedEnvelope, tx: tx)
+                }
+            case .serverReceipt:
+                owsAssertDebug(plaintextData == nil)
+                let envelope = try ServerReceiptEnvelope(validatedEnvelope)
+                handleDeliveryReceipt(envelope, context: PassthroughDeliveryReceiptContext(), transaction: tx)
+            }
         } catch {
             Logger.warn("Dropping invalid envelope \(error)")
-            return
         }
-        if blockingManager.isAddressBlocked(SignalServiceAddress(identifiedEnvelope.sourceServiceId), transaction: tx) {
-            return
-        }
-        checkForUnknownLinkedDevice(in: identifiedEnvelope, tx: tx)
-        switch identifiedEnvelope.envelopeType {
-        case .ciphertext, .prekeyBundle, .unidentifiedSender, .senderkeyMessage, .plaintextContent:
-            guard let plaintextData else {
-                return owsFailDebug("Missing decrypted data for envelope \(Self.description(for: envelope))")
-            }
-            let request = MessageManagerRequest(
-                identifiedEnvelope: identifiedEnvelope,
-                plaintextData: plaintextData,
-                wasReceivedByUD: wasReceivedByUD,
-                serverDeliveryTimestamp: serverDeliveryTimestamp,
-                shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
-                transaction: tx
-            )
-            if let request {
-                handle(request, context: PassthroughDeliveryReceiptContext(), transaction: tx)
-            }
-        case .receipt:
-            owsAssertDebug(plaintextData == nil)
-            handleDeliveryReceipt(identifiedEnvelope, context: PassthroughDeliveryReceiptContext(), transaction: tx)
-        case .keyExchange:
-            Logger.warn("Received Key Exchange Message, not supported")
-        case .unknown:
-            Logger.warn("Received an unknown message type")
-        default:
-            Logger.warn("Received unhandled envelope type: \(identifiedEnvelope.envelopeType)")
-        }
-        finishProcessingEnvelope(identifiedEnvelope, tx: tx)
     }
 
     /// Called when we've finished processing an envelope.
@@ -193,24 +186,24 @@ extension OWSMessageManager {
     /// - The envelope contains a message with an invalid reaction
     /// - The envelope contains a link preview but the URL isn't in the message
     /// - & so on, for many "errors" that are handled elsewhere
-    func finishProcessingEnvelope(_ identifiedEnvelope: IdentifiedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
-        saveSpamReportingToken(for: identifiedEnvelope, tx: tx)
-        clearLeftoverPlaceholders(for: identifiedEnvelope, tx: tx)
+    func finishProcessingEnvelope(_ decryptedEnvelope: DecryptedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
+        saveSpamReportingToken(for: decryptedEnvelope, tx: tx)
+        clearLeftoverPlaceholders(for: decryptedEnvelope, tx: tx)
     }
 
-    private func saveSpamReportingToken(for identifiedEnvelope: IdentifiedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
+    private func saveSpamReportingToken(for decryptedEnvelope: DecryptedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
         guard
-            let rawSpamReportingToken = identifiedEnvelope.envelope.spamReportingToken,
+            let rawSpamReportingToken = decryptedEnvelope.envelope.spamReportingToken,
             let spamReportingToken = SpamReportingToken(data: rawSpamReportingToken)
         else {
             Logger.debug("Received an envelope without a spam reporting token. Doing nothing")
             return
         }
 
-        Logger.info("Saving spam reporting token. Envelope timestamp: \(identifiedEnvelope.timestamp)")
+        Logger.info("Saving spam reporting token. Envelope timestamp: \(decryptedEnvelope.timestamp)")
         do {
             try SpamReportingTokenRecord(
-                sourceUuid: identifiedEnvelope.sourceServiceId,
+                sourceUuid: decryptedEnvelope.sourceAci.untypedServiceId,
                 spamReportingToken: spamReportingToken
             ).upsert(tx.unwrapGrdbWrite.database)
         } catch {
@@ -230,11 +223,11 @@ extension OWSMessageManager {
     /// - The message does not result in an inserted TSIncomingMessage or
     /// TSOutgoingMessage. For example, a read receipt. In that case, we should
     /// just clear the placeholder.
-    private func clearLeftoverPlaceholders(for envelope: IdentifiedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
+    private func clearLeftoverPlaceholders(for envelope: DecryptedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
         do {
             let placeholders = try InteractionFinder.interactions(
                 withTimestamp: envelope.timestamp,
-                filter: { ($0 as? OWSRecoverableDecryptionPlaceholder)?.sender?.untypedServiceId == envelope.sourceServiceId },
+                filter: { ($0 as? OWSRecoverableDecryptionPlaceholder)?.sender?.serviceId == envelope.sourceAci },
                 transaction: tx
             )
             owsAssertDebug(placeholders.count <= 1)
@@ -287,20 +280,19 @@ extension OWSMessageManager {
         }
     }
 
-    @objc
-    func handleIncomingEnvelope(
-        _ identifiedEnvelope: IdentifiedIncomingEnvelope,
+    private func handleIncomingEnvelope(
+        _ decryptedEnvelope: DecryptedIncomingEnvelope,
         withSenderKeyDistributionMessage skdmData: Data,
         transaction writeTx: SDSAnyWriteTransaction
     ) {
         do {
             let skdm = try SenderKeyDistributionMessage(bytes: skdmData.map { $0 })
-            let sourceServiceId = identifiedEnvelope.sourceServiceId
-            let sourceDeviceId = identifiedEnvelope.sourceDeviceId
-            let protocolAddress = try ProtocolAddress(uuid: sourceServiceId.uuidValue, deviceId: sourceDeviceId)
+            let sourceAci = decryptedEnvelope.sourceAci
+            let sourceDeviceId = decryptedEnvelope.sourceDeviceId
+            let protocolAddress = try ProtocolAddress(uuid: sourceAci.temporary_rawUUID, deviceId: sourceDeviceId)
             try processSenderKeyDistributionMessage(skdm, from: protocolAddress, store: senderKeyStore, context: writeTx)
 
-            Logger.info("Processed incoming sender key distribution message from \(sourceServiceId).\(sourceDeviceId)")
+            Logger.info("Processed incoming sender key distribution message from \(sourceAci).\(sourceDeviceId)")
 
         } catch {
             owsFailDebug("Failed to process incoming sender key \(error)")
@@ -309,12 +301,12 @@ extension OWSMessageManager {
 
     @objc
     func handleIncomingEnvelope(
-        _ identifiedEnvelope: IdentifiedIncomingEnvelope,
+        _ decryptedEnvelope: DecryptedIncomingEnvelope,
         withDecryptionErrorMessage bytes: Data,
         transaction writeTx: SDSAnyWriteTransaction
     ) {
-        let sourceServiceId = identifiedEnvelope.sourceServiceId
-        let sourceDeviceId = identifiedEnvelope.sourceDeviceId
+        let sourceServiceId = decryptedEnvelope.sourceAci.untypedServiceId
+        let sourceDeviceId = decryptedEnvelope.sourceDeviceId
 
         do {
             let errorMessage = try DecryptionErrorMessage(bytes: bytes)
@@ -390,7 +382,7 @@ extension OWSMessageManager {
 
     @objc
     func handleIncomingEnvelope(
-        _ identifiedEnvelope: IdentifiedIncomingEnvelope,
+        _ decryptedEnvelope: DecryptedIncomingEnvelope,
         editSyncMessage: SSKProtoSyncMessage,
         transaction tx: SDSAnyWriteTransaction
     ) -> EditProcessingResult {
@@ -401,7 +393,7 @@ extension OWSMessageManager {
 
         guard let transcript = OWSIncomingSentMessageTranscript(
             proto: sentMessage,
-            serverTimestamp: identifiedEnvelope.serverTimestamp,
+            serverTimestamp: decryptedEnvelope.serverTimestamp,
             transaction: tx
         ) else {
             Logger.warn("Missing edit transcript.")
@@ -432,7 +424,7 @@ extension OWSMessageManager {
         }
 
         guard let message = handleMessageEdit(
-            envelope: identifiedEnvelope,
+            envelope: decryptedEnvelope,
             thread: thread,
             editTarget: targetMessage,
             editMessage: editMessage,
@@ -456,7 +448,7 @@ extension OWSMessageManager {
 
     @objc
     func handleIncomingEnvelope(
-        _ identifiedEnvelope: IdentifiedIncomingEnvelope,
+        _ decryptedEnvelope: DecryptedIncomingEnvelope,
         withEditMessage editMessage: SSKProtoEditMessage,
         wasReceivedByUD: Bool,
         transaction tx: SDSAnyWriteTransaction
@@ -469,7 +461,7 @@ extension OWSMessageManager {
 
         guard let thread = preprocessDataMessage(
             dataMessage,
-            envelope: identifiedEnvelope.envelope,
+            envelope: decryptedEnvelope.envelope,
             transaction: tx
         ) else {
             Logger.warn("Missing edit message thread.")
@@ -480,7 +472,7 @@ extension OWSMessageManager {
         // return and enqueue the message to be handled as early delivery
         guard let targetMessage = EditMessageFinder.editTarget(
             timestamp: editMessage.targetSentTimestamp,
-            authorAci: identifiedEnvelope.sourceServiceId,
+            authorAci: decryptedEnvelope.sourceAci.untypedServiceId,
             transaction: tx
         ) else {
             Logger.warn("Edit cannot find the target message")
@@ -488,7 +480,7 @@ extension OWSMessageManager {
         }
 
         guard let message = handleMessageEdit(
-            envelope: identifiedEnvelope,
+            envelope: decryptedEnvelope,
             thread: thread,
             editTarget: targetMessage,
             editMessage: editMessage,
@@ -500,7 +492,7 @@ extension OWSMessageManager {
 
         if wasReceivedByUD {
             self.outgoingReceiptManager.enqueueDeliveryReceipt(
-                for: identifiedEnvelope.envelope,
+                for: decryptedEnvelope.envelope,
                 messageUniqueId: message.uniqueId,
                 transaction: tx
             )
@@ -510,7 +502,7 @@ extension OWSMessageManager {
     }
 
     private func handleMessageEdit(
-        envelope: IdentifiedIncomingEnvelope,
+        envelope: DecryptedIncomingEnvelope,
         thread: TSThread,
         editTarget: EditMessageTarget,
         editMessage: SSKProtoEditMessage,
@@ -543,7 +535,7 @@ extension OWSMessageManager {
         DispatchQueue.main.async {
             self.typingIndicatorsImpl.didReceiveIncomingMessage(
                 inThread: thread,
-                address: SignalServiceAddress(envelope.sourceServiceId),
+                address: SignalServiceAddress(envelope.sourceAci),
                 deviceId: UInt(envelope.sourceDeviceId)
             )
         }
@@ -606,17 +598,17 @@ extension OWSMessageManager {
     }
 
     @objc
-    func checkForUnknownLinkedDevice(in envelope: IdentifiedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
-        let serviceId = envelope.sourceServiceId
+    func checkForUnknownLinkedDevice(in envelope: DecryptedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
+        let aci = envelope.sourceAci
         let deviceId = envelope.sourceDeviceId
 
-        guard serviceId == tsAccountManager.localIdentifiers(transaction: tx)?.aci.untypedServiceId else {
+        guard aci == tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
             return
         }
 
         // Check if the SignalRecipient (used for sending messages) knows about
         // this device.
-        let recipient = DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
+        let recipient = DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx.asV2Write)
         if !recipient.deviceIds.contains(deviceId) {
             Logger.info("Message received from unknown linked device; adding to local SignalRecipient: \(deviceId).")
             recipient.modifyAndSave(deviceIdsToAdd: [deviceId], deviceIdsToRemove: [], tx: tx)
@@ -865,7 +857,7 @@ extension SSKProtoSyncMessage {
 @objc
 class MessageManagerRequest: NSObject {
     @objc
-    let identifiedEnvelope: IdentifiedIncomingEnvelope
+    let decryptedEnvelope: DecryptedIncomingEnvelope
 
     @objc
     let envelope: SSKProtoEnvelope
@@ -882,118 +874,115 @@ class MessageManagerRequest: NSObject {
     @objc
     let shouldDiscardVisibleMessages: Bool
 
-    enum Kind {
-        case modern(SSKProtoContent)
-        case unactionable
-    }
-    private let kind: Kind
-
     @objc
-    var protoContent: SSKProtoContent? {
-        switch kind {
-        case .modern(let content):
-            return content
-        case .unactionable:
-            return nil
-        }
-    }
+    let protoContent: SSKProtoContent
 
     @objc
     var messageType: OWSMessageManagerMessageType {
-        if protoContent?.syncMessage != nil {
+        if protoContent.syncMessage != nil {
             return .syncMessage
         }
-        if protoContent?.dataMessage != nil {
+        if protoContent.dataMessage != nil {
             return .dataMessage
         }
-        if protoContent?.callMessage != nil {
+        if protoContent.callMessage != nil {
             return .callMessage
         }
-        if protoContent?.typingMessage != nil {
+        if protoContent.typingMessage != nil {
             return .typingMessage
         }
-        if protoContent?.nullMessage != nil {
+        if protoContent.nullMessage != nil {
             return .nullMessage
         }
-        if protoContent?.receiptMessage != nil {
+        if protoContent.receiptMessage != nil {
             return .receiptMessage
         }
-        if protoContent?.decryptionErrorMessage != nil {
+        if protoContent.decryptionErrorMessage != nil {
             return .decryptionErrorMessage
         }
-        if protoContent?.storyMessage != nil {
+        if protoContent.storyMessage != nil {
             return .storyMessage
         }
-        if protoContent?.hasSenderKeyDistributionMessage ?? false {
+        if protoContent.hasSenderKeyDistributionMessage {
             return .hasSenderKeyDistributionMessage
         }
-        if protoContent?.editMessage != nil {
+        if protoContent.editMessage != nil {
             return .editMessage
         }
         return .unknown
     }
 
-    @objc
-    init?(
-        identifiedEnvelope: IdentifiedIncomingEnvelope,
-        plaintextData: Data,
-        wasReceivedByUD: Bool,
-        serverDeliveryTimestamp: UInt64,
-        shouldDiscardVisibleMessages: Bool,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        self.identifiedEnvelope = identifiedEnvelope
-        self.envelope = identifiedEnvelope.envelope
-        self.plaintextData = plaintextData
-        self.wasReceivedByUD = wasReceivedByUD
-        self.serverDeliveryTimestamp = serverDeliveryTimestamp
-        self.shouldDiscardVisibleMessages = shouldDiscardVisibleMessages
-
-        if Self.isDuplicate(identifiedEnvelope, tx: transaction) {
-            Logger.info("Ignoring previously received envelope from \(envelope.formattedAddress) with timestamp: \(envelope.timestamp)")
-            return nil
-        }
-
-        if envelope.content != nil {
-            do {
-                let contentProto = try SSKProtoContent(serializedData: self.plaintextData)
-                Logger.info("handling content: <Content: \(contentProto.contentDescription)>")
-                if contentProto.callMessage != nil && shouldDiscardVisibleMessages {
-                    Logger.info("Discarding message with timestamp \(envelope.timestamp)")
-                    return nil
-                }
-
-                if envelope.story && contentProto.dataMessage?.delete == nil {
-                    guard StoryManager.areStoriesEnabled(transaction: transaction) else {
-                        Logger.info("Discarding story message received while stories are disabled")
-                        return nil
-                    }
-                    guard
-                        contentProto.senderKeyDistributionMessage != nil ||
-                        contentProto.storyMessage != nil ||
-                        (contentProto.dataMessage?.storyContext != nil && contentProto.dataMessage?.groupV2 != nil)
-                    else {
-                        owsFailDebug("Discarding story message with invalid content.")
-                        return nil
-                    }
-                }
-
-                kind = .modern(contentProto)
-            } catch {
-                owsFailDebug("could not parse proto: \(error)")
-                return nil
-            }
-        } else {
-            kind = .unactionable
-        }
+    enum BuildResult {
+        case discard
+        case noContent
+        case request(MessageManagerRequest)
     }
 
-    private static func isDuplicate(_ identifiedEnvelope: IdentifiedIncomingEnvelope, tx: SDSAnyReadTransaction) -> Bool {
+    static func buildRequest(
+        for decryptedEnvelope: DecryptedIncomingEnvelope,
+        serverDeliveryTimestamp: UInt64,
+        shouldDiscardVisibleMessages: Bool,
+        tx: SDSAnyWriteTransaction
+    ) -> BuildResult {
+        if Self.isDuplicate(decryptedEnvelope, tx: tx) {
+            Logger.info("Ignoring previously received envelope from \(decryptedEnvelope.sourceAci) with timestamp: \(decryptedEnvelope.timestamp)")
+            return .discard
+        }
+
+        guard let contentProto = decryptedEnvelope.content else {
+            return .noContent
+        }
+
+        Logger.info("handling content: <Content: \(contentProto.contentDescription)>")
+        if contentProto.callMessage != nil && shouldDiscardVisibleMessages {
+            Logger.info("Discarding message with timestamp \(decryptedEnvelope.timestamp)")
+            return .discard
+        }
+
+        if decryptedEnvelope.envelope.story && contentProto.dataMessage?.delete == nil {
+            guard StoryManager.areStoriesEnabled(transaction: tx) else {
+                Logger.info("Discarding story message received while stories are disabled")
+                return .discard
+            }
+            guard
+                contentProto.senderKeyDistributionMessage != nil ||
+                contentProto.storyMessage != nil ||
+                (contentProto.dataMessage?.storyContext != nil && contentProto.dataMessage?.groupV2 != nil)
+            else {
+                owsFailDebug("Discarding story message with invalid content.")
+                return .discard
+            }
+        }
+
+        return .request(MessageManagerRequest(
+            decryptedEnvelope: decryptedEnvelope,
+            protoContent: contentProto,
+            serverDeliveryTimestamp: serverDeliveryTimestamp,
+            shouldDiscardVisibleMessages: shouldDiscardVisibleMessages
+        ))
+    }
+
+    private static func isDuplicate(_ decryptedEnvelope: DecryptedIncomingEnvelope, tx: SDSAnyReadTransaction) -> Bool {
         return InteractionFinder.existsIncomingMessage(
-            timestamp: identifiedEnvelope.timestamp,
-            sourceServiceId: identifiedEnvelope.sourceServiceId,
-            sourceDeviceId: identifiedEnvelope.sourceDeviceId,
+            timestamp: decryptedEnvelope.timestamp,
+            sourceServiceId: decryptedEnvelope.sourceAci.untypedServiceId,
+            sourceDeviceId: decryptedEnvelope.sourceDeviceId,
             transaction: tx
         )
+    }
+
+    private init(
+        decryptedEnvelope: DecryptedIncomingEnvelope,
+        protoContent: SSKProtoContent,
+        serverDeliveryTimestamp: UInt64,
+        shouldDiscardVisibleMessages: Bool
+    ) {
+        self.decryptedEnvelope = decryptedEnvelope
+        self.envelope = decryptedEnvelope.envelope
+        self.plaintextData = decryptedEnvelope.plaintextData
+        self.wasReceivedByUD = decryptedEnvelope.wasReceivedByUD
+        self.protoContent = protoContent
+        self.serverDeliveryTimestamp = serverDeliveryTimestamp
+        self.shouldDiscardVisibleMessages = shouldDiscardVisibleMessages
     }
 }

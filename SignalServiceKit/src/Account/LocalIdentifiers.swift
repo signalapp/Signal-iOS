@@ -94,3 +94,19 @@ public extension LocalIdentifiers {
         SignalServiceAddress(serviceId: aci, phoneNumber: phoneNumber)
     }
 }
+
+// MARK: - Unit Tests
+
+#if TESTABLE_BUILD
+
+extension LocalIdentifiers {
+    static var forUnitTests: LocalIdentifiers {
+        return LocalIdentifiers(
+            aci: Aci.constantForTesting("00000000-0000-4000-8000-000000000AAA"),
+            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-000000000BBB"),
+            phoneNumber: "+16505550100"
+        )
+    }
+}
+
+#endif

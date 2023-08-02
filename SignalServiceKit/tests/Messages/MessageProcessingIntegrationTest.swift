@@ -110,9 +110,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setServerGuid(UUID().uuidString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageProcessor.processEncryptedEnvelopeData(envelopeData,
-                                                      serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                                      envelopeSource: .tests) { error in
+        messageProcessor.processReceivedEnvelopeData(
+            envelopeData,
+            serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+            envelopeSource: .tests
+        ) { error in
             switch error {
             case MessageProcessingError.duplicatePendingEnvelope?:
                 XCTFail("duplicatePendingEnvelope")
@@ -145,9 +147,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         envelopeBuilder.setServerGuid(UUID().uuidString)
         envelopeBuilder.setDestinationUuid(UUID().uuidString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageProcessor.processEncryptedEnvelopeData(envelopeData,
-                                                      serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                                      envelopeSource: .tests) { error in
+        messageProcessor.processReceivedEnvelopeData(
+            envelopeData,
+            serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+            envelopeSource: .tests
+        ) { error in
             switch error {
             case MessageProcessingError.wrongDestinationUuid?:
                 break
@@ -194,11 +198,13 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         envelopeBuilder.setSourceDevice(1)
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setServerGuid(UUID().uuidString)
-        envelopeBuilder.setDestinationUuid(tsAccountManager.localPni!.uuidString)
+        envelopeBuilder.setDestinationUuid(tsAccountManager.localIdentifiers!.pni!.serviceIdString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageProcessor.processEncryptedEnvelopeData(envelopeData,
-                                                      serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                                      envelopeSource: .tests) { error in
+        messageProcessor.processReceivedEnvelopeData(
+            envelopeData,
+            serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+            envelopeSource: .tests
+        ) { error in
             switch error {
             case let error?:
                 XCTFail("failure \(error)")
@@ -231,9 +237,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         envelopeBuilder.setSourceDevice(2)
         envelopeBuilder.setSourceUuid(self.bobClient.uuidIdentifier)
         let envelopeData = try envelopeBuilder.buildSerializedData()
-        messageProcessor.processEncryptedEnvelopeData(envelopeData,
-                                                      serverDeliveryTimestamp: 102,
-                                                      envelopeSource: .websocketUnidentified) { error in
+        messageProcessor.processReceivedEnvelopeData(
+            envelopeData,
+            serverDeliveryTimestamp: 102,
+            envelopeSource: .websocketUnidentified
+        ) { error in
             XCTAssertNil(error)
 
             // Handle a sync message
@@ -262,9 +270,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             let envelopeData = try! envelopeBuilder.buildSerializedData()
 
             // Process the message
-            self.messageProcessor.processEncryptedEnvelopeData(envelopeData,
-                                                               serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                                               envelopeSource: .tests) { error in
+            self.messageProcessor.processReceivedEnvelopeData(
+                envelopeData,
+                serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                envelopeSource: .tests
+            ) { error in
                 switch error {
                 case let error?:
                     XCTFail("failure \(error)")
@@ -318,9 +328,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         envelopeBuilder.setDestinationUuid(self.localClient.uuidIdentifier)
         let envelopeData = try envelopeBuilder.buildSerializedData()
 
-        messageProcessor.processEncryptedEnvelopeData(envelopeData,
-                                                      serverDeliveryTimestamp: 102,
-                                                      envelopeSource: .websocketUnidentified) { error in
+        messageProcessor.processReceivedEnvelopeData(
+            envelopeData,
+            serverDeliveryTimestamp: 102,
+            envelopeSource: .websocketUnidentified
+        ) { error in
             XCTAssertNil(error)
 
             // Handle a sync message
@@ -349,9 +361,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             let envelopeData = try! envelopeBuilder.buildSerializedData()
 
             // Process the message
-            self.messageProcessor.processEncryptedEnvelopeData(envelopeData,
-                                                               serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                                               envelopeSource: .tests) { error in
+            self.messageProcessor.processReceivedEnvelopeData(
+                envelopeData,
+                serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                envelopeSource: .tests
+            ) { error in
                 switch error {
                 case let error?:
                     XCTFail("failure \(error)")

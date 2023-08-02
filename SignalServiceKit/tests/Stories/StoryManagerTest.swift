@@ -10,6 +10,12 @@ import GRDB
 
 class StoryManagerTest: SSKBaseTestSwift {
 
+    override func setUp() {
+        super.setUp()
+
+        tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
+    }
+
     // MARK: - Message Creation
 
     func testProcessIncomingStoryMessage_createsPrivateStoryWithWhitelistedAuthor() throws {

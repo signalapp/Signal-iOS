@@ -103,7 +103,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
     // MARK: -
 
     fileprivate func enqueue(envelopeData: Data,
-                             plaintextData: Data?,
+                             plaintextData: Data,
                              groupId: Data,
                              wasReceivedByUD: Bool,
                              serverDeliveryTimestamp: UInt64,
@@ -554,13 +554,6 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             return []
         }
 
-        let reportFailure = { (transaction: SDSAnyWriteTransaction) in
-            // TODO: Add analytics.
-            let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
-            self.notificationsManager?.notifyUser(forThreadlessErrorMessage: errorMessage,
-                                                  transaction: transaction)
-        }
-
         var processedJobs = [IncomingGroupsV2MessageJob]()
         for jobInfo in jobInfos {
             let job = jobInfo.job
@@ -572,18 +565,15 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                 // Do nothing.
                 Logger.verbose("Discarding job.")
             } else {
-                guard let envelope = jobInfo.envelope else {
-                    owsFailDebug("Missing envelope.")
-                    reportFailure(transaction)
-                    continue
-                }
-                let shouldDiscardVisibleMessages = discardMode == .discardVisibleMessages
+                // The forced unwraps are checked in `discardMode`, so they can't fail.
+                // TODO: Refactor so that the compiler enforces the above statement.
                 self.messageManager.processEnvelope(
-                    envelope,
-                    plaintextData: job.plaintextData,
+                    jobInfo.envelope!,
+                    plaintextData: job.plaintextData!,
                     wasReceivedByUD: job.wasReceivedByUD,
                     serverDeliveryTimestamp: job.serverDeliveryTimestamp,
-                    shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
+                    shouldDiscardVisibleMessages: discardMode == .discardVisibleMessages,
+                    localIdentifiers: tsAccountManager.localIdentifiers(transaction: transaction)!,
                     tx: transaction
                 )
             }
@@ -977,13 +967,17 @@ public class GroupsV2MessageProcessor: NSObject {
             return nil
         }
 
+        return groupContextV2(from: contentProto)
+    }
+
+    public class func groupContextV2(from contentProto: SSKProtoContent) -> SSKProtoGroupContextV2? {
         if let groupV2 = contentProto.dataMessage?.groupV2 {
             return groupV2
-        } else if let groupV2 = contentProto.syncMessage?.sent?.message?.groupV2 {
-            return groupV2
-        } else {
-            return nil
         }
+        if let groupV2 = contentProto.syncMessage?.sent?.message?.groupV2 {
+            return groupV2
+        }
+        return nil
     }
 
     public func isActivelyProcessing() -> Bool {

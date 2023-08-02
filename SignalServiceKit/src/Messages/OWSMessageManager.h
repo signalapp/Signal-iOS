@@ -9,12 +9,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol DeliveryReceiptContext;
 
-@class IdentifiedIncomingEnvelope;
 @class MessageManagerRequest;
 @class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
 @class SSKProtoEnvelope;
 @class SSKProtoSyncMessage;
+@class ServerReceiptEnvelope;
 @class TSThread;
 
 typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
@@ -44,7 +44,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
 
 - (void)logUnactionablePayload:(SSKProtoEnvelope *)envelope;
 
-- (void)handleDeliveryReceipt:(IdentifiedIncomingEnvelope *)identifiedEnvelope
+- (void)handleDeliveryReceipt:(ServerReceiptEnvelope *)envelope
                       context:(id<DeliveryReceiptContext>)context
                   transaction:(SDSAnyWriteTransaction *)transaction;
 

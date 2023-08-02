@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData
-                       plaintextData:(NSData *_Nullable)plaintextData
+                       plaintextData:(NSData *_Nullable)plaintextData // optional for historical reasons
                              groupId:(NSData *_Nullable)groupId
                      wasReceivedByUD:(BOOL)wasReceivedByUD
              serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp NS_DESIGNATED_INITIALIZER;

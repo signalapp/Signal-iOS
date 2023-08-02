@@ -558,9 +558,11 @@ public class OWSWebSocket: NSObject {
         }()
 
         Self.messageProcessingQueue.async {
-            Self.messageProcessor.processEncryptedEnvelopeData(encryptedEnvelope,
-                                                               serverDeliveryTimestamp: serverDeliveryTimestamp,
-                                                               envelopeSource: envelopeSource) { error in
+            Self.messageProcessor.processReceivedEnvelopeData(
+                encryptedEnvelope,
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                envelopeSource: envelopeSource
+            ) { error in
                 Self.serialQueue.async {
                     ackMessage(error, serverDeliveryTimestamp)
                 }

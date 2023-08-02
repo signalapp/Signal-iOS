@@ -286,18 +286,13 @@ public class MessageFetcherJob: NSObject {
                     serverDeliveryTimestamp: batch.serverDeliveryTimestamp,
                     hasMore: batch.hasMore)
         }.then(on: DispatchQueue.global()) { (envelopeJobs: [EnvelopeJob], serverDeliveryTimestamp: UInt64, hasMore: Bool) -> Promise<Void> in
-            let queuedContentCountOld = Self.messageProcessor.queuedContentCount
             for job in envelopeJobs {
-                Self.messageProcessor.processEncryptedEnvelope(
+                Self.messageProcessor.processReceivedEnvelope(
                     job.encryptedEnvelope,
                     serverDeliveryTimestamp: serverDeliveryTimestamp,
                     envelopeSource: .rest,
-                    completion: job.completion)
-            }
-            let queuedContentCountNew = Self.messageProcessor.queuedContentCount
-
-            if DebugFlags.internalLogging {
-                Logger.info("messageProcessor.queuedContentCount: \(queuedContentCountOld) + \(envelopeJobs.count) -> \(queuedContentCountNew)")
+                    completion: job.completion
+                )
             }
 
             if hasMore {

@@ -3345,9 +3345,11 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: senderClient)
         envelopeBuilder.setSourceUuid(senderClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageProcessor.processEncryptedEnvelopeData(envelopeData,
-                                                      serverDeliveryTimestamp: 0,
-                                                      envelopeSource: .debugUI) { _ in }
+        messageProcessor.processReceivedEnvelopeData(
+            envelopeData,
+            serverDeliveryTimestamp: 0,
+            envelopeSource: .debugUI
+        ) { _ in }
     }
 
     private static func createUUIDGroup() {
@@ -3531,11 +3533,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setType(.ciphertext)
-        if let sourceUuid = address.uuidString {
-            envelopeBuilder.setSourceUuid(sourceUuid)
-        }
+        envelopeBuilder.setSourceUuid(address.uuidString!)
         envelopeBuilder.setSourceDevice(1)
         envelopeBuilder.setContent(plaintextData)
+        envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
 
         let envelope = try! envelopeBuilder.build()
         processDecryptedEnvelope(envelope, plaintextData: plaintextData)
@@ -4293,7 +4294,17 @@ class DebugUIMessages: DebugUIPage, Dependencies {
     }
 
     private static func processDecryptedEnvelope(_ envelope: SSKProtoEnvelope, plaintextData: Data) {
-        messageProcessor.debugui_processFakeDecryptedEnvelope(envelope, plaintextData: plaintextData)
+        databaseStorage.write { tx in
+            messageManager.processEnvelope(
+                envelope,
+                plaintextData: plaintextData,
+                wasReceivedByUD: false,
+                serverDeliveryTimestamp: 0,
+                shouldDiscardVisibleMessages: false,
+                localIdentifiers: tsAccountManager.localIdentifiers(transaction: tx)!,
+                tx: tx
+            )
+        }
     }
 }
 

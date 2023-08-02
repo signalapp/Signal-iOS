@@ -6,34 +6,6 @@
 import LibSignalClient
 import SignalCoreKit
 
-struct OWSMessageDecryptResult {
-    let identifiedEnvelope: IdentifiedIncomingEnvelope
-    let envelopeData: Data?
-    let plaintextData: Data?
-    let localIdentity: OWSIdentity
-
-    fileprivate init(
-        identifiedEnvelope: IdentifiedIncomingEnvelope,
-        envelopeData: Data?,
-        plaintextData: Data?,
-        localIdentity: OWSIdentity,
-        localIdentifiers: LocalIdentifiers,
-        localDeviceId: UInt32
-    ) {
-        self.identifiedEnvelope = identifiedEnvelope
-        self.envelopeData = envelopeData
-        self.plaintextData = plaintextData
-        self.localIdentity = localIdentity
-
-        // Self-sent messages should be discarded during the decryption process.
-        let sentFromThisDevice: Bool = (
-            localIdentifiers.contains(serviceId: identifiedEnvelope.sourceServiceId)
-            && localDeviceId == identifiedEnvelope.sourceDeviceId
-        )
-        owsAssertDebug(!sentFromThisDevice)
-    }
-}
-
 @objc
 public class OWSMessageDecrypter: OWSMessageHandler {
 
@@ -59,108 +31,6 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             guard CurrentAppContext().isMainApp else { return }
             self.cleanUpExpiredPlaceholders()
         }
-    }
-
-    private func localIdentity(
-        forDestinationUuidString destinationUuidString: String?,
-        localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyReadTransaction
-    ) throws -> OWSIdentity {
-        guard let destinationUuidString else {
-            return .aci
-        }
-        guard let destinationServiceId = UntypedServiceId(uuidString: destinationUuidString) else {
-            throw OWSAssertionError("incoming envelope has invalid destinationUuid: \(destinationUuidString)")
-        }
-
-        switch destinationServiceId {
-        case localIdentifiers.aci.untypedServiceId:
-            return .aci
-        case localIdentifiers.pni?.untypedServiceId:
-            return .pni
-        default:
-            throw MessageProcessingError.wrongDestinationUuid
-        }
-    }
-
-    func decryptEnvelope(
-        _ envelope: SSKProtoEnvelope,
-        envelopeData: Data?,
-        transaction: SDSAnyWriteTransaction
-    ) throws -> OWSMessageDecryptResult {
-        // This is only called via `drainPendingEnvelopes`, and that confirms that
-        // we're registered. If we're registered, we must have `LocalIdentifiers`,
-        // so this shouldn't fail.
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
-            throw OWSAssertionError("Not registered.")
-        }
-        let localDeviceId = tsAccountManager.storedDeviceId(transaction: transaction)
-
-        OWSMessageHandler.logInvalidEnvelope(envelope)
-        Logger.info("decrypting envelope: \(description(for: envelope))")
-
-        let incomingEnvelope = try ValidatedIncomingEnvelope(envelope)
-
-        let localIdentity = try localIdentity(
-            forDestinationUuidString: envelope.destinationUuid,
-            localIdentifiers: localIdentifiers,
-            transaction: transaction
-        )
-        guard incomingEnvelope.canBeReceived(by: localIdentity) else {
-            throw MessageProcessingError.invalidMessageTypeForDestinationUuid
-        }
-
-        let cipherType: CiphertextMessage.MessageType
-        switch envelope.unwrappedType {
-        case .receipt, .keyExchange, .unknown:
-            let identifiedEnvelope = try IdentifiedIncomingEnvelope(validatedEnvelope: incomingEnvelope)
-            return OWSMessageDecryptResult(
-                identifiedEnvelope: identifiedEnvelope,
-                envelopeData: envelopeData,
-                plaintextData: nil,
-                localIdentity: localIdentity,
-                localIdentifiers: localIdentifiers,
-                localDeviceId: localDeviceId
-            )
-        case .unidentifiedSender:
-            return try decryptUnidentifiedSenderEnvelope(
-                incomingEnvelope: incomingEnvelope,
-                sentTo: localIdentity,
-                localIdentifiers: localIdentifiers,
-                localDeviceId: localDeviceId,
-                transaction: transaction
-            )
-        case .ciphertext:
-            cipherType = .whisper
-        case .prekeyBundle:
-            DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction.asV2Read)
-            cipherType = .preKey
-        case .senderkeyMessage:
-            cipherType = .senderKey
-        case .plaintextContent:
-            cipherType = .plaintext
-        @unknown default:
-            Logger.warn("Received unhandled envelope type: \(envelope.unwrappedType)")
-            throw OWSGenericError("Received unhandled envelope type: \(envelope.unwrappedType)")
-        }
-
-        let identifiedEnvelope = try IdentifiedIncomingEnvelope(validatedEnvelope: incomingEnvelope)
-
-        let plaintextData = try decrypt(
-            identifiedEnvelope,
-            sentTo: localIdentity,
-            cipherType: cipherType,
-            transaction: transaction
-        )
-
-        return OWSMessageDecryptResult(
-            identifiedEnvelope: identifiedEnvelope,
-            envelopeData: envelopeData,
-            plaintextData: plaintextData,
-            localIdentity: localIdentity,
-            localIdentifiers: localIdentifiers,
-            localDeviceId: localDeviceId
-        )
     }
 
     @objc
@@ -513,17 +383,18 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
-    private func decrypt(
-        _ identifiedEnvelope: IdentifiedIncomingEnvelope,
-        sentTo localIdentity: OWSIdentity,
+    func decryptIdentifiedEnvelope(
+        _ validatedEnvelope: ValidatedIncomingEnvelope,
         cipherType: CiphertextMessage.MessageType,
-        transaction: SDSAnyWriteTransaction
-    ) throws -> Data {
+        tx transaction: SDSAnyWriteTransaction
+    ) throws -> DecryptedIncomingEnvelope {
+        // This method is only used for identified envelopes. If an unidentified
+        // envelope is ever passed here, we'll reject on the next line because it
+        // won't have a source.
+        let (sourceAci, sourceDeviceId) = try validatedEnvelope.validateSource(Aci.self)
+        let localIdentity = validatedEnvelope.localIdentity
         do {
-            let deviceId = identifiedEnvelope.sourceDeviceId
-
-            let envelope = identifiedEnvelope.envelope
-            guard let encryptedData = envelope.content else {
+            guard let encryptedData = validatedEnvelope.envelope.content else {
                 OWSAnalytics.logEvent(OWSAnalyticsEvents.messageManagerErrorMessageEnvelopeHasNoContent(),
                                       severity: .critical,
                                       parameters: nil,
@@ -534,8 +405,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                isRetryable: false)
             }
 
-            let protocolAddress = try ProtocolAddress(uuid: identifiedEnvelope.sourceServiceId.uuidValue, deviceId: deviceId)
-            let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: localIdentity)
+            let protocolAddress = try ProtocolAddress(uuid: sourceAci.temporary_rawUUID, deviceId: sourceDeviceId)
+            let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: validatedEnvelope.localIdentity)
 
             let plaintext: [UInt8]
             switch cipherType {
@@ -548,8 +419,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     identityStore: identityManager.store(for: localIdentity, transaction: transaction),
                     context: transaction
                 )
-                sendReactiveProfileKeyIfNecessary(address: SignalServiceAddress(identifiedEnvelope.sourceServiceId), transaction: transaction)
+                sendReactiveProfileKeyIfNecessary(address: SignalServiceAddress(sourceAci), transaction: transaction)
             case .preKey:
+                DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction.asV2Read)
                 let message = try PreKeySignalMessage(bytes: encryptedData)
                 plaintext = try signalDecryptPreKey(
                     message: message,
@@ -582,11 +454,18 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             }
 
             let plaintextData = Data(plaintext).withoutPadding()
-            return plaintextData
+            return DecryptedIncomingEnvelope(
+                validatedEnvelope: validatedEnvelope,
+                updatedEnvelope: validatedEnvelope.envelope,
+                sourceAci: sourceAci,
+                sourceDeviceId: sourceDeviceId,
+                wasReceivedByUD: false,
+                plaintextData: plaintextData
+            )
         } catch {
             throw processError(
                 error,
-                envelope: identifiedEnvelope.envelope,
+                envelope: validatedEnvelope.envelope,
                 sentTo: localIdentity,
                 untrustedGroupId: nil,
                 cipherType: cipherType,
@@ -646,14 +525,14 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
-    private func decryptUnidentifiedSenderEnvelope(
-        incomingEnvelope: ValidatedIncomingEnvelope,
-        sentTo localIdentity: OWSIdentity,
+    func decryptUnidentifiedSenderEnvelope(
+        _ validatedEnvelope: ValidatedIncomingEnvelope,
         localIdentifiers: LocalIdentifiers,
         localDeviceId: UInt32,
-        transaction: SDSAnyWriteTransaction
-    ) throws -> OWSMessageDecryptResult {
-        guard let encryptedData = incomingEnvelope.envelope.content else {
+        tx transaction: SDSAnyWriteTransaction
+    ) throws -> DecryptedIncomingEnvelope {
+        let localIdentity = validatedEnvelope.localIdentity
+        guard let encryptedData = validatedEnvelope.envelope.content else {
             throw OWSAssertionError("UD Envelope is missing content.")
         }
         let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: localIdentity)
@@ -672,7 +551,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             decryptResult = try cipher.decryptMessage(
                 trustRoot: Self.udManager.trustRoot.key,
                 cipherTextData: encryptedData,
-                timestamp: incomingEnvelope.serverTimestamp,
+                timestamp: validatedEnvelope.serverTimestamp,
                 localIdentifiers: localIdentifiers,
                 localDeviceId: localDeviceId,
                 protocolContext: transaction
@@ -680,7 +559,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         } catch let outerError as SecretSessionKnownSenderError {
             throw handleUnidentifiedSenderDecryptionError(
                 outerError.underlyingError,
-                envelope: incomingEnvelope.envelope.buildIdentifiedCopy(using: outerError),
+                envelope: validatedEnvelope.envelope.buildIdentifiedCopy(using: outerError),
                 sentTo: .aci,
                 untrustedGroupId: outerError.groupId,
                 cipherType: outerError.cipherType,
@@ -690,7 +569,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         } catch {
             throw handleUnidentifiedSenderDecryptionError(
                 error,
-                envelope: incomingEnvelope.envelope,
+                envelope: validatedEnvelope.envelope,
                 sentTo: .aci,
                 untrustedGroupId: nil,
                 cipherType: .plaintext,
@@ -703,6 +582,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction.asV2Read)
         }
 
+        let sourceAci = Aci(fromUUID: decryptResult.senderServiceId.uuidValue)
         let rawSourceDeviceId = decryptResult.senderDeviceId
         guard rawSourceDeviceId > 0, rawSourceDeviceId < UInt32.max else {
             throw OWSAssertionError("Invalid UD sender device id.")
@@ -711,25 +591,23 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let recipient = DependenciesBridge.shared.recipientMerger.applyMergeFromSealedSender(
             localIdentifiers: localIdentifiers,
-            aci: decryptResult.senderServiceId,
+            aci: sourceAci.untypedServiceId,
             phoneNumber: E164(decryptResult.senderE164),
             tx: transaction.asV2Write
         )
         recipient.markAsRegisteredAndSave(deviceId: sourceDeviceId, tx: transaction)
 
-        let identifiedEnvelope = try IdentifiedIncomingEnvelope(
-            validatedEnvelope: incomingEnvelope,
-            sourceServiceId: decryptResult.senderServiceId,
-            sourceDeviceId: sourceDeviceId
-        )
+        let envelopeBuilder = validatedEnvelope.envelope.asBuilder()
+        envelopeBuilder.setSourceUuid(sourceAci.serviceIdString)
+        envelopeBuilder.setSourceDevice(sourceDeviceId)
 
-        return OWSMessageDecryptResult(
-            identifiedEnvelope: identifiedEnvelope,
-            envelopeData: nil,
-            plaintextData: decryptResult.paddedPayload.withoutPadding(),
-            localIdentity: localIdentity,
-            localIdentifiers: localIdentifiers,
-            localDeviceId: localDeviceId
+        return DecryptedIncomingEnvelope(
+            validatedEnvelope: validatedEnvelope,
+            updatedEnvelope: try envelopeBuilder.build(),
+            sourceAci: Aci(fromUUID: decryptResult.senderServiceId.uuidValue),
+            sourceDeviceId: sourceDeviceId,
+            wasReceivedByUD: validatedEnvelope.envelope.sourceUuid == nil,
+            plaintextData: decryptResult.paddedPayload.withoutPadding()
         )
     }
 

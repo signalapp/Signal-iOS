@@ -13,7 +13,7 @@ public class GRDBGroupsV2MessageJobFinder: NSObject {
 
     @objc
     public func addJob(envelopeData: Data,
-                       plaintextData: Data?,
+                       plaintextData: Data,
                        groupId: Data,
                        wasReceivedByUD: Bool,
                        serverDeliveryTimestamp: UInt64,
