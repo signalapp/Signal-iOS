@@ -5,23 +5,21 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 import SignalCoreKit
 
 // MARK: -
 
-@objc
-public class ReactionFinder: NSObject {
+public class ReactionFinder {
 
-    @objc
     public let uniqueMessageId: String
 
-    @objc
     public init(uniqueMessageId: String) {
         self.uniqueMessageId = uniqueMessageId
     }
 
     /// Returns the given users reaction if it exists, otherwise nil
-    public func reaction(for aci: UntypedServiceId, tx: GRDBReadTransaction) -> OWSReaction? {
+    public func reaction(for aci: Aci, tx: GRDBReadTransaction) -> OWSReaction? {
         // If there is a reaction for the ACI, return it.
         do {
             let sql = """
@@ -29,7 +27,7 @@ public class ReactionFinder: NSObject {
                 WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
                 AND \(OWSReaction.columnName(.reactorUUID)) = ?
             """
-            let aciString = aci.uuidValue.uuidString
+            let aciString = aci.serviceIdUppercaseString
             if let result = try OWSReaction.fetchOne(tx.database, sql: sql, arguments: [uniqueMessageId, aciString]) {
                 return result
             }

@@ -116,7 +116,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
 
         let contactAci = FutureAci.randomForTesting()
 
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
             XCTFail("No local address. Test is not set up correctly")
             return
         }
@@ -146,7 +146,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
             let reaction = OWSReaction(
                 uniqueMessageId: message.uniqueId,
                 emoji: "💽",
-                reactor: localAddress,
+                reactor: localAci,
                 sentAtTimestamp: 1234,
                 receivedAtTimestamp: 1234
             )

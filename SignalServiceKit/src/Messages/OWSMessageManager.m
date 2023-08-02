@@ -919,7 +919,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSReactionProcessingResult result =
                     [OWSReactionManager processIncomingReaction:dataMessage.reaction
                                                          thread:transcript.thread
-                                                        reactor:decryptedEnvelope.sourceServiceIdObjC
+                                                        reactor:decryptedEnvelope.sourceAciObjC
                                                       timestamp:syncMessage.sent.timestamp
                                                 serverTimestamp:decryptedEnvelope.serverTimestamp
                                                expiresInSeconds:dataMessage.expireTimer
@@ -1248,7 +1248,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSReactionProcessingResult result =
             [OWSReactionManager processIncomingReaction:dataMessage.reaction
                                                  thread:thread
-                                                reactor:decryptedEnvelope.sourceServiceIdObjC
+                                                reactor:decryptedEnvelope.sourceAciObjC
                                               timestamp:timestamp
                                         serverTimestamp:decryptedEnvelope.serverTimestamp
                                        expiresInSeconds:dataMessage.expireTimer

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 @objc(OWSReactionManager)
@@ -70,7 +71,7 @@ public class ReactionManager: NSObject {
 
         Logger.info("Sending reaction, isRemoving: \(isRemoving)")
 
-        guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci.untypedServiceId else {
+        guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
             throw OWSAssertionError("missing local address")
         }
 
@@ -89,13 +90,13 @@ public class ReactionManager: NSObject {
             transaction: tx
         )
 
-        outgoingMessage.previousReaction = message.reaction(for: UntypedServiceIdObjC(localAci), tx: tx)
+        outgoingMessage.previousReaction = message.reaction(for: localAci, tx: tx)
 
         if isRemoving {
-            message.removeReaction(for: UntypedServiceIdObjC(localAci), tx: tx)
+            message.removeReaction(for: localAci, tx: tx)
         } else {
             outgoingMessage.createdReaction = message.recordReaction(
-                for: UntypedServiceIdObjC(localAci),
+                for: localAci,
                 emoji: emoji,
                 sentAtTimestamp: outgoingMessage.timestamp,
                 receivedAtTimestamp: outgoingMessage.timestamp,
@@ -120,13 +121,15 @@ public class ReactionManager: NSObject {
     public class func processIncomingReaction(
         _ reaction: SSKProtoDataMessageReaction,
         thread: TSThread,
-        reactor: UntypedServiceIdObjC,
+        reactor: AciObjC,
         timestamp: UInt64,
         serverTimestamp: UInt64,
         expiresInSeconds: UInt32,
         sentTranscript: OWSIncomingSentMessageTranscript?,
         transaction: SDSAnyWriteTransaction
     ) -> ReactionProcessingResult {
+        let reactor = reactor.wrappedAciValue
+
         guard let emoji = reaction.emoji.strippedOrNil else {
             owsFailDebug("Received invalid emoji")
             return .invalidReaction
@@ -135,7 +138,7 @@ public class ReactionManager: NSObject {
             owsFailDebug("Received invalid emoji")
             return .invalidReaction
         }
-        guard let messageAuthor = UntypedServiceId(uuidString: reaction.authorUuid) else {
+        guard let messageAuthor = Aci.parseFrom(aciString: reaction.authorUuid) else {
             owsFailDebug("reaction missing message author")
             return .invalidReaction
         }
@@ -178,8 +181,8 @@ public class ReactionManager: NSObject {
                 )
 
                 // If this is a reaction to a message we sent, notify the user.
-                let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci.untypedServiceId
-                if let reaction, let message = message as? TSOutgoingMessage, reactor.wrappedValue != localAci {
+                let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+                if let reaction, let message = message as? TSOutgoingMessage, reactor != localAci {
                     self.notificationsManager.notifyUser(
                         forReaction: reaction,
                         onOutgoingMessage: message,
@@ -218,13 +221,13 @@ public class ReactionManager: NSObject {
             let message: TSMessage
 
             let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
-            if reactor.wrappedValue == localAci?.untypedServiceId {
+            if reactor == localAci {
                 let builder = TSOutgoingMessageBuilder(thread: thread)
                 populateStoryContext(on: builder)
                 message = builder.build(transaction: transaction)
             } else {
                 let builder = TSIncomingMessageBuilder(thread: thread)
-                builder.authorAci = reactor
+                builder.authorAci = UntypedServiceIdObjC(reactor.untypedServiceId)
                 builder.serverTimestamp = NSNumber(value: serverTimestamp)
                 populateStoryContext(on: builder)
                 message = builder.build()

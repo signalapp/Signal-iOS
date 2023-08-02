@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 public extension TSMessage {
@@ -76,15 +77,13 @@ public extension TSMessage {
         unreadReactions.forEach { $0.markAsRead(transaction: transaction) }
     }
 
-    @objc(reactionFor:tx:)
-    func reaction(for reactor: UntypedServiceIdObjC, tx: SDSAnyReadTransaction) -> OWSReaction? {
-        return reactionFinder.reaction(for: reactor.wrappedValue, tx: tx.unwrapGrdbRead)
+    func reaction(for reactor: Aci, tx: SDSAnyReadTransaction) -> OWSReaction? {
+        return reactionFinder.reaction(for: reactor, tx: tx.unwrapGrdbRead)
     }
 
-    @objc(recordReactionFor:emoji:sentAtTimestamp:receivedAtTimestamp:tx:)
     @discardableResult
     func recordReaction(
-        for reactor: UntypedServiceIdObjC,
+        for reactor: Aci,
         emoji: String,
         sentAtTimestamp: UInt64,
         receivedAtTimestamp: UInt64,
@@ -105,7 +104,7 @@ public extension TSMessage {
         let reaction = OWSReaction(
             uniqueMessageId: uniqueId,
             emoji: emoji,
-            reactor: SignalServiceAddress(reactor.wrappedValue),
+            reactor: reactor,
             sentAtTimestamp: sentAtTimestamp,
             receivedAtTimestamp: receivedAtTimestamp
         )
@@ -122,8 +121,7 @@ public extension TSMessage {
         return reaction
     }
 
-    @objc(removeReactionFor:tx:)
-    func removeReaction(for reactor: UntypedServiceIdObjC, tx: SDSAnyWriteTransaction) {
+    func removeReaction(for reactor: Aci, tx: SDSAnyWriteTransaction) {
         Logger.info("")
 
         guard let reaction = reaction(for: reactor, tx: tx) else { return }

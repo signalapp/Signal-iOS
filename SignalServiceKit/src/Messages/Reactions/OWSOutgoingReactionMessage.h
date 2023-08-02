@@ -21,6 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
               expiresInSeconds:(uint32_t)expiresInSeconds
                    transaction:(SDSAnyReadTransaction *)transaction;
 
+@property (nonatomic, readonly) NSString *messageUniqueId;
+@property (nonatomic, readonly) NSString *emoji;
+@property (nonatomic, readonly) BOOL isRemoving;
 @property (nonatomic, nullable) OWSReaction *createdReaction;
 @property (nonatomic, nullable) OWSReaction *previousReaction;
 

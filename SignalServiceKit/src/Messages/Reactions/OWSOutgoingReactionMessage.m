@@ -9,16 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSOutgoingReactionMessage ()
-
-@property (nonatomic, readonly) NSString *messageUniqueId;
-@property (nonatomic, readonly) NSString *emoji;
-@property (nonatomic, readonly) BOOL isRemoving;
-
-@end
-
-#pragma mark -
-
 @implementation OWSOutgoingReactionMessage
 
 - (instancetype)initWithThread:(TSThread *)thread
@@ -53,39 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
                                                           transaction:(SDSAnyReadTransaction *)transaction
 {
-    TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:self.messageUniqueId transaction:transaction];
-    if (!message) {
-        OWSFailDebug(@"unexpectedly missing message for reaction");
-        return nil;
-    }
-
-    SSKProtoDataMessageReactionBuilder *reactionBuilder =
-        [SSKProtoDataMessageReaction builderWithEmoji:self.emoji timestamp:message.timestamp];
-    [reactionBuilder setRemove:self.isRemoving];
-
-    SignalServiceAddress *_Nullable messageAuthor;
-
-    if ([message isKindOfClass:[TSOutgoingMessage class]]) {
-        messageAuthor = TSAccountManager.shared.localAddress;
-    } else if ([message isKindOfClass:[TSIncomingMessage class]]) {
-        messageAuthor = ((TSIncomingMessage *)message).authorAddress;
-    }
-
-    if (!messageAuthor) {
-        OWSFailDebug(@"message is missing author.");
-        return nil;
-    }
-
-    if (messageAuthor.uuidString) {
-        reactionBuilder.authorUuid = messageAuthor.uuidString;
-    } else {
-        OWSAssertDebug(!SSKFeatureFlags.phoneNumberSharing);
-    }
-
-    NSError *error;
-    SSKProtoDataMessageReaction *_Nullable reactionProto = [reactionBuilder buildAndReturnError:&error];
-    if (error || !reactionProto) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
+    SSKProtoDataMessageReaction *_Nullable reactionProto = [self buildDataMessageReactionProtoWithTx:transaction];
+    if (!reactionProto) {
         return nil;
     }
 
@@ -100,45 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateWithSendingError:(NSError *)error transaction:(SDSAnyWriteTransaction *)transaction
 {
     [super updateWithSendingError:error transaction:transaction];
-
-    // Do nothing if we successfully delivered to anyone. Only cleanup
-    // local state if we fail to deliver to anyone.
-    if (self.sentRecipientAddresses.count > 0) {
-        OWSLogError(@"Failed to send reaction to some recipients: %@", error.userErrorDescription);
-        return;
-    }
-
-    NSUUID *_Nullable localUuid = TSAccountManager.shared.localUuid;
-    if (!localUuid) {
-        OWSFailDebug(@"unexpectedly missing local address");
-        return;
-    }
-    UntypedServiceIdObjC *localAci = [[UntypedServiceIdObjC alloc] initWithUuidValue:localUuid];
-
-    TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:self.messageUniqueId transaction:transaction];
-    if (!message) {
-        OWSFailDebug(@"unexpectedly missing message for reaction");
-        return;
-    }
-
-    OWSLogError(@"Failed to send reaction to all recipients: %@", error.userErrorDescription);
-
-    OWSReaction *_Nullable currentReaction = [message reactionFor:localAci tx:transaction];
-
-    if (![NSString isNullableObject:currentReaction.uniqueId equalTo:self.createdReaction.uniqueId]) {
-        OWSLogInfo(@"Skipping reversion, changes have been made since we tried to send this message.");
-        return;
-    }
-
-    if (self.previousReaction) {
-        [message recordReactionFor:localAci
-                             emoji:self.previousReaction.emoji
-                   sentAtTimestamp:self.previousReaction.sentAtTimestamp
-               receivedAtTimestamp:self.previousReaction.receivedAtTimestamp
-                                tx:transaction];
-    } else {
-        [message removeReactionFor:localAci tx:transaction];
-    }
+    [self revertLocalStateIfFailedForEveryoneWithTx:transaction];
 }
 
 - (NSSet<NSString *> *)relatedUniqueIds
