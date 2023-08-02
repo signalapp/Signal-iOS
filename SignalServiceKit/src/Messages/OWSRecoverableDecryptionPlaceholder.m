@@ -11,10 +11,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSRecoverableDecryptionPlaceholder
 
-- (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
-                                      sourceAci:(AciObjC *)sourceAci
-                               untrustedGroupId:(nullable NSData *)untrustedGroupId
-                                    transaction:(SDSAnyWriteTransaction *)writeTx
+- (nullable instancetype)initWithFailedEnvelopeTimestamp:(uint64_t)timestamp
+                                               sourceAci:(AciObjC *)sourceAci
+                                        untrustedGroupId:(nullable NSData *)untrustedGroupId
+                                             transaction:(SDSAnyWriteTransaction *)writeTx
 {
     SignalServiceAddress *sender = [[SignalServiceAddress alloc] initWithServiceIdObjC:sourceAci];
     TSThread *thread;
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     TSErrorMessageBuilder *builder =
         [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
-    builder.timestamp = envelope.timestamp;
+    builder.timestamp = timestamp;
     builder.senderAddress = sender;
     return [super initErrorMessageWithBuilder:builder];
 }

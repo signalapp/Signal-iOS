@@ -82,7 +82,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
         // assertEquals(plaintext.first().getDeviceId(), 1);
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "smert za smert")
         XCTAssertEqual(bobPlaintext.senderDeviceId, aliceMockClient.deviceId)
-        XCTAssertEqual(bobPlaintext.senderServiceId, aliceMockClient.serviceId)
+        XCTAssertEqual(bobPlaintext.senderAci.untypedServiceId, aliceMockClient.serviceId)
         XCTAssertEqual(bobPlaintext.senderE164, aliceMockClient.phoneNumber.stringValue)
     }
 
@@ -160,7 +160,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                     originalSenderDeviceId: knownSenderError.senderDeviceId
                 )
             )
-            XCTAssertEqual(knownSenderError.senderServiceId, aliceMockClient.serviceId)
+            XCTAssertEqual(knownSenderError.senderAci.untypedServiceId, aliceMockClient.serviceId)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -240,7 +240,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                     originalSenderDeviceId: knownSenderError.senderDeviceId
                 )
             )
-            XCTAssertEqual(knownSenderError.senderServiceId, aliceMockClient.serviceId)
+            XCTAssertEqual(knownSenderError.senderAci.untypedServiceId, aliceMockClient.serviceId)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -365,7 +365,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
 
         // Verify
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "beltalowda")
-        XCTAssertEqual(bobPlaintext.senderServiceId, aliceMockClient.serviceId)
+        XCTAssertEqual(bobPlaintext.senderAci.untypedServiceId, aliceMockClient.serviceId)
         XCTAssertEqual(bobPlaintext.senderDeviceId, aliceMockClient.deviceId)
         XCTAssertEqual(bobPlaintext.messageType, .senderKey)
     }
@@ -422,7 +422,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
             // Verify: We need to make sure that the sender, group, and contentHint are preserved
             // through decryption failures because of missing a missing sender key. This will
             // help with recovery.
-            XCTAssertEqual(knownSenderError.senderServiceId, aliceMockClient.serviceId)
+            XCTAssertEqual(knownSenderError.senderAci.untypedServiceId, aliceMockClient.serviceId)
             XCTAssertEqual(knownSenderError.senderDeviceId, UInt32(aliceMockClient.deviceId))
             XCTAssertEqual(Data(knownSenderError.groupId!), "inyalowda".data(using: String.Encoding.utf8)!)
             XCTAssertEqual(knownSenderError.contentHint, .resendable)

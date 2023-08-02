@@ -12,11 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSOutgoingResendRequest : TSOutgoingMessage
 
-- (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
-                                      sourceAci:(AciObjC *)sourceAci
-                                     cipherType:(uint8_t)cipherType
-                          failedEnvelopeGroupId:(nullable NSData *)failedEnvelopeGroupId
-                                    transaction:(SDSAnyWriteTransaction *)transaction;
+- (instancetype)initWithErrorMessageBytes:(NSData *)errorMessageBytes
+                                sourceAci:(AciObjC *)sourceAci
+                    failedEnvelopeGroupId:(nullable NSData *)failedEnvelopeGroupId
+                              transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
                                    transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;

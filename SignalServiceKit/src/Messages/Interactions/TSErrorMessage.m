@@ -294,12 +294,11 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                                                         transaction:transaction] build];
 }
 
-+ (instancetype)sessionRefreshWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(SDSAnyWriteTransaction *)transaction
++ (instancetype)sessionRefreshWithSourceAci:(AciObjC *)sourceAci withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     return [[TSErrorMessageBuilder errorMessageBuilderWithErrorType:TSErrorMessageSessionRefresh
-                                                           envelope:envelope
-                                                        transaction:transaction] build];
+                                                          sourceAci:sourceAci
+                                                                 tx:transaction] build];
 }
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread

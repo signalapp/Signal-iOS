@@ -8,6 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AciObjC;
 @class SSKProtoEnvelope;
 @class SignalServiceAddress;
 @class TSErrorMessageBuilder;
@@ -131,8 +132,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 + (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
                            withTransaction:(SDSAnyWriteTransaction *)transaction;
 
-+ (instancetype)sessionRefreshWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(SDSAnyWriteTransaction *)transaction;
++ (instancetype)sessionRefreshWithSourceAci:(AciObjC *)sourceAci withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread
                                           address:(SignalServiceAddress *)address

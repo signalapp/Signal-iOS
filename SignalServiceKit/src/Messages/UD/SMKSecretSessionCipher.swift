@@ -9,7 +9,7 @@ import LibSignalClient
 import SignalCoreKit
 
 public struct SecretSessionKnownSenderError: Error {
-    public let senderServiceId: UntypedServiceId
+    public let senderAci: Aci
     public let senderDeviceId: UInt32
     public let cipherType: CiphertextMessage.MessageType
     public let groupId: Data?
@@ -17,8 +17,8 @@ public struct SecretSessionKnownSenderError: Error {
     public let contentHint: UnidentifiedSenderMessageContent.ContentHint
     public let underlyingError: Error
 
-    init(senderServiceId: UntypedServiceId, messageContent: UnidentifiedSenderMessageContent, underlyingError: Error) {
-        self.senderServiceId = senderServiceId
+    init(senderAci: Aci, messageContent: UnidentifiedSenderMessageContent, underlyingError: Error) {
+        self.senderAci = senderAci
         self.senderDeviceId = messageContent.senderCertificate.sender.deviceId
         self.cipherType = messageContent.messageType
         self.groupId = messageContent.groupId.map { Data($0) }
@@ -45,7 +45,7 @@ public enum SMKMessageType: Int {
 }
 
 public struct SMKDecryptResult {
-    let senderServiceId: UntypedServiceId
+    let senderAci: Aci
     let senderE164: String?
     let senderDeviceId: UInt32
     let paddedPayload: Data
@@ -201,11 +201,11 @@ public class SMKSecretSessionCipher: NSObject {
         guard sender.deviceId <= Int32.max else {
             throw SMKError.assertionError(description: "\(logTag) Invalid senderDeviceId.")
         }
-        guard let senderServiceId = UntypedServiceId(uuidString: sender.uuidString) else {
-            throw SMKError.assertionError(description: "\(logTag) Invalid senderServiceId.")
+        guard let senderAci = Aci.parseFrom(aciString: sender.uuidString) else {
+            throw SMKError.assertionError(description: "\(logTag) Invalid senderAci.")
         }
 
-        if localIdentifiers.contains(serviceId: senderServiceId) && sender.deviceId == localDeviceId {
+        if localIdentifiers.aci == senderAci && sender.deviceId == localDeviceId {
             Logger.info("Discarding self-sent message")
             throw SMKSecretSessionCipherError.selfSentMessage
         }
@@ -222,7 +222,7 @@ public class SMKSecretSessionCipher: NSObject {
             //     content.getSenderCertificate().getSenderDeviceId()),
             //     decrypt(content));
             return SMKDecryptResult(
-                senderServiceId: senderServiceId,
+                senderAci: senderAci,
                 senderE164: sender.e164,
                 senderDeviceId: sender.deviceId,
                 paddedPayload: Data(paddedMessagePlaintext),
@@ -230,7 +230,7 @@ public class SMKSecretSessionCipher: NSObject {
             )
         } catch {
             throw SecretSessionKnownSenderError(
-                senderServiceId: senderServiceId,
+                senderAci: senderAci,
                 messageContent: messageContent,
                 underlyingError: error
             )
