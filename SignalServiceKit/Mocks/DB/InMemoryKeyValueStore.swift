@@ -120,6 +120,18 @@ public class InMemoryKeyValueStore: KeyValueStore {
         dict[key] = value
     }
 
+    public func getInt32(_ key: String, transaction: SignalServiceKit.DBReadTransaction) -> Int32? {
+        return read(key)
+    }
+
+    public func getInt32(_ key: String, defaultValue: Int32, transaction: SignalServiceKit.DBReadTransaction) -> Int32 {
+        return read(key, defaultValue: defaultValue)
+    }
+
+    public func setInt32(_ value: Int32, key: String, transaction: SignalServiceKit.DBWriteTransaction) {
+        dict[key] = value
+    }
+
     public func getUInt32(_ key: String, transaction: SignalServiceKit.DBReadTransaction) -> UInt32? {
         return read(key)
     }

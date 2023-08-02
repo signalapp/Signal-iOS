@@ -8,15 +8,15 @@ import SignalServiceKit
 import LibSignalClient
 
 internal class MockSignalProtocolStore: SignalProtocolStore {
-    internal var sessionStore: SignalSessionStore { mockSessionStore }
-    internal var preKeyStore: SignalPreKeyStore { mockPreKeyStore }
-    internal var signedPreKeyStore: SignalSignedPreKeyStore { mockSignedPreKeyStore }
-    internal var kyberPreKeyStore: SignalKyberPreKeyStore { mockKyberPreKeyStore }
+    public var sessionStore: SignalSessionStore { mockSessionStore }
+    public var preKeyStore: SignalPreKeyStore { mockPreKeyStore }
+    public var signedPreKeyStore: SignalSignedPreKeyStore { mockSignedPreKeyStore }
+    public var kyberPreKeyStore: SignalKyberPreKeyStore { mockKyberPreKeyStore }
 
     internal var mockSessionStore = MockSessionStore()
     internal var mockPreKeyStore = MockPreKeyStore()
     internal var mockSignedPreKeyStore = MockSignalSignedPreKeyStore()
-    internal var mockKyberPreKeyStore = MockKyberPreKeyStore()
+    internal var mockKyberPreKeyStore = MockKyberPreKeyStore(dateProvider: Date.provider)
 }
 
 class MockSessionStore: SignalSessionStore {
@@ -174,16 +174,65 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
 }
 
 internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
+
     private(set) var nextKeyId: Int32 = 0
     var identityKeyPair = Curve25519.generateKeyPair()
+    var dateProvider: DateProvider
+    var currentLastResortPreKey: SignalServiceKit.KyberPreKeyRecord!
+
+    init(dateProvider: @escaping DateProvider) {
+        self.dateProvider = dateProvider
+    }
+
+    func getLastResortKyberPreKey(tx: DBReadTransaction) -> SignalServiceKit.KyberPreKeyRecord? {
+        return currentLastResortPreKey
+    }
+
+    func generateLastResortKyberPreKey(signedBy keyPair: ECKeyPair, tx: DBWriteTransaction) throws -> SignalServiceKit.KyberPreKeyRecord {
+        try generateKyberPreKey(signedBy: keyPair, isLastResort: true, tx: tx)
+    }
+
+    func generateKyberPreKeyRecords(count: Int, signedBy keyPair: ECKeyPair, tx: DBWriteTransaction) throws -> [SignalServiceKit.KyberPreKeyRecord] {
+        return try (0..<count).map { _ in
+            try generateKyberPreKey(signedBy: keyPair, isLastResort: false, tx: tx)
+        }
+    }
+
+    func generateKyberPreKey(signedBy keyPair: ECKeyPair, isLastResort: Bool, tx: DBWriteTransaction) throws -> SignalServiceKit.KyberPreKeyRecord {
+
+        let keyPair = KEMKeyPair.generate()
+        let signature = try Ed25519.sign(Data(keyPair.publicKey.serialize()), with: identityKeyPair)
+
+        let record = SignalServiceKit.KyberPreKeyRecord(
+            nextKeyId,
+            keyPair: keyPair,
+            signature: signature,
+            generatedAt: dateProvider(),
+            isLastResort: isLastResort
+        )
+        return record
+    }
 
     func loadKyberPreKey(id: UInt32, context: LibSignalClient.StoreContext) throws -> LibSignalClient.KyberPreKeyRecord {
-        preconditionFailure("unimplemented")
+        let keyId = self.nextKeyId
+        self.nextKeyId += 1
+        let keyPair = KEMKeyPair.generate()
+        let signature = try Ed25519.sign(Data(keyPair.publicKey.serialize()), with: identityKeyPair)
+        return try LibSignalClient.KyberPreKeyRecord(
+            id: UInt32(bitPattern: keyId),
+            timestamp: Date().ows_millisecondsSince1970,
+            keyPair: keyPair,
+            signature: signature
+        )
     }
 
-    func storeKyberPreKey(_ record: LibSignalClient.KyberPreKeyRecord, id: UInt32, context: LibSignalClient.StoreContext) throws {
+    public func storeLastResortPreKeyAndMarkAsCurrent(record: SignalServiceKit.KyberPreKeyRecord, tx: DBWriteTransaction) throws {
+        currentLastResortPreKey = record
     }
 
-    func markKyberPreKeyUsed(id: UInt32, context: LibSignalClient.StoreContext) throws {
-    }
+    func storeKyberPreKey(record: SignalServiceKit.KyberPreKeyRecord, tx: DBWriteTransaction) throws { }
+    func storeKyberPreKeyRecords(records: [SignalServiceKit.KyberPreKeyRecord], tx: DBWriteTransaction) throws { }
+    func storeKyberPreKey(_ record: LibSignalClient.KyberPreKeyRecord, id: UInt32, context: LibSignalClient.StoreContext) throws { }
+
+    func markKyberPreKeyUsed(id: UInt32, context: LibSignalClient.StoreContext) throws { }
 }

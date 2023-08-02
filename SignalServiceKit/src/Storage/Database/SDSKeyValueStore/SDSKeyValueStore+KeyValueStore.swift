@@ -98,6 +98,21 @@ extension SDSKeyValueStore: KeyValueStore {
         setInt(value, key: key, transaction: sdsTx)
     }
 
+    public func getInt32(_ key: String, transaction: DBReadTransaction) -> Int32? {
+        let sdsTx = SDSDB.shimOnlyBridge(transaction)
+        return getInt32(key, transaction: sdsTx)
+    }
+
+    public func getInt32(_ key: String, defaultValue: Int32, transaction: DBReadTransaction) -> Int32 {
+        let sdsTx = SDSDB.shimOnlyBridge(transaction)
+        return getInt32(key, defaultValue: defaultValue, transaction: sdsTx)
+    }
+
+    public func setInt32(_ value: Int32, key: String, transaction: DBWriteTransaction) {
+        let sdsTx = SDSDB.shimOnlyBridge(transaction)
+        return setInt32(value, key: key, transaction: sdsTx)
+    }
+
     public func getUInt32(_ key: String, transaction: DBReadTransaction) -> UInt32? {
         let sdsTx = SDSDB.shimOnlyBridge(transaction)
         return getUInt32(key, transaction: sdsTx)

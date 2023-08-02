@@ -218,7 +218,10 @@ public struct LocalSignalClient: TestSignalClient {
 
     public init(identity: OWSIdentity = .aci) {
         self.identity = identity
-        self.protocolStore = SignalProtocolStoreImpl(for: identity)
+        self.protocolStore = SignalProtocolStoreImpl(
+            for: identity,
+            keyValueStoreFactory: InMemoryKeyValueStoreFactory()
+        )
     }
 
     public var identityKeyPair: ECKeyPair {

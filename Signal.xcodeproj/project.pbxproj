@@ -1264,6 +1264,7 @@
 		C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */; };
 		C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15837EE29A592BA00176927 /* UsernameValidationManager.swift */; };
 		C167387529E8397B0068EA92 /* EditMessageFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167387429E8397B0068EA92 /* EditMessageFinder.swift */; };
+		C167F1E52A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */; };
 		C169095F2A4DE2A200B6A65D /* EditMessageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */; };
 		C17345BB2A5E000300C6426D /* PreKeyOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17345BA2A5E000300C6426D /* PreKeyOperation.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
@@ -3871,6 +3872,7 @@
 		C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditMessage.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
 		C167387429E8397B0068EA92 /* EditMessageFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageFinder.swift; sourceTree = "<group>"; };
+		C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStoreTest.swift; sourceTree = "<group>"; };
 		C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageWrapper.swift; sourceTree = "<group>"; };
 		C17345BA2A5E000300C6426D /* PreKeyOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyOperation.swift; sourceTree = "<group>"; };
 		C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberPrivacySettingsViewController.swift; sourceTree = "<group>"; };
@@ -8299,6 +8301,8 @@
 				F94261DC289B1B5400460798 /* SDSDatabaseStorageTest.swift */,
 				F94261DB289B1B5400460798 /* SDSKeyValueStoreTest.swift */,
 				C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */,
+				C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */,
+				C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */,
 				C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */,
 				F94261E1289B1B5400460798 /* SSKSignedPreKeyStoreTest.swift */,
 				F94261DA289B1B5400460798 /* TestModelTests.swift */,
@@ -12907,6 +12911,7 @@
 				F9613CDE2981F15700894B55 /* SqliteUtilTest.swift in Sources */,
 				F942626F289B1B5500460798 /* SSKBaseTestObjC.m in Sources */,
 				F94262A2289B1B5600460798 /* SSKBaseTestSwift.swift in Sources */,
+				C167F1E52A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift in Sources */,
 				C1CD0E402A6B37BF00307F1A /* SSKPreKeyStoreTests.swift in Sources */,
 				F9426250289B1B5500460798 /* SSKSignedPreKeyStoreTest.swift in Sources */,
 				F9426270289B1B5500460798 /* SSKSwiftTests.swift in Sources */,

@@ -44,10 +44,12 @@ public class AppSetup {
         owsAssert(OWSFileSystem.ensureDirectoryExists(temporaryDirectory))
         owsAssert(OWSFileSystem.protectFileOrFolder(atPath: temporaryDirectory, fileProtectionType: .completeUntilFirstUserAuthentication))
 
+        let keyValueStoreFactory = SDSKeyValueStoreFactory()
+
         // MARK: DependenciesBridge
 
         let accountServiceClient = AccountServiceClient()
-        let aciSignalProtocolStore = SignalProtocolStoreImpl(for: .aci)
+        let aciSignalProtocolStore = SignalProtocolStoreImpl(for: .aci, keyValueStoreFactory: keyValueStoreFactory)
         let dateProvider = Date.provider
         let groupsV2 = GroupsV2Impl()
         let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
@@ -56,7 +58,7 @@ public class AppSetup {
         let modelReadCaches = ModelReadCaches(factory: ModelReadCacheFactory())
         let networkManager = NetworkManager()
         let ows2FAManager = OWS2FAManager()
-        let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni)
+        let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni, keyValueStoreFactory: keyValueStoreFactory)
         let profileManager = OWSProfileManager(databaseStorage: databaseStorage)
         let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
             aciProtocolStore: aciSignalProtocolStore,

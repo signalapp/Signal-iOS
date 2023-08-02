@@ -48,11 +48,12 @@ public class MockSSKEnvironment: SSKEnvironment {
 
         let storageCoordinator = StorageCoordinator()
         let databaseStorage = storageCoordinator.nonGlobalDatabaseStorage
+        let keyValueStoreFactory = InMemoryKeyValueStoreFactory()
 
         // Set up DependenciesBridge
 
         let accountServiceClient = FakeAccountServiceClient()
-        let aciSignalProtocolStore = SignalProtocolStoreImpl(for: .aci)
+        let aciSignalProtocolStore = SignalProtocolStoreImpl(for: .aci, keyValueStoreFactory: keyValueStoreFactory)
         let dateProvider = Date.provider
         let groupsV2 = MockGroupsV2()
         let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
@@ -62,7 +63,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let networkManager = OWSFakeNetworkManager()
         let notificationsManager = NoopNotificationsManager()
         let ows2FAManager = OWS2FAManager()
-        let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni)
+        let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni, keyValueStoreFactory: keyValueStoreFactory)
         let profileManager = OWSFakeProfileManager()
         let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
             aciProtocolStore: aciSignalProtocolStore,

@@ -235,6 +235,25 @@ public class SDSKeyValueStore: NSObject {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
 
+    // MARK: - Int32
+
+    public func getInt32(_ key: String, transaction: SDSAnyReadTransaction) -> Int32? {
+        guard let number: NSNumber = read(key, transaction: transaction) else {
+            return nil
+        }
+        return number.int32Value
+    }
+
+    @objc
+    public func getInt32(_ key: String, defaultValue: Int32, transaction: SDSAnyReadTransaction) -> Int32 {
+        return getInt32(key, transaction: transaction) ?? defaultValue
+    }
+
+    @objc
+    public func setInt32(_ value: Int32, key: String, transaction: SDSAnyWriteTransaction) {
+        setObject(NSNumber(value: value), key: key, transaction: transaction)
+    }
+
     // MARK: - UInt32
 
     public func getUInt32(_ key: String, transaction: SDSAnyReadTransaction) -> UInt32? {

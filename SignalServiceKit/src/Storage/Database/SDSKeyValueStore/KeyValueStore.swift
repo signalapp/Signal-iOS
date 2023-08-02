@@ -76,6 +76,14 @@ public protocol KeyValueStore {
 
     func setInt(_ value: Int, key: String, transaction: DBWriteTransaction)
 
+    // MARK: - Int32
+
+    func getInt32(_ key: String, transaction: DBReadTransaction) -> Int32?
+
+    func getInt32(_ key: String, defaultValue: Int32, transaction: DBReadTransaction) -> Int32
+
+    func setInt32(_ value: Int32, key: String, transaction: DBWriteTransaction)
+
     // MARK: - UInt32
 
     func getUInt32(_ key: String, transaction: DBReadTransaction) -> UInt32?

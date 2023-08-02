@@ -18,11 +18,15 @@ public class SignalProtocolStoreImpl: SignalProtocolStore {
     public let signedPreKeyStore: SignalSignedPreKeyStore
     public let kyberPreKeyStore: SignalKyberPreKeyStore
 
-    public init(for identity: OWSIdentity) {
+    public init(for identity: OWSIdentity, keyValueStoreFactory: KeyValueStoreFactory) {
         sessionStore = SSKSessionStore(for: identity)
         preKeyStore = SSKPreKeyStore(for: identity)
         signedPreKeyStore = SSKSignedPreKeyStore(for: identity)
-        kyberPreKeyStore = SSKKyberPreKeyStore(for: identity)
+        kyberPreKeyStore = SSKKyberPreKeyStore(
+            for: identity,
+            keyValueStoreFactory: keyValueStoreFactory,
+            dateProvider: Date.provider
+        )
     }
 }
 
