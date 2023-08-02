@@ -320,10 +320,11 @@ public extension PaymentsImpl {
 
     private func fetchPublicAddress(forAddress address: SignalServiceAddress) -> Promise<MobileCoin.PublicAddress> {
         return firstly {
-            ProfileFetcherJob.fetchProfilePromise(address: address,
-                                                  mainAppOnly: false,
-                                                  ignoreThrottling: true,
-                                                  fetchType: .`default`)
+            ProfileFetcherJob.fetchProfilePromise(
+                address: address,
+                mainAppOnly: false,
+                ignoreThrottling: true
+            )
         }.map(on: DispatchQueue.global()) { (fetchedProfile: FetchedProfile) -> MobileCoin.PublicAddress in
             guard let decryptedProfile = fetchedProfile.decryptedProfile else {
                 Logger.verbose("address: \(address)")

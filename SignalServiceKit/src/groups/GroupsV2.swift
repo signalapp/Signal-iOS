@@ -105,18 +105,18 @@ public protocol GroupsV2: AnyObject {
 
 public protocol GroupsV2Swift: GroupsV2 {
 
-    typealias ProfileKeyCredentialMap = [UUID: ExpiringProfileKeyCredential]
+    typealias ProfileKeyCredentialMap = [Aci: ExpiringProfileKeyCredential]
 
     func createNewGroupOnService(groupModel: TSGroupModelV2,
                                  disappearingMessageToken: DisappearingMessageToken) -> Promise<Void>
 
     func loadProfileKeyCredentials(
-        for uuids: [UUID],
+        for acis: [Aci],
         forceRefresh: Bool
     ) -> Promise<ProfileKeyCredentialMap>
 
     func tryToFetchProfileKeyCredentials(
-        for uuids: [UUID],
+        for acis: [Aci],
         ignoreMissingProfiles: Bool,
         forceRefresh: Bool
     ) -> Promise<Void>
@@ -588,14 +588,14 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
     }
 
     public func loadProfileKeyCredentials(
-        for uuids: [UUID],
+        for acis: [Aci],
         forceRefresh: Bool
     ) -> Promise<ProfileKeyCredentialMap> {
         owsFail("Not implemented.")
     }
 
     public func tryToFetchProfileKeyCredentials(
-        for uuids: [UUID],
+        for acis: [Aci],
         ignoreMissingProfiles: Bool,
         forceRefresh: Bool
     ) -> Promise<Void> {

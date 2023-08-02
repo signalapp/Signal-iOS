@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
@@ -110,18 +111,18 @@ private extension AddGroupMembersViewController {
             return dismissAndUpdateDelegate()
         }
 
-        let newUuids = newRecipientSet.orderedMembers
-            .compactMap { recipient -> UUID? in
-                if let uuid = recipient.address?.uuid,
-                   !oldGroupModel.groupMembership.isFullMember(uuid) {
-                    return uuid
+        let newServiceIds = newRecipientSet.orderedMembers
+            .compactMap { recipient -> ServiceId? in
+                if let serviceId = recipient.address?.serviceId,
+                   !oldGroupModel.groupMembership.isFullMember(serviceId.temporary_rawUUID) {
+                    return serviceId
                 }
 
                 owsFailDebug("Missing UUID, or recipient is already in group!")
                 return nil
             }
 
-        guard !newUuids.isEmpty else {
+        guard !newServiceIds.isEmpty else {
             let error = OWSAssertionError("No valid recipients")
             GroupViewUtils.showUpdateErrorUI(error: error)
             return
@@ -133,7 +134,7 @@ private extension AddGroupMembersViewController {
             updateDescription: self.logTag,
             updateBlock: {
                 GroupManager.addOrInvite(
-                    aciOrPniUuids: newUuids,
+                    serviceIds: newServiceIds,
                     toExistingGroup: self.oldGroupModel
                 )
             },

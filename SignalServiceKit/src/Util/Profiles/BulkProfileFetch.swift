@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Foundation
+import LibSignalClient
+
 @objc
 public class BulkProfileFetch: NSObject {
 
@@ -208,7 +211,7 @@ public class BulkProfileFetch: NSObject {
                 return Guarantee.value(())
             }
         }.then(on: DispatchQueue.global()) {
-            ProfileFetcherJob.fetchProfilePromise(address: SignalServiceAddress(uuid: uuid)).asVoid()
+            ProfileFetcherJob.fetchProfilePromise(serviceId: Aci(fromUUID: uuid)).asVoid()
         }.done(on: DispatchQueue.global()) {
             self.serialQueue.asyncAfter(deadline: DispatchTime.now() + updateDelaySeconds) {
                 self.isUpdateInFlight = false

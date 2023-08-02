@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 @objc
 public class UpsertGroupResult: NSObject {
@@ -218,7 +219,7 @@ public class GroupManager: NSObject {
             // we need them to fully add (rather than merely inviting) members.
             firstly { () -> Promise<Void> in
                 self.groupsV2Swift.tryToFetchProfileKeyCredentials(
-                    for: groupMembership.allMembersOfAnyKind.compactMap { $0.uuid },
+                    for: groupMembership.allMembersOfAnyKind.compactMap { $0.serviceId as? Aci },
                     ignoreMissingProfiles: false,
                     forceRefresh: false
                 )
@@ -1428,7 +1429,7 @@ public extension GroupManager {
 
 extension GroupManager {
     public static func addOrInvite(
-        aciOrPniUuids: [UUID],
+        serviceIds: [ServiceId],
         toExistingGroup existingGroupModel: TSGroupModel
     ) -> Promise<TSGroupThread> {
         guard let existingGroupModel = existingGroupModel as? TSGroupModelV2 else {
@@ -1441,7 +1442,7 @@ extension GroupManager {
             // whether to add or invite a user.
 
             self.groupsV2Swift.tryToFetchProfileKeyCredentials(
-                for: aciOrPniUuids,
+                for: serviceIds.compactMap { $0 as? Aci },
                 ignoreMissingProfiles: false,
                 forceRefresh: false
             )
@@ -1451,24 +1452,24 @@ extension GroupManager {
                 description: "Add/Invite new non-admin members"
             ) { groupChangeSet in
                 self.databaseStorage.read { transaction in
-                    for uuid in aciOrPniUuids {
-                        owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(uuid))
+                    for serviceId in serviceIds {
+                        owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(serviceId.temporary_rawUUID))
 
                         // Important that at this point we already have the
                         // profile keys for these users
                         let isPending = !self.groupsV2Swift.hasProfileKeyCredential(
-                            for: SignalServiceAddress(uuid: uuid),
+                            for: SignalServiceAddress(serviceId),
                             transaction: transaction
                         )
 
                         if isPending {
-                            groupChangeSet.addInvitedMember(uuid, role: .normal)
+                            groupChangeSet.addInvitedMember(serviceId.temporary_rawUUID, role: .normal)
                         } else {
-                            groupChangeSet.addMember(uuid, role: .normal)
+                            groupChangeSet.addMember(serviceId.temporary_rawUUID, role: .normal)
                         }
 
-                        if existingGroupModel.groupMembership.isBannedMember(uuid) {
-                            groupChangeSet.removeBannedMember(uuid)
+                        if existingGroupModel.groupMembership.isBannedMember(serviceId.temporary_rawUUID) {
+                            groupChangeSet.removeBannedMember(serviceId.temporary_rawUUID)
                         }
                     }
                 }

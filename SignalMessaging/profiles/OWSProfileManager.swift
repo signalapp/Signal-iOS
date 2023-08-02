@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 
 public extension OWSProfileManager {
@@ -45,21 +46,20 @@ public extension OWSProfileManager {
                 Logger.info("Skipping local profile fetch during key rotation.")
                 return Promise.value(())
             }
-            var localAddress: SignalServiceAddress
+            let localAci: Aci
             switch authedAccount.info {
             case .explicit(let info):
-                localAddress = info.localUserAddress()
+                localAci = info.localIdentifiers.aci
             case .implicit:
-                guard let address = TSAccountManager.shared.localAddress else {
+                guard let implicitLocalAci = TSAccountManager.shared.localIdentifiers?.aci else {
                     throw OWSAssertionError("missing local address")
                 }
-                localAddress = address
+                localAci = implicitLocalAci
             }
             return ProfileFetcherJob.fetchProfilePromise(
-                address: localAddress,
+                serviceId: localAci,
                 mainAppOnly: false,
                 ignoreThrottling: true,
-                fetchType: .default,
                 authedAccount: authedAccount
             ).asVoid()
         }.done(on: DispatchQueue.global()) { () -> Void in
@@ -188,8 +188,8 @@ public extension OWSProfileManager {
             let newProfileKey = OWSAES256Key.generateRandom()
             return self.reuploadLocalProfilePromise(unsavedRotatedProfileKey: newProfileKey, authedAccount: authedAccount).map { newProfileKey }
         }.then(on: DispatchQueue.global()) { newProfileKey -> Promise<Void> in
-            guard let localAddress = self.tsAccountManager.localAddress, let serviceId = localAddress.untypedServiceId else {
-                throw OWSAssertionError("Missing local address")
+            guard let localAci = self.tsAccountManager.localIdentifiers?.aci else {
+                throw OWSAssertionError("Missing localAci.")
             }
 
             Logger.info("Persisting rotated profile key and kicking off subsequent operations.")
@@ -204,7 +204,7 @@ public extension OWSProfileManager {
 
                 // Whenever a user's profile key changes, we need to fetch a new
                 // profile key credential for them.
-                self.versionedProfiles.clearProfileKeyCredential(for: UntypedServiceIdObjC(serviceId), transaction: transaction)
+                self.versionedProfiles.clearProfileKeyCredential(for: AciObjC(localAci), transaction: transaction)
 
                 // We schedule the updates here but process them below using processProfileKeyUpdates.
                 // It's more efficient to process them after the intermediary steps are done.

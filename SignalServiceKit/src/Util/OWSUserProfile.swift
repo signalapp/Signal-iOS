@@ -151,31 +151,27 @@ public extension OWSUserProfile {
         return try? Aes256GcmEncryptedData(concatenated: profileData).decrypt(key: profileKey.keyData)
     }
 
-    class func decrypt(profileNameData: Data, profileKey: OWSAES256Key, address: SignalServiceAddress) -> PersonNameComponents? {
+    class func decrypt(profileNameData: Data, profileKey: OWSAES256Key) -> PersonNameComponents? {
         guard let decryptedData = decrypt(profileData: profileNameData, profileKey: profileKey) else { return nil }
+
+        func parseNameSegment(_ nameSegment: Data?) -> String? {
+            return nameSegment.flatMap({ String(data: $0, encoding: .utf8) })?.strippedOrNil
+        }
 
         // Unpad profile name. The given and family name are stored
         // in the string like "<given name><null><family name><null padding>"
         let nameSegments: [Data] = decryptedData.split(separator: 0x00)
 
         // Given name is required
-        guard nameSegments.count > 0,
-              let givenName = String(data: nameSegments[0], encoding: .utf8), !givenName.isEmpty else {
-            Logger.warn("unexpectedly missing first name for \(address), isLocal: \(address.isLocalAddress).")
+        guard let givenName = parseNameSegment(nameSegments.first) else {
+            Logger.warn("unexpectedly missing given name")
             return nil
-        }
-
-        // Family name is optional
-        let familyName: String?
-        if nameSegments.count > 1 {
-            familyName = String(data: nameSegments[1], encoding: .utf8)
-        } else {
-            familyName = nil
         }
 
         var nameComponents = PersonNameComponents()
         nameComponents.givenName = givenName
-        nameComponents.familyName = familyName
+        // Family name is optional
+        nameComponents.familyName = parseNameSegment(nameSegments.dropFirst().first)
         return nameComponents
     }
 

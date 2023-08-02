@@ -5,6 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AciObjC;
 @class ChatServiceAuth;
 @class DeviceMessage;
 @class ECKeyPair;
@@ -12,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class PreKeyRecord;
 @class ProfileValue;
 @class SMKUDAccessKey;
+@class ServiceIdObjC;
 @class SignalServiceAddress;
 @class SignedPreKeyRecord;
 @class TSRequest;
@@ -37,17 +39,17 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)getMessagesRequest;
 
-+ (TSRequest *)getUnversionedProfileRequestWithAddress:(SignalServiceAddress *)address
-                                           udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-                                                  auth:(ChatServiceAuth *)auth
-    NS_SWIFT_NAME(getUnversionedProfileRequest(address:udAccessKey:auth:));
++ (TSRequest *)getUnversionedProfileRequestWithServiceId:(ServiceIdObjC *)serviceId
+                                             udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+                                                    auth:(ChatServiceAuth *)auth
+    NS_SWIFT_NAME(getUnversionedProfileRequest(serviceId:udAccessKey:auth:));
 
-+ (TSRequest *)getVersionedProfileRequestWithServiceId:(UntypedServiceIdObjC *)serviceId
-                                     profileKeyVersion:(nullable NSString *)profileKeyVersion
-                                     credentialRequest:(nullable NSData *)credentialRequest
-                                           udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-                                                  auth:(ChatServiceAuth *)auth
-    NS_SWIFT_NAME(getVersionedProfileRequest(serviceId:profileKeyVersion:credentialRequest:udAccessKey:auth:));
++ (TSRequest *)getVersionedProfileRequestWithAci:(AciObjC *)aci
+                               profileKeyVersion:(nullable NSString *)profileKeyVersion
+                               credentialRequest:(nullable NSData *)credentialRequest
+                                     udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+                                            auth:(ChatServiceAuth *)auth
+    NS_SWIFT_NAME(getVersionedProfileRequest(aci:profileKeyVersion:credentialRequest:udAccessKey:auth:));
 
 + (TSRequest *)turnServerInfoRequest;
 

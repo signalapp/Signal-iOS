@@ -4,9 +4,9 @@
 //
 
 import Foundation
+import LibSignalClient
 
-@objc
-public class SignalServiceProfile: NSObject {
+public class SignalServiceProfile {
 
     public enum ValidationError: Error {
         case invalid(description: String)
@@ -14,7 +14,7 @@ public class SignalServiceProfile: NSObject {
         case invalidProfileName(description: String)
     }
 
-    public let address: SignalServiceAddress
+    public let serviceId: ServiceId
     public let identityKey: Data
     public let profileNameEncrypted: Data?
     public let bioEncrypted: Data?
@@ -33,31 +33,22 @@ public class SignalServiceProfile: NSObject {
     public let canReceiveGiftBadges: Bool
     public let isPniCapable: Bool
 
-    public init(address: SignalServiceAddress?, responseObject: Any?) throws {
+    public init(serviceId: ServiceId, responseObject: Any?) throws {
         guard let params = ParamParser(responseObject: responseObject) else {
             throw ValidationError.invalid(description: "invalid response: \(String(describing: responseObject))")
         }
 
-        if let address = address {
-            self.address = address
-        } else if let uuidString: String = try params.required(key: "uuid") {
-            self.address = SignalServiceAddress(uuidString: uuidString)
-        } else {
-            throw ValidationError.invalid(description: "response or input missing address")
-        }
+        self.serviceId = serviceId
 
         let identityKeyWithType = try params.requiredBase64EncodedData(key: "identityKey")
         guard identityKeyWithType.count == kIdentityKeyLength else {
             throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with decoded length: \(identityKeyWithType.count)")
         }
         do {
-            // `removeKeyType` is an objc category method only on NSData, so temporarily cast.
-            self.identityKey = try (identityKeyWithType as NSData).removeKeyType() as Data
+            self.identityKey = try identityKeyWithType.removeKeyType()
         } catch {
-            // `removeKeyType` throws an SCKExceptionWrapperError, which, typically should
-            // be unwrapped by any objc code calling this method.
             owsFailDebug("identify key had unexpected format")
-            throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with data: \(identityKeyWithType)")
+            throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString)")
         }
 
         self.profileNameEncrypted = try params.optionalBase64EncodedData(key: "name")

@@ -136,14 +136,14 @@ public class AddToGroupViewController: OWSTableViewController2 {
         AssertIsOnMainThread()
         owsAssert(groupThread.isGroupV2Thread)  // non-gv2 filtered above when fetching groups
 
-        guard let uuid = self.address.uuid else {
+        guard let serviceId = self.address.serviceId else {
             GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
             return
         }
 
         let oldGroupModel = groupThread.groupModel
 
-        guard !oldGroupModel.groupMembership.isMemberOfAnyKind(uuid) else {
+        guard !oldGroupModel.groupMembership.isMemberOfAnyKind(serviceId.temporary_rawUUID) else {
             let error = OWSAssertionError("Receipient is already in group")
             GroupViewUtils.showUpdateErrorUI(error: error)
             return
@@ -155,7 +155,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
             updateDescription: self.logTag,
             updateBlock: {
                 GroupManager.addOrInvite(
-                    aciOrPniUuids: [uuid],
+                    serviceIds: [serviceId],
                     toExistingGroup: oldGroupModel
                 )
             },

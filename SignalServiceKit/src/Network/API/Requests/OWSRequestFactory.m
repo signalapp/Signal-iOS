@@ -51,14 +51,11 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
-+ (TSRequest *)getUnversionedProfileRequestWithAddress:(SignalServiceAddress *)address
-                                           udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-                                                  auth:(ChatServiceAuth *)auth
++ (TSRequest *)getUnversionedProfileRequestWithServiceId:(ServiceIdObjC *)serviceId
+                                             udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+                                                    auth:(ChatServiceAuth *)auth
 {
-    OWSAssertDebug(address.isValid);
-    OWSAssertDebug(address.uuid != nil);
-
-    NSString *path = [NSString stringWithFormat:@"v1/profile/%@", address.uuidString];
+    NSString *path = [NSString stringWithFormat:@"v1/profile/%@", serviceId.serviceIdString];
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
         [self useUDAuthWithRequest:request accessKey:udAccessKey];
@@ -68,27 +65,27 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
-+ (TSRequest *)getVersionedProfileRequestWithServiceId:(UntypedServiceIdObjC *)serviceId
-                                     profileKeyVersion:(nullable NSString *)profileKeyVersion
-                                     credentialRequest:(nullable NSData *)credentialRequest
-                                           udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-                                                  auth:(ChatServiceAuth *)auth
++ (TSRequest *)getVersionedProfileRequestWithAci:(AciObjC *)aci
+                               profileKeyVersion:(nullable NSString *)profileKeyVersion
+                               credentialRequest:(nullable NSData *)credentialRequest
+                                     udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+                                            auth:(ChatServiceAuth *)auth
 {
-    NSString *uuidParam = serviceId.uuidValue.UUIDString.lowercaseString;
+    NSString *aciString = aci.serviceIdString;
     NSString *_Nullable profileKeyVersionParam = profileKeyVersion.lowercaseString;
-    NSString *_Nullable credentialRequestParam = credentialRequest.hexadecimalString.lowercaseString;
+    NSString *_Nullable credentialRequestParam = credentialRequest.hexadecimalString;
 
-    // GET /v1/profile/{uuid}/{version}/{profile_key_credential_request}
+    // GET /v1/profile/{aci}/{version}/{profile_key_credential_request}
     NSString *path;
     if (profileKeyVersion.length > 0 && credentialRequest.length > 0) {
         path = [NSString stringWithFormat:@"v1/profile/%@/%@/%@?credentialType=expiringProfileKey",
-                         uuidParam,
+                         aciString,
                          profileKeyVersionParam,
                          credentialRequestParam];
     } else if (profileKeyVersion.length > 0) {
-        path = [NSString stringWithFormat:@"v1/profile/%@/%@", uuidParam, profileKeyVersionParam];
+        path = [NSString stringWithFormat:@"v1/profile/%@/%@", aciString, profileKeyVersionParam];
     } else {
-        path = [NSString stringWithFormat:@"v1/profile/%@", uuidParam];
+        path = [NSString stringWithFormat:@"v1/profile/%@", aciString];
     }
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];

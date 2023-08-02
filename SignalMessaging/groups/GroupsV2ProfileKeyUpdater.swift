@@ -216,8 +216,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
 
     private func tryToUpdate(groupId: Data) -> Promise<Void> {
         let profileKeyData = profileManager.localProfileKey().keyData
-        guard let localAddress = tsAccountManager.localAddress,
-              let localUuid = tsAccountManager.localUuid else {
+        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
             owsFailDebug("missing local address")
             return Promise(error: GroupsV2Error.shouldDiscard)
         }
@@ -239,7 +238,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 }
                 return self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
             }.map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> (TSGroupThread, UInt32) in
-                guard groupV2Snapshot.groupMembership.isFullMember(localAddress) else {
+                guard groupV2Snapshot.groupMembership.isFullMember(localAci.temporary_rawUUID) else {
                     // We're not a full member, no need to update profile key.
                     throw GroupsV2Error.redundantChange
                 }
@@ -249,7 +248,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 }
                 if DebugFlags.internalLogging {
                     for (uuid, profileKey) in groupV2Snapshot.profileKeys {
-                        Logger.info("Existing profile key: \(profileKey.hexadecimalString), for uuid: \(uuid), is local: \(uuid == localUuid)")
+                        Logger.info("Existing profile key: \(profileKey.hexadecimalString), for uuid: \(uuid), is local: \(uuid == localAci.temporary_rawUUID)")
                     }
                 }
                 let checkedRevision = groupV2Snapshot.revision
@@ -257,7 +256,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
             }
         }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread, checkedRevision: UInt32) throws -> Promise<Void> in
             if DebugFlags.internalLogging {
-                Logger.info("Updating profile key for group: \(groupThread.groupId.hexadecimalString), profileKey: \(profileKeyData.hexadecimalString), localUuid: \(localUuid), checkedRevision: \(checkedRevision)")
+                Logger.info("Updating profile key for group: \(groupThread.groupId.hexadecimalString), profileKey: \(profileKeyData.hexadecimalString), localUuid: \(localAci), checkedRevision: \(checkedRevision)")
             } else {
                 Logger.info("Updating profile key for group.")
             }
@@ -303,20 +302,17 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                     if DebugFlags.internalLogging {
                         Logger.info("updated revision: \(groupV2Snapshot.revision)")
                         for (uuid, profileKey) in groupV2Snapshot.profileKeys {
-                            Logger.info("Existing profile key: \(profileKey.hexadecimalString), for uuid: \(uuid), is local: \(uuid == localUuid)")
+                            Logger.info("Existing profile key: \(profileKey.hexadecimalString), for uuid: \(uuid), is local: \(uuid == localAci.temporary_rawUUID)")
                         }
                     }
-                    guard groupV2Snapshot.groupMembership.isFullMember(localAddress) else {
+                    guard groupV2Snapshot.groupMembership.isFullMember(localAci.temporary_rawUUID) else {
                         owsFailDebug("Not a full member.")
                         return
                     }
                     guard groupV2Snapshot.profileKeys.values.contains(profileKeyData) else {
                         owsFailDebug("Update failed.")
-                        self.databaseStorage.write { transaction in
-                            self.versionedProfiles.clearProfileKeyCredential(
-                                for: UntypedServiceIdObjC(uuidValue: localUuid),
-                                transaction: transaction
-                            )
+                        self.databaseStorage.write { tx in
+                            self.versionedProfiles.clearProfileKeyCredential(for: AciObjC(localAci), transaction: tx)
                         }
                         return
                     }

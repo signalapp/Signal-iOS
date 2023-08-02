@@ -448,14 +448,14 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
 - (AnyPromise *)fetchLocalUsersProfilePromiseWithAuthedAccount:(AuthedAccount *)authedAccount
 {
-    SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
-    if (!localAddress.isValid) {
+    ServiceIdObjC *_Nullable localAci = self.tsAccountManager.localAddress.serviceIdObjC;
+    if (![localAci isKindOfClass:[AciObjC class]]) {
         return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Missing local address.")];
     }
-    return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:localAddress
-                                                     mainAppOnly:NO
-                                                ignoreThrottling:YES
-                                                   authedAccount:authedAccount];
+    return [ProfileFetcherJob fetchProfilePromiseObjcWithServiceId:localAci
+                                                       mainAppOnly:NO
+                                                  ignoreThrottling:YES
+                                                     authedAccount:authedAccount];
 }
 
 - (void)reuploadLocalProfileWithAuthedAccount:(AuthedAccount *)authedAccount
@@ -1161,11 +1161,11 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         return;
     }
 
-    UntypedServiceIdObjC *serviceId = addressParam.untypedServiceIdObjC;
-    if (serviceId != nil) {
+    ServiceIdObjC *serviceId = addressParam.serviceIdObjC;
+    if ([serviceId isKindOfClass:[AciObjC class]]) {
         // Whenever a user's profile key changes, we need to fetch a new
         // profile key credential for them.
-        [self.versionedProfiles clearProfileKeyCredentialForServiceId:serviceId transaction:transaction];
+        [self.versionedProfiles clearProfileKeyCredentialForServiceId:(AciObjC *)serviceId transaction:transaction];
     }
 
     [userProfile updateWithProfileKey:profileKey

@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 import SignalCoreKit
 
 /// We create SignalRecipient records for accounts we know about.
@@ -364,7 +365,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         if let serviceId {
             if !newAddress.isLocalAddress {
                 self.versionedProfiles.clearProfileKeyCredential(
-                    for: UntypedServiceIdObjC(serviceId),
+                    for: AciObjC(Aci(fromUUID: serviceId.uuidValue)),
                     transaction: transaction
                 )
 

@@ -149,9 +149,6 @@ class DebugUIStress: DebugUIPage, Dependencies {
                 guard let fromViewController = UIApplication.shared.frontmostViewController else { return }
                 DebugUIStress.copyToAnotherGroup(groupThread, fromViewController: fromViewController)
             }))
-            items.append(OWSTableItem(title: "Add debug members to group", actionBlock: {
-                DebugUIStress.addDebugMembersToGroup(groupThread)
-            }))
             if groupThread.isGroupV2Thread {
                 items.append(OWSTableItem(title: "Make all members admins", actionBlock: {
                     DebugUIStress.makeAllMembersAdmin(groupThread)
@@ -259,53 +256,19 @@ class DebugUIStress: DebugUIPage, Dependencies {
 
     private static func copyToAnotherGroup(srcGroupThread: TSGroupThread, dstGroupThread: TSGroupThread) {
         let membersToAdd = srcGroupThread.groupMembership.allMembersOfAnyKind.subtracting(dstGroupThread.groupMembership.allMembersOfAnyKind)
-        let uuidsToAdd = membersToAdd.compactMap { $0.uuid }
-        for uuid in uuidsToAdd {
-            Logger.verbose("Adding: \(uuid)")
+        let serviceIdsToAdd = membersToAdd.compactMap { $0.serviceId }
+        for serviceId in serviceIdsToAdd {
+            Logger.verbose("Adding: \(serviceId)")
         }
         firstly {
             GroupManager.addOrInvite(
-                aciOrPniUuids: uuidsToAdd,
+                serviceIds: serviceIdsToAdd,
                 toExistingGroup: dstGroupThread.groupModel
             )
         }.done { (groupThread) in
             Logger.info("Complete.")
 
             SignalApp.shared.presentConversationForThread(groupThread, animated: true)
-        }.catch(on: DispatchQueue.global()) { error in
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    private static func addDebugMembersToGroup(_ groupThread: TSGroupThread) {
-        let oldGroupModel = groupThread.groupModel
-
-        let e164ToAdd: [String] = [
-            "+16785621057"
-        ]
-
-        let uuidsToAdd = e164ToAdd
-            .map { SignalServiceAddress(phoneNumber: $0) }
-            .compactMap { $0.uuid }
-            .filter { uuid in
-                if oldGroupModel.groupMembership.isMemberOfAnyKind(uuid) {
-                    Logger.warn("Recipient is already in group.")
-                    return false
-                }
-
-                return true
-            }
-
-        firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: oldGroupModel,
-                                                         description: String(describing: type(of: self)))
-        }.then(on: DispatchQueue.global()) { _ in
-            GroupManager.addOrInvite(
-                aciOrPniUuids: uuidsToAdd,
-                toExistingGroup: oldGroupModel
-            )
-        }.done(on: DispatchQueue.global()) { (_) in
-            Logger.info("Complete.")
         }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")
         }

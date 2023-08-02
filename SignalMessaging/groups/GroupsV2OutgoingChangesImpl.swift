@@ -246,7 +246,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         guard groupId == currentGroupModel.groupId else {
             return Promise(error: OWSAssertionError("Mismatched groupId."))
         }
-        guard let localUuid = tsAccountManager.localUuid else {
+        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
 
@@ -256,12 +256,12 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
         // credentials that we'll actually need to build the change proto.
         //
         // NOTE: We don't (and can't) gather profile key credentials for pending members.
-        var newUserUuids: Set<UUID> = Set(membersToAdd.keys)
-        newUserUuids.insert(localUuid)
+        var newUserAcis: Set<Aci> = Set(membersToAdd.keys.map { Aci(fromUUID: $0) })
+        newUserAcis.insert(localAci)
 
         return firstly(on: DispatchQueue.global()) { () -> Promise<GroupsV2Swift.ProfileKeyCredentialMap> in
             self.groupsV2Swift.loadProfileKeyCredentials(
-                for: Array(newUserUuids),
+                for: Array(newUserAcis),
                 forceRefresh: forceRefreshProfileKeyCredentials
             )
         }.map(on: DispatchQueue.global()) { (profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap) throws -> GroupsV2BuiltGroupChange in
@@ -323,7 +323,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
             throw OWSAssertionError("Missing local identifiers!")
         }
 
-        let localAci = localIdentifiers.aci.temporary_rawUUID
+        let localAci = localIdentifiers.aci
 
         let oldRevision = currentGroupModel.revision
         let newRevision = oldRevision + 1
@@ -441,7 +441,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
                     remainingAdminUuids.insert(uuid)
                 }
             } else {
-                guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
+                guard let profileKeyCredential = profileKeyCredentialMap[Aci(fromUUID: uuid)] else {
                     throw OWSAssertionError("Missing profile key credential: \(uuid)")
                 }
                 var actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
@@ -559,7 +559,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
             var actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
             actionBuilder.setAdded(try GroupsV2Protos.buildPendingMemberProto(uuid: uuid,
                                                                               role: role.asProtoRole,
-                                                                              localUuid: localAci,
+                                                                              localUuid: localAci.temporary_rawUUID,
                                                                               groupV2Params: groupV2Params))
             actionsBuilder.addAddPendingMembers(try actionBuilder.build())
             didChange = true
@@ -647,7 +647,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
 
         var accessForAddFromInviteLink = self.accessForAddFromInviteLink
         if currentGroupMembership.allMembersOfAnyKind.count == 1 &&
-            currentGroupMembership.isFullMemberAndAdministrator(localAci) &&
+            currentGroupMembership.isFullMemberAndAdministrator(localAci.temporary_rawUUID) &&
             self.shouldLeaveGroupDeclineInvite {
             // If we're the last admin to leave the group,
             // disable the group invite link.
@@ -680,7 +680,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
             // in by the presence of our ACI or PNI in the invited member list.
 
             var promotedLocalAci: Bool
-            let isLocalInvitedByAci = currentGroupMembership.isInvitedMember(localAci)
+            let isLocalInvitedByAci = currentGroupMembership.isInvitedMember(localAci.temporary_rawUUID)
             let isLocalInvitedByPni = {
                 guard let localPni = localIdentifiers.pni?.temporary_rawUUID else { return false }
                 return currentGroupMembership.isInvitedMember(localPni)
@@ -704,7 +704,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
                 actionsBuilder.addPromotePniPendingMembers(try actionBuilder.build())
 
                 promotedLocalAci = true
-            } else if currentGroupMembership.isFullMember(localAci) {
+            } else if currentGroupMembership.isFullMember(localAci.temporary_rawUUID) {
                 Logger.warn("Accepting invite, but already a full member!")
                 promotedLocalAci = false
             } else {
@@ -714,13 +714,13 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
 
             if promotedLocalAci {
                 didChange = true
-                remainingMemberOfAnyKindUuids.insert(localAci)
-                remainingFullMemberUuids.insert(localAci)
+                remainingMemberOfAnyKindUuids.insert(localAci.temporary_rawUUID)
+                remainingFullMemberUuids.insert(localAci.temporary_rawUUID)
             }
         }
 
         if self.shouldLeaveGroupDeclineInvite {
-            let canLeaveGroup = GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: localAci,
+            let canLeaveGroup = GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: localAci.temporary_rawUUID,
                                                                                            remainingFullMemberUuids: remainingFullMemberUuids,
                                                                                            remainingAdminUuids: remainingAdminUuids)
             guard canLeaveGroup else {
@@ -746,10 +746,10 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
                 actionBuilder.setDeletedUserID(invitedAtUserId)
                 actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
                 didChange = true
-            } else if currentGroupMembership.isFullMember(localAci) {
+            } else if currentGroupMembership.isFullMember(localAci.temporary_rawUUID) {
                 // Leave group
                 var actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
-                let localUserId = try groupV2Params.userId(forUuid: localAci)
+                let localUserId = try groupV2Params.userId(forUuid: localAci.temporary_rawUUID)
                 actionBuilder.setDeletedUserID(localUserId)
                 actionsBuilder.addDeleteMembers(try actionBuilder.build())
                 didChange = true

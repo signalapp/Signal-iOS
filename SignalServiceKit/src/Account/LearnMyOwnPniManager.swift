@@ -270,11 +270,10 @@ class _LearnMyOwnPniManagerImpl_ProfileFetcher_Wrapper: _LearnMyOwnPniManagerImp
         let logger = LearnMyOwnPniManagerImpl.logger
 
         return ProfileFetcherJob.fetchProfilePromise(
-            address: SignalServiceAddress(localPni),
+            serviceId: Pni(fromUUID: localPni.uuidValue),
             mainAppOnly: true,
             ignoreThrottling: true,
-            shouldUpdateStore: false,
-            fetchType: .unversioned
+            shouldUpdateStore: false
         ).map(on: schedulers.sync) { fetchedProfile -> Data in
             return fetchedProfile.profile.identityKey
         }.recover(on: schedulers.sync) { error throws -> Promise<Data?> in

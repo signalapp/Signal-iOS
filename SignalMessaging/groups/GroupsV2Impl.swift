@@ -205,29 +205,28 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         groupV2Params: GroupV2Params,
         shouldForceRefreshProfileKeyCredentials: Bool = false
     ) -> Promise<GroupsProtoGroup> {
-        guard let localUuid = tsAccountManager.localUuid else {
+        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
 
         return firstly(on: DispatchQueue.global()) { () throws -> Promise<ProfileKeyCredentialMap> in
-            // Gather the UUIDs for all full (not invited) members, and get
-            // profile key credentials for them. By definition, we cannot get
-            // a PKC for the invited members.
-            let uuids: [UUID] = groupModel.groupMembers.compactMap { address in
-                guard let uuid = address.uuid else {
-                    owsFailDebug("Address of full member in new group missing UUID.")
+            // Gather the ACIs for all full (not invited) members, and get profile key
+            // credentials for them. By definition, we cannot get a PKC for the invited
+            // members.
+            let acis: [Aci] = groupModel.groupMembers.compactMap { address in
+                guard let aci = address.aci else {
+                    owsFailDebug("Address of full member in new group missing ACI.")
                     return nil
                 }
-
-                return uuid
+                return aci
             }
 
-            guard uuids.contains(localUuid) else {
+            guard acis.contains(localAci) else {
                 throw OWSAssertionError("localUuid is not a member.")
             }
 
             return self.loadProfileKeyCredentials(
-                for: uuids,
+                for: acis,
                 forceRefresh: shouldForceRefreshProfileKeyCredentials
             )
         }.map(on: DispatchQueue.global()) { profileKeyCredentialMap -> GroupsProtoGroup in
@@ -236,7 +235,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 disappearingMessageToken: disappearingMessageToken,
                 groupV2Params: groupV2Params,
                 profileKeyCredentialMap: profileKeyCredentialMap,
-                localUuid: localUuid
+                localAci: localAci
             )
         }
     }
@@ -1321,22 +1320,22 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
     // MARK: - ProfileKeyCredentials
 
-    /// Fetches and returnes the profile key credential for each passed UUID. If
+    /// Fetches and returnes the profile key credential for each passed ACI. If
     /// any are missing, returns an error.
     public func loadProfileKeyCredentials(
-        for uuids: [UUID],
+        for acis: [Aci],
         forceRefresh: Bool
     ) -> Promise<ProfileKeyCredentialMap> {
         tryToFetchProfileKeyCredentials(
-            for: uuids,
+            for: acis,
             ignoreMissingProfiles: false,
             forceRefresh: forceRefresh
         ).map(on: DispatchQueue.global()) { () -> ProfileKeyCredentialMap in
-            let uuids = Set(uuids)
+            let acis = Set(acis)
 
-            let credentialMap = self.loadPresentProfileKeyCredentials(for: uuids)
+            let credentialMap = self.loadPresentProfileKeyCredentials(for: acis)
 
-            guard uuids.symmetricDifference(credentialMap.keys).isEmpty else {
+            guard acis.symmetricDifference(credentialMap.keys).isEmpty else {
                 throw OWSAssertionError("Missing requested keys from credential map!")
             }
 
@@ -1345,32 +1344,29 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
     }
 
     /// Makes a best-effort to fetch the profile key credential for each passed
-    /// UUID. If a profile exists for the user but the credential cannot be
-    /// fetched (e.g., the UUID is not a contact of ours), skips it. Optionally
+    /// ACI. If a profile exists for the user but the credential cannot be
+    /// fetched (e.g., the ACI is not a contact of ours), skips it. Optionally
     /// ignores "missing profile" errors during fetch.
     public func tryToFetchProfileKeyCredentials(
-        for uuids: [UUID],
+        for acis: [Aci],
         ignoreMissingProfiles: Bool,
         forceRefresh: Bool
     ) -> Promise<Void> {
-        let uuids = Set(uuids)
+        let acis = Set(acis)
 
-        let uuidsToFetch: Set<UUID>
+        let acisToFetch: Set<Aci>
         if forceRefresh {
-            uuidsToFetch = uuids
+            acisToFetch = acis
         } else {
-            uuidsToFetch = uuids.subtracting(loadPresentProfileKeyCredentials(for: uuids).keys)
+            acisToFetch = acis.subtracting(loadPresentProfileKeyCredentials(for: acis).keys)
         }
 
         var promises = [Promise<Void>]()
-        for uuidToFetch in uuidsToFetch {
-            let address = SignalServiceAddress(uuid: uuidToFetch)
-
+        for aciToFetch in acisToFetch {
             let promise = ProfileFetcherJob.fetchProfilePromise(
-                address: address,
+                serviceId: aciToFetch,
                 mainAppOnly: false,
-                ignoreThrottling: true,
-                fetchType: .versioned
+                ignoreThrottling: true
             ).asVoid().recover(on: DispatchQueue.global()) { error throws -> Promise<Void> in
                 if
                     case ProfileFetchError.missing = error,
@@ -1389,17 +1385,17 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         return Promise.when(fulfilled: promises)
     }
 
-    private func loadPresentProfileKeyCredentials(for serviceIdUuidValues: Set<UUID>) -> ProfileKeyCredentialMap {
+    private func loadPresentProfileKeyCredentials(for acis: Set<Aci>) -> ProfileKeyCredentialMap {
         databaseStorage.read { transaction in
             var credentialMap = ProfileKeyCredentialMap()
 
-            for serviceIdUuidValue in serviceIdUuidValues {
+            for aci in acis {
                 do {
                     if let credential = try self.versionedProfilesSwift.validProfileKeyCredential(
-                        for: UntypedServiceId(serviceIdUuidValue),
+                        for: aci,
                         transaction: transaction
                     ) {
-                        credentialMap[serviceIdUuidValue] = credential
+                        credentialMap[aci] = credential
                     }
                 } catch {
                     owsFailDebug("Error loading profile key credential: \(error)")
@@ -1415,11 +1411,14 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         transaction: SDSAnyReadTransaction
     ) -> Bool {
         do {
-            guard let serviceId = address.untypedServiceId else {
-                throw OWSAssertionError("Missing serviceId.")
+            guard let serviceId = address.serviceId else {
+                throw OWSAssertionError("Missing ACI.")
+            }
+            guard let aci = serviceId as? Aci else {
+                return false
             }
             return try self.versionedProfilesSwift.validProfileKeyCredential(
-                for: serviceId,
+                for: aci,
                 transaction: transaction
             ) != nil
         } catch let error {
@@ -2183,7 +2182,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                                                         groupV2Params: GroupV2Params,
                                                         revisionForPlaceholderModel: AtomicOptional<UInt32>) -> Promise<GroupsProtoGroupChangeActions> {
 
-        guard let localUuid = self.tsAccountManager.localUuid else {
+        guard let localAci = self.tsAccountManager.localIdentifiers?.aci else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
 
@@ -2205,9 +2204,9 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             }
 
             return firstly(on: DispatchQueue.global()) { () -> Promise<ProfileKeyCredentialMap> in
-                self.loadProfileKeyCredentials(for: [localUuid], forceRefresh: false)
+                self.loadProfileKeyCredentials(for: [localAci], forceRefresh: false)
             }.map(on: DispatchQueue.global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> (GroupInviteLinkPreview, ExpiringProfileKeyCredential) in
-                guard let localProfileKeyCredential = profileKeyCredentialMap[localUuid] else {
+                guard let localProfileKeyCredential = profileKeyCredentialMap[localAci] else {
                     throw OWSAssertionError("Missing localProfileKeyCredential.")
                 }
                 return (groupInviteLinkPreview, localProfileKeyCredential)

@@ -31,16 +31,11 @@ public protocol VersionedProfileRequest: AnyObject {
 public protocol VersionedProfiles: AnyObject {
     @objc(clearProfileKeyCredentialForServiceId:transaction:)
     func clearProfileKeyCredential(
-        for serviceId: UntypedServiceIdObjC,
+        for aci: AciObjC,
         transaction: SDSAnyWriteTransaction
     )
 
     func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction)
-
-    func didFetchProfile(
-        profile: SignalServiceProfile,
-        profileRequest: VersionedProfileRequest
-    )
 }
 
 // MARK: -
@@ -59,28 +54,33 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
     ) -> Promise<VersionedProfileUpdate>
 
     func versionedProfileRequest(
-        for serviceId: UntypedServiceId,
+        for aci: Aci,
         udAccessKey: SMKUDAccessKey?,
         auth: ChatServiceAuth
     ) throws -> VersionedProfileRequest
 
     func validProfileKeyCredential(
-        for serviceId: UntypedServiceId,
+        for aci: Aci,
         transaction: SDSAnyReadTransaction
     ) throws -> ExpiringProfileKeyCredential?
+
+    func didFetchProfile(
+        profile: SignalServiceProfile,
+        profileRequest: VersionedProfileRequest
+    )
 }
 
 // MARK: -
 
 @objc
 public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedProfiles {
-    public func clearProfileKeyCredential(for serviceId: UntypedServiceIdObjC,
+    public func clearProfileKeyCredential(for aci: AciObjC,
                                           transaction: SDSAnyWriteTransaction) {}
 
     public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {}
 
     public func versionedProfileRequest(
-        for serviceId: UntypedServiceId,
+        for aci: Aci,
         udAccessKey: SMKUDAccessKey?,
         auth: ChatServiceAuth
     ) throws -> VersionedProfileRequest {
@@ -103,7 +103,7 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
         owsFail("Not implemented.")
     }
 
-    public func validProfileKeyCredential(for serviceId: UntypedServiceId,
+    public func validProfileKeyCredential(for aci: Aci,
                                           transaction: SDSAnyReadTransaction) throws -> ExpiringProfileKeyCredential? {
         owsFail("Not implemented")
     }

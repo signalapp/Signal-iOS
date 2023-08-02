@@ -84,14 +84,17 @@ public class GroupsV2Protos {
         return presentation.serialize().asData
     }
 
-    public class func buildNewGroupProto(groupModel: TSGroupModelV2,
-                                         disappearingMessageToken: DisappearingMessageToken,
-                                         groupV2Params: GroupV2Params,
-                                         profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap,
-                                         localUuid: UUID) throws -> GroupsProtoGroup {
+    public class func buildNewGroupProto(
+        groupModel: TSGroupModelV2,
+        disappearingMessageToken: DisappearingMessageToken,
+        groupV2Params: GroupV2Params,
+        profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap,
+        localAci: Aci
+    ) throws -> GroupsProtoGroup {
+        let localUuid = localAci.temporary_rawUUID
 
         // Collect credential for self.
-        guard let localProfileKeyCredential = profileKeyCredentialMap[localUuid] else {
+        guard let localProfileKeyCredential = profileKeyCredentialMap[localAci] else {
             throw OWSAssertionError("Missing localProfileKeyCredential.")
         }
         // Collect credentials for all members except self.
@@ -138,15 +141,15 @@ public class GroupsV2Protos {
         groupBuilder.addMembers(try buildMemberProto(profileKeyCredential: localProfileKeyCredential,
                                                      role: .administrator,
                                                      groupV2Params: groupV2Params))
-        for (uuid, profileKeyCredential) in profileKeyCredentialMap {
-            guard uuid != localUuid else {
+        for (aci, profileKeyCredential) in profileKeyCredentialMap {
+            guard aci != localAci else {
                 continue
             }
-            let isInvited = groupMembership.isInvitedMember(uuid)
+            let isInvited = groupMembership.isInvitedMember(aci.temporary_rawUUID)
             guard !isInvited else {
                 continue
             }
-            let isAdministrator = groupMembership.isFullMemberAndAdministrator(uuid)
+            let isAdministrator = groupMembership.isFullMemberAndAdministrator(aci.temporary_rawUUID)
             let role: GroupsProtoMemberRole = isAdministrator ? .administrator : .`default`
             groupBuilder.addMembers(try buildMemberProto(profileKeyCredential: profileKeyCredential,
                                                          role: role,
