@@ -5,28 +5,41 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 
 public struct SpamReportingTokenRecord: Codable, FetchableRecord, PersistableRecord {
     public static let databaseTableName = "spamReportingTokenRecords"
 
-    public let sourceUuid: UntypedServiceId
+    public let sourceAci: Aci
     public let spamReportingToken: SpamReportingToken
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
-        case sourceUuid
+        case sourceAci = "sourceUuid"
         case spamReportingToken
     }
 
-    public init(sourceUuid: UntypedServiceId, spamReportingToken: SpamReportingToken) {
-        self.sourceUuid = sourceUuid
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.sourceAci = Aci(fromUUID: try container.decode(UUID.self, forKey: .sourceAci))
+        self.spamReportingToken = try container.decode(SpamReportingToken.self, forKey: .spamReportingToken)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.sourceAci.rawUUID, forKey: .sourceAci)
+        try container.encode(self.spamReportingToken, forKey: .spamReportingToken)
+    }
+
+    public init(sourceAci: Aci, spamReportingToken: SpamReportingToken) {
+        self.sourceAci = sourceAci
         self.spamReportingToken = spamReportingToken
     }
 
     public static func reportingToken(
-        for sourceUuid: UntypedServiceId,
+        for sourceAci: Aci,
         database: Database
     ) throws -> SpamReportingToken? {
-        try Self.fetchOne(database, key: sourceUuid)?.spamReportingToken
+        try Self.fetchOne(database, key: sourceAci.rawUUID)?.spamReportingToken
     }
 }
 

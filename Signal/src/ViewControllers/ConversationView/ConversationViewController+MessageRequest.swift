@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SafariServices
 import SignalMessaging
 import SignalServiceKit
@@ -142,8 +143,8 @@ extension ConversationViewController: MessageRequestDelegate {
             return owsFailDebug("Unexpected thread type for reporting spam \(type(of: thread))")
         }
 
-        guard let serviceId = contactThread.contactAddress.untypedServiceId else {
-            return owsFailDebug("Missing uuid for reporting spam from \(contactThread.contactAddress)")
+        guard let aci = contactThread.contactAddress.serviceId as? Aci else {
+            return owsFailDebug("Missing ACI for reporting spam from \(contactThread.contactAddress)")
         }
 
         // We only report a selection of the N most recent messages
@@ -174,7 +175,7 @@ extension ConversationViewController: MessageRequestDelegate {
             var reportingToken: SpamReportingToken?
             do {
                 reportingToken = try SpamReportingTokenRecord.reportingToken(
-                    for: serviceId,
+                    for: aci,
                     database: transaction.unwrapGrdbRead.database
                 )
             } catch {
@@ -190,13 +191,13 @@ extension ConversationViewController: MessageRequestDelegate {
         }
 
         Logger.info(
-            "Reporting \(guidsToReport.count) message(s) from \(serviceId) as spam. We \(reportingToken == nil ? "do not have" : "have") a reporting token"
+            "Reporting \(guidsToReport.count) message(s) from \(aci) as spam. We \(reportingToken == nil ? "do not have" : "have") a reporting token"
         )
 
         var promises = [Promise<Void>]()
         for guid in guidsToReport {
             let request = OWSRequestFactory.reportSpam(
-                from: serviceId,
+                from: aci,
                 withServerGuid: guid,
                 reportingToken: reportingToken
             )
@@ -204,9 +205,9 @@ extension ConversationViewController: MessageRequestDelegate {
         }
 
         Promise.when(fulfilled: promises).done {
-            Logger.info("Successfully reported \(guidsToReport.count) message(s) from \(serviceId) as spam.")
+            Logger.info("Successfully reported \(guidsToReport.count) message(s) from \(aci) as spam.")
         }.catch { error in
-            owsFailDebug("Failed to report message(s) from \(serviceId) as spam with error: \(error)")
+            owsFailDebug("Failed to report message(s) from \(aci) as spam with error: \(error)")
         }
     }
 

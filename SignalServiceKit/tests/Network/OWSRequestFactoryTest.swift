@@ -198,14 +198,14 @@ class OWSRequestFactoryTest: XCTestCase {
 
     func testReportSpamFromUuid() {
         let request = OWSRequestFactory.reportSpam(
-            from: UntypedServiceId(uuidString: "37EBAFB5-91D6-4C63-BFF7-82F540856386")!,
+            from: Aci.constantForTesting("37EBAFB5-91D6-4C63-BFF7-82F540856386"),
             withServerGuid: "abc 123",
             reportingToken: nil
         )
 
         XCTAssertEqual(
             request.url?.relativeString,
-            "v1/messages/report/37EBAFB5-91D6-4C63-BFF7-82F540856386/abc%20123"
+            "v1/messages/report/37ebafb5-91d6-4c63-bff7-82f540856386/abc%20123"
         )
         XCTAssertEqual(request.httpMethod, "POST")
         XCTAssertEqual(request.parameters as! [String: String], [:])
@@ -215,20 +215,20 @@ class OWSRequestFactoryTest: XCTestCase {
     func testReportSpamFromUuidWithEmptyServerGuid() {
         // This will probably never happen, but if the server wants, this should be allowed.
         let request = OWSRequestFactory.reportSpam(
-            from: FutureAci.constantForTesting("EB7B0432-BE7F-4A62-9859-4D7835D0D724"),
+            from: Aci.constantForTesting("EB7B0432-BE7F-4A62-9859-4D7835D0D724"),
             withServerGuid: "",
             reportingToken: nil
         )
 
         XCTAssertEqual(
             request.url?.relativeString,
-            "v1/messages/report/EB7B0432-BE7F-4A62-9859-4D7835D0D724/"
+            "v1/messages/report/eb7b0432-be7f-4a62-9859-4d7835d0d724/"
         )
     }
 
     func testReportSpamWithReportingToken() {
         let request = OWSRequestFactory.reportSpam(
-            from: FutureAci.randomForTesting(),
+            from: Aci.randomForTesting(),
             withServerGuid: "abc123",
             reportingToken: .init(data: .init([97, 98, 99]))
         )

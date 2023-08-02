@@ -203,7 +203,7 @@ extension OWSMessageManager {
         Logger.info("Saving spam reporting token. Envelope timestamp: \(decryptedEnvelope.timestamp)")
         do {
             try SpamReportingTokenRecord(
-                sourceUuid: decryptedEnvelope.sourceAci.untypedServiceId,
+                sourceAci: decryptedEnvelope.sourceAci,
                 spamReportingToken: spamReportingToken
             ).upsert(tx.unwrapGrdbWrite.database)
         } catch {

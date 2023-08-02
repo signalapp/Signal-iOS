@@ -4,16 +4,17 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public extension OWSRequestFactory {
     static func reportSpam(
-        from sender: UntypedServiceId,
+        from sender: Aci,
         withServerGuid serverGuid: String,
         reportingToken: SpamReportingToken?
     ) -> TSRequest {
         let url: URL = {
             let urlWithGuid = URL(
-                pathComponents: ["v1", "messages", "report", sender.uuidValue.uuidString, serverGuid]
+                pathComponents: ["v1", "messages", "report", sender.serviceIdString, serverGuid]
             )!
             if serverGuid.isEmpty {
                 // This will probably never happen, but the server should be allowed to provide an
