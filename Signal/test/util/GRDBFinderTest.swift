@@ -131,17 +131,17 @@ class GRDBFinderTest: SignalBaseTest {
 
         // We'll create SignalRecipient for these...
         let address1 = SignalServiceAddress(phoneNumber: "+13213334444")
-        let address2 = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+13213334445")
-        let address3 = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+13213334446")
+        let address2 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+13213334445")
+        let address3 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+13213334446")
         let address4 = SignalServiceAddress.randomForTesting()
         // ...but not these.
         let address5 = SignalServiceAddress(phoneNumber: "+13213334447")
-        let address6 = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+13213334448")
+        let address6 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+13213334448")
         let address7 = SignalServiceAddress.randomForTesting()
 
         self.write { transaction in
             [address1, address2, address3, address4].forEach {
-                SignalRecipient(serviceId: $0.untypedServiceId, phoneNumber: $0.e164)
+                SignalRecipient(aci: $0.aci, phoneNumber: $0.e164)
                     .anyInsert(transaction: transaction)
             }
         }

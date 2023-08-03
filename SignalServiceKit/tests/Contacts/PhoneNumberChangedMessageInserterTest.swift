@@ -13,21 +13,21 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
     func testDidLearnAssociation() {
         let ssaCache = SignalServiceAddressCache()
 
-        let myAci = FutureAci.constantForTesting("00000000-0000-4000-8000-000000000000")
+        let myAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
         let myPhoneNumber1 = E164("+16505550111")!
         let myPhoneNumber2 = E164("+16505550122")!
-        let myAddress1 = ssaCache.makeAddress(serviceId: myAci, phoneNumber: myPhoneNumber1)
+        let myAddress1 = ssaCache.makeAddress(serviceId: myAci.untypedServiceId, phoneNumber: myPhoneNumber1)
 
-        let aliceAci = FutureAci.constantForTesting("00000000-0000-4000-8000-00000000000A")
+        let aliceAci = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
         let alicePhoneNumber1 = E164("+16505550133")!
         let alicePhoneNumber2 = E164("+16505550144")!
-        let aliceAddress1 = ssaCache.makeAddress(serviceId: aliceAci, phoneNumber: alicePhoneNumber1)
+        let aliceAddress1 = ssaCache.makeAddress(serviceId: aliceAci.untypedServiceId, phoneNumber: alicePhoneNumber1)
 
-        let bobAci = FutureAci.constantForTesting("00000000-0000-4000-8000-00000000000B")
+        let bobAci = Aci.constantForTesting("00000000-0000-4000-8000-00000000000B")
         let bobPhoneNumber1: E164? = nil
         let bobPhoneNumber2 = E164("+16505550166")!
         let bobPhoneNumber3 = E164("+16505550177")!
-        let bobAddress1 = ssaCache.makeAddress(serviceId: bobAci, phoneNumber: bobPhoneNumber1)
+        let bobAddress1 = ssaCache.makeAddress(serviceId: bobAci.untypedServiceId, phoneNumber: bobPhoneNumber1)
 
         let groupWithEveryone = TSGroupThread.forUnitTest(groupId: 1, groupMembers: [myAddress1, aliceAddress1, bobAddress1])
         let groupWithoutAlice = TSGroupThread.forUnitTest(groupId: 2, groupMembers: [myAddress1, bobAddress1])
@@ -86,7 +86,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
         mockDB.write { tx in
             mergeObserver.didLearnAssociation(
                 mergedRecipient: makeRecipient(
-                    serviceId: aliceAci,
+                    aci: aliceAci,
                     oldPhoneNumber: alicePhoneNumber1,
                     newPhoneNumber: alicePhoneNumber2,
                     isLocalRecipient: false
@@ -103,7 +103,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
         mockDB.write { tx in
             mergeObserver.didLearnAssociation(
                 mergedRecipient: makeRecipient(
-                    serviceId: bobAci,
+                    aci: bobAci,
                     oldPhoneNumber: bobPhoneNumber1,
                     newPhoneNumber: bobPhoneNumber2,
                     isLocalRecipient: false
@@ -120,7 +120,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
         mockDB.write { tx in
             mergeObserver.didLearnAssociation(
                 mergedRecipient: makeRecipient(
-                    serviceId: bobAci,
+                    aci: bobAci,
                     oldPhoneNumber: bobPhoneNumber2,
                     newPhoneNumber: bobPhoneNumber3,
                     isLocalRecipient: false
@@ -137,7 +137,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
         mockDB.write { tx in
             mergeObserver.didLearnAssociation(
                 mergedRecipient: makeRecipient(
-                    serviceId: myAci,
+                    aci: myAci,
                     oldPhoneNumber: myPhoneNumber1,
                     newPhoneNumber: myPhoneNumber2,
                     isLocalRecipient: true
@@ -151,17 +151,17 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
     }
 
     private func makeRecipient(
-        serviceId: UntypedServiceId,
+        aci: Aci,
         oldPhoneNumber: E164?,
         newPhoneNumber: E164,
         isLocalRecipient: Bool
     ) -> MergedRecipient {
         MergedRecipient(
-            serviceId: serviceId,
+            aci: aci,
             oldPhoneNumber: oldPhoneNumber?.stringValue,
             newPhoneNumber: newPhoneNumber,
             isLocalRecipient: isLocalRecipient,
-            signalRecipient: SignalRecipient(serviceId: serviceId, phoneNumber: newPhoneNumber)
+            signalRecipient: SignalRecipient(aci: aci, phoneNumber: newPhoneNumber)
         )
     }
 

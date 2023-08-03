@@ -51,7 +51,7 @@ extension OWSRecipientIdentity {
 
         let recipient_id = "\(signalRecipientColumnFullyQualified: .id)"
         let recipient_recipientPhoneNumber = "\(signalRecipientColumnFullyQualified: .phoneNumber)"
-        let recipient_recipientUUID = "\(signalRecipientColumnFullyQualified: .serviceIdString)"
+        let recipient_recipientUUID = "\(signalRecipientColumnFullyQualified: .aciString)"
         let recipient_uniqueID = "\(signalRecipientColumnFullyQualified: .uniqueId)"
 
         let recipientIdentity_uniqueID = "\(recipientIdentityColumnFullyQualified: .uniqueId)"

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 @objc
@@ -58,7 +59,7 @@ class GRDBSignalRecipientFinder: NSObject {
 
     fileprivate func signalRecipientForUUID(_ uuid: UUID?, transaction: GRDBReadTransaction) -> SignalRecipient? {
         guard let uuidString = uuid?.uuidString else { return nil }
-        let sql = "SELECT * FROM \(SignalRecipient.databaseTableName) WHERE \(signalRecipientColumn: .serviceIdString) = ?"
+        let sql = "SELECT * FROM \(SignalRecipient.databaseTableName) WHERE \(signalRecipientColumn: .aciString) = ?"
         return SignalRecipient.anyFetch(sql: sql, arguments: [uuidString], transaction: transaction.asAnyRead)
     }
 
@@ -71,13 +72,14 @@ class GRDBSignalRecipientFinder: NSObject {
     func signalRecipients(for addresses: [SignalServiceAddress], transaction tx: GRDBReadTransaction) -> [SignalRecipient] {
         guard !addresses.isEmpty else { return [] }
 
+        // PNI TODO: Support PNIs.
         let phoneNumbersToLookup = addresses.compactMap { $0.phoneNumber }.map { "'\($0)'" }.joined(separator: ",")
         let uuidsToLookup = addresses.compactMap { $0.uuidString }.map { "'\($0)'" }.joined(separator: ",")
 
         let sql = """
             SELECT * FROM \(SignalRecipient.databaseTableName)
             WHERE \(signalRecipientColumn: .phoneNumber) IN (\(phoneNumbersToLookup))
-            OR \(signalRecipientColumn: .serviceIdString) IN (\(uuidsToLookup))
+            OR \(signalRecipientColumn: .aciString) IN (\(uuidsToLookup))
         """
 
         var result = [SignalRecipient]()

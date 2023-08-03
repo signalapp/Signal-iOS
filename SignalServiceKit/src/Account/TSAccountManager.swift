@@ -273,8 +273,8 @@ public extension TSAccountManager {
         )))
 
         let localRecipient = DependenciesBridge.shared.recipientMerger.applyMergeForLocalAccount(
-            aci: newAci.wrappedAciValue.untypedServiceId,
-            pni: newPni?.wrappedPniValue.untypedServiceId,
+            aci: newAci.wrappedAciValue,
+            pni: newPni?.wrappedPniValue,
             phoneNumber: newLocalNumber.wrappedValue,
             tx: transaction.asV2Write
         )

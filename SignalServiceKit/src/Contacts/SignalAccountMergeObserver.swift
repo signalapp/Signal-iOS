@@ -4,9 +4,10 @@
 //
 
 import Foundation
+import LibSignalClient
 
 class SignalAccountMergeObserver: RecipientMergeObserver {
-    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {}
+    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
         // SignalAccounts are "merged" differently than most other types because
@@ -70,7 +71,7 @@ class SignalAccountMergeObserver: RecipientMergeObserver {
         // that's the ServiceId that's now associated with that system contact. In
         // the above example, we are replacing the ServiceId for SA2.
         if let claimedAccount = fetch(for: mergedRecipient.newPhoneNumber.stringValue, tx: tx) {
-            claimedAccount.recipientUUID = mergedRecipient.serviceId.uuidValue.uuidString
+            claimedAccount.recipientUUID = mergedRecipient.aci.serviceIdUppercaseString
             claimedAccount.anyOverwritingUpdate(transaction: tx)
         }
     }

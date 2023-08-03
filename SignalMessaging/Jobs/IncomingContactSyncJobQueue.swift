@@ -232,7 +232,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         if let aci = contactDetails.aci {
             recipient = recipientMerger.applyMergeFromLinkedDevice(
                 localIdentifiers: localIdentifiers,
-                serviceId: aci.untypedServiceId,
+                aci: aci,
                 phoneNumber: contactDetails.phoneNumber,
                 tx: transaction.asV2Write
             )

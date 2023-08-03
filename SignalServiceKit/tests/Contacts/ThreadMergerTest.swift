@@ -25,7 +25,7 @@ final class ThreadMergerTest: XCTestCase {
 
     private var _signalServiceAddressCache: SignalServiceAddressCache!
 
-    private let serviceId = FutureAci.constantForTesting("00000000-0000-4000-8000-000000000000")
+    private let aci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
     private let phoneNumber = E164("+16505550100")!
 
     private var serviceIdThread: TSContactThread!
@@ -73,8 +73,8 @@ final class ThreadMergerTest: XCTestCase {
             wallpaperStore: wallpaperStore
         )
 
-        serviceIdThread = makeThread(serviceId: serviceId, phoneNumber: nil)
-        phoneNumberThread = makeThread(serviceId: nil, phoneNumber: phoneNumber)
+        serviceIdThread = makeThread(aci: aci, phoneNumber: nil)
+        phoneNumberThread = makeThread(aci: nil, phoneNumber: phoneNumber)
     }
 
     // MARK: - Pinned Threads
@@ -267,7 +267,7 @@ final class ThreadMergerTest: XCTestCase {
     func testThreadReplyInfoJustPhoneNumber() {
         threadStore.threads = [serviceIdThread, phoneNumberThread]
         db.write { tx in
-            threadReplyInfoStore.save(ThreadReplyInfo(timestamp: 2, author: serviceId), for: phoneNumberThread.uniqueId, tx: tx)
+            threadReplyInfoStore.save(ThreadReplyInfo(timestamp: 2, author: aci.untypedServiceId), for: phoneNumberThread.uniqueId, tx: tx)
         }
         performDefaultMerge()
         db.read { tx in
@@ -279,8 +279,8 @@ final class ThreadMergerTest: XCTestCase {
     func testThreadReplyInfoBoth() {
         threadStore.threads = [serviceIdThread, phoneNumberThread]
         db.write { tx in
-            threadReplyInfoStore.save(ThreadReplyInfo(timestamp: 3, author: serviceId), for: serviceIdThread.uniqueId, tx: tx)
-            threadReplyInfoStore.save(ThreadReplyInfo(timestamp: 4, author: serviceId), for: phoneNumberThread.uniqueId, tx: tx)
+            threadReplyInfoStore.save(ThreadReplyInfo(timestamp: 3, author: aci.untypedServiceId), for: serviceIdThread.uniqueId, tx: tx)
+            threadReplyInfoStore.save(ThreadReplyInfo(timestamp: 4, author: aci.untypedServiceId), for: phoneNumberThread.uniqueId, tx: tx)
         }
         performDefaultMerge()
         db.read { tx in
@@ -305,20 +305,20 @@ final class ThreadMergerTest: XCTestCase {
         db.write { tx in
             threadMerger.didLearnAssociation(
                 mergedRecipient: MergedRecipient(
-                    serviceId: serviceId,
+                    aci: aci,
                     oldPhoneNumber: nil,
                     newPhoneNumber: phoneNumber,
                     isLocalRecipient: false,
-                    signalRecipient: SignalRecipient(serviceId: serviceId, phoneNumber: phoneNumber)
+                    signalRecipient: SignalRecipient(aci: aci, phoneNumber: phoneNumber)
                 ),
                 transaction: tx
             )
         }
     }
 
-    private func makeThread(serviceId: UntypedServiceId?, phoneNumber: E164?) -> TSContactThread {
+    private func makeThread(aci: Aci?, phoneNumber: E164?) -> TSContactThread {
         let result = TSContactThread(contactAddress: SignalServiceAddress(
-            uuid: serviceId?.uuidValue,
+            serviceId: aci,
             phoneNumber: phoneNumber?.stringValue,
             cache: _signalServiceAddressCache,
             cachePolicy: .preferInitialPhoneNumberAndListenForUpdates

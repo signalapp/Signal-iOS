@@ -5,10 +5,11 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 
 class AuthorMergeObserver: RecipientMergeObserver {
-    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {
-        populateMissingAcis(phoneNumber: phoneNumber, aci: serviceId, tx: transaction)
+    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction: DBWriteTransaction) {
+        populateMissingAcis(phoneNumber: phoneNumber, aci: aci, tx: transaction)
     }
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
@@ -19,7 +20,7 @@ class AuthorMergeObserver: RecipientMergeObserver {
         // able to fetch based on the phone number.
     }
 
-    private func populateMissingAcis(phoneNumber: E164, aci: UntypedServiceId, tx: DBWriteTransaction) {
+    private func populateMissingAcis(phoneNumber: E164, aci: Aci, tx: DBWriteTransaction) {
         for table in AuthorDatabaseTable.all {
             let sql = """
                 UPDATE "\(table.name)"
@@ -27,7 +28,7 @@ class AuthorMergeObserver: RecipientMergeObserver {
                 WHERE "\(table.phoneNumberColumn)" = ?
                 AND "\(table.aciColumn)" IS NULL
             """
-            let arguments: StatementArguments = [aci.uuidValue.uuidString, phoneNumber.stringValue]
+            let arguments: StatementArguments = [aci.serviceIdUppercaseString, phoneNumber.stringValue]
             SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.execute(sql: sql, arguments: arguments)
         }
         ModelReadCaches.shared.evacuateAllCaches()

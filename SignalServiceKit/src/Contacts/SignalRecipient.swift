@@ -34,29 +34,34 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
     public var id: RowId?
     public let uniqueId: String
-    public var serviceIdString: String?
+    public var aciString: String?
     public var phoneNumber: String?
     private(set) public var deviceIds: [UInt32]
     private(set) public var unregisteredAtTimestamp: UInt64?
 
+    public var aci: Aci? {
+        get { Aci.parseFrom(aciString: aciString) }
+        set { aciString = newValue?.serviceIdUppercaseString }
+    }
+
     public var serviceId: UntypedServiceId? {
-        get { UntypedServiceId(uuidString: serviceIdString) }
-        set { serviceIdString = newValue?.uuidValue.uuidString }
+        get { UntypedServiceId(uuidString: aciString) }
+        set { aciString = newValue?.uuidValue.uuidString }
     }
 
     public var address: SignalServiceAddress {
-        SignalServiceAddress(uuidString: serviceIdString, phoneNumber: phoneNumber)
+        SignalServiceAddress(aciString: aciString, phoneNumber: phoneNumber)
     }
 
-    public convenience init(serviceId: UntypedServiceId?, phoneNumber: E164?) {
-        self.init(serviceId: serviceId, phoneNumber: phoneNumber, deviceIds: [])
+    public convenience init(aci: Aci?, phoneNumber: E164?) {
+        self.init(aci: aci, phoneNumber: phoneNumber, deviceIds: [])
     }
 
-    public convenience init(serviceId: UntypedServiceId?, phoneNumber: E164?, deviceIds: [UInt32]) {
+    public convenience init(aci: Aci?, phoneNumber: E164?, deviceIds: [UInt32]) {
         self.init(
             id: nil,
             uniqueId: UUID().uuidString,
-            serviceIdString: serviceId?.uuidValue.uuidString,
+            aciString: aci?.serviceIdUppercaseString,
             phoneNumber: phoneNumber?.stringValue,
             deviceIds: deviceIds,
             unregisteredAtTimestamp: deviceIds.isEmpty ? Constants.distantPastUnregisteredTimestamp : nil
@@ -66,14 +71,14 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     private init(
         id: RowId?,
         uniqueId: String,
-        serviceIdString: String?,
+        aciString: String?,
         phoneNumber: String?,
         deviceIds: [UInt32],
         unregisteredAtTimestamp: UInt64?
     ) {
         self.id = id
         self.uniqueId = uniqueId
-        self.serviceIdString = serviceIdString
+        self.aciString = aciString
         self.phoneNumber = phoneNumber
         self.deviceIds = deviceIds
         self.unregisteredAtTimestamp = unregisteredAtTimestamp
@@ -83,7 +88,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         return SignalRecipient(
             id: id,
             uniqueId: uniqueId,
-            serviceIdString: serviceIdString,
+            aciString: aciString,
             phoneNumber: phoneNumber,
             deviceIds: deviceIds,
             unregisteredAtTimestamp: unregisteredAtTimestamp
@@ -96,7 +101,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         }
         guard id == otherRecipient.id else { return false }
         guard uniqueId == otherRecipient.uniqueId else { return false }
-        guard serviceIdString == otherRecipient.serviceIdString else { return false }
+        guard aciString == otherRecipient.aciString else { return false }
         guard phoneNumber == otherRecipient.phoneNumber else { return false }
         guard deviceIds == otherRecipient.deviceIds else { return false }
         guard unregisteredAtTimestamp == otherRecipient.unregisteredAtTimestamp else { return false }
@@ -107,7 +112,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         var hasher = Hasher()
         hasher.combine(id)
         hasher.combine(uniqueId)
-        hasher.combine(serviceIdString)
+        hasher.combine(aciString)
         hasher.combine(phoneNumber)
         hasher.combine(deviceIds)
         hasher.combine(unregisteredAtTimestamp)
@@ -118,7 +123,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         case id
         case recordType
         case uniqueId
-        case serviceIdString = "recipientUUID"
+        case aciString = "recipientUUID"
         case phoneNumber = "recipientPhoneNumber"
         case deviceIds = "devices"
         case unregisteredAtTimestamp
@@ -135,7 +140,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
-        serviceIdString = try container.decodeIfPresent(String.self, forKey: .serviceIdString)
+        aciString = try container.decodeIfPresent(String.self, forKey: .aciString)
         phoneNumber = try container.decodeIfPresent(String.self, forKey: .phoneNumber)
         let encodedDeviceIds = try container.decode(Data.self, forKey: .deviceIds)
         let deviceSetObjC: NSOrderedSet = try LegacySDSSerializer().deserializeLegacySDSData(encodedDeviceIds, propertyName: "devices")
@@ -152,7 +157,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         try container.encodeIfPresent(id, forKey: .id)
         try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
-        try container.encodeIfPresent(serviceIdString, forKey: .serviceIdString)
+        try container.encodeIfPresent(aciString, forKey: .aciString)
         try container.encodeIfPresent(phoneNumber, forKey: .phoneNumber)
         let deviceSetObjC = NSOrderedSet(array: deviceIds.map { NSNumber(value: $0) })
         let encodedDevices = LegacySDSSerializer().serializeAsLegacySDSData(property: deviceSetObjC)
@@ -321,20 +326,20 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     public static let notificationKeyUUID = "UUID"
 
     fileprivate static func didUpdatePhoneNumber(
-        serviceIdString: String,
+        aciString: String,
         oldPhoneNumber: String?,
         newPhoneNumber: String?,
         transaction: SDSAnyWriteTransaction
     ) {
-        let serviceId = UntypedServiceId(uuidString: serviceIdString)
+        let aci = Aci.parseFrom(aciString: aciString)
 
         let oldAddress = SignalServiceAddress(
-            uuid: serviceId?.uuidValue,
+            serviceId: aci,
             phoneNumber: oldPhoneNumber,
             ignoreCache: true
         )
         let newAddress = SignalServiceAddress(
-            uuid: serviceId?.uuidValue,
+            serviceId: aci,
             phoneNumber: newPhoneNumber,
             ignoreCache: true
         )
@@ -349,7 +354,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             let phoneNumbers: [String] = [oldPhoneNumber, newPhoneNumber].compactMap { $0 }
             for phoneNumber in phoneNumbers {
                 let userInfo: [AnyHashable: Any] = [
-                    Self.notificationKeyUUID: serviceIdString,
+                    Self.notificationKeyUUID: aciString,
                     Self.notificationKeyPhoneNumber: phoneNumber
                 ]
                 NotificationCenter.default.postNotificationNameAsync(Self.phoneNumberDidChange,
@@ -362,10 +367,10 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             SDSDatabaseStorage.shared.touch(thread: contactThread, shouldReindex: true, transaction: transaction)
         }
 
-        if let serviceId {
+        if let aci {
             if !newAddress.isLocalAddress {
                 self.versionedProfiles.clearProfileKeyCredential(
-                    for: AciObjC(Aci(fromUUID: serviceId.uuidValue)),
+                    for: AciObjC(aci),
                     transaction: transaction
                 )
 
@@ -403,7 +408,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             }
         }
 
-        if serviceId != nil {
+        if aci != nil {
             transaction.addAsyncCompletion(queue: .global()) {
                 Self.udManager.setUnidentifiedAccessMode(.unknown, address: newAddress)
 
@@ -416,7 +421,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
     @objc
     public var addressComponentsDescription: String {
-        SignalServiceAddress.addressComponentsDescription(uuidString: serviceIdString, phoneNumber: phoneNumber)
+        SignalServiceAddress.addressComponentsDescription(uuidString: aciString, phoneNumber: phoneNumber)
     }
 }
 
@@ -441,13 +446,13 @@ class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
     }
 
     func didUpdatePhoneNumber(
-        serviceIdString: String,
+        aciString: String,
         oldPhoneNumber: String?,
         newPhoneNumber: E164?,
         transaction: DBWriteTransaction
     ) {
         SignalRecipient.didUpdatePhoneNumber(
-            serviceIdString: serviceIdString,
+            aciString: aciString,
             oldPhoneNumber: oldPhoneNumber,
             newPhoneNumber: newPhoneNumber?.stringValue,
             transaction: SDSDB.shimOnlyBridge(transaction)

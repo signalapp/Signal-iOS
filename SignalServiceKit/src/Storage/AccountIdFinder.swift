@@ -54,7 +54,7 @@ public class OWSAccountIdFinder: NSObject {
             // ensure that the return value can be fetched. In the future, we should
             // update all callers to ensure they pass valid addresses.
             owsFailDebug("Fetching accountId for invalid address.")
-            recipient = SignalRecipient(serviceId: nil, phoneNumber: nil)
+            recipient = SignalRecipient(aci: nil, phoneNumber: nil)
             recipient.anyInsert(transaction: transaction)
         }
         return recipient

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 private struct MergePair<T> {
@@ -208,7 +209,7 @@ final class ThreadMerger: RecipientMergeObserver {
         }
     }
 
-    private func mergeThreads(serviceId: UntypedServiceId, phoneNumber: E164, tx: DBWriteTransaction) {
+    private func mergeThreads(aci: Aci, phoneNumber: E164, tx: DBWriteTransaction) {
         // Fetch all the threads related to the new recipient. Because we don't
         // have UNIQUE constraints on the TSThread table, there might be many
         // duplicate threads that we need to merge. We fetch the ServiceId threads
@@ -217,7 +218,7 @@ final class ThreadMerger: RecipientMergeObserver {
         var threadsToMerge = [TSContactThread]()
 
         // We include all ServiceId threads in the merge.
-        threadsToMerge.append(contentsOf: threadStore.fetchContactThreads(serviceId: serviceId, tx: tx))
+        threadsToMerge.append(contentsOf: threadStore.fetchContactThreads(serviceId: aci.untypedServiceId, tx: tx))
 
         for thread in threadStore.fetchContactThreads(phoneNumber: phoneNumber.stringValue, tx: tx) {
             if thread.contactUUID == nil {
@@ -225,7 +226,7 @@ final class ThreadMerger: RecipientMergeObserver {
                 // ServiceId. (This check also excludes any threads that were included in
                 // `serviceIdThreads` because those must have a nonnil `contactUUID`.)
                 threadsToMerge.append(thread)
-            } else if thread.contactUUID == serviceId.uuidValue.uuidString {
+            } else if thread.contactUUID == aci.serviceIdUppercaseString {
                 // This is already in `threadsToMerge`, so do nothing.
             } else {
                 // If they do have some other UUID, we clear the phone number because we've
@@ -238,23 +239,23 @@ final class ThreadMerger: RecipientMergeObserver {
 
         mergeAllThreads(threadsToMerge, tx: tx)
         if threadsToMerge.count >= 2 {
-            Logger.info("Merged \(threadsToMerge.count) threads for \(serviceId)")
+            Logger.info("Merged \(threadsToMerge.count) threads for \(aci)")
         }
 
         // After we merge all threads, we're left with just one. Make sure that that thread has the new ACI/E164 pair.
         if let finalThread = threadsToMerge.first {
-            finalThread.contactUUID = serviceId.uuidValue.uuidString
+            finalThread.contactUUID = aci.serviceIdUppercaseString
             finalThread.contactPhoneNumber = phoneNumber.stringValue
             threadStore.updateThread(finalThread, tx: tx)
         }
     }
 
-    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction tx: DBWriteTransaction) {
-        mergeThreads(serviceId: serviceId, phoneNumber: phoneNumber, tx: tx)
+    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction tx: DBWriteTransaction) {
+        mergeThreads(aci: aci, phoneNumber: phoneNumber, tx: tx)
     }
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
-        mergeThreads(serviceId: mergedRecipient.serviceId, phoneNumber: mergedRecipient.newPhoneNumber, tx: tx)
+        mergeThreads(aci: mergedRecipient.aci, phoneNumber: mergedRecipient.newPhoneNumber, tx: tx)
     }
 }
 

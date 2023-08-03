@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
     private let groupMemberStore: GroupMemberStore
@@ -23,7 +24,7 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
         self.threadStore = threadStore
     }
 
-    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {}
+    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
         guard !mergedRecipient.isLocalRecipient else {
@@ -46,7 +47,7 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
                 return
             }
             let infoMessage = TSInfoMessage(thread: thread, messageType: .phoneNumberChange, infoMessageUserInfo: [
-                .changePhoneNumberUuid: mergedRecipient.serviceId.uuidValue.uuidString,
+                .changePhoneNumberUuid: mergedRecipient.aci.serviceIdUppercaseString,
                 .changePhoneNumberOld: oldPhoneNumber,
                 .changePhoneNumberNew: mergedRecipient.newPhoneNumber.stringValue
             ])
@@ -55,7 +56,7 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
         }
 
         // Only insert "change phone number" interactions for full members.
-        for threadId in groupMemberStore.groupThreadIds(withFullMember: mergedRecipient.serviceId, tx: tx) {
+        for threadId in groupMemberStore.groupThreadIds(withFullMember: mergedRecipient.aci.untypedServiceId, tx: tx) {
             guard let thread = threadStore.fetchGroupThread(uniqueId: threadId, tx: tx) else {
                 continue
             }
@@ -63,7 +64,7 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
         }
 
         // Only insert "change phone number" interaction in 1:1 thread if it already exists.
-        if let thread = threadStore.fetchThread(serviceId: mergedRecipient.serviceId, tx: tx) {
+        if let thread = threadStore.fetchThread(serviceId: mergedRecipient.aci.untypedServiceId, tx: tx) {
             insertChangeMessage(thread: thread)
         }
     }

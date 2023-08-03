@@ -26,27 +26,27 @@ class UserProfileMergerTest: XCTestCase {
     }
 
     func testMergeLocal() {
-        let serviceId = FutureAci.constantForTesting("00000000-0000-4000-8000-000000000000")
+        let aci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
         let phoneNumber = E164("+16505550100")!
 
-        let localProfile = buildUserProfile(serviceId: nil, phoneNumber: kLocalProfileInvariantPhoneNumber, profileKey: nil)
-        let otherProfile = buildUserProfile(serviceId: FutureAci.randomForTesting(), phoneNumber: nil, profileKey: nil)
+        let localProfile = buildUserProfile(aci: nil, phoneNumber: kLocalProfileInvariantPhoneNumber, profileKey: nil)
+        let otherProfile = buildUserProfile(aci: Aci.randomForTesting(), phoneNumber: nil, profileKey: nil)
 
         userProfileStore.userProfiles = [
             localProfile,
-            buildUserProfile(serviceId: serviceId, phoneNumber: nil, profileKey: Data(repeating: 1, count: 32)),
-            buildUserProfile(serviceId: nil, phoneNumber: phoneNumber.stringValue, profileKey: Data(repeating: 2, count: 32)),
+            buildUserProfile(aci: aci, phoneNumber: nil, profileKey: Data(repeating: 1, count: 32)),
+            buildUserProfile(aci: nil, phoneNumber: phoneNumber.stringValue, profileKey: Data(repeating: 2, count: 32)),
             otherProfile
         ]
 
         MockDB().write { tx in
             userProfileMerger.didLearnAssociation(
                 mergedRecipient: MergedRecipient(
-                    serviceId: serviceId,
+                    aci: aci,
                     oldPhoneNumber: nil,
                     newPhoneNumber: phoneNumber,
                     isLocalRecipient: true,
-                    signalRecipient: SignalRecipient(serviceId: serviceId, phoneNumber: phoneNumber)
+                    signalRecipient: SignalRecipient(aci: aci, phoneNumber: phoneNumber)
                 ),
                 transaction: tx
             )
@@ -56,29 +56,29 @@ class UserProfileMergerTest: XCTestCase {
     }
 
     func testMergeOther() {
-        let serviceId = FutureAci.constantForTesting("00000000-0000-4000-8000-000000000000")
+        let aci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
         let phoneNumber = E164("+16505550100")!
 
-        let localProfile = buildUserProfile(serviceId: nil, phoneNumber: kLocalProfileInvariantPhoneNumber, profileKey: nil)
-        let otherProfile = buildUserProfile(serviceId: FutureAci.randomForTesting(), phoneNumber: phoneNumber.stringValue, profileKey: nil)
-        let finalProfile = buildUserProfile(serviceId: serviceId, phoneNumber: nil, profileKey: nil)
+        let localProfile = buildUserProfile(aci: nil, phoneNumber: kLocalProfileInvariantPhoneNumber, profileKey: nil)
+        let otherProfile = buildUserProfile(aci: Aci.randomForTesting(), phoneNumber: phoneNumber.stringValue, profileKey: nil)
+        let finalProfile = buildUserProfile(aci: aci, phoneNumber: nil, profileKey: nil)
 
         userProfileStore.userProfiles = [
             localProfile,
             finalProfile,
-            buildUserProfile(serviceId: serviceId, phoneNumber: phoneNumber.stringValue, profileKey: Data(repeating: 2, count: 32)),
-            buildUserProfile(serviceId: nil, phoneNumber: phoneNumber.stringValue, profileKey: Data(repeating: 3, count: 32)),
+            buildUserProfile(aci: aci, phoneNumber: phoneNumber.stringValue, profileKey: Data(repeating: 2, count: 32)),
+            buildUserProfile(aci: nil, phoneNumber: phoneNumber.stringValue, profileKey: Data(repeating: 3, count: 32)),
             otherProfile
         ]
 
         MockDB().write { tx in
             userProfileMerger.didLearnAssociation(
                 mergedRecipient: MergedRecipient(
-                    serviceId: serviceId,
+                    aci: aci,
                     oldPhoneNumber: nil,
                     newPhoneNumber: phoneNumber,
                     isLocalRecipient: false,
-                    signalRecipient: SignalRecipient(serviceId: serviceId, phoneNumber: phoneNumber)
+                    signalRecipient: SignalRecipient(aci: aci, phoneNumber: phoneNumber)
                 ),
                 transaction: tx
             )
@@ -90,7 +90,7 @@ class UserProfileMergerTest: XCTestCase {
         XCTAssertEqual(userProfileStore.userProfiles, [localProfile, finalProfile, otherProfile])
     }
 
-    private func buildUserProfile(serviceId: UntypedServiceId?, phoneNumber: String?, profileKey: Data?) -> OWSUserProfile {
+    private func buildUserProfile(aci: Aci?, phoneNumber: String?, profileKey: Data?) -> OWSUserProfile {
         OWSUserProfile(
             grdbId: 0,
             uniqueId: UUID().uuidString,
@@ -108,7 +108,7 @@ class UserProfileMergerTest: XCTestCase {
             profileKey: profileKey.map { OWSAES256Key(data: $0)! },
             profileName: nil,
             recipientPhoneNumber: phoneNumber,
-            recipientUUID: serviceId?.uuidValue.uuidString
+            recipientUUID: aci?.serviceIdUppercaseString
         )
     }
 }

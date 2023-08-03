@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 class UserProfileMerger: RecipientMergeObserver {
@@ -35,8 +36,8 @@ class UserProfileMerger: RecipientMergeObserver {
         )
     }
 
-    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction tx: DBWriteTransaction) {
-        mergeUserProfiles(serviceId: serviceId, phoneNumber: phoneNumber, tx: tx)
+    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction tx: DBWriteTransaction) {
+        mergeUserProfiles(aci: aci, phoneNumber: phoneNumber, tx: tx)
     }
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
@@ -46,26 +47,26 @@ class UserProfileMerger: RecipientMergeObserver {
             // number that was connected to some other account, and we want to
             // guarantee that that profile is deleted.
             fetchAndExpungeUserProfiles(
-                serviceId: mergedRecipient.serviceId,
+                aci: mergedRecipient.aci,
                 phoneNumber: mergedRecipient.newPhoneNumber,
                 tx: tx
             ).forEach {
                 userProfileStore.removeUserProfile($0, tx: tx)
             }
         } else {
-            mergeUserProfiles(serviceId: mergedRecipient.serviceId, phoneNumber: mergedRecipient.newPhoneNumber, tx: tx)
+            mergeUserProfiles(aci: mergedRecipient.aci, phoneNumber: mergedRecipient.newPhoneNumber, tx: tx)
         }
     }
 
-    private func mergeUserProfiles(serviceId: UntypedServiceId, phoneNumber: E164, tx: DBWriteTransaction) {
-        let userProfiles = fetchAndExpungeUserProfiles(serviceId: serviceId, phoneNumber: phoneNumber, tx: tx)
+    private func mergeUserProfiles(aci: Aci, phoneNumber: E164, tx: DBWriteTransaction) {
+        let userProfiles = fetchAndExpungeUserProfiles(aci: aci, phoneNumber: phoneNumber, tx: tx)
         guard let userProfileToMergeInto = userProfiles.first else {
             return
         }
         // One of these might not be set, or one of them might have a non-canonical
         // representation (eg uppercase UUID). Make sure both of these are updated
         // to reflect that latest (ACI, E164) pair for the account.
-        userProfileToMergeInto.recipientUUID = serviceId.uuidValue.uuidString
+        userProfileToMergeInto.recipientUUID = aci.serviceIdUppercaseString
         userProfileToMergeInto.recipientPhoneNumber = phoneNumber.stringValue
         userProfileStore.updateUserProfile(userProfileToMergeInto, tx: tx)
 
@@ -77,16 +78,16 @@ class UserProfileMerger: RecipientMergeObserver {
         }
     }
 
-    private func fetchAndExpungeUserProfiles(serviceId: UntypedServiceId, phoneNumber: E164, tx: DBWriteTransaction) -> [OWSUserProfile] {
+    private func fetchAndExpungeUserProfiles(aci: Aci, phoneNumber: E164, tx: DBWriteTransaction) -> [OWSUserProfile] {
         var results = [OWSUserProfile]()
 
         // Find any profiles already associated with `serviceId`.
-        results.append(contentsOf: userProfileStore.fetchUserProfiles(for: serviceId, tx: tx))
+        results.append(contentsOf: userProfileStore.fetchUserProfiles(for: aci.untypedServiceId, tx: tx))
 
         // Find any profiles associated with `newPhoneNumber` that can be merged.
         for phoneNumberProfile in userProfileStore.fetchUserProfiles(for: phoneNumber, tx: tx) {
             switch phoneNumberProfile.recipientUUID {
-            case serviceId.uuidValue.uuidString:
+            case aci.serviceIdUppercaseString:
                 // This profile already matches `serviceId`, so it's already in userProfiles.
                 break
             case .some:

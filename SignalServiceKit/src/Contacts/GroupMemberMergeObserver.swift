@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 class GroupMemberMergeObserverImpl: RecipientMergeObserver {
@@ -21,11 +22,11 @@ class GroupMemberMergeObserverImpl: RecipientMergeObserver {
         self.groupMemberStore = groupMemberStore
     }
 
-    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {}
+    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
         let groupThreadIds: [String] = (
-            groupMemberStore.groupThreadIds(withFullMember: mergedRecipient.serviceId, tx: tx)
+            groupMemberStore.groupThreadIds(withFullMember: mergedRecipient.aci.untypedServiceId, tx: tx)
             + groupMemberStore.groupThreadIds(withFullMember: mergedRecipient.newPhoneNumber, tx: tx)
         )
         resolveGroupMembers(in: groupThreadIds, tx: tx)

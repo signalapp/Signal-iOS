@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -103,7 +104,7 @@ class GroupMemberUpdaterTest: XCTestCase {
 
         for signalRecipient in signalRecipients {
             mockSignalServiceAddressCache.updateRecipient(SignalRecipient(
-                serviceId: UntypedServiceId(uuidString: signalRecipient.serviceId),
+                aci: Aci.constantForTesting(signalRecipient.serviceId),
                 phoneNumber: E164(signalRecipient.phoneNumber)
             ))
         }

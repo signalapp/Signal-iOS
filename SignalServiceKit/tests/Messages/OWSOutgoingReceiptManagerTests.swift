@@ -55,7 +55,7 @@ class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
 
         // Test – Mark the merged address as high trust, then fetch all receipt sets
         signalServiceAddressCache.updateRecipient(
-            SignalRecipient(serviceId: uuidAddress.untypedServiceId, phoneNumber: e164Address.e164)
+            SignalRecipient(aci: uuidAddress.aci, phoneNumber: e164Address.e164)
         )
         let allReceipts = databaseStorage.read { readTx in
             outgoingReceiptManager.fetchAllReceiptSets(type: .delivery, transaction: readTx)

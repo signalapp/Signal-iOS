@@ -11,33 +11,33 @@ import XCTest
 
 class SignalRecipientTest: SSKBaseTestSwift {
 
-    private lazy var localAci = FutureAci.randomForTesting()
+    private lazy var localAci = Aci.randomForTesting()
     private lazy var localPhoneNumber = E164("+16505550199")!
     private lazy var localIdentifiers = LocalIdentifiers(
-        aci: Aci(fromUUID: localAci.uuidValue),
+        aci: localAci,
         pni: Pni.randomForTesting(),
         phoneNumber: localPhoneNumber.stringValue
     )
 
     override func setUp() {
         super.setUp()
-        tsAccountManager.registerForTests(withLocalNumber: localIdentifiers.phoneNumber, uuid: localIdentifiers.aci.rawUUID)
+        tsAccountManager.registerForTests(localIdentifiers: localIdentifiers)
     }
 
     func testSelfRecipientWithExistingRecord() {
         write { transaction in
-            mergeHighTrust(serviceId: localAci, phoneNumber: localPhoneNumber, transaction: transaction)
-            XCTAssertNotNil(fetchRecipient(serviceId: localAci, transaction: transaction))
+            mergeHighTrust(aci: localAci, phoneNumber: localPhoneNumber, transaction: transaction)
+            XCTAssertNotNil(fetchRecipient(aci: localAci, transaction: transaction))
             XCTAssertNotNil(fetchRecipient(phoneNumber: localPhoneNumber, transaction: transaction))
         }
     }
 
     func testRecipientWithExistingRecord() {
-        let aci = FutureAci.randomForTesting()
+        let aci = Aci.randomForTesting()
         let phoneNumber = E164("+16505550101")!
         write { transaction in
-            mergeHighTrust(serviceId: aci, phoneNumber: phoneNumber, transaction: transaction)
-            XCTAssertNotNil(fetchRecipient(serviceId: aci, transaction: transaction))
+            mergeHighTrust(aci: aci, phoneNumber: phoneNumber, transaction: transaction)
+            XCTAssertNotNil(fetchRecipient(aci: aci, transaction: transaction))
             XCTAssertNotNil(fetchRecipient(phoneNumber: phoneNumber, transaction: transaction))
         }
     }
@@ -58,9 +58,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
         // UUID only recipients are recorded
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-            let aci = FutureAci.randomForTesting()
-            _ = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
-            XCTAssertNotNil(fetchRecipient(serviceId: aci, transaction: tx))
+            let aci = Aci.randomForTesting()
+            _ = recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx.asV2Write)
+            XCTAssertNotNil(fetchRecipient(aci: aci, transaction: tx))
         }
     }
 
@@ -69,31 +69,31 @@ class SignalRecipientTest: SSKBaseTestSwift {
     func testHighTrustUUIDOnly() {
         // UUID only recipients are recorded
         write { transaction in
-            let aci = FutureAci.randomForTesting()
-            _ = mergeHighTrust(serviceId: aci, phoneNumber: nil, transaction: transaction)
-            XCTAssertNotNil(fetchRecipient(serviceId: aci, transaction: transaction))
+            let aci = Aci.randomForTesting()
+            _ = mergeHighTrust(aci: aci, phoneNumber: nil, transaction: transaction)
+            XCTAssertNotNil(fetchRecipient(aci: aci, transaction: transaction))
         }
     }
 
     func testHighTrustFullyQualified() {
         // Fully qualified addresses are recorded in their entirety
 
-        let aci = FutureAci.randomForTesting()
+        let aci = Aci.randomForTesting()
         let phoneNumber = E164("+16505550101")!
 
         let addressToBeUpdated = SignalServiceAddress(phoneNumber: phoneNumber.stringValue)
-        XCTAssertNil(addressToBeUpdated.untypedServiceId)
+        XCTAssertNil(addressToBeUpdated.serviceId)
 
         write { transaction in
-            let recipient = mergeHighTrust(serviceId: aci, phoneNumber: phoneNumber, transaction: transaction)
-            XCTAssertEqual(recipient.serviceId, aci)
+            let recipient = mergeHighTrust(aci: aci, phoneNumber: phoneNumber, transaction: transaction)
+            XCTAssertEqual(recipient.aci, aci)
             XCTAssertEqual(recipient.phoneNumber, phoneNumber.stringValue)
 
             // The incomplete address is automatically filled after marking the
             // complete address as registered.
-            XCTAssertEqual(addressToBeUpdated.untypedServiceId, aci)
+            XCTAssertEqual(addressToBeUpdated.serviceId, aci)
 
-            XCTAssertNotNil(fetchRecipient(serviceId: aci, transaction: transaction))
+            XCTAssertNotNil(fetchRecipient(aci: aci, transaction: transaction))
             XCTAssertNotNil(fetchRecipient(phoneNumber: phoneNumber, transaction: transaction))
         }
     }
@@ -101,14 +101,14 @@ class SignalRecipientTest: SSKBaseTestSwift {
     func testHighTrustMergeWithInvestedPhoneNumber() {
         // If there is a UUID-only contact and a phone number-only contact, and if
         // we later find out they are the same user, we must merge them.
-        let aci = FutureAci.randomForTesting()
+        let aci = Aci.randomForTesting()
         let phoneNumber = E164("+16505550101")!
 
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-            let uuidRecipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
+            let uuidRecipient = recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx.asV2Write)
             let phoneNumberRecipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write)
-            let mergedRecipient = mergeHighTrust(serviceId: aci, phoneNumber: phoneNumber, transaction: tx)
+            let mergedRecipient = mergeHighTrust(aci: aci, phoneNumber: phoneNumber, transaction: tx)
 
             XCTAssertEqual(mergedRecipient.uniqueId, uuidRecipient.uniqueId)
             XCTAssertNil(SignalRecipient.anyFetch(uniqueId: phoneNumberRecipient.uniqueId, transaction: tx))
@@ -151,8 +151,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let oldAccount = SignalAccount(address: oldAddress)
             oldAccount.anyInsert(transaction: transaction)
 
-            mergeHighTrust(serviceId: aci.untypedServiceId, phoneNumber: oldPhoneNumber, transaction: transaction)
-            mergeHighTrust(serviceId: aci.untypedServiceId, phoneNumber: newPhoneNumber, transaction: transaction)
+            mergeHighTrust(aci: aci, phoneNumber: oldPhoneNumber, transaction: transaction)
+            mergeHighTrust(aci: aci, phoneNumber: newPhoneNumber, transaction: transaction)
 
             let newAddress = SignalServiceAddress(serviceId: aci, phoneNumber: newPhoneNumber.stringValue)
 
@@ -178,7 +178,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             // after the phone number change. They are updated to reflect
             // the new address.
             XCTAssertEqual(oldAddress.phoneNumber, newAddress.phoneNumber)
-            XCTAssertEqual(oldAddress.untypedServiceId, newAddress.untypedServiceId)
+            XCTAssertEqual(oldAddress.serviceId, newAddress.serviceId)
 
             XCTAssertEqual(oldThread.uniqueId, newThread.uniqueId)
             XCTAssertNotEqual(oldThread.contactPhoneNumber, newThread.contactPhoneNumber)
@@ -228,8 +228,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let oldAccount = SignalAccount(address: oldAddress)
             oldAccount.anyInsert(transaction: transaction)
 
-            mergeHighTrust(serviceId: oldAci.untypedServiceId, phoneNumber: phoneNumber, transaction: transaction)
-            mergeHighTrust(serviceId: newAci.untypedServiceId, phoneNumber: phoneNumber, transaction: transaction)
+            mergeHighTrust(aci: oldAci, phoneNumber: phoneNumber, transaction: transaction)
+            mergeHighTrust(aci: newAci, phoneNumber: phoneNumber, transaction: transaction)
 
             let newAddress = SignalServiceAddress(serviceId: newAci, phoneNumber: phoneNumber.stringValue)
 
@@ -256,7 +256,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             // number stripped.
             XCTAssertNil(oldAddress.phoneNumber)
             XCTAssertNotEqual(oldAddress.phoneNumber, newAddress.phoneNumber)
-            XCTAssertNotEqual(oldAddress.untypedServiceId, newAddress.untypedServiceId)
+            XCTAssertNotEqual(oldAddress.serviceId, newAddress.serviceId)
 
             oldThread.anyReload(transaction: transaction)
             XCTAssertNotEqual(oldThread.uniqueId, newThread.uniqueId)
@@ -280,7 +280,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         }
     }
 
-    private func createGroupAndThreads(for addresses: [(aci: UntypedServiceId?, phoneNumber: E164?)]) -> TSGroupThread {
+    private func createGroupAndThreads(for addresses: [(aci: Aci?, phoneNumber: E164?)]) -> TSGroupThread {
         return self.write { (tx) -> TSGroupThread in
             // Create a group with all the addresses.
             let groupThread = {
@@ -296,7 +296,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             // that were provided.
             for address in addresses {
                 let groupMember = TSGroupMember(
-                    serviceId: address.aci,
+                    serviceId: address.aci?.untypedServiceId,
                     phoneNumber: address.phoneNumber?.stringValue,
                     groupThreadId: groupThread.uniqueId,
                     lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
@@ -312,12 +312,12 @@ class SignalRecipientTest: SSKBaseTestSwift {
         }
     }
 
-    private func assertEqual(groupMembers: [TSGroupMember], expectedAddresses: [(aci: UntypedServiceId?, phoneNumber: E164?)]) {
+    private func assertEqual(groupMembers: [TSGroupMember], expectedAddresses: [(aci: Aci?, phoneNumber: E164?)]) {
         let actualValues = Set(groupMembers.lazy.map {
             "\($0.serviceId?.uuidValue.uuidString ?? "nil")-\($0.phoneNumber ?? "nil")"
         })
         let expectedValues = Set(expectedAddresses.lazy.map {
-            "\($0.aci?.uuidValue.uuidString ?? "nil")-\($0.phoneNumber?.stringValue ?? "nil")"
+            "\($0.aci?.serviceIdUppercaseString ?? "nil")-\($0.phoneNumber?.stringValue ?? "nil")"
         })
         XCTAssertEqual(actualValues, expectedValues)
     }
@@ -339,9 +339,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
     // * Otherwise we'll end up with two TSGroupMembers with (p2, g1) which violates
     //   a uniqueness constraint.
     func testDBMappingsEdgeCase1() {
-        let aci1 = FutureAci.randomForTesting()
+        let aci1 = Aci.randomForTesting()
         let phoneNumber1 = E164(CommonGenerator.e164())!
-        let aci2 = FutureAci.randomForTesting()
+        let aci2 = Aci.randomForTesting()
         let phoneNumber2 = E164(CommonGenerator.e164())!
 
         let groupThread = createGroupAndThreads(for: [
@@ -350,9 +350,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
         ])
 
         write { tx in
-            mergeHighTrust(serviceId: aci1, phoneNumber: phoneNumber1, transaction: tx)
+            mergeHighTrust(aci: aci1, phoneNumber: phoneNumber1, transaction: tx)
             // phoneNumber2 becomes associated with aci1.
-            mergeHighTrust(serviceId: aci1, phoneNumber: phoneNumber2, transaction: tx)
+            mergeHighTrust(aci: aci1, phoneNumber: phoneNumber2, transaction: tx)
         }
 
         databaseStorage.read { tx in
@@ -387,7 +387,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
     // * Otherwise we'll end up with two TSGroupMembers with (p2, g1) which violates
     //   a uniqueness constraint.
     func testDBMappingsEdgeCase2() {
-        let aci1 = FutureAci.randomForTesting()
+        let aci1 = Aci.randomForTesting()
         let phoneNumber1 = E164(CommonGenerator.e164())!
         let phoneNumber2 = E164(CommonGenerator.e164())!
 
@@ -397,9 +397,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
         ])
 
         write { tx in
-            mergeHighTrust(serviceId: aci1, phoneNumber: phoneNumber1, transaction: tx)
+            mergeHighTrust(aci: aci1, phoneNumber: phoneNumber1, transaction: tx)
             // phoneNumber2 becomes associated with aci1.
-            mergeHighTrust(serviceId: aci1, phoneNumber: phoneNumber2, transaction: tx)
+            mergeHighTrust(aci: aci1, phoneNumber: phoneNumber2, transaction: tx)
         }
 
         databaseStorage.read { tx in
@@ -433,9 +433,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
     // * Otherwise we'll end up with two TSGroupMembers with (p1, g1) which violates
     //   a uniqueness constraint.
     func testDBMappingsEdgeCase3() {
-        let aci1 = FutureAci.randomForTesting()
+        let aci1 = Aci.randomForTesting()
         let phoneNumber1 = E164(CommonGenerator.e164())!
-        let aci2 = FutureAci.randomForTesting()
+        let aci2 = Aci.randomForTesting()
         let phoneNumber2 = E164(CommonGenerator.e164())!
 
         let groupThread = createGroupAndThreads(for: [
@@ -444,9 +444,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
         ])
 
         write { tx in
-            mergeHighTrust(serviceId: aci1, phoneNumber: phoneNumber1, transaction: tx)
+            mergeHighTrust(aci: aci1, phoneNumber: phoneNumber1, transaction: tx)
             // phoneNumber1 becomes associated with aci2.
-            mergeHighTrust(serviceId: aci2, phoneNumber: phoneNumber1, transaction: tx)
+            mergeHighTrust(aci: aci2, phoneNumber: phoneNumber1, transaction: tx)
         }
 
         databaseStorage.read { tx in
@@ -481,9 +481,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
     // * Otherwise we'll end up with two TSGroupMembers with (p1, g1) which violates
     //   a uniqueness constraint.
     func testDBMappingsEdgeCase4() {
-        let aci1 = FutureAci.randomForTesting()
+        let aci1 = Aci.randomForTesting()
         let phoneNumber1 = E164(CommonGenerator.e164())!
-        let aci2 = FutureAci.randomForTesting()
+        let aci2 = Aci.randomForTesting()
 
         let groupThread = createGroupAndThreads(for: [
             (aci: aci1, phoneNumber: phoneNumber1),
@@ -491,9 +491,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
         ])
 
         write { tx in
-            mergeHighTrust(serviceId: aci1, phoneNumber: phoneNumber1, transaction: tx)
+            mergeHighTrust(aci: aci1, phoneNumber: phoneNumber1, transaction: tx)
             // phoneNumber1 becomes associated with aci2.
-            mergeHighTrust(serviceId: aci2, phoneNumber: phoneNumber1, transaction: tx)
+            mergeHighTrust(aci: aci2, phoneNumber: phoneNumber1, transaction: tx)
         }
 
         databaseStorage.read { tx in
@@ -521,7 +521,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
     /// should have a UUID, and that requirement would put us back in
     /// testDBMappingsEdgeCase4 territory.
     func testDBMappingsEdgeCase5() {
-        let aci1 = FutureAci.randomForTesting()
+        let aci1 = Aci.randomForTesting()
         let phoneNumber1 = E164(CommonGenerator.e164())!
 
         let groupThread = createGroupAndThreads(for: [
@@ -532,8 +532,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber1, tx: tx.asV2Write)
-            mergeHighTrust(serviceId: aci1, phoneNumber: nil, transaction: tx)
-            mergeHighTrust(serviceId: aci1, phoneNumber: phoneNumber1, transaction: tx)
+            mergeHighTrust(aci: aci1, phoneNumber: nil, transaction: tx)
+            mergeHighTrust(aci: aci1, phoneNumber: phoneNumber1, transaction: tx)
         }
 
         databaseStorage.read { tx in
@@ -555,9 +555,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
     /// account claims that phone number, we should ensure that the original ACI
     /// is still in the group but the new ACI is not.
     func testDBMappingsEdgeCase6() {
-        let aci1 = FutureAci.randomForTesting()
+        let aci1 = Aci.randomForTesting()
         let phoneNumber1 = E164(CommonGenerator.e164())!
-        let aci2 = FutureAci.randomForTesting()
+        let aci2 = Aci.randomForTesting()
 
         let groupThread = createGroupAndThreads(for: [
             (aci: aci1, phoneNumber: nil),
@@ -567,9 +567,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber1, tx: tx.asV2Write)
-            mergeHighTrust(serviceId: aci1, phoneNumber: nil, transaction: tx)
-            mergeHighTrust(serviceId: aci1, phoneNumber: phoneNumber1, transaction: tx)
-            mergeHighTrust(serviceId: aci2, phoneNumber: phoneNumber1, transaction: tx)
+            mergeHighTrust(aci: aci1, phoneNumber: nil, transaction: tx)
+            mergeHighTrust(aci: aci1, phoneNumber: phoneNumber1, transaction: tx)
+            mergeHighTrust(aci: aci2, phoneNumber: phoneNumber1, transaction: tx)
         }
 
         databaseStorage.read { tx in
@@ -586,20 +586,20 @@ class SignalRecipientTest: SSKBaseTestSwift {
     }
 
     func testUnregisteredTimestamps() {
-        let aci = FutureAci.randomForTesting()
+        let aci = Aci.randomForTesting()
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-            let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
+            let recipient = recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx.asV2Write)
             XCTAssertNotNil(recipient.unregisteredAtTimestamp)
 
             recipient.markAsRegisteredAndSave(tx: tx)
-            XCTAssertNil(fetchRecipient(serviceId: aci, transaction: tx)!.unregisteredAtTimestamp)
+            XCTAssertNil(fetchRecipient(aci: aci, transaction: tx)!.unregisteredAtTimestamp)
 
             recipient.markAsUnregisteredAndSave(tx: tx)
-            XCTAssertGreaterThan(fetchRecipient(serviceId: aci, transaction: tx)!.unregisteredAtTimestamp!, 0)
+            XCTAssertGreaterThan(fetchRecipient(aci: aci, transaction: tx)!.unregisteredAtTimestamp!, 0)
 
             recipient.markAsRegisteredAndSave(tx: tx)
-            XCTAssertNil(fetchRecipient(serviceId: aci, transaction: tx)!.unregisteredAtTimestamp)
+            XCTAssertNil(fetchRecipient(aci: aci, transaction: tx)!.unregisteredAtTimestamp)
         }
     }
 
@@ -626,7 +626,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             for testCase in testCases {
-                let recipient = recipientFetcher.fetchOrCreate(serviceId: FutureAci.randomForTesting(), tx: tx.asV2Write)
+                let recipient = recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting().untypedServiceId, tx: tx.asV2Write)
                 recipient.modifyAndSave(deviceIdsToAdd: Array(testCase.initialDeviceIds), deviceIdsToRemove: [], tx: tx)
                 recipient.markAsRegisteredAndSave(deviceId: testCase.addedDeviceId, tx: tx)
                 XCTAssertEqual(Set(recipient.deviceIds), testCase.expectedDeviceIds, "\(testCase)")
@@ -637,18 +637,18 @@ class SignalRecipientTest: SSKBaseTestSwift {
     // MARK: - Helpers
 
     @discardableResult
-    private func mergeHighTrust(serviceId: UntypedServiceId, phoneNumber: E164?, transaction tx: SDSAnyWriteTransaction) -> SignalRecipient {
+    private func mergeHighTrust(aci: Aci, phoneNumber: E164?, transaction tx: SDSAnyWriteTransaction) -> SignalRecipient {
         let recipientMerger = DependenciesBridge.shared.recipientMerger
         return recipientMerger.applyMergeFromLinkedDevice(
             localIdentifiers: localIdentifiers,
-            serviceId: serviceId,
+            aci: aci,
             phoneNumber: phoneNumber,
             tx: tx.asV2Write
         )
     }
 
-    private func fetchRecipient(serviceId: UntypedServiceId, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
-        SignalRecipient.fetchRecipient(for: SignalServiceAddress(serviceId), onlyIfRegistered: false, tx: transaction)
+    private func fetchRecipient(aci: Aci, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
+        SignalRecipient.fetchRecipient(for: SignalServiceAddress(aci), onlyIfRegistered: false, tx: transaction)
     }
 
     private func fetchRecipient(phoneNumber: E164, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
@@ -691,20 +691,20 @@ final class SignalRecipient2Test: XCTestCase {
             XCTAssertEqual(signalRecipients[0].uniqueId, "00000000-0000-4000-8000-00000000000A")
             XCTAssertEqual(signalRecipients[0].deviceIds, [1, 2, 5, 4, 6])
             XCTAssertEqual(signalRecipients[0].phoneNumber, "+16505550100")
-            XCTAssertEqual(signalRecipients[0].serviceIdString, "00000000-0000-4000-8000-000000000000")
+            XCTAssertEqual(signalRecipients[0].aciString, "00000000-0000-4000-8000-000000000000")
             XCTAssertEqual(signalRecipients[0].unregisteredAtTimestamp, nil)
 
             XCTAssertEqual(signalRecipients[1].id, 21)
             XCTAssertEqual(signalRecipients[1].uniqueId, "00000000-0000-4000-8000-00000000000B")
             XCTAssertEqual(signalRecipients[1].deviceIds, [])
             XCTAssertEqual(signalRecipients[1].phoneNumber, "+16505550101")
-            XCTAssertEqual(signalRecipients[1].serviceIdString, "00000000-0000-4000-8000-000000000001")
+            XCTAssertEqual(signalRecipients[1].aciString, "00000000-0000-4000-8000-000000000001")
             XCTAssertEqual(signalRecipients[1].unregisteredAtTimestamp, 1683679214631)
         }
     }
 
     func testEqualityAndHashing() {
-        let someRecipient = SignalRecipient(serviceId: FutureAci.randomForTesting(), phoneNumber: nil, deviceIds: [1, 2])
+        let someRecipient = SignalRecipient(aci: Aci.randomForTesting(), phoneNumber: nil, deviceIds: [1, 2])
         let copiedRecipient = someRecipient.copy() as! SignalRecipient
         XCTAssertEqual(copiedRecipient, someRecipient)
         XCTAssertEqual(copiedRecipient.hashValue, someRecipient.hashValue)

@@ -92,7 +92,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             }
             let recipient = recipientMerger.applyMergeFromContactDiscovery(
                 localIdentifiers: localIdentifiers,
-                aci: aci.untypedServiceId,
+                aci: aci,
                 phoneNumber: discoveryResult.e164,
                 tx: tx
             )

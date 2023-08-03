@@ -4,23 +4,23 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 public protocol RecipientMerger {
     /// We're registering, linking, changing our number, etc. This is the only
     /// time we're allowed to "merge" the identifiers for our own account.
     func applyMergeForLocalAccount(
-        aci: UntypedServiceId,
-        pni: UntypedServiceId?,
+        aci: Aci,
+        pni: Pni?,
         phoneNumber: E164,
         tx: DBWriteTransaction
     ) -> SignalRecipient
 
-    /// We've learned about an association from another device. These sources
-    /// don't indicate whether a ServiceId is an ACI or PNI.
+    /// We've learned about an association from another device.
     func applyMergeFromLinkedDevice(
         localIdentifiers: LocalIdentifiers,
-        serviceId: UntypedServiceId,
+        aci: Aci,
         phoneNumber: E164?,
         tx: DBWriteTransaction
     ) -> SignalRecipient
@@ -28,7 +28,7 @@ public protocol RecipientMerger {
     /// We've learned about an association from CDS.
     func applyMergeFromContactDiscovery(
         localIdentifiers: LocalIdentifiers,
-        aci: UntypedServiceId,
+        aci: Aci,
         phoneNumber: E164,
         tx: DBWriteTransaction
     ) -> SignalRecipient
@@ -38,7 +38,7 @@ public protocol RecipientMerger {
     /// number sharing is disabled.
     func applyMergeFromSealedSender(
         localIdentifiers: LocalIdentifiers,
-        aci: UntypedServiceId,
+        aci: Aci,
         phoneNumber: E164?,
         tx: DBWriteTransaction
     ) -> SignalRecipient
@@ -48,7 +48,7 @@ protocol RecipientMergeObserver {
     /// We are about to learn a new association between identifiers.
     ///
     /// This is called for the identifiers that will no longer be linked.
-    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction: DBWriteTransaction)
+    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction: DBWriteTransaction)
 
     /// We just learned a new association between identifiers.
     ///
@@ -60,7 +60,7 @@ protocol RecipientMergeObserver {
 }
 
 struct MergedRecipient {
-    let serviceId: UntypedServiceId
+    let aci: Aci
     let oldPhoneNumber: String?
     let newPhoneNumber: E164
     let isLocalRecipient: Bool
@@ -69,7 +69,7 @@ struct MergedRecipient {
 
 protocol RecipientMergerTemporaryShims {
     func didUpdatePhoneNumber(
-        serviceIdString: String,
+        aciString: String,
         oldPhoneNumber: String?,
         newPhoneNumber: E164?,
         transaction: DBWriteTransaction
@@ -154,62 +154,62 @@ class RecipientMergerImpl: RecipientMerger {
     }
 
     func applyMergeForLocalAccount(
-        aci: UntypedServiceId,
-        pni: UntypedServiceId?,
+        aci: Aci,
+        pni: Pni?,
         phoneNumber: E164,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
-        return mergeAlways(serviceId: aci, phoneNumber: phoneNumber, isLocalRecipient: true, tx: tx)
+        return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: true, tx: tx)
     }
 
     func applyMergeFromLinkedDevice(
         localIdentifiers: LocalIdentifiers,
-        serviceId: UntypedServiceId,
+        aci: Aci,
         phoneNumber: E164?,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
         guard let phoneNumber else {
-            return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+            return recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx)
         }
-        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, serviceId: serviceId, phoneNumber: phoneNumber, tx: tx)
+        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, tx: tx)
     }
 
     func applyMergeFromSealedSender(
         localIdentifiers: LocalIdentifiers,
-        aci: UntypedServiceId,
+        aci: Aci,
         phoneNumber: E164?,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
         guard let phoneNumber else {
-            return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+            return recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx)
         }
-        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, serviceId: aci, phoneNumber: phoneNumber, tx: tx)
+        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, tx: tx)
     }
 
     func applyMergeFromContactDiscovery(
         localIdentifiers: LocalIdentifiers,
-        aci: UntypedServiceId,
+        aci: Aci,
         phoneNumber: E164,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
-        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, serviceId: aci, phoneNumber: phoneNumber, tx: tx)
+        return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, tx: tx)
     }
 
     /// Performs a merge unless a provided identifier refers to the local user.
     ///
     /// With the exception of registration, change number, etc., we're never
     /// allowed to initiate a merge with our own identifiers. Instead, we simply
-    /// return whichever recipient exists for the provided `serviceId`.
+    /// return whichever recipient exists for the provided `aci`.
     private func mergeIfNotLocalIdentifier(
         localIdentifiers: LocalIdentifiers,
-        serviceId: UntypedServiceId,
+        aci: Aci,
         phoneNumber: E164,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
-        if localIdentifiers.contains(serviceId: serviceId) || localIdentifiers.contains(phoneNumber: phoneNumber) {
-            return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+        if localIdentifiers.contains(serviceId: aci) || localIdentifiers.contains(phoneNumber: phoneNumber) {
+            return recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx)
         }
-        return mergeAlways(serviceId: serviceId, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx)
+        return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx)
     }
 
     /// Performs a merge for the provided identifiers.
@@ -218,9 +218,9 @@ class RecipientMergerImpl: RecipientMerger {
     /// identifiers. If there is, we'll update and return that value (see the
     /// rules below). Otherwise, we'll create a new instance.
     ///
-    /// A merge indicates that `serviceId` & `phoneNumber` refer to the same
-    /// account. As part of this operation, the database will be updated to
-    /// reflect that relationship.
+    /// A merge indicates that `aci` & `phoneNumber` refer to the same account.
+    /// As part of this operation, the database will be updated to reflect that
+    /// relationship.
     ///
     /// In general, the rules we follow when applying changes are:
     ///
@@ -232,19 +232,19 @@ class RecipientMergerImpl: RecipientMerger {
     /// * Phone numbers are transient and can move freely between ACIs. When
     /// they do, we must backfill the database to reflect the change.
     private func mergeAlways(
-        serviceId: UntypedServiceId,
+        aci: Aci,
         phoneNumber: E164,
         isLocalRecipient: Bool,
         tx transaction: DBWriteTransaction
     ) -> SignalRecipient {
-        let serviceIdRecipient = dataStore.fetchRecipient(serviceId: serviceId, transaction: transaction)
+        let aciRecipient = dataStore.fetchRecipient(serviceId: aci.untypedServiceId, transaction: transaction)
 
         // If these values have already been merged, we can return the result
         // without any modifications. This will be the path taken in 99% of cases
         // (ie, we'll hit this path every time a recipient sends you a message,
         // assuming they haven't changed their phone number).
-        if let serviceIdRecipient, serviceIdRecipient.phoneNumber == phoneNumber.stringValue {
-            return serviceIdRecipient
+        if let aciRecipient, aciRecipient.phoneNumber == phoneNumber.stringValue {
+            return aciRecipient
         }
 
         // In every other case, we need to change *something*. The goal of the
@@ -253,7 +253,7 @@ class RecipientMergerImpl: RecipientMerger {
         // would match the the prior `if` check and return early without making any
         // modifications.
 
-        let oldPhoneNumber = serviceIdRecipient?.phoneNumber
+        let oldPhoneNumber = aciRecipient?.phoneNumber
 
         let phoneNumberRecipient = dataStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: transaction)
 
@@ -263,17 +263,17 @@ class RecipientMergerImpl: RecipientMerger {
         // point in time, everything we've saved locally with PN_1 is associated
         // with the ACI_A account, so we should mark it as such in the database.
         // After this point, everything new will be associated with ACI_B.
-        if let phoneNumberRecipient, let oldServiceId = phoneNumberRecipient.serviceId {
+        if let phoneNumberRecipient, let oldAci = phoneNumberRecipient.aci {
             for observer in observers {
-                observer.willBreakAssociation(serviceId: oldServiceId, phoneNumber: phoneNumber, transaction: transaction)
+                observer.willBreakAssociation(aci: oldAci, phoneNumber: phoneNumber, transaction: transaction)
             }
         }
 
         let mergedRecipient: SignalRecipient
         switch _mergeHighTrust(
-            serviceId: serviceId,
+            aci: aci,
             phoneNumber: phoneNumber,
-            serviceIdRecipient: serviceIdRecipient,
+            aciRecipient: aciRecipient,
             phoneNumberRecipient: phoneNumberRecipient,
             transaction: transaction
         ) {
@@ -282,14 +282,14 @@ class RecipientMergerImpl: RecipientMerger {
             dataStore.updateRecipient(mergedRecipient, transaction: transaction)
             storageServiceManager.recordPendingUpdates(updatedAccountIds: [mergedRecipient.accountId])
         case .none:
-            mergedRecipient = SignalRecipient(serviceId: serviceId, phoneNumber: phoneNumber)
+            mergedRecipient = SignalRecipient(aci: aci, phoneNumber: phoneNumber)
             dataStore.insertRecipient(mergedRecipient, transaction: transaction)
         }
 
         for observer in observers {
             observer.didLearnAssociation(
                 mergedRecipient: MergedRecipient(
-                    serviceId: serviceId,
+                    aci: aci,
                     oldPhoneNumber: oldPhoneNumber,
                     newPhoneNumber: phoneNumber,
                     isLocalRecipient: isLocalRecipient,
@@ -303,18 +303,18 @@ class RecipientMergerImpl: RecipientMerger {
     }
 
     private func _mergeHighTrust(
-        serviceId: UntypedServiceId,
+        aci: Aci,
         phoneNumber: E164,
-        serviceIdRecipient: SignalRecipient?,
+        aciRecipient: SignalRecipient?,
         phoneNumberRecipient: SignalRecipient?,
         transaction tx: DBWriteTransaction
     ) -> SignalRecipient? {
-        if let serviceIdRecipient {
+        if let aciRecipient {
             if let phoneNumberRecipient {
-                guard let phoneNumberRecipientServiceId = phoneNumberRecipient.serviceIdString else {
+                guard let phoneNumberRecipientAciString = phoneNumberRecipient.aciString else {
                     return mergeRecipients(
-                        serviceId: serviceId,
-                        serviceIdRecipient: serviceIdRecipient,
+                        aci: aci,
+                        aciRecipient: aciRecipient,
                         phoneNumber: phoneNumber,
                         phoneNumberRecipient: phoneNumberRecipient,
                         transaction: tx
@@ -325,28 +325,28 @@ class RecipientMergerImpl: RecipientMerger {
                 // recipient *before* we assign the phone number to the new recipient in
                 // case there are any legacy phone number-only records in the database.
 
-                updatePhoneNumber(for: phoneNumberRecipient, serviceId: phoneNumberRecipientServiceId, to: nil, tx: tx)
+                updatePhoneNumber(for: phoneNumberRecipient, aciString: phoneNumberRecipientAciString, to: nil, tx: tx)
                 dataStore.updateRecipient(phoneNumberRecipient, transaction: tx)
 
                 // Fall through now that we've cleaned up `phoneNumberRecipient`.
             }
 
-            updatePhoneNumber(for: serviceIdRecipient, serviceId: serviceId.uuidValue.uuidString, to: phoneNumber, tx: tx)
-            return serviceIdRecipient
+            updatePhoneNumber(for: aciRecipient, aciString: aci.serviceIdUppercaseString, to: phoneNumber, tx: tx)
+            return aciRecipient
         }
 
         if let phoneNumberRecipient {
-            if let phoneNumberRecipientServiceId = phoneNumberRecipient.serviceIdString {
-                // We can't change the ServiceId because it's non-empty. Instead, we must
-                // create a new SignalRecipient. We clear the phone number here since it
-                // will belong to the new SignalRecipient.
-                updatePhoneNumber(for: phoneNumberRecipient, serviceId: phoneNumberRecipientServiceId, to: nil, tx: tx)
+            if let phoneNumberRecipientAciString = phoneNumberRecipient.aciString {
+                // We can't change the ACI because it's non-empty. Instead, we must create
+                // a new SignalRecipient. We clear the phone number here since it will
+                // belong to the new SignalRecipient.
+                updatePhoneNumber(for: phoneNumberRecipient, aciString: phoneNumberRecipientAciString, to: nil, tx: tx)
                 dataStore.updateRecipient(phoneNumberRecipient, transaction: tx)
                 return nil
             }
 
-            Logger.info("Learned serviceId \(serviceId) is associated with phoneNumber \(phoneNumber)")
-            phoneNumberRecipient.serviceId = serviceId
+            Logger.info("Learned \(aci) is associated with phoneNumber \(phoneNumber)")
+            phoneNumberRecipient.aci = aci
             return phoneNumberRecipient
         }
 
@@ -356,17 +356,17 @@ class RecipientMergerImpl: RecipientMerger {
 
     private func updatePhoneNumber(
         for recipient: SignalRecipient,
-        serviceId: String,
+        aciString: String,
         to newPhoneNumber: E164?,
         tx: DBWriteTransaction
     ) {
         let oldPhoneNumber = recipient.phoneNumber?.nilIfEmpty
         recipient.phoneNumber = newPhoneNumber?.stringValue
 
-        Logger.info("Updating phone number; serviceId: \(serviceId), phoneNumber: \(oldPhoneNumber ?? "nil") -> \(newPhoneNumber?.stringValue ?? "nil")")
+        Logger.info("Updating phone number; \(aciString), phoneNumber: \(oldPhoneNumber ?? "nil") -> \(newPhoneNumber?.stringValue ?? "nil")")
 
         temporaryShims.didUpdatePhoneNumber(
-            serviceIdString: serviceId,
+            aciString: aciString,
             oldPhoneNumber: oldPhoneNumber,
             newPhoneNumber: newPhoneNumber,
             transaction: tx
@@ -374,8 +374,8 @@ class RecipientMergerImpl: RecipientMerger {
     }
 
     private func mergeRecipients(
-        serviceId: UntypedServiceId,
-        serviceIdRecipient: SignalRecipient,
+        aci: Aci,
+        aciRecipient: SignalRecipient,
         phoneNumber: E164,
         phoneNumberRecipient: SignalRecipient,
         transaction: DBWriteTransaction
@@ -386,8 +386,8 @@ class RecipientMergerImpl: RecipientMerger {
 
         // We try to preserve the recipient that has a session.
         // (Note that we don't check for PNI sessions; we always prefer the ACI session there.)
-        let hasSessionForServiceId = temporaryShims.hasActiveSignalProtocolSession(
-            recipientId: serviceIdRecipient.accountId,
+        let hasSessionForAci = temporaryShims.hasActiveSignalProtocolSession(
+            recipientId: aciRecipient.accountId,
             deviceId: Int32(OWSDevice.primaryDeviceId),
             transaction: transaction
         )
@@ -404,20 +404,20 @@ class RecipientMergerImpl: RecipientMerger {
         // and the ServiceId recipient doesn't. Historically, we tried to be clever and
         // pick the session that had seen more use, but merging sessions should
         // only happen in exceptional circumstances these days.
-        if !hasSessionForServiceId && hasSessionForPhoneNumber {
-            Logger.warn("Discarding serviceId recipient in favor of phone number recipient.")
+        if !hasSessionForAci && hasSessionForPhoneNumber {
+            Logger.warn("Discarding ACI recipient in favor of phone number recipient.")
             winningRecipient = phoneNumberRecipient
-            losingRecipient = serviceIdRecipient
+            losingRecipient = aciRecipient
         } else {
-            Logger.warn("Discarding phone number recipient in favor of serviceId recipient.")
-            winningRecipient = serviceIdRecipient
+            Logger.warn("Discarding phone number recipient in favor of ACI recipient.")
+            winningRecipient = aciRecipient
             losingRecipient = phoneNumberRecipient
         }
         owsAssertBeta(winningRecipient !== losingRecipient)
 
         // Make sure the winning recipient is fully qualified.
         winningRecipient.phoneNumber = phoneNumber.stringValue
-        winningRecipient.serviceId = serviceId
+        winningRecipient.aci = aci
 
         // Discard the losing recipient.
         // TODO: Should we clean up any state related to the discarded recipient?
@@ -430,7 +430,7 @@ class RecipientMergerImpl: RecipientMerger {
 // MARK: - SignalServiceAddressCache
 
 extension SignalServiceAddressCache: RecipientMergeObserver {
-    func willBreakAssociation(serviceId: UntypedServiceId, phoneNumber: E164, transaction: DBWriteTransaction) {}
+    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
         updateRecipient(mergedRecipient.signalRecipient)

@@ -319,8 +319,8 @@ public class LegacyChangePhoneNumber: NSObject {
 
         let recipientMerger = DependenciesBridge.shared.recipientMerger
         let localRecipient = recipientMerger.applyMergeForLocalAccount(
-            aci: serviceAci.untypedServiceId,
-            pni: servicePni.untypedServiceId,
+            aci: serviceAci,
+            pni: servicePni,
             phoneNumber: serviceE164,
             tx: transaction.asV2Write
         )

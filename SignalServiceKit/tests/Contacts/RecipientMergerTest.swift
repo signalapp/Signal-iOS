@@ -52,7 +52,7 @@ private class MockRecipientDataStore: RecipientDataStore {
 }
 
 private class MockRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
-    func didUpdatePhoneNumber(serviceIdString: String, oldPhoneNumber: String?, newPhoneNumber: E164?, transaction: DBWriteTransaction) {}
+    func didUpdatePhoneNumber(aciString: String, oldPhoneNumber: String?, newPhoneNumber: E164?, transaction: DBWriteTransaction) {}
 
     func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool { false }
 }
@@ -79,13 +79,13 @@ private class MockStorageServiceManager: StorageServiceManager {
 
 class RecipientMergerTest: XCTestCase {
     func testTwoWayMergeCases() {
-        let aci_A = FutureAci.constantForTesting("00000000-0000-4000-8000-00000000000A")
-        let aci_B = FutureAci.constantForTesting("00000000-0000-4000-8000-00000000000B")
-        let aciMe = FutureAci.constantForTesting("00000000-0000-4000-8000-00000000000C")
+        let aci_A = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
+        let aci_B = Aci.constantForTesting("00000000-0000-4000-8000-00000000000B")
+        let aciMe = Aci.constantForTesting("00000000-0000-4000-8000-00000000000C")
         let e164_A = E164("+16505550101")!
         let e164_B = E164("+16505550102")!
         let e164Me = E164("+16505550103")!
-        let localIdentifiers = LocalIdentifiers(aci: Aci(fromUUID: aciMe.uuidValue), pni: nil, phoneNumber: e164Me.stringValue)
+        let localIdentifiers = LocalIdentifiers(aci: aciMe, pni: nil, phoneNumber: e164Me.stringValue)
 
         enum TrustLevel {
             case high
@@ -95,9 +95,9 @@ class RecipientMergerTest: XCTestCase {
         // Taken from the "ACI-E164 Merging Test Cases" document.
         let testCases: [(
             trustLevel: TrustLevel,
-            mergeRequest: (serviceId: UntypedServiceId?, phoneNumber: E164?),
-            initialState: [(rowId: Int, serviceId: UntypedServiceId?, phoneNumber: E164?)],
-            finalState: [(rowId: Int, serviceId: UntypedServiceId?, phoneNumber: E164?)]
+            mergeRequest: (aci: Aci?, phoneNumber: E164?),
+            initialState: [(rowId: Int, aci: Aci?, phoneNumber: E164?)],
+            finalState: [(rowId: Int, aci: Aci?, phoneNumber: E164?)]
         )] = [
             (.high, (aci_A, nil), [], [(1, aci_A, nil)]),
             (.low, (aci_A, nil), [], [(1, aci_A, nil)]),
@@ -142,30 +142,30 @@ class RecipientMergerTest: XCTestCase {
                     XCTAssertEqual(mockDataStore.nextRowId, initialRecipient.rowId, "\(testCase)")
                     mockDataStore.insertRecipient(
                         SignalRecipient(
-                            serviceId: initialRecipient.serviceId,
+                            aci: initialRecipient.aci,
                             phoneNumber: initialRecipient.phoneNumber
                         ),
                         transaction: transaction
                     )
                 }
 
-                switch (testCase.trustLevel, testCase.mergeRequest.serviceId, testCase.mergeRequest.phoneNumber) {
-                case (.high, let serviceId?, let phoneNumber?):
+                switch (testCase.trustLevel, testCase.mergeRequest.aci, testCase.mergeRequest.phoneNumber) {
+                case (.high, let aci?, let phoneNumber?):
                     _ = recipientMerger.applyMergeFromLinkedDevice(
                         localIdentifiers: localIdentifiers,
-                        serviceId: serviceId,
+                        aci: aci,
                         phoneNumber: phoneNumber,
                         tx: transaction
                     )
-                case (_, let serviceId?, _):
-                    _ = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction)
+                case (_, let aci?, _):
+                    _ = recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: transaction)
                 case (_, _, let phoneNumber):
                     _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber!, tx: transaction)
                 }
 
                 for finalRecipient in testCase.finalState.reversed() {
                     let signalRecipient = mockDataStore.recipientTable.removeValue(forKey: finalRecipient.rowId)
-                    XCTAssertEqual(signalRecipient?.serviceId, finalRecipient.serviceId, "\(idx)")
+                    XCTAssertEqual(signalRecipient?.aci, finalRecipient.aci, "\(idx)")
                     XCTAssertEqual(signalRecipient?.phoneNumber, finalRecipient.phoneNumber?.stringValue, "\(idx)")
                 }
                 XCTAssertEqual(mockDataStore.recipientTable, [:], "\(idx)")

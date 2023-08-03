@@ -378,7 +378,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         let recipient = recipientMerger.applyMergeFromLinkedDevice(
             localIdentifiers: localIdentifiers,
-            serviceId: contact.aci.untypedServiceId,
+            aci: contact.aci,
             phoneNumber: contact.serviceE164,
             tx: transaction.asV2Write
         )

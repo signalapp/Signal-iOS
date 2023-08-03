@@ -610,7 +610,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let recipient = DependenciesBridge.shared.recipientMerger.applyMergeFromSealedSender(
             localIdentifiers: localIdentifiers,
-            aci: decryptResult.senderAci.untypedServiceId,
+            aci: decryptResult.senderAci,
             phoneNumber: E164(decryptResult.senderE164),
             tx: transaction.asV2Write
         )
