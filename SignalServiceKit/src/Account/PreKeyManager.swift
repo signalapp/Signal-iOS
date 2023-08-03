@@ -39,6 +39,9 @@ public class PreKeyManagerImpl: PreKeyManager {
         // before the message sending is disabled.
         static let SignedPreKeyUpdateFailureMaxFailureDuration = (10 * kDayInterval)
 
+        // Maximum amount of time that can elapse without rotating signed prekeys
+        // before the message sending is disabled.
+        static let SignedPreKeyMaxRotationDuration = (14 * kDayInterval)
     }
 
     /// PreKey state lives in two places - on the client and on the service.
@@ -72,7 +75,7 @@ public class PreKeyManagerImpl: PreKeyManager {
 
     private var lastPreKeyCheckTimestamp: Date?
 
-    private func needsSignedPreKeyRotation(identity: OWSIdentity, tx: DBReadTransaction) -> Bool {
+    private func legacy_needsSignedPreKeyRotation(identity: OWSIdentity, tx: DBReadTransaction) -> Bool {
         let store = protocolStoreManager.signalProtocolStore(for: identity).signedPreKeyStore
 
         // Only disable message sending if we have failed more than N times...
@@ -88,10 +91,42 @@ public class PreKeyManagerImpl: PreKeyManager {
         return fabs(firstFailureDate.timeIntervalSinceNow) >= Constants.SignedPreKeyUpdateFailureMaxFailureDuration
     }
 
+    private func needsSignedPreKeyRotation(identity: OWSIdentity, tx: DBReadTransaction) -> Bool {
+        let store = protocolStoreManager.signalProtocolStore(for: identity).signedPreKeyStore
+
+        guard let lastSuccessDate = store.getLastSuccessfulPreKeyRotationDate(tx: tx) else {
+            return true
+        }
+
+        return lastSuccessDate.timeIntervalSinceNow >= Constants.SignedPreKeyMaxRotationDuration
+
+    }
+
+    private func needsLastResortPreKeyRotation(identity: OWSIdentity, tx: DBReadTransaction) -> Bool {
+        let store = protocolStoreManager.signalProtocolStore(for: identity).kyberPreKeyStore
+
+        guard let lastSuccessDate = store.getLastSuccessfulPreKeyRotationDate(tx: tx) else {
+            return true
+        }
+
+        return lastSuccessDate.timeIntervalSinceNow >= Constants.SignedPreKeyMaxRotationDuration
+    }
+
     public func isAppLockedDueToPreKeyUpdateFailures(tx: DBReadTransaction) -> Bool {
-        return
-            needsSignedPreKeyRotation(identity: .aci, tx: tx)
-            || needsSignedPreKeyRotation(identity: .pni, tx: tx)
+        if FeatureFlags.enablePQXDH {
+            let needPreKeyRotation =
+                needsSignedPreKeyRotation(identity: .aci, tx: tx)
+                || needsSignedPreKeyRotation(identity: .pni, tx: tx)
+
+            let needLastResortKeyRotation =
+                needsLastResortPreKeyRotation(identity: .aci, tx: tx)
+                || needsLastResortPreKeyRotation(identity: .pni, tx: tx)
+
+            return needPreKeyRotation || needLastResortKeyRotation
+        } else {
+            return legacy_needsSignedPreKeyRotation(identity: .aci, tx: tx)
+            || legacy_needsSignedPreKeyRotation(identity: .pni, tx: tx)
+        }
     }
 
     public func refreshPreKeysDidSucceed() {

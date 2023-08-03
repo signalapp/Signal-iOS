@@ -61,6 +61,11 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 - (void)clearPrekeyUpdateFailureCountWithTransaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(clearPrekeyUpdateFailureCount(transaction:));
 
+#pragma mark - Prekey rotation tracking
+- (void)setLastSuccessfulPreKeyRotationDate:(NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction;
+- (nullable NSDate *)getLastSuccessfulPreKeyRotationDateWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(getLastSuccessfulPreKeyRotationDate(transaction:));
+
 #pragma mark - Debugging
 
 - (void)logSignedPreKeyReport;

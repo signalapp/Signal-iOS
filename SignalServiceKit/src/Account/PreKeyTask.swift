@@ -287,7 +287,8 @@ public class PreKeyTask {
                             tx: tx
                         )
 
-                        // cleanup (if not New key, but probably can't hurt?)
+                        self.signedPreKeyStore.setLastSuccessfulPreKeyRotationDate(self.context.dateProvider(), tx: tx)
+
                         self.signedPreKeyStore.cullSignedPreKeyRecords(tx: tx)
                         self.signedPreKeyStore.clearPreKeyUpdateFailureCount(tx: tx)
                     }
@@ -299,10 +300,11 @@ public class PreKeyTask {
                             tx: tx
                         )
 
-                        // TODO(PQXDH): Mark the keys as accepted, and implement cleanup
-                        // mark as accepted?
-                        // self.signedPreKeyStore.cullSignedPreKeyRecords(tx: tx)
-                        // self.signedPreKeyStore.clearPreKeyUpdateFailureCount(tx: tx)
+                        // Register a successful key rotation
+                        self.kyberPreKeyStore.setLastSuccessfulPreKeyRotationDate(self.context.dateProvider(), tx: tx)
+
+                        // Cleanup any old keys
+                        try self.kyberPreKeyStore.cullLastResortPreKeyRecords(tx: tx)
                     }
 
                     if let newPreKeyRecords = update.preKeyRecords {
@@ -317,8 +319,7 @@ public class PreKeyTask {
                     if let pqPreKeyRecords = update.pqPreKeyRecords {
                         try self.kyberPreKeyStore.storeKyberPreKeyRecords(records: pqPreKeyRecords, tx: tx)
 
-                        // TODO(PQXDH): Mark the keys as accepted, and implement cleanup
-                        // self.preKeyStore.cullPreKeyRecords(tx: tx)
+                        try self.kyberPreKeyStore.cullOneTimePreKeyRecords(tx: tx)
                     }
                 }
 
@@ -346,10 +347,6 @@ public class PreKeyTask {
         self.context.db.write { tx in
             if update.signedPreKey != nil {
                 signedPreKeyStore.incrementPreKeyUpdateFailureCount(tx: tx)
-            }
-
-            if update.lastResortPreKey != nil {
-                // signedPreKeyStore.incrementPreKeyUpdateFailureCount(tx: tx)
             }
         }
     }

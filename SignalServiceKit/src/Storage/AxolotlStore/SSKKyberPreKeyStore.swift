@@ -35,6 +35,19 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         record: SignalServiceKit.KyberPreKeyRecord,
         tx: DBWriteTransaction
     ) throws
+
+    func cullLastResortPreKeyRecords(tx: DBWriteTransaction) throws
+
+    func cullOneTimePreKeyRecords(tx: DBWriteTransaction) throws
+
+    func setLastSuccessfulPreKeyRotationDate(
+        _ date: Date,
+        tx: DBWriteTransaction
+    )
+
+    func getLastSuccessfulPreKeyRotationDate(
+        tx: DBReadTransaction
+    ) -> Date?
 }
 
 public struct KyberPreKeyRecord: Codable {
@@ -109,6 +122,11 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         static let currentLastResortKeyId = "currentLastResortKeyId"
         static let lastKeyId = "lastKeyId"
         static let maxKeyId: Int32 = 0xFFFFFF
+
+        static let lastKeyRotationDate = "lastKeyRotationDate"
+
+        static let oneTimeKeyExpirationInterval = kDayInterval * 90
+        static let lastResortKeyExpirationInterval = kDayInterval * 30
     }
 
     let identity: OWSIdentity
@@ -306,5 +324,52 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
 
     public func markKyberPreKeyUsed(id: UInt32, context: StoreContext) throws {
         try self.markKyberPreKeyUsed(id: Int32(bitPattern: id), tx: context.asTransaction.asV2Write)
+    }
+
+    public func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: DBWriteTransaction) {
+        self.metadataStore.setDate(date, key: Constants.lastKeyRotationDate, transaction: tx)
+    }
+
+    public func getLastSuccessfulPreKeyRotationDate(tx: DBReadTransaction) -> Date? {
+        self.metadataStore.getDate(Constants.lastKeyRotationDate, transaction: tx)
+    }
+
+    public func cullOneTimePreKeyRecords(tx: DBWriteTransaction) throws {
+
+        // get all keys
+        // filter by isLastResort = false
+        // remove all keys older than 90 days
+
+        let recordsToRemove: [KyberPreKeyRecord] = try self.keyStore
+            .allCodableValues(transaction: tx)
+            .filter { record in
+                guard !record.isLastResort else { return false }
+                let keyAge = dateProvider().timeIntervalSince(record.generatedAt)
+                return keyAge >= Constants.oneTimeKeyExpirationInterval
+            }
+
+        let keysToRemove = recordsToRemove.map { key(for: $0.id) }
+        self.keyStore.removeValues(forKeys: keysToRemove, transaction: tx)
+    }
+
+    public func cullLastResortPreKeyRecords(tx: DBWriteTransaction) throws {
+
+        // get a list of keys
+        // get the current key
+        // don't touch the current
+        // remove all others older than 30 days
+        guard let currentLastResort = getLastResortKyberPreKey(tx: tx) else { return }
+
+        let recordsToRemove: [KyberPreKeyRecord] = try self.keyStore
+            .allCodableValues(transaction: tx)
+            .filter { record in
+                guard record.isLastResort else { return false }
+                guard record.id != currentLastResort.id else { return false }
+                let keyAge = dateProvider().timeIntervalSince(record.generatedAt)
+                return keyAge >= Constants.lastResortKeyExpirationInterval
+            }
+
+        let keysToRemove = recordsToRemove.map { key(for: $0.id) }
+        self.keyStore.removeValues(forKeys: keysToRemove, transaction: tx)
     }
 }

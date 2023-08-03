@@ -28,6 +28,11 @@ public protocol SignalSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
 
     func cullSignedPreKeyRecords(tx: DBWriteTransaction)
 
+    func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: DBWriteTransaction)
+    func getLastSuccessfulPreKeyRotationDate(tx: DBReadTransaction) -> Date?
+
+    // MARK: - Deprecated
+
     func incrementPreKeyUpdateFailureCount(tx: DBWriteTransaction)
     func getPreKeyUpdateFailureCount(tx: DBReadTransaction) -> Int32
     func getFirstPreKeyUpdateFailureDate(tx: DBReadTransaction) -> Date?
@@ -88,6 +93,16 @@ extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
     public func cullSignedPreKeyRecords(tx: DBWriteTransaction) {
         cullSignedPreKeyRecords(transaction: SDSDB.shimOnlyBridge(tx))
     }
+
+    public func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: DBWriteTransaction) {
+        setLastSuccessfulPreKeyRotationDate(date, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func getLastSuccessfulPreKeyRotationDate(tx: DBReadTransaction) -> Date? {
+        getLastSuccessfulPreKeyRotationDate(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    // MARK: - Deprecated (remove once legacy prekey tasks are retired)
 
     public func incrementPreKeyUpdateFailureCount(tx: DBWriteTransaction) {
         incrementPrekeyUpdateFailureCount(transaction: SDSDB.shimOnlyBridge(tx))

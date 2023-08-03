@@ -99,6 +99,8 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
     private var preKeyId: Int32 = 0
     private var currentSignedPreKey: SignalServiceKit.SignedPreKeyRecord?
 
+    private(set) var lastPreKeyRotation: Date?
+
     internal private(set) var storedSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?
     internal private(set) var storedSignedPreKeyId: Int32?
 
@@ -175,6 +177,14 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
         firstFailureDate: Date,
         tx: DBWriteTransaction
     ) { }
+
+    func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: SignalServiceKit.DBWriteTransaction) {
+        lastPreKeyRotation = date
+    }
+
+    func getLastSuccessfulPreKeyRotationDate(tx: SignalServiceKit.DBReadTransaction) -> Date? {
+        return lastPreKeyRotation
+    }
 }
 
 internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
@@ -182,6 +192,8 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
     private(set) var nextKeyId: Int32 = 0
     var identityKeyPair = Curve25519.generateKeyPair()
     var dateProvider: DateProvider
+
+    private(set) var lastPreKeyRotation: Date?
 
     private(set) var lastResortRecords = [SignalServiceKit.KyberPreKeyRecord]()
     private(set) var currentLastResortPreKey: SignalServiceKit.KyberPreKeyRecord!
@@ -257,5 +269,17 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
         guard let index = oneTimeRecords.firstIndex(where: { $0.id == id }) else { return }
         let record = oneTimeRecords.remove(at: index)
         usedOneTimeRecords.append(record)
+    }
+
+    func cullOneTimePreKeyRecords(tx: DBWriteTransaction) { }
+
+    func cullLastResortPreKeyRecords(tx: DBWriteTransaction) { }
+
+    func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: SignalServiceKit.DBWriteTransaction) {
+        lastPreKeyRotation = date
+    }
+
+    func getLastSuccessfulPreKeyRotationDate(tx: SignalServiceKit.DBReadTransaction) -> Date? {
+        return lastPreKeyRotation
     }
 }

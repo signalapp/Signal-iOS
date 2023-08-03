@@ -63,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const kPrekeyUpdateFailureCountKey = @"prekeyUpdateFailureCount";
 NSString *const kFirstPrekeyUpdateFailureDateKey = @"firstPrekeyUpdateFailureDate";
 NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
+NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 
 @interface SSKSignedPreKeyStore ()
 
@@ -338,6 +339,28 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
     return [self.metadataStore getDate:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
 }
 
+
+- (void)setLastSuccessfulPreKeyRotationDate:(NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.metadataStore setDate:date key:kLastPreKeyRotationDate transaction:transaction];
+}
+
+- (nullable NSDate *)getLastSuccessfulPreKeyRotationDateWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    NSDate *lastSuccess = [self.metadataStore getDate:kLastPreKeyRotationDate transaction:transaction];
+
+    // For compatibility with existing signed prekeys, fall back to the last
+    if (lastSuccess == nil) {
+        SignedPreKeyRecord *currentSignedPreKey = [self currentSignedPreKeyWithTransaction:transaction];
+        if (currentSignedPreKey.wasAcceptedByService) {
+            // Return the date the last key was signed at as an approximation of last rotation date.
+            return currentSignedPreKey.generatedAt;
+        }
+        return nil;
+    }
+
+    return lastSuccess;
+}
 
 #pragma mark - Debugging
 

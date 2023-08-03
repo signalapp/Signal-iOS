@@ -13,7 +13,7 @@ import XCTest
 class KyberPreKeyStoreTest: XCTestCase {
     var keyValueStoreFactory: KeyValueStoreFactory!
     var dateProvider: DateProvider!
-    var staticDate = Date()
+    var currentDate = Date()
     var db = MockDB()
 
     var identityKey: ECKeyPair!
@@ -21,7 +21,7 @@ class KyberPreKeyStoreTest: XCTestCase {
 
     override func setUp() {
         keyValueStoreFactory = InMemoryKeyValueStoreFactory()
-        dateProvider = { return self.staticDate }
+        dateProvider = { return self.currentDate }
         identityKey = Curve25519.generateKeyPair()
         kyberPreKeyStore = SSKKyberPreKeyStore(
             for: .aci,
@@ -455,5 +455,107 @@ class KyberPreKeyStoreTest: XCTestCase {
                 XCTAssertNil(aciLastResortRecord2)
                 XCTAssertNotNil(pniLastResortRecord2)
         }
+    }
+
+    func testCullOneTimeKeys() {
+        currentDate = Date(
+            timeIntervalSinceNow: -(SSKKyberPreKeyStore.Constants.oneTimeKeyExpirationInterval + 1)
+        )
+        try! self.db.write { tx in
+            let records = try self.kyberPreKeyStore.generateKyberPreKeyRecords(
+                count: 5,
+                signedBy: self.identityKey,
+                tx: tx
+            )
+            try self.kyberPreKeyStore.storeKyberPreKeyRecords(records: records, tx: tx)
+        }
+
+        currentDate = Date()
+
+        let currentRecords = try! self.db.write { tx in
+            let records = try self.kyberPreKeyStore.generateKyberPreKeyRecords(
+                count: 5,
+                signedBy: self.identityKey,
+                tx: tx
+            )
+
+            try self.kyberPreKeyStore.storeKyberPreKeyRecords(records: records, tx: tx)
+            return records
+        }
+
+        let keyStore = keyValueStoreFactory.keyValueStore(
+            collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
+        )
+
+        let numRecords = self.db.read { tx in
+            keyStore.allKeys(transaction: tx).count
+        }
+        XCTAssertEqual(numRecords, 10)
+
+        self.db.write { tx in
+            try! self.kyberPreKeyStore.cullOneTimePreKeyRecords(tx: tx)
+        }
+
+        let recordsAfterCull: [KyberPreKeyRecord] = self.db.read { tx in
+            try! keyStore.allCodableValues(transaction: tx).filter { !$0.isLastResort }
+        }
+
+        let sortedExpectedRecords = currentRecords.sorted { $0.id < $1.id }
+        let sortedFoundRecords = recordsAfterCull.sorted { $0.id < $1.id }
+        XCTAssertEqual(sortedExpectedRecords.count, sortedFoundRecords.count)
+        zip(sortedFoundRecords, sortedExpectedRecords).forEach {
+            XCTAssertEqual($0.id, $1.id)
+        }
+
+        XCTAssertEqual(recordsAfterCull.count, 5)
+    }
+
+    func testCullLastResortKeys() {
+        currentDate = Date(
+            timeIntervalSinceNow: -(SSKKyberPreKeyStore.Constants.lastResortKeyExpirationInterval + 1)
+        )
+
+        let expiredLastResort = try! self.db.write { tx in
+            let record = try self.kyberPreKeyStore.generateLastResortKyberPreKey(signedBy: self.identityKey, tx: tx)
+            try self.kyberPreKeyStore.storeLastResortPreKeyAndMarkAsCurrent(record: record, tx: tx)
+            return record
+        }
+
+        currentDate = Date(
+            timeIntervalSinceNow: -(SSKKyberPreKeyStore.Constants.lastResortKeyExpirationInterval - 1)
+        )
+
+        let oldUnexpiredLastResort = try! self.db.write { tx in
+            let record = try self.kyberPreKeyStore.generateLastResortKyberPreKey(signedBy: self.identityKey, tx: tx)
+            try self.kyberPreKeyStore.storeLastResortPreKeyAndMarkAsCurrent(record: record, tx: tx)
+            return record
+        }
+
+        currentDate = Date()
+
+        let currentLastResort = try! self.db.write { tx in
+            let record = try self.kyberPreKeyStore.generateLastResortKyberPreKey(signedBy: self.identityKey, tx: tx)
+            try self.kyberPreKeyStore.storeLastResortPreKeyAndMarkAsCurrent(record: record, tx: tx)
+            return record
+        }
+
+        let keyStore = keyValueStoreFactory.keyValueStore(
+            collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
+        )
+
+        self.db.write { tx in
+            try! self.kyberPreKeyStore.cullLastResortPreKeyRecords(tx: tx)
+        }
+
+        let recordsAfterCull: [KyberPreKeyRecord] = self.db.read { tx in
+            try! keyStore.allCodableValues(transaction: tx).filter { $0.isLastResort }
+        }
+
+        XCTAssertEqual(recordsAfterCull.count, 2)
+
+        let sortedFoundRecords = recordsAfterCull.sorted { $0.id < $1.id }
+
+        XCTAssertNotNil(recordsAfterCull.firstIndex(where: { $0.id == oldUnexpiredLastResort.id }))
+        XCTAssertNotNil(recordsAfterCull.firstIndex(where: { $0.id == currentLastResort.id }))
     }
 }
