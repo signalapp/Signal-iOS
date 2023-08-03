@@ -24,7 +24,7 @@ final class UsernameLookupRecordTest: XCTestCase {
 
             let deserialized = inMemoryDatabase.read { db in
                 return UsernameLookupRecord.fetchOne(
-                    forAci: constant.aci,
+                    forAci: Aci(fromUUID: constant.aci),
                     database: db
                 )
             }
@@ -43,18 +43,18 @@ final class UsernameLookupRecordTest: XCTestCase {
             }
 
             inMemoryDatabase.write { db in
-                UsernameLookupRecord.deleteOne(forAci: constant.aci, database: db)
+                UsernameLookupRecord.deleteOne(forAci: Aci(fromUUID: constant.aci), database: db)
             }
 
             XCTAssertNil(inMemoryDatabase.read { db in
-                return UsernameLookupRecord.fetchOne(forAci: constant.aci, database: db)
+                return UsernameLookupRecord.fetchOne(forAci: Aci(fromUUID: constant.aci), database: db)
             })
         }
     }
 
     func testUpsert() throws {
-        let aci1 = FutureAci.randomForTesting()
-        let aci2 = FutureAci.randomForTesting()
+        let aci1 = Aci.randomForTesting()
+        let aci2 = Aci.randomForTesting()
         let username1 = "jango_fett.42"
         let username2 = "boba_fett.42"
 
@@ -82,10 +82,10 @@ final class UsernameLookupRecordTest: XCTestCase {
             return
         }
 
-        XCTAssertEqual(record1.aci, aci1)
+        XCTAssertEqual(record1.aci, aci1.rawUUID)
         XCTAssertEqual(record1.username, username2)
 
-        XCTAssertEqual(record2.aci, aci2)
+        XCTAssertEqual(record2.aci, aci2.rawUUID)
         XCTAssertEqual(record2.username, username2)
     }
 
@@ -124,7 +124,7 @@ final class UsernameLookupRecordTest: XCTestCase {
 extension UsernameLookupRecord: ValidatableModel {
     static var constants: [(UsernameLookupRecord, base64JsonData: Data)] = [
         (
-            UsernameLookupRecord(aci: FutureAci.constantForTesting("effc880f-8b41-4985-9bf6-3c4f0231a959"), username: "boba_fett.42"),
+            UsernameLookupRecord(aci: Aci.constantForTesting("effc880f-8b41-4985-9bf6-3c4f0231a959"), username: "boba_fett.42"),
             Data(base64Encoded: "eyJhY2kiOiJFRkZDODgwRi04QjQxLTQ5ODUtOUJGNi0zQzRGMDIzMUE5NTkiLCJ1c2VybmFtZSI6ImJvYmFfZmV0dC40MiJ9")!
         )
     ]

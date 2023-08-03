@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 
 /// A point-in-time result of performing a lookup for a given username.
 ///
@@ -22,24 +23,24 @@ public struct UsernameLookupRecord: Codable, FetchableRecord, PersistableRecord 
 
     // MARK: - Init
 
-    public let aci: UntypedServiceId
+    public let aci: UUID
     public let username: String
 
-    public init(aci: UntypedServiceId, username: String) {
-        self.aci = aci
+    public init(aci: Aci, username: String) {
+        self.aci = aci.rawUUID
         self.username = username
     }
 
     // MARK: - Fetch
 
-    static func fetchOne(forAci aci: UntypedServiceId, transaction: SDSAnyReadTransaction) -> Self? {
+    static func fetchOne(forAci aci: Aci, transaction: SDSAnyReadTransaction) -> Self? {
         fetchOne(forAci: aci, database: transaction.unwrapGrdbRead.database)
     }
 
     /// Outside tests, prefer the variant that takes a transaction.
-    static func fetchOne(forAci aci: UntypedServiceId, database: Database) -> Self? {
+    static func fetchOne(forAci aci: Aci, database: Database) -> Self? {
         do {
-            return try Self.fetchOne(database, key: aci)
+            return try Self.fetchOne(database, key: aci.rawUUID)
         } catch let error {
             owsFailDebug("Got error while fetching record by ACI: \(error)")
             return nil
@@ -48,14 +49,14 @@ public struct UsernameLookupRecord: Codable, FetchableRecord, PersistableRecord 
 
     // MARK: - Delete
 
-    static func deleteOne(forAci aci: UntypedServiceId, transaction: SDSAnyWriteTransaction) {
+    static func deleteOne(forAci aci: Aci, transaction: SDSAnyWriteTransaction) {
         deleteOne(forAci: aci, database: transaction.unwrapGrdbWrite.database)
     }
 
     /// Outside tests, prefer the variant that takes a transaction.
-    static func deleteOne(forAci aci: UntypedServiceId, database: Database) {
+    static func deleteOne(forAci aci: Aci, database: Database) {
         do {
-            try Self.deleteOne(database, key: aci)
+            try Self.deleteOne(database, key: aci.rawUUID)
         } catch let error {
             owsFailDebug("Got error while deleting record by ACI: \(error)")
         }

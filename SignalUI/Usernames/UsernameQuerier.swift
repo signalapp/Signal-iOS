@@ -73,14 +73,14 @@ public struct UsernameQuerier {
         link: Usernames.UsernameLink,
         fromViewController: UIViewController,
         tx: SDSAnyReadTransaction,
-        onSuccess: @escaping (FutureAci) -> Void
+        onSuccess: @escaping (Aci) -> Void
     ) {
         if
             let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci,
             let localLink = localUsernameManager.usernameState(tx: tx.asV2Read).usernameLink,
             localLink == link
         {
-            queryMatchedLocalUser(onSuccess: onSuccess, localAci: localAci.untypedServiceId, tx: tx)
+            queryMatchedLocalUser(onSuccess: onSuccess, localAci: localAci, tx: tx)
             return
         }
 
@@ -129,14 +129,14 @@ public struct UsernameQuerier {
         username: String,
         fromViewController: UIViewController,
         tx: SDSAnyReadTransaction,
-        onSuccess: @escaping (FutureAci) -> Void
+        onSuccess: @escaping (Aci) -> Void
     ) {
         if
             let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci,
             let localUsername = localUsernameManager.usernameState(tx: tx.asV2Read).username,
             localUsername.caseInsensitiveCompare(username) == .orderedSame
         {
-            queryMatchedLocalUser(onSuccess: onSuccess, localAci: localAci.untypedServiceId, tx: tx)
+            queryMatchedLocalUser(onSuccess: onSuccess, localAci: localAci, tx: tx)
             return
         }
 
@@ -166,8 +166,8 @@ public struct UsernameQuerier {
     /// attention to the fact that this workaround is required because the query
     /// methods are within the context of a transaction.
     private func queryMatchedLocalUser(
-        onSuccess: @escaping (FutureAci) -> Void,
-        localAci: FutureAci,
+        onSuccess: @escaping (Aci) -> Void,
+        localAci: Aci,
         tx _: SDSAnyReadTransaction
     ) {
         // Dispatch asynchronously, since we are inside a transaction.
@@ -186,9 +186,9 @@ public struct UsernameQuerier {
     private func queryServiceForUsernameBehindSpinner(
         presentedModalActivityIndicator modal: ModalActivityIndicatorViewController,
         hashedUsername: Usernames.HashedUsername,
-        onSuccess: @escaping (FutureAci) -> Void
+        onSuccess: @escaping (Aci) -> Void
     ) {
-        firstly(on: schedulers.sync) { () -> Promise<FutureAci?> in
+        firstly(on: schedulers.sync) { () -> Promise<Aci?> in
             return self.usernameApiClient.lookupAci(
                 forHashedUsername: hashedUsername
             )
@@ -218,11 +218,11 @@ public struct UsernameQuerier {
     }
 
     private func handleUsernameLookupCompleted(
-        aci: FutureAci,
+        aci: Aci,
         username: String,
         tx: SDSAnyWriteTransaction
     ) {
-        let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
+        let recipient = recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx.asV2Write)
         recipient.markAsRegisteredAndSave(tx: tx)
 
         let isUsernameBestIdentifier = Usernames.BetterIdentifierChecker.assembleByQuerying(

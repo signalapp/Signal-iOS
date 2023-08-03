@@ -213,8 +213,8 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     func testGetDisplayNamesWithUserNames() {
-        let aliceAci = FutureAci.randomForTesting()
-        let bobAci = FutureAci.randomForTesting()
+        let aliceAci = Aci.randomForTesting()
+        let bobAci = Aci.randomForTesting()
 
         let addresses = [SignalServiceAddress(aliceAci), SignalServiceAddress(bobAci)]
 
@@ -252,10 +252,10 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     func testGetDisplayNamesMixed() {
-        let aliceAci = FutureAci.randomForTesting()
+        let aliceAci = Aci.randomForTesting()
         let aliceAddress = SignalServiceAddress(aliceAci)
         let aliceAccount = makeAccount(address: aliceAddress, phoneNumber: nil, name: "Alice Aliceson")
-        createRecipients([aliceAci])
+        createRecipients([aliceAci.untypedServiceId])
         createAccounts([aliceAccount])
 
         let bobAddress = SignalServiceAddress.randomForTesting()
@@ -263,7 +263,7 @@ class OWSContactsManagerTest: SignalBaseTest {
 
         let carolAddress = SignalServiceAddress(phoneNumber: "+17035559900")
 
-        let daveAci = FutureAci.randomForTesting()
+        let daveAci = Aci.randomForTesting()
         let daveAddress = SignalServiceAddress(daveAci)
         dbV2.write { transaction in
             mockUsernameLookupMananger.saveUsername("dave", forAci: daveAci, transaction: transaction)

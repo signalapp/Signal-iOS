@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalCoreKit
 
 public class UsernameApiClientImpl: UsernameApiClient {
@@ -179,12 +180,12 @@ public class UsernameApiClientImpl: UsernameApiClient {
 
     public func lookupAci(
         forHashedUsername hashedUsername: Usernames.HashedUsername
-    ) -> Promise<FutureAci?> {
+    ) -> Promise<Aci?> {
         let request = OWSRequestFactory.lookupAciUsernameRequest(
             usernameHashToLookup: hashedUsername.hashString
         )
 
-        func onRequestSuccess(response: HTTPResponse) throws -> UntypedServiceId {
+        func onRequestSuccess(response: HTTPResponse) throws -> Aci {
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError("Unexpected response code: \(response.responseStatusCode)")
             }
@@ -195,10 +196,10 @@ public class UsernameApiClientImpl: UsernameApiClient {
 
             let aciUuid: UUID = try parser.required(key: "uuid")
 
-            return FutureAci(aciUuid)
+            return Aci(fromUUID: aciUuid)
         }
 
-        func onRequestFailure(error: Error) throws -> FutureAci? {
+        func onRequestFailure(error: Error) throws -> Aci? {
             guard let statusCode = error.httpStatusCode else {
                 owsFailDebug("Unexpectedly missing HTTP status code!")
                 throw error

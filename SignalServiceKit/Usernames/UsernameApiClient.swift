@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalCoreKit
 
 /// Manages usernames-related API calls.
@@ -40,7 +41,7 @@ public protocol UsernameApiClient {
     /// Looks up the ACI corresponding to the given username, if one exists.
     func lookupAci(
         forHashedUsername hashedUsername: Usernames.HashedUsername
-    ) -> Promise<FutureAci?>
+    ) -> Promise<Aci?>
 
     // MARK: Links
 

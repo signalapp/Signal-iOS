@@ -332,7 +332,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         if
             usernameBetterIdentifierChecker.usernameIsBestIdentifier(),
             let username = usernameLookupManager.fetchUsername(
-                forAci: contact.aci.untypedServiceId,
+                forAci: contact.aci,
                 transaction: transaction.asV2Read
             )
         {
@@ -525,7 +525,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         usernameLookupManager.saveUsername(
             usernameIsBestIdentifierOnRecord ? record.username : nil,
-            forAci: contact.aci.untypedServiceId,
+            forAci: contact.aci,
             transaction: transaction.asV2Write
         )
 

@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
+import LibSignalClient
 import XCTest
+
+@testable import SignalServiceKit
 
 class LocalUsernameManagerTests: XCTestCase {
     private var mockDB: MockDB!
@@ -543,7 +545,7 @@ private class MockUsernameApiClient: UsernameApiClient {
     // MARK: Unimplemented
 
     func reserveUsernameCandidates(usernameCandidates: Usernames.HashedUsername.GeneratedCandidates) -> Promise<Usernames.ApiClientReservationResult> { owsFail("Not implemented!") }
-    func lookupAci(forHashedUsername hashedUsername: Usernames.HashedUsername) -> Promise<FutureAci?> { owsFail("Not implemented!") }
+    func lookupAci(forHashedUsername hashedUsername: Usernames.HashedUsername) -> Promise<Aci?> { owsFail("Not implemented!") }
     func getUsernameLink(handle: UUID) -> Promise<Data?> { owsFail("Not implemented!") }
 }
 
