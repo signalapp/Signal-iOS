@@ -73,6 +73,10 @@ public enum RegistrationStep: Equatable {
         /// In either case, they need to send a new code to proceed.
         case verificationCodeSubmissionUnavailable
 
+        /// The user tried to submit a verification code, but we've never
+        /// actually sent a code, so no submission could possibly be correct.
+        case submittingVerificationCodeBeforeAnyCodeSent
+
         /// The user had completed registration, but before finishing
         /// post-registration steps they were deregistered, likely by
         /// another device registering on the same number.
@@ -82,11 +86,6 @@ public enum RegistrationStep: Equatable {
         /// A network error occurred. The user can probably fix this by
         /// checking their internet connection.
         case networkError
-
-        /// A third party provider failed to send an sms or call to the session's number.
-        /// May be permanent (the user should probably use a different number)
-        /// or transient (the user should try again later).
-        case providerFailure(isPermanent: Bool)
 
         /// A generic error occurred. Prefer to use other error types.
         case genericError

@@ -163,7 +163,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     sessionState.sessionId == session.id
                 {
                     switch sessionState.initialCodeRequestState {
-                    case .failedToRequest, .exhaustedCodeAttempts:
+                    case
+                            .smsTransportFailed,
+                            .transientProviderFailure,
+                            .permanentProviderFailure,
+                            .failedToRequest,
+                            .exhaustedCodeAttempts:
                         // Reset state so we try again.
                         self.updatePersistedSessionState(session: session, tx) {
                             $0.initialCodeRequestState = .neverRequested
@@ -638,11 +643,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 /// We have already requested a code at least once; further requests
                 /// are user driven and not automatic
                 case requested
-                /// We have never requested a code but did try and failed. User action needed.
+                /// We asked for a code but got some generic failure. User action needed.
                 case failedToRequest
                 /// We sent a code, but submission attempts were exhausted so we should
                 /// send a new code on user input.
                 case exhaustedCodeAttempts
+
+                /// We requested an sms code, but transport failed.
+                /// User action needed, by selecting another transport.
+                case smsTransportFailed
+                // A 3p provider failed to send a message,
+                // either permanently or transiently.
+                case permanentProviderFailure
+                case transientProviderFailure
             }
 
             var initialCodeRequestState: InitialCodeRequestState = .neverRequested
@@ -1781,17 +1794,51 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return self.makeRegisterOrChangeNumberRequestFromSession(session)
         }
 
+        // We show the code entry screen if we've ever tried sending
+        // a verification code, even if that send failed.
+        // Note we will re-emit validation errors on every `nextStep()` call,
+        // and it is up to the view controller to ignore duplicates.
+        let shouldShowCodeEntryStep: Bool
+        let codeEntryValidationError: RegistrationVerificationValidationError?
         var pendingCodeTransport = inMemoryState.pendingCodeTransport
-        if pendingCodeTransport == nil {
-            switch persistedState.sessionState?.initialCodeRequestState {
-            case .none, .requested, .failedToRequest, .exhaustedCodeAttempts:
-                break
-            case .neverRequested:
-                // Request an sms code when we get a new session.
+
+        switch persistedState.sessionState?.initialCodeRequestState {
+        case .none:
+            shouldShowCodeEntryStep = false
+            codeEntryValidationError = nil
+
+        case .neverRequested:
+            shouldShowCodeEntryStep = false
+            codeEntryValidationError = nil
+            if pendingCodeTransport == nil {
+                // If we've never requested a code before, and aren't about to,
+                // we should automatically request an sms code.
                 pendingCodeTransport = .sms
             }
+
+        case .requested:
+            shouldShowCodeEntryStep = true
+            codeEntryValidationError = nil
+
+        case .smsTransportFailed:
+            shouldShowCodeEntryStep = true
+            codeEntryValidationError = .failedInitialTransport(failedTransport: .sms)
+        case .transientProviderFailure:
+            shouldShowCodeEntryStep = true
+            codeEntryValidationError = .providerFailure(isPermanent: false)
+        case .permanentProviderFailure:
+            shouldShowCodeEntryStep = true
+            codeEntryValidationError = .providerFailure(isPermanent: true)
+        case .exhaustedCodeAttempts:
+            shouldShowCodeEntryStep = true
+            codeEntryValidationError = .submitCodeTimeout
+        case .failedToRequest:
+            shouldShowCodeEntryStep = true
+            codeEntryValidationError = .genericCodeRequestError(isNetworkError: false)
         }
 
+        // If we have a pending transport to which we want to send a code,
+        // try and do that, regardless of other state.
         if let pendingCodeTransport {
             guard session.allowedToRequestCode else {
                 return attemptToFulfillAvailableChallengesWaitingIfNeeded(for: session)
@@ -1802,55 +1849,32 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .sms:
                 if let nextSMSDate = session.nextSMSDate, nextSMSDate <= deps.dateProvider() {
                     return requestSessionCode(session: session, transport: pendingCodeTransport)
-                } else if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                } else {
+                    // Inability to send puts on the verification entry screen, so the
+                    // user can try the alternate transport manually.
                     return .value(.verificationCodeEntry(self.verificationCodeEntryState(
                         session: session,
-                        nextVerificationAttemptDate: nextVerificationAttemptDate,
                         validationError: .smsResendTimeout
                     )))
-                } else if let nextSMSDate = session.nextSMSDate {
-                    return .value(.phoneNumberEntry(phoneNumberEntryState(
-                        validationError: .rateLimited(.init(
-                            expiration: nextSMSDate,
-                            e164: session.e164
-                        ))
-                    )))
-                } else {
-                    return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
                 }
             case .voice:
                 if let nextCallDate = session.nextCallDate, nextCallDate <= deps.dateProvider() {
                     return requestSessionCode(session: session, transport: pendingCodeTransport)
-                } else if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                } else {
+                    // Inability to send puts on the verification entry screen, so the
+                    // user can try the alternate transport manually.
                     return .value(.verificationCodeEntry(self.verificationCodeEntryState(
                         session: session,
-                        nextVerificationAttemptDate: nextVerificationAttemptDate,
                         validationError: .voiceResendTimeout
                     )))
-                } else if let nextSMSDate = session.nextSMSDate {
-                    return .value(.phoneNumberEntry(phoneNumberEntryState(
-                        validationError: .rateLimited(.init(
-                            expiration: nextSMSDate,
-                            e164: session.e164
-                        ))
-                    )))
-                } else {
-                    return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
                 }
             }
         }
 
-        if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
-            let validationError: RegistrationVerificationValidationError?
-            if deps.dateProvider() < nextVerificationAttemptDate {
-                validationError = .submitCodeTimeout
-            } else {
-                validationError = nil
-            }
+        if shouldShowCodeEntryStep {
             return .value(.verificationCodeEntry(self.verificationCodeEntryState(
                 session: session,
-                nextVerificationAttemptDate: nextVerificationAttemptDate,
-                validationError: validationError
+                validationError: codeEntryValidationError
             )))
         }
 
@@ -1879,6 +1903,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch (oldInitialCodeRequestState, newInitialCodeRequestState) {
         case
                 (.none, _),
+                (.smsTransportFailed, _),
+                (.transientProviderFailure, _),
+                (.permanentProviderFailure, _),
                 (.failedToRequest, _),
                 (.neverRequested, _),
                 (.exhaustedCodeAttempts, _),
@@ -2215,18 +2242,30 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // code transport.
                 self.db.write { self.processSession(session, $0) }
                 return self.nextStep()
+            case .transportError(let session):
+                // We failed with the current transport, but another transport
+                // might work.
+                self.db.write { self.processSession(session, initialCodeRequestState: .smsTransportFailed, $0) }
+                // Wipe the pending code request, so we don't auto-retry.
+                self.inMemoryState.pendingCodeTransport = nil
+                return self.nextStep()
             case .invalidSession:
                 self.inMemoryState.pendingCodeTransport = nil
                 self.db.write { self.resetSession($0) }
                 return .value(.showErrorSheet(.sessionInvalidated))
             case .serverFailure(let failureResponse):
-                self.inMemoryState.pendingCodeTransport = nil
-                if failureResponse.isPermanent {
-                    self.db.write { self.resetSession($0) }
-                } else {
-                    self.db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
+                self.db.write { tx in
+                    self.processSession(
+                        session,
+                        initialCodeRequestState: failureResponse.isPermanent
+                            ? .permanentProviderFailure
+                            : .transientProviderFailure,
+                        tx
+                    )
                 }
-                return .value(.showErrorSheet(.providerFailure(isPermanent: failureResponse.isPermanent)))
+                // Wipe the pending code request, so we don't auto-retry.
+                self.inMemoryState.pendingCodeTransport = nil
+                return self.nextStep()
             case .retryAfterTimeout(let session):
                 let timeInterval: TimeInterval?
                 switch transport {
@@ -2250,14 +2289,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         }
                 } else {
                     self.inMemoryState.pendingCodeTransport = nil
-                    if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                    if session.nextVerificationAttemptDate != nil {
                         self.db.write {
                             self.processSession(session, initialCodeRequestState: .requested, $0)
                         }
                         // Show an error on the verification code entry screen.
                         return .value(.verificationCodeEntry(self.verificationCodeEntryState(
                             session: session,
-                            nextVerificationAttemptDate: nextVerificationAttemptDate,
                             validationError: {
                                 switch transport {
                                 case .sms: return .smsResendTimeout
@@ -2557,6 +2595,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     )
                 }
                 return .value(.showErrorSheet(.networkError))
+            case .transportError(let session):
+                Logger.error("Should not get a transport error for a challenge request")
+                // Clear the pending code; we want the user to press again
+                // once the timeout expires.
+                self.inMemoryState.pendingCodeTransport = nil
+                self.db.write { self.processSession(session, initialCodeRequestState: .failedToRequest, $0) }
+                return self.nextStep()
             case .genericError:
                 return .value(.showErrorSheet(.genericError))
             }
@@ -2592,24 +2637,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 self.db.write { self.processSession(session, $0) }
                 return self.nextStep()
             case .rejectedArgument(let session):
-                if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                if session.nextVerificationAttemptDate != nil {
                     self.db.write { self.processSession(session, $0) }
                     return .value(.verificationCodeEntry(self.verificationCodeEntryState(
                         session: session,
-                        nextVerificationAttemptDate: nextVerificationAttemptDate,
                         validationError: .invalidVerificationCode(invalidCode: code)
                     )))
                 } else {
                     // Something went wrong, we can't submit again.
                     self.db.write { self.processSession(session, initialCodeRequestState: .exhaustedCodeAttempts, $0) }
-                    return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
+                    return .value(self.verificationCodeSubmissionRejectedError)
                 }
             case .disallowed(let session):
                 // This state means the session state is updated
                 // such that what comes next has changed, e.g. we can't send a verification
                 // code and will kick the user back to sending an sms code.
                 self.db.write { self.processSession(session, $0) }
-                return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
+                return .value(self.verificationCodeSubmissionRejectedError)
             case .invalidSession:
                 self.db.write { self.resetSession($0) }
                 return .value(.showErrorSheet(.sessionInvalidated))
@@ -2634,15 +2678,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                             )
                         }
                 }
-                if let nextVerificationAttemptDate = session.nextVerificationAttemptDate {
+                if session.nextVerificationAttemptDate != nil {
                     return .value(.verificationCodeEntry(self.verificationCodeEntryState(
                         session: session,
-                        nextVerificationAttemptDate: nextVerificationAttemptDate,
                         validationError: .submitCodeTimeout
                     )))
                 } else {
                     // Something went wrong, we can't submit again.
-                    return .value(.showErrorSheet(.verificationCodeSubmissionUnavailable))
+                    return .value(self.verificationCodeSubmissionRejectedError)
                 }
             case .networkFailure:
                 if retriesLeft > 0 {
@@ -2653,6 +2696,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     )
                 }
                 return .value(.showErrorSheet(.networkError))
+            case .transportError(let session):
+                Logger.error("Should not get transport error when submitting verification code")
+                self.db.write { self.processSession(session, $0) }
+                return .value(.showErrorSheet(.genericError))
             case .genericError:
                 return .value(.showErrorSheet(.genericError))
             }
@@ -3787,7 +3834,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func verificationCodeEntryState(
         session: RegistrationSession,
-        nextVerificationAttemptDate: Date,
         validationError: RegistrationVerificationValidationError? = nil
     ) -> RegistrationVerificationState {
         let exitConfiguration: RegistrationVerificationState.ExitConfiguration
@@ -3816,7 +3862,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             e164: session.e164,
             nextSMSDate: session.nextSMSDate,
             nextCallDate: session.nextCallDate,
-            nextVerificationAttemptDate: nextVerificationAttemptDate,
+            nextVerificationAttemptDate: session.nextVerificationAttemptDate,
             canChangeE164: canChangeE164,
             // TODO[Registration]: pass up the number directly here, and test for it.
             showHelpText: (persistedState.sessionState?.numVerificationCodeSubmissions ?? 0) >= 3,
@@ -3874,6 +3920,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             } else {
                 return .none
             }
+        }
+    }
+
+    private var verificationCodeSubmissionRejectedError: RegistrationStep {
+        switch persistedState.sessionState?.initialCodeRequestState {
+        case
+                .none,
+                .neverRequested,
+                .failedToRequest,
+                .permanentProviderFailure,
+                .transientProviderFailure,
+                .smsTransportFailed:
+            return .showErrorSheet(.submittingVerificationCodeBeforeAnyCodeSent)
+        case .exhaustedCodeAttempts, .requested:
+            return .showErrorSheet(.verificationCodeSubmissionUnavailable)
         }
     }
 

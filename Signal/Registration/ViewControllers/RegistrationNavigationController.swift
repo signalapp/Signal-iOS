@@ -301,6 +301,12 @@ public class RegistrationNavigationController: OWSNavigationController {
                     "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT",
                     comment: "Alert shown when running out of attempts at submitting a verification code."
                 )
+            case .submittingVerificationCodeBeforeAnyCodeSent:
+                title = nil
+                message = OWSLocalizedString(
+                    "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE",
+                    comment: "During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message."
+                )
             case .networkError:
                 title = OWSLocalizedString(
                     "REGISTRATION_NETWORK_ERROR_TITLE",
@@ -313,20 +319,6 @@ public class RegistrationNavigationController: OWSNavigationController {
             case .sessionInvalidated, .genericError:
                 title = nil
                 message = CommonStrings.somethingWentWrongTryAgainLaterError
-
-            case .providerFailure(let isPermanent):
-                title = nil
-                if isPermanent {
-                    message = OWSLocalizedString(
-                        "REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT",
-                        comment: "Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number."
-                    )
-                } else {
-                    message = OWSLocalizedString(
-                        "REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT",
-                        comment: "Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number."
-                    )
-                }
             }
             let actionSheet = ActionSheetController(title: title, message: message)
             actionSheet.addAction(.init(title: CommonStrings.okButton, style: .default, handler: { [weak self] _ in

@@ -57,13 +57,17 @@ public enum RegistrationServiceResponses {
         /// or the session might already be verified. Check the session object to know.
         /// Response body has `RegistrationSession` object.
         case disallowed = 409
+        /// The chosen transport mode is not supported (likely scoped to the e164),
+        /// but another transport may be supported.
+        case transportError = 418
         /// May need to wait before trying again; check session object for timeouts.
         /// If no timeout is specified, a different transport or starting a fresh session may be required.
         /// Response body has `RegistrationSession` object.
         case retry = 429
         /// The attempt to send a verification code failed because an external service (e.g. the SMS provider) refused to deliver the code.
         /// Response body has `SendVerificationCodeFailedResponse` with more detailed information.
-        case providerFailure = 502
+        case providerFailure = 440
+        case legacy_providerFailure = 502
         case unexpectedError = -1
 
         static public var unknown: Self { .unexpectedError }

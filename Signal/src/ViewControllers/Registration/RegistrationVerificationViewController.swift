@@ -10,6 +10,22 @@ import SignalUI
 
 public enum RegistrationVerificationValidationError: Equatable {
     case invalidVerificationCode(invalidCode: String)
+
+    /// We tried to send via sms and failed, but voice code might work
+    /// so we are on this screen now. An error should be shown.
+    case failedInitialTransport(failedTransport: Registration.CodeTransport)
+
+    /// A third party provider failed to send an sms or call to the session's number.
+    /// May be permanent (the user should probably use a different number)
+    /// or transient (the user should try again later).
+    /// Regardless we let the user submit a code or retry.
+    case providerFailure(isPermanent: Bool)
+
+    /// Requesting a code failed with some unknown error; show a
+    /// generic dialog and let the user dismiss. They might have actually
+    /// gotten a code, so let them submit or resend.
+    case genericCodeRequestError(isNetworkError: Bool)
+
     // These three errors are what happens when we try and
     // take the three respective actions but are rejected
     // with a timeout. The State should have timeout information.
@@ -24,7 +40,7 @@ public struct RegistrationVerificationState: Equatable {
     let e164: E164
     let nextSMSDate: Date?
     let nextCallDate: Date?
-    let nextVerificationAttemptDate: Date
+    let nextVerificationAttemptDate: Date?
     // If false, no option to go back and change e164 will be shown.
     let canChangeE164: Bool
     let showHelpText: Bool
@@ -411,30 +427,109 @@ class RegistrationVerificationViewController: OWSViewController {
         previouslyRenderedValidationError = newError
 
         guard let newError, oldError != newError else { return }
-
-        let title: String?
-        let message: String
         switch newError {
         case .invalidVerificationCode(let code):
-            title = nil
-            message = OWSLocalizedString(
+            let message = OWSLocalizedString(
                 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE",
                 comment: "During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message."
             )
             if verificationCodeView.verificationCode == code {
                 verificationCodeView.clear()
             }
+            OWSActionSheets.showActionSheet(title: nil, message: message)
+
+        case .providerFailure(let isPermanent):
+            let message: String
+            if isPermanent {
+                message = OWSLocalizedString(
+                    "REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT",
+                    comment: "Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number."
+                )
+            } else {
+                message = OWSLocalizedString(
+                    "REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT",
+                    comment: "Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number."
+                )
+            }
+            OWSActionSheets.showActionSheet(title: nil, message: message)
+
+        case .genericCodeRequestError(let isNetworkError):
+            let title: String?
+            let message: String
+            if isNetworkError {
+                title = OWSLocalizedString(
+                    "REGISTRATION_NETWORK_ERROR_TITLE",
+                    comment: "A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet."
+                )
+                message = OWSLocalizedString(
+                    "REGISTRATION_NETWORK_ERROR_BODY",
+                    comment: "A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet."
+                )
+            } else {
+                title = nil
+                message = CommonStrings.somethingWentWrongTryAgainLaterError
+            }
+            OWSActionSheets.showActionSheet(title: title, message: message)
+
+        case .failedInitialTransport(let failedTransport):
+            let errorMessage: String
+            let alternativeTransportButtonText: String
+            let alternativeTransport: Registration.CodeTransport
+            switch failedTransport {
+            case .sms:
+                errorMessage = OWSLocalizedString(
+                    "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR",
+                    comment: "Error message when sending a verification code via sms failed, but resending via voice call might succeed."
+                )
+                alternativeTransportButtonText = OWSLocalizedString(
+                    "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON",
+                    comment: "Button when sending a verification code via sms failed, but resending via voice call might succeed."
+                )
+                alternativeTransport = .voice
+            case .voice:
+                errorMessage = OWSLocalizedString(
+                    "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR",
+                    comment: "Error message when sending a verification code via voice call failed, but resending via sms might succeed."
+                )
+                alternativeTransportButtonText = OWSLocalizedString(
+                    "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON",
+                    comment: "Button when sending a verification code via voice call failed, but resending via sms might succeed."
+                )
+                alternativeTransport = .sms
+            }
+            let actionSheet = ActionSheetController(title: nil, message: errorMessage)
+            actionSheet.addAction(.init(
+                title: alternativeTransportButtonText,
+                accessibilityIdentifier: nil,
+                handler: { [weak self] _ in
+                    switch alternativeTransport {
+                    case .sms:
+                        self?.presenter?.requestSMSCode()
+                    case .voice:
+                        self?.presenter?.requestVoiceCode()
+                    }
+                }
+            ))
+            actionSheet.addAction(.init(
+                title: CommonStrings.cancelButton,
+                accessibilityIdentifier: nil
+            ))
+            self.present(actionSheet, animated: true)
+            return
+
         case .smsResendTimeout, .voiceResendTimeout:
-            title = nil
-            message = OWSLocalizedString(
+            let message = OWSLocalizedString(
                 "REGISTER_RATE_LIMITING_ALERT",
                 comment: "Body of action sheet shown when rate-limited during registration."
             )
-        case .submitCodeTimeout:
-            title = nil
+            OWSActionSheets.showActionSheet(title: nil, message: message)
 
+        case .submitCodeTimeout:
+            guard let nextVerificationAttemptDate = state.nextVerificationAttemptDate else {
+                return
+            }
             let now = Date()
-            if now >= state.nextVerificationAttemptDate {
+            if now >= nextVerificationAttemptDate {
                 return
             }
             let format = OWSLocalizedString(
@@ -449,11 +544,11 @@ class RegistrationVerificationViewController: OWSViewController {
                 return result
             }()
 
-            let timeRemaining = max(state.nextVerificationAttemptDate.timeIntervalSince(now), 0)
+            let timeRemaining = max(nextVerificationAttemptDate.timeIntervalSince(now), 0)
             let durationString = formatter.string(from: Date(timeIntervalSinceReferenceDate: timeRemaining))
-            message = String(format: format, durationString)
+            let message = String(format: format, durationString)
+            OWSActionSheets.showActionSheet(title: nil, message: message)
         }
-        OWSActionSheets.showActionSheet(title: title, message: message)
     }
 
     // MARK: Events

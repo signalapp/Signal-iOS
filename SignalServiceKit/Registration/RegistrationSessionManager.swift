@@ -73,6 +73,11 @@ public enum Registration {
         /// For example, a verification code may have been submitted
         /// despite no code being available for submission.
         case disallowed(RegistrationSession)
+        /// This happens when the provided transport is rejected,
+        /// for example if attempting to send a verification code sms
+        /// to a landline number.
+        /// The user can retry with an alternative transport method.
+        case transportError(RegistrationSession)
         /// The request was made before the required timeout; it should be
         /// made again after the time specified in the `RegistrationSession`.
         case retryAfterTimeout(RegistrationSession)

@@ -124,7 +124,8 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             let .success(session),
             let .disallowed(session),
             let .rejectedArgument(session),
-            let .retryAfterTimeout(session):
+            let .retryAfterTimeout(session),
+            let .transportError(session):
             db.write { self.persist(session: session, $0) }
         case .invalidSession:
             // Clear the session we've stored as it's invalid.
@@ -366,10 +367,15 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
                 fromResponseBody: bodyData,
                 e164: e164
             ).map { .retryAfterTimeout($0) } ?? .genericError
-        case .providerFailure:
+        case .providerFailure, .legacy_providerFailure:
             return serverFailureResponse(fromResponseBody: bodyData, sessionAtSendTime: sessionAtSendTime).map { .serverFailure($0) } ?? .genericError
         case .missingSession:
             return .invalidSession
+        case .transportError:
+            return registrationSession(
+                fromResponseBody: bodyData,
+                e164: e164
+            ).map { .transportError($0) } ?? .genericError
         case .malformedRequest, .unexpectedError, .none:
             return .genericError
         }
