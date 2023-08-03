@@ -322,6 +322,16 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
         alert.addAction(OWSActionSheets.cancelAction)
         presentActionSheet(alert)
     }
+
+    // MARK: UITableViewDelegate
+
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .none
+    }
+
+    func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        return false
+    }
 }
 
 // MARK: -
