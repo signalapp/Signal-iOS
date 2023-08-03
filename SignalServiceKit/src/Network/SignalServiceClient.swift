@@ -16,7 +16,7 @@ public protocol SignalServiceClient {
     func deprecated_requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void>
     func deprecated_requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void>
     func verifySecondaryDevice(verificationCode: String, phoneNumber: String, authKey: String, encryptedDeviceName: Data) -> Promise<VerifySecondaryDeviceResponse>
-    func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<Int>
+    func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)>
     /// If a username and password are both provided, those are used for the request's
     /// Authentication header. Otherwise, the default header is used (whatever's on
     /// TSAccountManager).
@@ -25,6 +25,8 @@ public protocol SignalServiceClient {
         identityKey: IdentityKey,
         signedPreKeyRecord: SignedPreKeyRecord?,
         preKeyRecords: [PreKeyRecord]?,
+        pqLastResortPreKeyRecord: KyberPreKeyRecord?,
+        pqPreKeyRecords: [KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void>
@@ -78,7 +80,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
         return networkManager.makePromise(request: request).asVoid()
     }
 
-    public func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<Int> {
+    public func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
         Logger.debug("")
 
         let request = OWSRequestFactory.availablePreKeysCountRequest(for: identity)
@@ -93,9 +95,10 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
                 throw OWSAssertionError("Missing or invalid response.")
             }
 
-            let count: Int = try params.required(key: "count")
+            let ecCount: Int = try params.required(key: "count")
+            let pqCount: Int = try params.optional(key: "pqCount") ?? 0
 
-            return count
+            return (ecCount, pqCount)
         }
     }
 
@@ -104,6 +107,8 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
         identityKey: IdentityKey,
         signedPreKeyRecord: SignedPreKeyRecord?,
         preKeyRecords: [PreKeyRecord]?,
+        pqLastResortPreKeyRecord: KyberPreKeyRecord?,
+        pqPreKeyRecords: [KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> Promise<Void> {
         Logger.debug("")
@@ -113,6 +118,8 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
             identityKey: identityKey,
             signedPreKeyRecord: signedPreKeyRecord,
             prekeyRecords: preKeyRecords,
+            pqLastResortPreKeyRecord: pqLastResortPreKeyRecord,
+            pqPreKeyRecords: pqPreKeyRecords,
             auth: auth
         )
         return networkManager.makePromise(request: request).asVoid()

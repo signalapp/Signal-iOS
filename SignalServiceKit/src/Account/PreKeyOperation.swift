@@ -14,7 +14,9 @@ extension PreKey {
         public enum SingleTarget: Int, Equatable, CaseIterable {
             case signedPreKey = 1
             case oneTimePreKey = 2
-            // next raw value: 4 (1 << 2)
+            case oneTimePqPreKey = 4
+            case lastResortPqPreKey = 8
+            // next raw value: 16 (1 << 4)
 
             public var asTarget: Target {
                 return Target(rawValue: rawValue)
@@ -29,6 +31,8 @@ extension PreKey {
 
             static let signedPreKey  = Target(rawValue: SingleTarget.signedPreKey.rawValue)
             static let oneTimePreKey = Target(rawValue: SingleTarget.oneTimePreKey.rawValue)
+            static let oneTimePqPreKey = Target(rawValue: SingleTarget.oneTimePqPreKey.rawValue)
+            static let lastResortPqPreKey = Target(rawValue: SingleTarget.lastResortPqPreKey.rawValue)
 
             public mutating func insert(target: SingleTarget) {
                 self.insert(target.asTarget)

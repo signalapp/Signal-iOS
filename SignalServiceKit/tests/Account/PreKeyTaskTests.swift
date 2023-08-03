@@ -73,6 +73,9 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
         XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
+        XCTAssertNotNil(mockServiceClient.pqLastResortPreKeyRecord)
+        XCTAssertNotNil(mockServiceClient.pqPreKeyRecords)
+        XCTAssertEqual(mockServiceClient.pqPreKeyRecords?.count, 100)
     }
 
     func testCreateFailsOnLinkedDevice() {
@@ -123,6 +126,8 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
         XCTAssertNil(mockServiceClient.preKeyRecords)
+        XCTAssertNil(mockServiceClient.pqPreKeyRecords)
+        XCTAssertNil(mockServiceClient.pqLastResortPreKeyRecord)
     }
 
     func testCreatePreKeyOnly() {
@@ -148,6 +153,8 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
         XCTAssertNotNil(mockServiceClient.identityKey)
         XCTAssertNil(mockServiceClient.signedPreKeyRecord)
+        XCTAssertNil(mockServiceClient.pqPreKeyRecords)
+        XCTAssertNil(mockServiceClient.pqLastResortPreKeyRecord)
         XCTAssertNotNil(mockServiceClient.preKeyRecords)
     }
 
@@ -170,6 +177,9 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
         XCTAssertEqual(mockServiceClient.identityKey, mockIdentityManager.aciKeyPair!.publicKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
+        XCTAssertNotNil(mockServiceClient.pqPreKeyRecords)
+        XCTAssertEqual(mockServiceClient.pqPreKeyRecords?.count, 100)
+        XCTAssertNotNil(mockServiceClient.pqLastResortPreKeyRecord)
     }
 
     func testMockCreateSignedPreKeyWithExisting() {
@@ -191,6 +201,8 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertNil(mockServiceClient.preKeyRecords)
         XCTAssertNotNil(mockAciProtocolStore.mockSignedPreKeyStore.currentSignedPreKey)
         XCTAssertNotNil(mockServiceClient.signedPreKeyRecord)
+        XCTAssertNil(mockServiceClient.pqLastResortPreKeyRecord)
+        XCTAssertNil(mockServiceClient.pqPreKeyRecords)
     }
 
     func testMockCreatePreKeyOnlyWithExisting() {
@@ -211,6 +223,35 @@ final class PreKeyTaskTests: XCTestCase {
         XCTAssertEqual(mockServiceClient.preKeyRecords?.count, 100)
         XCTAssertNil(mockAciProtocolStore.mockSignedPreKeyStore.storedSignedPreKeyRecord)
         XCTAssertNil(mockServiceClient.signedPreKeyRecord)
+        XCTAssertNil(mockServiceClient.pqPreKeyRecords)
+        XCTAssertNil(mockServiceClient.pqLastResortPreKeyRecord)
+    }
+
+    func testCreatePqKeysOnly() {
+        let task = PreKeyTask(
+            for: .aci,
+            action: .create([.lastResortPqPreKey, .oneTimePqPreKey]),
+            auth: .implicit(),
+            context: context
+        )
+
+        // Pre-validate
+        XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.oneTimeRecords.count, 0)
+        XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.lastResortRecords.count, 0)
+        XCTAssertNil(mockAciProtocolStore.mockKyberPreKeyStore.currentLastResortPreKey)
+
+        _ = task.runPreKeyTask()
+        testSchedulers.scheduler.start()
+
+        // Validate
+        XCTAssertEqual(mockAciProtocolStore.mockKyberPreKeyStore.oneTimeRecords.count, 100)
+        XCTAssertNotNil(mockAciProtocolStore.mockKyberPreKeyStore.currentLastResortPreKey)
+
+        XCTAssertNotNil(mockServiceClient.identityKey)
+        XCTAssertNil(mockServiceClient.signedPreKeyRecord)
+        XCTAssertNil(mockServiceClient.preKeyRecords)
+        XCTAssertNotNil(mockServiceClient.pqPreKeyRecords)
+        XCTAssertNotNil(mockServiceClient.pqLastResortPreKeyRecord)
     }
 
     func testIdentityKeyCreated() {

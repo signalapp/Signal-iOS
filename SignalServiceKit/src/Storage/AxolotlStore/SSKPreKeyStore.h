@@ -19,6 +19,10 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 - (instancetype)initForIdentity:(OWSIdentity)identity;
 
 - (NSArray<PreKeyRecord *> *)generatePreKeyRecords;
+
+- (NSArray<PreKeyRecord *> *)generatePreKeyRecordsWithTransaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(generatePreKeyRecords(transaction:));
+
 - (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords
                transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(storePreKeyRecords(_:transaction:));
 

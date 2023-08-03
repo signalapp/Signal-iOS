@@ -74,6 +74,8 @@ public class CreatePreKeysOperation: OWSOperation {
                 identityKey: identityKey,
                 signedPreKeyRecord: signedPreKeyRecord,
                 preKeyRecords: preKeyRecords,
+                pqLastResortPreKeyRecord: nil,
+                pqPreKeyRecords: nil,
                 auth: self.auth
             )
         }.done {

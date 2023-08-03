@@ -12,21 +12,37 @@ public class PreKeyTask {
         // Replenish whenever 10 or less remain
         internal static let EphemeralPreKeysMinimumCount: UInt = 10
 
+        internal static let PqPreKeysMinimumCount: UInt = 10
+
         // Signed prekeys should be rotated every at least every 2 days
         internal static let SignedPreKeyRotationTime: TimeInterval = 2 * kDayInterval
+
+        internal static let LastResortPqPreKeyRotationTime: TimeInterval = 2 * kDayInterval
     }
 
     private struct CurrentState {
         let currentSignedPreKey: SignedPreKeyRecord?
-        let preKeyRecordCount: Int
+        let currentLastResortPqPreKey: KyberPreKeyRecord?
+        let ecPreKeyRecordCount: Int
+        let pqPreKeyRecordCount: Int
     }
 
     private class Update {
         var signedPreKey: SignedPreKeyRecord?
         var preKeyRecords: [PreKeyRecord]?
+        var lastResortPreKey: KyberPreKeyRecord?
+        var pqPreKeyRecords: [KyberPreKeyRecord]?
 
         func isEmpty() -> Bool {
-            return (signedPreKey == nil && preKeyRecords == nil)
+            if
+                preKeyRecords == nil,
+                signedPreKey == nil,
+                lastResortPreKey == nil,
+                pqPreKeyRecords == nil
+            {
+                return true
+            }
+            return false
         }
     }
 
@@ -57,6 +73,7 @@ public class PreKeyTask {
 
     private let preKeyStore: SignalPreKeyStore
     private let signedPreKeyStore: SignalSignedPreKeyStore
+    private let kyberPreKeyStore: SignalKyberPreKeyStore
 
     public init(
         for identity: OWSIdentity,
@@ -72,6 +89,7 @@ public class PreKeyTask {
 
         self.preKeyStore = protocolStore.preKeyStore
         self.signedPreKeyStore = protocolStore.signedPreKeyStore
+        self.kyberPreKeyStore = protocolStore.kyberPreKeyStore
 
         switch action {
         case .create(let targets):
@@ -147,22 +165,26 @@ public class PreKeyTask {
             }
         }.then(on: globalQueue()) { () -> Promise<CurrentState> in
 
-            return firstly(on: self.context.schedulers.global()) { () -> Promise<Int> in
+            return firstly(on: globalQueue()) { () -> Promise<(ecCount: Int, pqCount: Int)> in
                 if self.forceRefresh || self.allowCreate {
                     // Return a no-op since the prekeys will be refreshed regardless of the response
-                    return Promise.value(0)
+                    return Promise.value((0, 0))
                 } else {
                     return self.context.serviceClient.getPreKeysCount(for: self.identity)
                 }
-            }.then(on: self.context.schedulers.global()) { (preKeysCount: Int) -> Promise<CurrentState> in
-                let preKey = self.context.db.read { tx in
-                    return self.signedPreKeyStore.currentSignedPreKey(tx: tx)
+            }.then(on: globalQueue()) { (ecCount: Int, pqCount: Int) -> Promise<CurrentState> in
+                let (preKey, lastResortKey) = self.context.db.read { tx in
+                    let signedPreKey = self.signedPreKeyStore.currentSignedPreKey(tx: tx)
+                    let lastResortKey = self.kyberPreKeyStore.getLastResortKyberPreKey(tx: tx)
+                    return (signedPreKey, lastResortKey)
                 }
 
                 return Promise.value(
                     CurrentState(
                         currentSignedPreKey: preKey,
-                        preKeyRecordCount: preKeysCount
+                        currentLastResortPqPreKey: lastResortKey,
+                        ecPreKeyRecordCount: ecCount,
+                        pqPreKeyRecordCount: pqCount
                     )
                 )
             }
@@ -177,10 +199,16 @@ public class PreKeyTask {
             return Promise.value(self.requestedTargets.targets.reduce(into: []) { value, target in
                 switch target {
                 case .oneTimePreKey:
-                    if preKeyState.preKeyRecordCount < Constants.EphemeralPreKeysMinimumCount {
+                    if preKeyState.ecPreKeyRecordCount < Constants.EphemeralPreKeysMinimumCount {
                         value.insert(target: target)
                     } else {
-                        Logger.info("Available \(self.identity) keys sufficient: \(preKeyState.preKeyRecordCount)")
+                        Logger.info("Available \(self.identity) keys sufficient: \(preKeyState.ecPreKeyRecordCount)")
+                    }
+                case .oneTimePqPreKey:
+                    if preKeyState.pqPreKeyRecordCount < Constants.PqPreKeysMinimumCount {
+                        value.insert(target: target)
+                    } else {
+                        Logger.info("Available \(self.identity) PQ keys sufficient: \(preKeyState.pqPreKeyRecordCount)")
                     }
                 case .signedPreKey:
                     if
@@ -189,7 +217,18 @@ public class PreKeyTask {
                         case let generatedDate = signedPreKey.generatedAt,
                         currentDate.timeIntervalSince(generatedDate) < Constants.SignedPreKeyRotationTime
                     {
-                        Logger.info("Available \(self.identity) prekeys sufficient: \(preKeyState.preKeyRecordCount)")
+                        Logger.info("Available \(self.identity) signed PreKey sufficient: \(signedPreKey.generatedAt)")
+                    } else {
+                        value.insert(target: target)
+                    }
+                case .lastResortPqPreKey:
+                    if
+                        let lastResortPreKey = preKeyState.currentLastResortPqPreKey,
+                        case let currentDate = self.context.dateProvider(),
+                        case let generatedDate = lastResortPreKey.generatedAt,
+                        currentDate.timeIntervalSince(generatedDate) < Constants.LastResortPqPreKeyRotationTime
+                    {
+                        Logger.info("Available \(self.identity) last resort PreKey sufficient: \(lastResortPreKey.generatedAt)")
                     } else {
                         value.insert(target: target)
                     }
@@ -197,16 +236,29 @@ public class PreKeyTask {
             })
         }.then(on: globalQueue()) { (neededTargets: PreKey.Operation.Target) -> Promise<Update> in
 
-            // Map the keys to the requested operation
-            // Pass these keys along to be uploaded to the service/stored/accepted
-            Promise.value(neededTargets.targets.reduce(into: Update()) { result, target in
-                switch target {
-                case .oneTimePreKey:
-                    result.preKeyRecords = self.preKeyStore.generatePreKeyRecords()
-                case .signedPreKey:
-                    result.signedPreKey = self.signedPreKeyStore.generateRandomSignedRecord()
-                }
-            })
+            // Map the keys to the requested operation.  Create the necessary keys and
+            // pass them along to be uploaded to the service/stored/accepted
+            return try self.context.db.write { tx in
+                return Promise.value(try neededTargets.targets.reduce(into: Update()) { result, target in
+                    switch target {
+                    case .oneTimePreKey:
+                        result.preKeyRecords = self.preKeyStore.generatePreKeyRecords(tx: tx)
+                    case .signedPreKey:
+                        result.signedPreKey = self.signedPreKeyStore.generateRandomSignedRecord()
+                    case .oneTimePqPreKey:
+                        result.pqPreKeyRecords = try self.kyberPreKeyStore.generateKyberPreKeyRecords(
+                            count: 100,
+                            signedBy: identityKeyPair,
+                            tx: tx
+                        )
+                    case .lastResortPqPreKey:
+                        result.lastResortPreKey = try self.kyberPreKeyStore.generateLastResortKyberPreKey(
+                            signedBy: identityKeyPair,
+                            tx: tx
+                        )
+                    }
+                })
+            }
         }.then(on: globalQueue()) { (update: Update) -> Promise<Void> in
 
             // If there is nothing to update, skip this step.
@@ -218,11 +270,13 @@ public class PreKeyTask {
                     identityKey: identityKeyPair.publicKey,
                     signedPreKeyRecord: update.signedPreKey,
                     preKeyRecords: update.preKeyRecords,
+                    pqLastResortPreKeyRecord: update.lastResortPreKey,
+                    pqPreKeyRecords: update.pqPreKeyRecords,
                     auth: self.auth
                 )
             }.done(on: globalQueue()) { () in
 
-                self.context.db.write { tx in
+                try self.context.db.write { tx in
                     // save last-resort PQ key here as well (if created)
                     if let signedPreKeyRecord = update.signedPreKey {
 
@@ -238,6 +292,19 @@ public class PreKeyTask {
                         self.signedPreKeyStore.clearPreKeyUpdateFailureCount(tx: tx)
                     }
 
+                    if let lastResortPreKey = update.lastResortPreKey {
+
+                        try self.kyberPreKeyStore.storeLastResortPreKeyAndMarkAsCurrent(
+                            record: lastResortPreKey,
+                            tx: tx
+                        )
+
+                        // TODO(PQXDH): Mark the keys as accepted, and implement cleanup
+                        // mark as accepted?
+                        // self.signedPreKeyStore.cullSignedPreKeyRecords(tx: tx)
+                        // self.signedPreKeyStore.clearPreKeyUpdateFailureCount(tx: tx)
+                    }
+
                     if let newPreKeyRecords = update.preKeyRecords {
 
                         // Store newly added prekeys
@@ -247,8 +314,14 @@ public class PreKeyTask {
                         self.preKeyStore.cullPreKeyRecords(tx: tx)
                     }
 
-                    // Same for PQ keys
+                    if let pqPreKeyRecords = update.pqPreKeyRecords {
+                        try self.kyberPreKeyStore.storeKyberPreKeyRecords(records: pqPreKeyRecords, tx: tx)
+
+                        // TODO(PQXDH): Mark the keys as accepted, and implement cleanup
+                        // self.preKeyStore.cullPreKeyRecords(tx: tx)
+                    }
                 }
+
             }.recover(on: globalQueue()) { error in
                 self.didFail(error: error, update: update)
                 throw error
@@ -273,6 +346,10 @@ public class PreKeyTask {
         self.context.db.write { tx in
             if update.signedPreKey != nil {
                 signedPreKeyStore.incrementPreKeyUpdateFailureCount(tx: tx)
+            }
+
+            if update.lastResortPreKey != nil {
+                // signedPreKeyStore.incrementPreKeyUpdateFailureCount(tx: tx)
             }
         }
     }

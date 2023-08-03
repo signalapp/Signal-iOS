@@ -34,7 +34,7 @@ public class AccountServiceClient: NSObject {
         }
     }
 
-    public func getPreKeysCount(for identity: OWSIdentity) -> Promise<Int> {
+    public func getPreKeysCount(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
         return serviceClient.getAvailablePreKeys(for: identity)
     }
 
@@ -43,6 +43,8 @@ public class AccountServiceClient: NSObject {
         identityKey: IdentityKey,
         signedPreKeyRecord: SignedPreKeyRecord?,
         preKeyRecords: [PreKeyRecord]?,
+        pqLastResortPreKeyRecord: KyberPreKeyRecord?,
+        pqPreKeyRecords: [KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> Promise<Void> {
         return serviceClient.registerPreKeys(
@@ -50,6 +52,8 @@ public class AccountServiceClient: NSObject {
             identityKey: identityKey,
             signedPreKeyRecord: signedPreKeyRecord,
             preKeyRecords: preKeyRecords,
+            pqLastResortPreKeyRecord: pqLastResortPreKeyRecord,
+            pqPreKeyRecords: pqPreKeyRecords,
             auth: auth
         )
     }

@@ -23,8 +23,8 @@ public class FakeAccountServiceClient: AccountServiceClient {
         return Promise { $0.resolve() }
     }
 
-    public override func getPreKeysCount(for identity: OWSIdentity) -> Promise<Int> {
-        return Promise { $0.resolve(0) }
+    public override func getPreKeysCount(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
+        return Promise { $0.resolve((ecCount: 0, pqCount: 0)) }
     }
 
     public override func setPreKeys(
@@ -32,6 +32,8 @@ public class FakeAccountServiceClient: AccountServiceClient {
         identityKey: IdentityKey,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
         preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
+        pqLastResortPreKeyRecord: KyberPreKeyRecord?,
+        pqPreKeyRecords: [KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> Promise<Void> {
         return .value(())

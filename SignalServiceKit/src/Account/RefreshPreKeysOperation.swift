@@ -48,9 +48,9 @@ public class RefreshPreKeysOperation: OWSOperation {
 
         firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             self.messageProcessor.fetchingAndProcessingCompletePromise()
-        }.then(on: DispatchQueue.global()) { () -> Promise<Int> in
+        }.then(on: DispatchQueue.global()) { () -> Promise<(ecCount: Int, pqCount: Int)> in
             self.accountServiceClient.getPreKeysCount(for: self.identity)
-        }.then(on: DispatchQueue.global()) { (preKeysCount: Int) -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { (preKeysCount: Int, _ ) -> Promise<Void> in
             Logger.info("\(self.identity) preKeysCount: \(preKeysCount)")
 
             if !self.shouldRefreshSignedPreKey {
@@ -113,6 +113,8 @@ public class RefreshPreKeysOperation: OWSOperation {
                     identityKey: identityKeyPair.publicKey,
                     signedPreKeyRecord: signedPreKeyRecord,
                     preKeyRecords: newPreKeyRecords,
+                    pqLastResortPreKeyRecord: nil,
+                    pqPreKeyRecords: nil,
                     auth: .implicit()
                 )
             }.done(on: DispatchQueue.global()) { () in

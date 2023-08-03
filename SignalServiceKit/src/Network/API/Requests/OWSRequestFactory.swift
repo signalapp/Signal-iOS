@@ -237,15 +237,24 @@ extension OWSRequestFactory {
         ]
     }
 
+    static func pqPreKeyRequestParameters(_ pqPreKeyRecord: KyberPreKeyRecord) -> [String: Any] {
+        [
+            "keyId": pqPreKeyRecord.id,
+            "publicKey": Data(pqPreKeyRecord.keyPair.publicKey.serialize()).base64EncodedStringWithoutPadding(),
+            "signature": pqPreKeyRecord.signature.base64EncodedStringWithoutPadding()
+        ]
+    }
+
     /// If a username and password are both provided, those are used for the request's
     /// Authentication header. Otherwise, the default header is used (whatever's on
     /// TSAccountManager).
-    @objc
     static func registerPrekeysRequest(
         identity: OWSIdentity,
         identityKey: IdentityKey,
         signedPreKeyRecord: SignedPreKeyRecord?,
         prekeyRecords: [PreKeyRecord]?,
+        pqLastResortPreKeyRecord: KyberPreKeyRecord?,
+        pqPreKeyRecords: [KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> TSRequest {
         owsAssertDebug(identityKey.count > 0)
@@ -263,6 +272,12 @@ extension OWSRequestFactory {
         }
         if let prekeyRecords {
             parameters["preKeys"] = prekeyRecords.map { self.preKeyRequestParameters($0) }
+        }
+        if let pqLastResortPreKeyRecord {
+            parameters["pqLastResortPreKey"] = pqPreKeyRequestParameters(pqLastResortPreKeyRecord)
+        }
+        if let pqPreKeyRecords {
+            parameters["pqPreKeys"] = pqPreKeyRecords.map { self.pqPreKeyRequestParameters($0) }
         }
 
         let request = TSRequest(

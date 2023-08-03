@@ -81,6 +81,17 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 
 - (NSArray<PreKeyRecord *> *)generatePreKeyRecords
 {
+    __block NSArray *preKeyRecords;
+
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        preKeyRecords = [self generatePreKeyRecordsWithTransaction:transaction];
+    });
+
+    return preKeyRecords;
+}
+
+- (NSArray<PreKeyRecord *> *)generatePreKeyRecordsWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
     NSMutableArray *preKeyRecords = [NSMutableArray array];
 
     @synchronized(self) {
@@ -97,9 +108,7 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
             preKeyId++;
         }
 
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            [self.metadataStore setInt:preKeyId key:TSNextPrekeyIdKey transaction:transaction];
-        });
+        [self.metadataStore setInt:preKeyId key:TSNextPrekeyIdKey transaction:transaction];
     }
     return preKeyRecords;
 }
