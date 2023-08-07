@@ -546,9 +546,38 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
-                           thread: TSThread,
-                           transaction: SDSAnyReadTransaction) {
+    public func notifyUser(
+        forIncomingMessage incomingMessage: TSIncomingMessage,
+        thread: TSThread,
+        transaction: SDSAnyReadTransaction
+    ) {
+        notifyUserInternal(
+            forIncomingMessage: incomingMessage,
+            editTarget: nil,
+            thread: thread,
+            transaction: transaction
+        )
+    }
+
+    public func notifyUser(
+        forIncomingMessage incomingMessage: TSIncomingMessage,
+        editTarget: TSIncomingMessage,
+        thread: TSThread,
+        transaction: SDSAnyReadTransaction
+    ) {
+        notifyUserInternal(
+            forIncomingMessage: incomingMessage,
+            editTarget: editTarget,
+            thread: thread,
+            transaction: transaction
+        )
+    }
+
+    private func notifyUserInternal(
+        forIncomingMessage incomingMessage: TSIncomingMessage,
+        editTarget: TSIncomingMessage?,
+        thread: TSThread,
+        transaction: SDSAnyReadTransaction) {
 
         guard canNotify(for: incomingMessage, thread: thread, transaction: transaction) else {
             if DebugFlags.internalLogging {
@@ -644,15 +673,28 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         performNotificationActionAsync { completion in
-            let sound = self.requestSound(thread: thread)
-            self.presenter.notify(category: category,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                threadIdentifier: threadIdentifier,
-                                userInfo: userInfo,
-                                interaction: interaction,
-                                sound: sound,
-                                completion: completion)
+            let sound = (editTarget != nil) ? nil : self.requestSound(thread: thread)
+            let notify = {
+                self.presenter.notify(
+                    category: category,
+                    title: notificationTitle,
+                    body: notificationBody,
+                    threadIdentifier: threadIdentifier,
+                    userInfo: userInfo,
+                    interaction: interaction,
+                    sound: sound,
+                    completion: completion
+                )
+            }
+
+            if let editTarget {
+                self.presenter.cancelNotifications(
+                    messageIds: [editTarget.uniqueId],
+                    completion: notify
+                )
+            } else {
+               notify()
+            }
         }
     }
 

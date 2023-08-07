@@ -13,6 +13,13 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
         Logger.warn("skipping notification for: \(incomingMessage.description)")
     }
 
+    public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
+                           editTarget: TSIncomingMessage,
+                           thread: TSThread,
+                           transaction: SDSAnyReadTransaction) {
+        Logger.warn("skipping notification for: \(incomingMessage.description)")
+    }
+
     public func notifyUser(forReaction reaction: OWSReaction,
                            onOutgoingMessage message: TSOutgoingMessage,
                            thread: TSThread,

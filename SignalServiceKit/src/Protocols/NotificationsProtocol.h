@@ -26,6 +26,12 @@ NS_ASSUME_NONNULL_BEGIN
                          transaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(notifyUser(forIncomingMessage:thread:transaction:));
 
+- (void)notifyUserForIncomingMessage:(TSIncomingMessage *)incomingMessage
+                          editTarget:(TSIncomingMessage *)editTarget
+                              thread:(TSThread *)thread
+                         transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(notifyUser(forIncomingMessage:editTarget:thread:transaction:));
+
 - (void)notifyUserForReaction:(OWSReaction *)reaction
             onOutgoingMessage:(TSOutgoingMessage *)message
                        thread:(TSThread *)thread

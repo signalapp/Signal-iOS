@@ -496,6 +496,18 @@ extension OWSMessageManager {
                 messageUniqueId: message.uniqueId,
                 transaction: tx
             )
+
+            if
+                case let .incomingMessage(incoming) = targetMessage,
+                let message = message as? TSIncomingMessage
+            {
+                self.notificationsManager.notifyUser(
+                    forIncomingMessage: message,
+                    editTarget: incoming.message,
+                    thread: thread,
+                    transaction: tx
+                )
+            }
         }
 
         return .success
