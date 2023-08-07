@@ -412,7 +412,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(sqlClauseForAllUnreadInteractions())
+            AND \(sqlClauseForAllUnreadInteractions(excludeReadEdits: true))
             ORDER BY \(interactionColumn: .id)
         """
 

@@ -165,9 +165,9 @@ public class OutgoingEditMessage: TSOutgoingMessage {
             uniqueId: editedMessage.uniqueId,
             transaction: transaction
         ) {
-            editedMessage .updateWith(
-                recipientAddressStates: self.recipientAddressStates,
-                transaction: transaction
+            editedMessage.anyUpdateOutgoingMessage(
+                transaction: transaction,
+                block: block
             )
         }
     }

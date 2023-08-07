@@ -70,7 +70,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             contactShare: message.contactShare,
             linkPreview: message.linkPreview,
             messageSticker: message.messageSticker,
-            read: isLatestRevision ? message.wasRead : true,
+            read: isLatestRevision ? false : true,
             serverTimestamp: message.serverTimestamp,
             serverDeliveryTimestamp: message.serverDeliveryTimestamp,
             serverGuid: message.serverGuid,
