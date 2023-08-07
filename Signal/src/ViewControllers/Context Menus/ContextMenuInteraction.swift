@@ -202,18 +202,18 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
 
         if animated {
             contextMenuController?.animateOut({
-                completion()
                 self.delegate?.contextMenuInteraction(self, didEndForConfiguration: configuration)
                 self.contextMenuController?.view.removeFromSuperview()
                 self.contextMenuController = nil
+                completion()
             })
         } else {
             targetedPreview?.view.isHidden = false
             targetedPreview?.auxiliaryView?.isHidden = false
             delegate?.contextMenuInteraction(self, didEndForConfiguration: configuration)
-            completion()
             self.contextMenuController?.view.removeFromSuperview()
             self.contextMenuController = nil
+            completion()
         }
     }
 
