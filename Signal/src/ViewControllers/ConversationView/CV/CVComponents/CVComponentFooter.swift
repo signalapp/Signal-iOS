@@ -21,7 +21,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         let statusIndicator: StatusIndicator?
         let accessibilityLabel: String?
         let hasTapForMore: Bool
-        let wasEdited: Bool
+        let displayEditedLabel: Bool
 
         struct Expiration: Equatable {
             let expirationTimestamp: UInt64
@@ -41,8 +41,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     public var hasTapForMore: Bool {
         footerState.hasTapForMore
     }
-    public var wasEdited: Bool {
-        footerState.wasEdited
+    public var displayEditedLabel: Bool {
+        footerState.displayEditedLabel
     }
     private var expiration: State.Expiration? {
         footerState.expiration
@@ -129,7 +129,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
         }
 
-        if wasEdited {
+        if displayEditedLabel {
             let editedLabel = componentView.editedLabel
             editedLabelConfig(textColor: textColor).applyForRendering(label: editedLabel)
             innerViews.append(editedLabel)
@@ -260,7 +260,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         }
 
         var expiration: State.Expiration?
-        var wasEdited: Bool = false
+        var displayEditedLabel: Bool = false
         if let message = interaction as? TSMessage {
             if message.hasPerConversationExpiration {
                 expiration = State.Expiration(
@@ -271,10 +271,10 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
             if !message.wasRemotelyDeleted {
                 switch message.editState {
-                case .latestRevisionRead, .latestRevisionUnread, .pastRevision:
-                    wasEdited = true
-                case .none:
-                    wasEdited = false
+                case .latestRevisionRead, .latestRevisionUnread:
+                    displayEditedLabel = true
+                case .none, .pastRevision:
+                    displayEditedLabel = false
                 }
             }
         }
@@ -284,7 +284,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             statusIndicator: statusIndicator,
             accessibilityLabel: accessibilityLabel,
             hasTapForMore: hasTapForMore,
-            wasEdited: wasEdited,
+            displayEditedLabel: displayEditedLabel,
             expiration: expiration
         )
     }
@@ -369,7 +369,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         // We always use a stretching spacer.
         outerSubviewInfos.append(ManualStackSubviewInfo.empty)
 
-        if wasEdited {
+        if displayEditedLabel {
             let editedLabelConfig = self.editedLabelConfig(textColor: .black)
             let editedLabelSize = CVText.measureLabel(config: editedLabelConfig, maxWidth: maxWidth)
             innerSubviewInfos.append(editedLabelSize.asManualSubviewInfo(hasFixedWidth: true))
@@ -428,7 +428,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 return true
             }
         }
-        if wasEdited {
+        if displayEditedLabel {
             let editedLabel = componentView.editedLabel
             let location = sender.location(in: editedLabel)
             if editedLabel.bounds.contains(location) {
