@@ -320,13 +320,16 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                 // ...and always show the "tap to read more" footer.
                 let nextReceiptStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: nextOutgoingMessage)
                 let nextTimestampText = DateUtil.formatTimestampShort(nextOutgoingMessage.timestamp)
-                itemViewState.shouldHideFooter = (timestampText == nextTimestampText &&
-                                                    receiptStatus == nextReceiptStatus &&
-                                                    outgoingMessage.messageState != .failed &&
-                                                    outgoingMessage.messageState != .sending &&
-                                                    outgoingMessage.messageState != .pending &&
-                                                    !isDisappearingMessage &&
-                                                    !hasTapForMore)
+                itemViewState.shouldHideFooter = (
+                    timestampText == nextTimestampText &&
+                    receiptStatus == nextReceiptStatus &&
+                    outgoingMessage.messageState != .failed &&
+                    outgoingMessage.messageState != .sending &&
+                    outgoingMessage.messageState != .pending &&
+                    outgoingMessage.editState == .none &&
+                    !isDisappearingMessage &&
+                    !hasTapForMore
+                )
             } else {
                 itemViewState.isLastInCluster = true
             }
