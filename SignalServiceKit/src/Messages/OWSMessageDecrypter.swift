@@ -640,7 +640,10 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         case SMKSecretSessionCipherError.selfSentMessage:
             // Self-sent messages can be safely discarded. Return as-is.
             return error
-        case is SignalError, SSKPreKeyStore.Error.noPreKeyWithId(_), SSKSignedPreKeyStore.Error.noPreKeyWithId(_):
+        case is SignalError,
+            SSKPreKeyStore.Error.noPreKeyWithId(_),
+            SSKSignedPreKeyStore.Error.noPreKeyWithId(_),
+            SSKKyberPreKeyStore.Error.noKyberPreKeyWithId(_):
             return processError(
                 error,
                 validatedEnvelope: validatedEnvelope,
