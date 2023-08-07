@@ -114,6 +114,9 @@ class DebugUIMisc: DebugUIPage, Dependencies {
                     preKeyManagerImpl.checkPreKeysImmediately(tx: tx.asV2Read)
                 }
             }),
+            OWSTableItem(title: "Refresh prekeys (force update)", actionBlock: {
+                _ = DependenciesBridge.shared.preKeyManager.createPreKeys(auth: .implicit())
+            }),
             OWSTableItem(title: "Remove All Prekeys", actionBlock: {
                 DebugUIMisc.removeAllPrekeys()
             }),
@@ -349,11 +352,13 @@ class DebugUIMisc: DebugUIPage, Dependencies {
             signalProtocolStoreACI.sessionStore.removeAll(tx: transaction.asV2Write)
             signalProtocolStoreACI.signedPreKeyStore.removeAll(tx: transaction.asV2Write)
             signalProtocolStoreACI.preKeyStore.removeAll(tx: transaction.asV2Write)
+            signalProtocolStoreACI.kyberPreKeyStore.removeAll(tx: transaction.asV2Write)
 
             let signalProtocolStorePNI = signalProtoclStoreManager.signalProtocolStore(for: .pni)
             signalProtocolStorePNI.sessionStore.removeAll(tx: transaction.asV2Write)
             signalProtocolStorePNI.signedPreKeyStore.removeAll(tx: transaction.asV2Write)
             signalProtocolStorePNI.preKeyStore.removeAll(tx: transaction.asV2Write)
+            signalProtocolStorePNI.kyberPreKeyStore.removeAll(tx: transaction.asV2Write)
         }
     }
 

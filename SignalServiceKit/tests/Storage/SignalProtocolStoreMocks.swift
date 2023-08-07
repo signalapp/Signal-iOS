@@ -282,4 +282,6 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
     func getLastSuccessfulPreKeyRotationDate(tx: SignalServiceKit.DBReadTransaction) -> Date? {
         return lastPreKeyRotation
     }
+
+    func removeAll(tx: DBWriteTransaction) { }
 }
