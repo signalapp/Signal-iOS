@@ -615,6 +615,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
         editableBody.beginEditing()
         editableBody.toggleStyle(style, in: selectedRange)
         editableBody.endEditing()
+        textViewDidChange(self)
     }
 
     @objc
@@ -627,6 +628,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
         editableBody.beginEditing()
         editableBody.clearFormatting(in: selectedRange)
         editableBody.endEditing()
+        textViewDidChange(self)
     }
 
     // MARK: - Text Container Insets

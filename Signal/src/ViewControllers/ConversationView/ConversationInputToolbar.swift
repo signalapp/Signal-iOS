@@ -670,6 +670,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         lazy var sendButton: UIButton = {
             let button = UIButton(type: .system)
             button.accessibilityLabel = MessageStrings.sendButton
+            button.adjustsImageWhenDisabled = true
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "sendButton")
             button.setImage(UIImage(imageLiteralResourceName: "send-blue-28"), for: .normal)
             button.bounds.size = CGSize(width: 48, height: LayoutMetrics.minToolbarItemHeight)
@@ -978,11 +979,13 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private func showEditMessageView(animated: Bool) {
        toggleMessageComponentVisibility(hide: false, component: editMessageLabelWrapper, animated: animated)
+        rightEdgeControlsView.sendButton.isEnabled = false
     }
 
     private func hideEditMessageView(animated: Bool) {
         owsAssertDebug(editTarget == nil)
         toggleMessageComponentVisibility(hide: true, component: editMessageLabelWrapper, animated: animated)
+        rightEdgeControlsView.sendButton.isEnabled = true
     }
 
     // MARK: Quoted Reply
@@ -2131,6 +2134,10 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
         updateHeightWithTextView(textView)
         ensureButtonVisibility(withAnimation: true, doLayout: true)
         updateInputLinkPreview()
+
+        if editTarget != nil {
+            rightEdgeControlsView.sendButton.isEnabled = textView.hasText
+        }
     }
 
     func textViewDidChangeSelection(_ textView: UITextView) { }
