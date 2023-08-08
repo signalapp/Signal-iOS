@@ -4,6 +4,7 @@
 //
 
 import CoreMedia
+import SignalMessaging
 import SignalServiceKit
 import SignalUI
 import YYImage
@@ -40,7 +41,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     // MARK: - Layout
 
-    private var lastKnownScrollViewWidth: CGFloat = 0
+    private var lastKnownScrollViewSafeAreaSize: CGSize = .zero
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: view.bounds)
         scrollView.delegate = self
@@ -89,7 +90,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
             mediaSize = .zero
         }
 
-        let scrollViewSize = scrollView.bounds.size
+        let scrollViewSize = scrollView.safeAreaLayoutGuide.layoutFrame.size
 
         guard mediaSize.isNonEmpty && scrollViewSize.isNonEmpty else {
             // Invalid content or view state.
@@ -108,8 +109,8 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
         // Center the media view in the scroll view.
         let mediaViewSize = mediaView.frame.size
-        let yOffset = max(0, (scrollViewSize.height - mediaViewSize.height) / 2)
-        let xOffset = max(0, (scrollViewSize.width - mediaViewSize.width) / 2)
+        let yOffset = max(0, (scrollView.bounds.height - mediaViewSize.height) / 2)
+        let xOffset = max(0, (scrollView.bounds.width - mediaViewSize.width) / 2)
         mediaViewTopConstraint?.constant = yOffset
         mediaViewBottomConstraint?.constant = yOffset
         mediaViewLeadingConstraint?.constant = xOffset
@@ -129,6 +130,17 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         } else if scrollView.zoomScale > maxScale {
             scrollView.zoomScale = maxScale
         }
+    }
+
+    private func resetScrollViewZoomIfNecessary() {
+        // In iOS multi-tasking, the size of root view (and hence the scroll view)
+        // is set later, after viewWillAppear, etc.  Therefore we need to reset the
+        // zoomScale to the default whenever the scrollView width changes.
+        let currentScrollViewSize = scrollView.safeAreaLayoutGuide.layoutFrame.size
+        if !(currentScrollViewSize - lastKnownScrollViewSafeAreaSize).asPoint.fuzzyEquals(.zero, tolerance: 0.001) {
+            scrollView.zoomScale = scrollView.minimumZoomScale
+        }
+        lastKnownScrollViewSafeAreaSize = currentScrollViewSize
     }
 
     func zoomOut(animated: Bool) {
@@ -311,17 +323,8 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         super.viewDidLayoutSubviews()
 
         updateZoomScaleAndConstraints()
-
-        // In iOS multi-tasking, the size of root view (and hence the scroll view)
-        // is set later, after viewWillAppear, etc.  Therefore we need to reset the
-        // zoomScale to the default whenever the scrollView width changes.
-        let tolerance: CGFloat = 0.001
-        let currentScrollViewWidth = scrollView.frame.width
-        if abs(lastKnownScrollViewWidth - currentScrollViewWidth) > tolerance {
-            scrollView.zoomScale = scrollView.minimumZoomScale
-        }
-        lastKnownScrollViewWidth = currentScrollViewWidth
-    }
+        resetScrollViewZoomIfNecessary()
+   }
 
     // MARK: - Helpers
 
