@@ -132,9 +132,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let recipientHiding = false
 
-    public static let useUpdatePreKeyOperations = build.includes(.dev)
+    public static let useUpdatePreKeyOperations = build.includes(.internal)
 
-    public static let enablePQXDH = false
+    public static let enablePQXDH = build.includes(.internal)
 }
 
 // MARK: -
