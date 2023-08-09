@@ -118,6 +118,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         self.topHeader = searchBarWrapper
         self.bottomFooter = footerView
         selection.delegate = self
+        contactsViewHelper.addObserver(self)
     }
 
     private var approvalMode: ApprovalMode {
@@ -1580,5 +1581,12 @@ private struct ConversationCollection {
                 return false
             }
         }
+    }
+}
+
+extension ConversationPickerViewController: ContactsViewHelperObserver {
+    public func contactsViewHelperDidUpdateContacts() {
+        /// Triggers subsequent call to `updateTableContents`.
+        self.conversationCollection = self.buildConversationCollection()
     }
 }
