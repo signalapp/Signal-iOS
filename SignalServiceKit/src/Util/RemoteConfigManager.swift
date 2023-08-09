@@ -272,6 +272,10 @@ public class RemoteConfig: BaseFlags {
         return false
     }
 
+    public static var maxAttachmentDownloadSizeBytes: UInt {
+        return getUIntValue(forFlag: .maxAttachmentDownloadSizeBytes, defaultValue: 100 * 1024 * 1024)
+    }
+
     // MARK: UInt values
 
     private static func getUIntValue(
@@ -617,6 +621,7 @@ private struct Flags {
         case maxGroupCallRingSize
         case minNicknameLength
         case maxNicknameLength
+        case maxAttachmentDownloadSizeBytes
     }
 
     // We filter the received config down to just the supported values.
@@ -658,6 +663,7 @@ private extension FlagType {
         case "maxNicknameLength": return "global.nicknames.max"
         case "safetyNumberAci": return "global.safetyNumberAci"
         case "cdsDisableCompatibilityMode": return "cds.disableCompatibilityMode"
+        case "maxAttachmentDownloadSizeBytes": return "global.attachments.maxBytes"
         default: return Flags.prefix + rawValue
         }
     }

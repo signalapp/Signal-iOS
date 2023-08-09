@@ -1399,16 +1399,20 @@ public extension OWSAttachmentDownloads {
                              autoreleaseFrequency: .workItem)
     }()
 
-    // We want to avoid large downloads from a compromised or buggy service.
-    private static let maxDownloadSize = 150 * 1024 * 1024
-
     private func retrieveAttachment(job: Job,
                                     attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "retrieveAttachment")
 
+        // We want to avoid large downloads from a compromised or buggy service.
+        let maxDownloadSize = RemoteConfig.maxAttachmentDownloadSizeBytes
+
         return firstly(on: Self.serialQueue) { () -> Promise<URL> in
-            self.download(job: job, attachmentPointer: attachmentPointer)
+            self.download(
+                job: job,
+                attachmentPointer: attachmentPointer,
+                maxDownloadSizeBytes: maxDownloadSize
+            )
         }.then(on: Self.serialQueue) { (encryptedFileUrl: URL) -> Promise<TSAttachmentStream> in
             Self.decrypt(encryptedFileUrl: encryptedFileUrl,
                          attachmentPointer: attachmentPointer)
@@ -1432,18 +1436,28 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    private func download(job: Job, attachmentPointer: TSAttachmentPointer) -> Promise<URL> {
+    private func download(
+        job: Job,
+        attachmentPointer: TSAttachmentPointer,
+        maxDownloadSizeBytes: UInt
+    ) -> Promise<URL> {
 
         let downloadState = DownloadState(job: job, attachmentPointer: attachmentPointer)
 
         return firstly(on: Self.serialQueue) { () -> Promise<URL> in
-            self.downloadAttempt(downloadState: downloadState)
+            self.downloadAttempt(
+                downloadState: downloadState,
+                maxDownloadSizeBytes: maxDownloadSizeBytes
+            )
         }
     }
 
-    private func downloadAttempt(downloadState: DownloadState,
-                                 resumeData: Data? = nil,
-                                 attemptIndex: UInt = 0) -> Promise<URL> {
+    private func downloadAttempt(
+        downloadState: DownloadState,
+        maxDownloadSizeBytes: UInt,
+        resumeData: Data? = nil,
+        attemptIndex: UInt = 0
+    ) -> Promise<URL> {
 
         let (promise, future) = Promise<URL>.pending()
 
@@ -1456,10 +1470,13 @@ public extension OWSAttachmentDownloads {
             ]
 
             let progress = { (task: URLSessionTask, progress: Progress) in
-                self.handleDownloadProgress(downloadState: downloadState,
-                                            task: task,
-                                            progress: progress,
-                                            future: future)
+                self.handleDownloadProgress(
+                    downloadState: downloadState,
+                    maxDownloadSizeBytes: maxDownloadSizeBytes,
+                    task: task,
+                    progress: progress,
+                    future: future
+                )
             }
 
             if let resumeData = resumeData {
@@ -1481,8 +1498,8 @@ public extension OWSAttachmentDownloads {
             guard let fileSize = OWSFileSystem.fileSize(of: downloadUrl) else {
                 throw OWSAssertionError("Could not determine attachment file size.")
             }
-            guard fileSize.int64Value <= Self.maxDownloadSize else {
-                throw OWSAssertionError("Attachment download length exceeds max size.")
+            guard fileSize.int64Value <= maxDownloadSizeBytes else {
+                throw OWSGenericError("Attachment download length exceeds max size.")
             }
             return downloadUrl
         }.recover(on: Self.serialQueue) { (error: Error) -> Promise<URL> in
@@ -1498,9 +1515,18 @@ public extension OWSAttachmentDownloads {
                 }.then { () -> Promise<URL> in
                     if let resumeData = (error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data,
                        !resumeData.isEmpty {
-                        return self.downloadAttempt(downloadState: downloadState, resumeData: resumeData, attemptIndex: attemptIndex + 1)
+                        return self.downloadAttempt(
+                            downloadState: downloadState,
+                            maxDownloadSizeBytes: maxDownloadSizeBytes,
+                            resumeData: resumeData,
+                            attemptIndex: attemptIndex + 1
+                        )
                     } else {
-                        return self.downloadAttempt(downloadState: downloadState, attemptIndex: attemptIndex + 1)
+                        return self.downloadAttempt(
+                            downloadState: downloadState,
+                            maxDownloadSizeBytes: maxDownloadSizeBytes,
+                            attemptIndex: attemptIndex + 1
+                        )
                     }
                 }
             } else {
@@ -1536,6 +1562,7 @@ public extension OWSAttachmentDownloads {
     }
 
     private func handleDownloadProgress(downloadState: DownloadState,
+                                        maxDownloadSizeBytes: UInt,
                                         task: URLSessionTask,
                                         progress: Progress,
                                         future: Future<URL>) {
@@ -1552,8 +1579,8 @@ public extension OWSAttachmentDownloads {
             return
         }
 
-        guard progress.totalUnitCount <= Self.maxDownloadSize,
-              progress.completedUnitCount <= Self.maxDownloadSize else {
+        guard progress.totalUnitCount <= maxDownloadSizeBytes,
+              progress.completedUnitCount <= maxDownloadSizeBytes else {
             // A malicious service might send a misleading content length header,
             // so....
             //
