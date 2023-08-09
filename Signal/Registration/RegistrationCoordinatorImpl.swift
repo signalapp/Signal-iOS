@@ -2825,7 +2825,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         if shouldSyncPreKeys() {
             return deps.preKeyManager
-                .createPreKeys(auth: accountIdentity.chatServiceAuth)
+                .legacy_createPreKeys(auth: accountIdentity.chatServiceAuth)
                 .then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep> in
                     guard let self else {
                         return unretainedSelfError()

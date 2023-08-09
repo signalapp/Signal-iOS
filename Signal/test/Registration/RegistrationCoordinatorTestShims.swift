@@ -168,7 +168,7 @@ public class _RegistrationCoordinator_OWS2FAManagerMock: _RegistrationCoordinato
 public class _RegistrationCoordinator_PreKeyManagerMock: MockPreKeyManager {
     public var createPreKeysMock: ((ChatServiceAuth) -> Promise<Void>)?
 
-    override public func createPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
+    override public func legacy_createPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
         return createPreKeysMock!(auth)
     }
 }

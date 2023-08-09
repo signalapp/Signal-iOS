@@ -141,7 +141,7 @@ public class AccountManager: NSObject, Dependencies {
 
             return self.accountServiceClient.updatePrimaryDeviceAccountAttributes()
         }.then {
-            DependenciesBridge.shared.preKeyManager.createPreKeys(auth: .implicit())
+            DependenciesBridge.shared.preKeyManager.legacy_createPreKeys(auth: .implicit())
         }.done {
             self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
         }.then { _ -> Promise<Void> in
@@ -395,7 +395,7 @@ public class AccountManager: NSObject, Dependencies {
                                                                transaction: transaction)
             }
         }.then { _ -> Promise<Void> in
-            DependenciesBridge.shared.preKeyManager.createPreKeys(auth: .implicit())
+            DependenciesBridge.shared.preKeyManager.legacy_createPreKeys(auth: .implicit())
         }.then { _ -> Promise<Void> in
             return self.syncPushTokens().recover { error in
                 switch error {

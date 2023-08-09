@@ -8,29 +8,12 @@ import Foundation
 extension PreKey {
     public enum Manager {
         public enum Shims {
-            public typealias TSAccountManager = _PreKeyManager_TSAccountManagerShim
             public typealias MessageProcessor = _PreKeyManager_MessageProcessorShim
         }
 
         public enum Wrappers {
-            public typealias TSAccountManager = _PreKeyManager_TSAccountManagerWrapper
             public typealias MessageProcessor = _PreKeyManager_MessageProcessorWrapper
         }
-    }
-}
-
-// MARK: - AccountManager
-
-public protocol _PreKeyManager_TSAccountManagerShim {
-    func isRegisteredAndReady(tx: DBReadTransaction) -> Bool
-}
-
-public class _PreKeyManager_TSAccountManagerWrapper: PreKey.Manager.Shims.TSAccountManager {
-    private let accountManager: TSAccountManager
-    public init(_ accountManager: TSAccountManager) { self.accountManager = accountManager }
-
-    public func isRegisteredAndReady(tx: DBReadTransaction) -> Bool {
-        return accountManager.isRegisteredAndReady(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

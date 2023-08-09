@@ -55,31 +55,43 @@ extension PreKey {
 
         public enum Action {
 
-            // Update the target prekeys if necessary. Passing in
-            // `forceRefresh: true` will have the effect of rotating
-            // all the target keys with new ones.
-            case refresh(Operation.Target, forceRefresh: Bool)
+            // Update the target prekeys if necessary.
+            // Never creates an identity key; fails if none present.
+            case refresh(identity: OWSIdentity, targets: Operation.Target)
 
-            // Create is essentially the same as a force refresh, but allows the
-            // task to create an identity key if missing.
-            case create(Operation.Target)
+            // Update the target prekeys, regardless of their current state.
+            // Never creates an identity key; fails if none present.
+            case rotate(identity: OWSIdentity, targets: Operation.Target)
+
+            // Create pni keys, rotating if they already exist.
+            // May also create the pni identity key if it didn't exist;
+            // if it did the existing key will be reused.
+            case createOrRotatePniKeys(targets: Operation.Target)
+
+            // Update the targeted prekeys, regardless of their current state.
+            // May also create the identity key if it didn't exist;
+            // if it did the existing key will be reused.
+            // TODO: remove this mode, everything that was create should
+            // either use new registration methods or pni methods.
+            case legacy_create(identity: OWSIdentity, targets: Operation.Target)
         }
     }
 }
 
 public class PreKeyOperation: OWSOperation {
-    private let context: PreKeyTask.Context
-    private let preKeyTask: PreKeyTask
+    private let context: PreKeyTasks.Context
+    private let preKeyTask: PreKeyTasks.PreKeyTask
+    private let _didSucceed: () -> Void
 
     public init(
-        for identity: OWSIdentity,
         action: PreKey.Operation.Action,
         auth: ChatServiceAuth = .implicit(),
-        context: PreKeyTask.Context
+        context: PreKeyTasks.Context,
+        didSucceed: @escaping () -> Void
     ) {
         self.context = context
-        self.preKeyTask = PreKeyTask(
-            for: identity,
+        self._didSucceed = didSucceed
+        self.preKeyTask = PreKeyTasks.PreKeyTask(
             action: action,
             auth: auth,
             context: context
@@ -98,6 +110,6 @@ public class PreKeyOperation: OWSOperation {
 
     public override func didSucceed() {
         super.didSucceed()
-        DependenciesBridge.shared.preKeyManager.refreshPreKeysDidSucceed()
+        _didSucceed()
     }
 }

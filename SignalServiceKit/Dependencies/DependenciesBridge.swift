@@ -217,7 +217,6 @@ public class DependenciesBridge {
         )
 
         self.preKeyManager = PreKeyManagerImpl(
-            accountManager: PreKey.Manager.Wrappers.TSAccountManager(tsAccountManager),
             messageProcessor: PreKey.Manager.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
             preKeyOperationFactory: preKeyOperationFactory,
             protocolStoreManager: signalProtocolStoreManager

@@ -114,9 +114,6 @@ class DebugUIMisc: DebugUIPage, Dependencies {
                     preKeyManagerImpl.checkPreKeysImmediately(tx: tx.asV2Read)
                 }
             }),
-            OWSTableItem(title: "Refresh prekeys (force update)", actionBlock: {
-                _ = DependenciesBridge.shared.preKeyManager.createPreKeys(auth: .implicit())
-            }),
             OWSTableItem(title: "Remove All Prekeys", actionBlock: {
                 DebugUIMisc.removeAllPrekeys()
             }),

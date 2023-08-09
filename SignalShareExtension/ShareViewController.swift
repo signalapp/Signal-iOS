@@ -143,7 +143,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // Always check prekeys after app launches, and sometimes check on app activation.
         self.databaseStorage.read { tx in
-            DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx.asV2Read)
+            if TSAccountManager.shared.isRegisteredAndReady(transaction: tx) {
+                DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx.asV2Read)
+            }
         }
 
         // We don't need to use RTCInitializeSSL() in the SAE.

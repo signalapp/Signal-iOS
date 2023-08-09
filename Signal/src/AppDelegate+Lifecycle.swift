@@ -80,7 +80,9 @@ extension AppDelegate {
 
         databaseStorage.read { tx in
             // Always check prekeys after app launches, and sometimes check on app activation.
-            DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx.asV2Read)
+            if TSAccountManager.shared.isRegisteredAndReady(transaction: tx) {
+                DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx.asV2Read)
+            }
         }
 
         if !Self.hasActivated {

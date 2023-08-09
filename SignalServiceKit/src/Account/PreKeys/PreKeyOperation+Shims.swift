@@ -25,7 +25,6 @@ extension PreKey.Operation {
 
 internal protocol _PreKey_AccountManagerShim {
     func isRegisteredAndReady(tx: DBReadTransaction) -> Bool
-    func isPrimaryDevice(tx: DBReadTransaction) -> Bool
 }
 
 internal class _PreKey_AccountManagerWrapper: _PreKey_AccountManagerShim {
@@ -36,10 +35,6 @@ internal class _PreKey_AccountManagerWrapper: _PreKey_AccountManagerShim {
 
     func isRegisteredAndReady(tx: DBReadTransaction) -> Bool {
         return accountManager.isRegisteredAndReady(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    func isPrimaryDevice(tx: DBReadTransaction) -> Bool {
-        return accountManager.isPrimaryDevice(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

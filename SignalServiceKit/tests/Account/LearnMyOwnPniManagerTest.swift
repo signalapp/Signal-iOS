@@ -336,7 +336,7 @@ private class PreKeyManagerMock: MockPreKeyManager {
         return true
     }
 
-    override func createPreKeys(identity: OWSIdentity) -> Promise<Void> {
+    override func createOrRotatePNIPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
         guard createKeysFuture == nil else {
             XCTFail("Creation already in-flight!")
             return Promise(error: OWSGenericError("Creation already in-flight!"))

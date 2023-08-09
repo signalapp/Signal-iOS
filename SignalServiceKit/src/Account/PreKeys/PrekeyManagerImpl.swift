@@ -37,18 +37,15 @@ public class PreKeyManagerImpl: PreKeyManager {
         return queue
     }()
 
-    private let accountManager: PreKey.Manager.Shims.TSAccountManager
     private let messageProcessor: PreKey.Manager.Shims.MessageProcessor
     private let preKeyOperationFactory: PreKeyOperationFactory
     private let protocolStoreManager: SignalProtocolStoreManager
 
     init(
-        accountManager: PreKey.Manager.Shims.TSAccountManager,
         messageProcessor: PreKey.Manager.Shims.MessageProcessor,
         preKeyOperationFactory: PreKeyOperationFactory,
         protocolStoreManager: SignalProtocolStoreManager
     ) {
-        self.accountManager = accountManager
         self.messageProcessor = messageProcessor
         self.preKeyOperationFactory = preKeyOperationFactory
         self.protocolStoreManager = protocolStoreManager
@@ -110,7 +107,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         }
     }
 
-    public func refreshPreKeysDidSucceed() {
+    private func refreshPreKeysDidSucceed() {
         lastPreKeyCheckTimestamp = Date()
     }
 
@@ -120,8 +117,7 @@ public class PreKeyManagerImpl: PreKeyManager {
 
     fileprivate func checkPreKeys(shouldThrottle: Bool, tx: DBReadTransaction) {
         guard
-            CurrentAppContext().isMainAppAndActive,
-            accountManager.isRegisteredAndReady(tx: tx)
+            CurrentAppContext().isMainAppAndActive
         else {
             return
         }
@@ -145,29 +141,14 @@ public class PreKeyManagerImpl: PreKeyManager {
         }()
 
         func addOperation(for identity: OWSIdentity) {
-            var refreshOperation: OWSOperation?
-            if shouldRefreshOneTimePrekeys {
-                let refreshOp = preKeyOperationFactory.refreshPreKeysOperation(
-                    for: identity,
-                    shouldRefreshSignedPreKey: true
-                )
-                refreshOp.addDependency(messageProcessingOperation)
-                operations.append(refreshOp)
-                refreshOperation = refreshOp
-            }
-
-            // Order matters here - if we rotated *before* refreshing, we'd risk uploading
-            // two SPK's in a row since RefreshPreKeysOperation can also upload a new SPK.
-            let rotationOperation = preKeyOperationFactory.rotateSignedPreKeyOperation(
+            let refreshOp = preKeyOperationFactory.refreshPreKeysOperation(
                 for: identity,
-                shouldSkipIfRecent: shouldThrottle
+                shouldRefreshOneTimePreKeys: shouldRefreshOneTimePrekeys,
+                shouldRefreshSignedPreKeys: true,
+                didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
             )
-
-            rotationOperation.addDependency(messageProcessingOperation)
-            if let refreshOperation {
-                rotationOperation.addDependency(refreshOperation)
-            }
-            operations.append(rotationOperation)
+            refreshOp.addDependency(messageProcessingOperation)
+            operations.append(refreshOp)
         }
 
         addOperation(for: .aci)
@@ -176,32 +157,52 @@ public class PreKeyManagerImpl: PreKeyManager {
         Self.operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 
-    public func createPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
-        let aciOp = preKeyOperationFactory.createPreKeysOperation(for: .aci, auth: auth)
-        let pniOp = preKeyOperationFactory.createPreKeysOperation(for: .pni, auth: auth)
+    public func legacy_createPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
+        let aciOp = preKeyOperationFactory.legacy_createPreKeysOperation(
+            for: .aci,
+            auth: auth,
+            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+        )
+        let pniOp = preKeyOperationFactory.legacy_createPreKeysOperation(
+            for: .pni,
+            auth: auth,
+            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+        )
         return runPreKeyOperations([aciOp, pniOp])
     }
 
-    public func createPreKeys(identity: OWSIdentity) -> Promise<Void> {
-        let operation = preKeyOperationFactory.createPreKeysOperation(for: identity, auth: .implicit())
+    public func createOrRotatePNIPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
+        let operation = preKeyOperationFactory.createOrRotatePNIPreKeysOperation(
+            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+        )
         return runPreKeyOperations([operation])
     }
 
     public func rotateSignedPreKeys() -> Promise<Void> {
-        let aciOp = preKeyOperationFactory.rotateSignedPreKeyOperation(for: .aci, shouldSkipIfRecent: false)
-        let pniOp = preKeyOperationFactory.rotateSignedPreKeyOperation(for: .pni, shouldSkipIfRecent: false)
+        let aciOp = preKeyOperationFactory.rotateSignedPreKeyOperation(
+            for: .aci,
+            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+        )
+        let pniOp = preKeyOperationFactory.rotateSignedPreKeyOperation(
+            for: .pni,
+            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+        )
         return runPreKeyOperations([aciOp, pniOp])
     }
 
     /// Refresh one-time pre-keys for the given identity, and optionally refresh
     /// the signed pre-key.
+    /// TODO: callers of this method _feel_ like they actually want a rotation (forced) not
+    /// a refresh (conditional). TBD.
    public func refreshOneTimePreKeys(
         forIdentity identity: OWSIdentity,
         alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
     ) {
         let refreshOperation = preKeyOperationFactory.refreshPreKeysOperation(
             for: identity,
-            shouldRefreshSignedPreKey: shouldRefreshSignedPreKey
+            shouldRefreshOneTimePreKeys: true,
+            shouldRefreshSignedPreKeys: shouldRefreshSignedPreKey,
+            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
         )
 
         Self.operationQueue.addOperation(refreshOperation)

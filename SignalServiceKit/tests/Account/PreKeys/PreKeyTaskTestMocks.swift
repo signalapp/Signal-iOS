@@ -28,9 +28,7 @@ extension PreKey.Operation {
 //
 class _PreKey_AccountManagerMock: PreKey.Operation.Shims.AccountManager {
     var isRegisteredAndReady: Bool = true
-    var isPrimaryDevice: Bool = true
     func isRegisteredAndReady(tx: SignalServiceKit.DBReadTransaction) -> Bool { isRegisteredAndReady }
-    func isPrimaryDevice(tx: SignalServiceKit.DBReadTransaction) -> Bool { isPrimaryDevice }
 }
 
 class _PreKey_IdentityManagerMock: PreKey.Operation.Shims.IdentityManager {

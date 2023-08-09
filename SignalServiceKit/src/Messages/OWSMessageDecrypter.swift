@@ -436,7 +436,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 )
                 sendReactiveProfileKeyIfNecessary(address: SignalServiceAddress(sourceAci), transaction: transaction)
             case .preKey:
-                DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction.asV2Read)
+                if tsAccountManager.isRegisteredAndReady(transaction: transaction) {
+                    DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction.asV2Read)
+                }
                 let message = try PreKeySignalMessage(bytes: encryptedData)
                 plaintext = try signalDecryptPreKey(
                     message: message,
@@ -598,7 +600,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             )
         }
 
-        if decryptResult.messageType == .prekey {
+        if decryptResult.messageType == .prekey, tsAccountManager.isRegisteredAndReady(transaction: transaction) {
             DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction.asV2Read)
         }
 
