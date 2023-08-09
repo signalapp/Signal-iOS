@@ -3641,10 +3641,10 @@
 "MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Encaminhar mensagens selecionadas";
 
 /* A label for a button that will open an address in Apple Maps. \"Maps\" is a proper noun referring to the Apple Maps app, and should be translated as such. */
-"MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "Open in Maps";
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "Abrir no Mapas";
 
 /* A label for a button that will open an address in Google Maps. \"Google Maps\" is a proper noun referring to the Google Maps app, and should be translated as such. */
-"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "Open in Google Maps";
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "Abrir no Google Maps";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Abrir o convite do grupo";
@@ -5084,19 +5084,19 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Nome";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Algo deu errado com seu nome de usuário, pois ele não está mais atribuído à sua conta.";
 
 /* Title for an action sheet button allowing users to create a new username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "Create Username";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "Criar nome de usuário";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Apagar nome de usuário";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "This will remove your username and disable your QR code and link. \"%1$@\" will be avaliable for others to claim. Are you sure?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Esta ação vai remover seu nome de usuário e desativar seu QR code e link. \"%1$@\" ficará disponível para outros usuários. Tem certeza?";
 
 /* The title of an action sheet button that will delete a user's username. */
-"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Delete Username";
+"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Apagar nome de usuário";
 
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Editar nome de usuário";
@@ -5243,10 +5243,10 @@
 "READ_ACTION" = "Lida";
 
 /* The title for a context menu item that blocks a recipient from your recipient picker list. */
-"RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "Block";
+"RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "Bloquear";
 
 /* The title for a context menu item that removes a recipient from your recipient picker list. */
-"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Remove";
+"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Remover";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Não é possível selecionar essa pessoa";
@@ -5419,6 +5419,12 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Você precisa se registrar antes de enviar uma mensagem.";
 
+/* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+
+/* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Você excedeu o número tentativas de inserir o código. Reenvie o código e tente novamente.";
 
@@ -5464,6 +5470,12 @@
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Verificando %1$@…";
 
+/* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+
+/* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Rejeitar";
 
@@ -5471,10 +5483,10 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "O número de telefone que você está tentanto registrar já foi registrado em um outro servidor. Por favor, anule o outro registro e tente de novo.";
 
 /* Label warning the user that something is wrong with their username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Algo deu errado com seu nome de usuário, pois ele não está mais atribuído à sua conta. Você pode tentar defini-lo de novo ou escolher outro.";
 
 /* Label warning the user that something is wrong with their username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Something went wrong with your username QR code and link, it’s no longer valid. Create a new link to share with others.";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Algo deu errado com o QR code e link do seu nome de usuário, ele não é mais válido. Crie outro link para compartilhar.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "Remover pré-visualização";
@@ -7382,10 +7394,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Redefinir";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code, your existing QR code and link will no longer work.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Se você redefinir o QR code, o QR code e o link existentes vão parar de funcionar.";
 
 /* A label indicating that the username link is being reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Resetting link...";
+"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Redefinindo link…";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Compartilhar";
@@ -7424,7 +7436,7 @@
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Nome de usuário inválido";
 
 /* A message indicating that a username link the user attempted to query is no longer valid. */
-"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "This username link is no longer valid.";
+"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Este nome de usuário não é mais válido.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ não é um usuário do Signal. Tenha certeza de que você digitou o nome de usuário completo.";
@@ -7436,7 +7448,7 @@
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Nomes de usuários não podem começar com um número.";
 
 /* A message explaining the side effects of changing your username. */
-"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Changing your username will reset your existing QR code and link. Are you sure?";
+"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Se você mudar seu nome de usuário, o QR code e o link existentes também serão alterados. Tem certeza?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
 "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Os nomes de usuário permitem que outras pessoas enviem mensagens para você sem precisar do seu número de telefone. Eles são pareados com um conjunto de dígitos para ajudar a manter seu endereço privado. %1$@";

@@ -3641,10 +3641,10 @@
 "MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Переслати обрані повідомлення";
 
 /* A label for a button that will open an address in Apple Maps. \"Maps\" is a proper noun referring to the Apple Maps app, and should be translated as such. */
-"MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "Open in Maps";
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "Відкрити у Картах";
 
 /* A label for a button that will open an address in Google Maps. \"Google Maps\" is a proper noun referring to the Google Maps app, and should be translated as such. */
-"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "Open in Google Maps";
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "Відкрити в Картах Google";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Відкрити запрошення до групи";
@@ -5084,19 +5084,19 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Ім'я";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Із вашим іменем користувача сталася помилка. Воно більше не належить до вашого акаунту.";
 
 /* Title for an action sheet button allowing users to create a new username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "Create Username";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "Створити ім'я користувача";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Видалити ім'я користувача";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "This will remove your username and disable your QR code and link. \"%1$@\" will be avaliable for others to claim. Are you sure?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Ім'я користувача буде вилучено, а QR-код і посилання — вимкнено. Інші користувачі зможуть вибрати ім'я «%1$@». Продовжити?";
 
 /* The title of an action sheet button that will delete a user's username. */
-"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Delete Username";
+"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Видалити ім'я користувача";
 
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Редагувати ім'я користувача";
@@ -5243,10 +5243,10 @@
 "READ_ACTION" = "Прочитано";
 
 /* The title for a context menu item that blocks a recipient from your recipient picker list. */
-"RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "Block";
+"RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "Заблокувати";
 
 /* The title for a context menu item that removes a recipient from your recipient picker list. */
-"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Remove";
+"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Видалити";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Користувач не може бути обраний.";
@@ -5282,7 +5282,7 @@
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Ваш PIN - це код з 4+ цифр, створений вами. Якщо ви не зможете згадати свій PIN-код, вам доведеться почекати 7 днів, щоб наново зареєструватися.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Неправельний PIN-код";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Неправильний PIN-код";
 
 /* Indicates the work we are doing while verifying the user's pin */
 "REGISTER_2FA_PIN_PROGRESS" = "Перевірка PIN-коду…";
@@ -5419,6 +5419,12 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Перед тим, як надсилати повідомлення, слід зареєструватися.";
 
+/* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+
+/* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Ви зробили забагато спроб ввести код. Запитайте код ще раз і спробуйте знову.";
 
@@ -5464,6 +5470,12 @@
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Перевірка %1$@…";
 
+/* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+
+/* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Відхилити";
 
@@ -5471,10 +5483,10 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Номер, який ви намагаєтеся зареєструвати, вже зареєстровано на іншому сервері, вилучіть реєстрацію звідти та спробуйте знову.";
 
 /* Label warning the user that something is wrong with their username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Із вашим іменем користувача сталася помилка. Воно більше не належить до вашого акаунту. Ви можете спробувати встановити це ім'я повторно або вибрати нове.";
 
 /* Label warning the user that something is wrong with their username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Something went wrong with your username QR code and link, it’s no longer valid. Create a new link to share with others.";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Із вашим QR-кодом і посиланням імені користувача сталася помилка. Вони більше не дійсні. Створіть нове посилання, щоби поділитися ним з іншими.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "Прибрати попередній перегляд";
@@ -7382,10 +7394,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Скинути";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code, your existing QR code and link will no longer work.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Якщо скинути QR-код, поточні QR-код і посилання більше не працюватимуть.";
 
 /* A label indicating that the username link is being reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Resetting link...";
+"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Посилання скидається…";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Поділитися";
@@ -7424,7 +7436,7 @@
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Недійсне ім'я користувача";
 
 /* A message indicating that a username link the user attempted to query is no longer valid. */
-"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "This username link is no longer valid.";
+"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Це посилання імені користувача більше не дійсне.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ не користувач Signal. Переконайтеся, що ви ввели повне ім'я користувача.";
@@ -7436,7 +7448,7 @@
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Ім'я користувача не може починатися з цифри.";
 
 /* A message explaining the side effects of changing your username. */
-"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Changing your username will reset your existing QR code and link. Are you sure?";
+"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Якщо змінити ім'я користувача, поточні QR-код і посилання буде скинуто. Змінити ім'я?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
 "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Завдяки імені користувача вам зможуть писати люди, які не знають вашого номеру телефону. Поряд з іменем є кілька цифр, які захищають конфіденційність вашої адреси. %1$@";

@@ -3641,10 +3641,10 @@
 "MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "轉寄揀選嘅訊息";
 
 /* A label for a button that will open an address in Apple Maps. \"Maps\" is a proper noun referring to the Apple Maps app, and should be translated as such. */
-"MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "Open in Maps";
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "喺地圖入面開啟";
 
 /* A label for a button that will open an address in Google Maps. \"Google Maps\" is a proper noun referring to the Google Maps app, and should be translated as such. */
-"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "Open in Google Maps";
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "喺 Google 地圖開啟";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "開啟個谷嘅邀請";
@@ -5084,19 +5084,19 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "名稱";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "你嘅用戶名稱出現問題，唔再指定至你嘅帳戶。";
 
 /* Title for an action sheet button allowing users to create a new username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "Create Username";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "建立用戶名稱";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "刪除用戶名稱";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "This will remove your username and disable your QR code and link. \"%1$@\" will be avaliable for others to claim. Are you sure?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "咁做嘅話，系統會移除你嘅用戶名稱同埋停用你嘅二維碼同連結。其他用戶就可以攞「%1$@」呢個名嚟用㗎喇。你係咪確定？";
 
 /* The title of an action sheet button that will delete a user's username. */
-"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Delete Username";
+"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "刪除用戶名稱";
 
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "編輯用戶名稱";
@@ -5243,10 +5243,10 @@
 "READ_ACTION" = "睇咗";
 
 /* The title for a context menu item that blocks a recipient from your recipient picker list. */
-"RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "Block";
+"RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "封鎖";
 
 /* The title for a context menu item that removes a recipient from your recipient picker list. */
-"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Remove";
+"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "移除";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "個使用者揀選唔到。";
@@ -5419,6 +5419,12 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "你需要註冊先可以傳送訊息。";
 
+/* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+
+/* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "你已經嘗試輸入驗證碼試得太多次喇。請重新傳送驗證碼，然後再試過啦。";
 
@@ -5464,6 +5470,12 @@
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "驗證緊 %1$@...";
 
+/* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+
+/* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "拒絕接聽";
 
@@ -5471,10 +5483,10 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "你嘗試註冊嘅電話號碼已經喺另一個伺服器度註冊咗喇。請先喺嗰度取消註冊，然後再試一次。";
 
 /* Label warning the user that something is wrong with their username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "你嘅用戶名稱出現問題，唔再指定至你嘅帳戶。你可以嘗試重設或者選擇一個新嘅用戶名稱。";
 
 /* Label warning the user that something is wrong with their username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Something went wrong with your username QR code and link, it’s no longer valid. Create a new link to share with others.";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "你嘅用戶名稱二維碼同連結出現問題，唔再指定至你嘅帳戶。建立新連結嚟同人分享啦。";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "移除預覽";
@@ -7382,10 +7394,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "重設";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code, your existing QR code and link will no longer work.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "如果你重設二維碼，你宜家用緊嘅二維碼同連結就會失效。";
 
 /* A label indicating that the username link is being reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Resetting link...";
+"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "重設緊連結...";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "分享";
@@ -7424,7 +7436,7 @@
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "用戶名稱無效";
 
 /* A message indicating that a username link the user attempted to query is no longer valid. */
-"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "This username link is no longer valid.";
+"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "呢條用戶名稱連結已經失效。";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ 唔係 Signal 用戶。請確認你係咪已經輸入咗完整嘅用戶名稱。";
@@ -7436,7 +7448,7 @@
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "用戶名稱唔可以用數目字開頭。";
 
 /* A message explaining the side effects of changing your username. */
-"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Changing your username will reset your existing QR code and link. Are you sure?";
+"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "更改用戶名稱會將你宜家用緊嘅二維碼同連結重設。你係咪確定？";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
 "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "用戶名稱可以等其他人唔使知道你嘅電話號碼，都可以向你傳送訊息。系統會將用戶名稱同一組數字配對，幫你將地址保密。%1$@";
