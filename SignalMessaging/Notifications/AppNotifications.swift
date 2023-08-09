@@ -688,10 +688,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             }
 
             if let editTarget {
-                self.presenter.cancelNotifications(
-                    messageIds: [editTarget.uniqueId],
-                    completion: notify
-                )
+                self.presenter.replaceNotification(messageId: editTarget.uniqueId) { didReplaceNotification in
+                    guard didReplaceNotification else { return }
+                    notify()
+                }
             } else {
                notify()
             }

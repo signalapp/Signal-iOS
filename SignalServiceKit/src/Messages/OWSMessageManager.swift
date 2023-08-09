@@ -501,12 +501,16 @@ extension OWSMessageManager {
                 case let .incomingMessage(incoming) = targetMessage,
                 let message = message as? TSIncomingMessage
             {
-                self.notificationsManager.notifyUser(
-                    forIncomingMessage: message,
-                    editTarget: incoming.message,
-                    thread: thread,
-                    transaction: tx
-                )
+                // Only update notifications for unread/unedited message targets
+                let targetEditState = incoming.message.editState
+                if targetEditState == .latestRevisionUnread || targetEditState == .none {
+                    self.notificationsManager.notifyUser(
+                        forIncomingMessage: message,
+                        editTarget: incoming.message,
+                        thread: thread,
+                        transaction: tx
+                    )
+                }
             }
         }
 

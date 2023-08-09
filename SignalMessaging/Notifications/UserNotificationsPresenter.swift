@@ -132,6 +132,7 @@ public class UserNotificationConfig {
 
 class UserNotificationPresenter: Dependencies {
     typealias NotificationActionCompletion = () -> Void
+    typealias NotificationReplaceCompletion = (Bool) -> Void
 
     private static var notificationCenter: UNUserNotificationCenter { UNUserNotificationCenter.current() }
 
@@ -362,6 +363,18 @@ class UserNotificationPresenter: Dependencies {
         }
     }
 
+    // MARK: - Replacement
+
+    func replaceNotification(messageId: String, completion: @escaping NotificationReplaceCompletion) {
+        getNotificationsRequests { requests in
+            let didFindNotification = self.cancelSync(
+                notificationRequests: requests,
+                matching: .messageIds([messageId])
+            )
+            completion(didFindNotification)
+        }
+    }
+
     // MARK: - Cancellation
 
     func cancelNotifications(threadId: String, completion: @escaping NotificationActionCompletion) {
@@ -412,10 +425,11 @@ class UserNotificationPresenter: Dependencies {
         }
     }
 
+    @discardableResult
     private func cancelSync(
         notificationRequests: [UNNotificationRequest],
         matching cancellationType: CancellationType
-    ) {
+    ) -> Bool {
         let requestMatchesPredicate: (UNNotificationRequest) -> Bool = { request in
             switch cancellationType {
             case .threadId(let threadId):
@@ -463,13 +477,15 @@ class UserNotificationPresenter: Dependencies {
         }()
 
         guard !identifiersToCancel.isEmpty else {
-            return
+            return false
         }
 
         Logger.info("Removing delivered/pending notifications with identifiers: \(identifiersToCancel)")
 
         Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: identifiersToCancel)
         Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
+
+        return true
     }
 
     // This method is thread-safe.
