@@ -17,8 +17,8 @@ public class HydratedMessageBody: Equatable, Hashable {
     public typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
 
     private let hydratedText: String
-    private let unhydratedMentions: [NSRangedValue<MentionAttribute>]
-    private let mentionAttributes: [NSRangedValue<MentionAttribute>]
+    private let unhydratedMentions: [NSRangedValue<UnhydratedMentionAttribute>]
+    private let mentionAttributes: [NSRangedValue<HydratedMentionAttribute>]
     private let styleAttributes: [NSRangedValue<StyleAttribute>]
 
     public var isEmpty: Bool { hydratedText.isEmpty }
@@ -39,8 +39,8 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     internal init(
         hydratedText: String,
-        unhydratedMentions: [NSRangedValue<MentionAttribute>] = [],
-        mentionAttributes: [NSRangedValue<MentionAttribute>],
+        unhydratedMentions: [NSRangedValue<UnhydratedMentionAttribute>] = [],
+        mentionAttributes: [NSRangedValue<HydratedMentionAttribute>],
         styleAttributes: [NSRangedValue<StyleAttribute>]
     ) {
         self.hydratedText = hydratedText
@@ -71,9 +71,9 @@ public class HydratedMessageBody: Equatable, Hashable {
 
         let finalText = NSMutableString(string: messageBody.text)
         let startLength = finalText.length
-        var unhydratedMentions = [NSRangedValue<MentionAttribute>]()
+        var unhydratedMentions = [NSRangedValue<UnhydratedMentionAttribute>]()
         var finalStyleAttributes = [NSRangedValue<StyleAttribute>]()
-        var finalMentionAttributes = [NSRangedValue<MentionAttribute>]()
+        var finalMentionAttributes = [NSRangedValue<HydratedMentionAttribute>]()
 
         var rangeOffset = 0
 
@@ -136,16 +136,16 @@ public class HydratedMessageBody: Equatable, Hashable {
             case .preserveMention:
                 // Preserve the mention without replacement and proceed.
                 unhydratedMentions.append(.init(
-                    MentionAttribute.fromOriginalRange(mention.range, mentionUuid: mention.value),
+                    UnhydratedMentionAttribute.fromOriginalRange(mention.range, mentionUuid: mention.value),
                     range: newMentionRange
                 ))
                 continue
             case let .hydrate(displayName):
                 let mentionPlaintext: String
                 if isRTL {
-                    mentionPlaintext = displayName + MentionAttribute.mentionPrefix
+                    mentionPlaintext = displayName + Mention.prefix
                 } else {
-                    mentionPlaintext = MentionAttribute.mentionPrefix + displayName
+                    mentionPlaintext = Mention.prefix + displayName
                 }
                 finalMentionLength = (mentionPlaintext as NSString).length
                 // Make sure we don't have any illegal mention ranges; if so skip them.
@@ -153,7 +153,11 @@ public class HydratedMessageBody: Equatable, Hashable {
                     mentionOffsetDelta = finalMentionLength - mention.range.length
                     finalText.replaceCharacters(in: newMentionRange, with: mentionPlaintext)
                     finalMentionAttributes.append(.init(
-                        MentionAttribute.fromOriginalRange(mention.range, mentionUuid: mention.value),
+                        HydratedMentionAttribute.fromOriginalRange(
+                            mention.range,
+                            mentionUuid: mention.value,
+                            displayName: displayName
+                        ),
                         range: NSRange(location: newMentionRange.location, length: finalMentionLength)
                     ))
                 } else {
@@ -359,7 +363,7 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     internal static func applyAttributes(
         on string: NSMutableAttributedString,
-        mentionAttributes: [NSRangedValue<MentionAttribute>],
+        mentionAttributes: [NSRangedValue<HydratedMentionAttribute>],
         styleAttributes: [NSRangedValue<StyleAttribute>],
         config: HydratedMessageBody.DisplayConfiguration,
         isDarkThemeEnabled: Bool
@@ -573,7 +577,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             guard $0.range.location < finalLength else {
                 return false
             }
-            mentionHydrationStrings[$0.value.mentionUuid] = String(hydratedText.substring(withRange: $0.range))
+            mentionHydrationStrings[$0.value.mentionUuid] = $0.value.displayName
             return true
         })
         let unhydratedMentions = self.unhydratedMentions.filter { $0.range.upperBound <= finalLength }
@@ -733,7 +737,7 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     internal static func tappableItems(
         text: String,
-        mentionAttributes: [NSRangedValue<MentionAttribute>],
+        mentionAttributes: [NSRangedValue<HydratedMentionAttribute>],
         styleAttributes: [NSRangedValue<StyleAttribute>],
         revealedSpoilerIds: Set<Int>,
         dataDetector: NSDataDetector?

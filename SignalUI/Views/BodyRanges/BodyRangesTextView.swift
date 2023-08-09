@@ -73,8 +73,8 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
 
         replaceCharacters(
             in: NSRange(
-                location: range.location - MentionAttribute.mentionPrefix.count,
-                length: range.length + MentionAttribute.mentionPrefix.count
+                location: range.location - Mention.prefix.count,
+                length: range.length + Mention.prefix.count
             ),
             withMentionAddress: address
         )
@@ -352,7 +352,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
 
         while location > 0 {
             let possiblePrefix = editableBody.hydratedPlaintext.substring(
-                withRange: NSRange(location: location - MentionAttribute.mentionPrefix.count, length: MentionAttribute.mentionPrefix.count)
+                withRange: NSRange(location: location - Mention.prefix.count, length: Mention.prefix.count)
             )
 
             let mentionRanges = editableBody.mentionRanges
@@ -370,13 +370,13 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
                 return
 
             // If we find the mention prefix before the selected range, we may be typing a mention.
-            } else if possiblePrefix == MentionAttribute.mentionPrefix {
+            } else if possiblePrefix == Mention.prefix {
 
                 // If there's more text before the mention prefix, check if it's whitespace. Mentions
                 // only start at the beginning of the string OR after a whitespace character.
-                if location - MentionAttribute.mentionPrefix.count > 0 {
+                if location - Mention.prefix.count > 0 {
                     let characterPrecedingPrefix = editableBody.hydratedPlaintext.substring(
-                        withRange: NSRange(location: location - MentionAttribute.mentionPrefix.count - 1, length: MentionAttribute.mentionPrefix.count)
+                        withRange: NSRange(location: location - Mention.prefix.count - 1, length: Mention.prefix.count)
                     )
 
                     // If it's not whitespace, keep looking back. Mention text can contain an "@" character,

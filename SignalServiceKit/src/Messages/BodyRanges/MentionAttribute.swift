@@ -24,15 +24,23 @@ public struct MentionDisplayConfiguration: Equatable {
     }
 }
 
-public struct MentionAttribute: Equatable, Hashable {
+public enum Mention {
+    public static let prefix = "@"
+}
 
-    public static let mentionPrefix = "@"
+internal protocol MentionAttribute: Equatable, Hashable {
 
     /// Externally: identifies a single mention range, even if multiple mentions with
     /// the same uuid exist in the same message.
     ///
     /// Really this is just the original range of the mention, hashed. But that detail is
     /// irrelevant to everthing outside of this class.
+    var id: MentionIDType { get }
+    var mentionUuid: UUID { get }
+}
+
+internal struct UnhydratedMentionAttribute: MentionAttribute {
+
     internal let id: MentionIDType
     internal let mentionUuid: UUID
 
@@ -46,6 +54,35 @@ public struct MentionAttribute: Equatable, Hashable {
     private init(id: MentionIDType, mentionUuid: UUID) {
         self.id = id
         self.mentionUuid = mentionUuid
+    }
+}
+
+internal struct HydratedMentionAttribute: MentionAttribute {
+
+    internal let id: MentionIDType
+    internal let mentionUuid: UUID
+    /// Name without the prefix.
+    internal let displayName: String
+
+    internal static func fromOriginalRange(
+        _ range: NSRange,
+        mentionUuid: UUID,
+        displayName: String
+    ) -> Self {
+        var hasher = Hasher()
+        hasher.combine(range)
+        let id = hasher.finalize()
+        return .init(id: id, mentionUuid: mentionUuid, displayName: displayName)
+    }
+
+    private init(
+        id: MentionIDType,
+        mentionUuid: UUID,
+        displayName: String
+    ) {
+        self.id = id
+        self.mentionUuid = mentionUuid
+        self.displayName = displayName
     }
 
     internal func applyAttributes(

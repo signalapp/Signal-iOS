@@ -54,7 +54,8 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 6, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "Luke"
                         ),
                         range: NSRange(location: 6, length: 5)
                     )
@@ -88,21 +89,24 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 6, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "Luke"
                         ),
                         range: NSRange(location: 6, length: 5)
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 12, length: 1),
-                            mentionUuid: uuids[1]
+                            mentionUuid: uuids[1],
+                            displayName: "Leia"
                         ),
                         range: NSRange(location: 16, length: 5)
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 22, length: 1),
-                            mentionUuid: uuids[2]
+                            mentionUuid: uuids[2],
+                            displayName: "Han"
                         ),
                         range: NSRange(location: 30, length: 4)
                     )
@@ -138,21 +142,24 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 6, length: 5),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "Luke"
                         ),
                         range: NSRange(location: 6, length: 5)
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 16, length: 2),
-                            mentionUuid: uuids[1]
+                            mentionUuid: uuids[1],
+                            displayName: "Leia"
                         ),
                         range: NSRange(location: 16, length: 5)
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 27, length: 0),
-                            mentionUuid: uuids[2]
+                            mentionUuid: uuids[2],
+                            displayName: "Han"
                         ),
                         range: NSRange(location: 30, length: 4)
                     )
@@ -191,14 +198,16 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 6, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "Luke"
                         ),
                         range: NSRange(location: 6, length: 5)
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 22, length: 1),
-                            mentionUuid: uuids[2]
+                            mentionUuid: uuids[2],
+                            displayName: "Han"
                         ),
                         range: NSRange(location: 26, length: 4)
                     )
@@ -271,7 +280,8 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 32, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "Luke"
                         ),
                         range: NSRange(location: 32, length: 5)
                     )
@@ -322,7 +332,8 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "Luke"
                         ),
                         range: NSRange(location: 0, length: 5)
                     )
@@ -371,7 +382,8 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 15, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "Luke"
                         ),
                         range: NSRange(location: 15, length: 5)
                     )
@@ -427,28 +439,32 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "BoldGuy"
                         ),
                         range: NSRange(location: 0, length: 8)
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 3, length: 3),
-                            mentionUuid: uuids[1]
+                            mentionUuid: uuids[1],
+                            displayName: "BoldItalicGuy"
                         ),
                         range: NSRange(location: 10, length: 14)
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 8, length: 15),
-                            mentionUuid: uuids[2]
+                            mentionUuid: uuids[2],
+                            displayName: "BoldMonoGuy"
                         ),
                         range: NSRange(location: 26, length: 12)
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 28, length: 3),
-                            mentionUuid: uuids[3]
+                            mentionUuid: uuids[3],
+                            displayName: "BoldSpoilerGuy"
                         ),
                         range: NSRange(location: 43, length: 15)
                     )
@@ -555,14 +571,16 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "BoldGuy"
                         ),
                         range: NSRange(location: 0, length: 8)
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 28, length: 3),
-                            mentionUuid: uuids[3]
+                            mentionUuid: uuids[3],
+                            displayName: "BoldSpoilerGuy"
                         ),
                         range: NSRange(location: 35, length: 15)
                     )
@@ -650,14 +668,16 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 5, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "לוק"
                         ),
                         range: NSRange(location: 5, length: 4)
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 13, length: 1),
-                            mentionUuid: uuids[1]
+                            mentionUuid: uuids[1],
+                            displayName: "ליאה"
                         ),
                         range: NSRange(location: 16, length: 5)
                     )
@@ -688,7 +708,8 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 12, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "לוק"
                         ),
                         range: NSRange(location: 12, length: 4)
                     )
@@ -724,7 +745,8 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "לוק"
                         ),
                         range: NSRange(location: 0, length: 4)
                     )
@@ -762,7 +784,8 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 12, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "לוק"
                         ),
                         range: NSRange(location: 12, length: 4)
                     )
@@ -798,7 +821,8 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "לוק"
                         ),
                         range: NSRange(location: 0, length: 4)
                     )
@@ -836,7 +860,8 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 12, length: 3),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "לוק"
                         ),
                         range: NSRange(location: 12, length: 4)
                     )
@@ -871,7 +896,8 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 3),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "לוק"
                         ),
                         range: NSRange(location: 0, length: 4)
                     )
@@ -915,14 +941,16 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 3),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "José"
                         ),
                         range: NSRange(location: 0, length: 5)
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 13, length: 3),
-                            mentionUuid: uuids[1]
+                            mentionUuid: uuids[1],
+                            displayName: "María"
                         ),
                         range: NSRange(location: 15, length: 6)
                     )
@@ -1001,14 +1029,16 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 3),
-                            mentionUuid: uuids[0]
+                            mentionUuid: uuids[0],
+                            displayName: "Luke"
                         ),
                         range: NSRange(location: 0, length: 5)
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: secondMentionLocation + 1, length: 3),
-                            mentionUuid: uuids[1]
+                            mentionUuid: uuids[1],
+                            displayName: "Leia"
                         ),
                         range: NSRange(location: secondMentionLocation + 3, length: 5)
                     )

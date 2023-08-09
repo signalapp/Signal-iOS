@@ -208,10 +208,10 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             range.upperBound == intersectingMentionRange.upperBound
         {
             // Backspace at the end of a mention, just clear the whole mention minus the prefix.
-            self.replaceCharacters(in: intersectingMentionRange, with: MentionAttribute.mentionPrefix, selectedRange: selectedRange)
+            self.replaceCharacters(in: intersectingMentionRange, with: Mention.prefix, selectedRange: selectedRange)
             // Put the selection after the prefix so a new mention can be typed.
             let newSelectedRange = NSRange(
-                location: intersectingMentionRange.location + (MentionAttribute.mentionPrefix as NSString).length,
+                location: intersectingMentionRange.location + (Mention.prefix as NSString).length,
                 length: 0
             )
             self.selectionAfterEdits = newSelectedRange
@@ -321,9 +321,9 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         switch hydrator.hydrator(mentionUuid) {
         case .hydrate(let mentionString):
             if CurrentAppContext().isRTL {
-                hydratedMention = mentionString + MentionAttribute.mentionPrefix
+                hydratedMention = mentionString + Mention.prefix
             } else {
-                hydratedMention = MentionAttribute.mentionPrefix + mentionString
+                hydratedMention = Mention.prefix + mentionString
             }
         case .preserveMention:
             return
