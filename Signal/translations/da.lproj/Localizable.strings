@@ -3641,10 +3641,10 @@
 "MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Videresend valgte beskeder";
 
 /* A label for a button that will open an address in Apple Maps. \"Maps\" is a proper noun referring to the Apple Maps app, and should be translated as such. */
-"MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "Open in Maps";
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "Åbn i Maps";
 
 /* A label for a button that will open an address in Google Maps. \"Google Maps\" is a proper noun referring to the Google Maps app, and should be translated as such. */
-"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "Open in Google Maps";
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "Åbn i Google Maps";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Åbn gruppeinvitation";
@@ -5084,19 +5084,19 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Navn";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Something went wrong with your username, it’s no longer assigned to your account.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Noget gik galt med dit brugernavn. Det er ikke længere tildelt din konto.";
 
 /* Title for an action sheet button allowing users to create a new username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "Create Username";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CREATE_NEW_USERNAME_ACTION_TITLE" = "Opret et brugernavn";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Slet brugernavn";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "This will remove your username and disable your QR code and link. \"%1$@\" will be avaliable for others to claim. Are you sure?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Dette vil fjerne dit brugernavn og deaktivere din QR-kode og dit link. Andre vil dermed have mulighed for at bruge \"%1$@\". Er du sikker?";
 
 /* The title of an action sheet button that will delete a user's username. */
-"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Delete Username";
+"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Slet brugernavn";
 
 /* Title for a menu action allowing users to edit their existing username. */
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Rediger brugernavn";
@@ -5243,10 +5243,10 @@
 "READ_ACTION" = "Læst";
 
 /* The title for a context menu item that blocks a recipient from your recipient picker list. */
-"RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "Block";
+"RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "Blokér";
 
 /* The title for a context menu item that removes a recipient from your recipient picker list. */
-"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Remove";
+"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Fjern";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Bruger kan ikke vælges";
@@ -5471,10 +5471,10 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Dit angivne telefonnummer er allerede registreret på en anden server. Fjern det venligst derfra først og prøv derefter igen";
 
 /* Label warning the user that something is wrong with their username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Something went wrong with your username, it’s no longer assigned to your account. You can try and set it again or choose a new one.";
+"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Noget gik galt med dit brugernavn. Det er ikke længere tildelt din konto. Du kan prøve at indstille det igen eller vælge et nyt.";
 
 /* Label warning the user that something is wrong with their username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Something went wrong with your username QR code and link, it’s no longer valid. Create a new link to share with others.";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Noget gik galt med QR-koden for dit brugernavn og dit link. Det er ikke længere gyldigt. Opret et nyt link, som du kan dele med andre.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "Fjern forhåndsvisning";
@@ -7382,10 +7382,10 @@
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "Nulstil";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "If you reset your QR code, your existing QR code and link will no longer work.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "Hvis du nulstiller din QR-kode, vil din eksisterende QR-kode og dit link ikke længere fungere.";
 
 /* A label indicating that the username link is being reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Resetting link...";
+"USERNAME_LINK_QR_CODE_VIEW_RESETTING_LINK_LABEL" = "Nulstiller link...";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
 "USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "Del";
@@ -7424,7 +7424,7 @@
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Ugyldigt brugernavn";
 
 /* A message indicating that a username link the user attempted to query is no longer valid. */
-"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "This username link is no longer valid.";
+"USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Dette brugernavnslink er ikke længere gyldigt.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
 "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ er ikke bruger af Signal. Tjek at du har skrevet det korrekte brugernavn.";
@@ -7436,7 +7436,7 @@
 "USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "Brugernavne må ikke starte med et tal.";
 
 /* A message explaining the side effects of changing your username. */
-"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Changing your username will reset your existing QR code and link. Are you sure?";
+"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "Hvis du ændrer dit brugernavn, nulstilles din eksisterende QR-kode og dit link. Er du sikker?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
 "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Brugernavne gør det muligt for andre sende dig beskeder uden dit telefonnummer. De er forbundet med et sæt cifre, der hjælper med at beskytte din adresse. %1$@";

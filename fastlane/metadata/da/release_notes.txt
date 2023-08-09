@@ -1,1 +1,3 @@
-• Format text in your messages by selecting any text in the message composition field. Make a bold statement that's actually bold, send M. Night Shyamalan a twist ending with a spoiler effect, emphasize a name by writing "Alex" in italics, put a line through a rejected dinner idea with strikethrough, or share code in monospace.
+• Formatér teksten i dine beskeder ved at vælge en hvilken som helst tekst i beskedfeltet.
+
+Skriv en påstand i fed, som faktisk er fed, send M. Night Shyamalan et overraskende svar med en spoilereffekt, understreg et navn ved at skrive "Alex" i kursiv, sæt en streg gennem et forkastet middagsforslag med gennemstregning, eller del en kode i monospatieret skrift.
