@@ -6,6 +6,24 @@
 import Foundation
 
 public protocol PreKeyOperationFactory {
+
+    func createForRegistration(
+        future: Future<RegistrationPreKeyUploadBundles>
+    ) -> OWSOperation
+
+    func finalizeRegistrationPreKeys(
+        _ bundles: RegistrationPreKeyUploadBundles,
+        uploadDidSucceed: Bool,
+        future: Future<Void>
+    ) -> OWSOperation
+
+    func rotateOneTimePreKeysForRegistration(
+        identity: OWSIdentity,
+        auth: ChatServiceAuth,
+        future: Future<Void>,
+        didSucceed: @escaping () -> Void
+    ) -> OWSOperation
+
     func legacy_createPreKeysOperation(
         for identity: OWSIdentity,
         auth: ChatServiceAuth,
@@ -36,16 +54,61 @@ public struct PreKeyOperationFactoryImpl: PreKeyOperationFactory {
         self.context = context
     }
 
+    public func createForRegistration(
+        future: Future<RegistrationPreKeyUploadBundles>
+    ) -> OWSOperation {
+        return PreKeyCreateForRegistrationOperation(
+            dateProvider: context.dateProvider,
+            db: context.db,
+            identityManager: context.identityManager,
+            protocolStoreManager: context.protocolStoreManager,
+            schedulers: context.schedulers,
+            future: future
+        )
+    }
+
+    public func finalizeRegistrationPreKeys(
+        _ bundles: RegistrationPreKeyUploadBundles,
+        uploadDidSucceed: Bool,
+        future: Future<Void>
+    ) -> OWSOperation {
+        return PreKeyPersistAfterRegistrationOperation(
+            bundles: bundles,
+            uploadDidSucceed: uploadDidSucceed,
+            dateProvider: context.dateProvider,
+            db: context.db,
+            protocolStoreManager: context.protocolStoreManager,
+            schedulers: context.schedulers,
+            future: future
+        )
+    }
+
+    public func rotateOneTimePreKeysForRegistration(
+        identity: OWSIdentity,
+        auth: ChatServiceAuth,
+        future: Future<Void>,
+        didSucceed: @escaping () -> Void
+    ) -> OWSOperation {
+        return PreKeyOperation(
+            action: .createOneTimePreKeys(identity: identity),
+            auth: auth,
+            context: context,
+            future: future,
+            didSucceed: didSucceed
+        )
+    }
+
     public func legacy_createPreKeysOperation(
         for identity: OWSIdentity,
         auth: ChatServiceAuth,
         didSucceed: @escaping () -> Void
     ) -> OWSOperation {
-        var targets: PreKey.Operation.Target = [.oneTimePreKey, .signedPreKey]
-        if FeatureFlags.enablePQXDH {
-            targets.insert(target: .oneTimePqPreKey)
-            targets.insert(target: .lastResortPqPreKey)
-        }
+        let targets: PreKey.Operation.Target = [
+            .oneTimePreKey,
+            .signedPreKey,
+            .oneTimePqPreKey,
+            .lastResortPqPreKey
+        ]
 
         return PreKeyOperation(
             action: .legacy_create(identity: identity, targets: targets),
@@ -64,19 +127,11 @@ public struct PreKeyOperationFactoryImpl: PreKeyOperationFactory {
         var targets: PreKey.Operation.Target = []
         if shouldRefreshSignedPreKeys {
             targets.insert(.signedPreKey)
+            targets.insert(target: .lastResortPqPreKey)
         }
         if shouldRefreshOneTimePreKeys {
             targets.insert(target: .oneTimePreKey)
-        }
-
-        if FeatureFlags.enablePQXDH {
             targets.insert(target: .oneTimePqPreKey)
-            if shouldRefreshSignedPreKeys {
-                targets.insert(target: .lastResortPqPreKey)
-            }
-            if shouldRefreshOneTimePreKeys {
-                targets.insert(target: .oneTimePqPreKey)
-            }
         }
 
         return PreKeyOperation(
@@ -90,10 +145,7 @@ public struct PreKeyOperationFactoryImpl: PreKeyOperationFactory {
         for identity: OWSIdentity,
         didSucceed: @escaping () -> Void
     ) -> OWSOperation {
-        var targets: PreKey.Operation.Target = .signedPreKey
-        if FeatureFlags.enablePQXDH {
-            targets.insert(target: .lastResortPqPreKey)
-        }
+        let targets: PreKey.Operation.Target = [.signedPreKey, .lastResortPqPreKey]
 
         return PreKeyOperation(
             action: .rotate(identity: identity, targets: targets),
@@ -105,11 +157,12 @@ public struct PreKeyOperationFactoryImpl: PreKeyOperationFactory {
     public func createOrRotatePNIPreKeysOperation(
         didSucceed: @escaping () -> Void
     ) -> OWSOperation {
-        var targets: PreKey.Operation.Target = [.oneTimePreKey, .signedPreKey]
-        if FeatureFlags.enablePQXDH {
-            targets.insert(target: .oneTimePqPreKey)
-            targets.insert(target: .lastResortPqPreKey)
-        }
+        let targets: PreKey.Operation.Target = [
+            .oneTimePreKey,
+            .signedPreKey,
+            .oneTimePqPreKey,
+            .lastResortPqPreKey
+        ]
 
         return PreKeyOperation(
             action: .createOrRotatePniKeys(targets: targets),

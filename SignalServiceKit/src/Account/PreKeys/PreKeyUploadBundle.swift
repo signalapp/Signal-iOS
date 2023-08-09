@@ -44,4 +44,36 @@ public final class PartialPreKeyUploadBundle: PreKeyUploadBundle {
     public func getPqPreKeyRecords() -> [KyberPreKeyRecord]? { pqPreKeyRecords }
 }
 
-// TODO: add prekey bundle to be used for registration
+public final class RegistrationPreKeyUploadBundle: PreKeyUploadBundle {
+    public let identity: OWSIdentity
+    public let identityKeyPair: ECKeyPair
+    public let signedPreKey: SignedPreKeyRecord
+    public let lastResortPreKey: KyberPreKeyRecord
+
+    public init(
+        identity: OWSIdentity,
+        identityKeyPair: ECKeyPair,
+        signedPreKey: SignedPreKeyRecord,
+        lastResortPreKey: KyberPreKeyRecord
+    ) {
+        self.identity = identity
+        self.identityKeyPair = identityKeyPair
+        self.signedPreKey = signedPreKey
+        self.lastResortPreKey = lastResortPreKey
+    }
+
+    public func getSignedPreKey() -> SignedPreKeyRecord? { signedPreKey }
+    public func getPreKeyRecords() -> [PreKeyRecord]? { nil }
+    public func getLastResortPreKey() -> KyberPreKeyRecord? { lastResortPreKey }
+    public func getPqPreKeyRecords() -> [KyberPreKeyRecord]? { nil }
+}
+
+public struct RegistrationPreKeyUploadBundles {
+    public let aci: RegistrationPreKeyUploadBundle
+    public let pni: RegistrationPreKeyUploadBundle
+
+    public init(aci: RegistrationPreKeyUploadBundle, pni: RegistrationPreKeyUploadBundle) {
+        self.aci = aci
+        self.pni = pni
+    }
+}

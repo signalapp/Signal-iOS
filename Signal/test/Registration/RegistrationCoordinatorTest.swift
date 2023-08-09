@@ -278,6 +278,15 @@ public class RegistrationCoordinatorTest: XCTestCase {
         pushRegistrationManagerMock.requestPushTokenMock = {
             return .value(.success(Stubs.apnsRegistrationId))
         }
+        // It needs prekeys as well.
+        preKeyManagerMock.createPreKeysMock = {
+            return .value(Stubs.prekeyBundles())
+        }
+        // And will finalize prekeys after success.
+        preKeyManagerMock.finalizePreKeysMock = { didSucceed in
+            XCTAssert(didSucceed)
+            return .value(())
+        }
 
         let expectedRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
@@ -285,7 +294,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
             skipDeviceTransfer: true,
-            apnRegistrationId: Stubs.apnsRegistrationId
+            apnRegistrationId: Stubs.apnsRegistrationId,
+            prekeyBundles: Stubs.prekeyBundles()
         )
         let identityResponse = Stubs.accountIdentityResponse()
         var authPassword: String!
@@ -317,7 +327,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         // When registered, we should create pre-keys.
-        preKeyManagerMock.createPreKeysMock = { auth in
+        preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
             XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
             return .value(())
         }
@@ -421,6 +431,15 @@ public class RegistrationCoordinatorTest: XCTestCase {
             pushRegistrationManagerMock.requestPushTokenMock = {
                 return .value(.success(Stubs.apnsRegistrationId))
             }
+            // Every time we register we also ask for prekeys.
+            preKeyManagerMock.createPreKeysMock = {
+                return .value(Stubs.prekeyBundles())
+            }
+            // And we finalize them after.
+            preKeyManagerMock.finalizePreKeysMock = { didSucceed in
+                XCTAssertTrue(didSucceed)
+                return .value(())
+            }
 
             let expectedRequest = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
@@ -428,7 +447,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
                 skipDeviceTransfer: true,
-                apnRegistrationId: Stubs.apnsRegistrationId
+                apnRegistrationId: Stubs.apnsRegistrationId,
+                prekeyBundles: Stubs.prekeyBundles()
             )
 
             let identityResponse = Stubs.accountIdentityResponse()
@@ -452,7 +472,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             // When registered, we should create pre-keys.
-            preKeyManagerMock.createPreKeysMock = { auth in
+            preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
                 XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
                 return .value(())
             }
@@ -549,6 +569,30 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     return .value(.timeout)
                 }
             }
+            // Every time we register we also ask for prekeys.
+            preKeyManagerMock.createPreKeysMock = {
+                switch self.scheduler.currentTime {
+                case 1, 3:
+                    return .value(Stubs.prekeyBundles())
+                default:
+                    XCTFail("Got unexpected push tokens request")
+                    return .init(error: PreKeyError())
+                }
+            }
+            // And we finalize them after.
+            preKeyManagerMock.finalizePreKeysMock = { didSucceed in
+                switch self.scheduler.currentTime {
+                case 3:
+                    XCTAssertFalse(didSucceed)
+                    return .value(())
+                case 4:
+                    XCTAssertTrue(didSucceed)
+                    return .value(())
+                default:
+                    XCTFail("Got unexpected push tokens request")
+                    return .init(error: PreKeyError())
+                }
+            }
 
             let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
@@ -556,7 +600,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
                 skipDeviceTransfer: true,
-                apnRegistrationId: Stubs.apnsRegistrationId
+                apnRegistrationId: Stubs.apnsRegistrationId,
+                prekeyBundles: Stubs.prekeyBundles()
             )
 
             // Fail the request at t=3; the reg recovery pw is invalid.
@@ -653,20 +698,55 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Give it the pin code, which should make it try and register.
             nextStep = coordinator.submitPINCode(Stubs.pinCode)
 
-            // Before registering at t=0, it should ask for push tokens to give the create account endpoint.
-            // On the second registration attempt at t=3, it will ask again.
-            // Finally before requesting a session at t=5, it should ask for push tokens to give the session.
+            // First we try and create an account with reg recovery
+            // password; we will fail with reglock error.
+            // First we get apns tokens, then prekeys, then register
+            // then finalize prekeys (with failure) after.
+            let firstPushTokenTime = 0
+            let firstPreKeyCreateTime = 1
+            let firstRegistrationTime = 2
+            let firstPreKeyFinalizeTime = 3
+
+            // Once we fail, we try again immediately with the reglock
+            // token we fetch.
+            // Same sequence as the first request.
+            let secondPushTokenTime = 4
+            let secondPreKeyCreateTime = 5
+            let secondRegistrationTime = 6
+            let secondPreKeyFinalizeTime = 7
+
+            // When that fails, we try and create a session.
+            // No prekey stuff this time, just apns token and session requests.
+            let thirdPushTokenTime = 8
+            let sessionStartTime = 9
+            let sendVerificationCodeTime = 10
+
             pushRegistrationManagerMock.requestPushTokenMock = {
                 switch self.scheduler.currentTime {
-                case 0:
-                    return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 1)
-                case 3:
-                    return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 4)
-                case 5:
-                    return .value(.success(Stubs.apnsRegistrationId))
+                case firstPushTokenTime, secondPushTokenTime, thirdPushTokenTime:
+                    return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: self.scheduler.currentTime + 1)
                 default:
                     XCTFail("Got unexpected push tokens request")
                     return .value(.timeout)
+                }
+            }
+            preKeyManagerMock.createPreKeysMock = {
+                switch self.scheduler.currentTime {
+                case firstPreKeyCreateTime, secondPreKeyCreateTime:
+                    return self.scheduler.promise(resolvingWith: Stubs.prekeyBundles(), atTime: self.scheduler.currentTime + 1)
+                default:
+                    XCTFail("Got unexpected prekeys request")
+                    return .init(error: PreKeyError())
+                }
+            }
+            preKeyManagerMock.finalizePreKeysMock = { didSucceed in
+                switch self.scheduler.currentTime {
+                case firstPreKeyFinalizeTime, secondPreKeyFinalizeTime:
+                    XCTAssertFalse(didSucceed)
+                    return self.scheduler.promise(resolvingWith: (), atTime: self.scheduler.currentTime + 1)
+                default:
+                    XCTFail("Got unexpected prekeys request")
+                    return .init(error: PreKeyError())
                 }
             }
 
@@ -676,10 +756,11 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
                 skipDeviceTransfer: true,
-                apnRegistrationId: Stubs.apnsRegistrationId
+                apnRegistrationId: Stubs.apnsRegistrationId,
+                prekeyBundles: Stubs.prekeyBundles()
             )
 
-            // Fail the request at t=3; the reglock is invalid.
+            // Fail the first request; the reglock is invalid.
             let failResponse = TSRequestOWSURLSessionMock.Response(
                 urlSuffix: expectedRecoveryPwRequest.url!.absoluteString,
                 statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
@@ -689,41 +770,39 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     svr2AuthCredential: Stubs.svr2AuthCredential
                 )
             )
-            mockURLSession.addResponse(failResponse, atTime: 3, on: scheduler)
+            mockURLSession.addResponse(failResponse, atTime: firstRegistrationTime + 1, on: scheduler)
 
-            // Once the request fails, at t=3, we should try again with the reglock
+            // Once the request fails, we should try again with the reglock
             // token, this time.
-            mockURLSession.addResponse(failResponse, atTime: 5, on: scheduler)
+            mockURLSession.addResponse(failResponse, atTime: secondRegistrationTime + 1, on: scheduler)
 
-            // Once the second request fails, at t=5, it should try an start a session.
-            scheduler.run(atTime: 4) {
+            // Once the second request fails, it should try an start a session.
+            scheduler.run(atTime: sessionStartTime - 1) {
                 // We'll ask for a push challenge, though we don't need to resolve it in this test.
                 self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
                     return Guarantee<String>.pending().0
                 }
 
-                // Resolve with a session at time 6.
+                // Resolve with a session.
                 self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
                     resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
-                    atTime: 6
+                    atTime: sessionStartTime + 1
                 )
             }
 
-            // It will ask for push tokens for the session at t=5; response was set up above.
-
-            // Then when it gets back the session at t=6, it should immediately ask for
+            // Then when it gets back the session, it should immediately ask for
             // a verification code to be sent.
-            scheduler.run(atTime: 5) {
-                // Resolve with an updated session at time 7.
+            scheduler.run(atTime: sendVerificationCodeTime - 1) {
+                // Resolve with an updated session.
                 self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                     resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
-                    atTime: 7
+                    atTime: sendVerificationCodeTime + 1
                 )
             }
 
             XCTAssert(svr.hasMasterKey)
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, 7)
+            XCTAssertEqual(scheduler.currentTime, sendVerificationCodeTime + 1)
 
             // Now we should expect to be at verification code entry since we already set the phone number.
             // No exit allowed since we've already started trying to create the account.
@@ -792,6 +871,30 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     return .value(.timeout)
                 }
             }
+            // Every time we register we also ask for prekeys.
+            preKeyManagerMock.createPreKeysMock = {
+                switch self.scheduler.currentTime {
+                case 1, 4:
+                    return .value(Stubs.prekeyBundles())
+                default:
+                    XCTFail("Got unexpected push tokens request")
+                    return .init(error: PreKeyError())
+                }
+            }
+            // And we finalize them after.
+            preKeyManagerMock.finalizePreKeysMock = { didSucceed in
+                switch self.scheduler.currentTime {
+                case 3:
+                    XCTAssertFalse(didSucceed)
+                    return .value(())
+                case 5:
+                    XCTAssertTrue(didSucceed)
+                    return .value(())
+                default:
+                    XCTFail("Got unexpected push tokens request")
+                    return .init(error: PreKeyError())
+                }
+            }
 
             let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
@@ -799,7 +902,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
                 skipDeviceTransfer: true,
-                apnRegistrationId: Stubs.apnsRegistrationId
+                apnRegistrationId: Stubs.apnsRegistrationId,
+                prekeyBundles: Stubs.prekeyBundles()
             )
 
             // Fail the request at t=3 with a network error.
@@ -818,7 +922,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     authPassword: "", // Doesn't matter for request generation.
                     accountAttributes: Stubs.accountAttributes(),
                     skipDeviceTransfer: true,
-                    apnRegistrationId: Stubs.apnsRegistrationId
+                    apnRegistrationId: Stubs.apnsRegistrationId,
+                    prekeyBundles: Stubs.prekeyBundles()
                 )
 
                 self.mockURLSession.addResponse(
@@ -847,8 +952,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 )
             }
 
-            // When registered at t=5, it should try and create pre-keys. Succeed at t=6.
-            preKeyManagerMock.createPreKeysMock = { auth in
+            // When registered at t=5, it should try and sync pre-keys. Succeed at t=6.
+            preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
                 XCTAssertEqual(self.scheduler.currentTime, 5)
                 XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
                 return self.scheduler.promise(resolvingWith: (), atTime: 6)
@@ -996,6 +1101,27 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 XCTAssertEqual(self.scheduler.currentTime, 1)
                 return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 2)
             }
+            // Every time we register we also ask for prekeys.
+            preKeyManagerMock.createPreKeysMock = {
+                switch self.scheduler.currentTime {
+                case 2:
+                    return .value(Stubs.prekeyBundles())
+                default:
+                    XCTFail("Got unexpected push tokens request")
+                    return .init(error: PreKeyError())
+                }
+            }
+            // And we finalize them after.
+            preKeyManagerMock.finalizePreKeysMock = { didSucceed in
+                switch self.scheduler.currentTime {
+                case 3:
+                    XCTAssert(didSucceed)
+                    return .value(())
+                default:
+                    XCTFail("Got unexpected push tokens request")
+                    return .init(error: PreKeyError())
+                }
+            }
 
             // Now still at t=2 it should make a reg recovery pw request, resolve it at t=3.
             let accountIdentityResponse = Stubs.accountIdentityResponse()
@@ -1006,7 +1132,8 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
                 skipDeviceTransfer: true,
-                apnRegistrationId: Stubs.apnsRegistrationId
+                apnRegistrationId: Stubs.apnsRegistrationId,
+                prekeyBundles: Stubs.prekeyBundles()
             )
             self.mockURLSession.addResponse(
                 TSRequestOWSURLSessionMock.Response(
@@ -1033,7 +1160,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // When registered at t=3, it should try and create pre-keys.
             // Resolve at t=4.
-            preKeyManagerMock.createPreKeysMock = { auth in
+            preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
                 XCTAssertEqual(self.scheduler.currentTime, 3)
                 XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
                 return self.scheduler.promise(resolvingWith: (), atTime: 4)
@@ -1326,16 +1453,23 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 8)
             }
 
-            scheduler.run(atTime: 7) {
+            // It should also fetch the prekeys for account creation
+            preKeyManagerMock.createPreKeysMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 8)
+                return self.scheduler.promise(resolvingWith: Stubs.prekeyBundles(), atTime: 9)
+            }
+
+            scheduler.run(atTime: 8) {
                 let expectedRequest = RegistrationRequestFactory.createAccountRequest(
                     verificationMethod: .sessionId(Stubs.sessionId),
                     e164: Stubs.e164,
                     authPassword: "", // Doesn't matter for request generation.
                     accountAttributes: Stubs.accountAttributes(),
                     skipDeviceTransfer: true,
-                    apnRegistrationId: Stubs.apnsRegistrationId
+                    apnRegistrationId: Stubs.apnsRegistrationId,
+                    prekeyBundles: Stubs.prekeyBundles()
                 )
-                // Resolve it at t=9
+                // Resolve it at t=10
                 self.mockURLSession.addResponse(
                     TSRequestOWSURLSessionMock.Response(
                         matcher: { request in
@@ -1345,7 +1479,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                         statusCode: 200,
                         bodyJson: accountIdentityResponse
                     ),
-                    atTime: 9,
+                    atTime: 10,
                     on: self.scheduler
                 )
             }
@@ -1359,16 +1493,23 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 )
             }
 
-            // Once we are registered at t=9, we should try and create pre-keys
+            // Once we are registered at t=10, we should finalize prekeys.
+            preKeyManagerMock.finalizePreKeysMock = { didSucceed in
+                XCTAssertEqual(self.scheduler.currentTime, 10)
+                XCTAssert(didSucceed)
+                return self.scheduler.promise(resolvingWith: (), atTime: 11)
+            }
+
+            // Then we should try and create one time pre-keys
             // with the credentials we got in the identity response.
-            preKeyManagerMock.createPreKeysMock = { auth in
-                XCTAssertEqual(self.scheduler.currentTime, 9)
+            preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
+                XCTAssertEqual(self.scheduler.currentTime, 11)
                 XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-                return self.scheduler.promise(resolvingWith: (), atTime: 10)
+                return self.scheduler.promise(resolvingWith: (), atTime: 12)
             }
 
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, 10)
+            XCTAssertEqual(scheduler.currentTime, 12)
 
             // Now we should ask to create a PIN.
             // No exit allowed since we've already started trying to create the account.
@@ -1406,7 +1547,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             }
 
             // When registered, we should create pre-keys.
-            preKeyManagerMock.createPreKeysMock = { auth in
+            preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
                 XCTAssertEqual(auth, expectedAuthedAccount())
                 return .value(())
             }
@@ -3292,6 +3433,35 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
         }
 
+        static func prekeyBundles() -> RegistrationPreKeyUploadBundles {
+            return RegistrationPreKeyUploadBundles(
+                aci: preKeyBundle(identity: .aci),
+                pni: preKeyBundle(identity: .pni)
+            )
+        }
+
+        static func preKeyBundle(identity: OWSIdentity) -> RegistrationPreKeyUploadBundle {
+            let identityKeyPair = Curve25519.generateKeyPair()
+            return RegistrationPreKeyUploadBundle(
+                identity: identity,
+                identityKeyPair: identityKeyPair,
+                signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                lastResortPreKey: {
+                    let keyPair = KEMKeyPair.generate()
+                    let signature = try! Ed25519.sign(Data(keyPair.publicKey.serialize()), with: identityKeyPair)
+
+                    let record = SignalServiceKit.KyberPreKeyRecord(
+                        0,
+                        keyPair: keyPair,
+                        signature: signature,
+                        generatedAt: Date(),
+                        isLastResort: true
+                    )
+                    return record
+                }()
+            )
+        }
+
         // MARK: Step States
 
         static func permissionsState() -> RegistrationPermissionsState {
@@ -3510,4 +3680,8 @@ extension RegistrationMode {
             return .exitChangeNumber
         }
     }
+}
+
+private class PreKeyError: Error {
+    init() {}
 }

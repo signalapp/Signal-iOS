@@ -161,6 +161,11 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
 
     func cullSignedPreKeyRecords(tx: DBWriteTransaction) { }
 
+    func removeSignedPreKey(
+        _ signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
+        tx: SignalServiceKit.DBWriteTransaction
+    ) {}
+
     func incrementPreKeyUpdateFailureCount(tx: DBWriteTransaction) { }
     internal func getPreKeyUpdateFailureCount(tx: DBReadTransaction) -> Int32 { 0 }
     internal func getFirstPreKeyUpdateFailureDate(tx: DBReadTransaction) -> Date? { nil }
@@ -274,6 +279,11 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
     func cullOneTimePreKeyRecords(tx: DBWriteTransaction) { }
 
     func cullLastResortPreKeyRecords(tx: DBWriteTransaction) { }
+
+    func removeLastResortPreKey(
+        record: SignalServiceKit.KyberPreKeyRecord,
+        tx: SignalServiceKit.DBWriteTransaction
+    ) {}
 
     func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: SignalServiceKit.DBWriteTransaction) {
         lastPreKeyRotation = date

@@ -28,6 +28,11 @@ public protocol SignalSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
 
     func cullSignedPreKeyRecords(tx: DBWriteTransaction)
 
+    func removeSignedPreKey(
+        _ signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
+        tx: DBWriteTransaction
+    )
+
     func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: DBWriteTransaction)
     func getLastSuccessfulPreKeyRotationDate(tx: DBReadTransaction) -> Date?
 
@@ -92,6 +97,13 @@ extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
 
     public func cullSignedPreKeyRecords(tx: DBWriteTransaction) {
         cullSignedPreKeyRecords(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func removeSignedPreKey(
+        _ signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
+        tx: DBWriteTransaction
+    ) {
+        self.removeSignedPreKey(signedPreKeyRecord.id, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func setLastSuccessfulPreKeyRotationDate(_ date: Date, tx: DBWriteTransaction) {

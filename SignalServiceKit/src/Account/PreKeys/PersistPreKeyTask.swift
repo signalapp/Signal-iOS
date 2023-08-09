@@ -28,13 +28,8 @@ extension PreKeyTasks {
             self.signedPreKeyStore = signedPreKeyStore
             self.kyberPreKeyStore = kyberPreKeyStore
         }
-    }
 
-    internal class PersistSuccesfulUpload: PersistBase {
-
-        func runTask(
-            bundle: PreKeyUploadBundle
-        ) throws {
+        fileprivate func persistForSuccessulUpload(bundle: PreKeyUploadBundle) throws {
             try self.db.write { tx in
                 // save last-resort PQ key here as well (if created)
                 if let signedPreKeyRecord = bundle.getSignedPreKey() {
@@ -81,6 +76,64 @@ extension PreKeyTasks {
                     try self.kyberPreKeyStore.cullOneTimePreKeyRecords(tx: tx)
                 }
             }
+        }
+    }
+
+    /// Unlike the below method, this does not mark the stored prekeys as "current" or "accepted by server"
+    /// TODO: should the concept of "current" and "accepted" go away?
+    internal class PersistPriorToUpload: PersistBase {
+
+        func runTask(
+            bundle: PreKeyUploadBundle
+        ) throws {
+            try self.db.write { tx in
+                if let signedPreKeyRecord = bundle.getSignedPreKey() {
+                    self.signedPreKeyStore.storeSignedPreKey(
+                        signedPreKeyRecord.id,
+                        signedPreKeyRecord: signedPreKeyRecord,
+                        tx: tx
+                    )
+                }
+                if let lastResortPreKey = bundle.getLastResortPreKey() {
+                    try self.kyberPreKeyStore.storeKyberPreKey(
+                        record: lastResortPreKey,
+                        tx: tx
+                    )
+                }
+                if let newPreKeyRecords = bundle.getPreKeyRecords() {
+                    self.preKeyStore.storePreKeyRecords(newPreKeyRecords, tx: tx)
+                }
+                if let pqPreKeyRecords = bundle.getPqPreKeyRecords() {
+                    try self.kyberPreKeyStore.storeKyberPreKeyRecords(records: pqPreKeyRecords, tx: tx)
+                }
+            }
+        }
+    }
+
+    internal class PersistAfterRegistration: PersistBase {
+
+        func runTask(
+            bundle: RegistrationPreKeyUploadBundle,
+            uploadDidSucceed: Bool
+        ) throws {
+            if uploadDidSucceed {
+                try persistForSuccessulUpload(bundle: bundle)
+            } else {
+                // Wipe the keys.
+                self.db.write { tx in
+                    self.signedPreKeyStore.removeSignedPreKey(bundle.signedPreKey, tx: tx)
+                    self.kyberPreKeyStore.removeLastResortPreKey(record: bundle.lastResortPreKey, tx: tx)
+                }
+            }
+        }
+    }
+
+    internal class PersistSuccesfulUpload: PersistBase {
+
+        func runTask(
+            bundle: PreKeyUploadBundle
+        ) throws {
+            try persistForSuccessulUpload(bundle: bundle)
         }
     }
 

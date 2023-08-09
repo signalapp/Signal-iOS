@@ -38,6 +38,11 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
 
     func cullLastResortPreKeyRecords(tx: DBWriteTransaction) throws
 
+    func removeLastResortPreKey(
+        record: SignalServiceKit.KyberPreKeyRecord,
+        tx: DBWriteTransaction
+    )
+
     func cullOneTimePreKeyRecords(tx: DBWriteTransaction) throws
 
     func setLastSuccessfulPreKeyRotationDate(
@@ -382,5 +387,12 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
 
         let keysToRemove = recordsToRemove.map { key(for: $0.id) }
         self.keyStore.removeValues(forKeys: keysToRemove, transaction: tx)
+    }
+
+    public func removeLastResortPreKey(
+        record: SignalServiceKit.KyberPreKeyRecord,
+        tx: DBWriteTransaction
+    ) {
+        self.keyStore.removeValue(forKey: key(for: record.id), transaction: tx)
     }
 }

@@ -121,6 +121,10 @@ extension PreKeyTasks {
                         targets: targets
                     )
                     .map(on: SyncScheduler()) { $0 }
+            case .createOneTimePreKeys:
+                bundlePromise = CreateOneTimePreKeys(context: generateContext)
+                    .runTask(identity: action.identity)
+                    .map(on: SyncScheduler()) { $0 }
             case .createOrRotatePniKeys(let targets):
                 bundlePromise = GenerateForPNIRotation
                     .init(
@@ -170,7 +174,7 @@ fileprivate extension PreKey.Operation.Action {
 
     var identity: OWSIdentity {
         switch self {
-        case .refresh(let identity, _), .rotate(let identity, _), .legacy_create(let identity, _):
+        case .refresh(let identity, _), .rotate(let identity, _), .legacy_create(let identity, _), .createOneTimePreKeys(let identity):
             return identity
         case .createOrRotatePniKeys:
             return .pni

@@ -27,7 +27,10 @@ extension PreKeyTasks {
         }
 
         fileprivate func getOrCreateIdentityKeyPair(identity: OWSIdentity) -> ECKeyPair {
-            if let identityKeyPair = context.identityManager.identityKeyPair(for: identity) {
+            let existingKeyPair = context.db.read { tx in
+                return context.identityManager.identityKeyPair(for: identity, tx: tx)
+            }
+            if let identityKeyPair = existingKeyPair {
                 return identityKeyPair
             }
             let identityKeyPair = context.identityManager.generateNewIdentityKeyPair()
@@ -81,6 +84,56 @@ extension PreKeyTasks {
                 lastResortPreKey: lastResortPreKey,
                 pqPreKeyRecords: pqPreKeyRecords
             )
+        }
+    }
+
+    /// When we register, we create a new identity key and other keys. So this variant:
+    /// CAN create a new identity key (or uses any existing one)
+    /// ALWAYS changes the targeted keys (regardless of current key state)
+    internal class GenerateForRegistration: GenerateBase {
+
+        internal override init(context: Generate.Context) {
+            super.init(context: context)
+        }
+
+        func runTask(identity: OWSIdentity) throws -> RegistrationPreKeyUploadBundle {
+            let identityKeyPair = getOrCreateIdentityKeyPair(identity: identity)
+            return try context.db.write { tx in
+                return RegistrationPreKeyUploadBundle(
+                    identity: identity,
+                    identityKeyPair: identityKeyPair,
+                    signedPreKey: context.signedPreKeyStore.generateRandomSignedRecord(),
+                    lastResortPreKey: try context.kyberPreKeyStore.generateLastResortKyberPreKey(
+                        signedBy: identityKeyPair,
+                        tx: tx
+                    )
+                )
+            }
+        }
+    }
+
+    internal class CreateOneTimePreKeys: GenerateBase {
+        internal override init(context: Generate.Context) {
+            super.init(context: context)
+        }
+
+        func runTask(identity: OWSIdentity) -> Promise<PartialPreKeyUploadBundle> {
+            // Get the identity key
+            guard let identityKeyPair: ECKeyPair = context.db.read(block: { tx in
+                context.identityManager.identityKeyPair(for: identity, tx: tx)
+            }) else {
+                Logger.warn("cannot refresh \(identity) pre-keys; missing identity key")
+                return .init(error: Error.noIdentityKey)
+            }
+            do {
+                return .value(try self.createPartialBundle(
+                    identity: identity,
+                    identityKeyPair: identityKeyPair,
+                    targets: [.oneTimePreKey, .oneTimePqPreKey]
+                ))
+            } catch let error {
+                return .init(error: error)
+            }
         }
     }
 
@@ -177,7 +230,9 @@ extension PreKeyTasks {
             targets: PreKey.Operation.Target
         ) -> Promise<PartialPreKeyUploadBundle> {
             // Get the identity key
-            guard let identityKeyPair: ECKeyPair = context.identityManager.identityKeyPair(for: identity) else {
+            guard let identityKeyPair: ECKeyPair = context.db.read(block: { tx in
+                context.identityManager.identityKeyPair(for: identity, tx: tx)
+            }) else {
                 Logger.warn("cannot refresh \(identity) pre-keys; missing identity key")
                 return .init(error: Error.noIdentityKey)
             }
@@ -220,7 +275,9 @@ extension PreKeyTasks {
             targets unfilteredTargets: PreKey.Operation.Target
         ) -> Promise<PartialPreKeyUploadBundle> {
             // Get the identity key
-            guard let identityKeyPair: ECKeyPair = context.identityManager.identityKeyPair(for: identity) else {
+            guard let identityKeyPair: ECKeyPair = context.db.read(block: { tx in
+                context.identityManager.identityKeyPair(for: identity, tx: tx)
+            }) else {
                 Logger.warn("cannot refresh \(identity) pre-keys; missing identity key")
                 return .init(error: Error.noIdentityKey)
             }

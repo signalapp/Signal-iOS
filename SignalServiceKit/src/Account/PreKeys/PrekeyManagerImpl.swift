@@ -91,20 +91,15 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func isAppLockedDueToPreKeyUpdateFailures(tx: DBReadTransaction) -> Bool {
-        if FeatureFlags.enablePQXDH {
-            let needPreKeyRotation =
-                needsSignedPreKeyRotation(identity: .aci, tx: tx)
-                || needsSignedPreKeyRotation(identity: .pni, tx: tx)
+        let needPreKeyRotation =
+            needsSignedPreKeyRotation(identity: .aci, tx: tx)
+            || needsSignedPreKeyRotation(identity: .pni, tx: tx)
 
-            let needLastResortKeyRotation =
-                needsLastResortPreKeyRotation(identity: .aci, tx: tx)
-                || needsLastResortPreKeyRotation(identity: .pni, tx: tx)
+        let needLastResortKeyRotation =
+            needsLastResortPreKeyRotation(identity: .aci, tx: tx)
+            || needsLastResortPreKeyRotation(identity: .pni, tx: tx)
 
-            return needPreKeyRotation || needLastResortKeyRotation
-        } else {
-            return legacy_needsSignedPreKeyRotation(identity: .aci, tx: tx)
-            || legacy_needsSignedPreKeyRotation(identity: .pni, tx: tx)
-        }
+        return needPreKeyRotation || needLastResortKeyRotation
     }
 
     private func refreshPreKeysDidSucceed() {
@@ -155,6 +150,48 @@ public class PreKeyManagerImpl: PreKeyManager {
         addOperation(for: .pni)
 
         Self.operationQueue.addOperations(operations, waitUntilFinished: false)
+    }
+
+    public func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles> {
+        /// Note that we do not report a `refreshPreKeysDidSucceed, because this operation does not`
+        /// generate one time prekeys, so we shouldn't mark the routine refresh as having been "checked".
+        let (promise, future) = Promise<RegistrationPreKeyUploadBundles>.pending()
+        let operation = preKeyOperationFactory.createForRegistration(future: future)
+        Self.operationQueue.addOperation(operation)
+        return promise
+    }
+
+    public func finalizeRegistrationPreKeys(
+        _ bundles: RegistrationPreKeyUploadBundles,
+        uploadDidSucceed: Bool
+    ) -> Promise<Void> {
+        let (promise, future) = Promise<Void>.pending()
+        let operation = preKeyOperationFactory.finalizeRegistrationPreKeys(
+            bundles,
+            uploadDidSucceed: uploadDidSucceed,
+            future: future
+        )
+        Self.operationQueue.addOperation(operation)
+        return promise
+    }
+
+    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void> {
+        let (aciPromise, aciFuture) = Promise<Void>.pending()
+        let aciOperation = preKeyOperationFactory.rotateOneTimePreKeysForRegistration(
+            identity: .aci,
+            auth: auth,
+            future: aciFuture,
+            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+        )
+        let (pniPromise, pniFuture) = Promise<Void>.pending()
+        let pniOperation = preKeyOperationFactory.rotateOneTimePreKeysForRegistration(
+            identity: .pni,
+            auth: auth,
+            future: pniFuture,
+            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+        )
+        Self.operationQueue.addOperations([aciOperation, pniOperation], waitUntilFinished: false)
+        return Promise.when(fulfilled: [aciPromise, pniPromise])
     }
 
     public func legacy_createPreKeys(auth: ChatServiceAuth) -> Promise<Void> {

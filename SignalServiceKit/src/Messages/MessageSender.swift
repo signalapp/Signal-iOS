@@ -119,8 +119,9 @@ private extension MessageSender {
         }
 
         // Don't use UD for story preKey fetches, we don't have a valid UD auth key
+        // TODO: (PreKey Cleanup)
         let udAccess = isStoryMessage ? nil : udSendingParamsProvider?.udSendingAccess?.udAccess
-        let requestPqKeys = FeatureFlags.enablePQXDH
+        let requestPqKeys = true
 
         let requestMaker = RequestMaker(
             label: "Prekey Fetch",

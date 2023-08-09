@@ -246,16 +246,8 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
         SignedPreKeyRecord *left, SignedPreKeyRecord *right) { return [left.generatedAt compare:right.generatedAt]; }];
 
     unsigned oldSignedPreKeyCount = (unsigned)[oldSignedPrekeys count];
-    unsigned oldAcceptedSignedPreKeyCount = 0;
-    for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
-        if (signedPrekey.wasAcceptedByService) {
-            oldAcceptedSignedPreKeyCount++;
-        }
-    }
 
-    OWSLogInfo(@"oldSignedPreKeyCount: %u, oldAcceptedSignedPreKeyCount: %u",
-        oldSignedPreKeyCount,
-        oldAcceptedSignedPreKeyCount);
+    OWSLogInfo(@"oldSignedPreKeyCount: %u", oldSignedPreKeyCount);
 
     // Iterate the signed prekeys in ascending order so that we try to delete older keys first.
     for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
@@ -275,15 +267,7 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
             break;
         }
 
-        // We try to keep a minimum of 3 "old, accepted" signed prekeys.
-        if (signedPrekey.wasAcceptedByService) {
-            if (oldAcceptedSignedPreKeyCount <= 3) {
-                continue;
-            } else {
-                oldAcceptedSignedPreKeyCount--;
-            }
-        }
-
+        // TODO: (PreKey Cleanup)
         if (signedPrekey.wasAcceptedByService) {
             OWSProdInfo([OWSAnalyticsEvents prekeysDeletedOldAcceptedSignedPrekey]);
         } else {

@@ -36,7 +36,7 @@ class _PreKey_IdentityManagerMock: PreKey.Operation.Shims.IdentityManager {
     var aciKeyPair: ECKeyPair?
     var pniKeyPair: ECKeyPair?
 
-    func identityKeyPair(for identity: OWSIdentity) -> ECKeyPair? {
+    func identityKeyPair(for identity: OWSIdentity, tx: SignalServiceKit.DBReadTransaction) -> ECKeyPair? {
         switch identity {
         case .aci:
             return aciKeyPair

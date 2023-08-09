@@ -63,6 +63,11 @@ extension PreKey {
             // Never creates an identity key; fails if none present.
             case rotate(identity: OWSIdentity, targets: Operation.Target)
 
+            // Create all one time prekeys. Used during registration.
+            // Does not check for existing prekeys, or wait for message
+            // processing, as it is assumed these are the first prekeys.
+            case createOneTimePreKeys(identity: OWSIdentity)
+
             // Create pni keys, rotating if they already exist.
             // May also create the pni identity key if it didn't exist;
             // if it did the existing key will be reused.
@@ -81,15 +86,18 @@ extension PreKey {
 public class PreKeyOperation: OWSOperation {
     private let context: PreKeyTasks.Context
     private let preKeyTask: PreKeyTasks.PreKeyTask
+    private let future: Future<Void>?
     private let _didSucceed: () -> Void
 
     public init(
         action: PreKey.Operation.Action,
         auth: ChatServiceAuth = .implicit(),
         context: PreKeyTasks.Context,
+        future: Future<Void>? = nil,
         didSucceed: @escaping () -> Void
     ) {
         self.context = context
+        self.future = future
         self._didSucceed = didSucceed
         self.preKeyTask = PreKeyTasks.PreKeyTask(
             action: action,
@@ -102,8 +110,10 @@ public class PreKeyOperation: OWSOperation {
         firstly(on: context.schedulers.global()) {
             self.preKeyTask.runPreKeyTask()
         } .done(on: self.context.schedulers.global()) {
+            self.future?.resolve()
             self.reportSuccess()
         }.catch(on: self.context.schedulers.global()) { error in
+            self.future?.reject(error)
             self.reportError(withUndefinedRetry: error)
         }
     }
@@ -111,5 +121,129 @@ public class PreKeyOperation: OWSOperation {
     public override func didSucceed() {
         super.didSucceed()
         _didSucceed()
+    }
+}
+
+internal class PreKeyCreateForRegistrationOperation: OWSOperation {
+    private let scheduler: Scheduler
+    private let aciGenerateTask: PreKeyTasks.GenerateForRegistration
+    private let pniGenerateTask: PreKeyTasks.GenerateForRegistration
+    private let aciPersistTask: PreKeyTasks.PersistPriorToUpload
+    private let pniPersistTask: PreKeyTasks.PersistPriorToUpload
+    private let future: Future<RegistrationPreKeyUploadBundles>
+
+    public init(
+        dateProvider: @escaping DateProvider,
+        db: DB,
+        identityManager: PreKey.Operation.Shims.IdentityManager,
+        protocolStoreManager: SignalProtocolStoreManager,
+        schedulers: Schedulers,
+        future: Future<RegistrationPreKeyUploadBundles>
+    ) {
+        let scheduler = schedulers.global()
+        self.scheduler = scheduler
+        self.future = future
+
+        func generateContext(for identity: OWSIdentity) -> PreKeyTasks.Generate.Context {
+            let protocolStore = protocolStoreManager.signalProtocolStore(for: identity)
+            return .init(
+                db: db,
+                identityManager: identityManager,
+                scheduler: scheduler,
+                preKeyStore: protocolStore.preKeyStore,
+                signedPreKeyStore: protocolStore.signedPreKeyStore,
+                kyberPreKeyStore: protocolStore.kyberPreKeyStore
+            )
+        }
+
+        let aciContext = generateContext(for: .aci)
+        self.aciGenerateTask = PreKeyTasks.GenerateForRegistration(context: aciContext)
+        let pniContext = generateContext(for: .pni)
+        self.pniGenerateTask = PreKeyTasks.GenerateForRegistration(context: pniContext)
+        self.aciPersistTask = PreKeyTasks.PersistPriorToUpload(
+            dateProvider: dateProvider,
+            db: db,
+            preKeyStore: aciContext.preKeyStore,
+            signedPreKeyStore: aciContext.signedPreKeyStore,
+            kyberPreKeyStore: aciContext.kyberPreKeyStore
+        )
+        self.pniPersistTask = PreKeyTasks.PersistPriorToUpload(
+            dateProvider: dateProvider,
+            db: db,
+            preKeyStore: pniContext.preKeyStore,
+            signedPreKeyStore: pniContext.signedPreKeyStore,
+            kyberPreKeyStore: pniContext.kyberPreKeyStore
+        )
+    }
+
+    public override func run() {
+        firstly(on: scheduler) { () -> RegistrationPreKeyUploadBundles in
+            let aciBundle = try self.aciGenerateTask.runTask(identity: .aci)
+            try self.aciPersistTask.runTask(bundle: aciBundle)
+            let pniBundle = try self.pniGenerateTask.runTask(identity: .pni)
+            try self.pniPersistTask.runTask(bundle: pniBundle)
+            return .init(aci: aciBundle, pni: pniBundle)
+        }.done(on: scheduler) {
+            self.future.resolve($0)
+            self.reportSuccess()
+        }.catch(on: scheduler) { error in
+            self.future.reject(error)
+            self.reportError(withUndefinedRetry: error)
+        }
+    }
+}
+
+internal class PreKeyPersistAfterRegistrationOperation: OWSOperation {
+    private let bundles: RegistrationPreKeyUploadBundles
+    private let uploadDidSucceed: Bool
+    private let scheduler: Scheduler
+    private let aciPersistTask: PreKeyTasks.PersistAfterRegistration
+    private let pniPersistTask: PreKeyTasks.PersistAfterRegistration
+    private let future: Future<Void>
+
+    public init(
+        bundles: RegistrationPreKeyUploadBundles,
+        uploadDidSucceed: Bool,
+        dateProvider: @escaping DateProvider,
+        db: DB,
+        protocolStoreManager: SignalProtocolStoreManager,
+        schedulers: Schedulers,
+        future: Future<Void>
+    ) {
+        self.bundles = bundles
+        self.uploadDidSucceed = uploadDidSucceed
+        let scheduler = schedulers.global()
+        self.scheduler = scheduler
+        self.future = future
+
+        let aciProtocolStore = protocolStoreManager.signalProtocolStore(for: .aci)
+        let pniProtocolStore = protocolStoreManager.signalProtocolStore(for: .pni)
+        self.aciPersistTask = PreKeyTasks.PersistAfterRegistration(
+            dateProvider: dateProvider,
+            db: db,
+            preKeyStore: aciProtocolStore.preKeyStore,
+            signedPreKeyStore: aciProtocolStore.signedPreKeyStore,
+            kyberPreKeyStore: aciProtocolStore.kyberPreKeyStore
+        )
+        self.pniPersistTask = PreKeyTasks.PersistAfterRegistration(
+            dateProvider: dateProvider,
+            db: db,
+            preKeyStore: pniProtocolStore.preKeyStore,
+            signedPreKeyStore: pniProtocolStore.signedPreKeyStore,
+            kyberPreKeyStore: pniProtocolStore.kyberPreKeyStore
+        )
+    }
+
+    public override func run() {
+        firstly(on: scheduler) {
+            try self.aciPersistTask.runTask(bundle: self.bundles.aci, uploadDidSucceed: self.uploadDidSucceed)
+            try self.pniPersistTask.runTask(bundle: self.bundles.pni, uploadDidSucceed: self.uploadDidSucceed)
+        }.done(on: scheduler) {
+            self.future.resolve(())
+            self.reportSuccess()
+        }.catch(on: scheduler) { error in
+            self.future.reject(error)
+            self.reportError(withUndefinedRetry: error)
+        }
     }
 }

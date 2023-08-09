@@ -10,6 +10,21 @@ public protocol PreKeyManager {
 
     func checkPreKeysIfNecessary(tx: DBReadTransaction)
 
+    /// Creates a new set of prekeys for registration, creating a new identity key if needed
+    /// (or reusing the existing identity key).
+    /// These keys are persisted before this method's promise resolves, but best effort
+    /// should be taken to finalize the keys once they have been accepted by the server.
+    func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles>
+
+    /// Called on a best-effort basis. Consequences of not calling this is that the keys are still
+    /// persisted (from prior to uploading) but they aren't marked current and accepted.
+    func finalizeRegistrationPreKeys(
+        _ bundles: RegistrationPreKeyUploadBundles,
+        uploadDidSucceed: Bool
+    ) -> Promise<Void>
+
+    func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void>
+
     func legacy_createPreKeys(auth: ChatServiceAuth) -> Promise<Void>
 
     /// Our local PNI can get out of sync with the server, including because we never had

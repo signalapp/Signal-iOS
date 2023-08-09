@@ -42,7 +42,7 @@ internal class _PreKey_AccountManagerWrapper: _PreKey_AccountManagerShim {
 
 internal protocol _PreKey_IdentityManagerShim {
 
-    func identityKeyPair(for identity: OWSIdentity) -> ECKeyPair?
+    func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair?
 
     func generateNewIdentityKeyPair() -> ECKeyPair
 
@@ -59,8 +59,8 @@ internal class _PreKey_IdentityManagerWrapper: _PreKey_IdentityManagerShim {
         self.identityManager = identityManager
     }
 
-    func identityKeyPair(for identity: OWSIdentity) -> ECKeyPair? {
-        identityManager.identityKeyPair(for: identity)
+    func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair? {
+        identityManager.identityKeyPair(for: identity, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     func generateNewIdentityKeyPair() -> ECKeyPair {

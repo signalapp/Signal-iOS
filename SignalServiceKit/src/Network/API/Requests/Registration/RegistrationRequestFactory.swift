@@ -261,13 +261,15 @@ public enum RegistrationRequestFactory {
     /// - parameter apnRegistrationId: Apple Push Notification Service token(s) for the server to send
     ///   push notifications to. Either this must be non-nil, or `AccountAttributes.isManualMessageFetchEnabled`
     ///   must be true, otherwise the request will fail.
+    /// - parameter prekeyBundles: Prekey information to include in the request; mirrors the requests to `v2/keys`.
     public static func createAccountRequest(
         verificationMethod: VerificationMethod,
         e164: E164,
         authPassword: String,
         accountAttributes: AccountAttributes,
         skipDeviceTransfer: Bool,
-        apnRegistrationId: ApnRegistrationId?
+        apnRegistrationId: ApnRegistrationId?,
+        prekeyBundles: RegistrationPreKeyUploadBundles
     ) -> TSRequest {
         owsAssertDebug(apnRegistrationId != nil || accountAttributes.isManualMessageFetchEnabled)
 
@@ -284,7 +286,14 @@ public enum RegistrationRequestFactory {
 
         var parameters: [String: Any] = [
             "accountAttributes": accountAttributesDict,
-            "skipDeviceTransfer": skipDeviceTransfer
+            "skipDeviceTransfer": skipDeviceTransfer,
+            "aciIdentityKey": prekeyBundles.aci.identityKeyPair.publicKey.prependKeyType().base64EncodedStringWithoutPadding(),
+            "pniIdentityKey": prekeyBundles.pni.identityKeyPair.publicKey.prependKeyType().base64EncodedStringWithoutPadding(),
+            "aciSignedPreKey": OWSRequestFactory.signedPreKeyRequestParameters(prekeyBundles.aci.signedPreKey),
+            "pniSignedPreKey": OWSRequestFactory.signedPreKeyRequestParameters(prekeyBundles.pni.signedPreKey),
+            "aciPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.aci.lastResortPreKey),
+            "pniPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.pni.lastResortPreKey),
+            "requireAtomic": true
         ]
         switch verificationMethod {
         case .sessionId(let sessionId):

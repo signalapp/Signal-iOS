@@ -121,6 +121,7 @@ extension RegistrationCoordinatorImpl {
             accountAttributes: AccountAttributes,
             skipDeviceTransfer: Bool,
             apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
+            prekeyBundles: RegistrationPreKeyUploadBundles,
             signalService: OWSSignalServiceProtocol,
             schedulers: Schedulers
         ) -> Guarantee<AccountResponse> {
@@ -130,7 +131,8 @@ extension RegistrationCoordinatorImpl {
                 authPassword: authPassword,
                 accountAttributes: accountAttributes,
                 skipDeviceTransfer: skipDeviceTransfer,
-                apnRegistrationId: apnRegistrationId
+                apnRegistrationId: apnRegistrationId,
+                prekeyBundles: prekeyBundles
             )
             return makeRequest(
                 request,

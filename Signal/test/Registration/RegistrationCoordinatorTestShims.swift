@@ -166,10 +166,22 @@ public class _RegistrationCoordinator_OWS2FAManagerMock: _RegistrationCoordinato
 // MARK: - PreKeyManager
 
 public class _RegistrationCoordinator_PreKeyManagerMock: MockPreKeyManager {
-    public var createPreKeysMock: ((ChatServiceAuth) -> Promise<Void>)?
+    public var createPreKeysMock: (() -> Promise<RegistrationPreKeyUploadBundles>)?
 
-    override public func legacy_createPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
-        return createPreKeysMock!(auth)
+    override public func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles> {
+        return createPreKeysMock!()
+    }
+
+    public var finalizePreKeysMock: ((_ didSucceed: Bool) -> Promise<Void>)?
+
+    override public func finalizeRegistrationPreKeys(_ bundles: RegistrationPreKeyUploadBundles, uploadDidSucceed: Bool) -> Promise<Void> {
+        return finalizePreKeysMock!(uploadDidSucceed)
+    }
+
+    public var rotateOneTimePreKeysMock: ((ChatServiceAuth) -> Promise<Void>)?
+
+    override public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void> {
+        return rotateOneTimePreKeysMock!(auth)
     }
 }
 
@@ -244,7 +256,7 @@ public class _RegistrationCoordinator_PushRegistrationManagerMock: _Registration
     public func syncPushTokensForcingUpload(
         auth: ChatServiceAuth
     ) -> Guarantee<Registration.SyncPushTokensResult> {
-        return .value(.success)
+        fatalError("Only legacy registration should be syncing push tokens")
     }
 }
 
