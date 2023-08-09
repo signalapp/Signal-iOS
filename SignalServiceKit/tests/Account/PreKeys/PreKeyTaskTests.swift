@@ -12,10 +12,10 @@ final class PreKeyTaskTests: XCTestCase {
 
     private var testSchedulers: TestSchedulers!
 
-    private var mockAccountManager: PreKey.Mocks.AccountManager!
-    private var mockIdentityManager: PreKey.Mocks.IdentityManager!
-    private var mockServiceClient: PreKey.Mocks.AccountServiceClient!
-    private var mockDateProvider: PreKey.Mocks.DateProvider!
+    private var mockAccountManager: PreKey.Operation.Mocks.AccountManager!
+    private var mockIdentityManager: PreKey.Operation.Mocks.IdentityManager!
+    private var mockServiceClient: PreKey.Operation.Mocks.AccountServiceClient!
+    private var mockDateProvider: PreKey.Operation.Mocks.DateProvider!
     private var context: PreKeyTask.Context!
 
     private var mockAciProtocolStore: MockSignalProtocolStore!
@@ -42,7 +42,7 @@ final class PreKeyTaskTests: XCTestCase {
             dateProvider: mockDateProvider.targetDate,
             db: MockDB(schedulers: testSchedulers),
             identityManager: mockIdentityManager,
-            messageProcessor: PreKey.Mocks.MessageProcessor(),
+            messageProcessor: PreKey.Operation.Mocks.MessageProcessor(),
             protocolStoreManager: mockProtocolStoreManager,
             schedulers: testSchedulers,
             serviceClient: mockServiceClient

@@ -53,7 +53,8 @@
     return result;
 }
 
-- (void)testSignedPreKeyDeletion {
+- (void)testSignedPreKeyDeletion
+{
     XCTAssertEqual(0, self.signedPreKeyCount);
 
     int days = 40;

@@ -820,6 +820,10 @@
 		66586D3829005A1B00DDA9B9 /* story_viewer_onboarding_1.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */; };
 		66586D3929005A1B00DDA9B9 /* story_viewer_onboarding_3.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */; };
 		66586D4129009C0000DDA9B9 /* TextAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66586D4029009C0000DDA9B9 /* TextAttachment.swift */; };
+		6659A0262A7C11A800066AB7 /* PrekeyManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0252A7C11A800066AB7 /* PrekeyManagerImpl.swift */; };
+		6659A0282A7C11ED00066AB7 /* MockPreKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0272A7C11ED00066AB7 /* MockPreKeyManager.swift */; };
+		6659A02A2A7C121C00066AB7 /* PreKeyManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A0292A7C121C00066AB7 /* PreKeyManager+Shims.swift */; };
+		6659A02C2A7C161400066AB7 /* PreKeyOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659A02B2A7C161400066AB7 /* PreKeyOperationFactory.swift */; };
 		6659CCB129CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */; };
 		665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EF86C290C385B00F490D2 /* OWSNavigationController.swift */; };
 		665FAE8C2A02C0D400FA298D /* SpoilerRevealState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */; };
@@ -1272,7 +1276,7 @@
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
 		C198FDD62A37C905000BCAC9 /* SSKKyberPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */; };
-		C19AFAB82A6598D800FE3ECF /* PreKeyOperationShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19AFAB72A6598D800FE3ECF /* PreKeyOperationShims.swift */; };
+		C19AFAB82A6598D800FE3ECF /* PreKeyOperation+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19AFAB72A6598D800FE3ECF /* PreKeyOperation+Shims.swift */; };
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
 		C1CD0E362A6B0BC900307F1A /* SignalPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */; };
 		C1CD0E382A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E372A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift */; };
@@ -1904,13 +1908,10 @@
 		F9C5CCA3289453B300548EEE /* StorageService.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B8289453B100548EEE /* StorageService.pb.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCA4289453B300548EEE /* SSKProto+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B9289453B100548EEE /* SSKProto+OWS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCA5289453B300548EEE /* TSAccountManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9BB289453B100548EEE /* TSAccountManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CCA6289453B300548EEE /* RotateSignedKeyOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9BC289453B100548EEE /* RotateSignedKeyOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCA8289453B300548EEE /* CreatePreKeysOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9BE289453B100548EEE /* CreatePreKeysOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCA9289453B300548EEE /* AccountServiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCAA289453B300548EEE /* TSAccountManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C0289453B100548EEE /* TSAccountManager.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCAB289453B300548EEE /* TSAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C1289453B100548EEE /* TSAccountManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCAC289453B300548EEE /* PreKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C2289453B100548EEE /* PreKeyManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCAD289453B300548EEE /* RefreshPreKeysOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C3289453B100548EEE /* RefreshPreKeysOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB1289453B300548EEE /* RemoteAttestationQuote.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C8289453B100548EEE /* RemoteAttestationQuote.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCB3289453B300548EEE /* RemoteAttestationQuote.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9CA289453B100548EEE /* RemoteAttestationQuote.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3352,6 +3353,10 @@
 		66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_1.json; sourceTree = "<group>"; };
 		66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_3.json; sourceTree = "<group>"; };
 		66586D4029009C0000DDA9B9 /* TextAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAttachment.swift; sourceTree = "<group>"; };
+		6659A0252A7C11A800066AB7 /* PrekeyManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrekeyManagerImpl.swift; sourceTree = "<group>"; };
+		6659A0272A7C11ED00066AB7 /* MockPreKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPreKeyManager.swift; sourceTree = "<group>"; };
+		6659A0292A7C121C00066AB7 /* PreKeyManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreKeyManager+Shims.swift"; sourceTree = "<group>"; };
+		6659A02B2A7C161400066AB7 /* PreKeyOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyOperationFactory.swift; sourceTree = "<group>"; };
 		6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationConfirmModeSwitchViewController.swift; sourceTree = "<group>"; };
 		665EF86C290C385B00F490D2 /* OWSNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationController.swift; sourceTree = "<group>"; };
 		665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealState.swift; sourceTree = "<group>"; };
@@ -3884,7 +3889,7 @@
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
 		C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStore.swift; sourceTree = "<group>"; };
-		C19AFAB72A6598D800FE3ECF /* PreKeyOperationShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyOperationShims.swift; sourceTree = "<group>"; };
+		C19AFAB72A6598D800FE3ECF /* PreKeyOperation+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreKeyOperation+Shims.swift"; sourceTree = "<group>"; };
 		C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerShims.swift; sourceTree = "<group>"; };
 		C1CD0E352A6B0BC900307F1A /* SignalPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalPreKeyStore.swift; sourceTree = "<group>"; };
 		C1CD0E372A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalSignedPreKeyStore.swift; sourceTree = "<group>"; };
@@ -4524,13 +4529,10 @@
 		F9C5C9B8289453B100548EEE /* StorageService.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageService.pb.swift; sourceTree = "<group>"; };
 		F9C5C9B9289453B100548EEE /* SSKProto+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SSKProto+OWS.swift"; sourceTree = "<group>"; };
 		F9C5C9BB289453B100548EEE /* TSAccountManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAccountManager.h; sourceTree = "<group>"; };
-		F9C5C9BC289453B100548EEE /* RotateSignedKeyOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotateSignedKeyOperation.swift; sourceTree = "<group>"; };
-		F9C5C9BE289453B100548EEE /* CreatePreKeysOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreatePreKeysOperation.swift; sourceTree = "<group>"; };
 		F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountServiceClient.swift; sourceTree = "<group>"; };
 		F9C5C9C0289453B100548EEE /* TSAccountManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAccountManager.m; sourceTree = "<group>"; };
 		F9C5C9C1289453B100548EEE /* TSAccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSAccountManager.swift; sourceTree = "<group>"; };
 		F9C5C9C2289453B100548EEE /* PreKeyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreKeyManager.swift; sourceTree = "<group>"; };
-		F9C5C9C3289453B100548EEE /* RefreshPreKeysOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefreshPreKeysOperation.swift; sourceTree = "<group>"; };
 		F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteAttestation.swift; sourceTree = "<group>"; };
 		F9C5C9C8289453B100548EEE /* RemoteAttestationQuote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteAttestationQuote.m; sourceTree = "<group>"; };
 		F9C5C9CA289453B100548EEE /* RemoteAttestationQuote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoteAttestationQuote.h; sourceTree = "<group>"; };
@@ -6726,6 +6728,31 @@
 			path = WhoAmI;
 			sourceTree = "<group>";
 		};
+		6659A0242A7C112700066AB7 /* PreKeys */ = {
+			isa = PBXGroup;
+			children = (
+				6659A0272A7C11ED00066AB7 /* MockPreKeyManager.swift */,
+				6659A0292A7C121C00066AB7 /* PreKeyManager+Shims.swift */,
+				F9C5C9C2289453B100548EEE /* PreKeyManager.swift */,
+				6659A0252A7C11A800066AB7 /* PrekeyManagerImpl.swift */,
+				C19AFAB72A6598D800FE3ECF /* PreKeyOperation+Shims.swift */,
+				C17345BA2A5E000300C6426D /* PreKeyOperation.swift */,
+				6659A02B2A7C161400066AB7 /* PreKeyOperationFactory.swift */,
+				C1ED5CA02A72E3D5009AD3FC /* PreKeyTask.swift */,
+			);
+			path = PreKeys;
+			sourceTree = "<group>";
+		};
+		6659A02D2A7C171900066AB7 /* PreKeys */ = {
+			isa = PBXGroup;
+			children = (
+				C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */,
+				C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */,
+				F9426201289B1B5400460798 /* SignedPreKeyDeletionTests.m */,
+			);
+			path = PreKeys;
+			sourceTree = "<group>";
+		};
 		666BAB0E2980B76B00867196 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -8305,7 +8332,6 @@
 				F94261DC289B1B5400460798 /* SDSDatabaseStorageTest.swift */,
 				F94261DB289B1B5400460798 /* SDSKeyValueStoreTest.swift */,
 				C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */,
-				C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */,
 				C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */,
 				C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */,
 				F94261E1289B1B5400460798 /* SSKSignedPreKeyStoreTest.swift */,
@@ -8369,15 +8395,13 @@
 		F94261FF289B1B5400460798 /* Account */ = {
 			isa = PBXGroup;
 			children = (
+				6659A02D2A7C171900066AB7 /* PreKeys */,
 				D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */,
 				D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */,
 				D9CAF74C2A09D2AB0049193A /* PniHelloWorldManagerTest.swift */,
-				C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */,
-				C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */,
 				5003BB44299F650E0037159B /* ServiceIdTest.swift */,
 				F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */,
 				E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */,
-				F9426201289B1B5400460798 /* SignedPreKeyDeletionTests.m */,
 				F903C29A28EC7AE60035B42B /* TSAccountManagerTest.swift */,
 			);
 			name = Account;
@@ -9020,19 +9044,13 @@
 		F9C5C9BA289453B100548EEE /* Account */ = {
 			isa = PBXGroup;
 			children = (
+				6659A0242A7C112700066AB7 /* PreKeys */,
 				F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */,
-				F9C5C9BE289453B100548EEE /* CreatePreKeysOperation.swift */,
 				D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */,
 				5033D46629D76BD0007FEADA /* LocalIdentifiers.swift */,
 				D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */,
 				D9C2D78629A80C9C00D79715 /* PniDistributionSyncMessage.swift */,
 				D9CAF7482A09CCE50049193A /* PniHelloWorldManager.swift */,
-				F9C5C9C2289453B100548EEE /* PreKeyManager.swift */,
-				C17345BA2A5E000300C6426D /* PreKeyOperation.swift */,
-				C19AFAB72A6598D800FE3ECF /* PreKeyOperationShims.swift */,
-				C1ED5CA02A72E3D5009AD3FC /* PreKeyTask.swift */,
-				F9C5C9C3289453B100548EEE /* RefreshPreKeysOperation.swift */,
-				F9C5C9BC289453B100548EEE /* RotateSignedKeyOperation.swift */,
 				507CD5E429660D5100E47DAC /* ServiceId.swift */,
 				F9C5C9BB289453B100548EEE /* TSAccountManager.h */,
 				F9C5C9C0289453B100548EEE /* TSAccountManager.m */,
@@ -12140,7 +12158,6 @@
 				F9C5CCF8289453B300548EEE /* ContactsInputStream.swift in Sources */,
 				F9C5CDCA289453B400548EEE /* ContentProxy.swift in Sources */,
 				F962B38A293F9F1F00765BD8 /* CRC32.swift in Sources */,
-				F9C5CCA8289453B300548EEE /* CreatePreKeysOperation.swift in Sources */,
 				F9C5CDF4289453B400548EEE /* Currency.swift in Sources */,
 				F9C5CDE0289453B400548EEE /* DarwinNotificationCenter.m in Sources */,
 				F9C5CE35289453B400548EEE /* DarwinNotificationName.swift in Sources */,
@@ -12308,6 +12325,7 @@
 				F9C5CD7B289453B300548EEE /* MobileCoinHelper.swift in Sources */,
 				F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */,
 				D9E335A42993269100825677 /* MockDBV2.swift in Sources */,
+				6659A0282A7C11ED00066AB7 /* MockPreKeyManager.swift in Sources */,
 				66C2B1502A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift in Sources */,
 				F9C57FAD28E5F1E2001D3596 /* MockSSKEnvironment.swift in Sources */,
 				F9C5CE56289453B400548EEE /* MockSubscriptionManager.swift in Sources */,
@@ -12502,9 +12520,12 @@
 				D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */,
 				F9C5CBCB289453B300548EEE /* PreKeyBundle+jsonDict.m in Sources */,
 				F9C5CD50289453B300548EEE /* PreKeyBundle.m in Sources */,
+				6659A02A2A7C121C00066AB7 /* PreKeyManager+Shims.swift in Sources */,
 				F9C5CCAC289453B300548EEE /* PreKeyManager.swift in Sources */,
+				6659A0262A7C11A800066AB7 /* PrekeyManagerImpl.swift in Sources */,
+				C19AFAB82A6598D800FE3ECF /* PreKeyOperation+Shims.swift in Sources */,
 				C17345BB2A5E000300C6426D /* PreKeyOperation.swift in Sources */,
-				C19AFAB82A6598D800FE3ECF /* PreKeyOperationShims.swift in Sources */,
+				6659A02C2A7C161400066AB7 /* PreKeyOperationFactory.swift in Sources */,
 				F9C5CD4D289453B300548EEE /* PreKeyRecord.m in Sources */,
 				C1ED5CA12A72E3D5009AD3FC /* PreKeyTask.swift in Sources */,
 				F9C5CE38289453B400548EEE /* ProfileFetcherJob.swift in Sources */,
@@ -12527,7 +12548,6 @@
 				E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */,
 				506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */,
 				F9C5CE18289453B400548EEE /* Refinery.swift in Sources */,
-				F9C5CCAD289453B300548EEE /* RefreshPreKeysOperation.swift in Sources */,
 				66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */,
 				66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */,
 				6600F354298C8FCA00B1EDB7 /* RegistrationSession.swift in Sources */,
@@ -12543,7 +12563,6 @@
 				F9C5CDBE289453B400548EEE /* RESTNetworkManager.swift in Sources */,
 				F9C5CDF8289453B400548EEE /* ReverseDispatchQueue.swift in Sources */,
 				F945FE4A2984796D00C835C7 /* RingrtcFieldTrials.swift in Sources */,
-				F9C5CCA6289453B300548EEE /* RotateSignedKeyOperation.swift in Sources */,
 				6600F37E298F27C600B1EDB7 /* Schedulers.swift in Sources */,
 				F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */,
 				D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */,

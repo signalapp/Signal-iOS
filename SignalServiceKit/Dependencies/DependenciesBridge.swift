@@ -203,27 +203,22 @@ public class DependenciesBridge {
             notificationsManager: notificationsManager
         )
 
-        let preKeyOperationFactory: PreKeyManagerImpl.Shims.PreKeyOperationFactory
-        if FeatureFlags.useUpdatePreKeyOperations {
-            preKeyOperationFactory = PreKeyManagerImpl.Wrappers.PreKeyOperationFactory(
-                context: .init(
-                    accountManager: PreKey.Wrappers.AccountManager(accountManager: tsAccountManager),
-                    dateProvider: dateProvider,
-                    db: db,
-                    identityManager: PreKey.Wrappers.IdentityManager(identityManager: identityManager),
-                    messageProcessor: PreKey.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
-                    protocolStoreManager: signalProtocolStoreManager,
-                    schedulers: schedulers,
-                    serviceClient: accountServiceClient
-                )
+        let preKeyOperationFactory: PreKeyOperationFactory = PreKeyOperationFactoryImpl(
+            context: .init(
+                accountManager: PreKey.Operation.Wrappers.AccountManager(accountManager: tsAccountManager),
+                dateProvider: dateProvider,
+                db: db,
+                identityManager: PreKey.Operation.Wrappers.IdentityManager(identityManager: identityManager),
+                messageProcessor: PreKey.Operation.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
+                protocolStoreManager: signalProtocolStoreManager,
+                schedulers: schedulers,
+                serviceClient: accountServiceClient
             )
-        } else {
-            preKeyOperationFactory = PreKeyManagerImpl.Wrappers.LegacyPreKeyOperationFactory()
-        }
+        )
 
         self.preKeyManager = PreKeyManagerImpl(
-            accountManager: PreKeyManagerImpl.Wrappers.TSAccountManager(tsAccountManager),
-            messageProcessor: PreKeyManagerImpl.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
+            accountManager: PreKey.Manager.Wrappers.TSAccountManager(tsAccountManager),
+            messageProcessor: PreKey.Manager.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
             preKeyOperationFactory: preKeyOperationFactory,
             protocolStoreManager: signalProtocolStoreManager
         )

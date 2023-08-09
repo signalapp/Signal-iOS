@@ -6,16 +6,14 @@
 import Foundation
 
 // MARK: Shims
-extension PreKey {
+
+extension PreKey.Operation {
     internal enum Shims {
         internal typealias AccountManager = _PreKey_AccountManagerShim
         internal typealias IdentityManager = _PreKey_IdentityManagerShim
         internal typealias MessageProcessor = _PreKey_MessageProcessorShim
     }
-}
 
-// MARK: Wrappers
-extension PreKey {
     internal enum Wrappers {
         internal typealias AccountManager = _PreKey_AccountManagerWrapper
         internal typealias IdentityManager = _PreKey_IdentityManagerWrapper

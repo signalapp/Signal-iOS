@@ -11,7 +11,7 @@ import Foundation
 // MARK: - Mocks
 //
 //
-extension PreKey {
+extension PreKey.Operation {
     enum Mocks {
         typealias AccountManager = _PreKey_AccountManagerMock
         typealias AccountServiceClient = _PreKey_AccountServiceClientMock
@@ -26,14 +26,14 @@ extension PreKey {
 // MARK: - Mock Implementations
 //
 //
-class _PreKey_AccountManagerMock: PreKey.Shims.AccountManager {
+class _PreKey_AccountManagerMock: PreKey.Operation.Shims.AccountManager {
     var isRegisteredAndReady: Bool = true
     var isPrimaryDevice: Bool = true
     func isRegisteredAndReady(tx: SignalServiceKit.DBReadTransaction) -> Bool { isRegisteredAndReady }
     func isPrimaryDevice(tx: SignalServiceKit.DBReadTransaction) -> Bool { isPrimaryDevice }
 }
 
-class _PreKey_IdentityManagerMock: PreKey.Shims.IdentityManager {
+class _PreKey_IdentityManagerMock: PreKey.Operation.Shims.IdentityManager {
 
     var aciKeyPair: ECKeyPair?
     var pniKeyPair: ECKeyPair?
@@ -59,7 +59,7 @@ class _PreKey_IdentityManagerMock: PreKey.Shims.IdentityManager {
     }
 }
 
-struct _PreKey_MessageProcessorMock: PreKey.Shims.MessageProcessor {
+struct _PreKey_MessageProcessorMock: PreKey.Operation.Shims.MessageProcessor {
     func fetchingAndProcessingCompletePromise() -> Promise<Void> {
         return Promise<Void>.value(())
     }

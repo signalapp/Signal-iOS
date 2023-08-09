@@ -53,11 +53,11 @@ public class PreKeyTask {
     }
 
     public struct Context {
-        let accountManager: PreKey.Shims.AccountManager
+        let accountManager: PreKey.Operation.Shims.AccountManager
         let dateProvider: DateProvider
         let db: DB
-        let identityManager: PreKey.Shims.IdentityManager
-        let messageProcessor: PreKey.Shims.MessageProcessor
+        let identityManager: PreKey.Operation.Shims.IdentityManager
+        let messageProcessor: PreKey.Operation.Shims.MessageProcessor
         let protocolStoreManager: SignalProtocolStoreManager
         let schedulers: Schedulers
         let serviceClient: AccountServiceClient

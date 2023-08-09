@@ -1,28 +1,9 @@
 //
-// Copyright 2020 Signal Messenger, LLC
+// Copyright 2023 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
-
-public protocol PreKeyManager {
-    func isAppLockedDueToPreKeyUpdateFailures(tx: DBReadTransaction) -> Bool
-
-    func refreshPreKeysDidSucceed()
-
-    func checkPreKeysIfNecessary(tx: DBReadTransaction)
-
-    func createPreKeys(auth: ChatServiceAuth) -> Promise<Void>
-
-    func createPreKeys(identity: OWSIdentity) -> Promise<Void>
-
-    func rotateSignedPreKeys() -> Promise<Void>
-
-    func refreshOneTimePreKeys(
-        forIdentity identity: OWSIdentity,
-        alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
-    )
-}
 
 public class PreKeyManagerImpl: PreKeyManager {
 
@@ -56,15 +37,15 @@ public class PreKeyManagerImpl: PreKeyManager {
         return queue
     }()
 
-    private let accountManager: PreKeyManagerImpl.Shims.TSAccountManager
-    private let messageProcessor: PreKeyManagerImpl.Shims.MessageProcessor
-    private let preKeyOperationFactory: PreKeyManagerImpl.Shims.PreKeyOperationFactory
+    private let accountManager: PreKey.Manager.Shims.TSAccountManager
+    private let messageProcessor: PreKey.Manager.Shims.MessageProcessor
+    private let preKeyOperationFactory: PreKeyOperationFactory
     private let protocolStoreManager: SignalProtocolStoreManager
 
     init(
-        accountManager: PreKeyManagerImpl.Shims.TSAccountManager,
-        messageProcessor: PreKeyManagerImpl.Shims.MessageProcessor,
-        preKeyOperationFactory: PreKeyManagerImpl.Shims.PreKeyOperationFactory,
+        accountManager: PreKey.Manager.Shims.TSAccountManager,
+        messageProcessor: PreKey.Manager.Shims.MessageProcessor,
+        preKeyOperationFactory: PreKeyOperationFactory,
         protocolStoreManager: SignalProtocolStoreManager
     ) {
         self.accountManager = accountManager
@@ -249,8 +230,8 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     private class MessageProcessingOperation: OWSOperation {
-        let messageProcessorWrapper: PreKeyManagerImpl.Shims.MessageProcessor
-        public init(messageProcessor: PreKeyManagerImpl.Shims.MessageProcessor) {
+        let messageProcessorWrapper: PreKey.Manager.Shims.MessageProcessor
+        public init(messageProcessor: PreKey.Manager.Shims.MessageProcessor) {
             self.messageProcessorWrapper = messageProcessor
         }
 
@@ -292,140 +273,3 @@ public extension PreKeyManagerImpl {
 }
 
 #endif
-
-extension PreKeyManagerImpl {
-    public enum Shims {
-        public typealias TSAccountManager = _PreKeyManager_TSAccountManagerShim
-        public typealias MessageProcessor = _PreKeyManager_MessageProcessorShim
-        public typealias PreKeyOperationFactory = _PreKeyManager_PreKeyOperationFactoryShims
-    }
-
-    public enum Wrappers {
-        public typealias TSAccountManager = _PreKeyManager_TSAccountManagerWrapper
-        public typealias MessageProcessor = _PreKeyManager_MessageProcessorWrapper
-        public typealias LegacyPreKeyOperationFactory = _PreKeyManager_LegacyPreKeyOperationFactoryWrapper
-        public typealias PreKeyOperationFactory = _PreKeyManager_PreKeyOperationFactoryWrapper
-    }
-}
-
-// MARK: - AccountManager
-
-public protocol _PreKeyManager_TSAccountManagerShim {
-    func isRegisteredAndReady(tx: DBReadTransaction) -> Bool
-}
-
-public class _PreKeyManager_TSAccountManagerWrapper: PreKeyManagerImpl.Shims.TSAccountManager {
-    private let accountManager: TSAccountManager
-    public init(_ accountManager: TSAccountManager) { self.accountManager = accountManager }
-
-    public func isRegisteredAndReady(tx: DBReadTransaction) -> Bool {
-        return accountManager.isRegisteredAndReady(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-}
-
-// MARK: - MessageProcessor
-
-public protocol _PreKeyManager_MessageProcessorShim {
-    func fetchingAndProcessingCompletePromise() -> Promise<Void>
-}
-
-public struct _PreKeyManager_MessageProcessorWrapper: PreKeyManagerImpl.Shims.MessageProcessor {
-    private let messageProcessor: MessageProcessor
-    public init(messageProcessor: MessageProcessor) {
-        self.messageProcessor = messageProcessor
-    }
-
-    public func fetchingAndProcessingCompletePromise() -> Promise<Void> {
-        messageProcessor.fetchingAndProcessingCompletePromise()
-    }
-}
-
-// MARK: - PreKeyOperationFactory
-
-public protocol _PreKeyManager_PreKeyOperationFactoryShims {
-    func rotateSignedPreKeyOperation(for identity: OWSIdentity, shouldSkipIfRecent: Bool) -> OWSOperation
-    func createPreKeysOperation(for identity: OWSIdentity, auth: ChatServiceAuth) -> OWSOperation
-    func refreshPreKeysOperation(for identity: OWSIdentity, shouldRefreshSignedPreKey: Bool) -> OWSOperation
-}
-
-public struct _PreKeyManager_LegacyPreKeyOperationFactoryWrapper: PreKeyManagerImpl.Shims.PreKeyOperationFactory {
-    public func rotateSignedPreKeyOperation(for identity: OWSIdentity, shouldSkipIfRecent: Bool) -> OWSOperation {
-        RotateSignedPreKeyOperation(for: identity, shouldSkipIfRecent: shouldSkipIfRecent)
-    }
-
-    public func createPreKeysOperation(for identity: OWSIdentity, auth: ChatServiceAuth) -> OWSOperation {
-        CreatePreKeysOperation(for: identity, auth: auth)
-    }
-
-    public func refreshPreKeysOperation(for identity: OWSIdentity, shouldRefreshSignedPreKey: Bool) -> OWSOperation {
-        RefreshPreKeysOperation(for: identity, shouldRefreshSignedPreKey: shouldRefreshSignedPreKey)
-    }
-}
-
-public struct _PreKeyManager_PreKeyOperationFactoryWrapper: PreKeyManagerImpl.Shims.PreKeyOperationFactory {
-    private let context: PreKeyTask.Context
-    init(context: PreKeyTask.Context) {
-        self.context = context
-    }
-
-    public func rotateSignedPreKeyOperation(for identity: OWSIdentity, shouldSkipIfRecent: Bool) -> OWSOperation {
-
-        var targets: PreKey.Operation.Target = .signedPreKey
-        if FeatureFlags.enablePQXDH {
-            targets.insert(target: .lastResortPqPreKey)
-        }
-
-        return PreKeyOperation(
-            for: identity,
-            action: .refresh(targets, forceRefresh: !shouldSkipIfRecent),
-            context: context
-        )
-    }
-
-    public func createPreKeysOperation(for identity: OWSIdentity, auth: ChatServiceAuth) -> OWSOperation {
-        var targets: PreKey.Operation.Target = [.oneTimePreKey, .signedPreKey]
-        if FeatureFlags.enablePQXDH {
-            targets.insert(target: .oneTimePqPreKey)
-            targets.insert(target: .lastResortPqPreKey)
-        }
-
-        return PreKeyOperation(
-            for: identity,
-            action: .create(targets),
-            auth: auth,
-            context: context
-        )
-    }
-
-    public func refreshPreKeysOperation(for identity: OWSIdentity, shouldRefreshSignedPreKey: Bool) -> OWSOperation {
-        var targets: PreKey.Operation.Target = .oneTimePreKey
-        if shouldRefreshSignedPreKey {
-            targets.insert(.signedPreKey)
-        }
-
-        if FeatureFlags.enablePQXDH {
-            targets.insert(target: .oneTimePqPreKey)
-            if shouldRefreshSignedPreKey {
-                targets.insert(target: .lastResortPqPreKey)
-            }
-        }
-
-        return PreKeyOperation(
-            for: identity,
-            action: .refresh(targets, forceRefresh: false),
-            context: context
-        )
-    }
-}
-
-// MARK: - Default Mock PreKeymanager
-
-internal class MockPreKeyManager: PreKeyManager {
-    func isAppLockedDueToPreKeyUpdateFailures(tx: SignalServiceKit.DBReadTransaction) -> Bool { false }
-    func refreshPreKeysDidSucceed() { }
-    func checkPreKeysIfNecessary(tx: SignalServiceKit.DBReadTransaction) { }
-    func createPreKeys(auth: SignalServiceKit.ChatServiceAuth) -> SignalCoreKit.Promise<Void> { Promise.value(()) }
-    func createPreKeys(identity: OWSIdentity) -> SignalCoreKit.Promise<Void> { Promise.value(()) }
-    func rotateSignedPreKeys() -> SignalCoreKit.Promise<Void> { Promise.value(()) }
-    func refreshOneTimePreKeys(forIdentity identity: OWSIdentity, alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool) { }
-}
