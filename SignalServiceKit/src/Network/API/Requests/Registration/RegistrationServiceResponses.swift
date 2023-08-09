@@ -259,6 +259,9 @@ public enum RegistrationServiceResponses {
         /// from another device, but a device transfer is technically possible.
         case deviceTransferPossible = 409
         /// Response body has an optional string error message.
+        ///
+        /// NOTE: if `requireAtomic` is set on the request but other
+        /// atomic account creation fields are nil, the server will return 422.
         case invalidArgument = 422
         /// An account with the given phone number already exists and has a registration lock,
         /// and the client has not provided appropriate reglock credentials (either because the

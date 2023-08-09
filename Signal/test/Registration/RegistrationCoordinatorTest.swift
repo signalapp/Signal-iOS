@@ -273,12 +273,19 @@ public class RegistrationCoordinatorTest: XCTestCase {
         XCTAssertEqual(nextStep, .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: self.mode)))
 
         // Give it the pin code, which should make it try and register.
+
+        // It needs an apns token to register.
+        pushRegistrationManagerMock.requestPushTokenMock = {
+            return .value(.success(Stubs.apnsRegistrationId))
+        }
+
         let expectedRequest = RegistrationRequestFactory.createAccountRequest(
             verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(),
-            skipDeviceTransfer: true
+            skipDeviceTransfer: true,
+            apnRegistrationId: Stubs.apnsRegistrationId
         )
         let identityResponse = Stubs.accountIdentityResponse()
         var authPassword: String!
@@ -307,12 +314,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 e164: Stubs.e164,
                 authPassword: authPassword
             )
-        }
-
-        // When registered, it should try and sync push tokens.
-        pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
-            XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-            return .value(.success)
         }
 
         // When registered, we should create pre-keys.
@@ -415,12 +416,19 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
 
             // Give it the right pin code, which should make it try and register.
+
+            // It needs an apns token to register.
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                return .value(.success(Stubs.apnsRegistrationId))
+            }
+
             let expectedRequest = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
-                skipDeviceTransfer: true
+                skipDeviceTransfer: true,
+                apnRegistrationId: Stubs.apnsRegistrationId
             )
 
             let identityResponse = Stubs.accountIdentityResponse()
@@ -441,12 +449,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     e164: Stubs.e164,
                     authPassword: authPassword
                 )
-            }
-
-            // When registered, it should try and sync push tokens.
-            pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
-                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-                return .value(.success)
             }
 
             // When registered, we should create pre-keys.
@@ -501,6 +503,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             svr.dataGenerator = {
                 switch $0 {
                 case .registrationRecoveryPassword:
+
                     return Stubs.regRecoveryPwData
                 case .registrationLock:
                     return Stubs.reglockData
@@ -532,55 +535,68 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Give it the pin code, which should make it try and register.
             nextStep = coordinator.submitPINCode(Stubs.pinCode)
 
+            // Before registering at t=0, it should ask for push tokens to give the registration.
+            // It will also ask again later at t=3 when account creation fails and it needs
+            // to create a new session.
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                switch self.scheduler.currentTime {
+                case 0:
+                    return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 1)
+                case 3:
+                    return .value(.success(Stubs.apnsRegistrationId))
+                default:
+                    XCTFail("Got unexpected push tokens request")
+                    return .value(.timeout)
+                }
+            }
+
             let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
-                skipDeviceTransfer: true
+                skipDeviceTransfer: true,
+                apnRegistrationId: Stubs.apnsRegistrationId
             )
 
-            // Fail the request at t=2; the reg recovery pw is invalid.
+            // Fail the request at t=3; the reg recovery pw is invalid.
             let failResponse = TSRequestOWSURLSessionMock.Response(
                 urlSuffix: expectedRecoveryPwRequest.url!.absoluteString,
                 statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.unauthorized.rawValue
             )
-            mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
+            mockURLSession.addResponse(failResponse, atTime: 3, on: scheduler)
 
-            // Once the first request fails, at t=2, it should try an start a session.
-            scheduler.run(atTime: 1) {
-                // Resolve with a session at time 3.
+            // Once the first request fails, at t=3, it should try an start a session.
+            scheduler.run(atTime: 2) {
+                // Resolve with a session at time 4.
                 self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
                     resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
-                    atTime: 3
+                    atTime: 4
                 )
             }
 
-            // Before requesting a session at t=2, it should ask for push tokens to give the session.
-            pushRegistrationManagerMock.requestPushTokenMock = {
-                XCTAssertEqual(self.scheduler.currentTime, 2)
-                return .value(Stubs.apnsToken)
-            }
+            // Before requesting a session at t=3, it should ask for push tokens to give the session.
+            // This was set up above.
 
-            // Then when it gets back the session at t=3, it should immediately ask for
+            // Then when it gets back the session at t=4, it should immediately ask for
             // a verification code to be sent.
-            scheduler.run(atTime: 3) {
+            scheduler.run(atTime: 4) {
                 // We'll ask for a push challenge, though we don't need to resolve it in this test.
                 self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
                     return Guarantee<String>.pending().0
                 }
 
-                // Resolve with an updated session at time 4.
+                // Resolve with an updated session at time 5.
                 self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                     resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
-                    atTime: 4
+                    atTime: 5
                 )
             }
 
             // Check we have the master key now, to be safe.
             XCTAssert(svr.hasMasterKey)
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, 4)
+            XCTAssertEqual(scheduler.currentTime, 5)
 
             // Now we should expect to be at verification code entry since we already set the phone number.
             // No exit allowed since we've already started trying to create the account.
@@ -637,15 +653,33 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Give it the pin code, which should make it try and register.
             nextStep = coordinator.submitPINCode(Stubs.pinCode)
 
+            // Before registering at t=0, it should ask for push tokens to give the create account endpoint.
+            // On the second registration attempt at t=3, it will ask again.
+            // Finally before requesting a session at t=5, it should ask for push tokens to give the session.
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                switch self.scheduler.currentTime {
+                case 0:
+                    return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 1)
+                case 3:
+                    return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 4)
+                case 5:
+                    return .value(.success(Stubs.apnsRegistrationId))
+                default:
+                    XCTFail("Got unexpected push tokens request")
+                    return .value(.timeout)
+                }
+            }
+
             let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
-                skipDeviceTransfer: true
+                skipDeviceTransfer: true,
+                apnRegistrationId: Stubs.apnsRegistrationId
             )
 
-            // Fail the request at t=2; the reglock is invalid.
+            // Fail the request at t=3; the reglock is invalid.
             let failResponse = TSRequestOWSURLSessionMock.Response(
                 urlSuffix: expectedRecoveryPwRequest.url!.absoluteString,
                 statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
@@ -655,45 +689,41 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     svr2AuthCredential: Stubs.svr2AuthCredential
                 )
             )
-            mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
-
-            // Once the request fails, at t=2, we should try again with the reglock
-            // token, this time.
             mockURLSession.addResponse(failResponse, atTime: 3, on: scheduler)
 
-            // Once the second request fails, at t=3, it should try an start a session.
-            scheduler.run(atTime: 2) {
+            // Once the request fails, at t=3, we should try again with the reglock
+            // token, this time.
+            mockURLSession.addResponse(failResponse, atTime: 5, on: scheduler)
+
+            // Once the second request fails, at t=5, it should try an start a session.
+            scheduler.run(atTime: 4) {
                 // We'll ask for a push challenge, though we don't need to resolve it in this test.
                 self.pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = {
                     return Guarantee<String>.pending().0
                 }
 
-                // Resolve with a session at time 4.
+                // Resolve with a session at time 6.
                 self.sessionManager.beginSessionResponse = self.scheduler.guarantee(
                     resolvingWith: .success(Stubs.session(hasSentVerificationCode: false)),
-                    atTime: 4
+                    atTime: 6
                 )
             }
 
-            // Before requesting a session at t=3, it should ask for push tokens to give the session.
-            pushRegistrationManagerMock.requestPushTokenMock = {
-                XCTAssertEqual(self.scheduler.currentTime, 3)
-                return .value(Stubs.apnsToken)
-            }
+            // It will ask for push tokens for the session at t=5; response was set up above.
 
-            // Then when it gets back the session at t=4, it should immediately ask for
+            // Then when it gets back the session at t=6, it should immediately ask for
             // a verification code to be sent.
-            scheduler.run(atTime: 3) {
-                // Resolve with an updated session at time 5.
+            scheduler.run(atTime: 5) {
+                // Resolve with an updated session at time 7.
                 self.sessionManager.requestCodeResponse = self.scheduler.guarantee(
                     resolvingWith: .success(Stubs.session(hasSentVerificationCode: true)),
-                    atTime: 5
+                    atTime: 7
                 )
             }
 
             XCTAssert(svr.hasMasterKey)
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, 5)
+            XCTAssertEqual(scheduler.currentTime, 7)
 
             // Now we should expect to be at verification code entry since we already set the phone number.
             // No exit allowed since we've already started trying to create the account.
@@ -749,30 +779,46 @@ public class RegistrationCoordinatorTest: XCTestCase {
             // Give it the pin code, which should make it try and register.
             nextStep = coordinator.submitPINCode(Stubs.pinCode)
 
+            // Before registering at t=0, it should ask for push tokens to give the registration.
+            // When it retries at t=3, it will ask again.
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                switch self.scheduler.currentTime {
+                case 0:
+                    return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 1)
+                case 3:
+                    return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 4)
+                default:
+                    XCTFail("Got unexpected push tokens request")
+                    return .value(.timeout)
+                }
+            }
+
             let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
-                skipDeviceTransfer: true
+                skipDeviceTransfer: true,
+                apnRegistrationId: Stubs.apnsRegistrationId
             )
 
-            // Fail the request at t=2 with a network error.
+            // Fail the request at t=3 with a network error.
             let failResponse = TSRequestOWSURLSessionMock.Response.networkError(url: expectedRecoveryPwRequest.url!)
-            mockURLSession.addResponse(failResponse, atTime: 2, on: scheduler)
+            mockURLSession.addResponse(failResponse, atTime: 3, on: scheduler)
 
             let identityResponse = Stubs.accountIdentityResponse()
             var authPassword: String!
 
-            // Once the first request fails, at t=2, it should retry.
-            scheduler.run(atTime: 1) {
-                // Resolve with success at t=3
+            // Once the first request fails, at t=3, it should retry.
+            scheduler.run(atTime: 2) {
+                // Resolve with success at t=5
                 let expectedRequest = RegistrationRequestFactory.createAccountRequest(
                     verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
                     e164: Stubs.e164,
                     authPassword: "", // Doesn't matter for request generation.
                     accountAttributes: Stubs.accountAttributes(),
-                    skipDeviceTransfer: true
+                    skipDeviceTransfer: true,
+                    apnRegistrationId: Stubs.apnsRegistrationId
                 )
 
                 self.mockURLSession.addResponse(
@@ -787,7 +833,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                         statusCode: 200,
                         bodyData: try! JSONEncoder().encode(identityResponse)
                     ),
-                    atTime: 3,
+                    atTime: 5,
                     on: self.scheduler
                 )
             }
@@ -801,39 +847,33 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 )
             }
 
-            // When registered at t=3, it should try and sync push tokens. Succeed at t=4
-            pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
-                XCTAssertEqual(self.scheduler.currentTime, 3)
-                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-                return self.scheduler.guarantee(resolvingWith: .success, atTime: 4)
-            }
-
-            // When registered, we should create pre-keys.
+            // When registered at t=5, it should try and create pre-keys. Succeed at t=6.
             preKeyManagerMock.createPreKeysMock = { auth in
+                XCTAssertEqual(self.scheduler.currentTime, 5)
                 XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-                return .value(())
+                return self.scheduler.promise(resolvingWith: (), atTime: 6)
             }
 
-            // We haven't done a SVR backup; that should happen at t=4. Succeed at t=5.
+            // We haven't done a SVR backup; that should happen at t=6. Succeed at t=7.
             svr.generateAndBackupKeysMock = { pin, authMethod, rotateMasterKey in
-                XCTAssertEqual(self.scheduler.currentTime, 4)
+                XCTAssertEqual(self.scheduler.currentTime, 6)
                 XCTAssertEqual(pin, Stubs.pinCode)
                 // We don't have a SVR auth credential, it should use chat server creds.
                 XCTAssertEqual(authMethod, .chatServerAuth(expectedAuthedAccount()))
                 XCTAssertFalse(rotateMasterKey)
                 self.svr.hasMasterKey = true
-                return self.scheduler.promise(resolvingWith: (), atTime: 5)
+                return self.scheduler.promise(resolvingWith: (), atTime: 7)
             }
 
-            // Once we sync push tokens at t=5, we should restore from storage service.
-            // Succeed at t=6.
+            // Once we back up to svr at t=7, we should restore from storage service.
+            // Succeed at t=8.
             accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
-                XCTAssertEqual(self.scheduler.currentTime, 5)
+                XCTAssertEqual(self.scheduler.currentTime, 7)
                 XCTAssertEqual(auth, expectedAuthedAccount())
-                return self.scheduler.promise(resolvingWith: (), atTime: 6)
+                return self.scheduler.promise(resolvingWith: (), atTime: 8)
             }
 
-            // Once we do the storage service restore at t=6,
+            // Once we do the storage service restore at t=8,
             // we will sync account attributes and then we are finished!
             let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
                 Stubs.accountAttributes(),
@@ -847,12 +887,12 @@ public class RegistrationCoordinatorTest: XCTestCase {
                     statusCode: 200,
                     bodyData: nil
                 ),
-                atTime: 7,
+                atTime: 9,
                 on: scheduler
             )
 
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, 7)
+            XCTAssertEqual(scheduler.currentTime, 9)
 
             XCTAssertEqual(nextStep.value, .done)
         }
@@ -951,7 +991,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 }
             }
 
-            // Now still at t=1 it should make a reg recovery pw request, resolve it at t=2.
+            // Before registering at t=1, it should ask for push tokens to give the registration.
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 1)
+                return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 2)
+            }
+
+            // Now still at t=2 it should make a reg recovery pw request, resolve it at t=3.
             let accountIdentityResponse = Stubs.accountIdentityResponse()
             var authPassword: String!
             let expectedRegRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
@@ -959,19 +1005,20 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
                 accountAttributes: Stubs.accountAttributes(),
-                skipDeviceTransfer: true
+                skipDeviceTransfer: true,
+                apnRegistrationId: Stubs.apnsRegistrationId
             )
             self.mockURLSession.addResponse(
                 TSRequestOWSURLSessionMock.Response(
                     matcher: { request in
-                        XCTAssertEqual(self.scheduler.currentTime, 1)
+                        XCTAssertEqual(self.scheduler.currentTime, 2)
                         authPassword = request.authPassword
                         return request.url == expectedRegRecoveryPwRequest.url
                     },
                     statusCode: 200,
                     bodyJson: accountIdentityResponse
                 ),
-                atTime: 2,
+                atTime: 3,
                 on: self.scheduler
             )
 
@@ -984,40 +1031,34 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 )
             }
 
-            // When registered at t=2, it should try and sync push tokens.
-            // Resolve at t=3.
-            pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
-                XCTAssertEqual(self.scheduler.currentTime, 2)
-                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-                return self.scheduler.guarantee(resolvingWith: .success, atTime: 3)
-            }
-
-            // When registered, we should create pre-keys.
+            // When registered at t=3, it should try and create pre-keys.
+            // Resolve at t=4.
             preKeyManagerMock.createPreKeysMock = { auth in
+                XCTAssertEqual(self.scheduler.currentTime, 3)
                 XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-                return .value(())
+                return self.scheduler.promise(resolvingWith: (), atTime: 4)
             }
 
-            // At t=3 once we sync push tokens, we should back up to svr.
+            // At t=4 once we create pre-keys, we should back up to svr.
             svr.generateAndBackupKeysMock = { (pin: String, authMethod: SVR.AuthMethod, rotateMasterKey: Bool) in
-                XCTAssertEqual(self.scheduler.currentTime, 3)
+                XCTAssertEqual(self.scheduler.currentTime, 4)
                 XCTAssertEqual(pin, Stubs.pinCode)
                 XCTAssertEqual(authMethod, .svrAuth(
                     .svr2Only(Stubs.svr2AuthCredential),
                     backup: .chatServerAuth(expectedAuthedAccount())
                 ))
                 XCTAssertFalse(rotateMasterKey)
-                return self.scheduler.promise(resolvingWith: (), atTime: 4)
-            }
-
-            // At t=4 once we back up to svr, we should restore from storage service.
-            accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
-                XCTAssertEqual(self.scheduler.currentTime, 4)
-                XCTAssertEqual(auth, expectedAuthedAccount())
                 return self.scheduler.promise(resolvingWith: (), atTime: 5)
             }
 
-            // And at t=5 once we do the storage service restore,
+            // At t=5 once we back up to svr, we should restore from storage service.
+            accountManagerMock.performInitialStorageServiceRestoreMock = { auth in
+                XCTAssertEqual(self.scheduler.currentTime, 5)
+                XCTAssertEqual(auth, expectedAuthedAccount())
+                return self.scheduler.promise(resolvingWith: (), atTime: 6)
+            }
+
+            // And at t=6 once we do the storage service restore,
             // we will sync account attributes and then we are finished!
             let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
                 Stubs.accountAttributes(),
@@ -1025,20 +1066,20 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
             self.mockURLSession.addResponse(
                 matcher: { request in
-                    XCTAssertEqual(self.scheduler.currentTime, 5)
+                    XCTAssertEqual(self.scheduler.currentTime, 6)
                     return request.url == expectedAttributesRequest.url
                 },
                 statusCode: 200
             )
 
-            for i in 0...2 {
+            for i in 0...5 {
                 scheduler.run(atTime: i) {
                     XCTAssertNil(nextStepPromise.value)
                 }
             }
 
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, 5)
+            XCTAssertEqual(scheduler.currentTime, 6)
 
             XCTAssertEqual(nextStepPromise.value, .done)
         }
@@ -1114,7 +1155,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 )
             }
 
-            pushRegistrationManagerMock.requestPushTokenMock = { .value(Stubs.apnsToken)}
+            pushRegistrationManagerMock.requestPushTokenMock = { .value(.success(Stubs.apnsRegistrationId))}
 
             scheduler.runUntilIdle()
             XCTAssertEqual(scheduler.currentTime, 4)
@@ -1198,7 +1239,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 )
             }
 
-            pushRegistrationManagerMock.requestPushTokenMock = { .value(Stubs.apnsToken)}
+            pushRegistrationManagerMock.requestPushTokenMock = { .value(.success(Stubs.apnsRegistrationId))}
 
             scheduler.runUntilIdle()
             XCTAssertEqual(scheduler.currentTime, 4)
@@ -1278,15 +1319,23 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             // That means at t=7 it should try and register with the verified
             // session; be ready for that starting at t=6 (but not before).
-            scheduler.run(atTime: 6) {
+
+            // Before registering at t=7, it should ask for push tokens to give the registration.
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 7)
+                return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 8)
+            }
+
+            scheduler.run(atTime: 7) {
                 let expectedRequest = RegistrationRequestFactory.createAccountRequest(
                     verificationMethod: .sessionId(Stubs.sessionId),
                     e164: Stubs.e164,
                     authPassword: "", // Doesn't matter for request generation.
                     accountAttributes: Stubs.accountAttributes(),
-                    skipDeviceTransfer: true
+                    skipDeviceTransfer: true,
+                    apnRegistrationId: Stubs.apnsRegistrationId
                 )
-                // Resolve it at t=8
+                // Resolve it at t=9
                 self.mockURLSession.addResponse(
                     TSRequestOWSURLSessionMock.Response(
                         matcher: { request in
@@ -1296,7 +1345,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                         statusCode: 200,
                         bodyJson: accountIdentityResponse
                     ),
-                    atTime: 8,
+                    atTime: 9,
                     on: self.scheduler
                 )
             }
@@ -1310,23 +1359,16 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 )
             }
 
-            // Once we are registered at t=8, we should try and sync push tokens
+            // Once we are registered at t=9, we should try and create pre-keys
             // with the credentials we got in the identity response.
-            pushRegistrationManagerMock.syncPushTokensForcingUploadMock = { auth in
-                XCTAssertEqual(self.scheduler.currentTime, 8)
-                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-                return self.scheduler.guarantee(resolvingWith: .success, atTime: 9)
-            }
-
-            // When registered, we should create pre-keys.
             preKeyManagerMock.createPreKeysMock = { auth in
                 XCTAssertEqual(self.scheduler.currentTime, 9)
                 XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
-                return .value(())
+                return self.scheduler.promise(resolvingWith: (), atTime: 10)
             }
 
             scheduler.runUntilIdle()
-            XCTAssertEqual(scheduler.currentTime, 9)
+            XCTAssertEqual(scheduler.currentTime, 10)
 
             // Now we should ask to create a PIN.
             // No exit allowed since we've already started trying to create the account.
@@ -2043,7 +2085,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             pushRegistrationManagerMock.requestPushTokenMock = {
                 XCTAssertEqual(self.scheduler.currentTime, 0)
-                return .value(Stubs.apnsToken)
+                return .value(.success(Stubs.apnsRegistrationId))
             }
 
             // Give it a phone number, which should cause it to start a session.
@@ -2138,7 +2180,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             pushRegistrationManagerMock.requestPushTokenMock = {
                 XCTAssertEqual(self.scheduler.currentTime, 0)
-                return .value(Stubs.apnsToken)
+                return .value(.success(Stubs.apnsRegistrationId))
             }
 
             // Give it a phone number, which should cause it to start a session.
@@ -2210,7 +2252,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             pushRegistrationManagerMock.requestPushTokenMock = {
                 XCTAssertEqual(self.scheduler.currentTime, 0)
-                return .value(Stubs.apnsToken)
+                return .value(.success(Stubs.apnsRegistrationId))
             }
 
             // Give it a phone number, which should cause it to start a session.
@@ -2265,7 +2307,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             pushRegistrationManagerMock.requestPushTokenMock = {
                 XCTAssertEqual(self.scheduler.currentTime, 0)
-                return .value(nil)
+                return .value(.pushUnsupported(description: ""))
             }
 
             // Give it a phone number, which should cause it to start a session.
@@ -2313,7 +2355,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             pushRegistrationManagerMock.requestPushTokenMock = {
                 XCTAssertEqual(self.scheduler.currentTime, 0)
-                return .value(Stubs.apnsToken)
+                return .value(.success(Stubs.apnsRegistrationId))
             }
 
             // Be ready to provide the push challenge token as soon as it's needed.
@@ -2401,7 +2443,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             pushRegistrationManagerMock.requestPushTokenMock = {
                 XCTAssertEqual(self.scheduler.currentTime, 0)
-                return .value(Stubs.apnsToken)
+                return .value(.success(Stubs.apnsRegistrationId))
             }
 
             // Give it a phone number, which should cause it to start a session.
@@ -2461,7 +2503,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             pushRegistrationManagerMock.requestPushTokenMock = {
                 XCTAssertEqual(self.scheduler.currentTime, 0)
-                return .value(Stubs.apnsToken)
+                return .value(.success(Stubs.apnsRegistrationId))
             }
 
             // Give it a phone number, which should cause it to start a session.
@@ -2560,7 +2602,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
             pushRegistrationManagerMock.requestPushTokenMock = {
                 XCTAssertEqual(self.scheduler.currentTime, 0)
-                return .value(nil)
+                return .value(.pushUnsupported(description: ""))
             }
 
             // Give it a phone number, which should cause it to start a session.
@@ -3081,7 +3123,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         // Set profile info so we skip those steps.
         self.setupDefaultAccountAttributes()
 
-        pushRegistrationManagerMock.requestPushTokenMock = { .value(Stubs.apnsToken) }
+        pushRegistrationManagerMock.requestPushTokenMock = { .value(.success(Stubs.apnsRegistrationId)) }
 
         pushRegistrationManagerMock.receivePreAuthChallengeTokenMock = { .pending().0 }
 
@@ -3197,6 +3239,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         static let captchaToken = "captchaToken"
         static let apnsToken = "apnsToken"
+        static let apnsRegistrationId = RegistrationRequestFactory.ApnRegistrationId(apnsToken: apnsToken, voipToken: nil)
 
         static let authUsername = "username_jdhfsalkjfhd"
         static let authPassword = "password_dskafjasldkfjasf"

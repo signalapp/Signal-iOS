@@ -59,17 +59,19 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         }
     }
 
+    public typealias ApnRegistrationId = RegistrationRequestFactory.ApnRegistrationId
+
     /// - parameter timeOutEventually: If the OS fails to get back to us with the apns token after
     /// we have requested it and significant time has passed, do we time out or keep waiting? Default to keep waiting.
     public func requestPushTokens(
         forceRotation: Bool,
         timeOutEventually: Bool = false
-    ) -> Promise<(pushToken: String, voipToken: String?)> {
+    ) -> Promise<ApnRegistrationId> {
         Logger.info("")
 
         return firstly {
             return self.registerUserNotificationSettings()
-        }.then { (_) -> Promise<(pushToken: String, voipToken: String?)> in
+        }.then { (_) -> Promise<ApnRegistrationId> in
             guard !Platform.isSimulator else {
                 throw PushRegistrationError.pushNotSupported(description: "Push not supported on simulators")
             }
@@ -78,9 +80,9 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
                 .registerForVanillaPushToken(
                     forceRotation: forceRotation,
                     timeOutEventually: timeOutEventually
-                ).then { vanillaPushToken -> Promise<(pushToken: String, voipToken: String?)> in
+                ).then { vanillaPushToken -> Promise<ApnRegistrationId> in
                     self.registerForVoipPushToken().map { voipPushToken in
-                        (pushToken: vanillaPushToken, voipToken: voipPushToken)
+                        return ApnRegistrationId(apnsToken: vanillaPushToken, voipToken: voipPushToken)
                     }
                 }
         }

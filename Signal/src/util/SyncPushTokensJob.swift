@@ -50,6 +50,8 @@ class SyncPushTokensJob: NSObject {
         }
     }
 
+    public typealias ApnRegistrationId = RegistrationRequestFactory.ApnRegistrationId
+
     private func run(shouldRotateAPNSToken: Bool) -> Promise<Void> {
         return firstly(on: DispatchQueue.main) {
             return self.pushRegistrationManager.requestPushTokens(
@@ -57,8 +59,8 @@ class SyncPushTokensJob: NSObject {
             ).map(on: DispatchQueue.main) {
                 return (shouldRotateAPNSToken, $0)
             }
-        }.then(on: DispatchQueue.global()) { (didRotate: Bool, regResult: (String, String?)) -> Promise<(pushToken: String, voipToken: String?)> in
-            let (pushToken, voipToken) = regResult
+        }.then(on: DispatchQueue.global()) { (didRotate: Bool, regResult: ApnRegistrationId) -> Promise<(pushToken: String, voipToken: String?)> in
+            let (pushToken, voipToken) = (regResult.apnsToken, regResult.voipToken)
             return Self.databaseStorage.write(.promise) { transaction in
                 if shouldRotateAPNSToken {
                     APNSRotationStore.didRotateAPNSToken(transaction: transaction)

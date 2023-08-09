@@ -223,9 +223,9 @@ public class _RegistrationCoordinator_PushRegistrationManagerMock: _Registration
         return .value(())
     }
 
-    public var requestPushTokenMock: (() -> Guarantee<String?>)?
+    public var requestPushTokenMock: (() -> Guarantee<Registration.RequestPushTokensResult>)?
 
-    public func requestPushToken() -> Guarantee<String?> {
+    public func requestPushToken() -> Guarantee<Registration.RequestPushTokensResult> {
         return requestPushTokenMock!()
     }
 
@@ -241,14 +241,10 @@ public class _RegistrationCoordinator_PushRegistrationManagerMock: _Registration
         didClearPreAuthChallengeToken = true
     }
 
-    public var syncPushTokensForcingUploadMock: ((
-        _ auth: ChatServiceAuth
-    ) -> Guarantee<Registration.SyncPushTokensResult>)?
-
     public func syncPushTokensForcingUpload(
         auth: ChatServiceAuth
     ) -> Guarantee<Registration.SyncPushTokensResult> {
-        return syncPushTokensForcingUploadMock!(auth)
+        return .value(.success)
     }
 }
 

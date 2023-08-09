@@ -62,7 +62,9 @@ public class AccountManager: NSObject, Dependencies {
     func deprecated_getPreauthChallenge(e164: String) -> Promise<String?> {
         return firstly {
             return self.pushRegistrationManager.requestPushTokens(forceRotation: false)
-        }.then { (vanillaToken: String, voipToken: String?) -> Promise<String?> in
+        }.then { tokensResult -> Promise<String?> in
+            let vanillaToken = tokensResult.apnsToken
+            let voipToken = tokensResult.voipToken
             self.pushRegistrationManager.clearPreAuthChallengeToken()
             let pushPromise = self.pushRegistrationManager.receivePreAuthChallengeToken()
 

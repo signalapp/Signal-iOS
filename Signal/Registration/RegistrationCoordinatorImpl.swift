@@ -754,10 +754,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// before finishing post-registration steps.
         var accountIdentity: AccountIdentity?
 
-        /// Once per registration we want to sync push tokens up to
-        /// the server. This might fail non-transiently because the device
-        /// doesn't support push. We'd mark this as true and move on.
-        var didSyncPushTokens: Bool = false
+        /// After atomic account creation, we include push tokens (if any) in
+        /// the account creation request, and this field is useless. We set it
+        /// to true immediately.
+        /// Before atomic account creation, we would have to follow up after
+        /// account creation and sync push tokens with the server. This
+        /// tracked whether we had done that (or discovered we have no token).
+        var legacy_didSyncPushTokens: Bool = false
 
         /// Once per registration we sync prekeys (and the signed prekey)
         /// up to the server. We can't proceed until this succeeds.
@@ -784,7 +787,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case hasGivenUpTryingToRestoreWithSVR = "hasGivenUpTryingToRestoreWithKBS"
             case sessionState
             case accountIdentity
-            case didSyncPushTokens
+            case legacy_didSyncPushTokens = "didSyncPushTokens"
             case didSyncPrekeys
             case hasDeclinedTransfer
         }
@@ -2141,9 +2144,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         retriesLeft: Int = Constants.networkErrorRetries
     ) -> Guarantee<RegistrationStep> {
         return deps.pushRegistrationManager.requestPushToken()
-            .then(on: schedulers.sharedBackground) { [weak self] apnsToken -> Guarantee<RegistrationStep> in
+            .then(on: schedulers.sharedBackground) { [weak self] tokenResult -> Guarantee<RegistrationStep> in
                 guard let strongSelf = self else {
                     return unretainedSelfError()
+                }
+                let apnsToken: String?
+                switch tokenResult {
+                case .success(let tokens):
+                    apnsToken = tokens.apnsToken
+                case .pushUnsupported, .timeout, .genericError:
+                    apnsToken = nil
                 }
                 return strongSelf.deps.sessionManager.beginOrRestoreSession(
                     e164: e164,
@@ -2786,10 +2796,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             break
         case .changingNumber:
             // Change number is different; we do a limited number of operations and then finalize.
-            if !persistedState.didSyncPushTokens {
-                return syncPushTokens(accountIdentity)
-            }
-
             guard let svrRemoteConfig = inMemoryState.svrRemoteConfig else {
                 return syncRemoteConfig(accountIdentity)
             }
@@ -2814,10 +2820,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // 1. sync push tokens OR set isManualMessageFetchEnabled=true and sync account attributes
         // 2. create prekeys and register them with the server
         // then we can do other stuff (fetch SVR backups, set profile info, etc)
-        if !persistedState.didSyncPushTokens {
+        if !persistedState.legacy_didSyncPushTokens {
             return syncPushTokens(accountIdentity)
         }
-
         if shouldSyncPreKeys() {
             return deps.preKeyManager
                 .createPreKeys(auth: accountIdentity.chatServiceAuth)
@@ -2925,7 +2930,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case .success:
                     strongSelf.db.write { tx in
                         strongSelf.updatePersistedState(tx) {
-                            $0.didSyncPushTokens = true
+                            $0.legacy_didSyncPushTokens = true
                         }
                     }
                     return strongSelf.nextStep()
@@ -2950,7 +2955,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                                 strongSelf.deps.tsAccountManager.setIsManualMessageFetchEnabled(true, tx)
                                 strongSelf.updatePersistedState(tx) {
                                     // Say that we synced push tokens so that we skip this step hereafter.
-                                    $0.didSyncPushTokens = true
+                                    $0.legacy_didSyncPushTokens = true
                                 }
                             }
                             return strongSelf.nextStep()
@@ -3275,7 +3280,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         Logger.info("")
         return Service
             .makeUpdateAccountAttributesRequest(
-                makeAccountAttributes(twoFAMode: self.attributes2FAMode(e164: accountIdentity.e164)),
+                makeAccountAttributes(
+                    isManualMessageFetchEnabled: inMemoryState.isManualMessageFetchEnabled,
+                    twoFAMode: self.attributes2FAMode(e164: accountIdentity.e164)
+                ),
                 auth: accountIdentity.chatServiceAuth,
                 signalService: deps.signalService,
                 schedulers: schedulers
@@ -3416,20 +3424,50 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // write it to TSAccountManager when all is said and done, and use
             // it for requests we need to make between now and then.
             let authToken = generateServerAuthToken()
-            let accountAttributes = makeAccountAttributes(twoFAMode: twoFAMode)
-            return Service
-                .makeCreateAccountRequest(
-                    method,
-                    e164: e164,
-                    authPassword: authToken,
-                    accountAttributes: accountAttributes,
-                    skipDeviceTransfer: shouldSkipDeviceTransfer(),
-                    signalService: deps.signalService,
-                    schedulers: schedulers
-                )
-                .then(on: schedulers.main) { accountResponse in
-                    return responseHandler(accountResponse)
+            return fetchApnRegistrationId().then(on: schedulers.main) { [weak self] apnResult in
+                guard let self else {
+                    return unretainedSelfError()
                 }
+                // Either manual message fetch is true, or apns tokens are set.
+                // Otherwise the request will fail.
+                let isManualMessageFetchEnabled: Bool
+                let apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?
+                switch apnResult {
+                case .success(let tokens):
+                    isManualMessageFetchEnabled = false
+                    apnRegistrationId = tokens
+                case .pushUnsupported:
+                    Logger.info("Push unsupported; enabling manual message fetch.")
+                    isManualMessageFetchEnabled = true
+                    apnRegistrationId = nil
+                case .timeout:
+                    Logger.error("Timed out waiting for apns token")
+                    return .value(.showErrorSheet(.genericError))
+                case .genericError:
+                    return .value(.showErrorSheet(.genericError))
+                }
+                self.inMemoryState.isManualMessageFetchEnabled = isManualMessageFetchEnabled
+                let accountAttributes = self.makeAccountAttributes(
+                    isManualMessageFetchEnabled: isManualMessageFetchEnabled,
+                    twoFAMode: twoFAMode
+                )
+                return Service
+                    .makeCreateAccountRequest(
+                        method,
+                        e164: e164,
+                        authPassword: authToken,
+                        accountAttributes: accountAttributes,
+                        skipDeviceTransfer: self.shouldSkipDeviceTransfer(),
+                        apnRegistrationId: apnRegistrationId,
+                        signalService: self.deps.signalService,
+                        schedulers: self.schedulers
+                    )
+                    .then(on: self.schedulers.main) { accountResponse in
+                        // TODO: once we actually use atomic account creation,
+                        // mark legacy_didSyncPushTokens as true.
+                        return responseHandler(accountResponse)
+                    }
+            }
 
         case .changingNumber(let changeNumberState):
             if let pniState = changeNumberState.pniState {
@@ -3709,7 +3747,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    private func makeAccountAttributes(twoFAMode: AccountAttributes.TwoFactorAuthMode) -> AccountAttributes {
+    private func makeAccountAttributes(
+        isManualMessageFetchEnabled: Bool,
+        twoFAMode: AccountAttributes.TwoFactorAuthMode
+    ) -> AccountAttributes {
         let hasSVRBackups: Bool
         switch getPathway() {
         case
@@ -3731,7 +3772,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
         return AccountAttributes(
-            isManualMessageFetchEnabled: inMemoryState.isManualMessageFetchEnabled,
+            isManualMessageFetchEnabled: isManualMessageFetchEnabled,
             registrationId: inMemoryState.registrationId,
             pniRegistrationId: inMemoryState.pniRegistrationId,
             unidentifiedAccessKey: inMemoryState.udAccessKey.keyData.base64EncodedString(),
@@ -3742,6 +3783,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             discoverableByPhoneNumber: inMemoryState.isDiscoverableByPhoneNumber,
             hasSVRBackups: hasSVRBackups
         )
+    }
+
+    private func fetchApnRegistrationId() -> Guarantee<Registration.RequestPushTokensResult> {
+        guard !inMemoryState.isManualMessageFetchEnabled else {
+            return .value(.pushUnsupported(description: "Manual fetch pre-enabled"))
+        }
+        return deps.pushRegistrationManager.requestPushToken()
     }
 
     private func generateServerAuthToken() -> String {

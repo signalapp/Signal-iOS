@@ -232,6 +232,21 @@ public enum RegistrationRequestFactory {
         case recoveryPassword(String)
     }
 
+    public struct ApnRegistrationId: Codable {
+        public let apnsToken: String
+        public let voipToken: String?
+
+        public init(apnsToken: String, voipToken: String?) {
+            self.apnsToken = apnsToken
+            self.voipToken = voipToken
+        }
+
+        public enum CodingKeys: String, CodingKey {
+            case apnsToken = "apnRegistrationId"
+            case voipToken = "voipRegistrationId"
+        }
+    }
+
     /// Create an account, or re-register if one exists.
     ///
     /// - parameter verificationMethod: A way to verify phone number and account ownership.
@@ -243,13 +258,19 @@ public enum RegistrationRequestFactory {
     ///   given the capabilities of the calling device and the device associated with the existing account (if any).
     ///   If false and if a device transfer is technically possible, the registration request will fail with an HTTP/409
     ///   response indicating that the client should prompt the user to transfer data from an existing device.
+    /// - parameter apnRegistrationId: Apple Push Notification Service token(s) for the server to send
+    ///   push notifications to. Either this must be non-nil, or `AccountAttributes.isManualMessageFetchEnabled`
+    ///   must be true, otherwise the request will fail.
     public static func createAccountRequest(
         verificationMethod: VerificationMethod,
         e164: E164,
         authPassword: String,
         accountAttributes: AccountAttributes,
-        skipDeviceTransfer: Bool
+        skipDeviceTransfer: Bool,
+        apnRegistrationId: ApnRegistrationId?
     ) -> TSRequest {
+        owsAssertDebug(apnRegistrationId != nil || accountAttributes.isManualMessageFetchEnabled)
+
         let urlPathComponents = URLPathComponents(
             ["v1", "registration"]
         )
@@ -257,7 +278,8 @@ public enum RegistrationRequestFactory {
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
         let url = urlComponents.url!
 
-        let accountAttributesData = try! JSONEncoder().encode(accountAttributes)
+        let jsonEncoder = JSONEncoder()
+        let accountAttributesData = try! jsonEncoder.encode(accountAttributes)
         let accountAttributesDict = try! JSONSerialization.jsonObject(with: accountAttributesData, options: .fragmentsAllowed) as! [String: Any]
 
         var parameters: [String: Any] = [
@@ -269,6 +291,14 @@ public enum RegistrationRequestFactory {
             parameters["sessionId"] = sessionId
         case .recoveryPassword(let recoveryPassword):
             parameters["recoveryPassword"] = recoveryPassword
+        }
+
+        if
+            let apnRegistrationId,
+            let apnRegistrationIdData = try? jsonEncoder.encode(apnRegistrationId),
+            let apnRegistrationIdDict = try? JSONSerialization.jsonObject(with: apnRegistrationIdData, options: .fragmentsAllowed) as? [String: Any]
+        {
+            parameters["apnToken"] = apnRegistrationIdDict
         }
 
         let result = TSRequest(url: url, method: "POST", parameters: parameters)

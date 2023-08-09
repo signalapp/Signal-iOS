@@ -57,8 +57,8 @@ class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
 }
 
 class VerifyingPushRegistrationManager: PushRegistrationManager {
-    public override func requestPushTokens(forceRotation: Bool, timeOutEventually: Bool = false) -> Promise<(pushToken: String, voipToken: String?)> {
-        return Promise.value(("a", "b"))
+    public override func requestPushTokens(forceRotation: Bool, timeOutEventually: Bool = false) -> Promise<PushRegistrationManager.ApnRegistrationId> {
+        return .value(.init(apnsToken: "a", voipToken: "b"))
     }
 }
 

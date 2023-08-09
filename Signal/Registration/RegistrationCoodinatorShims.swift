@@ -278,6 +278,13 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
 // MARK: - PushRegistrationManager
 
 extension Registration {
+    public enum RequestPushTokensResult {
+        case success(RegistrationRequestFactory.ApnRegistrationId)
+        case pushUnsupported(description: String)
+        case timeout
+        case genericError(Error)
+    }
+
     public enum SyncPushTokensResult {
         case success
         case pushUnsupported(description: String)
@@ -292,7 +299,7 @@ public protocol _RegistrationCoordinator_PushRegistrationManagerShim {
 
     func registerUserNotificationSettings() -> Guarantee<Void>
 
-    func requestPushToken() -> Guarantee<String?>
+    func requestPushToken() -> Guarantee<Registration.RequestPushTokensResult>
 
     func receivePreAuthChallengeToken() -> Guarantee<String>
 
@@ -316,10 +323,19 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
         return manager.registerUserNotificationSettings()
     }
 
-    public func requestPushToken() -> Guarantee<String?> {
+    public func requestPushToken() -> Guarantee<Registration.RequestPushTokensResult> {
         return manager.requestPushTokens(forceRotation: false, timeOutEventually: true)
-            .map { $0.0 }
-            .recover { _ in return .value(nil) }
+            .map(on: SyncScheduler()) { .success($0) }
+            .recover(on: SyncScheduler()) { error in
+                switch error {
+                case PushRegistrationError.pushNotSupported(let description):
+                    return .value(.pushUnsupported(description: description))
+                case PushRegistrationError.timeout:
+                    return .value(.timeout)
+                default:
+                    return .value(.genericError(error))
+                }
+            }
     }
 
     public func receivePreAuthChallengeToken() -> Guarantee<String> {
