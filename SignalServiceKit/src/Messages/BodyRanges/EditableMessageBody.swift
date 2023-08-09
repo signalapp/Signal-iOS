@@ -55,6 +55,13 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         return body.hydratedText
     }
 
+    public var naturalTextAlignment: NSTextAlignment {
+        guard body.hydratedText.isEmpty else {
+            return .natural
+        }
+        return body.hydratedText.naturalTextAlignment
+    }
+
     public override func attributes(at location: Int, effectiveRange range: NSRangePointer?) -> [NSAttributedString.Key: Any] {
         return displayString.attributes(at: location, effectiveRange: range)
     }
@@ -276,15 +283,19 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         if let stylesToApply {
             stringToAppend = StyleOnlyMessageBody(text: string, styles: stylesToApply).asAttributedStringForDisplay(
                 config: config.style,
+                textAlignment: string.nilIfEmpty?.naturalTextAlignment ?? .natural,
                 isDarkThemeEnabled: isDarkThemeEnabled
             )
             editActions = [.editedAttributes, .editedCharacters]
         } else {
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = string.nilIfEmpty?.naturalTextAlignment ?? .natural
             stringToAppend = NSAttributedString(
                 string: string,
                 attributes: [
                     .font: config.mention.font,
-                    .foregroundColor: config.baseTextColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+                    .foregroundColor: config.baseTextColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
+                    .paragraphStyle: paragraphStyle
                 ]
             )
             editActions = .editedCharacters
@@ -881,6 +892,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             .hydrating(mentionHydrator: hydrator.hydrator, filterStringForDisplay: false)
             .asAttributedStringForDisplay(
                 config: config,
+                textAlignment: hydratedPlaintext.nilIfEmpty?.naturalTextAlignment ?? .natural,
                 isDarkThemeEnabled: isDarkThemeEnabled
             )
         self.displayString = (displayString as? NSMutableAttributedString) ?? NSMutableAttributedString(attributedString: displayString)

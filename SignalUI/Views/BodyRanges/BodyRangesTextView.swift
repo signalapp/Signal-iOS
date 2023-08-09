@@ -49,6 +49,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
         updateTextContainerInset()
         delegate = self
         editableBody.editableBodyDelegate = self
+        textAlignment = .natural
     }
 
     public override var layoutManager: NSLayoutManager {
@@ -854,6 +855,7 @@ extension BodyRangesTextView: UITextViewDelegate {
         isShowingFormatMenu = false
         mentionDelegate?.textViewDidChange?(textView)
         if editableBody.hydratedPlaintext.isEmpty { updateMentionState() }
+        self.textAlignment = editableBody.naturalTextAlignment
     }
 
     open func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
