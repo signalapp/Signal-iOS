@@ -96,6 +96,16 @@ public class ConversationInternalViewController: OWSTableViewController2 {
             })
 
             contents.add(actionSection)
+
+            let sessionSection = OWSTableSection()
+            sessionSection.add(.actionItem(withText: "Delete Session") {
+                self.databaseStorage.write { transaction in
+                    let aciStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci)
+                    aciStore.sessionStore.deleteAllSessions(for: address, tx: transaction.asV2Write)
+                }
+            })
+
+            contents.add(sessionSection)
         }
 
         self.contents = contents
