@@ -7,9 +7,23 @@ import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
-public class Deprecated_ProvisioningController: NSObject {
+public class ProvisioningNavigationController: OWSNavigationController {
+    private(set) var provisioningController: ProvisioningController
 
-    let onboardingController: Deprecated_OnboardingController
+    public init(provisioningController: ProvisioningController) {
+        self.provisioningController = provisioningController
+        super.init()
+    }
+
+    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        let superOrientations = super.supportedInterfaceOrientations
+        let provisioningOrientations: UIInterfaceOrientationMask = UIDevice.current.isIPad ? .all : .portrait
+
+        return superOrientations.intersection(provisioningOrientations)
+    }
+}
+
+public class ProvisioningController: NSObject {
 
     private let provisioningCipher: ProvisioningCipher
     private let provisioningSocket: ProvisioningSocket
@@ -20,8 +34,7 @@ public class Deprecated_ProvisioningController: NSObject {
     private var provisionEnvelopePromise: Promise<ProvisioningProtoProvisionEnvelope>
     private var provisionEnvelopeFuture: Future<ProvisioningProtoProvisionEnvelope>
 
-    public init(onboardingController: Deprecated_OnboardingController) {
-        self.onboardingController = onboardingController
+    private override init() {
         provisioningCipher = ProvisioningCipher.generate()
 
         (self.deviceIdPromise, self.deviceIdFuture) = Promise.pending()
@@ -40,35 +53,179 @@ public class Deprecated_ProvisioningController: NSObject {
         (self.provisionEnvelopePromise, self.provisionEnvelopeFuture) = Promise.pending()
     }
 
-    public static func presentRelinkingFlow() {
-        // TODO[ViewContextPiping]
-        let context = ViewControllerContext.shared
-        let onboardingController = Deprecated_OnboardingController(context: context, onboardingMode: .provisioning)
-        let navController = Deprecated_OnboardingNavigationController(onboardingController: onboardingController)
+    public static func presentProvisioningFlow() {
+        let provisioningController = ProvisioningController()
+        let navController = ProvisioningNavigationController(provisioningController: provisioningController)
+        provisioningController.setUpDebugLogsGesture(on: navController)
 
-        let provisioningController = Deprecated_ProvisioningController(onboardingController: onboardingController)
-        let vc = Deprecated_SecondaryLinkingQRCodeViewController(provisioningController: provisioningController)
+        let vc = ProvisioningSplashViewController(provisioningController: provisioningController)
+        navController.setViewControllers([vc], animated: false)
+
+        CurrentAppContext().mainWindow?.rootViewController = navController
+    }
+
+    public static func presentRelinkingFlow() {
+        let provisioningController = ProvisioningController()
+        let navController = ProvisioningNavigationController(provisioningController: provisioningController)
+        provisioningController.setUpDebugLogsGesture(on: navController)
+
+        let vc = ProvisioningQRCodeViewController(provisioningController: provisioningController)
         navController.setViewControllers([vc], animated: false)
 
         provisioningController.awaitProvisioning(from: vc, navigationController: navController)
         CurrentAppContext().mainWindow?.rootViewController = navController
     }
 
-    // MARK: -
+    private func setUpDebugLogsGesture(
+        on navigationController: UINavigationController
+    ) {
+        let submitLogsGesture = UITapGestureRecognizer(target: self, action: #selector(submitLogs))
+        submitLogsGesture.numberOfTapsRequired = 8
+        submitLogsGesture.delaysTouchesEnded = false
+        navigationController.view.addGestureRecognizer(submitLogsGesture)
+    }
 
-    func didConfirmSecondaryDevice(from viewController: Deprecated_SecondaryLinkingPrepViewController) {
+    @objc
+    private func submitLogs() {
+        DebugLogs.submitLogsWithSupportTag("Onboarding")
+    }
+
+    // MARK: - Transitions
+
+    public func provisioningSplashRequestedModeSwitch(viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        let view = ProvisioningModeSwitchConfirmationViewController(provisioningController: self)
+        viewController.navigationController?.pushViewController(view, animated: true)
+    }
+
+    public func switchToPrimaryRegistration(viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+        let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
+        SignalApp.shared.showRegistration(loader: loader, desiredMode: .registering)
+    }
+
+    public func provisioningSplashDidComplete(viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        pushPermissionsViewOrSkipToRegistration(onto: viewController)
+    }
+
+    private func pushPermissionsViewOrSkipToRegistration(
+        onto oldViewController: UIViewController
+    ) {
+        // Disable interaction during the asynchronous operation.
+        oldViewController.view.isUserInteractionEnabled = false
+
+        let newViewController = ProvisioningPermissionsViewController(provisioningController: self)
+
+        firstly(on: DispatchQueue.sharedUserInitiated) {
+            newViewController.needsToAskForAnyPermissions()
+        }.timeout(
+            // If we don't get an answer quickly, assume we need to ask. We don't
+            // expect to hit this timeout, but we really don't want to keep users
+            // waiting during registration.
+            seconds: 1,
+            substituteValue: true
+        ).recover(on: DispatchQueue.main) { error in
+            // This could only happen if something rejects, which we don't expect.
+            // However, because it's registration, we assume we need to ask instead of
+            // crashing—that's better than preventing registration.
+            owsFailDebug("\(error)")
+            return .value(true)
+        }.done(on: DispatchQueue.main) { (needsToAskForAnyPermissions: Bool) in
+            // Always re-enable interaction in case the user restart registration.
+            oldViewController.view.isUserInteractionEnabled = true
+
+            if needsToAskForAnyPermissions {
+                oldViewController.navigationController?.pushViewController(newViewController, animated: true)
+            } else {
+                self.provisioningPermissionsDidComplete(viewController: oldViewController)
+            }
+        }
+    }
+
+    public func provisioningPermissionsDidComplete(viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
         guard let navigationController = viewController.navigationController else {
             owsFailDebug("navigationController was unexpectedly nil")
             return
         }
 
-        let qrCodeViewController = Deprecated_SecondaryLinkingQRCodeViewController(provisioningController: self)
+        pushTransferChoiceView(onto: navigationController)
+    }
+
+    func pushTransferChoiceView(onto navigationController: UINavigationController) {
+        AssertIsOnMainThread()
+
+        let view = ProvisioningTransferChoiceViewController(provisioningController: self)
+        navigationController.pushViewController(view, animated: true)
+    }
+
+    // MARK: - Transfer
+
+    func transferAccount(fromViewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        guard let navigationController = fromViewController.navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        guard !(navigationController.topViewController is ProvisioningTransferQRCodeViewController) else {
+            // qr code view is already presented, we don't need to push it again.
+            return
+        }
+
+        let view = ProvisioningTransferQRCodeViewController(provisioningController: self)
+        navigationController.pushViewController(view, animated: true)
+    }
+
+    func accountTransferInProgress(fromViewController: UIViewController, progress: Progress) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        guard let navigationController = fromViewController.navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        guard !(navigationController.topViewController is ProvisioningTransferProgressViewController) else {
+            // qr code view is already presented, we don't need to push it again.
+            return
+        }
+
+        let view = ProvisioningTransferProgressViewController(provisioningController: self, progress: progress)
+        navigationController.pushViewController(view, animated: true)
+    }
+
+    // MARK: - Linking
+
+    func didConfirmSecondaryDevice(from viewController: ProvisioningPrepViewController) {
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("navigationController was unexpectedly nil")
+            return
+        }
+
+        let qrCodeViewController = ProvisioningQRCodeViewController(provisioningController: self)
         navigationController.pushViewController(qrCodeViewController, animated: true)
 
         awaitProvisioning(from: qrCodeViewController, navigationController: navigationController)
     }
 
-    private func awaitProvisioning(from viewController: Deprecated_SecondaryLinkingQRCodeViewController,
+    private func awaitProvisioning(from viewController: ProvisioningQRCodeViewController,
                                    navigationController: UINavigationController) {
 
         awaitProvisionMessage.done { [weak self, weak navigationController] message in
@@ -93,7 +250,7 @@ public class Deprecated_ProvisioningController: NSObject {
                 return
             }
 
-            let confirmVC = Deprecated_SecondaryLinkingSetDeviceNameViewController(provisioningController: self)
+            let confirmVC = ProvisioningSetDeviceNameViewController(provisioningController: self)
             navigationController.pushViewController(confirmVC, animated: true)
         }.catch { error in
             switch error {
@@ -119,7 +276,7 @@ public class Deprecated_ProvisioningController: NSObject {
         let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
             self.completeLinking(deviceName: deviceName).done {
                 modal.dismiss {
-                    self.onboardingController.linkingDidComplete(from: viewController)
+                    self.provisioningDidComplete(from: viewController)
                 }
             }.catch { error in
                 Logger.warn("error: \(error)")
@@ -177,6 +334,14 @@ public class Deprecated_ProvisioningController: NSObject {
         ModalActivityIndicatorViewController.present(fromViewController: viewController,
                                                      canCancel: false,
                                                      backgroundBlock: backgroundBlock)
+    }
+
+    public func provisioningDidComplete(from viewController: UIViewController) {
+        self.databaseStorage.write {
+            Logger.info("completed provisioning")
+            self.tsAccountManager.setIsOnboarded(true, transaction: $0)
+        }
+        SignalApp.shared.showConversationSplitView()
     }
 
     private static func resetDeviceState() {
@@ -246,7 +411,7 @@ public class Deprecated_ProvisioningController: NSObject {
     }
 }
 
-extension Deprecated_ProvisioningController: ProvisioningSocketDelegate {
+extension ProvisioningController: ProvisioningSocketDelegate {
     public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveDeviceId deviceId: String) {
         owsAssertDebug(!deviceIdPromise.isSealed)
         deviceIdFuture.resolve(deviceId)

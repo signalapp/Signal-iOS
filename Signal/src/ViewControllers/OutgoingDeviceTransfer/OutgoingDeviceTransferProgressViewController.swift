@@ -7,7 +7,7 @@ import MultipeerConnectivity
 import SignalServiceKit
 import SignalUI
 
-class DeviceTransferProgressViewController: DeviceTransferBaseViewController {
+class OutgoingDeviceTransferProgressViewController: DeviceTransferBaseViewController {
 
     override var requiresDismissConfirmation: Bool { TSAccountManager.shared.isTransferInProgress }
 
@@ -67,12 +67,12 @@ class DeviceTransferProgressViewController: DeviceTransferBaseViewController {
 
     @objc
     private func didTapNext() {
-        let qrScanner = DeviceTransferQRScanningViewController()
+        let qrScanner = OutgoingDeviceTransferQRScanningViewController()
         navigationController?.pushViewController(qrScanner, animated: true)
     }
 }
 
-extension DeviceTransferProgressViewController: DeviceTransferServiceObserver {
+extension OutgoingDeviceTransferProgressViewController: DeviceTransferServiceObserver {
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {}
 
     func deviceTransferServiceDidStartTransfer(progress: Progress) {}

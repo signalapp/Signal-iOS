@@ -18,22 +18,6 @@ public class AccountServiceClient: NSObject {
 
     // MARK: - Public
 
-    public func deprecated_requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
-        serviceClient.deprecated_requestPreauthChallenge(e164: e164, pushToken: pushToken, isVoipToken: isVoipToken)
-    }
-
-    public func deprecated_requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
-        serviceClient.deprecated_requestVerificationCode(e164: e164,
-                                              preauthChallenge: preauthChallenge,
-                                              captchaToken: captchaToken,
-                                              transport: transport).recover { error -> Void in
-            if error.httpStatusCode == 402 {
-                throw AccountServiceClientError.captchaRequired
-            }
-            throw error
-        }
-    }
-
     public func getPreKeysCount(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
         return serviceClient.getAvailablePreKeys(for: identity)
     }

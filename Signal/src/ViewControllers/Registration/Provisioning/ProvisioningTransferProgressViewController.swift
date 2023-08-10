@@ -7,13 +7,13 @@ import MultipeerConnectivity
 import SignalMessaging
 import SignalUI
 
-public class Deprecated_OnboardingTransferProgressViewController: Deprecated_OnboardingBaseViewController {
+public class ProvisioningTransferProgressViewController: ProvisioningBaseViewController {
 
     let progressView: TransferProgressView
 
-    public init(onboardingController: Deprecated_OnboardingController, progress: Progress) {
+    public init(provisioningController: ProvisioningController, progress: Progress) {
         self.progressView = TransferProgressView(progress: progress)
-        super.init(onboardingController: onboardingController)
+        super.init(provisioningController: provisioningController)
     }
 
     override public func loadView() {
@@ -100,7 +100,7 @@ public class Deprecated_OnboardingTransferProgressViewController: Deprecated_Onb
                                      comment: "The stop action of the dialog asking the user if they want to cancel a device transfer"),
             style: .destructive
         ) { _ in
-            self.onboardingController.pushStartDeviceRegistrationView(onto: navigationController)
+            self.provisioningController.pushTransferChoiceView(onto: navigationController)
         }
         actionSheet.addAction(okAction)
 
@@ -113,7 +113,7 @@ public class Deprecated_OnboardingTransferProgressViewController: Deprecated_Onb
     }
 }
 
-extension Deprecated_OnboardingTransferProgressViewController: DeviceTransferServiceObserver {
+extension ProvisioningTransferProgressViewController: DeviceTransferServiceObserver {
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {}
 
     func deviceTransferServiceDidStartTransfer(progress: Progress) {}

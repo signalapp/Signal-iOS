@@ -7,7 +7,7 @@ import MultipeerConnectivity
 import SignalMessaging
 import SignalUI
 
-public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_OnboardingBaseViewController {
+public class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
 
     private let qrCodeView = QRCodeView()
 
@@ -77,7 +77,7 @@ public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_Onboa
 
         do {
             let url = try deviceTransferService.startAcceptingTransfersFromOldDevices(
-                mode: onboardingController.onboardingMode == .provisioning ? .linked : .primary
+                mode: .linked // TODO: .primary
             )
 
             qrCodeView.setQR(url: url)
@@ -155,7 +155,7 @@ public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_Onboa
             return owsFailDebug("unexpectedly missing nav controller")
         }
 
-        onboardingController.pushStartDeviceRegistrationView(onto: navigationController)
+        provisioningController.pushTransferChoiceView(onto: navigationController)
     }
 
     @objc
@@ -177,11 +177,11 @@ public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_Onboa
     }
 }
 
-extension Deprecated_OnboardingTransferQRCodeViewController: DeviceTransferServiceObserver {
+extension ProvisioningTransferQRCodeViewController: DeviceTransferServiceObserver {
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {}
 
     func deviceTransferServiceDidStartTransfer(progress: Progress) {
-        onboardingController.accountTransferInProgress(fromViewController: self, progress: progress)
+        provisioningController.accountTransferInProgress(fromViewController: self, progress: progress)
     }
 
     func deviceTransferServiceDidEndTransfer(error: DeviceTransferService.Error?) {

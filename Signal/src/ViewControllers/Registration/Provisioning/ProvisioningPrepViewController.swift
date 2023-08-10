@@ -7,14 +7,14 @@ import Lottie
 import SignalMessaging
 import SignalUI
 
-public class Deprecated_SecondaryLinkingPrepViewController: Deprecated_OnboardingBaseViewController {
+public class ProvisioningPrepViewController: ProvisioningBaseViewController {
 
     lazy var animationView = AnimationView(name: isTransferring ? "launchApp-iPad" : "launchApp-iPhone")
     let isTransferring: Bool
 
-    public init(onboardingController: Deprecated_OnboardingController, isTransferring: Bool) {
+    public init(provisioningController: ProvisioningController, isTransferring: Bool) {
         self.isTransferring = isTransferring
-        super.init(onboardingController: onboardingController)
+        super.init(provisioningController: provisioningController)
     }
 
     override public func loadView() {
@@ -59,7 +59,7 @@ public class Deprecated_SecondaryLinkingPrepViewController: Deprecated_Onboardin
         let nextButton = self.primaryButton(title: CommonStrings.nextButton,
                                             selector: #selector(didPressNext))
         nextButton.accessibilityIdentifier = "onboarding.prelink.nextButton"
-        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
+        let primaryButtonView = ProvisioningBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
@@ -111,9 +111,8 @@ public class Deprecated_SecondaryLinkingPrepViewController: Deprecated_Onboardin
         Logger.info("")
 
         if isTransferring {
-            onboardingController.transferAccount(fromViewController: self)
+            provisioningController.transferAccount(fromViewController: self)
         } else {
-            let provisioningController = Deprecated_ProvisioningController(onboardingController: onboardingController)
             provisioningController.didConfirmSecondaryDevice(from: self)
         }
     }

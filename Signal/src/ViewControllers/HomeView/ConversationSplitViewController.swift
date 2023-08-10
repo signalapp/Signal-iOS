@@ -9,7 +9,7 @@ import SignalUI
 
 class ConversationSplitViewController: UISplitViewController, ConversationSplit {
 
-    fileprivate var deviceTransferNavController: DeviceTransferNavigationController?
+    fileprivate var deviceTransferNavController: OutgoingDeviceTransferNavigationController?
 
     let homeVC = HomeTabBarController()
     private let detailPlaceholderVC = NoSelectedConversationViewController()
@@ -646,7 +646,7 @@ extension ConversationSplitViewController: DeviceTransferServiceObserver {
 
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {
         guard deviceTransferNavController?.presentingViewController == nil else { return }
-        let navController = DeviceTransferNavigationController()
+        let navController = OutgoingDeviceTransferNavigationController()
         deviceTransferNavController = navController
         navController.present(fromViewController: self)
     }

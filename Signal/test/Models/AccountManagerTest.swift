@@ -75,68 +75,6 @@ class AccountManagerTest: SignalBaseTest {
         super.tearDown()
     }
 
-    func testRegisterWhenEmptyCode() {
-        let accountManager = AccountManager()
-
-        let expectation = self.expectation(description: "should fail")
-
-        firstly {
-            accountManager.register(verificationCode: "", pin: "", checkForAvailableTransfer: false)
-        }.done {
-            XCTFail("Should fail")
-        }.catch { error in
-            let nserror = error as NSError
-            if OWSErrorCode(rawValue: nserror.code) == OWSErrorCode.userError {
-                expectation.fulfill()
-            } else {
-                XCTFail("Unexpected error: \(error)")
-            }
-        }
-
-        self.waitForExpectations(timeout: 1.0, handler: nil)
-    }
-
-    func testRegisterWhenVerificationFails() {
-        let accountManager = AccountManager()
-
-        let expectation = self.expectation(description: "should fail")
-
-        firstly {
-            accountManager.register(verificationCode: "123456", pin: "", checkForAvailableTransfer: false)
-        }.done {
-            XCTFail("Should fail")
-        }.catch { error in
-            if error is VerificationFailedError {
-                expectation.fulfill()
-            } else {
-                XCTFail("Unexpected error: \(error)")
-            }
-        }
-
-        self.waitForExpectations(timeout: 1.0, handler: nil)
-    }
-
-    func testSuccessfulRegistration() {
-        let tsAccountManager = TokenObtainingTSAccountManager()
-        SSKEnvironment.shared.setTsAccountManagerForUnitTests(tsAccountManager)
-
-        AppEnvironment.shared.pushRegistrationManagerRef = VerifyingPushRegistrationManager()
-
-        let accountManager = AccountManager()
-
-        let expectation = self.expectation(description: "should succeed")
-
-        firstly {
-            accountManager.register(verificationCode: "123456", pin: "", checkForAvailableTransfer: false)
-        }.done {
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Unexpected error: \(error)")
-        }
-
-        self.waitForExpectations(timeout: 5.0, handler: nil)
-    }
-
     func testUpdatePushTokens() {
         let accountManager = AccountManager()
 

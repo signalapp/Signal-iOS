@@ -8,7 +8,7 @@ import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
-public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBaseViewController {
+public class ProvisioningSplashViewController: ProvisioningBaseViewController {
 
     let modeSwitchButton = UIButton()
 
@@ -27,7 +27,7 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
 
         view.addSubview(modeSwitchButton)
         modeSwitchButton.setTemplateImageName(
-            Deprecated_OnboardingController.defaultOnboardingMode == .registering ? "link" : "link-slash",
+            "link-slash",
             tintColor: .ows_gray25
         )
         modeSwitchButton.autoSetDimensions(to: CGSize(square: 40))
@@ -35,8 +35,6 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
         modeSwitchButton.autoPinEdge(toSuperviewMargin: .top)
         modeSwitchButton.addTarget(self, action: #selector(didTapModeSwitch), for: .touchUpInside)
         modeSwitchButton.accessibilityIdentifier = "onboarding.splash.modeSwitch"
-
-        modeSwitchButton.isHidden = !UIDevice.current.isIPad && !FeatureFlags.linkedPhones
 
         view.backgroundColor = Theme.backgroundColor
 
@@ -72,7 +70,7 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
         let continueButton = self.primaryButton(title: CommonStrings.continueButton,
                                                     selector: #selector(continuePressed))
         continueButton.accessibilityIdentifier = "onboarding.splash." + "continueButton"
-        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: continueButton)
+        let primaryButtonView = ProvisioningBaseViewController.horizontallyWrap(primaryButton: continueButton)
 
         let stackView = UIStackView(arrangedSubviews: [
             heroImageView,
@@ -97,11 +95,11 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
     // MARK: - Events
 
     @objc
-    private func didTapModeSwitch() {
-        Logger.info("")
+   private func didTapModeSwitch() {
+       Logger.info("")
 
-        onboardingController.onboardingSplashRequestedModeSwitch(viewController: self)
-    }
+       provisioningController.provisioningSplashRequestedModeSwitch(viewController: self)
+   }
 
     @objc
     private func explanationLabelTapped(sender: UIGestureRecognizer) {
@@ -117,6 +115,6 @@ public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBas
     private func continuePressed() {
         Logger.info("")
 
-        onboardingController.onboardingSplashDidComplete(viewController: self)
+        provisioningController.provisioningSplashDidComplete(viewController: self)
     }
 }

@@ -16,7 +16,6 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
     private let credentialStorage: SVRAuthCredentialStorage
     private let db: DB
     private let keyValueStoreFactory: KeyValueStoreFactory
-    private let legacyStateManager: LegacyKbsStateManager
     private let localStorage: SVRLocalStorage
     private let remoteAttestation: SVR.Shims.RemoteAttestation
     private let schedulers: Schedulers
@@ -45,7 +44,6 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         self.credentialStorage = credentialStorage
         self.db = databaseStorage
         self.keyValueStoreFactory = keyValueStoreFactory
-        self.legacyStateManager = LegacyKbsStateManager(keyValueStoreFactory: keyValueStoreFactory)
         self.localStorage = SVRLocalStorage(keyValueStoreFactory: keyValueStoreFactory)
         self.remoteAttestation = remoteAttestation
         self.schedulers = schedulers
@@ -528,10 +526,6 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         }.recover(on: schedulers.global()) { error in
             Logger.error("recording backupKeyRequest errored: \(error)")
 
-            self.db.write { transaction in
-                self.legacyStateManager.setHasBackupKeyRequestFailed(true, transaction: transaction)
-            }
-
             guard let kbsError = error as? SVR.SVRError else {
                 Logger.error("Surfacing a non KBS error: \(error)")
                 throw error
@@ -813,9 +807,6 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
         if enclaveName != previousState.enclaveName {
             localStorage.setSVR1EnclaveName(enclaveName, transaction)
         }
-
-        // Clear failed status
-        legacyStateManager.setHasBackupKeyRequestFailed(false, transaction: transaction)
 
         reloadState(transaction: transaction)
 

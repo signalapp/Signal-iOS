@@ -7,7 +7,7 @@ import Foundation
 import Lottie
 import SignalMessaging
 
-class DeviceTransferInitialViewController: DeviceTransferBaseViewController {
+class OutgoingDeviceTransferInitialViewController: DeviceTransferBaseViewController {
     let animationView = AnimationView(name: "transfer")
 
     override func viewDidLoad() {
@@ -58,7 +58,7 @@ class DeviceTransferInitialViewController: DeviceTransferBaseViewController {
     private func didTapNext() {
         ows_askForCameraPermissions { granted in
             guard granted else { return }
-            let qrScanner = DeviceTransferQRScanningViewController()
+            let qrScanner = OutgoingDeviceTransferQRScanningViewController()
             self.navigationController?.pushViewController(qrScanner, animated: true)
         }
     }

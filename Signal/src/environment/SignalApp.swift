@@ -9,8 +9,8 @@ import SignalUI
 
 enum LaunchInterface {
     case registration(RegistrationCoordinatorLoader, RegistrationMode)
-    case deprecatedOnboarding(Deprecated_OnboardingController)
-    case chatList(Deprecated_OnboardingController)
+    case secondaryProvisioning
+    case chatList
 }
 
 @objc
@@ -85,8 +85,8 @@ extension SignalApp {
         case .registration(let registrationLoader, let desiredMode):
             showRegistration(loader: registrationLoader, desiredMode: desiredMode)
             AppReadiness.setUIIsReady()
-        case .deprecatedOnboarding(let onboardingController):
-            showDeprecatedOnboardingView(controller: onboardingController)
+        case .secondaryProvisioning:
+            showSecondaryProvisioning()
             AppReadiness.setUIIsReady()
         case .chatList:
             showConversationSplitView()
@@ -260,22 +260,9 @@ extension SignalApp {
 
 extension SignalApp {
 
-    func showDeprecatedOnboardingView(controller: Deprecated_OnboardingController) {
-        let navigationController = Deprecated_OnboardingNavigationController(onboardingController: controller)
-
-        let submitLogsGesture = UITapGestureRecognizer(target: self, action: #selector(submitOnboardingLogs))
-        submitLogsGesture.numberOfTapsRequired = 8
-        submitLogsGesture.delaysTouchesEnded = false
-        navigationController.view.addGestureRecognizer(submitLogsGesture)
-
-        UIApplication.shared.delegate?.window??.rootViewController = navigationController
-
+    func showSecondaryProvisioning() {
+        ProvisioningController.presentProvisioningFlow()
         conversationSplitViewController = nil
-    }
-
-    @objc
-    private func submitOnboardingLogs() {
-        DebugLogs.submitLogsWithSupportTag("Onboarding")
     }
 }
 

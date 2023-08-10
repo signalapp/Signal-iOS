@@ -26,65 +26,9 @@ public extension OWSRequestFactory {
 
     // MARK: - Registration
 
-    static func deprecated_requestPreauthChallenge(
-        e164: String,
-        pushToken: String,
-        isVoipToken: Bool
-    ) -> TSRequest {
-        owsAssertDebug(!e164.isEmpty)
-        owsAssertDebug(!pushToken.isEmpty)
-
-        let urlPathComponents = URLPathComponents(
-            ["v1", "accounts", "apn", "preauth", pushToken, e164]
-        )
-        var urlComponents = URLComponents()
-        urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
-        urlComponents.queryItems = [.init(name: "voip", value: isVoipToken ? "true" : "false")]
-        let url = urlComponents.url!
-
-        let result = TSRequest(url: url, method: "GET", parameters: nil)
-        result.shouldHaveAuthorizationHeaders = false
-        return result
-    }
-
     static func enable2FARequest(withPin pin: String) -> TSRequest {
         owsAssertBeta(!pin.isEmpty)
         return .init(url: URL(string: textSecure2FAAPI)!, method: "PUT", parameters: ["pin": pin])
-    }
-
-    @nonobjc
-    static func changePhoneNumberRequest(
-        newPhoneNumberE164: String,
-        verificationCode: String,
-        registrationLock: String?,
-        pniChangePhoneNumberParameters: PniDistribution.Parameters
-    ) -> TSRequest {
-        owsAssertDebug(nil != newPhoneNumberE164.strippedOrNil)
-        owsAssertDebug(nil != verificationCode.strippedOrNil)
-
-        let url = URL(string: "\(textSecureAccountsAPI)/number")!
-
-        var parameters: [String: Any] = [
-            "number": newPhoneNumberE164,
-            "code": verificationCode
-        ]
-
-        if let registrationLock = registrationLock?.strippedOrNil {
-            parameters["reglock"] = registrationLock
-        }
-
-        parameters.merge(
-            pniChangePhoneNumberParameters.requestParameters(),
-            uniquingKeysWith: { (_, _) in
-                owsFail("Unexpectedly encountered duplicate keys!")
-            }
-        )
-
-        return TSRequest(
-            url: url,
-            method: HTTPMethod.put.methodName,
-            parameters: parameters
-        )
     }
 
     static func enableRegistrationLockV2Request(token: String) -> TSRequest {
@@ -297,38 +241,6 @@ extension OWSRequestFactory {
         case .pni:
             return "identity=pni"
         }
-    }
-
-    public static func deprecated_verifyPrimaryDeviceRequest(
-        verificationCode: String,
-        phoneNumber: String,
-        authPassword: String,
-        checkForAvailableTransfer: Bool,
-        attributes: AccountAttributes
-    ) -> TSRequest {
-        owsAssertDebug(verificationCode.isEmpty.negated)
-        owsAssertDebug(phoneNumber.isEmpty.negated)
-
-        let urlPathComponents = URLPathComponents(
-            [self.textSecureAccountsAPI, "code", verificationCode]
-        )
-        var urlComponents = URLComponents()
-        urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
-        if checkForAvailableTransfer {
-            urlComponents.queryItems = [URLQueryItem(name: "transfer", value: "true")]
-        }
-        let url = urlComponents.url!
-
-        // The request expects the AccountAttributes to be the root object.
-        // Serialize it to JSON then get the key value dict to do that.
-        let data = try! JSONEncoder().encode(attributes)
-        let parameters = try! JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as! [String: Any]
-
-        let result = TSRequest(url: url, method: "PUT", parameters: parameters)
-        // The "verify code" request handles auth differently.
-        result.authUsername = phoneNumber
-        result.authPassword = authPassword
-        return result
     }
 
     public static func verifySecondaryDeviceRequest(

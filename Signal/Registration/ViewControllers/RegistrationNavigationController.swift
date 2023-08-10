@@ -396,7 +396,7 @@ extension RegistrationNavigationController: RegistrationConfimModeSwitchPresente
             owsFailBeta("Can't switch to secondary device linking")
             return
         }
-        SignalApp.shared.showDeprecatedOnboardingView(controller: .init(context: .shared, onboardingMode: .provisioning))
+        SignalApp.shared.showSecondaryProvisioning()
     }
 }
 

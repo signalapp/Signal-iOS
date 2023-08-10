@@ -48,7 +48,7 @@ class RegistrationConfirmModeSwitchViewController: OWSViewController {
             selector: #selector(didPressNext)
         )
         nextButton.accessibilityIdentifier = "onboarding.modeSwitch.nextButton"
-        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
+        let primaryButtonView = ProvisioningBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let topSpacer = UIView.vStretchingSpacer(minHeight: 12)
         let bottomSpacer = UIView.vStretchingSpacer(minHeight: 12)

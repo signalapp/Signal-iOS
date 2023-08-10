@@ -15,14 +15,6 @@ public class FakeAccountServiceClient: AccountServiceClient {
 
     // MARK: - Public
 
-    public override func deprecated_requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
-        return Promise { $0.resolve() }
-    }
-
-    public override func deprecated_requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
-        return Promise { $0.resolve() }
-    }
-
     public override func getPreKeysCount(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
         return Promise { $0.resolve((ecCount: 0, pqCount: 0)) }
     }

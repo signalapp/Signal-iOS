@@ -112,7 +112,7 @@ class AppUpdateNag: NSObject {
         }
 
         switch frontmostViewController {
-        case is ConversationSplitViewController, is Deprecated_OnboardingSplashViewController:
+        case is ConversationSplitViewController, is ProvisioningSplashViewController, is RegistrationSplashViewController:
             self.setLastNagDate(Date())
             self.clearFirstHeardOfNewVersionDate()
             presentUpgradeNag(appStoreRecord: appStoreRecord)

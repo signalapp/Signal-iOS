@@ -21,266 +21,6 @@ public class AccountManager: NSObject, Dependencies {
         SwiftSingletons.register(self)
     }
 
-    // MARK: registration
-
-    public enum VerificationMode {
-        case registration
-        case changePhoneNumber
-    }
-
-    public func deprecated_requestAccountVerification(e164: String,
-                                                      captchaToken: String?,
-                                                      isSMS: Bool,
-                                                      mode: VerificationMode) -> Promise<Void> {
-        let transport: TSVerificationTransport = isSMS ? .SMS : .voice
-
-        return firstly { () -> Promise<String?> in
-            switch mode {
-            case .registration:
-                guard !self.tsAccountManager.isRegistered else {
-                    throw OWSAssertionError("requesting account verification when already registered")
-                }
-                guard let phoneNumber = E164(e164) else {
-                    throw OWSAssertionError("Requesting account verification for an invalid E164")
-                }
-                self.tsAccountManager.phoneNumberAwaitingVerification = E164ObjC(phoneNumber)
-
-            case .changePhoneNumber:
-                // Don't set phoneNumberAwaitingVerification in the "change phone number" flow.
-                break
-            }
-
-            return self.deprecated_getPreauthChallenge(e164: e164)
-        }.then { (preauthChallenge: String?) -> Promise<Void> in
-            self.accountServiceClient.deprecated_requestVerificationCode(e164: e164,
-                                                                         preauthChallenge: preauthChallenge,
-                                                                         captchaToken: captchaToken,
-                                                                         transport: transport)
-        }
-    }
-
-    func deprecated_getPreauthChallenge(e164: String) -> Promise<String?> {
-        return firstly {
-            return self.pushRegistrationManager.requestPushTokens(forceRotation: false)
-        }.then { tokensResult -> Promise<String?> in
-            let vanillaToken = tokensResult.apnsToken
-            let voipToken = tokensResult.voipToken
-            self.pushRegistrationManager.clearPreAuthChallengeToken()
-            let pushPromise = self.pushRegistrationManager.receivePreAuthChallengeToken()
-
-            return self.accountServiceClient.deprecated_requestPreauthChallenge(
-                e164: e164,
-                pushToken: voipToken?.nilIfEmpty ?? vanillaToken,
-                isVoipToken: !voipToken.isEmptyOrNil
-            ).then { () -> Promise<String?> in
-                let timeout: TimeInterval
-                if OWSIsDebugBuild() && TSConstants.isUsingProductionService {
-                    // won't receive production voip in debug build, don't wait for long
-                    timeout = 0.5
-                } else {
-                    timeout = 5
-                }
-
-                return pushPromise.nilTimeout(seconds: timeout)
-            }
-        }.recover { (error: Error) -> Promise<String?> in
-            switch error {
-            case PushRegistrationError.pushNotSupported(description: let description):
-                Logger.warn("Push not supported: \(description)")
-            case is OWSHTTPError:
-                // not deployed to production yet.
-                if error.httpStatusCode == 404 {
-                    Logger.warn("404 while requesting preauthChallenge: \(error)")
-                } else if error.isNetworkFailureOrTimeout {
-                    Logger.warn("Network failure while requesting preauthChallenge: \(error)")
-                } else {
-                    fallthrough
-                }
-            default:
-                owsFailDebug("error while requesting preauthChallenge: \(error)")
-            }
-            return Promise.value(nil)
-        }
-    }
-
-    func register(verificationCode: String, pin: String?, checkForAvailableTransfer: Bool) -> Promise<Void> {
-        if verificationCode.isEmpty {
-            let error = OWSError(error: .userError,
-                                 description: OWSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
-                                                                comment: "alert body during registration"),
-                                 isRetryable: false)
-            return Promise(error: error)
-        }
-
-        Logger.debug("registering with signal server")
-
-        return firstly {
-            self.registerForTextSecure(verificationCode: verificationCode, pin: pin, checkForAvailableTransfer: checkForAvailableTransfer)
-        }.then { response -> Promise<Void> in
-            self.tsAccountManager.uuidAwaitingVerification = response.aci
-            self.tsAccountManager.pniAwaitingVerification = response.pni
-
-            self.databaseStorage.write { transaction in
-                if !self.tsAccountManager.isReregistering {
-                    // For new users, read receipts are on by default.
-                    self.receiptManager.setAreReadReceiptsEnabled(true,
-                                                                  transaction: transaction)
-                    StoryManager.setAreViewReceiptsEnabled(true, transaction: transaction)
-
-                    // New users also have the onboarding banner cards enabled
-                    GetStartedBannerViewController.enableAllCards(writeTx: transaction)
-                }
-
-                // If the user previously had a PIN, but we don't have record of it,
-                // mark them as pending restoration during onboarding. Reg lock users
-                // will have already restored their PIN by this point.
-                if response.hasPreviouslyUsedKBS, !DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction.asV2Read) {
-                    LegacyKbsStateManager.shared.recordPendingRestoration(transaction: transaction.asV2Write)
-                }
-            }
-
-            return self.accountServiceClient.updatePrimaryDeviceAccountAttributes()
-        }.then {
-            DependenciesBridge.shared.preKeyManager.legacy_createPreKeys(auth: .implicit())
-        }.done {
-            self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
-        }.then { _ -> Promise<Void> in
-            return self.syncPushTokens().recover { (error) -> Promise<Void> in
-                switch error {
-                case PushRegistrationError.pushNotSupported(let description):
-                    // This can happen with:
-                    // - simulators, none of which support receiving push notifications
-                    // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
-                    Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
-                    self.tsAccountManager.setIsManualMessageFetchEnabled(true)
-                    return self.accountServiceClient.updatePrimaryDeviceAccountAttributes()
-                default:
-                    throw error
-                }
-            }
-        }.done {
-            self.completeRegistration()
-        }.then { _ -> Promise<Void> in
-            self.performInitialStorageServiceRestore()
-        }
-    }
-
-    func deprecated_requestChangePhoneNumber(
-        newPhoneNumber: String,
-        verificationCode: String,
-        registrationLock: String?
-    ) -> Promise<Void> {
-        guard let verificationCode = verificationCode.nilIfEmpty else {
-            let error = OWSError(
-                error: .userError,
-                description: OWSLocalizedString(
-                    "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
-                    comment: "alert body during registration"
-                ),
-                isRetryable: false
-            )
-
-            return Promise(error: error)
-        }
-
-        guard let newE164 = E164(newPhoneNumber) else {
-            return Promise(error: OWSAssertionError("Invalid new phone number!"))
-        }
-
-        Logger.info("Changing phone number.")
-
-        typealias PniParameters = PniDistribution.Parameters
-        typealias ChangeToken = LegacyChangePhoneNumber.ChangeToken
-
-        return firstly { () -> Promise<(PniParameters, ChangeToken)> in
-            // Mark a change as in flight.  If the change is interrupted, we'll
-            // check on next app launch to ensure local client state reflects
-            // current service state.
-
-            databaseStorage.write { transaction -> Promise<(PniParameters, ChangeToken)> in
-                legacyChangePhoneNumber.deprecated_buildNewChangeToken(
-                    forNewE164: newE164,
-                    transaction: transaction
-                )
-            }
-        }.then(on: DispatchQueue.global()) { (parameters, changeToken) -> Promise<Void> in
-            firstly { () -> Promise<ChangePhoneNumberResponse> in
-                // Make the request to change phone number and PNI parameters on
-                // the service.
-
-                self.makeChangePhoneNumberRequest(
-                    newE164: newE164,
-                    verificationCode: verificationCode,
-                    registrationLock: registrationLock,
-                    pniChangePhoneNumberParameters: parameters
-                )
-            }.map(on: DispatchQueue.global()) { changePhoneNumberResponse -> Void in
-                // Update local state to match new service state.
-
-                self.databaseStorage.write { transaction in
-                    self.legacyChangePhoneNumber.changeDidComplete(
-                        changeToken: changeToken,
-                        successfulChangeParams: LegacyChangePhoneNumber.SuccessfulChangeParams(
-                            newServiceE164: changePhoneNumberResponse.e164,
-                            serviceAci: changePhoneNumberResponse.aci,
-                            servicePni: changePhoneNumberResponse.pni
-                        ),
-                        transaction: transaction
-                    )
-                }
-
-                self.profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
-            }
-        }
-    }
-
-    private struct ChangePhoneNumberResponse: Decodable {
-        private enum CodingKeys: String, CodingKey {
-            case aci = "uuid"
-            case pni
-            case e164 = "number"
-        }
-
-        let aci: UUID
-        let pni: UUID
-        let e164: E164
-    }
-
-    private func makeChangePhoneNumberRequest(
-        newE164: E164,
-        verificationCode: String,
-        registrationLock: String?,
-        pniChangePhoneNumberParameters: PniDistribution.Parameters
-    ) -> Promise<ChangePhoneNumberResponse> {
-        firstly { () -> Promise<HTTPResponse> in
-            let request = OWSRequestFactory.changePhoneNumberRequest(
-                newPhoneNumberE164: newE164.stringValue,
-                verificationCode: verificationCode,
-                registrationLock: registrationLock,
-                pniChangePhoneNumberParameters: pniChangePhoneNumberParameters
-            )
-
-            return networkManager.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response -> ChangePhoneNumberResponse in
-            let statusCode = response.responseStatusCode
-
-            switch statusCode {
-            case 200, 204:
-                guard let data = response.responseBodyData else {
-                    throw OWSAssertionError("Missing or invalid body data!")
-                }
-
-                Logger.info("Change-number request accepted!")
-
-                return try JSONDecoder().decode(ChangePhoneNumberResponse.self, from: data)
-            default:
-                throw OWSAssertionError("Unexpected status while verifying code: \(statusCode)")
-            }
-        }.recover(on: DispatchQueue.global()) { error throws -> Promise<ChangePhoneNumberResponse> in
-            throw TSAccountManager.processRegistrationError(error)
-        }
-    }
-
     func performInitialStorageServiceRestore(authedAccount: AuthedAccount = .implicit()) -> Promise<Void> {
         BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
         return firstly {
@@ -310,6 +50,8 @@ public class AccountManager: NSObject, Dependencies {
             BenchEventComplete(eventId: "initial-storage-service-restore")
         }.timeout(seconds: 60)
     }
+
+    // MARK: Linking
 
     func completeSecondaryLinking(provisionMessage: ProvisionMessage, deviceName: String) -> Promise<Void> {
         // * Primary devices _can_ re-register with a new uuid.
@@ -417,7 +159,7 @@ public class AccountManager: NSObject, Dependencies {
             }
             return self.serviceClient.updateSecondaryDeviceCapabilities(hasBackedUpMasterKey: hasBackedUpMasterKey)
         }.done {
-            self.completeRegistration()
+            self.completeDeviceLinking()
         }.then { _ -> Promise<Void> in
             BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
 
@@ -466,71 +208,13 @@ public class AccountManager: NSObject, Dependencies {
         }
     }
 
-    private struct RegistrationResponse {
-        var aci: UUID
-        var pni: UUID
-        var hasPreviouslyUsedKBS = false
-    }
-
-    private func registerForTextSecure(verificationCode: String, pin: String?, checkForAvailableTransfer: Bool) -> Promise<RegistrationResponse> {
-        let serverAuthToken = generateServerAuthToken()
-
-        return Promise<Any?> { future in
-            guard let phoneNumber = tsAccountManager.phoneNumberAwaitingVerification else {
-                throw OWSAssertionError("phoneNumberAwaitingVerification was unexpectedly nil")
-            }
-
-            let accountAttributes = self.databaseStorage.write { transaction in
-                return AccountAttributes.deprecated_generateForInitialRegistration(
-                    fromDependencies: self,
-                    svr: DependenciesBridge.shared.svr,
-                    transaction: transaction
-                )
-            }
-
-            let request = OWSRequestFactory.deprecated_verifyPrimaryDeviceRequest(
-                verificationCode: verificationCode,
-                phoneNumber: phoneNumber.stringValue,
-                authPassword: serverAuthToken,
-                checkForAvailableTransfer: checkForAvailableTransfer,
-                attributes: accountAttributes
-            )
-
-            tsAccountManager.verifyRegistration(request: request,
-                                                success: future.resolve,
-                                                failure: future.reject)
-        }.map(on: DispatchQueue.global()) { responseObject throws -> RegistrationResponse in
-            self.databaseStorage.write { transaction in
-                self.tsAccountManager.setStoredServerAuthToken(
-                    serverAuthToken,
-                    deviceId: OWSDevice.primaryDeviceId,
-                    transaction: transaction
-                )
-            }
-
-            guard let responseObject = responseObject else {
-                throw OWSAssertionError("Missing responseObject.")
-            }
-
-            guard let params = ParamParser(responseObject: responseObject) else {
-                throw OWSAssertionError("Missing or invalid params.")
-            }
-
-            let aci: UUID = try params.required(key: "uuid")
-            let pni: UUID = try params.required(key: "pni")
-            let hasPreviouslyUsedKBS = try params.optional(key: "storageCapable") ?? false
-
-            return RegistrationResponse(aci: aci, pni: pni, hasPreviouslyUsedKBS: hasPreviouslyUsedKBS)
-        }
-    }
-
     private func syncPushTokens() -> Promise<Void> {
         Logger.info("")
         let job = SyncPushTokensJob(mode: .forceUpload)
         return job.run()
     }
 
-    private func completeRegistration() {
+    private func completeDeviceLinking() {
         Logger.info("")
         tsAccountManager.didRegister()
     }

@@ -28,21 +28,6 @@ class OWSRequestFactoryTest: XCTestCase {
 
     // MARK: - Account
 
-    func testRequestPreauthChallenge() {
-        let request = OWSRequestFactory.deprecated_requestPreauthChallenge(
-            e164: "+19875550165",
-            pushToken: "foo bar",
-            isVoipToken: true
-        )
-
-        XCTAssertEqual(
-            request.url?.relativeString,
-            "v1/accounts/apn/preauth/foo%20bar/+19875550165?voip=true"
-        )
-        XCTAssertEqual(request.httpMethod, "GET")
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
-    }
-
     func testEnable2FARequestWithPin() {
         let request = OWSRequestFactory.enable2FARequest(withPin: "90210")
 

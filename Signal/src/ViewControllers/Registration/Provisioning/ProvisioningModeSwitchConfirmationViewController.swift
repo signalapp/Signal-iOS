@@ -6,7 +6,7 @@
 import SignalMessaging
 import SignalUI
 
-class Deprecated_OnboardingModeSwitchConfirmationViewController: Deprecated_OnboardingBaseViewController {
+class ProvisioningModeSwitchConfirmationViewController: ProvisioningBaseViewController {
     var warningText: String?
 
     override func loadView() {
@@ -21,30 +21,15 @@ class Deprecated_OnboardingModeSwitchConfirmationViewController: Deprecated_Onbo
         let nextButtonText: String
         let image: UIImage?
 
-        switch onboardingController.onboardingMode {
-        case .registering:
-            titleText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_REGISTERING",
-                                          comment: "header text indicating to the user they're switching from registering to linking flow")
-            explanationText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING",
-                                                comment: "explanation to the user they're switching from registering to linking flow")
-
-            nextButtonText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING",
-                                               comment: "button indicating that the user will link their phone")
-
-            warningText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_WARNING_REGISTERING",
-                                            comment: "warning to the user that linking a phone is not recommended")
-            image = nil
-        case .provisioning:
-            titleText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING",
-                                          comment: "header text indicating to the user they're switching from linking to registering flow")
-            explanationText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING",
-                                                comment: "explanation to the user they're switching from linking to registering flow")
-            nextButtonText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING",
-                                               comment: "button indicating that the user will register their ipad")
-            warningText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING",
-                                            comment: "warning to the user that registering an ipad is not recommended")
-            image = #imageLiteral(resourceName: "ipad-primary")
-        }
+        titleText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING",
+                                      comment: "header text indicating to the user they're switching from linking to registering flow")
+        explanationText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING",
+                                            comment: "explanation to the user they're switching from linking to registering flow")
+        nextButtonText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING",
+                                           comment: "button indicating that the user will register their ipad")
+        warningText = OWSLocalizedString("ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING",
+                                        comment: "warning to the user that registering an ipad is not recommended")
+        image = #imageLiteral(resourceName: "ipad-primary")
 
         let imageView = UIImageView(image: image)
         imageView.contentMode = .scaleAspectFit
@@ -57,7 +42,7 @@ class Deprecated_OnboardingModeSwitchConfirmationViewController: Deprecated_Onbo
         let nextButton = self.primaryButton(title: nextButtonText,
                                             selector: #selector(didPressNext))
         nextButton.accessibilityIdentifier = "onboarding.modeSwitch.nextButton"
-        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
+        let primaryButtonView = ProvisioningBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let topSpacer = UIView.vStretchingSpacer(minHeight: 12)
         let bottomSpacer = UIView.vStretchingSpacer(minHeight: 12)
@@ -94,7 +79,7 @@ class Deprecated_OnboardingModeSwitchConfirmationViewController: Deprecated_Onbo
             accessibilityIdentifier: "onboarding.modeSwitch.continue",
             handler: { [weak self] _ in
                 guard let self else { return }
-                self.onboardingController.overrideDefaultRegistrationMode(viewController: self)
+                self.provisioningController.switchToPrimaryRegistration(viewController: self)
             }
         )
         actionSheet.addAction(continueAction)

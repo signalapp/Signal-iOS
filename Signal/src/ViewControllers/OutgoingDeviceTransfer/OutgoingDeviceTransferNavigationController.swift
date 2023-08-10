@@ -6,7 +6,7 @@
 import SignalCoreKit
 import SignalUI
 
-class DeviceTransferNavigationController: UINavigationController {
+class OutgoingDeviceTransferNavigationController: UINavigationController {
 
     required init() {
         super.init(nibName: nil, bundle: nil)
@@ -15,7 +15,7 @@ class DeviceTransferNavigationController: UINavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        pushViewController(DeviceTransferInitialViewController(), animated: false)
+        pushViewController(OutgoingDeviceTransferInitialViewController(), animated: false)
         setNavigationBarHidden(true, animated: false)
 
         let dismissButton = UIButton()
@@ -80,8 +80,8 @@ class DeviceTransferNavigationController: UINavigationController {
 }
 
 class DeviceTransferBaseViewController: UIViewController {
-    var transferNavigationController: DeviceTransferNavigationController? {
-        return navigationController as? DeviceTransferNavigationController
+    var transferNavigationController: OutgoingDeviceTransferNavigationController? {
+        return navigationController as? OutgoingDeviceTransferNavigationController
     }
 
     var requiresDismissConfirmation: Bool { false }

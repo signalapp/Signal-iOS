@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-public class Deprecated_OnboardingTransferChoiceViewController: Deprecated_OnboardingBaseViewController {
+public class ProvisioningTransferChoiceViewController: ProvisioningBaseViewController {
 
     public override var primaryLayoutMargins: UIEdgeInsets {
         var defaultMargins = super.primaryLayoutMargins
@@ -40,39 +40,26 @@ public class Deprecated_OnboardingTransferChoiceViewController: Deprecated_Onboa
         )
         titleLabel.accessibilityIdentifier = "onboarding.transferChoice." + "titleLabel"
 
-        let explanationText: String
-        let transferTitle: String
-        let transferBody: String
-        let registerTitle: String
-        let registerBody: String
-        switch onboardingController.onboardingMode {
-        case .provisioning:
-            explanationText = OWSLocalizedString("DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION",
-                                                comment: "The explanation for the device transfer 'choice' view when linking a device")
-
-            transferTitle = OWSLocalizedString("DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE",
-                                              comment: "The title for the device transfer 'choice' view 'transfer' option when linking a device")
-            transferBody = OWSLocalizedString("DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY",
-                                             comment: "The body for the device transfer 'choice' view 'transfer' option when linking a device")
-
-            registerTitle = OWSLocalizedString("DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE",
-                                              comment: "The title for the device transfer 'choice' view 'register' option when linking a device")
-            registerBody = OWSLocalizedString("DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY",
-                                             comment: "The body for the device transfer 'choice' view 'register' option when linking a device")
-        case .registering:
-            explanationText = OWSLocalizedString("DEVICE_TRANSFER_CHOICE_EXPLANATION",
-                                                comment: "The explanation for the device transfer 'choice' view")
-
-            transferTitle = OWSLocalizedString("DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE",
-                                              comment: "The title for the device transfer 'choice' view 'transfer' option")
-            transferBody = OWSLocalizedString("DEVICE_TRANSFER_CHOICE_TRANSFER_BODY",
-                                             comment: "The body for the device transfer 'choice' view 'transfer' option")
-
-            registerTitle = OWSLocalizedString("DEVICE_TRANSFER_CHOICE_REGISTER_TITLE",
-                                              comment: "The title for the device transfer 'choice' view 'register' option")
-            registerBody = OWSLocalizedString("DEVICE_TRANSFER_CHOICE_REGISTER_BODY",
-                                             comment: "The body for the device transfer 'choice' view 'register' option")
-        }
+        let explanationText = OWSLocalizedString(
+            "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION",
+            comment: "The explanation for the device transfer 'choice' view when linking a device"
+        )
+        let transferTitle = OWSLocalizedString(
+            "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE",
+            comment: "The title for the device transfer 'choice' view 'transfer' option when linking a device"
+        )
+        let transferBody = OWSLocalizedString(
+            "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY",
+            comment: "The body for the device transfer 'choice' view 'transfer' option when linking a device"
+        )
+        let registerTitle = OWSLocalizedString(
+            "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE",
+            comment: "The title for the device transfer 'choice' view 'register' option when linking a device"
+        )
+        let registerBody = OWSLocalizedString(
+            "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY",
+            comment: "The body for the device transfer 'choice' view 'register' option when linking a device"
+        )
 
         let explanationLabel = self.createExplanationLabel(explanationText: explanationText)
         explanationLabel.accessibilityIdentifier = "onboarding.transferChoice." + "explanationLabel"
@@ -109,13 +96,6 @@ public class Deprecated_OnboardingTransferChoiceViewController: Deprecated_Onboa
         topStackView.isLayoutMarginsRelativeArrangement = true
         topStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
 
-        let bottomStackView = UIStackView(arrangedSubviews: [warningLabel])
-        bottomStackView.axis = .vertical
-        bottomStackView.alignment = .fill
-        bottomStackView.isLayoutMarginsRelativeArrangement = true
-        bottomStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
-        bottomStackView.isHidden = onboardingController.onboardingMode == .provisioning
-
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
 
@@ -125,8 +105,7 @@ public class Deprecated_OnboardingTransferChoiceViewController: Deprecated_Onboa
             transferButton,
             UIView.spacer(withHeight: 12),
             registerButton,
-            bottomSpacer,
-            bottomStackView
+            bottomSpacer
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -218,28 +197,15 @@ public class Deprecated_OnboardingTransferChoiceViewController: Deprecated_Onboa
     private func didSelectTransfer() {
         Logger.info("")
 
-        switch onboardingController.onboardingMode {
-        case .provisioning:
-            let prepViewController = Deprecated_SecondaryLinkingPrepViewController(onboardingController: onboardingController, isTransferring: true)
-            navigationController?.pushViewController(prepViewController, animated: true)
-        case .registering:
-            onboardingController.transferAccount(fromViewController: self)
-        }
+        let prepViewController = ProvisioningPrepViewController(provisioningController: provisioningController, isTransferring: true)
+        navigationController?.pushViewController(prepViewController, animated: true)
     }
 
     @objc
     private func didSelectRegister() {
         Logger.info("")
 
-        switch onboardingController.onboardingMode {
-        case .provisioning:
-            let prepViewController = Deprecated_SecondaryLinkingPrepViewController(onboardingController: onboardingController, isTransferring: false)
-            navigationController?.pushViewController(prepViewController, animated: true)
-        case .registering:
-            onboardingController.submitVerification(fromViewController: self, checkForAvailableTransfer: false, completion: { outcome in
-                guard outcome != .success else { return }
-                owsFailDebug("Unexpected error on transfer choice view \(outcome)")
-            })
-        }
+        let prepViewController = ProvisioningPrepViewController(provisioningController: provisioningController, isTransferring: false)
+        navigationController?.pushViewController(prepViewController, animated: true)
     }
 }

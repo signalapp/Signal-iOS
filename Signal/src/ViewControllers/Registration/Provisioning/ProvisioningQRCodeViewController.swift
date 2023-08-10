@@ -7,14 +7,7 @@ import SafariServices
 import SignalMessaging
 import SignalUI
 
-public class Deprecated_SecondaryLinkingQRCodeViewController: Deprecated_OnboardingBaseViewController {
-
-    let provisioningController: Deprecated_ProvisioningController
-
-    required init(provisioningController: Deprecated_ProvisioningController) {
-        self.provisioningController = provisioningController
-        super.init(onboardingController: provisioningController.onboardingController)
-    }
+public class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
 
     let qrCodeView = QRCodeView()
 
@@ -53,9 +46,9 @@ public class Deprecated_SecondaryLinkingQRCodeViewController: Deprecated_Onboard
         explanationLabel.setContentHuggingHigh()
 
 #if TESTABLE_BUILD
-        let copyURLButton = UIButton(type: .system)
-        copyURLButton.setTitle(LocalizationNotNeeded("Debug only: Copy URL"), for: .normal)
-        copyURLButton.addTarget(self, action: #selector(didTapCopyURL), for: .touchUpInside)
+        let shareURLButton = UIButton(type: .system)
+        shareURLButton.setTitle(LocalizationNotNeeded("Debug only: Share URL"), for: .normal)
+        shareURLButton.addTarget(self, action: #selector(didTapShareURL), for: .touchUpInside)
 #endif
 
         let stackView = UIStackView(arrangedSubviews: [
@@ -65,7 +58,7 @@ public class Deprecated_SecondaryLinkingQRCodeViewController: Deprecated_Onboard
             explanationLabel
             ])
 #if TESTABLE_BUILD
-        stackView.addArrangedSubview(copyURLButton)
+        stackView.addArrangedSubview(shareURLButton)
 #endif
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -98,9 +91,19 @@ public class Deprecated_SecondaryLinkingQRCodeViewController: Deprecated_Onboard
     }
 
 #if TESTABLE_BUILD
-    @IBAction func didTapCopyURL() {
+    @IBAction func didTapShareURL() {
         if let qrCodeURL = self.qrCodeURL {
             UIPasteboard.general.url = qrCodeURL
+            // If we share the plain url and airdrop it to a mac, it will just open the url,
+            // and fail because signal desktop can't open it.
+            // Share some text instead so we can open it on mac and copy paste into
+            // a primary device simulator.
+            let activityVC = UIActivityViewController(
+                activityItems: ["Provisioning URL: " + qrCodeURL.absoluteString],
+                applicationActivities: nil
+            )
+            activityVC.popoverPresentationController?.sourceView = self.qrCodeView
+            self.present(activityVC, animated: true)
         } else {
             UIPasteboard.general.string = LocalizationNotNeeded("URL NOT READY YET")
         }

@@ -6,14 +6,7 @@
 import SignalCoreKit
 import SignalUI
 
-class Deprecated_SecondaryLinkingSetDeviceNameViewController: Deprecated_OnboardingBaseViewController {
-
-    let provisioningController: Deprecated_ProvisioningController
-
-    init(provisioningController: Deprecated_ProvisioningController) {
-        self.provisioningController = provisioningController
-        super.init(onboardingController: provisioningController.onboardingController)
-    }
+class ProvisioningSetDeviceNameViewController: ProvisioningBaseViewController {
 
     // MARK: UIViewController overrides
 
@@ -61,7 +54,7 @@ class Deprecated_SecondaryLinkingSetDeviceNameViewController: Deprecated_Onboard
         let primaryButton = self.primaryButton(title: OWSLocalizedString("SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS", comment: "body text while displaying a QR code which, when scanned, will link this device."),
                                                selector: #selector(didTapFinalizeLinking))
         primaryButton.accessibilityIdentifier = "onboarding.confirmLink.confirmButton"
-        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: primaryButton)
+        let primaryButtonView = ProvisioningBaseViewController.horizontallyWrap(primaryButton: primaryButton)
 
         let aboveTextFieldSpacer = UIView.vStretchingSpacer(maxHeight: 60)
         let belowTextFieldSpacer = UIView.vStretchingSpacer()

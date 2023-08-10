@@ -68,7 +68,7 @@ public class RegistrationUtils: Dependencies {
         }
 
         preferences.unsetRecordedAPNSTokens()
-        Deprecated_ProvisioningController.presentRelinkingFlow()
+        ProvisioningController.presentRelinkingFlow()
     }
 
     private class func showReRegistration(e164: E164, aci: UUID) {

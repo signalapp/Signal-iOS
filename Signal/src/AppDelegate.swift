@@ -267,10 +267,9 @@ extension AppDelegate {
 
         let hasInProgressRegistration: Bool
         switch launchInterface {
-        case .registration, .deprecatedOnboarding:
+        case .registration, .secondaryProvisioning:
             hasInProgressRegistration = true
-        case .chatList(let onboardingController):
-            onboardingController.markAsOnboarded()
+        case .chatList:
             hasInProgressRegistration = false
         }
 
@@ -442,15 +441,24 @@ extension AppDelegate {
     // MARK: - Registration
 
     private func buildLaunchInterface(regLoader: RegistrationCoordinatorLoader) -> LaunchInterface {
-        let onboardingController = Deprecated_OnboardingController()
-
-        if let lastMode = databaseStorage.read(block: { regLoader.restoreLastMode(transaction: $0.asV2Read) }) {
+        let (
+            isOnboarded,
+            isRegistered,
+            lastMode
+        ) = databaseStorage.read { tx in
+            return (
+                tsAccountManager.isOnboarded(transaction: tx),
+                tsAccountManager.isRegistered(transaction: tx),
+                regLoader.restoreLastMode(transaction: tx.asV2Read)
+            )
+        }
+        if let lastMode {
             Logger.info("Found ongoing registration; continuing")
             return .registration(regLoader, lastMode)
-            // TODO[Registration]: use a db migration to move isComplete state to reg coordinator.
-        } else if !onboardingController.isComplete {
+            // TODO[Registration]: use a db migration to move isOnboarded state to reg coordinator.
+        } else if !(isOnboarded && isRegistered) {
             if UIDevice.current.isIPad {
-                return .deprecatedOnboarding(onboardingController)
+                return .secondaryProvisioning
             } else {
                 let desiredMode: RegistrationMode
                 if
@@ -469,7 +477,7 @@ extension AppDelegate {
                 return .registration(regLoader, desiredMode)
             }
         } else {
-            return .chatList(onboardingController)
+            return .chatList
         }
     }
 

@@ -13,8 +13,6 @@ public enum SignalServiceError: Int, Error {
 // MARK: -
 
 public protocol SignalServiceClient {
-    func deprecated_requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void>
-    func deprecated_requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void>
     func verifySecondaryDevice(verificationCode: String, phoneNumber: String, authKey: String, encryptedDeviceName: Data) -> Promise<VerifySecondaryDeviceResponse>
     func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)>
     /// If a username and password are both provided, those are used for the request's
@@ -62,23 +60,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     public static let shared = SignalServiceRestClient()
 
     // MARK: - Public
-
-    public func deprecated_requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
-        let request = OWSRequestFactory.deprecated_requestPreauthChallenge(
-            e164: e164,
-            pushToken: pushToken,
-            isVoipToken: isVoipToken
-        )
-        return networkManager.makePromise(request: request).asVoid()
-    }
-
-    public func deprecated_requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
-        let request = OWSRequestFactory.requestVerificationCodeRequest(e164: e164,
-                                                                       preauthChallenge: preauthChallenge,
-                                                                       captchaToken: captchaToken,
-                                                                       transport: transport)
-        return networkManager.makePromise(request: request).asVoid()
-    }
 
     public func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
         Logger.debug("")

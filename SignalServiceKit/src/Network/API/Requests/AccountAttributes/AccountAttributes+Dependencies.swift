@@ -22,21 +22,6 @@ extension AccountAttributes {
         )
     }
 
-    public static func deprecated_generateForInitialRegistration(
-        fromDependencies dependencies: Dependencies,
-        svr: SecureValueRecovery,
-        transaction: SDSAnyWriteTransaction
-    ) -> AccountAttributes {
-        owsAssertDebug(dependencies.tsAccountManager.isPrimaryDevice)
-        return generate(
-            fromDependencies: dependencies,
-            svr: svr,
-            encryptedDeviceName: nil,
-            isSecondaryDeviceRegistration: false,
-            transaction: transaction
-        )
-    }
-
     public static func generateForSecondaryDevice(
         fromDependencies dependencies: Dependencies,
         svr: SecureValueRecovery,

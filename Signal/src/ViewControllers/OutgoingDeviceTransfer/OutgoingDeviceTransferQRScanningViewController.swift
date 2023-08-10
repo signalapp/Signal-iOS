@@ -7,7 +7,7 @@ import MultipeerConnectivity
 import SignalServiceKit
 import SignalUI
 
-class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
+class OutgoingDeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
 
     private let qrCodeScanViewController = QRCodeScanViewController(appearance: .unadorned)
 
@@ -123,7 +123,7 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
 
 // MARK: -
 
-extension DeviceTransferQRScanningViewController: QRCodeScanDelegate {
+extension OutgoingDeviceTransferQRScanningViewController: QRCodeScanDelegate {
 
     func qrCodeScanViewDismiss(_ qrCodeScanViewController: QRCodeScanViewController) {
         AssertIsOnMainThread()
@@ -234,12 +234,12 @@ extension DeviceTransferQRScanningViewController: QRCodeScanDelegate {
 
 // MARK: -
 
-extension DeviceTransferQRScanningViewController: DeviceTransferServiceObserver {
+extension OutgoingDeviceTransferQRScanningViewController: DeviceTransferServiceObserver {
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {}
 
     func deviceTransferServiceDidStartTransfer(progress: Progress) {
         deviceTransferService.removeObserver(self)
-        let vc = DeviceTransferProgressViewController(progress: progress)
+        let vc = OutgoingDeviceTransferProgressViewController(progress: progress)
         navigationController?.pushViewController(vc, animated: true)
     }
 

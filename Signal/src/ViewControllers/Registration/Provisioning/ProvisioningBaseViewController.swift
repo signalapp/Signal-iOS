@@ -1,11 +1,44 @@
 //
-// Copyright 2019 Signal Messenger, LLC
+// Copyright 2023 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import SignalUI
 
-public class Deprecated_RegistrationBaseViewController: OWSViewController, OWSNavigationChildController {
+public class ProvisioningBaseViewController: OWSViewController, OWSNavigationChildController {
+
+    // Unlike a delegate, we can and should retain a strong reference to the ProvisioningController.
+    let provisioningController: ProvisioningController
+
+    public init(provisioningController: ProvisioningController) {
+        self.provisioningController = provisioningController
+
+        super.init()
+    }
+
+    func shouldShowBackButton() -> Bool {
+        return false
+    }
+
+    // MARK: - View Lifecycle
+
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
+        primaryView.layoutMargins = primaryLayoutMargins
+
+        if shouldShowBackButton() {
+            let backButton = UIButton()
+            backButton.setTemplateImage(UIImage(imageLiteralResourceName: "NavBarBack"), tintColor: Theme.secondaryTextAndIconColor)
+            backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
+
+            view.addSubview(backButton)
+            backButton.autoSetDimensions(to: CGSize(square: 40))
+            backButton.autoPinEdge(toSuperviewMargin: .leading)
+            backButton.autoPinEdge(toSuperviewMargin: .top)
+        }
+    }
 
     // MARK: - Factory Methods
 
@@ -94,13 +127,7 @@ public class Deprecated_RegistrationBaseViewController: OWSViewController, OWSNa
         return buttonWrapper
     }
 
-    // MARK: - View Lifecycle
-
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-
-        primaryView.layoutMargins = primaryLayoutMargins
-    }
+    // MARK: - Overrides
 
     @objc
     func navigateBack() {
