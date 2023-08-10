@@ -243,13 +243,13 @@ public class DependenciesBridge {
 
         self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
             accountServiceClient: LearnMyOwnPniManagerImpl.Wrappers.AccountServiceClient(accountServiceClient),
+            db: db,
             identityManager: LearnMyOwnPniManagerImpl.Wrappers.IdentityManager(identityManager),
+            keyValueStoreFactory: keyValueStoreFactory,
             preKeyManager: preKeyManager,
             profileFetcher: LearnMyOwnPniManagerImpl.Wrappers.ProfileFetcher(schedulers: schedulers),
-            tsAccountManager: LearnMyOwnPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager),
-            databaseStorage: db,
-            keyValueStoreFactory: keyValueStoreFactory,
-            schedulers: schedulers
+            schedulers: schedulers,
+            tsAccountManager: LearnMyOwnPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
         )
 
         self.pniHelloWorldManager = PniHelloWorldManagerImpl(

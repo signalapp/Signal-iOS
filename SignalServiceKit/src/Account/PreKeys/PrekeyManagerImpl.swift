@@ -161,6 +161,22 @@ public class PreKeyManagerImpl: PreKeyManager {
         return promise
     }
 
+    public func createPreKeysForProvisioning(
+        aciIdentityKeyPair: ECKeyPair,
+        pniIdentityKeyPair: ECKeyPair
+    ) -> Promise<RegistrationPreKeyUploadBundles> {
+        /// Note that we do not report a `refreshPreKeysDidSucceed, because this operation does not`
+        /// generate one time prekeys, so we shouldn't mark the routine refresh as having been "checked".
+        let (promise, future) = Promise<RegistrationPreKeyUploadBundles>.pending()
+        let operation = preKeyOperationFactory.createForProvisioning(
+            aciIdentityKeyPair: aciIdentityKeyPair,
+            pniIdentityKeyPair: pniIdentityKeyPair,
+            future: future
+        )
+        Self.operationQueue.addOperation(operation)
+        return promise
+    }
+
     public func finalizeRegistrationPreKeys(
         _ bundles: RegistrationPreKeyUploadBundles,
         uploadDidSucceed: Bool

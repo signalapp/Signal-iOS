@@ -364,34 +364,16 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
     public let aciIdentityKeyPrivate: Data
 
     @objc
+    public let pniIdentityKeyPublic: Data
+
+    @objc
+    public let pniIdentityKeyPrivate: Data
+
+    @objc
     public let provisioningCode: String
 
     @objc
     public let profileKey: Data
-
-    @objc
-    public var pniIdentityKeyPublic: Data? {
-        guard hasPniIdentityKeyPublic else {
-            return nil
-        }
-        return proto.pniIdentityKeyPublic
-    }
-    @objc
-    public var hasPniIdentityKeyPublic: Bool {
-        return proto.hasPniIdentityKeyPublic
-    }
-
-    @objc
-    public var pniIdentityKeyPrivate: Data? {
-        guard hasPniIdentityKeyPrivate else {
-            return nil
-        }
-        return proto.pniIdentityKeyPrivate
-    }
-    @objc
-    public var hasPniIdentityKeyPrivate: Bool {
-        return proto.hasPniIdentityKeyPrivate
-    }
 
     @objc
     public var aci: String? {
@@ -470,11 +452,15 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
     private init(proto: ProvisioningProtos_ProvisionMessage,
                  aciIdentityKeyPublic: Data,
                  aciIdentityKeyPrivate: Data,
+                 pniIdentityKeyPublic: Data,
+                 pniIdentityKeyPrivate: Data,
                  provisioningCode: String,
                  profileKey: Data) {
         self.proto = proto
         self.aciIdentityKeyPublic = aciIdentityKeyPublic
         self.aciIdentityKeyPrivate = aciIdentityKeyPrivate
+        self.pniIdentityKeyPublic = pniIdentityKeyPublic
+        self.pniIdentityKeyPrivate = pniIdentityKeyPrivate
         self.provisioningCode = provisioningCode
         self.profileKey = profileKey
     }
@@ -501,6 +487,16 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
         }
         let aciIdentityKeyPrivate = proto.aciIdentityKeyPrivate
 
+        guard proto.hasPniIdentityKeyPublic else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: pniIdentityKeyPublic")
+        }
+        let pniIdentityKeyPublic = proto.pniIdentityKeyPublic
+
+        guard proto.hasPniIdentityKeyPrivate else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: pniIdentityKeyPrivate")
+        }
+        let pniIdentityKeyPrivate = proto.pniIdentityKeyPrivate
+
         guard proto.hasProvisioningCode else {
             throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: provisioningCode")
         }
@@ -514,6 +510,8 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
         self.init(proto: proto,
                   aciIdentityKeyPublic: aciIdentityKeyPublic,
                   aciIdentityKeyPrivate: aciIdentityKeyPrivate,
+                  pniIdentityKeyPublic: pniIdentityKeyPublic,
+                  pniIdentityKeyPrivate: pniIdentityKeyPrivate,
                   provisioningCode: provisioningCode,
                   profileKey: profileKey)
     }
@@ -556,20 +554,14 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
 
 extension ProvisioningProtoProvisionMessage {
     @objc
-    public static func builder(aciIdentityKeyPublic: Data, aciIdentityKeyPrivate: Data, provisioningCode: String, profileKey: Data) -> ProvisioningProtoProvisionMessageBuilder {
-        return ProvisioningProtoProvisionMessageBuilder(aciIdentityKeyPublic: aciIdentityKeyPublic, aciIdentityKeyPrivate: aciIdentityKeyPrivate, provisioningCode: provisioningCode, profileKey: profileKey)
+    public static func builder(aciIdentityKeyPublic: Data, aciIdentityKeyPrivate: Data, pniIdentityKeyPublic: Data, pniIdentityKeyPrivate: Data, provisioningCode: String, profileKey: Data) -> ProvisioningProtoProvisionMessageBuilder {
+        return ProvisioningProtoProvisionMessageBuilder(aciIdentityKeyPublic: aciIdentityKeyPublic, aciIdentityKeyPrivate: aciIdentityKeyPrivate, pniIdentityKeyPublic: pniIdentityKeyPublic, pniIdentityKeyPrivate: pniIdentityKeyPrivate, provisioningCode: provisioningCode, profileKey: profileKey)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> ProvisioningProtoProvisionMessageBuilder {
-        let builder = ProvisioningProtoProvisionMessageBuilder(aciIdentityKeyPublic: aciIdentityKeyPublic, aciIdentityKeyPrivate: aciIdentityKeyPrivate, provisioningCode: provisioningCode, profileKey: profileKey)
-        if let _value = pniIdentityKeyPublic {
-            builder.setPniIdentityKeyPublic(_value)
-        }
-        if let _value = pniIdentityKeyPrivate {
-            builder.setPniIdentityKeyPrivate(_value)
-        }
+        let builder = ProvisioningProtoProvisionMessageBuilder(aciIdentityKeyPublic: aciIdentityKeyPublic, aciIdentityKeyPrivate: aciIdentityKeyPrivate, pniIdentityKeyPublic: pniIdentityKeyPublic, pniIdentityKeyPrivate: pniIdentityKeyPrivate, provisioningCode: provisioningCode, profileKey: profileKey)
         if let _value = aci {
             builder.setAci(_value)
         }
@@ -604,11 +596,13 @@ public class ProvisioningProtoProvisionMessageBuilder: NSObject {
     fileprivate override init() {}
 
     @objc
-    fileprivate init(aciIdentityKeyPublic: Data, aciIdentityKeyPrivate: Data, provisioningCode: String, profileKey: Data) {
+    fileprivate init(aciIdentityKeyPublic: Data, aciIdentityKeyPrivate: Data, pniIdentityKeyPublic: Data, pniIdentityKeyPrivate: Data, provisioningCode: String, profileKey: Data) {
         super.init()
 
         setAciIdentityKeyPublic(aciIdentityKeyPublic)
         setAciIdentityKeyPrivate(aciIdentityKeyPrivate)
+        setPniIdentityKeyPublic(pniIdentityKeyPublic)
+        setPniIdentityKeyPrivate(pniIdentityKeyPrivate)
         setProvisioningCode(provisioningCode)
         setProfileKey(profileKey)
     }

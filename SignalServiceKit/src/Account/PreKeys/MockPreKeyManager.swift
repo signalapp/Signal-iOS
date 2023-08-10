@@ -29,6 +29,27 @@ internal class MockPreKeyManager: PreKeyManager {
         ))
     }
 
+    func createPreKeysForProvisioning(
+        aciIdentityKeyPair: ECKeyPair,
+        pniIdentityKeyPair: ECKeyPair
+    ) -> Promise<RegistrationPreKeyUploadBundles> {
+        let identityKeyPair = Curve25519.generateKeyPair()
+        return .value(.init(
+            aci: .init(
+                identity: .aci,
+                identityKeyPair: identityKeyPair,
+                signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
+            ),
+            pni: .init(
+                identity: .pni,
+                identityKeyPair: identityKeyPair,
+                signedPreKey: SSKSignedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair)
+            )
+        ))
+    }
+
     func finalizeRegistrationPreKeys(
         _ bundles: RegistrationPreKeyUploadBundles,
         uploadDidSucceed: Bool

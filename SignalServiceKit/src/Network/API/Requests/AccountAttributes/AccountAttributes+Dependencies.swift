@@ -54,6 +54,8 @@ extension AccountAttributes {
 
             // This field is scoped to the device that sets it and does not overwrite
             // the attribute from the primary device.
+
+            // TODO: can we change this with atomic device linking?
             isManualMessageFetchEnabled = true
         } else {
             isManualMessageFetchEnabled = dependencies.tsAccountManager.isManualMessageFetchEnabled(transaction)

@@ -72,7 +72,7 @@ class OWSDeviceProvisionerTest: XCTestCase {
             XCTAssertEqual(provisionMessage.phoneNumber, myPhoneNumber)
             XCTAssertEqual(provisionMessage.pni, myPni)
             XCTAssertEqual(provisionMessage.aciIdentityKeyPair.publicKey, Data(myAciIdentityKeyPair.publicKey.keyBytes))
-            XCTAssertEqual(provisionMessage.pniIdentityKeyPair?.publicKey, Data(myPniIdentityKeyPair.publicKey.keyBytes))
+            XCTAssertEqual(provisionMessage.pniIdentityKeyPair.publicKey, Data(myPniIdentityKeyPair.publicKey.keyBytes))
             XCTAssertEqual(provisionMessage.profileKey.keyData, profileKey)
             XCTAssertEqual(provisionMessage.areReadReceiptsEnabled, readReceiptsEnabled)
             XCTAssertEqual(provisionMessage.provisioningCode, provisioningCode)

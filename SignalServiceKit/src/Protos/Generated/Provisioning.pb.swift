@@ -112,6 +112,7 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `aciIdentityKeyPrivate`. Subsequent reads from it will return its default value.
   mutating func clearAciIdentityKeyPrivate() {self._aciIdentityKeyPrivate = nil}
 
+  /// @required
   var pniIdentityKeyPublic: Data {
     get {return _pniIdentityKeyPublic ?? Data()}
     set {_pniIdentityKeyPublic = newValue}
@@ -121,6 +122,7 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `pniIdentityKeyPublic`. Subsequent reads from it will return its default value.
   mutating func clearPniIdentityKeyPublic() {self._pniIdentityKeyPublic = nil}
 
+  /// @required
   var pniIdentityKeyPrivate: Data {
     get {return _pniIdentityKeyPrivate ?? Data()}
     set {_pniIdentityKeyPrivate = newValue}

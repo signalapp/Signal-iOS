@@ -54,10 +54,21 @@ public class AccountServiceClient: NSObject {
         return serviceClient.getAccountWhoAmI()
     }
 
-    public func verifySecondaryDevice(verificationCode: String,
-                                      phoneNumber: String,
-                                      authKey: String,
-                                      encryptedDeviceName: Data) -> Promise<VerifySecondaryDeviceResponse> {
-        return serviceClient.verifySecondaryDevice(verificationCode: verificationCode, phoneNumber: phoneNumber, authKey: authKey, encryptedDeviceName: encryptedDeviceName)
+    public func verifySecondaryDevice(
+        verificationCode: String,
+        phoneNumber: String,
+        authKey: String,
+        encryptedDeviceName: Data,
+        apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
+        prekeyBundles: RegistrationPreKeyUploadBundles
+    ) -> Promise<VerifySecondaryDeviceResponse> {
+        return serviceClient.verifySecondaryDevice(
+            verificationCode: verificationCode,
+            phoneNumber: phoneNumber,
+            authKey: authKey,
+            encryptedDeviceName: encryptedDeviceName,
+            apnRegistrationId: apnRegistrationId,
+            prekeyBundles: prekeyBundles
+        )
     }
 }

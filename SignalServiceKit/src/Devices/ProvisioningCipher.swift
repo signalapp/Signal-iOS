@@ -13,7 +13,7 @@ public struct ProvisionMessage {
     public let phoneNumber: String
     public let pni: UUID?
     public let aciIdentityKeyPair: ECKeyPair
-    public let pniIdentityKeyPair: ECKeyPair?
+    public let pniIdentityKeyPair: ECKeyPair
     public let profileKey: OWSAES256Key
     public let areReadReceiptsEnabled: Bool?
     public let primaryUserAgent: String?
@@ -109,15 +109,8 @@ public class ProvisioningCipher {
 
         let aciIdentityKeyPair = try IdentityKeyPair(publicKey: PublicKey(proto.aciIdentityKeyPublic),
                                                      privateKey: PrivateKey(proto.aciIdentityKeyPrivate))
-        let pniIdentityKeyPair: IdentityKeyPair?
-        if proto.hasPni {
-            guard let pubKey = proto.pniIdentityKeyPublic, let privKey = proto.pniIdentityKeyPrivate else {
-                throw ProvisioningError.invalidProvisionMessage("has PNI, but missing PNI identity key")
-            }
-            pniIdentityKeyPair = try IdentityKeyPair(publicKey: PublicKey(pubKey), privateKey: PrivateKey(privKey))
-        } else {
-            pniIdentityKeyPair = nil
-        }
+        let pniIdentityKeyPair = try IdentityKeyPair(publicKey: PublicKey(proto.pniIdentityKeyPublic),
+                                                     privateKey: PrivateKey(proto.pniIdentityKeyPrivate))
 
         guard let profileKey = OWSAES256Key(data: proto.profileKey) else {
             throw ProvisioningError.invalidProvisionMessage("invalid profileKey - count: \(proto.profileKey.count)")
@@ -154,7 +147,7 @@ public class ProvisioningCipher {
                                 phoneNumber: phoneNumber,
                                 pni: pni,
                                 aciIdentityKeyPair: ECKeyPair(aciIdentityKeyPair),
-                                pniIdentityKeyPair: pniIdentityKeyPair.map { ECKeyPair($0) },
+                                pniIdentityKeyPair: ECKeyPair(pniIdentityKeyPair),
                                 profileKey: profileKey,
                                 areReadReceiptsEnabled: areReadReceiptsEnabled,
                                 primaryUserAgent: primaryUserAgent,

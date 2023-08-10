@@ -29,7 +29,9 @@ message ProvisionMessage {
   optional bytes aciIdentityKeyPublic = 1;
   // @required
   optional bytes aciIdentityKeyPrivate = 2;
+  // @required
   optional bytes pniIdentityKeyPublic = 11;
+  // @required
   optional bytes pniIdentityKeyPrivate = 12;
   optional string aci = 8;
   optional string pni = 10;

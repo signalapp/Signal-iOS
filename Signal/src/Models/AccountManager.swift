@@ -95,15 +95,48 @@ public class AccountManager: NSObject, Dependencies {
 
         let serverAuthToken = generateServerAuthToken()
 
-        return firstly { () throws -> Promise<VerifySecondaryDeviceResponse> in
+        var prekeyBundlesCreated: RegistrationPreKeyUploadBundles?
+
+        return firstly { () -> Promise<RegistrationRequestFactory.ApnRegistrationId?> in
+            return pushRegistrationManager.requestPushTokens(forceRotation: false)
+                .map(on: SyncScheduler()) { return $0 }
+                .recover { (error) -> Promise<RegistrationRequestFactory.ApnRegistrationId?> in
+                    switch error {
+                    case PushRegistrationError.pushNotSupported(let description):
+                        // This can happen with:
+                        // - simulators, none of which support receiving push notifications
+                        // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
+                        Logger.info("Recovered push registration error. Leaving as manual message fetcher because push not supported: \(description)")
+
+                        // no-op since secondary devices already start as manual message fetchers
+                        return .value(nil)
+                    default:
+                        return .init(error: error)
+                    }
+                }
+        }.then { (apnRegistrationId) -> Promise<(RegistrationRequestFactory.ApnRegistrationId?, RegistrationPreKeyUploadBundles)> in
+            return DependenciesBridge.shared.preKeyManager
+                .createPreKeysForProvisioning(
+                    aciIdentityKeyPair: provisionMessage.aciIdentityKeyPair,
+                    pniIdentityKeyPair: provisionMessage.pniIdentityKeyPair
+                )
+                .map(on: SyncScheduler()) {
+                    prekeyBundlesCreated = $0
+                    return (apnRegistrationId, $0)
+                }
+        }.then { (apnRegistrationId, prekeyBundles) throws -> Promise<VerifySecondaryDeviceResponse> in
             let encryptedDeviceName = try DeviceNames.encryptDeviceName(
                 plaintext: deviceName,
                 identityKeyPair: provisionMessage.aciIdentityKeyPair)
 
-            return accountServiceClient.verifySecondaryDevice(verificationCode: provisionMessage.provisioningCode,
-                                                              phoneNumber: provisionMessage.phoneNumber,
-                                                              authKey: serverAuthToken,
-                                                              encryptedDeviceName: encryptedDeviceName)
+            return self.accountServiceClient.verifySecondaryDevice(
+                verificationCode: provisionMessage.provisioningCode,
+                phoneNumber: provisionMessage.phoneNumber,
+                authKey: serverAuthToken,
+                encryptedDeviceName: encryptedDeviceName,
+                apnRegistrationId: apnRegistrationId,
+                prekeyBundles: prekeyBundles
+            )
         }.done { (response: VerifySecondaryDeviceResponse) in
             if let pniFromPrimary = self.tsAccountManager.pniAwaitingVerification {
                 if pniFromPrimary != response.pni {
@@ -118,9 +151,9 @@ public class AccountManager: NSObject, Dependencies {
                                                           for: .aci,
                                                           transaction: transaction)
 
-                if let pniIdentityKeyPair = provisionMessage.pniIdentityKeyPair {
-                    self.identityManager.storeIdentityKeyPair(pniIdentityKeyPair, for: .pni, transaction: transaction)
-                }
+                self.identityManager.storeIdentityKeyPair(provisionMessage.pniIdentityKeyPair,
+                                                          for: .pni,
+                                                          transaction: transaction)
 
                 self.profileManagerImpl.setLocalProfileKey(provisionMessage.profileKey,
                                                            userProfileWriter: .linking,
@@ -129,7 +162,7 @@ public class AccountManager: NSObject, Dependencies {
 
                 if let areReadReceiptsEnabled = provisionMessage.areReadReceiptsEnabled {
                     self.receiptManager.setAreReadReceiptsEnabled(areReadReceiptsEnabled,
-                                                                      transaction: transaction)
+                                                                  transaction: transaction)
                 }
 
                 self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
@@ -137,22 +170,21 @@ public class AccountManager: NSObject, Dependencies {
                                                                transaction: transaction)
             }
         }.then { _ -> Promise<Void> in
-            DependenciesBridge.shared.preKeyManager.legacy_createPreKeys(auth: .implicit())
-        }.then { _ -> Promise<Void> in
-            return self.syncPushTokens().recover { error in
-                switch error {
-                case PushRegistrationError.pushNotSupported(let description):
-                    // This can happen with:
-                    // - simulators, none of which support receiving push notifications
-                    // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
-                    Logger.info("Recovered push registration error. Leaving as manual message fetcher because push not supported: \(description)")
-
-                    // no-op since secondary devices already start as manual message fetchers
-                    return
-                default:
-                    throw error
-                }
+            if let prekeyBundlesCreated {
+                return DependenciesBridge.shared.preKeyManager.finalizeRegistrationPreKeys(prekeyBundlesCreated, uploadDidSucceed: true)
+                    .then {
+                        return DependenciesBridge.shared.preKeyManager.rotateOneTimePreKeysForRegistration(auth: .implicit())
+                    }
             }
+            return DependenciesBridge.shared.preKeyManager.rotateOneTimePreKeysForRegistration(auth: .implicit())
+        }.recover { error -> Promise<Void> in
+            if let prekeyBundlesCreated {
+                return DependenciesBridge.shared.preKeyManager.finalizeRegistrationPreKeys(prekeyBundlesCreated, uploadDidSucceed: false)
+                    .then { () -> Promise<Void> in
+                        return .init(error: error)
+                    }
+            }
+            return .init(error: error)
         }.then(on: DispatchQueue.global()) {
             let hasBackedUpMasterKey = self.databaseStorage.read { tx in
                 DependenciesBridge.shared.svr.hasBackedUpMasterKey(transaction: tx.asV2Read)

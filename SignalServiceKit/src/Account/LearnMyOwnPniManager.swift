@@ -12,7 +12,7 @@ import SignalCoreKit
 /// the client and service. This manager handles syncing the PNI and related
 /// keys as necessary.
 public protocol LearnMyOwnPniManager {
-    func learnMyOwnPniIfNecessary(tx: DBReadTransaction) -> Promise<Void>
+    func learnMyOwnPniIfNecessary() -> Promise<Void>
 }
 
 final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
@@ -30,19 +30,19 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
     private let profileFetcher: Shims.ProfileFetcher
     private let tsAccountManager: Shims.TSAccountManager
 
-    private let databaseStorage: DB
+    private let db: DB
     private let keyValueStore: KeyValueStore
     private let schedulers: Schedulers
 
     init(
         accountServiceClient: Shims.AccountServiceClient,
+        db: DB,
         identityManager: Shims.IdentityManager,
+        keyValueStoreFactory: KeyValueStoreFactory,
         preKeyManager: PreKeyManager,
         profileFetcher: Shims.ProfileFetcher,
-        tsAccountManager: Shims.TSAccountManager,
-        databaseStorage: DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
-        schedulers: Schedulers
+        schedulers: Schedulers,
+        tsAccountManager: Shims.TSAccountManager
     ) {
         self.accountServiceClient = accountServiceClient
         self.identityManager = identityManager
@@ -50,16 +50,37 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
         self.profileFetcher = profileFetcher
         self.tsAccountManager = tsAccountManager
 
-        self.databaseStorage = databaseStorage
+        self.db = db
         self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: StoreConstants.collectionName)
         self.schedulers = schedulers
     }
 
-    func learnMyOwnPniIfNecessary(tx syncTx: DBReadTransaction) -> Promise<Void> {
+    /// Wrap everything in a chained promise so we don't issue requests
+    /// concurrently and end up with broken state.
+    /// Before making requests (but after getting dequeued) each call will
+    /// check local state to see if things corrected while enqueued, so enqueuing
+    /// is cheap.
+    /// NOTE: this only ever gets called in one place, on app launch, so this safety
+    /// is overkill. But it doesn't hurt to have.
+    private lazy var learnMyOwnPniChainedPromise = ChainedPromise(scheduler: schedulers.main)
+
+    func learnMyOwnPniIfNecessary() -> Promise<Void> {
+        return learnMyOwnPniChainedPromise.enqueue { [weak self] in
+            guard let self else {
+                return .init(error: OWSAssertionError("unretained self"))
+            }
+
+            return self.db.read { tx in
+                self._learnMyOwnPniIfNecessary(tx: tx)
+            }
+        }
+    }
+
+    private func _learnMyOwnPniIfNecessary(tx: DBReadTransaction) -> Promise<Void> {
         let hasCompletedPniLearningAlready = keyValueStore.getBool(
             StoreConstants.hasCompletedPniLearning,
             defaultValue: false,
-            transaction: syncTx
+            transaction: tx
         )
 
         guard !hasCompletedPniLearningAlready else {
@@ -67,21 +88,22 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
             return .value(())
         }
 
-        guard tsAccountManager.isPrimaryDevice(tx: syncTx) else {
+        guard tsAccountManager.isPrimaryDevice(tx: tx) else {
             logger.info("Skipping PNI learning on linked device.")
             return .value(())
         }
 
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: syncTx) else {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
             logger.warn("Skipping PNI learning, no local identifiers!")
             return .value(())
         }
 
-        let localPniIdentityPublicKeyData: Data? = identityManager.pniIdentityPublicKeyData(tx: syncTx)
-
         return firstly(on: schedulers.sync) { () -> Promise<UntypedServiceId> in
             return self.fetchMyPniIfNecessary(localIdentifiers: localIdentifiers)
         }.then(on: schedulers.sync) { localPni -> Promise<Void> in
+            let localPniIdentityPublicKeyData: Data? = self.db.read { tx in
+                self.identityManager.pniIdentityPublicKeyData(tx: tx)
+            }
             return self.createPniKeysIfNecessary(
                 localPni: localPni,
                 localPniIdentityPublicKeyData: localPniIdentityPublicKeyData
@@ -116,7 +138,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
                 )
             }
 
-            self.databaseStorage.write { tx in
+            self.db.write { tx in
                 self.tsAccountManager.updateLocalIdentifiers(
                     e164: remoteE164,
                     aci: remoteAci,
@@ -157,7 +179,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
                 {
                     self.logger.info("Local PNI identity key matches server.")
 
-                    self.databaseStorage.write { tx in
+                    self.db.write { tx in
                         self.keyValueStore.setBool(
                             true,
                             key: StoreConstants.hasCompletedPniLearning,
@@ -174,15 +196,15 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
                 self.logger.error("Error checking remote identity key: \(error)!")
                 return .value(false)
             }
-        }.done(on: schedulers.sync) { needsUpdate in
-            guard needsUpdate else { return }
+        }.then(on: schedulers.sync) { (needsUpdate: Bool) -> Promise<Void> in
+            guard needsUpdate else { return .value(()) }
 
-            firstly(on: self.schedulers.sync) { () -> Promise<Void> in
+            return firstly(on: self.schedulers.sync) { () -> Promise<Void> in
                 return self.preKeyManager.createOrRotatePNIPreKeys(auth: .implicit())
-            }.done(on: self.schedulers.global()) {
+            }.map(on: self.schedulers.global()) {
                 self.logger.info("Successfully created PNI keys!")
 
-                self.databaseStorage.write { tx in
+                self.db.write { tx in
                     self.keyValueStore.setBool(
                         true,
                         key: StoreConstants.hasCompletedPniLearning,

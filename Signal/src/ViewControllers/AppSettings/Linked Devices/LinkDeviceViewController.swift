@@ -136,32 +136,43 @@ class LinkDeviceViewController: OWSViewController {
             )
         }
 
-        let aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci)
-        let pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni)
-        let accountAddress = tsAccountManager.localAddress
-        let pni = tsAccountManager.localPni
+        var localIdentifiers: LocalIdentifiers?
+        var aciIdentityKeyPair: ECKeyPair?
+        var pniIdentityKeyPair: ECKeyPair?
+        var areReadReceiptsEnabled: Bool = true
+        databaseStorage.read { tx in
+            localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx)
+            aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, transaction: tx)
+            pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, transaction: tx)
+            areReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled(transaction: tx)
+        }
         let myProfileKeyData = profileManager.localProfileKey().keyData
-        let areReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled()
 
-        guard let myAci = accountAddress?.uuid, let myPhoneNumber = accountAddress?.phoneNumber else {
+        guard let myAci = localIdentifiers?.aci, let myPhoneNumber = localIdentifiers?.phoneNumber else {
             owsFail("Can't provision without an aci & phone number.")
         }
         guard let aciIdentityKeyPair else {
             owsFail("Can't provision without an aci identity.")
         }
+        guard let myPni = localIdentifiers?.pni else {
+            owsFail("Can't provision without a pni.")
+        }
+        guard let pniIdentityKeyPair else {
+            owsFail("Can't provision without an pni identity.")
+        }
 
         let deviceProvisioner = OWSDeviceProvisioner(
             myAciIdentityKeyPair: aciIdentityKeyPair.identityKeyPair,
-            myPniIdentityKeyPair: pniIdentityKeyPair?.identityKeyPair,
+            myPniIdentityKeyPair: pniIdentityKeyPair.identityKeyPair,
             theirPublicKey: deviceProvisioningUrl.publicKey,
             theirEphemeralDeviceId: deviceProvisioningUrl.ephemeralDeviceId,
-            myAci: myAci,
+            myAci: myAci.rawUUID,
             myPhoneNumber: myPhoneNumber,
-            myPni: pni,
+            myPni: myPni.rawUUID,
             profileKey: myProfileKeyData,
             readReceiptsEnabled: areReadReceiptsEnabled,
             provisioningService: DeviceProvisioningServiceImpl(
-                networkManager: networkManager,
+                networkManager: self.networkManager,
                 schedulers: DependenciesBridge.shared.schedulers
             ),
             schedulers: DependenciesBridge.shared.schedulers

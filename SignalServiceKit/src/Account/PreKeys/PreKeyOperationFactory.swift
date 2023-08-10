@@ -11,6 +11,12 @@ public protocol PreKeyOperationFactory {
         future: Future<RegistrationPreKeyUploadBundles>
     ) -> OWSOperation
 
+    func createForProvisioning(
+        aciIdentityKeyPair: ECKeyPair,
+        pniIdentityKeyPair: ECKeyPair,
+        future: Future<RegistrationPreKeyUploadBundles>
+    ) -> OWSOperation
+
     func finalizeRegistrationPreKeys(
         _ bundles: RegistrationPreKeyUploadBundles,
         uploadDidSucceed: Bool,
@@ -58,6 +64,23 @@ public struct PreKeyOperationFactoryImpl: PreKeyOperationFactory {
         future: Future<RegistrationPreKeyUploadBundles>
     ) -> OWSOperation {
         return PreKeyCreateForRegistrationOperation(
+            dateProvider: context.dateProvider,
+            db: context.db,
+            identityManager: context.identityManager,
+            protocolStoreManager: context.protocolStoreManager,
+            schedulers: context.schedulers,
+            future: future
+        )
+    }
+
+    public func createForProvisioning(
+        aciIdentityKeyPair: ECKeyPair,
+        pniIdentityKeyPair: ECKeyPair,
+        future: Future<RegistrationPreKeyUploadBundles>
+    ) -> OWSOperation {
+        return PreKeyCreateForProvisioningOperation(
+            aciIdentityKeyPair: aciIdentityKeyPair,
+            pniIdentityKeyPair: pniIdentityKeyPair,
             dateProvider: context.dateProvider,
             db: context.db,
             identityManager: context.identityManager,

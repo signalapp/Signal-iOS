@@ -15,12 +15,12 @@ public final class OWSDeviceProvisioner {
     internal static var userAgent: String { "OWI" }
 
     private let myAciIdentityKeyPair: IdentityKeyPair
-    private let myPniIdentityKeyPair: IdentityKeyPair?
+    private let myPniIdentityKeyPair: IdentityKeyPair
     private let theirPublicKey: Data
     private let ephemeralDeviceId: String
     private let myAci: UUID
     private let myPhoneNumber: String
-    private let myPni: UUID?
+    private let myPni: UUID
     private let profileKey: Data
     private let readReceiptsEnabled: Bool
 
@@ -29,12 +29,12 @@ public final class OWSDeviceProvisioner {
 
     public init(
         myAciIdentityKeyPair: IdentityKeyPair,
-        myPniIdentityKeyPair: IdentityKeyPair?,
+        myPniIdentityKeyPair: IdentityKeyPair,
         theirPublicKey: Data,
         theirEphemeralDeviceId: String,
         myAci: UUID,
         myPhoneNumber: String,
-        myPni: UUID?,
+        myPni: UUID,
         profileKey: Data,
         readReceiptsEnabled: Bool,
         provisioningService: DeviceProvisioningService,
@@ -75,6 +75,8 @@ public final class OWSDeviceProvisioner {
         let messageBuilder = ProvisioningProtoProvisionMessage.builder(
             aciIdentityKeyPublic: Data(myAciIdentityKeyPair.publicKey.serialize()),
             aciIdentityKeyPrivate: Data(myAciIdentityKeyPair.privateKey.serialize()),
+            pniIdentityKeyPublic: Data(myPniIdentityKeyPair.publicKey.serialize()),
+            pniIdentityKeyPrivate: Data(myPniIdentityKeyPair.privateKey.serialize()),
             provisioningCode: provisioningCode,
             profileKey: profileKey
         )
@@ -83,12 +85,7 @@ public final class OWSDeviceProvisioner {
         messageBuilder.setProvisioningVersion(OWSDeviceProvisionerConstant.provisioningVersion)
         messageBuilder.setNumber(myPhoneNumber)
         messageBuilder.setAci(myAci.uuidString)
-
-        if let myPni, let myPniIdentityKeyPair {
-            messageBuilder.setPni(myPni.uuidString)
-            messageBuilder.setPniIdentityKeyPublic(Data(myPniIdentityKeyPair.publicKey.serialize()))
-            messageBuilder.setPniIdentityKeyPrivate(Data(myPniIdentityKeyPair.privateKey.serialize()))
-        }
+        messageBuilder.setPni(myPni.uuidString)
 
         let plainTextProvisionMessage = try messageBuilder.buildSerializedData()
         let cipher = OWSProvisioningCipher(theirPublicKey: theirPublicKey)

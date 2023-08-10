@@ -13,7 +13,14 @@ public enum SignalServiceError: Int, Error {
 // MARK: -
 
 public protocol SignalServiceClient {
-    func verifySecondaryDevice(verificationCode: String, phoneNumber: String, authKey: String, encryptedDeviceName: Data) -> Promise<VerifySecondaryDeviceResponse>
+    func verifySecondaryDevice(
+        verificationCode: String,
+        phoneNumber: String,
+        authKey: String,
+        encryptedDeviceName: Data,
+        apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
+        prekeyBundles: RegistrationPreKeyUploadBundles
+    ) -> Promise<VerifySecondaryDeviceResponse>
     func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)>
     /// If a username and password are both provided, those are used for the request's
     /// Authentication header. Otherwise, the default header is used (whatever's on
@@ -182,7 +189,9 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
         verificationCode: String,
         phoneNumber: String,
         authKey: String,
-        encryptedDeviceName: Data
+        encryptedDeviceName: Data,
+        apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
+        prekeyBundles: RegistrationPreKeyUploadBundles
     ) -> Promise<VerifySecondaryDeviceResponse> {
 
         let accountAttributes = self.databaseStorage.write { transaction in
@@ -198,7 +207,9 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
             verificationCode: verificationCode,
             phoneNumber: phoneNumber,
             authPassword: authKey,
-            attributes: accountAttributes
+            attributes: accountAttributes,
+            apnRegistrationId: apnRegistrationId,
+            prekeyBundles: prekeyBundles
         )
 
         return firstly {

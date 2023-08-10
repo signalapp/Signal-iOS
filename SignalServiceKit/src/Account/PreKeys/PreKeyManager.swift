@@ -16,6 +16,16 @@ public protocol PreKeyManager {
     /// should be taken to finalize the keys once they have been accepted by the server.
     func createPreKeysForRegistration() -> Promise<RegistrationPreKeyUploadBundles>
 
+    /// Creates a new set of prekeys for provisioning (linking a new secondary device),
+    /// using the provided identity keys (which are delivered from the primary during linking).
+    /// These keys are persisted before this method's promise resolves, but best effort
+    /// should be taken to finalize the keys once they have been accepted by the server.
+    /// Use `finalizeRegistrationPreKeys` to finalize once linking is complete.
+    func createPreKeysForProvisioning(
+        aciIdentityKeyPair: ECKeyPair,
+        pniIdentityKeyPair: ECKeyPair
+    ) -> Promise<RegistrationPreKeyUploadBundles>
+
     /// Called on a best-effort basis. Consequences of not calling this is that the keys are still
     /// persisted (from prior to uploading) but they aren't marked current and accepted.
     func finalizeRegistrationPreKeys(

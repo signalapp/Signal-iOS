@@ -92,15 +92,13 @@ public class AppEnvironment: NSObject {
             let pniHelloWorldManager = DependenciesBridge.shared.pniHelloWorldManager
             let schedulers = DependenciesBridge.shared.schedulers
 
-            firstly(on: schedulers.sync) { () -> Promise<Void> in
-                return db.read { tx in
-                    return learnMyOwnPniManager.learnMyOwnPniIfNecessary(tx: tx)
+            learnMyOwnPniManager.learnMyOwnPniIfNecessary()
+                .done(on: schedulers.global()) { () -> Void in
+                    db.write { tx in
+                        pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
+                    }
                 }
-            }.done(on: schedulers.global()) { () -> Void in
-                db.write { tx in
-                    pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
-                }
-            }.cauterize()
+                .cauterize()
         }
 
         // Hang certain singletons on SMEnvironment too.

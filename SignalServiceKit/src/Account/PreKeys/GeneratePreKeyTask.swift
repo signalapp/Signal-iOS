@@ -112,6 +112,30 @@ extension PreKeyTasks {
         }
     }
 
+    /// When we provision, we use the primary's identity key to create other keys. So this variant:
+    /// NEVER creates an identity key
+    /// ALWAYS changes the targeted keys (regardless of current key state)
+    internal class GenerateForProvisioning: GenerateBase {
+
+        internal override init(context: Generate.Context) {
+            super.init(context: context)
+        }
+
+        func runTask(identity: OWSIdentity, identityKeyPair: ECKeyPair) throws -> RegistrationPreKeyUploadBundle {
+            return try context.db.write { tx in
+                return RegistrationPreKeyUploadBundle(
+                    identity: identity,
+                    identityKeyPair: identityKeyPair,
+                    signedPreKey: context.signedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
+                    lastResortPreKey: try context.kyberPreKeyStore.generateLastResortKyberPreKey(
+                        signedBy: identityKeyPair,
+                        tx: tx
+                    )
+                )
+            }
+        }
+    }
+
     internal class CreateOneTimePreKeys: GenerateBase {
         internal override init(context: Generate.Context) {
             super.init(context: context)
