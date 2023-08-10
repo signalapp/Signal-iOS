@@ -289,7 +289,10 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         return RecipientContextMenuHelper(
             databaseStorage: databaseStorage,
             blockingManager: blockingManager,
-            recipientHidingManager: DependenciesBridge.shared.recipientHidingManager
+            recipientHidingManager: DependenciesBridge.shared.recipientHidingManager,
+            accountManager: tsAccountManager,
+            contactsManager: contactsManager,
+            fromViewController: self
         )
     }()
 

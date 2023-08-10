@@ -388,19 +388,3 @@ public class BlockListUIUtils: Dependencies {
         viewController.presentActionSheet(actionSheet)
     }
 }
-
-private extension String {
-
-    func formattedForActionSheetTitle() -> String {
-        String.formattedDisplayName(self, maxLength: 20)
-    }
-
-    func formattedForActionSheetMessage() -> String {
-        String.formattedDisplayName(self, maxLength: 127)
-    }
-
-    private static func formattedDisplayName(_ displayName: String, maxLength: Int) -> String {
-        guard displayName.count > maxLength else { return displayName }
-        return displayName.substring(to: maxLength).appending("…")
-    }
-}

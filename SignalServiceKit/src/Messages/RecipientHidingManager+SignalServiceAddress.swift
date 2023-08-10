@@ -60,15 +60,13 @@ extension RecipientHidingManager {
     /// - Parameter tx: The transaction to use for database operations.
     public func addHiddenRecipient(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, tx: DBWriteTransaction) throws {
         guard address.isValid else {
-            owsFailDebug("Invalid address: \(address).")
-            return
+            throw RecipientHidingError.invalidRecipientAddress(address)
         }
         guard
             let localAddress = tsAccountManager.localAddress(with: SDSDB.shimOnlyBridge(tx)),
             !localAddress.isEqualToAddress(address)
         else {
-            owsFailDebug("Cannot hide the local address")
-            return
+            throw RecipientHidingError.cannotHideLocalAddress
         }
         let recipient = OWSAccountIdFinder.ensureRecipient(
             forAddress: address,

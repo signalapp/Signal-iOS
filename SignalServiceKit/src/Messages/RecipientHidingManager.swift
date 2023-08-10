@@ -146,14 +146,14 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
             // hide an already-hidden recipient. However, we return here,
             // just in case, in order to avoid the side-effects of
             // `didSetAsHidden`.
-            return
+            throw RecipientHidingError.recipientAlreadyHidden
         }
         if let id = recipient.id {
             let record = HiddenRecipient(recipientId: id)
             try record.save(SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database)
             didSetAsHidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
         } else {
-            Logger.warn("Could not find id on recipient to hide.")
+            throw RecipientHidingError.recipientIdNotFound
         }
     }
 
@@ -192,15 +192,13 @@ private extension RecipientHidingManagerImpl {
             recipient.address,
             transaction: SDSDB.shimOnlyBridge(tx)
         ) {
-
             let message = TSInfoMessage(thread: thread, messageType: .contactHidden)
             message.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
 
             /// TODO recipientHiding:
-            /// - Turn off read/delivery receipts.
             /// - Throw out other user's profile key if not in group with user.
-            /// - Flush incoming/outgoing messages first.
             /// - Throw away existing Stories from hidden user.
+            /// - Remove hidden user from Story distribution lists.
             /// - If this is primary device, rotate own Profile Key if not in group with them.
             if wasLocallyInitiated {
                 profileManager.removeUser(
@@ -233,6 +231,36 @@ private extension RecipientHidingManagerImpl {
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
             storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
+        }
+    }
+}
+
+/// Custom errors that can arise when attempting to hide a recipient.
+public enum RecipientHidingError: Error, CustomStringConvertible {
+    /// The recipient is already hidden. In theory, the UI should never
+    /// allow for an already-hidden recipient to be hidden again, but
+    /// never say never.
+    case recipientAlreadyHidden
+    /// The recipient did not have an id.
+    case recipientIdNotFound
+    /// The recipient's address was invalid.
+    case invalidRecipientAddress(SignalServiceAddress)
+    /// The recipient attempted to hide themselves (ie, Note to Self).
+    /// In theory, this should not be possible in the UI.
+    case cannotHideLocalAddress
+
+    // MARK: CustomStringConvertible
+
+    public var description: String {
+        switch self {
+        case .recipientAlreadyHidden:
+            return "Recipient already hidden."
+        case .recipientIdNotFound:
+            return "Id of recipient to hide was not found."
+        case .invalidRecipientAddress(let address):
+            return "Address of recipient to hide was invalid: \(address)."
+        case .cannotHideLocalAddress:
+            return "Cannot hide local address."
         }
     }
 }
