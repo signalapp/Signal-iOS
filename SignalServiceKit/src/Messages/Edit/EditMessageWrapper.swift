@@ -89,7 +89,11 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
 
         let editState: TSEditState = {
             if isLatestRevision {
-                return message.wasRead ? .latestRevisionRead : .latestRevisionUnread
+                if message.editState == .none {
+                    return message.wasRead ? .latestRevisionRead : .latestRevisionUnread
+                } else {
+                    return message.editState
+                }
             } else {
                 return .pastRevision
             }

@@ -8,7 +8,7 @@ import UIKit
 
 open class OWSTableSheetViewController: InteractiveSheetViewController {
     public let tableViewController = OWSTableViewController2()
-    public override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
+    open override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
 
     open override var sheetBackgroundColor: UIColor {
         OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true, forceDarkMode: tableViewController.forceDarkMode)

@@ -49,9 +49,9 @@ public class EditManager {
     internal enum Constants {
         // RECEIVE
 
-        // Edits will only be received for up to 24 hours from the
+        // Edits will only be received for up to 48 hours from the
         // original message
-        static let editWindowMilliseconds: UInt64 = UInt64(kDayInterval * 1000)
+        static let editWindowMilliseconds: UInt64 = UInt64(kHourInterval * 48 * 1000)
 
         // Receiving more than this number of edits on the same message
         // will result in subsequent edits being dropped
@@ -59,9 +59,9 @@ public class EditManager {
 
         // SEND
 
-        // Edits can only be sent for up to 3 hours from the
+        // Edits can only be sent for up to 24 hours from the
         // original message
-        static let editSendWindowMilliseconds: UInt64 = UInt64(kHourInterval * 3 * 1000)
+        static let editSendWindowMilliseconds: UInt64 = UInt64(kHourInterval * 24 * 1000)
 
         // Message can only be edited 10 times
         static let maxSendEdits: UInt = UInt(10)
@@ -186,11 +186,11 @@ public class EditManager {
 
     // MARK: - Edit UI Validation
 
-    public static func canShowEditMenu(interaction: TSInteraction) -> Bool {
-        return Self.validateCanShowEditMenu(interaction: interaction) == nil
+    public static func canShowEditMenu(interaction: TSInteraction, thread: TSThread) -> Bool {
+        return Self.validateCanShowEditMenu(interaction: interaction, thread: thread) == nil
     }
 
-    private static func validateCanShowEditMenu(interaction: TSInteraction) -> EditSendValidationError? {
+    private static func validateCanShowEditMenu(interaction: TSInteraction, thread: TSThread) -> EditSendValidationError? {
         guard FeatureFlags.editMessageSend else { return .editDisabled }
         guard let message = interaction as? TSOutgoingMessage else { return .messageTypeNotSupported }
 
@@ -198,15 +198,18 @@ public class EditManager {
             return .messageTypeNotSupported
         }
 
-        let (result, isOverflow) = interaction.timestamp.addingReportingOverflow(Constants.editSendWindowMilliseconds)
-        guard !isOverflow && Date.ows_millisecondTimestamp() <= result else {
-            return .editWindowClosed
+        if !thread.isNoteToSelf {
+            let (result, isOverflow) = interaction.timestamp.addingReportingOverflow(Constants.editSendWindowMilliseconds)
+            guard !isOverflow && Date.ows_millisecondTimestamp() <= result else {
+                return .editWindowClosed
+            }
         }
         return nil
     }
 
     public func validateCanSendEdit(
         targetMessageTimestamp: UInt64,
+        thread: TSThread,
         tx: DBReadTransaction
     ) -> EditSendValidationError? {
         guard FeatureFlags.editMessageSend else { return .editDisabled }
@@ -226,12 +229,12 @@ public class EditManager {
 
         let targetMessage = targetMessageWrapper.message
 
-        if let error = Self.validateCanShowEditMenu(interaction: targetMessage) {
+        if let error = Self.validateCanShowEditMenu(interaction: targetMessage, thread: thread) {
             return error
         }
 
         let numberOfEdits = context.dataStore.numberOfEdits(for: targetMessage, tx: tx)
-        if numberOfEdits >= Constants.maxSendEdits {
+        if !thread.isNoteToSelf && numberOfEdits >= Constants.maxSendEdits {
             return .tooManyEdits(Constants.maxSendEdits)
         }
 

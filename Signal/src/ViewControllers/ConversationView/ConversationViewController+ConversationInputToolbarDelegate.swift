@@ -133,6 +133,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             if let editTarget = inputToolbar.editTarget {
                 return context.editManager.validateCanSendEdit(
                     targetMessageTimestamp: editTarget.timestamp,
+                    thread: self.thread,
                     tx: transaction.asV2Read
                 )
             }

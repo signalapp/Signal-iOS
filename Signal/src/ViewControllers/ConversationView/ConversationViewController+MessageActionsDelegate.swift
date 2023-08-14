@@ -26,6 +26,7 @@ extension ConversationViewController: MessageActionsDelegate {
             // too many edits, etc), display a message here.
             if let error = context.editManager.validateCanSendEdit(
                 targetMessageTimestamp: message.timestamp,
+                thread: self.thread,
                 tx: transaction.asV2Read
             ) {
                 editValidationError = error

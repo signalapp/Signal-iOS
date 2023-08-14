@@ -362,6 +362,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                 let nextTimestampText = DateUtil.formatTimestampShort(nextIncomingMessage.timestamp)
                 itemViewState.shouldHideFooter = (timestampText == nextTimestampText &&
                                                     !isDisappearingMessage &&
+                                                    incomingMessage.editState == .none &&
                                                     !hasTapForMore)
             } else {
                 itemViewState.isLastInCluster = true

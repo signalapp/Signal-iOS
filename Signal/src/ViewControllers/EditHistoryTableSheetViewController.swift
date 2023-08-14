@@ -4,6 +4,7 @@
 //
 
 import LibSignalClient
+import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
@@ -17,9 +18,11 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         static let cellSpacing: CGFloat = 12.0
     }
 
+    open override var interactiveScrollViews: [UIScrollView] { [] }
+
     weak var delegate: MessageEditHistoryViewDelegate?
 
-    var parentRenderItem: CVRenderItem?
+    var parentRenderItems: [CVRenderItem]?
     var renderItems = [CVRenderItem]()
     let spoilerState: SpoilerRenderState
     private var message: TSMessage
@@ -93,22 +96,22 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
                 transaction: tx
             )
 
-            parentRenderItem = buildRenderItem(
+            parentRenderItems = buildRenderItem(
                 thread: thread,
                 threadAssociatedData: threadAssociatedData,
                 message: message,
+                forceDateHeader: true,
                 tx: tx)
 
             var renderItems = [CVRenderItem]()
             for edit in edits {
-                if let item = buildRenderItem(
+                let items = buildRenderItem(
                     thread: thread,
                     threadAssociatedData: threadAssociatedData,
                     message: edit,
                     tx: tx
-                ) {
-                    renderItems.append(item)
-                }
+                )
+                renderItems.append(contentsOf: items)
             }
             self.renderItems = renderItems
 
@@ -129,10 +132,10 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
         let contents = OWSTableContents()
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
-        guard let parentItem = parentRenderItem else { return }
+        guard let parentItems = parentRenderItems else { return }
 
         let topSection = OWSTableSection()
-        topSection.add(createMessageListTableItem(items: [parentItem]))
+        topSection.add(createMessageListTableItem(items: parentItems))
         contents.add(topSection)
 
         let header = OWSLocalizedString(
@@ -179,12 +182,15 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         }
     }
 
+    var currentDaysBefore: Int = -1
     private func buildRenderItem(
         thread: TSThread,
         threadAssociatedData: ThreadAssociatedData,
         message interaction: TSMessage,
+        forceDateHeader: Bool = false,
         tx: SDSAnyReadTransaction
-    ) -> CVRenderItem? {
+    ) -> [CVRenderItem] {
+        var results = [CVRenderItem]()
         let cellInsets = tableViewController.cellOuterInsets
         let viewWidth = tableViewController.view.frame.inset(by: cellInsets).width
         let conversationStyle = ConversationStyle(
@@ -195,14 +201,36 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             isWallpaperPhoto: false,
             chatColor: ChatColors.resolvedChatColor(for: thread, tx: tx)
         )
-        return CVLoader.buildStandaloneRenderItem(
+
+        let itemDate = NSDate.ows_date(withMillisecondsSince1970: interaction.timestamp)
+        let daysPrior = DateUtil.daysFrom(firstDate: itemDate, toSecondDate: Date())
+        if forceDateHeader || daysPrior > currentDaysBefore {
+            currentDaysBefore = daysPrior
+
+            let dateInteraction = DateHeaderInteraction(thread: thread, timestamp: interaction.timestamp)
+            if let dateItem = CVLoader.buildStandaloneRenderItem(
+                interaction: dateInteraction,
+                thread: thread,
+                threadAssociatedData: threadAssociatedData,
+                conversationStyle: conversationStyle,
+                spoilerState: self.spoilerState,
+                transaction: tx
+            ) {
+                results.append(dateItem)
+            }
+        }
+
+        if let item =  CVLoader.buildStandaloneRenderItem(
             interaction: interaction,
             thread: thread,
             threadAssociatedData: threadAssociatedData,
             conversationStyle: conversationStyle,
             spoilerState: self.spoilerState,
             transaction: tx
-        )
+        ) {
+            results.append(item)
+        }
+        return results
     }
 }
 
