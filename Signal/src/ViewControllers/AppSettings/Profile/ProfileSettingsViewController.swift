@@ -477,16 +477,19 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                     return self.context.localUsernameManager
                         .deleteUsername(tx: tx)
                 }
-            }.done(on: DispatchQueue.main) { [weak self] in
-                guard let self else { return }
-
+            }
+            .ensure(on: self.context.schedulers.main) {
                 let newState = self.context.db.read { tx in
                     return self.context.localUsernameManager.usernameState(tx: tx)
                 }
 
+                // State may have changed with either success or failure.
                 self.usernameStateDidChange(newState: newState)
+            }
+            .done(on: self.context.schedulers.main) {
                 modal.dismiss()
-            }.catch(on: DispatchQueue.main) { error in
+            }
+            .catch(on: self.context.schedulers.main) { error in
                 modal.dismiss {
                     OWSActionSheets.showErrorAlert(
                         message: CommonStrings.somethingWentWrongTryAgainLaterError
