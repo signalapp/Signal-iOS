@@ -410,7 +410,7 @@ public final class CallRecord: NSObject, SDSCodableModel, Decodable {
             }
             return
         }
-        guard let eventEnum = callRecord.status.objcEvent else {
+        guard let eventEnum = callRecord.status.syncMessageEventType else {
             Logger.info("Not sending local only call event, status: \(callRecord.status)")
             return
         }
@@ -426,15 +426,16 @@ public final class CallRecord: NSObject, SDSCodableModel, Decodable {
             owsFailDebug("Missing local thread for sync message.")
             return
         }
+
         let event = OutgoingCallEvent(
-            callId: callId,
-            type: callRecord.type.objcCallType,
-            direction: callRecord.direction.objcDirection,
-            event: eventEnum,
             timestamp: callInteraction.timestamp,
-            peerUuid: peerUuidData
+            conversationId: peerUuidData,
+            callId: callId,
+            callType: callRecord.type.syncMessageCallType,
+            eventDirection: callRecord.direction.syncMessageEventDirection,
+            eventType: eventEnum
         )
-        let message = OutgoingCallEventSyncMessage(thread: thread, event: event, transaction: transaction)
+        let message = OutgoingCallEventSyncMessage(thread: thread, event: event, tx: transaction)
         Logger.info("Sending call sync event, direction: \(callRecord.direction) event: \(eventEnum)")
         Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
@@ -573,19 +574,19 @@ extension TSRecentCallOfferType {
 
 extension CallRecord.CallType {
 
-    var objcCallType: OWSSyncCallEventType {
+    var syncMessageCallType: OutgoingCallEvent.CallType {
         switch self {
         case .audioCall:
-            return .audioCall
+            return .audio
         case .videoCall:
-            return .videoCall
+            return .video
         }
     }
 }
 
 extension CallRecord.Direction {
 
-    var objcDirection: OWSSyncCallEventDirection {
+    var syncMessageEventDirection: OutgoingCallEvent.EventDirection {
         switch self {
         case .incoming:
             return .incoming
@@ -597,7 +598,7 @@ extension CallRecord.Direction {
 
 extension CallRecord.Status {
 
-    var objcEvent: OWSSyncCallEventEvent? {
+    var syncMessageEventType: OutgoingCallEvent.EventType? {
         switch self {
         case .pending, .missed:
             // These events are local-only, not sent in syncs.

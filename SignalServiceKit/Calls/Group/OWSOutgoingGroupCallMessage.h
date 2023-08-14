@@ -9,6 +9,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// A message sent to the other participants of a group call to inform them that
+/// some state has changed, such as we have joined or left the call.
+///
+/// Not to be confused with an ``OWSGroupCallMessage``.
 @interface OWSOutgoingGroupCallMessage : TSOutgoingMessage
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder

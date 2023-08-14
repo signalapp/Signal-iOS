@@ -113,7 +113,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSVerificationStateSyncMessage.h>
 #import <SignalServiceKit/OWSViewOnceMessageReadSyncMessage.h>
 #import <SignalServiceKit/OWSViewedReceiptsForLinkedDevicesMessage.h>
-#import <SignalServiceKit/OutgoingCallEventSyncMessage.h>
 #import <SignalServiceKit/OutgoingPaymentSyncMessage.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>

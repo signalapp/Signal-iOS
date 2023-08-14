@@ -168,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.legacyHangupMessage) {
         [builder setLegacyHangup:self.legacyHangupMessage];
     }
-    
+
     if (self.hangupMessage) {
         [builder setHangup:self.hangupMessage];
     }
@@ -185,9 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setDestinationDeviceID:self.destinationDeviceId.unsignedIntValue];
     }
 
-    [ProtoUtils addLocalProfileKeyIfNecessary:thread
-                           callMessageBuilder:builder
-                                  transaction:transaction];
+    [ProtoUtils addLocalProfileKeyIfNecessary:thread callMessageBuilder:builder transaction:transaction];
 
     // All call messages must indicate multi-ring capability.
     [builder setSupportsMultiRing:YES];
