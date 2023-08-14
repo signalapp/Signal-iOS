@@ -16,7 +16,6 @@
 #import "OWSIdentityManager.h"
 #import "OWSOperation.h"
 #import "OWSOutgoingCallMessage.h"
-#import "OWSOutgoingGroupCallMessage.h"
 #import "OWSOutgoingReactionMessage.h"
 #import "OWSOutgoingSenderKeyDistributionMessage.h"
 #import "OWSOutgoingSentMessageTranscript.h"

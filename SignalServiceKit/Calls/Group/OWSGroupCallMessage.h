@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Represents a group call-related update that lives in chat history.
 ///
-/// Not to be confused with an ``OWSOutgoingGroupCallMessage``.
+/// Not to be confused with an ``OutgoingGroupCallUpdateMessage``.
 @interface OWSGroupCallMessage : TSInteraction <OWSReadTracking, OWSPreviewText>
 
 // Can be nil if we weren't able to peek the call.

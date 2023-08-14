@@ -750,7 +750,7 @@ extension MessageSender {
                 }
                 let isChatMessage = (
                     message.hasRenderableContent()
-                    || message is OWSOutgoingGroupCallMessage
+                    || message is OutgoingGroupCallUpdateMessage
                     || message is OWSOutgoingCallMessage
                 )
                 return isChatMessage ? thread.canSendChatMessagesToThread() : thread.canSendNonChatMessagesToThread

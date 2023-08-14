@@ -15,8 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoCallMessageOpaque;
 @class TSThread;
 
-/// A message sent to the other participant in a 1:1 call to pass along a
-/// RingRTC payload out-of-band.
+/// A message sent to the other participants in a call to pass along a RingRTC
+/// payload out-of-band.
 ///
 /// Not to be confused with a ``TSCall``.
 @interface OWSOutgoingCallMessage : TSOutgoingMessage
