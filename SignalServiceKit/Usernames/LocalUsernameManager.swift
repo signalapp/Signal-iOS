@@ -388,10 +388,12 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         markUsernameCorrupted(true, tx: syncTx)
 
         return firstly(on: schedulers.global()) { () throws -> Promise<(Usernames.ApiClientConfirmationResult)> in
-            return self.usernameApiClient.confirmReservedUsername(
-                reservedUsername: reservedUsername,
-                encryptedUsernameForLink: linkEncryptedUsername
-            )
+            return self.makeRequestWithNetworkRetries(requestBlock: {
+                return self.usernameApiClient.confirmReservedUsername(
+                    reservedUsername: reservedUsername,
+                    encryptedUsernameForLink: linkEncryptedUsername
+                )
+            })
         }.map(on: schedulers.global()) { apiClientConfirmationResult -> Usernames.ConfirmationResult in
             self.db.write { tx in
                 switch apiClientConfirmationResult {
@@ -429,7 +431,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             }
         }.recover(on: schedulers.global()) { error throws -> Promise<Usernames.ConfirmationResult> in
             UsernameLogger.shared.error(
-                "Error while confirming username. Username now assumed corrupted! \(error)"
+                "Error while confirming username. Username now assumed corrupted!"
             )
 
             throw error
@@ -444,7 +446,9 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         markUsernameCorrupted(true, tx: syncTx)
 
         return firstly(on: schedulers.global()) { () -> Promise<Void> in
-            return self.usernameApiClient.deleteCurrentUsername()
+            return self.makeRequestWithNetworkRetries(requestBlock: {
+                return self.usernameApiClient.deleteCurrentUsername()
+            })
         }.done(on: schedulers.global()) {
             self.db.write { tx in
                 self.clearLocalUsername(tx: tx)
@@ -455,7 +459,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             self.storageServiceManager.recordPendingLocalAccountUpdates()
         }.recover(on: schedulers.global()) { error -> Promise<Void> in
             UsernameLogger.shared.error(
-                "Error while deleting username. Username now assumed corrupted! \(error)"
+                "Error while deleting username. Username now assumed corrupted!"
             )
 
             throw error
@@ -493,9 +497,11 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         markUsernameLinkCorrupted(true, tx: syncTx)
 
         return firstly(on: schedulers.global()) { () -> Promise<UUID> in
-            return self.usernameApiClient.setUsernameLink(
-                encryptedUsername: newEncryptedUsername
-            )
+            return self.makeRequestWithNetworkRetries(requestBlock: {
+                return self.usernameApiClient.setUsernameLink(
+                    encryptedUsername: newEncryptedUsername
+                )
+            })
         }.map(on: schedulers.global()) { newHandle -> Usernames.UsernameLink in
             guard let newUsernameLink = Usernames.UsernameLink(
                 handle: newHandle,
@@ -519,10 +525,44 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             return newUsernameLink
         }.recover(on: schedulers.global()) { error -> Promise<Usernames.UsernameLink> in
             UsernameLogger.shared.error(
-                "Error while rotating username link. Username link now assumed corrupted! \(error)"
+                "Error while rotating username link. Username link now assumed corrupted!"
             )
 
             throw error
+        }
+    }
+}
+
+// MARK: - Network retries
+
+private extension LocalUsernameManagerImpl {
+    /// Make the request in the given block, with retries.
+    ///
+    /// Because a failed username mutation request leaves us in a corrupted
+    /// state, add retries for network errors to avoid unnecessary corruption
+    /// where possible.
+    func makeRequestWithNetworkRetries<T>(
+        requestBlock: @escaping () -> Promise<T>,
+        retriesRemaining: Int = 2
+    ) -> Promise<T> {
+        firstly(on: schedulers.sync) { () -> Promise<T> in
+            return requestBlock()
+        }
+        .recover(on: schedulers.global()) { error throws -> Promise<T> in
+            guard error.isNetworkFailureOrTimeout else {
+                UsernameLogger.shared.error("Non-network error during username request!")
+                throw error
+            }
+
+            guard retriesRemaining > 0 else {
+                UsernameLogger.shared.error("Exhausted retries during username request!")
+                throw error
+            }
+
+            return self.makeRequestWithNetworkRetries(
+                requestBlock: requestBlock,
+                retriesRemaining: retriesRemaining - 1
+            )
         }
     }
 }
