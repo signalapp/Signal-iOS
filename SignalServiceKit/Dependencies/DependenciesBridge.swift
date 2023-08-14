@@ -97,6 +97,7 @@ public class DependenciesBridge {
         notificationsManager: NotificationsProtocol,
         ows2FAManager: OWS2FAManager,
         profileManager: ProfileManagerProtocol,
+        receiptManager: OWSReceiptManager,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
@@ -119,6 +120,7 @@ public class DependenciesBridge {
             notificationsManager: notificationsManager,
             ows2FAManager: ows2FAManager,
             profileManager: profileManager,
+            receiptManager: receiptManager,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
@@ -146,6 +148,7 @@ public class DependenciesBridge {
         notificationsManager: NotificationsProtocol,
         ows2FAManager: OWS2FAManager,
         profileManager: ProfileManagerProtocol,
+        receiptManager: OWSReceiptManager,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         signalService: OWSSignalServiceProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
@@ -195,7 +198,8 @@ public class DependenciesBridge {
                 dataStore: EditManager.Wrappers.DataStore(),
                 groupsShim: EditManager.Wrappers.Groups(groupsV2: groupsV2),
                 keyValueStoreFactory: keyValueStoreFactory,
-                linkPreviewShim: EditManager.Wrappers.LinkPreview()
+                linkPreviewShim: EditManager.Wrappers.LinkPreview(),
+                receiptManagerShim: EditManager.Wrappers.ReceiptManager(receiptManager: receiptManager)
             )
         )
 

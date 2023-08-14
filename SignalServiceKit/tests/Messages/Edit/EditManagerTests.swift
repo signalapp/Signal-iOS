@@ -34,7 +34,8 @@ class EditManagerTests: SSKBaseTestSwift {
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewShim: LinkPreviewMock()
+                linkPreviewShim: LinkPreviewMock(),
+                receiptManagerShim: ReceiptManagerMock()
             )
         )
 
@@ -78,7 +79,8 @@ class EditManagerTests: SSKBaseTestSwift {
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewShim: LinkPreviewMock()
+                linkPreviewShim: LinkPreviewMock(),
+                receiptManagerShim: ReceiptManagerMock()
             )
         )
 
@@ -110,7 +112,8 @@ class EditManagerTests: SSKBaseTestSwift {
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewShim: LinkPreviewMock()
+                linkPreviewShim: LinkPreviewMock(),
+                receiptManagerShim: ReceiptManagerMock()
             )
         )
 
@@ -141,7 +144,8 @@ class EditManagerTests: SSKBaseTestSwift {
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewShim: LinkPreviewMock()
+                linkPreviewShim: LinkPreviewMock(),
+                receiptManagerShim: ReceiptManagerMock()
             )
         )
 
@@ -176,7 +180,8 @@ class EditManagerTests: SSKBaseTestSwift {
                 dataStore: dataStoreMock,
                 groupsShim: GroupsMock(),
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
-                linkPreviewShim: LinkPreviewMock()
+                linkPreviewShim: LinkPreviewMock(),
+                receiptManagerShim: ReceiptManagerMock()
             )
         )
 
@@ -356,6 +361,18 @@ class EditManagerTests: SSKBaseTestSwift {
         }
 
         func numberOfEdits(for message: TSMessage, tx: DBReadTransaction) -> Int { 1 }
+
+        func findEditHistory(
+            for message: TSMessage,
+            tx: DBReadTransaction
+        ) throws -> [(EditRecord, TSMessage?)] {
+            return []
+        }
+
+        func update(
+            editRecord: EditRecord,
+            tx: DBWriteTransaction
+        ) throws {}
     }
 
     private class LinkPreviewMock: EditManager.Shims.LinkPreview {
@@ -371,6 +388,14 @@ class EditManagerTests: SSKBaseTestSwift {
         func groupId(for message: SSKProtoDataMessage) -> GroupV2ContextInfo? {
             return nil
         }
+    }
+
+    private class ReceiptManagerMock: EditManager.Shims.ReceiptManager {
+        func messageWasRead(
+            _ message: TSIncomingMessage,
+            thread: TSThread,
+            circumstance: OWSReceiptCircumstance,
+            tx: DBWriteTransaction) { }
     }
 
     // MARK: - Test Data

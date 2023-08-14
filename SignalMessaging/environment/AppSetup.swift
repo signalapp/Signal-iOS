@@ -60,6 +60,7 @@ public class AppSetup {
         let ows2FAManager = OWS2FAManager()
         let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni, keyValueStoreFactory: keyValueStoreFactory)
         let profileManager = OWSProfileManager(databaseStorage: databaseStorage)
+        let receiptManager = OWSReceiptManager()
         let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
             aciProtocolStore: aciSignalProtocolStore,
             pniProtocolStore: pniSignalProtocolStore
@@ -84,6 +85,7 @@ public class AppSetup {
             notificationsManager: notificationPresenter,
             ows2FAManager: ows2FAManager,
             profileManager: profileManager,
+            receiptManager: receiptManager,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
@@ -120,7 +122,6 @@ public class AppSetup {
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
         let socketManager = SocketManager(appExpiry: appExpiry, db: DependenciesBridge.shared.db)
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
-        let receiptManager = OWSReceiptManager()
         let outgoingReceiptManager = OWSOutgoingReceiptManager()
         let reachabilityManager = SSKReachabilityManagerImpl()
         let typingIndicators = TypingIndicatorsImpl()

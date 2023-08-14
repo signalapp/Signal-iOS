@@ -65,6 +65,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let ows2FAManager = OWS2FAManager()
         let pniSignalProtocolStore = SignalProtocolStoreImpl(for: .pni, keyValueStoreFactory: keyValueStoreFactory)
         let profileManager = OWSFakeProfileManager()
+        let receiptManager = OWSReceiptManager()
         let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
             aciProtocolStore: aciSignalProtocolStore,
             pniProtocolStore: pniSignalProtocolStore
@@ -90,6 +91,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             notificationsManager: notificationsManager,
             ows2FAManager: ows2FAManager,
             profileManager: profileManager,
+            receiptManager: receiptManager,
             signalProtocolStoreManager: signalProtocolStoreManager,
             signalService: signalService,
             signalServiceAddressCache: signalServiceAddressCache,
@@ -113,7 +115,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let groupsV2MessageProcessor = GroupsV2MessageProcessor()
         let socketManager = SocketManager(appExpiry: appExpiry, db: DependenciesBridge.shared.db)
         let disappearingMessagesJob = OWSDisappearingMessagesJob()
-        let receiptManager = OWSReceiptManager()
         let outgoingReceiptManager = OWSOutgoingReceiptManager()
         let reachabilityManager = MockSSKReachabilityManager()
         let typingIndicators = TypingIndicatorsImpl()

@@ -77,17 +77,20 @@ public class EditManager {
         let groupsShim: EditManager.Shims.Groups
         let keyValueStoreFactory: KeyValueStoreFactory
         let linkPreviewShim: EditManager.Shims.LinkPreview
+        let receiptManagerShim: EditManager.Shims.ReceiptManager
 
         public init(
             dataStore: EditManager.Shims.DataStore,
             groupsShim: EditManager.Shims.Groups,
             keyValueStoreFactory: KeyValueStoreFactory,
-            linkPreviewShim: EditManager.Shims.LinkPreview
+            linkPreviewShim: EditManager.Shims.LinkPreview,
+            receiptManagerShim: EditManager.Shims.ReceiptManager
         ) {
             self.dataStore = dataStore
             self.groupsShim = groupsShim
             self.keyValueStoreFactory = keyValueStoreFactory
             self.linkPreviewShim = linkPreviewShim
+            self.receiptManagerShim = receiptManagerShim
         }
     }
 
@@ -345,7 +348,8 @@ public class EditManager {
         {
             let editRecord = EditRecord(
                 latestRevisionId: originalId,
-                pastRevisionId: editId
+                pastRevisionId: editId,
+                read: editTarget.wasRead
             )
             context.dataStore.insertEditRecord(record: editRecord, tx: tx)
         } else {
@@ -513,6 +517,35 @@ public class EditManager {
         }
 
         return newAttachmentIds
+    }
+
+    // MARK: - Edit Revision Read State
+
+    public func markEditRevisionsAsRead(
+        for edit: TSMessage,
+        thread: TSThread,
+        tx: DBWriteTransaction
+    ) throws {
+        try context.dataStore
+            .findEditHistory(for: edit, tx: tx)
+            .lazy
+            .filter { item in
+                !item.0.read
+            }
+            .forEach { item in
+                guard let message = item.1 as? TSIncomingMessage else { return }
+                var record: EditRecord = item.0
+
+                record.read = true
+                try self.context.dataStore.update(editRecord: record, tx: tx)
+
+                self.context.receiptManagerShim.messageWasRead(
+                    message,
+                    thread: thread,
+                    circumstance: .onThisDevice,
+                    tx: tx
+                )
+            }
     }
 }
 

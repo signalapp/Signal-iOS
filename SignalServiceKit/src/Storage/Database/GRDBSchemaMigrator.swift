@@ -230,6 +230,7 @@ public class GRDBSchemaMigrator: NSObject {
         case updateEditRecordTable
         case threadReplyEditTarget
         case addHiddenRecipientsTable
+        case editRecordReadState
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2279,6 +2280,13 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.threadReplyEditTarget) { tx in
             try tx.database.alter(table: "model_TSThread") { table in
                 table.add(column: "editTargetTimestamp", .integer)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.editRecordReadState) { tx in
+            try tx.database.alter(table: "EditRecord") { table in
+                table.add(column: "read", .boolean).notNull().defaults(to: false)
             }
             return .success(())
         }

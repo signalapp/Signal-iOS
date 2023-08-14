@@ -24,15 +24,18 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
     let spoilerState: SpoilerRenderState
     private var message: TSMessage
     private let database: SDSDatabaseStorage
+    private let editManager: EditManager
 
     init(
         message: TSMessage,
         spoilerState: SpoilerRenderState,
+        editManager: EditManager,
         database: SDSDatabaseStorage
     ) {
         self.spoilerState = spoilerState
         self.message = message
         self.database = database
+        self.editManager = editManager
         super.init()
 
         database.appendDatabaseChangeDelegate(self)
@@ -40,6 +43,27 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
     required init() {
         fatalError("init() has not been implemented")
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        do {
+            try self.database.write { tx in
+
+                guard let thread = TSThread.anyFetch(
+                    uniqueId: message.uniqueThreadId,
+                    transaction: tx
+                ) else { return }
+
+                try self.editManager.markEditRevisionsAsRead(
+                    for: self.message,
+                    thread: thread,
+                    tx: tx.asV2Write
+                )
+            }
+        } catch {
+            owsFailDebug("Failed to update edit read state")
+        }
     }
 
     // MARK: - Table Update

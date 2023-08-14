@@ -1441,6 +1441,7 @@ CREATE
         )
             ON DELETE
                 RESTRICT
+            ,"read" BOOLEAN NOT NULL DEFAULT 0
 )
 ;
 

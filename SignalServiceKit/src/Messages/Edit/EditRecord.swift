@@ -21,8 +21,27 @@ public struct EditRecord: Codable, FetchableRecord, PersistableRecord {
     public var id: Int64?
     public let latestRevisionId: Int64
     public let pastRevisionId: Int64
+    public var read: Bool = false
 
     mutating public func didInsert(with rowID: Int64, for column: String?) {
         id = rowID
+    }
+
+    public init(
+        latestRevisionId: Int64,
+        pastRevisionId: Int64,
+        read: Bool = false
+    ) {
+        self.latestRevisionId = latestRevisionId
+        self.pastRevisionId = pastRevisionId
+        self.read = read
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decodeIfPresent(Int64.self, forKey: .id)
+        self.latestRevisionId = try container.decode(Int64.self, forKey: .latestRevisionId)
+        self.pastRevisionId = try container.decode(Int64.self, forKey: .pastRevisionId)
+        self.read = try container.decodeIfPresent(Bool.self, forKey: .read) ?? false
     }
 }

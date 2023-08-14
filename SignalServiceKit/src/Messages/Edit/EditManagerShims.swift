@@ -11,12 +11,14 @@ extension EditManager {
         public typealias LinkPreview = _EditManager_LinkPreviewShim
         public typealias DataStore = _EditManager_DataStore
         public typealias Groups = _EditManager_GroupsShim
+        public typealias ReceiptManager = _EditManager_ReceiptManagerShim
     }
 
     public enum Wrappers {
         public typealias LinkPreview = _EditManager_LinkPreviewWrapper
         public typealias DataStore = _EditManager_DataStoreWrapper
         public typealias Groups = _EditManager_GroupsWrapper
+        public typealias ReceiptManager = _EditManager_ReceiptManagerWrapper
     }
 }
 
@@ -82,6 +84,16 @@ public protocol _EditManager_DataStore {
         authorAci: Aci?,
         tx: DBReadTransaction
     ) -> EditMessageTarget?
+
+    func findEditHistory(
+        for message: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> [(EditRecord, TSMessage?)]
+
+    func update(
+        editRecord: EditRecord,
+        tx: DBWriteTransaction
+    ) throws
 }
 
 public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
@@ -179,6 +191,23 @@ public class _EditManager_DataStoreWrapper: EditManager.Shims.DataStore {
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
+
+    public func findEditHistory(
+        for message: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> [(EditRecord, TSMessage?)] {
+        return try EditMessageFinder.findEditHistory(
+            for: message,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
+
+    public func update(
+        editRecord: EditRecord,
+        tx: DBWriteTransaction
+    ) throws {
+        try editRecord.update(SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database)
+    }
 }
 
 // MARK: - EditManager.Groups
@@ -219,6 +248,37 @@ public class _EditManager_LinkPreviewWrapper: EditManager.Shims.LinkPreview {
         return try OWSLinkPreview.buildValidatedLinkPreview(
             dataMessage: dataMessage,
             body: dataMessage.body,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
+}
+
+public protocol _EditManager_ReceiptManagerShim {
+    func messageWasRead(
+        _ message: TSIncomingMessage,
+        thread: TSThread,
+        circumstance: OWSReceiptCircumstance,
+        tx: DBWriteTransaction
+    )
+}
+
+public struct _EditManager_ReceiptManagerWrapper: EditManager.Shims.ReceiptManager {
+
+    private let receiptManager: OWSReceiptManager
+    public init(receiptManager: OWSReceiptManager) {
+        self.receiptManager = receiptManager
+    }
+
+    public func messageWasRead(
+        _ message: TSIncomingMessage,
+        thread: TSThread,
+        circumstance: OWSReceiptCircumstance,
+        tx: DBWriteTransaction
+    ) {
+        receiptManager.messageWasRead(
+            message,
+            thread: thread,
+            circumstance: circumstance,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }

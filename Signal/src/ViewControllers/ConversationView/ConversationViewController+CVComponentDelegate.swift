@@ -187,6 +187,7 @@ extension ConversationViewController: CVComponentDelegate {
         let sheet = EditHistoryTableSheetViewController(
             message: message,
             spoilerState: viewState.spoilerState,
+            editManager: self.context.editManager,
             database: databaseStorage
         )
         sheet.delegate = self

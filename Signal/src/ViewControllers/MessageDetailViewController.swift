@@ -388,6 +388,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 let sheet = EditHistoryTableSheetViewController(
                     message: self.message,
                     spoilerState: self.spoilerState,
+                    editManager: self.editManager,
                     database: self.databaseStorage
                 )
                 sheet.delegate = self.detailDelegate
