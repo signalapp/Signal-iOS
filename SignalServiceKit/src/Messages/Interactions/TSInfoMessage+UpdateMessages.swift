@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 extension TSInfoMessage {
     public enum UpdateMessage: Codable, CustomStringConvertible {
@@ -14,17 +15,17 @@ extension TSInfoMessage {
         }
 
         case sequenceOfInviteLinkRequestAndCancels(count: UInt, isTail: Bool)
-        case invitedPniPromotedToFullMemberAci(pni: UntypedServiceId, aci: UntypedServiceId)
-        case inviteRemoved(invitee: UntypedServiceId, wasLocalUser: Bool)
+        case invitedPniPromotedToFullMemberAci(pni: PniUuid, aci: AciUuid)
+        case inviteRemoved(invitee: ServiceIdUppercaseString, wasLocalUser: Bool)
 
         public var description: String {
             switch self {
             case let .sequenceOfInviteLinkRequestAndCancels(count, isTail):
                 return "sequenceOfInviteLinkRequestAndCancels: { count: \(count), isTail: \(isTail) }"
             case let .invitedPniPromotedToFullMemberAci(pni, aci):
-                return "invitedPniPromotedToFullMemberAci: { pni: \(pni), aci: \(aci) }"
+                return "invitedPniPromotedToFullMemberAci: { pni: \(pni.wrappedValue), aci: \(aci.wrappedValue) }"
             case let .inviteRemoved(invitee, wasLocalUser):
-                return "inviteRemoved: { invitee: \(invitee), wasLocalUser: \(wasLocalUser) }"
+                return "inviteRemoved: { invitee: \(invitee.wrappedValue), wasLocalUser: \(wasLocalUser) }"
             }
         }
     }

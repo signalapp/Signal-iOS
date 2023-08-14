@@ -9,30 +9,30 @@ import XCTest
 
 @testable import SignalServiceKit
 
-private extension UUID {
-    static let uuid1 = FutureAci.randomForTesting().uuidValue
-    static let uuid2 = FutureAci.randomForTesting().uuidValue
-    static let uuid3 = FutureAci.randomForTesting().uuidValue
+private extension Aci {
+    static let aci1 = Aci.randomForTesting()
+    static let aci2 = Aci.randomForTesting()
+    static let aci3 = Aci.randomForTesting()
 }
 
 class GroupModelsTest: SSKBaseTestSwift {
 
     func testGroupMembershipChangingFullMembers() {
         var builder1 = GroupMembership.Builder()
-        builder1.addFullMember(.uuid1, role: .normal)
+        builder1.addFullMember(.aci1, role: .normal)
         let membership1 = builder1.build()
 
         var builder2 = GroupMembership.Builder()
-        builder2.addFullMember(.uuid1, role: .administrator)
+        builder2.addFullMember(.aci1, role: .administrator)
         let membership2 = builder2.build()
 
         var builder3 = GroupMembership.Builder()
-        builder3.addFullMember(.uuid1, role: .normal)
-        builder3.addFullMember(.uuid2, role: .normal)
+        builder3.addFullMember(.aci1, role: .normal)
+        builder3.addFullMember(.aci2, role: .normal)
         let membership3 = builder3.build()
 
         var builder4 = GroupMembership.Builder()
-        builder4.addFullMember(.uuid1, role: .normal)
+        builder4.addFullMember(.aci1, role: .normal)
         let membership4 = builder4.build()
 
         XCTAssertEqual(membership1, membership4)
@@ -46,11 +46,11 @@ class GroupModelsTest: SSKBaseTestSwift {
 
     func testGroupMembershipChangingDidJoinFromInviteLink() {
         var builder1 = GroupMembership.Builder()
-        builder1.addFullMember(.uuid1, role: .normal, didJoinFromInviteLink: true)
+        builder1.addFullMember(.aci1, role: .normal, didJoinFromInviteLink: true)
         let membership1 = builder1.build()
 
         var builder2 = GroupMembership.Builder()
-        builder2.addFullMember(.uuid1, role: .normal, didJoinFromInviteLink: false)
+        builder2.addFullMember(.aci1, role: .normal, didJoinFromInviteLink: false)
         let membership2 = builder2.build()
 
         XCTAssertEqual(membership1, membership2)
@@ -58,22 +58,22 @@ class GroupModelsTest: SSKBaseTestSwift {
 
     func testGroupMembershipChangingRequestingMembers() {
         var builder1 = GroupMembership.Builder()
-        builder1.addFullMember(.uuid1, role: .normal)
+        builder1.addFullMember(.aci1, role: .normal)
         let membership1 = builder1.build()
 
         var builder2 = GroupMembership.Builder()
-        builder2.addFullMember(.uuid1, role: .normal)
-        builder2.addRequestingMember(.uuid2)
+        builder2.addFullMember(.aci1, role: .normal)
+        builder2.addRequestingMember(Aci.aci2)
         let membership2 = builder2.build()
 
         var builder3 = GroupMembership.Builder()
-        builder3.addFullMember(.uuid1, role: .normal)
-        builder3.addRequestingMember(.uuid3)
+        builder3.addFullMember(.aci1, role: .normal)
+        builder3.addRequestingMember(Aci.aci3)
         let membership3 = builder3.build()
 
         var builder4 = GroupMembership.Builder()
-        builder4.addFullMember(.uuid1, role: .normal)
-        builder4.addRequestingMember(.uuid2)
+        builder4.addFullMember(.aci1, role: .normal)
+        builder4.addRequestingMember(Aci.aci2)
         let membership4 = builder4.build()
 
         XCTAssertFalse(membership1 == membership2)
@@ -87,29 +87,29 @@ class GroupModelsTest: SSKBaseTestSwift {
 
     func testGroupMembershipChangingBannedMembers() {
         var builder1 = GroupMembership.Builder()
-        builder1.addFullMember(.uuid1, role: .normal)
+        builder1.addFullMember(.aci1, role: .normal)
         let membership1 = builder1.build()
 
         var builder2 = membership1.asBuilder
-        builder2.addFullMember(.uuid1, role: .normal)
-        builder2.addBannedMember(.uuid2, bannedAtTimestamp: 3)
+        builder2.addFullMember(.aci1, role: .normal)
+        builder2.addBannedMember(.aci2, bannedAtTimestamp: 3)
         let membership2 = builder2.build()
 
         var builder3 = GroupMembership.Builder()
-        builder3.addFullMember(.uuid1, role: .normal)
-        builder3.addBannedMember(.uuid2, bannedAtTimestamp: 12)
+        builder3.addFullMember(.aci1, role: .normal)
+        builder3.addBannedMember(.aci2, bannedAtTimestamp: 12)
         let membership3 = builder3.build()
 
         var builder4 = GroupMembership.Builder()
-        builder4.addFullMember(.uuid1, role: .normal)
-        builder4.addBannedMember(.uuid2, bannedAtTimestamp: 3)
-        builder4.addBannedMember(.uuid3, bannedAtTimestamp: 4)
+        builder4.addFullMember(.aci1, role: .normal)
+        builder4.addBannedMember(.aci2, bannedAtTimestamp: 3)
+        builder4.addBannedMember(.aci3, bannedAtTimestamp: 4)
         let membership4 = builder4.build()
 
         var builder5 = GroupMembership.Builder()
-        builder5.addFullMember(.uuid1, role: .normal)
-        builder5.addBannedMember(.uuid2, bannedAtTimestamp: 3)
-        builder5.addBannedMember(.uuid3, bannedAtTimestamp: 4)
+        builder5.addFullMember(.aci1, role: .normal)
+        builder5.addBannedMember(.aci2, bannedAtTimestamp: 3)
+        builder5.addBannedMember(.aci3, bannedAtTimestamp: 4)
         let membership5 = builder5.build()
 
         XCTAssertNotEqual(membership1, membership2)
@@ -121,7 +121,7 @@ class GroupModelsTest: SSKBaseTestSwift {
         XCTAssertEqual(membership4, membership5)
     }
 
-    func testTSGroupModelBackwardsCompatibleDeserialization() {
+    func testTSGroupModelBackwardsCompatibleDeserialization() throws {
         let groupIdLength = 16 // Taken from kGroupIdLength at the time of archiving.
         let expectedGroupId = Data(repeating: 8, count: groupIdLength)
         // hexstring generated by archiving:
@@ -137,9 +137,7 @@ class GroupModelsTest: SSKBaseTestSwift {
 
         let encodedData = Data.data(fromHex: hexData)!
 
-        let decodedModel = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encodedData) as? TSGroupModel
-        XCTAssertNotNil(decodedModel)
-        let groupModel = decodedModel!
+        let groupModel = try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(ofClass: TSGroupModel.self, from: encodedData, requiringSecureCoding: false))
         XCTAssertEqual(groupModel.groupId, expectedGroupId)
     }
 
@@ -171,9 +169,7 @@ class GroupModelsTest: SSKBaseTestSwift {
 
         let encodedData = Data.data(fromHex: hexData)!
 
-        let decodedModel = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encodedData) as? TSGroupModelV2
-        XCTAssertNotNil(decodedModel)
-        let groupModel = decodedModel!
+        let groupModel = try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(ofClass: TSGroupModelV2.self, from: encodedData, requiringSecureCoding: false))
         XCTAssertEqual(groupModel.groupId, expectedGroupId)
     }
 }

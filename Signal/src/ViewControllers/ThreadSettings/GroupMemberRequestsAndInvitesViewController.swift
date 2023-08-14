@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalCoreKit
 import SignalMessaging
 import SignalUI
@@ -226,32 +227,30 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     }
 
     private func addContentsForPendingInvites(contents: OWSTableContents) {
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
             owsFailDebug("missing local address")
             return
         }
 
         let groupMembership = groupModel.groupMembership
-        let allPendingMembersSorted = databaseStorage.read { transaction in
-            self.contactsManagerImpl.sortSignalServiceAddresses(Array(groupMembership.invitedMembers),
-                                                                transaction: transaction)
+        let allPendingMembersSorted = databaseStorage.read { tx in
+            self.contactsManagerImpl.sortSignalServiceAddresses(Array(groupMembership.invitedMembers), transaction: tx)
         }
 
         // Note that these collections retain their sorting from above.
         var membersInvitedByLocalUser = [SignalServiceAddress]()
         var membersInvitedByOtherUsers = [SignalServiceAddress: [SignalServiceAddress]]()
         for invitedAddress in allPendingMembersSorted {
-            guard let inviterUuid = groupMembership.addedByUuid(forInvitedMember: invitedAddress) else {
+            guard let inviterAci = groupMembership.addedByAci(forInvitedMember: invitedAddress) else {
                 owsFailDebug("Missing inviter.")
                 continue
             }
-            let inviterAddress = SignalServiceAddress(uuid: inviterUuid)
-            if inviterAddress == localAddress {
+            if inviterAci == localAci {
                 membersInvitedByLocalUser.append(invitedAddress)
             } else {
-                var invitedMembers: [SignalServiceAddress] = membersInvitedByOtherUsers[inviterAddress] ?? []
+                var invitedMembers = membersInvitedByOtherUsers[SignalServiceAddress(inviterAci)] ?? []
                 invitedMembers.append(invitedAddress)
-                membersInvitedByOtherUsers[inviterAddress] = invitedMembers
+                membersInvitedByOtherUsers[SignalServiceAddress(inviterAci)] = invitedMembers
             }
         }
 
@@ -460,8 +459,8 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 private extension GroupMemberRequestsAndInvitesViewController {
 
     func revokePendingInvites(addresses: [SignalServiceAddress]) {
-        let uuids = addresses.compactMap { $0.uuid }
-        guard let groupModelV2 = groupModel as? TSGroupModelV2, !uuids.isEmpty else {
+        let serviceIds = addresses.compactMap { $0.serviceId }
+        guard let groupModelV2 = groupModel as? TSGroupModelV2, !serviceIds.isEmpty else {
             GroupViewUtils.showUpdateErrorUI(error: OWSAssertionError("Invalid group model or addresses"))
             return
         }
@@ -471,8 +470,7 @@ private extension GroupMemberRequestsAndInvitesViewController {
             withGroupModel: groupModelV2,
             updateDescription: self.logTag,
             updateBlock: {
-                GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2,
-                                                             uuids: uuids)
+                GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2, serviceIds: serviceIds)
             },
             completion: { [weak self] groupThread in
                 self?.reloadContent(groupThread: groupThread)
@@ -541,9 +539,7 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
     }
 
     func acceptOrDenyMemberRequests(address: SignalServiceAddress, shouldAccept: Bool) {
-        guard let groupModelV2 = groupModel as? TSGroupModelV2,
-              let uuid = address.uuid
-        else {
+        guard let groupModelV2 = groupModel as? TSGroupModelV2, let aci = address.serviceId as? Aci else {
             GroupViewUtils.showUpdateErrorUI(error: OWSAssertionError("Invalid group model or address"))
             return
         }
@@ -553,9 +549,7 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
             withGroupModel: groupModelV2,
             updateDescription: self.logTag,
             updateBlock: { () -> Promise<TSGroupThread> in
-                GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2,
-                                                          uuids: [uuid],
-                                                          shouldAccept: shouldAccept)
+                GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2, aci: aci, shouldAccept: shouldAccept)
             },
             completion: { [weak self] groupThread in
                 guard let self = self else { return }
@@ -565,6 +559,7 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
                     self.presentRequestDeniedToast(address: address)
                 }
                 self.reloadContent(groupThread: groupThread)
-            })
+            }
+        )
     }
 }

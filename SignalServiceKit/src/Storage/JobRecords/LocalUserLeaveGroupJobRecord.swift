@@ -5,17 +5,18 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 
 public final class LocalUserLeaveGroupJobRecord: JobRecord, FactoryInitializableFromRecordType {
     override class var jobRecordType: JobRecordType { .localUserLeaveGroup }
 
     let threadId: String
-    let replacementAdminUuid: String?
+    let replacementAdminAciString: String?
     let waitForMessageProcessing: Bool
 
     init(
         threadId: String,
-        replacementAdminUuid: String?,
+        replacementAdminAci: Aci?,
         waitForMessageProcessing: Bool,
         label: String,
         exclusiveProcessIdentifier: String? = nil,
@@ -23,7 +24,7 @@ public final class LocalUserLeaveGroupJobRecord: JobRecord, FactoryInitializable
         status: Status = .ready
     ) {
         self.threadId = threadId
-        self.replacementAdminUuid = replacementAdminUuid
+        self.replacementAdminAciString = replacementAdminAci?.serviceIdUppercaseString
         self.waitForMessageProcessing = waitForMessageProcessing
 
         super.init(
@@ -38,7 +39,7 @@ public final class LocalUserLeaveGroupJobRecord: JobRecord, FactoryInitializable
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         threadId = try container.decode(String.self, forKey: .threadId)
-        replacementAdminUuid = try container.decodeIfPresent(String.self, forKey: .replacementAdminUuid)
+        replacementAdminAciString = try container.decodeIfPresent(String.self, forKey: .replacementAdminAciString)
         waitForMessageProcessing = try container.decode(Bool.self, forKey: .waitForMessageProcessing)
 
         try super.init(baseClassDuringFactoryInitializationFrom: container.superDecoder())
@@ -50,7 +51,7 @@ public final class LocalUserLeaveGroupJobRecord: JobRecord, FactoryInitializable
         try super.encode(to: container.superEncoder())
 
         try container.encode(threadId, forKey: .threadId)
-        try container.encodeIfPresent(replacementAdminUuid, forKey: .replacementAdminUuid)
+        try container.encodeIfPresent(replacementAdminAciString, forKey: .replacementAdminAciString)
         try container.encode(waitForMessageProcessing, forKey: .waitForMessageProcessing)
     }
 }

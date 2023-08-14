@@ -143,7 +143,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
         let oldGroupModel = groupThread.groupModel
 
-        guard !oldGroupModel.groupMembership.isMemberOfAnyKind(serviceId.temporary_rawUUID) else {
+        guard !oldGroupModel.groupMembership.isMemberOfAnyKind(serviceId) else {
             let error = OWSAssertionError("Receipient is already in group")
             GroupViewUtils.showUpdateErrorUI(error: error)
             return

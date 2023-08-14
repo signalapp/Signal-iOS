@@ -31,16 +31,16 @@ class GroupsPerfTest: PerformanceBaseTest {
 
         var builder = GroupMembership.Builder()
         for _ in 0..<memberCount {
-            builder.addFullMember(FutureAci.randomForTesting().uuidValue, role: .`normal`)
+            builder.addFullMember(Aci.randomForTesting(), role: .`normal`)
         }
         for _ in 0..<memberCount {
-            builder.addInvitedMember(FutureAci.randomForTesting().uuidValue, role: .`normal`, addedByUuid: FutureAci.randomForTesting().uuidValue)
+            builder.addInvitedMember(Aci.randomForTesting(), role: .`normal`, addedByAci: Aci.randomForTesting())
         }
         for _ in 0..<memberCount {
-            builder.addRequestingMember(FutureAci.randomForTesting().uuidValue)
+            builder.addRequestingMember(Aci.randomForTesting())
         }
         for i in 0..<memberCount {
-            builder.addBannedMember(FutureAci.randomForTesting().uuidValue, bannedAtTimestamp: UInt64(i))
+            builder.addBannedMember(Aci.randomForTesting(), bannedAtTimestamp: UInt64(i))
         }
         return builder.build()
     }

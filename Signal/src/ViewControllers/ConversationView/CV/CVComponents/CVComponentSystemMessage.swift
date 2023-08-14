@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalMessaging
 import SignalServiceKit
 import SignalUI
@@ -1163,7 +1164,7 @@ extension CVComponentSystemMessage {
 
                     guard
                         let requesterAddress = infoMessage.groupUpdateSourceAddress,
-                        let requesterUuid = requesterAddress.uuid
+                        let requesterAci = requesterAddress.serviceId as? Aci
                     else {
                         owsFailDebug("Missing parameters for join request sequence")
                         return nil
@@ -1185,7 +1186,7 @@ extension CVComponentSystemMessage {
                     // group state may have changed since that message.
                     guard
                         mostRecentGroupModel.groupMembership.isLocalUserFullMemberAndAdministrator,
-                        !mostRecentGroupModel.groupMembership.isBannedMember(requesterUuid)
+                        !mostRecentGroupModel.groupMembership.isBannedMember(requesterAci)
                     else {
                         return nil
                     }
@@ -1202,7 +1203,7 @@ extension CVComponentSystemMessage {
                                 for: requesterAddress,
                                 transaction: transaction
                             ),
-                            requesterUuid: requesterUuid
+                            requesterAci: requesterAci
                         )
                     )
                 default:

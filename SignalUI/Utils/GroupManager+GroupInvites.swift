@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 
 public extension GroupManager {
@@ -10,7 +11,7 @@ public extension GroupManager {
     static func leaveGroupOrDeclineInviteAsyncWithUI(
         groupThread: TSGroupThread,
         fromViewController: UIViewController,
-        replacementAdminUuid: UUID? = nil,
+        replacementAdminAci: Aci? = nil,
         success: (() -> Void)?
     ) {
 
@@ -27,7 +28,7 @@ public extension GroupManager {
                 databaseStorage.write { transaction in
                     self.localLeaveGroupOrDeclineInvite(
                         groupThread: groupThread,
-                        replacementAdminUuid: replacementAdminUuid,
+                        replacementAdminAci: replacementAdminAci,
                         waitForMessageProcessing: true,
                         transaction: transaction
                     ).asVoid()

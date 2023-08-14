@@ -223,23 +223,23 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
 
     func setAvatar(_ avatar: (data: Data, urlPath: String)?)
 
-    func addMember(_ uuid: UUID, role: TSGroupMemberRole)
+    func addMember(_ aci: Aci, role: TSGroupMemberRole)
 
-    func removeMember(_ uuid: UUID)
+    func removeMember(_ serviceId: ServiceId)
 
-    func addBannedMember(_ uuid: UUID)
+    func addBannedMember(_ aci: Aci)
 
-    func removeBannedMember(_ uuid: UUID)
+    func removeBannedMember(_ aci: Aci)
 
     func revokeInvalidInvites()
 
-    func changeRoleForMember(_ uuid: UUID, role: TSGroupMemberRole)
+    func changeRoleForMember(_ aci: Aci, role: TSGroupMemberRole)
 
     func setAccessForMembers(_ value: GroupV2Access)
 
     func setAccessForAttributes(_ value: GroupV2Access)
 
-    func addInvitedMember(_ uuid: UUID, role: TSGroupMemberRole)
+    func addInvitedMember(_ serviceId: ServiceId, role: TSGroupMemberRole)
 
     func setLocalShouldAcceptInvite()
 
@@ -368,7 +368,7 @@ public protocol GroupV2Snapshot {
 
     var disappearingMessageToken: DisappearingMessageToken { get }
 
-    var profileKeys: [UUID: Data] { get }
+    var profileKeys: [Aci: Data] { get }
 
     var inviteLinkPassword: Data? { get }
 

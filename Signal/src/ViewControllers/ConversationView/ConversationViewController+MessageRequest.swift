@@ -59,8 +59,8 @@ extension ConversationViewController: MessageRequestDelegate {
             self?.blockThread()
         })
 
-        if let addedByUuid = groupMembership.addedByUuid(forInvitedMember: invitedAtServiceId.temporary_rawUUID) {
-            let addedByAddress = SignalServiceAddress(uuid: addedByUuid)
+        if let addedByAci = groupMembership.addedByAci(forInvitedMember: invitedAtServiceId) {
+            let addedByAddress = SignalServiceAddress(addedByAci)
             let addedByName = contactsManager.displayName(for: addedByAddress)
 
             actionSheet.addAction(ActionSheetAction(

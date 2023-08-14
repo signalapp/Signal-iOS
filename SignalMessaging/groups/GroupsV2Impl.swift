@@ -206,7 +206,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         shouldForceRefreshProfileKeyCredentials: Bool = false
     ) -> Promise<GroupsProtoGroup> {
         guard let localAci = tsAccountManager.localIdentifiers?.aci else {
-            return Promise(error: OWSAssertionError("Missing localUuid."))
+            return Promise(error: OWSAssertionError("Missing localAci."))
         }
 
         return firstly(on: DispatchQueue.global()) { () throws -> Promise<ProfileKeyCredentialMap> in
@@ -456,51 +456,54 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         }
     }
 
-    private func membersRemovedByChangeActions(groupChangeProto: GroupsProtoGroupChangeActions,
-                                               groupV2Params: GroupV2Params) -> [UUID] {
-        var userIds = [Data]()
+    private func membersRemovedByChangeActions(
+        groupChangeProto: GroupsProtoGroupChangeActions,
+        groupV2Params: GroupV2Params
+    ) -> [ServiceId] {
+        var serviceIds = [ServiceId]()
         for action in groupChangeProto.deleteMembers {
             guard let userId = action.deletedUserID else {
                 owsFailDebug("Missing userID.")
                 continue
             }
-            userIds.append(userId)
+            do {
+                serviceIds.append(try groupV2Params.aci(for: userId))
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
         }
         for action in groupChangeProto.deletePendingMembers {
             guard let userId = action.deletedUserID else {
                 owsFailDebug("Missing userID.")
                 continue
             }
-            userIds.append(userId)
+            do {
+                serviceIds.append(try groupV2Params.serviceId(for: userId))
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
         }
         for action in groupChangeProto.deleteRequestingMembers {
             guard let userId = action.deletedUserID else {
                 owsFailDebug("Missing userID.")
                 continue
             }
-            userIds.append(userId)
-        }
-
-        var uuids = [UUID]()
-        for userId in userIds {
             do {
-                let uuid = try groupV2Params.uuid(forUserId: userId)
-                uuids.append(uuid)
+                serviceIds.append(try groupV2Params.aci(for: userId))
             } catch {
                 owsFailDebug("Error: \(error)")
             }
         }
-        return uuids
+        return serviceIds
     }
 
     private func sendGroupUpdateMessageToRemovedUsers(groupThread: TSGroupThread,
                                                       groupChangeProto: GroupsProtoGroupChangeActions,
                                                       changeActionsProtoData: Data,
                                                       groupV2Params: GroupV2Params) {
-        let uuids = membersRemovedByChangeActions(groupChangeProto: groupChangeProto,
-                                                  groupV2Params: groupV2Params)
+        let serviceIds = membersRemovedByChangeActions(groupChangeProto: groupChangeProto, groupV2Params: groupV2Params)
 
-        guard !uuids.isEmpty else {
+        guard !serviceIds.isEmpty else {
             return
         }
 
@@ -509,10 +512,9 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             return
         }
 
-        let contactThreads = databaseStorage.write { transaction in
-            uuids.map { uuid in
-                TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid),
-                                                  transaction: transaction)
+        let contactThreads = databaseStorage.write { tx in
+            serviceIds.map { serviceId in
+                TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(serviceId), transaction: tx)
             }
         }
         for contactThread in contactThreads {
@@ -553,17 +555,6 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                                              ignoreSignature: Bool,
                                              groupSecretParamsData: Data) throws -> Promise<TSGroupThread> {
         let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
-        return updateGroupWithChangeActions(groupId: groupId,
-                                            changeActionsProto: changeActionsProto,
-                                            justUploadedAvatars: nil,
-                                            ignoreSignature: ignoreSignature,
-                                            groupV2Params: groupV2Params)
-    }
-
-    public func updateGroupWithChangeActions(groupId: Data,
-                                             changeActionsProto: GroupsProtoGroupChangeActions,
-                                             ignoreSignature: Bool,
-                                             groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
         return updateGroupWithChangeActions(groupId: groupId,
                                             changeActionsProto: changeActionsProto,
                                             justUploadedAvatars: nil,
@@ -1943,18 +1934,18 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
                                                                                   groupSecretParamsData: groupV2Params.groupSecretParamsData)
         }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
-            guard let localUuid = self.tsAccountManager.localUuid else {
-                throw OWSAssertionError("Missing localUuid.")
+            guard let localAci = self.tsAccountManager.localIdentifiers?.aci else {
+                throw OWSAssertionError("Missing localAci.")
             }
             guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
                 throw OWSAssertionError("Invalid group model.")
             }
             let groupMembership = groupModelV2.groupMembership
-            if groupMembership.isFullMember(localUuid) ||
-                groupMembership.isRequestingMember(localUuid) {
+            if groupMembership.isFullMember(localAci) ||
+                groupMembership.isRequestingMember(localAci) {
                 // We're already in the group.
                 return Promise.value(groupThread)
-            } else if groupMembership.isInvitedMember(localUuid) {
+            } else if groupMembership.isInvitedMember(localAci) {
                 // We're already an invited member; try to join by accepting the invite.
                 // That will make us a full member; requesting to join via
                 // the invite link might make us a requesting member.
@@ -2079,13 +2070,12 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         guard let revision = revisionForPlaceholderModel.get() else {
             throw OWSAssertionError("Missing revisionForPlaceholderModel.")
         }
-        guard let localUuid = self.tsAccountManager.localUuid else {
-            throw OWSAssertionError("Missing localUuid.")
-        }
         return try databaseStorage.write { (transaction) throws -> TSGroupThread in
+            guard let localIdentifiers = Self.tsAccountManager.localIdentifiers(transaction: transaction) else {
+                throw OWSAssertionError("Missing localIdentifiers.")
+            }
 
-            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId,
-                                               transaction: transaction)
+            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
 
             if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
                 // The group already existing in the database; make sure
@@ -2094,8 +2084,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                     throw OWSAssertionError("Invalid groupModel.")
                 }
                 let oldGroupMembership = oldGroupModel.groupMembership
-                if oldGroupModel.revision >= revision &&
-                    oldGroupMembership.isRequestingMember(localUuid) {
+                if oldGroupModel.revision >= revision && oldGroupMembership.isRequestingMember(localIdentifiers.aci) {
                     // No need to update database, group state is already acceptable.
                     return groupThread
                 }
@@ -2103,8 +2092,8 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 builder.isPlaceholderModel = true
                 builder.groupV2Revision = max(revision, oldGroupModel.revision)
                 var membershipBuilder = oldGroupMembership.asBuilder
-                membershipBuilder.remove(localUuid)
-                membershipBuilder.addRequestingMember(localUuid)
+                membershipBuilder.remove(localIdentifiers.aci)
+                membershipBuilder.addRequestingMember(localIdentifiers.aci)
                 builder.groupMembership = membershipBuilder.build()
                 let newGroupModel = try builder.build()
 
@@ -2112,7 +2101,6 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
                 let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
-                let localAddress = SignalServiceAddress(uuid: localUuid)
                 GroupManager.insertGroupUpdateInfoMessage(
                     groupThread: groupThread,
                     oldGroupModel: oldGroupModel,
@@ -2120,7 +2108,8 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                     oldDisappearingMessageToken: dmToken,
                     newDisappearingMessageToken: dmToken,
                     newlyLearnedPniToAciAssociations: [:],
-                    groupUpdateSourceAddress: localAddress,
+                    groupUpdateSource: localIdentifiers.aci,
+                    localIdentifiers: localIdentifiers,
                     transaction: transaction
                 )
 
@@ -2150,17 +2139,15 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 }
 
                 var membershipBuilder = GroupMembership.Builder()
-                membershipBuilder.addRequestingMember(localUuid)
+                membershipBuilder.addRequestingMember(localIdentifiers.aci)
                 builder.groupMembership = membershipBuilder.build()
 
                 let groupModel = try builder.build()
-                let groupThread = TSGroupThread(groupModelPrivate: groupModel,
-                                                transaction: transaction)
+                let groupThread = TSGroupThread(groupModelPrivate: groupModel, transaction: transaction)
                 groupThread.anyInsert(transaction: transaction)
 
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
                 let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
-                let localAddress = SignalServiceAddress(uuid: localUuid)
                 GroupManager.insertGroupUpdateInfoMessage(
                     groupThread: groupThread,
                     oldGroupModel: nil,
@@ -2168,7 +2155,8 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                     oldDisappearingMessageToken: nil,
                     newDisappearingMessageToken: dmToken,
                     newlyLearnedPniToAciAssociations: [:],
-                    groupUpdateSourceAddress: localAddress,
+                    groupUpdateSource: localIdentifiers.aci,
+                    localIdentifiers: localIdentifiers,
                     transaction: transaction
                 )
 
@@ -2183,7 +2171,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                                                         revisionForPlaceholderModel: AtomicOptional<UInt32>) -> Promise<GroupsProtoGroupChangeActions> {
 
         guard let localAci = self.tsAccountManager.localIdentifiers?.aci else {
-            return Promise(error: OWSAssertionError("Missing localUuid."))
+            return Promise(error: OWSAssertionError("Missing localAci."))
         }
 
         return firstly(on: DispatchQueue.global()) { () -> Promise<GroupInviteLinkPreview> in
@@ -2270,14 +2258,14 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         }
     }
 
-    private func updateGroupRemovingMemberRequest(groupId: Data,
-                                                  newRevision proposedRevision: UInt32?) throws -> TSGroupThread {
-
-        guard let localUuid = self.tsAccountManager.localUuid else {
-            throw OWSAssertionError("Missing localUuid.")
-        }
-
+    private func updateGroupRemovingMemberRequest(
+        groupId: Data,
+        newRevision proposedRevision: UInt32?
+    ) throws -> TSGroupThread {
         return try databaseStorage.write { transaction -> TSGroupThread in
+            guard let localIdentifiers = self.tsAccountManager.localIdentifiers(transaction: transaction) else {
+                throw OWSAssertionError("Missing localIdentifiers.")
+            }
             TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Missing groupThread.")
@@ -2292,7 +2280,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             if let proposedRevision = proposedRevision {
                 if oldGroupModel.revision >= proposedRevision {
                     // No need to update database, group state is already acceptable.
-                    owsAssertDebug(!oldGroupMembership.isMemberOfAnyKind(localUuid))
+                    owsAssertDebug(!oldGroupMembership.isMemberOfAnyKind(localIdentifiers.aci))
                     return groupThread
                 }
                 newRevision = max(newRevision, proposedRevision)
@@ -2303,7 +2291,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             builder.groupV2Revision = newRevision
 
             var membershipBuilder = oldGroupMembership.asBuilder
-            membershipBuilder.remove(localUuid)
+            membershipBuilder.remove(localIdentifiers.aci)
             builder.groupMembership = membershipBuilder.build()
             let newGroupModel = try builder.build()
 
@@ -2311,7 +2299,6 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
             let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
-            let localAddress = SignalServiceAddress(uuid: localUuid)
             GroupManager.insertGroupUpdateInfoMessage(
                 groupThread: groupThread,
                 oldGroupModel: oldGroupModel,
@@ -2319,7 +2306,8 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 oldDisappearingMessageToken: dmToken,
                 newDisappearingMessageToken: dmToken,
                 newlyLearnedPniToAciAssociations: [:],
-                groupUpdateSourceAddress: localAddress,
+                groupUpdateSource: localIdentifiers.aci,
+                localIdentifiers: localIdentifiers,
                 transaction: transaction
             )
 
@@ -2376,8 +2364,8 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                                                               revisionForPlaceholderModel: AtomicOptional<UInt32>) -> Promise<GroupsProtoGroupChangeActions> {
 
         return firstly(on: DispatchQueue.global()) { () -> GroupsProtoGroupChangeActions in
-            guard let localUuid = self.tsAccountManager.localUuid else {
-                throw OWSAssertionError("Missing localUuid.")
+            guard let localAci = self.tsAccountManager.localIdentifiers?.aci else {
+                throw OWSAssertionError("Missing localAci.")
             }
             let oldRevision = groupInviteLinkPreview.revision
             let newRevision = oldRevision + 1
@@ -2387,7 +2375,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             actionsBuilder.setRevision(newRevision)
 
             var actionBuilder = GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.builder()
-            let userId = try groupV2Params.userId(forUuid: localUuid)
+            let userId = try groupV2Params.userId(for: localAci)
             actionBuilder.setDeletedUserID(userId)
             actionsBuilder.addDeleteRequestingMembers(try actionBuilder.build())
 
@@ -2431,8 +2419,8 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         firstly(on: DispatchQueue.global()) {
             let groupId = try self.groupId(forGroupSecretParamsData: groupSecretParamsData)
             try self.databaseStorage.write { transaction in
-                guard let localUuid = self.tsAccountManager.localUuid else {
-                    throw OWSAssertionError("Missing localUuid.")
+                guard let localIdentifiers = self.tsAccountManager.localIdentifiers(transaction: transaction) else {
+                    throw OWSAssertionError("Missing localIdentifiers.")
                 }
                 TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
                 guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
@@ -2454,9 +2442,9 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                 var builder = oldGroupModel.asBuilder
 
                 var membershipBuilder = oldGroupMembership.asBuilder
-                membershipBuilder.remove(localUuid)
+                membershipBuilder.remove(localIdentifiers.aci)
                 if isLocalUserRequestingMember {
-                    membershipBuilder.addRequestingMember(localUuid)
+                    membershipBuilder.addRequestingMember(localIdentifiers.aci)
                 }
                 builder.groupMembership = membershipBuilder.build()
                 let newGroupModel = try builder.build()
@@ -2473,7 +2461,8 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
                     oldDisappearingMessageToken: dmToken,
                     newDisappearingMessageToken: dmToken,
                     newlyLearnedPniToAciAssociations: [:],
-                    groupUpdateSourceAddress: nil,
+                    groupUpdateSource: nil,
+                    localIdentifiers: localIdentifiers,
                     transaction: transaction
                 )
             }

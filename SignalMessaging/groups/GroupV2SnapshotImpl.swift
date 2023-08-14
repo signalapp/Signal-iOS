@@ -31,7 +31,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
 
     public let isAnnouncementsOnly: Bool
 
-    public let profileKeys: [UUID: Data]
+    public let profileKeys: [Aci: Data]
 
     public var debugDescription: String {
         return groupProto.debugDescription
@@ -49,7 +49,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
                 inviteLinkPassword: Data?,
                 disappearingMessageToken: DisappearingMessageToken,
                 isAnnouncementsOnly: Bool,
-                profileKeys: [UUID: Data]) {
+                profileKeys: [Aci: Data]) {
 
         self.groupSecretParamsData = groupSecretParamsData
         self.groupProto = groupProto

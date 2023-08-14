@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
@@ -186,11 +187,7 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     func didTapShowConversationSettingsAndShowMemberRequests()
 
-    func didTapBlockRequest(
-        groupModel: TSGroupModelV2,
-        requesterName: String,
-        requesterUuid: UUID
-    )
+    func didTapBlockRequest(groupModel: TSGroupModelV2, requesterName: String, requesterAci: Aci)
 
     func didTapShowUpgradeAppUI()
 
@@ -232,7 +229,7 @@ struct CVMessageAction: Equatable {
         case didTapViewGroupDescription(groupModel: TSGroupModel?)
         case didTapGroupInviteLinkPromotion(groupModel: TSGroupModel)
         case didTapShowConversationSettingsAndShowMemberRequests
-        case didTapBlockRequest(groupModel: TSGroupModelV2, requesterName: String, requesterUuid: UUID)
+        case didTapBlockRequest(groupModel: TSGroupModelV2, requesterName: String, requesterAci: Aci)
         case didTapShowUpgradeAppUI
         case didTapUpdateSystemContact(address: SignalServiceAddress, newNameComponents: PersonNameComponents)
         case didTapPhoneNumberChange(uuid: UUID, phoneNumberOld: String, phoneNumberNew: String)
@@ -269,8 +266,8 @@ struct CVMessageAction: Equatable {
                 delegate.didTapGroupInviteLinkPromotion(groupModel: groupModel)
             case .didTapShowConversationSettingsAndShowMemberRequests:
                 delegate.didTapShowConversationSettingsAndShowMemberRequests()
-            case .didTapBlockRequest(let groupModel, let requesterName, let requesterUuid):
-                delegate.didTapBlockRequest(groupModel: groupModel, requesterName: requesterName, requesterUuid: requesterUuid)
+            case .didTapBlockRequest(let groupModel, let requesterName, let requesterAci):
+                delegate.didTapBlockRequest(groupModel: groupModel, requesterName: requesterName, requesterAci: requesterAci)
             case .didTapShowUpgradeAppUI:
                 delegate.didTapShowUpgradeAppUI()
             case .didTapUpdateSystemContact(let address, let newNameComponents):

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
@@ -425,7 +426,7 @@ extension MockConversationView: CVComponentDelegate {
     func didTapBlockRequest(
         groupModel: TSGroupModelV2,
         requesterName: String,
-        requesterUuid: UUID
+        requesterAci: Aci
     ) {}
 
     func didTapShowUpgradeAppUI() {}

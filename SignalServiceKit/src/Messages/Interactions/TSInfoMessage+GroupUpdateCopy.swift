@@ -336,8 +336,8 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
                     addedItems = true
                 }
             case let .invitedPniPromotedToFullMemberAci(pni, aci):
-                let invitedPniAddress = SignalServiceAddress(pni)
-                let fullMemberAciAddress = SignalServiceAddress(aci)
+                let invitedPniAddress = SignalServiceAddress(pni.wrappedValue)
+                let fullMemberAciAddress = SignalServiceAddress(aci.wrappedValue)
 
                 addUserInviteWasAccepted(
                     invitedAsAddress: invitedPniAddress,
@@ -349,7 +349,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
                 addedItems = true
             case let .inviteRemoved(invitee, wasLocalUser):
                 addUserInviteWasDeclinedOrRevoked(
-                    inviteeAddress: SignalServiceAddress(invitee),
+                    inviteeAddress: SignalServiceAddress(invitee.wrappedValue),
                     inviteeKnownToBeLocalUser: wasLocalUser,
                     oldGroupMembership: oldGroupMembership,
                     unnamedInviteCounts: &unnamedInviteCounts,
@@ -968,12 +968,9 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         var inviterName: String?
         var inviterAddress: SignalServiceAddress?
 
-        if let inviterUuid = oldGroupMembership.addedByUuid(forInvitedMember: invitedAsAddress) {
-            inviterAddress = SignalServiceAddress(uuid: inviterUuid)
-            inviterName = contactsManager.displayName(
-                address: SignalServiceAddress(uuid: inviterUuid),
-                tx: tx
-            )
+        if let inviterAci = oldGroupMembership.addedByAci(forInvitedMember: invitedAsAddress) {
+            inviterAddress = SignalServiceAddress(inviterAci)
+            inviterName = contactsManager.displayName(address: SignalServiceAddress(inviterAci), tx: tx)
         }
 
         if isLocalUser(address: acceptedAsAddress) {
@@ -1058,12 +1055,9 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
 
         var inviterName: String?
         var inviterAddress: SignalServiceAddress?
-        if let inviterUuid = oldGroupMembership.addedByUuid(forInvitedMember: inviteeAddress) {
-            inviterAddress = SignalServiceAddress(uuid: inviterUuid)
-            inviterName = contactsManager.displayName(
-                address: SignalServiceAddress(uuid: inviterUuid),
-                tx: tx
-            )
+        if let inviterAci = oldGroupMembership.addedByAci(forInvitedMember: inviteeAddress) {
+            inviterAddress = SignalServiceAddress(inviterAci)
+            inviterName = contactsManager.displayName(address: SignalServiceAddress(inviterAci), tx: tx)
         }
 
         if inviteeKnownToBeLocalUser || isLocalUser(address: inviteeAddress) {
@@ -1087,6 +1081,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
                 addItem(.localUserInviteRevokedByUnknownUser)
             }
         } else {
+            // PNI TODO: If someone declines an invitation we sent to their PNI, or if we revoke their invitation, this won't find their name.
             let inviteeName = contactsManager.displayName(address: inviteeAddress, tx: tx)
 
             switch updater {
@@ -1687,9 +1682,9 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
                     addItem(.localUserAddedByUnknownUser)
                 }
             }
-        case .invited(let inviterUuid):
-            if let inviterUuid {
-                let inviterAddress = SignalServiceAddress(uuid: inviterUuid)
+        case .invited(invitedBy: let inviterAci):
+            if let inviterAci {
+                let inviterAddress = SignalServiceAddress(inviterAci)
 
                 addItem(.localUserWasInvitedByOtherUser(
                     updaterName: contactsManager.displayName(address: inviterAddress, tx: tx),
@@ -1732,7 +1727,7 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
 
     enum MembershipStatus {
         case normalMember
-        case invited(invitedBy: UUID?)
+        case invited(invitedBy: Aci?)
         case requesting
         case none
     }
@@ -1769,11 +1764,11 @@ private extension SingleUseGroupUpdateItemBuilderImpl {
         serviceId: ServiceId,
         in groupMembership: GroupMembership
     ) -> MembershipStatus {
-        if groupMembership.isFullMember(serviceId.temporary_rawUUID) {
+        if groupMembership.isFullMember(serviceId) {
             return .normalMember
-        } else if groupMembership.isInvitedMember(serviceId.temporary_rawUUID) {
-            return .invited(invitedBy: groupMembership.addedByUuid(forInvitedMember: serviceId.temporary_rawUUID))
-        } else if groupMembership.isRequestingMember(serviceId.temporary_rawUUID) {
+        } else if groupMembership.isInvitedMember(serviceId) {
+            return .invited(invitedBy: groupMembership.addedByAci(forInvitedMember: serviceId))
+        } else if groupMembership.isRequestingMember(serviceId) {
             return .requesting
         } else {
             return .none

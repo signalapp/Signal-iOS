@@ -30,57 +30,67 @@ public class GroupsV2Protos {
 
     // MARK: -
 
-    public class func buildMemberProto(profileKeyCredential: ExpiringProfileKeyCredential,
-                                       role: GroupsProtoMemberRole,
-                                       groupV2Params: GroupV2Params) throws -> GroupsProtoMember {
+    public class func buildMemberProto(
+        profileKeyCredential: ExpiringProfileKeyCredential,
+        role: GroupsProtoMemberRole,
+        groupV2Params: GroupV2Params
+    ) throws -> GroupsProtoMember {
         var builder = GroupsProtoMember.builder()
         builder.setRole(role)
-        let presentationData = try self.presentationData(profileKeyCredential: profileKeyCredential,
-                                                         groupV2Params: groupV2Params)
+        let presentationData = try self.presentationData(
+            profileKeyCredential: profileKeyCredential,
+            groupV2Params: groupV2Params
+        )
         builder.setPresentation(presentationData)
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
-    public class func buildPendingMemberProto(uuid: UUID,
-                                              role: GroupsProtoMemberRole,
-                                              localUuid: UUID,
-                                              groupV2Params: GroupV2Params) throws -> GroupsProtoPendingMember {
+    public class func buildPendingMemberProto(
+        serviceId: ServiceId,
+        role: GroupsProtoMemberRole,
+        groupV2Params: GroupV2Params
+    ) throws -> GroupsProtoPendingMember {
         var builder = GroupsProtoPendingMember.builder()
 
         var memberBuilder = GroupsProtoMember.builder()
         memberBuilder.setRole(role)
-        let userId = try groupV2Params.userId(forUuid: uuid)
+        let userId = try groupV2Params.userId(for: serviceId)
         memberBuilder.setUserID(userId)
-        builder.setMember(try memberBuilder.build())
+        builder.setMember(memberBuilder.buildInfallibly())
 
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
     public class func buildRequestingMemberProto(profileKeyCredential: ExpiringProfileKeyCredential,
                                                  groupV2Params: GroupV2Params) throws -> GroupsProtoRequestingMember {
         var builder = GroupsProtoRequestingMember.builder()
-        let presentationData = try self.presentationData(profileKeyCredential: profileKeyCredential,
-                                                         groupV2Params: groupV2Params)
+        let presentationData = try self.presentationData(
+            profileKeyCredential: profileKeyCredential,
+            groupV2Params: groupV2Params
+        )
         builder.setPresentation(presentationData)
         return try builder.build()
     }
 
-    public class func buildBannedMemberProto(uuid: UUID, groupV2Params: GroupV2Params) throws -> GroupsProtoBannedMember {
+    public class func buildBannedMemberProto(aci: Aci, groupV2Params: GroupV2Params) throws -> GroupsProtoBannedMember {
         var builder = GroupsProtoBannedMember.builder()
 
-        let userId = try groupV2Params.userId(forUuid: uuid)
+        let userId = try groupV2Params.userId(for: aci)
         builder.setUserID(userId)
 
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
-    public class func presentationData(profileKeyCredential: ExpiringProfileKeyCredential,
-                                       groupV2Params: GroupV2Params) throws -> Data {
-
+    public class func presentationData(
+        profileKeyCredential: ExpiringProfileKeyCredential,
+        groupV2Params: GroupV2Params
+    ) throws -> Data {
         let serverPublicParams = try self.serverPublicParams()
         let profileOperations = ClientZkProfileOperations(serverPublicParams: serverPublicParams)
-        let presentation = try profileOperations.createProfileKeyCredentialPresentation(groupSecretParams: groupV2Params.groupSecretParams,
-                                                                                        profileKeyCredential: profileKeyCredential)
+        let presentation = try profileOperations.createProfileKeyCredentialPresentation(
+            groupSecretParams: groupV2Params.groupSecretParams,
+            profileKeyCredential: profileKeyCredential
+        )
         return presentation.serialize().asData
     }
 
@@ -91,8 +101,6 @@ public class GroupsV2Protos {
         profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap,
         localAci: Aci
     ) throws -> GroupsProtoGroup {
-        let localUuid = localAci.temporary_rawUUID
-
         // Collect credential for self.
         guard let localProfileKeyCredential = profileKeyCredentialMap[localAci] else {
             throw OWSAssertionError("Missing localProfileKeyCredential.")
@@ -125,11 +133,10 @@ public class GroupsV2Protos {
         }
 
         let groupAccess = groupModel.access
-        groupBuilder.setAccessControl(try buildAccessProto(groupAccess: groupAccess))
+        groupBuilder.setAccessControl(buildAccessProto(groupAccess: groupAccess))
 
-        if let inviteLinkPassword = groupModel.inviteLinkPassword,
-            !inviteLinkPassword.isEmpty {
-                groupBuilder.setInviteLinkPassword(inviteLinkPassword)
+        if let inviteLinkPassword = groupModel.inviteLinkPassword, !inviteLinkPassword.isEmpty {
+            groupBuilder.setInviteLinkPassword(inviteLinkPassword)
         }
 
         // * You will be member 0 and the only admin.
@@ -137,43 +144,48 @@ public class GroupsV2Protos {
         //
         // Add local user first to ensure that they are user 0.
         let groupMembership = groupModel.groupMembership
-        assert(groupMembership.isFullMemberAndAdministrator(localUuid))
-        groupBuilder.addMembers(try buildMemberProto(profileKeyCredential: localProfileKeyCredential,
-                                                     role: .administrator,
-                                                     groupV2Params: groupV2Params))
+        assert(groupMembership.isFullMemberAndAdministrator(localAci))
+        groupBuilder.addMembers(try buildMemberProto(
+            profileKeyCredential: localProfileKeyCredential,
+            role: .administrator,
+            groupV2Params: groupV2Params
+        ))
         for (aci, profileKeyCredential) in profileKeyCredentialMap {
             guard aci != localAci else {
                 continue
             }
-            let isInvited = groupMembership.isInvitedMember(aci.temporary_rawUUID)
+            let isInvited = groupMembership.isInvitedMember(aci)
             guard !isInvited else {
                 continue
             }
-            let isAdministrator = groupMembership.isFullMemberAndAdministrator(aci.temporary_rawUUID)
+            let isAdministrator = groupMembership.isFullMemberAndAdministrator(aci)
             let role: GroupsProtoMemberRole = isAdministrator ? .administrator : .`default`
-            groupBuilder.addMembers(try buildMemberProto(profileKeyCredential: profileKeyCredential,
-                                                         role: role,
-                                                         groupV2Params: groupV2Params))
+            groupBuilder.addMembers(try buildMemberProto(
+                profileKeyCredential: profileKeyCredential,
+                role: role,
+                groupV2Params: groupV2Params
+            ))
         }
         for address in groupMembership.invitedMembers {
-            guard let uuid = address.uuid else {
+            guard let serviceId = address.serviceId else {
                 throw OWSAssertionError("Missing uuid.")
             }
-            guard uuid != localUuid else {
+            guard serviceId != localAci else {
                 continue
             }
-            let isAdministrator = groupMembership.isFullOrInvitedAdministrator(uuid)
+            let isAdministrator = groupMembership.isFullOrInvitedAdministrator(serviceId)
             let role: GroupsProtoMemberRole = isAdministrator ? .administrator : .`default`
-            groupBuilder.addPendingMembers(try buildPendingMemberProto(uuid: uuid,
-                                                                       role: role,
-                                                                       localUuid: localUuid,
-                                                                       groupV2Params: groupV2Params))
+            groupBuilder.addPendingMembers(try buildPendingMemberProto(
+                serviceId: serviceId,
+                role: role,
+                groupV2Params: groupV2Params
+            ))
         }
 
-        for (uuid, _) in groupMembership.bannedMembers {
+        for (aci, _) in groupMembership.bannedMembers {
             owsFailDebug("There should never be a banned member in a freshly created group!")
 
-            groupBuilder.addBannedMembers(try buildBannedMemberProto(uuid: uuid, groupV2Params: groupV2Params))
+            groupBuilder.addBannedMembers(try buildBannedMemberProto(aci: aci, groupV2Params: groupV2Params))
         }
 
         let encryptedTimerData = try groupV2Params.encryptDisappearingMessagesTimer(disappearingMessageToken)
@@ -183,7 +195,7 @@ public class GroupsV2Protos {
 
         groupBuilder.setAnnouncementsOnly(groupModel.isAnnouncementsOnly)
 
-        return try groupBuilder.build()
+        return groupBuilder.buildInfallibly()
     }
 
     public class func validateInviteLinkState(inviteLinkPassword: Data?, groupAccess: GroupAccess) {
@@ -198,12 +210,12 @@ public class GroupsV2Protos {
         }
     }
 
-    public class func buildAccessProto(groupAccess: GroupAccess) throws -> GroupsProtoAccessControl {
+    public class func buildAccessProto(groupAccess: GroupAccess) -> GroupsProtoAccessControl {
         var builder = GroupsProtoAccessControl.builder()
         builder.setAttributes(groupAccess.attributes.protoAccess)
         builder.setMembers(groupAccess.members.protoAccess)
         builder.setAddFromInviteLink(groupAccess.addFromInviteLink.protoAccess)
-        return try builder.build()
+        return builder.buildInfallibly()
     }
 
     public class func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data {
@@ -294,7 +306,7 @@ public class GroupsV2Protos {
 
         // This client can learn of profile keys from parsing group state protos.
         // After parsing, we should fill in profileKeys in the profile manager.
-        var profileKeys = [UUID: Data]()
+        var profileKeys = [Aci: Data]()
 
         var groupMembershipBuilder = GroupMembership.Builder()
 
@@ -310,22 +322,20 @@ public class GroupsV2Protos {
 
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
-            let uuid = try groupV2Params.uuid(forUserId: userID)
+            let aci = try groupV2Params.aci(for: userID)
 
-            let address = SignalServiceAddress(uuid: uuid)
-            guard !groupMembershipBuilder.hasMemberOfAnyKind(address) else {
-                owsFailDebug("Duplicate user in group: \(address)")
+            guard !groupMembershipBuilder.hasMemberOfAnyKind(SignalServiceAddress(aci)) else {
+                owsFailDebug("Duplicate user in group: \(aci)")
                 continue
             }
-            groupMembershipBuilder.addFullMember(address, role: role, didJoinFromInviteLink: false)
+            groupMembershipBuilder.addFullMember(aci, role: role, didJoinFromInviteLink: false)
 
             guard let profileKeyCiphertextData = memberProto.profileKey else {
                 throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
             }
             let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
-            profileKeys[uuid] = profileKey
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext, aci: aci)
+            profileKeys[aci] = profileKey
         }
 
         for pendingMemberProto in groupProto.pendingMembers {
@@ -346,14 +356,14 @@ public class GroupsV2Protos {
 
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
-            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserId)
+            let addedByAci = try groupV2Params.aci(for: addedByUserId)
 
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This one cannot.  Therefore we need to
             // be robust to invalid ciphertexts.
-            let uuid: UUID
+            let serviceId: ServiceId
             do {
-                uuid = try groupV2Params.uuid(forUserId: userId)
+                serviceId = try groupV2Params.serviceId(for: userId)
             } catch {
                 guard !groupMembershipBuilder.hasInvalidInvite(userId: userId) else {
                     owsFailDebug("Duplicate invalid invite in group: \(userId)")
@@ -363,12 +373,11 @@ public class GroupsV2Protos {
                 owsFailDebug("Error parsing uuid: \(error)")
                 continue
             }
-            let address = SignalServiceAddress(uuid: uuid)
-            guard !groupMembershipBuilder.hasMemberOfAnyKind(address) else {
-                owsFailDebug("Duplicate user in group: \(address)")
+            guard !groupMembershipBuilder.hasMemberOfAnyKind(SignalServiceAddress(serviceId)) else {
+                owsFailDebug("Duplicate user in group: \(serviceId)")
                 continue
             }
-            groupMembershipBuilder.addInvitedMember(address, role: role, addedByUuid: addedByUuid)
+            groupMembershipBuilder.addInvitedMember(serviceId, role: role, addedByAci: addedByAci)
         }
 
         for requestingMemberProto in groupProto.requestingMembers {
@@ -378,22 +387,20 @@ public class GroupsV2Protos {
 
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
-            let uuid = try groupV2Params.uuid(forUserId: userId)
+            let aci = try groupV2Params.aci(for: userId)
 
-            let address = SignalServiceAddress(uuid: uuid)
-            guard !groupMembershipBuilder.hasMemberOfAnyKind(address) else {
-                owsFailDebug("Duplicate user in group: \(address)")
+            guard !groupMembershipBuilder.hasMemberOfAnyKind(SignalServiceAddress(aci)) else {
+                owsFailDebug("Duplicate user in group: \(aci)")
                 continue
             }
-            groupMembershipBuilder.addRequestingMember(address)
+            groupMembershipBuilder.addRequestingMember(aci)
 
             guard let profileKeyCiphertextData = requestingMemberProto.profileKey else {
                 throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
             }
             let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
-            profileKeys[uuid] = profileKey
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext, aci: aci)
+            profileKeys[aci] = profileKey
         }
 
         for bannedMemberProto in groupProto.bannedMembers {
@@ -402,18 +409,16 @@ public class GroupsV2Protos {
             }
 
             let bannedAtTimestamp = bannedMemberProto.bannedAtTimestamp
-            let uuid = try groupV2Params.uuid(forUserId: userId)
+            let aci = try groupV2Params.aci(for: userId)
 
-            groupMembershipBuilder.addBannedMember(uuid, bannedAtTimestamp: bannedAtTimestamp)
+            groupMembershipBuilder.addBannedMember(aci, bannedAtTimestamp: bannedAtTimestamp)
         }
 
         let groupMembership = groupMembershipBuilder.build()
 
         let inviteLinkPassword = groupProto.inviteLinkPassword
 
-        let isAnnouncementsOnly = (groupProto.hasAnnouncementsOnly
-                                    ? groupProto.announcementsOnly
-                                    : false)
+        let isAnnouncementsOnly = (groupProto.hasAnnouncementsOnly ? groupProto.announcementsOnly : false)
 
         guard let accessControl = groupProto.accessControl else {
             throw OWSAssertionError("Missing accessControl.")

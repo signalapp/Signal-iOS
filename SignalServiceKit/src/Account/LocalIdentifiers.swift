@@ -12,6 +12,12 @@ public class LocalIdentifiersObjC: NSObject {
     public init(_ wrappedValue: LocalIdentifiers) {
         self.wrappedValue = wrappedValue
     }
+
+    @objc
+    public var aci: AciObjC { AciObjC(wrappedValue.aci) }
+
+    @objc
+    public var aciAddress: SignalServiceAddress { wrappedValue.aciAddress }
 }
 
 public class LocalIdentifiers {

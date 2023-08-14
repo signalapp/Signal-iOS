@@ -128,16 +128,17 @@ NS_ASSUME_NONNULL_BEGIN
                                   storyReactionEmoji:nil
                                            giftBadge:transcript.giftBadge] buildWithTransaction:transaction];
 
-    SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
-    if (localAddress == nil) {
-        OWSFailDebug(@"Missing localAddress.");
+    LocalIdentifiersObjC *_Nullable localIdentifiers = [self.tsAccountManager localIdentifiersObjCWithTx:transaction];
+    if (localIdentifiers == nil) {
+        OWSFailDebug(@"Missing localIdentifiers.");
         return;
     }
 
-    if (!transcript.thread.isGroupThread) {
-        [GroupManager remoteUpdateDisappearingMessagesWithContactThread:transcript.thread
+    if ([transcript.thread isKindOfClass:[TSContactThread class]]) {
+        [GroupManager remoteUpdateDisappearingMessagesWithContactThread:(TSContactThread *)transcript.thread
                                                disappearingMessageToken:transcript.disappearingMessageToken
-                                               groupUpdateSourceAddress:localAddress
+                                                           changeAuthor:localIdentifiers.aci
+                                                       localIdentifiers:localIdentifiers
                                                             transaction:transaction];
     }
 
@@ -166,7 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Check for any placeholders inserted because of a previously undecryptable message
     // The sender may have resent the message. If so, we should swap it in place of the placeholder
-    [outgoingMessage insertOrReplacePlaceholderFrom:localAddress transaction:transaction];
+    [outgoingMessage insertOrReplacePlaceholderFrom:localIdentifiers.aciAddress transaction:transaction];
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos

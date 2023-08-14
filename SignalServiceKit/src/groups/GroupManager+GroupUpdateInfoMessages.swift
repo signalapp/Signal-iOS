@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 extension GroupManager {
     /// Inserts an info message into the given thread describing how the thread
@@ -18,17 +19,11 @@ extension GroupManager {
         newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken,
-        newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId],
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        newlyLearnedPniToAciAssociations: [Pni: Aci],
+        groupUpdateSource: ServiceId?,
+        localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard
-            let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction)
-        else {
-            owsFailDebug("Missing local identifiers, skipping info message!")
-            return
-        }
-
         DependenciesBridge.shared.groupUpdateInfoMessageInserter.insertGroupUpdateInfoMessage(
             localIdentifiers: localIdentifiers,
             groupThread: groupThread,
@@ -37,7 +32,7 @@ extension GroupManager {
             oldDisappearingMessageToken: oldDisappearingMessageToken,
             newDisappearingMessageToken: newDisappearingMessageToken,
             newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            groupUpdateSource: groupUpdateSource,
             transaction: transaction.asV2Write
         )
     }

@@ -4,6 +4,7 @@
 //
 
 import ContactsUI
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
@@ -584,7 +585,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         showLeaveGroupConfirmAlert()
     }
 
-    func showLeaveGroupConfirmAlert(replacementAdminUuid: UUID? = nil) {
+    func showLeaveGroupConfirmAlert(replacementAdminAci: Aci? = nil) {
         let alert = ActionSheetController(title: OWSLocalizedString("CONFIRM_LEAVE_GROUP_TITLE",
                                                                    comment: "Alert title"),
                                           message: OWSLocalizedString("CONFIRM_LEAVE_GROUP_DESCRIPTION",
@@ -594,7 +595,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                                                                      comment: "Confirmation button within contextual alert"),
                                             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "leave_group_confirm"),
                                             style: .destructive) { _ in
-                                                self.leaveGroup(replacementAdminUuid: replacementAdminUuid)
+                                                self.leaveGroup(replacementAdminAci: replacementAdminAci)
         }
         alert.addAction(leaveAction)
         alert.addAction(OWSActionSheets.cancelAction)
@@ -648,12 +649,14 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
             return true
         }
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
             owsFailDebug("missing local address")
             return true
         }
-        return GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(localAddress: localAddress,
-                                                                          groupMembership: groupModelV2.groupMembership)
+        return GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(
+            localAci: localAci,
+            groupMembership: groupModelV2.groupMembership
+        )
     }
 
     private var replacementAdminCandidates: Set<SignalServiceAddress> {
@@ -673,7 +676,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         return candidates
     }
 
-    private func leaveGroup(replacementAdminUuid: UUID? = nil) {
+    private func leaveGroup(replacementAdminAci: Aci? = nil) {
         guard let groupThread = thread as? TSGroupThread else {
             owsFailDebug("Invalid thread.")
             return
@@ -690,11 +693,12 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                 return
         }
         let conversationViewController = viewControllers[index - 1]
-        GroupManager.leaveGroupOrDeclineInviteAsyncWithUI(groupThread: groupThread,
-                                                          fromViewController: self,
-                                                          replacementAdminUuid: replacementAdminUuid) {
-                                                            self.navigationController?.popToViewController(conversationViewController,
-                                                                                                           animated: true)
+        GroupManager.leaveGroupOrDeclineInviteAsyncWithUI(
+            groupThread: groupThread,
+            fromViewController: self,
+            replacementAdminAci: replacementAdminAci
+        ) {
+            self.navigationController?.popToViewController(conversationViewController, animated: true)
         }
     }
 
@@ -1089,8 +1093,8 @@ extension ConversationSettingsViewController: GroupViewHelperDelegate {
 // MARK: -
 
 extension ConversationSettingsViewController: ReplaceAdminViewControllerDelegate {
-    func replaceAdmin(uuid: UUID) {
-        showLeaveGroupConfirmAlert(replacementAdminUuid: uuid)
+    func replaceAdmin(newAdminAci: Aci) {
+        showLeaveGroupConfirmAlert(replacementAdminAci: newAdminAci)
     }
 }
 

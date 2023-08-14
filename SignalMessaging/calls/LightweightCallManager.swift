@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalRingRTC
 
@@ -199,16 +200,16 @@ extension LightweightCallManager {
         let groupV2Params = try groupModel.groupV2Params()
 
         return thread.groupMembership.fullMembers.compactMap {
-            guard let uuid = $0.uuid else {
+            guard let aci = $0.serviceId as? Aci else {
                 owsFailDebug("Skipping group member, missing uuid")
                 return nil
             }
-            guard let uuidCipherText = try? groupV2Params.userId(forUuid: uuid) else {
+            guard let aciCiphertext = try? groupV2Params.userId(for: aci) else {
                 owsFailDebug("Skipping group member, missing uuidCipherText")
                 return nil
             }
 
-            return GroupMemberInfo(userId: uuid, userIdCipherText: uuidCipherText)
+            return GroupMemberInfo(userId: aci.rawUUID, userIdCipherText: aciCiphertext)
         }
     }
 }

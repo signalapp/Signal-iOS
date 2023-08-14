@@ -12,25 +12,25 @@ public struct ChangedGroupModel {
     public let newGroupModel: TSGroupModelV2
     // newDisappearingMessageToken is only set of DM state changed.
     public let newDisappearingMessageToken: DisappearingMessageToken?
-    public let changeAuthorUuid: UUID
-    public let profileKeys: [UUID: Data]
+    public let changeAuthor: ServiceId
+    public let profileKeys: [Aci: Data]
 
     /// Associations between a PNI and ACI that we learned as a part of this
     /// group change.
-    public let newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId]
+    public let newlyLearnedPniToAciAssociations: [Pni: Aci]
 
     public init(
         oldGroupModel: TSGroupModelV2,
         newGroupModel: TSGroupModelV2,
         newDisappearingMessageToken: DisappearingMessageToken?,
-        changeAuthorUuid: UUID,
-        profileKeys: [UUID: Data],
-        newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId]
+        changeAuthor: ServiceId,
+        profileKeys: [Aci: Data],
+        newlyLearnedPniToAciAssociations: [Pni: Aci]
     ) {
         self.oldGroupModel = oldGroupModel
         self.newGroupModel = newGroupModel
         self.newDisappearingMessageToken = newDisappearingMessageToken
-        self.changeAuthorUuid = changeAuthorUuid
+        self.changeAuthor = changeAuthor
         self.profileKeys = profileKeys
         self.newlyLearnedPniToAciAssociations = newlyLearnedPniToAciAssociations
     }
@@ -38,7 +38,7 @@ public struct ChangedGroupModel {
 
 // MARK: -
 
-public class GroupsV2IncomingChanges: Dependencies {
+public class GroupsV2IncomingChanges {
 
     // GroupsV2IncomingChanges has one responsibility: applying incremental
     // changes to group models. It should exactly mimic the behavior
@@ -56,15 +56,15 @@ public class GroupsV2IncomingChanges: Dependencies {
     // This method applies a single set of "change actions" to a group
     // model, thereby deriving a new group model whose revision is
     // exactly 1 higher.
-    class func applyChangesToGroupModel(groupThread: TSGroupThread,
-                                        changeActionsProto: GroupsProtoGroupChangeActions,
-                                        downloadedAvatars: GroupV2DownloadedAvatars,
-                                        groupModelOptions: TSGroupModelOptions) throws -> ChangedGroupModel {
+    class func applyChangesToGroupModel(
+        groupThread: TSGroupThread,
+        localIdentifiers: LocalIdentifiers,
+        changeActionsProto: GroupsProtoGroupChangeActions,
+        downloadedAvatars: GroupV2DownloadedAvatars,
+        groupModelOptions: TSGroupModelOptions
+    ) throws -> ChangedGroupModel {
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
-        }
-        guard let localUuid = tsAccountManager.localUuid else {
-            throw OWSAssertionError("Missing localUuid.")
         }
         guard !oldGroupModel.isPlaceholderModel else {
             throw GroupsV2Error.cantApplyChangesToPlaceholder
@@ -77,7 +77,7 @@ public class GroupsV2IncomingChanges: Dependencies {
         }
         // Some userIds/uuidCiphertexts can be validated by
         // the service. This is one.
-        let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
+        let changeAuthor = try groupV2Params.serviceId(for: changeAuthorUuidData)
 
         guard changeActionsProto.hasRevision else {
             throw OWSAssertionError("Missing revision.")
@@ -103,12 +103,12 @@ public class GroupsV2IncomingChanges: Dependencies {
         var newAttributesAccess = oldGroupAccess.attributes
         var newAddFromInviteLinkAccess = oldGroupAccess.addFromInviteLink
 
-        if !oldGroupMembership.isMemberOfAnyKind(changeAuthorUuid) {
+        if !oldGroupMembership.isMemberOfAnyKind(changeAuthor) {
             // Change author may have just added themself via a group invite link.
-            Logger.warn("changeAuthorUuid not a member of the group.")
+            Logger.warn("changeAuthor not a member of the group.")
         }
-        let isChangeAuthorMember = oldGroupMembership.isFullMember(changeAuthorUuid)
-        let isChangeAuthorAdmin = oldGroupMembership.isFullMemberAndAdministrator(changeAuthorUuid)
+        let isChangeAuthorMember = oldGroupMembership.isFullMember(changeAuthor)
+        let isChangeAuthorAdmin = oldGroupMembership.isFullMemberAndAdministrator(changeAuthor)
         let canAddMembers: Bool
         switch oldGroupAccess.members {
         case .unknown:
@@ -145,11 +145,11 @@ public class GroupsV2IncomingChanges: Dependencies {
 
         // This client can learn of profile keys from parsing group state protos.
         // After parsing, we should fill in profileKeys in the profile manager.
-        var profileKeys = [UUID: Data]()
+        var profileKeys = [Aci: Data]()
 
         // We may learn that a PNI and ACI are associated while processing group
         // change protos.
-        var newlyLearnedPniToAciAssociations = [UntypedServiceId: UntypedServiceId]()
+        var newlyLearnedPniToAciAssociations = [Pni: Aci]()
 
         for action in changeActionsProto.addMembers {
             let didJoinFromInviteLink = (action.hasJoinFromInviteLink && action.joinFromInviteLink)
@@ -176,17 +176,16 @@ public class GroupsV2IncomingChanges: Dependencies {
 
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
-            let uuid = try groupV2Params.uuid(forUserId: userId)
+            let aci = try groupV2Params.aci(for: userId)
 
-            guard !oldGroupMembership.isFullMember(uuid) else {
+            guard !oldGroupMembership.isFullMember(aci) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
-            groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addFullMember(uuid, role: role, didJoinFromInviteLink: didJoinFromInviteLink)
+            groupMembershipBuilder.remove(aci)
+            groupMembershipBuilder.addFullMember(aci, role: role, didJoinFromInviteLink: didJoinFromInviteLink)
 
-            if changeAuthorUuid == localUuid,
-               uuid == localUuid {
+            if changeAuthor == localIdentifiers.aci, aci == localIdentifiers.aci {
                 didJustAddSelfViaGroupLink = true
             }
 
@@ -194,10 +193,9 @@ public class GroupsV2IncomingChanges: Dependencies {
                 throw OWSAssertionError("Missing profileKeyCiphertext.")
             }
             let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext, aci: aci)
 
-            profileKeys[uuid] = profileKey
+            profileKeys[aci] = profileKey
         }
 
         for action in changeActionsProto.deleteMembers {
@@ -206,18 +204,18 @@ public class GroupsV2IncomingChanges: Dependencies {
             }
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
-            let uuid = try groupV2Params.uuid(forUserId: userId)
+            let aci = try groupV2Params.aci(for: userId)
 
-            if !canRemoveMembers && uuid != changeAuthorUuid {
+            if !canRemoveMembers && aci != changeAuthor {
                 // Admin can kick any member.
                 // Any member can leave the group.
                 owsFailDebug("Cannot kick member.")
             }
-            if !oldGroupMembership.isFullMember(uuid) {
+            if !oldGroupMembership.isFullMember(aci) {
                 owsFailDebug("Invalid membership.")
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
-            groupMembershipBuilder.remove(uuid)
+            groupMembershipBuilder.remove(aci)
         }
 
         for action in changeActionsProto.modifyMemberRoles {
@@ -241,16 +239,16 @@ public class GroupsV2IncomingChanges: Dependencies {
 
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
-            let uuid = try groupV2Params.uuid(forUserId: userId)
+            let aci = try groupV2Params.aci(for: userId)
 
-            guard oldGroupMembership.isFullMember(uuid) else {
+            guard oldGroupMembership.isFullMember(aci) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            if oldGroupMembership.role(for: uuid) == role {
+            if oldGroupMembership.role(for: aci) == role {
                 owsFailDebug("Member already has that role.")
             }
-            groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addFullMember(uuid, role: role)
+            groupMembershipBuilder.remove(aci)
+            groupMembershipBuilder.addFullMember(aci, role: role)
         }
 
         for action in changeActionsProto.modifyMemberProfileKeys {
@@ -292,32 +290,32 @@ public class GroupsV2IncomingChanges: Dependencies {
 
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
-            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserId)
+            let addedByAci = try groupV2Params.aci(for: addedByUserId)
 
             if role == .administrator && !isChangeAuthorAdmin {
                 owsFailDebug("Only admins can add admins.")
             }
-            if addedByUuid != changeAuthorUuid {
-                owsFailDebug("Unexpected addedByUuid.")
+            if addedByAci != changeAuthor {
+                owsFailDebug("Unexpected addedByAci.")
             }
 
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This one cannot.  Therefore we need to
             // be robust to invalid ciphertexts.
-            let uuid: UUID
+            let serviceId: ServiceId
             do {
-                uuid = try groupV2Params.uuid(forUserId: userId)
+                serviceId = try groupV2Params.serviceId(for: userId)
             } catch {
                 groupMembershipBuilder.addInvalidInvite(userId: userId, addedByUserId: addedByUserId)
                 owsFailDebug("Error parsing uuid: \(error)")
                 continue
             }
-            guard !oldGroupMembership.isMemberOfAnyKind(uuid) else {
+            guard !oldGroupMembership.isMemberOfAnyKind(serviceId) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
-            groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addInvitedMember(uuid, role: role, addedByUuid: addedByUuid)
+            groupMembershipBuilder.remove(serviceId)
+            groupMembershipBuilder.addInvitedMember(serviceId, role: role, addedByAci: addedByAci)
         }
 
         for action in changeActionsProto.deletePendingMembers {
@@ -328,20 +326,20 @@ public class GroupsV2IncomingChanges: Dependencies {
             // DeletePendingMemberAction is used to remove invalid invites,
             // so uuid ciphertexts might be invalid.
             do {
-                let uuid = try groupV2Params.uuid(forUserId: userId)
+                let serviceId = try groupV2Params.serviceId(for: userId)
 
-                if !canRemoveMembers && uuid != changeAuthorUuid {
+                if !canRemoveMembers && serviceId != changeAuthor {
                     // Admin can revoke any invitation.
                     // The invitee can decline the invitation.
                     owsFailDebug("Cannot revoke invitation.")
                 }
 
                 guard oldGroupMembership.hasInvalidInvite(forUserId: userId) ||
-                        oldGroupMembership.isInvitedMember(uuid) else {
+                        oldGroupMembership.isInvitedMember(serviceId) else {
                     throw OWSAssertionError("Invalid membership.")
                 }
                 groupMembershipBuilder.removeInvalidInvite(userId: userId)
-                groupMembershipBuilder.remove(uuid)
+                groupMembershipBuilder.remove(serviceId)
             } catch {
                 if !canRemoveMembers {
                     // Admin can revoke any invitation.
@@ -375,7 +373,7 @@ public class GroupsV2IncomingChanges: Dependencies {
             groupMembershipBuilder.remove(aci)
             groupMembershipBuilder.addFullMember(aci, role: role)
 
-            if aci != changeAuthorUuid {
+            if aci != changeAuthor {
                 // Only the invitee can accept an invitation.
                 owsFailDebug("Cannot accept the invitation.")
             }
@@ -411,7 +409,7 @@ public class GroupsV2IncomingChanges: Dependencies {
             profileKeys[aci] = profileKey
 
             // ...and track the PNI -> ACI promotion.
-            newlyLearnedPniToAciAssociations[UntypedServiceId(pni)] = UntypedServiceId(aci)
+            newlyLearnedPniToAciAssociations[pni] = aci
         }
 
         for action in changeActionsProto.addRequestingMembers {
@@ -423,23 +421,22 @@ public class GroupsV2IncomingChanges: Dependencies {
             guard let userId = requestingMember.userID else {
                 throw OWSAssertionError("Missing userID.")
             }
-            let uuid = try groupV2Params.uuid(forUserId: userId)
+            let aci = try groupV2Params.aci(for: userId)
 
             guard let profileKeyCiphertextData = requestingMember.profileKey else {
                 throw OWSAssertionError("Missing profileKeyCiphertext.")
             }
             let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext, aci: aci)
 
-            guard !oldGroupMembership.isMemberOfAnyKind(uuid) else {
+            guard !oldGroupMembership.isMemberOfAnyKind(aci) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
-            groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addRequestingMember(uuid)
+            groupMembershipBuilder.remove(aci)
+            groupMembershipBuilder.addRequestingMember(aci)
 
-            profileKeys[uuid] = profileKey
+            profileKeys[aci] = profileKey
         }
 
         for action in changeActionsProto.deleteRequestingMembers {
@@ -449,18 +446,18 @@ public class GroupsV2IncomingChanges: Dependencies {
             }
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
-            let uuid = try groupV2Params.uuid(forUserId: userId)
+            let aci = try groupV2Params.aci(for: userId)
 
-            if !canRemoveMembers && uuid != changeAuthorUuid {
+            if !canRemoveMembers && aci != changeAuthor {
                 owsFailDebug("Cannot remove members.")
             }
 
-            guard oldGroupMembership.isMemberOfAnyKind(uuid) else {
+            guard oldGroupMembership.isMemberOfAnyKind(aci) else {
                 throw OWSAssertionError("Invalid membership.")
             }
 
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
-            groupMembershipBuilder.remove(uuid)
+            groupMembershipBuilder.remove(aci)
         }
 
         for action in changeActionsProto.promoteRequestingMembers {
@@ -469,11 +466,11 @@ public class GroupsV2IncomingChanges: Dependencies {
             }
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
-            let uuid = try groupV2Params.uuid(forUserId: userId)
+            let aci = try groupV2Params.aci(for: userId)
 
             if oldGroupModel.isPlaceholderModel {
                 // We can't check permissions using a placeholder.
-            } else if !canAddMembers && uuid != changeAuthorUuid {
+            } else if !canAddMembers && aci != changeAuthor {
                 owsFailDebug("Cannot add members.")
             }
 
@@ -484,12 +481,12 @@ public class GroupsV2IncomingChanges: Dependencies {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
 
-            guard oldGroupMembership.isRequestingMember(uuid) else {
+            guard oldGroupMembership.isRequestingMember(aci) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
-            groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addFullMember(uuid, role: role)
+            groupMembershipBuilder.remove(aci)
+            groupMembershipBuilder.addFullMember(aci, role: role)
         }
 
         for action in changeActionsProto.addBannedMembers {
@@ -500,9 +497,9 @@ public class GroupsV2IncomingChanges: Dependencies {
                 throw OWSAssertionError("Invalid addBannedMember action")
             }
 
-            let uuid = try groupV2Params.uuid(forUserId: userId)
+            let aci = try groupV2Params.aci(for: userId)
 
-            groupMembershipBuilder.addBannedMember(uuid, bannedAtTimestamp: bannedAtTimestamp)
+            groupMembershipBuilder.addBannedMember(aci, bannedAtTimestamp: bannedAtTimestamp)
         }
 
         for action in changeActionsProto.deleteBannedMembers {
@@ -510,9 +507,9 @@ public class GroupsV2IncomingChanges: Dependencies {
                 throw OWSAssertionError("Invalid deleteBannedMember action")
             }
 
-            let uuid = try groupV2Params.uuid(forUserId: userId)
+            let aci = try groupV2Params.aci(for: userId)
 
-            groupMembershipBuilder.removeBannedMember(uuid)
+            groupMembershipBuilder.removeBannedMember(aci)
         }
 
         if let action = changeActionsProto.modifyTitle {
@@ -654,7 +651,7 @@ public class GroupsV2IncomingChanges: Dependencies {
             oldGroupModel: oldGroupModel,
             newGroupModel: newGroupModel,
             newDisappearingMessageToken: newDisappearingMessageToken,
-            changeAuthorUuid: changeAuthorUuid,
+            changeAuthor: changeAuthor,
             profileKeys: profileKeys,
             newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations
         )
@@ -664,20 +661,20 @@ public class GroupsV2IncomingChanges: Dependencies {
 // MARK: - HasAciAndProfileKey
 
 private struct AciProperties {
-    let aci: UUID
+    let aci: Aci
     let aciCiphertext: Data
     let profileKey: Data
 }
 
 private struct PniAndAciProperties {
-    let pni: UUID
+    let pni: Pni
     let pniCiphertext: Data
 
-    let aci: UUID
+    let aci: Aci
     let aciCiphertext: Data
     let profileKey: Data
 
-    init(pni: UUID, pniCiphertext: Data, aciProperties: AciProperties) {
+    init(pni: Pni, pniCiphertext: Data, aciProperties: AciProperties) {
         self.pni = pni
         self.pniCiphertext = pniCiphertext
         self.aci = aciProperties.aci
@@ -706,13 +703,10 @@ private extension HasAciAndProfileKey {
             let aciCiphertext = userID,
             let profileKeyCiphertextData = profileKey
         {
-            let aci = try groupV2Params.uuid(forUserId: aciCiphertext)
+            let aci = try groupV2Params.aci(for: aciCiphertext)
 
             let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
-            let profileKey = try groupV2Params.profileKey(
-                forProfileKeyCiphertext: profileKeyCiphertext,
-                uuid: aci
-            )
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext, aci: aci)
 
             return AciProperties(
                 aci: aci,
@@ -726,13 +720,10 @@ private extension HasAciAndProfileKey {
 
             let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
             let aciCiphertext = try presentation.getUuidCiphertext()
-            let aci = try groupV2Params.uuid(forUuidCiphertext: aciCiphertext)
+            let aci = try groupV2Params.aci(for: aciCiphertext)
 
             let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
-            let profileKey = try groupV2Params.profileKey(
-                forProfileKeyCiphertext: profileKeyCiphertext,
-                uuid: aci
-            )
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext, aci: aci)
 
             return AciProperties(
                 aci: aci,
@@ -753,7 +744,10 @@ private extension HasPniAndAciAndProfileKey {
             throw OWSAssertionError("Malformed proto!")
         }
 
-        let pni = try groupV2Params.uuid(forUserId: pniCiphertext)
+        guard let pni = try groupV2Params.serviceId(for: pniCiphertext) as? Pni else {
+            // PNI TODO: Use a more appropriate error.
+            throw OWSGenericError("Wrong type of ServiceId.")
+        }
 
         return PniAndAciProperties(
             pni: pni,

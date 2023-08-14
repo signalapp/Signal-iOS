@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 
 /// Manages state for banners that might be hidden.
@@ -106,7 +107,11 @@ private class BannerHiding {
 /// Manages state for the "pending member requests" banner.
 private class PendingMemberRequestsBannerHiding: BannerHiding {
     private struct RequestingMembersState: Codable {
-        let requestingMemberUuids: Set<UUID>
+        let requestingMemberAcis: Set<AciUuid>
+
+        enum CodingKeys: String, CodingKey {
+            case requestingMemberAcis = "requestingMemberUuids"
+        }
     }
 
     private static func requestingMembersStateKey(forThreadId threadId: String) -> String {
@@ -114,7 +119,7 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
     }
 
     func isHidden(
-        currentRequestingMemberUuids: [UUID],
+        currentRequestingMemberAcis: [Aci],
         threadUniqueId threadId: String,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
@@ -125,18 +130,16 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
         // We may want to show the banner, even if it is hidden, if we have
         // pending member requests we didn't know about last time we snoozed.
 
-        let persistedMemberRequestUuids: Set<UUID> = getRequestingMembersState(
+        let persistedMemberRequestAcis: [Aci] = getRequestingMembersState(
             forThreadId: threadId,
             transaction: transaction
-        )?.requestingMemberUuids ?? []
+        )?.requestingMemberAcis.map({ $0.wrappedValue }) ?? []
 
-        return Set(currentRequestingMemberUuids)
-            .subtracting(persistedMemberRequestUuids)
-            .isEmpty
+        return Set(currentRequestingMemberAcis).subtracting(persistedMemberRequestAcis).isEmpty
     }
 
     func hide(
-        currentPendingMemberRequestUuids: [UUID],
+        currentPendingMemberRequestAcis: [Aci],
         threadUniqueId threadId: String,
         transaction: SDSAnyWriteTransaction
     ) {
@@ -144,7 +147,7 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
 
         do {
             let newPendingMemberRequestState = RequestingMembersState(
-                requestingMemberUuids: Set(currentPendingMemberRequestUuids)
+                requestingMemberAcis: Set(currentPendingMemberRequestAcis.map { $0.codableUuid })
             )
 
             try bannerHidingStore.setCodable(
@@ -193,10 +196,10 @@ public extension CVViewState {
         currentPendingMembers: some Sequence<SignalServiceAddress>,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
-        let currentPendingMemberUuids = currentPendingMembers.compactMap { $0.uuid }
+        let currentPendingMemberAcis = currentPendingMembers.compactMap { $0.serviceId as? Aci }
 
         return !Self.isPendingMemberRequestsBannerHiding.isHidden(
-            currentRequestingMemberUuids: currentPendingMemberUuids,
+            currentRequestingMemberAcis: currentPendingMemberAcis,
             threadUniqueId: threadUniqueId,
             transaction: transaction
         )
@@ -206,10 +209,10 @@ public extension CVViewState {
         currentPendingMembers: some Sequence<SignalServiceAddress>,
         transaction: SDSAnyWriteTransaction
     ) {
-        let currentPendingMemberUuids = currentPendingMembers.compactMap { $0.uuid }
+        let currentPendingMemberAcis = currentPendingMembers.compactMap { $0.serviceId as? Aci }
 
         Self.isPendingMemberRequestsBannerHiding.hide(
-            currentPendingMemberRequestUuids: currentPendingMemberUuids,
+            currentPendingMemberRequestAcis: currentPendingMemberAcis,
             threadUniqueId: threadUniqueId,
             transaction: transaction
         )

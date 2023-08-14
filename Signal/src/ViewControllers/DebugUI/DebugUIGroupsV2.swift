@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalMessaging
 import SignalUI
@@ -51,15 +52,14 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
     // MARK: -
 
     private func kickOtherGroupMembers(groupModel: TSGroupModelV2) {
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAci = tsAccountManager.localIdentifiers?.aci else {
             return owsFailDebug("Missing localAddress.")
         }
 
-        let uuidsToKick = groupModel.groupMembership.allMembersOfAnyKind.filter { address in
-            address != localAddress
-        }.compactMap({ $0.uuid })
+        let serviceIdsToKick = groupModel.groupMembership.allMembersOfAnyKind
+            .compactMap({ $0.serviceId }).filter({ $0 != localAci })
 
-        GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModel, uuids: uuidsToKick)
+        GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModel, serviceIds: serviceIdsToKick)
             .done { _ in
                 Logger.info("Success.")
             }.catch { error in
@@ -69,8 +69,9 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
 
     private func sendInvalidGroupMessages(contactThread: TSContactThread) {
         let otherUserAddress = contactThread.contactAddress
-        guard let otherUserUuid = otherUserAddress.uuid else {
-            owsFailDebug("Recipient is missing UUID.")
+        // PNI TODO: Support PNIs.
+        guard let otherUserAci = otherUserAddress.serviceId as? Aci else {
+            owsFailDebug("Recipient is missing ACI.")
             return
         }
 
@@ -120,9 +121,11 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                 }
                 // Last admin (local user) can't leave group, so first
                 // make the "other user" an admin.
-                return GroupManager.changeMemberRoleV2(groupModel: groupModel,
-                                                       uuid: otherUserUuid,
-                                                       role: .administrator)
+                return GroupManager.changeMemberRoleV2(
+                    groupModel: groupModel,
+                    aci: otherUserAci,
+                    role: .administrator
+                )
             }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
                 self.databaseStorage.write { transaction in
                     GroupManager.localLeaveGroupOrDeclineInvite(

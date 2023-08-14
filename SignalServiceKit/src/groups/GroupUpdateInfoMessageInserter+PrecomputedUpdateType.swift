@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 extension GroupUpdateInfoMessageInserterImpl {
     /// Most group updates are computed via presentation-time "diffing" of group
     /// model objects stored wholesale on an info message. This type represents
@@ -17,11 +19,11 @@ extension GroupUpdateInfoMessageInserterImpl {
     /// precomputed, obviating the need for presentation-time diffing at all
     /// (outside legacy data).
     enum PrecomputedUpdateType {
-        case newJoinRequestFromSingleUser(requestingAddress: SignalServiceAddress)
-        case canceledJoinRequestFromSingleUser(cancelingAddress: SignalServiceAddress)
+        case newJoinRequestFromSingleUser(requestingAci: Aci)
+        case canceledJoinRequestFromSingleUser(cancelingAci: Aci)
         case bannedMemberChange
-        case invitedPnisPromotedToFullMemberAcis(promotions: [(pni: UntypedServiceId, aci: UntypedServiceId)])
-        case invitesRemoved(invitees: [UntypedServiceId])
+        case invitedPnisPromotedToFullMemberAcis(promotions: [(pni: Pni, aci: Aci)])
+        case invitesRemoved(invitees: [ServiceId])
 
         /// Computes the matching group update type, if any.
         ///
@@ -31,13 +33,13 @@ extension GroupUpdateInfoMessageInserterImpl {
         static func from(
             oldGroupMembership: GroupMembership,
             newGroupMembership: GroupMembership,
-            newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId]
+            newlyLearnedPniToAciAssociations: [Pni: Aci]
         ) -> Self? {
-            let membersDiff: Set<UUID> = newGroupMembership.allMemberUuidsOfAnyKind
-                .symmetricDifference(oldGroupMembership.allMemberUuidsOfAnyKind)
+            let membersDiff: Set<ServiceId> = newGroupMembership.allMembersOfAnyKindServiceIds
+                .symmetricDifference(oldGroupMembership.allMembersOfAnyKindServiceIds)
 
-            let bannedDiff: Set<UUID> = newGroupMembership.bannedMemberUuids
-                .symmetricDifference(oldGroupMembership.bannedMemberUuids)
+            let bannedDiff: Set<Aci> = Set(newGroupMembership.bannedMembers.keys)
+                .symmetricDifference(oldGroupMembership.bannedMembers.keys)
 
             if
                 membersDiff.isEmpty,
@@ -49,13 +51,13 @@ extension GroupUpdateInfoMessageInserterImpl {
                 oldGroupMembership: oldGroupMembership,
                 newGroupMembership: newGroupMembership
             ) {
-                return .newJoinRequestFromSingleUser(requestingAddress: SignalServiceAddress(uuid: newlyRequestingMember))
+                return .newJoinRequestFromSingleUser(requestingAci: newlyRequestingMember)
             } else if let canceledRequestingMember = checkForCanceledJoinRequestFromSingleUser(
                 membersDiff: membersDiff,
                 oldGroupMembership: oldGroupMembership,
                 newGroupMembership: newGroupMembership
             ) {
-                return .canceledJoinRequestFromSingleUser(cancelingAddress: SignalServiceAddress(uuid: canceledRequestingMember))
+                return .canceledJoinRequestFromSingleUser(cancelingAci: canceledRequestingMember)
             } else if let pniToAciPromotions = checkForInvitedPniPromotions(
                 membersDiff: membersDiff,
                 oldGroupMembership: oldGroupMembership,
@@ -80,11 +82,11 @@ extension GroupUpdateInfoMessageInserterImpl {
         /// The requesting user's ID, if they constitute the entire given diff.
         /// Otherwise, returns `nil`.
         private static func checkForNewJoinRequestFromSingleUser(
-            membersDiff: Set<UUID>,
+            membersDiff: Set<ServiceId>,
             oldGroupMembership: GroupMembership,
             newGroupMembership: GroupMembership
-        ) -> UUID? {
-            guard membersDiff.count == 1, let changedMember = membersDiff.first else {
+        ) -> Aci? {
+            guard membersDiff.count == 1, let changedMember = membersDiff.first as? Aci else {
                 return nil
             }
 
@@ -104,11 +106,11 @@ extension GroupUpdateInfoMessageInserterImpl {
         /// The requesting user's ID, if they constitute the entire given diff.
         /// Otherwise, returns `nil`.
         private static func checkForCanceledJoinRequestFromSingleUser(
-            membersDiff: Set<UUID>,
+            membersDiff: Set<ServiceId>,
             oldGroupMembership: GroupMembership,
             newGroupMembership: GroupMembership
-        ) -> UUID? {
-            guard membersDiff.count == 1, let changedMember = membersDiff.first else {
+        ) -> Aci? {
+            guard membersDiff.count == 1, let changedMember = membersDiff.first as? Aci else {
                 return nil
             }
 
@@ -128,22 +130,22 @@ extension GroupUpdateInfoMessageInserterImpl {
         /// The promoted PNI -> ACI pairs, if they constitute the entire given
         /// diff. Otherwise, returns `nil`.
         private static func checkForInvitedPniPromotions(
-            membersDiff: Set<UUID>,
+            membersDiff: Set<ServiceId>,
             oldGroupMembership: GroupMembership,
             newGroupMembership: GroupMembership,
-            newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId]
-        ) -> [(pni: UntypedServiceId, aci: UntypedServiceId)]? {
+            newlyLearnedPniToAciAssociations: [Pni: Aci]
+        ) -> [(pni: Pni, aci: Aci)]? {
             var remainingMembers = membersDiff
-            var promotions: [(pni: UntypedServiceId, aci: UntypedServiceId)] = []
+            var promotions: [(pni: Pni, aci: Aci)] = []
 
-            for possiblyInvitedPni in membersDiff.map({ UntypedServiceId($0) }) {
+            for possiblyInvitedPni in membersDiff.compactMap({ $0 as? Pni }) {
                 if
-                    oldGroupMembership.isInvitedMember(possiblyInvitedPni.uuidValue),
+                    oldGroupMembership.isInvitedMember(possiblyInvitedPni),
                     let fullMemberAci = newlyLearnedPniToAciAssociations[possiblyInvitedPni],
-                    newGroupMembership.isFullMember(fullMemberAci.uuidValue)
+                    newGroupMembership.isFullMember(fullMemberAci)
                 {
-                    remainingMembers.remove(possiblyInvitedPni.uuidValue)
-                    remainingMembers.remove(fullMemberAci.uuidValue)
+                    remainingMembers.remove(possiblyInvitedPni)
+                    remainingMembers.remove(fullMemberAci)
 
                     promotions.append((pni: possiblyInvitedPni, aci: fullMemberAci))
                 }
@@ -162,19 +164,19 @@ extension GroupUpdateInfoMessageInserterImpl {
         /// The IDs of the users whose invites were removed, if they constitute
         /// the entire given diff. Otherwise, returns `nil`.
         private static func checkForRemovedInvites(
-            membersDiff: Set<UUID>,
+            membersDiff: Set<ServiceId>,
             oldGroupMembership: GroupMembership,
             newGroupMembership: GroupMembership
-        ) -> [UntypedServiceId]? {
+        ) -> [ServiceId]? {
             var remainingMembers = membersDiff
-            var removedInvites: [UntypedServiceId] = []
+            var removedInvites: [ServiceId] = []
 
-            for possiblyRemovedInvite in membersDiff.map({ UntypedServiceId($0) }) {
+            for possiblyRemovedInvite in membersDiff {
                 if
-                    oldGroupMembership.isInvitedMember(possiblyRemovedInvite.uuidValue),
-                    !newGroupMembership.isMemberOfAnyKind(possiblyRemovedInvite.uuidValue)
+                    oldGroupMembership.isInvitedMember(possiblyRemovedInvite),
+                    !newGroupMembership.isMemberOfAnyKind(possiblyRemovedInvite)
                 {
-                    remainingMembers.remove(possiblyRemovedInvite.uuidValue)
+                    remainingMembers.remove(possiblyRemovedInvite)
 
                     removedInvites.append(possiblyRemovedInvite)
                 }

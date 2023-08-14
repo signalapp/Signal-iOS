@@ -50,7 +50,7 @@ extension JobRecord {
 
         // MARK: LocalUserLeaveGroupJobRecord
 
-        case replacementAdminUuid
+        case replacementAdminAciString = "replacementAdminUuid"
         case waitForMessageProcessing
 
         // MARK: BroadcastMediaMessageJobRecord

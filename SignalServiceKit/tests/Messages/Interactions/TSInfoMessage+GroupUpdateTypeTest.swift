@@ -225,14 +225,14 @@ private extension String {
 
 private extension SignalServiceAddress {
     static let otherUser1: SignalServiceAddress = SignalServiceAddress(
-        serviceId: FutureAci.randomForTesting(),
+        serviceId: Aci.randomForTesting(),
         phoneNumber: nil,
         cache: SignalServiceAddressCache(),
         cachePolicy: .ignoreCache
     )
 
     static let otherUser2: SignalServiceAddress = SignalServiceAddress(
-        serviceId: FutureAci.randomForTesting(),
+        serviceId: Aci.randomForTesting(),
         phoneNumber: nil,
         cache: SignalServiceAddressCache(),
         cachePolicy: .ignoreCache

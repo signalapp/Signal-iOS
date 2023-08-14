@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public protocol GroupUpdateInfoMessageInserter {
     func insertGroupUpdateInfoMessage(
@@ -13,8 +14,8 @@ public protocol GroupUpdateInfoMessageInserter {
         newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken,
-        newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId],
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        newlyLearnedPniToAciAssociations: [Pni: Aci],
+        groupUpdateSource: ServiceId?,
         transaction: DBWriteTransaction
     )
 }
@@ -33,8 +34,8 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken,
-        newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId],
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        newlyLearnedPniToAciAssociations: [Pni: Aci],
+        groupUpdateSource: ServiceId?,
         transaction v2Transaction: DBWriteTransaction
     ) {
         let transaction = SDSDB.shimOnlyBridge(v2Transaction)
@@ -58,7 +59,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                     .bannedMemberChange:
                 switch handlePossiblyCollapsibleMembershipChange(
                     precomputedUpdateType: precomputedUpdateType,
-                    localAci: localIdentifiers.aci.untypedServiceId,
+                    localAci: localIdentifiers.aci,
                     groupThread: groupThread,
                     oldGroupModel: oldGroupModel,
                     newGroupModel: newGroupModel,
@@ -76,14 +77,14 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             case .invitedPnisPromotedToFullMemberAcis(let promotions):
                 for (pni, aci) in promotions {
                     updateMessagesForNewMessage.append(
-                        .invitedPniPromotedToFullMemberAci(pni: pni, aci: aci)
+                        .invitedPniPromotedToFullMemberAci(pni: pni.codableUuid, aci: aci.codableUuid)
                     )
                 }
             case .invitesRemoved(let inviteeServiceIds):
                 for removedInviteServiceId in inviteeServiceIds {
                     updateMessagesForNewMessage.append(
                         .inviteRemoved(
-                            invitee: removedInviteServiceId,
+                            invitee: removedInviteServiceId.codableUppercaseString,
                             wasLocalUser: localIdentifiers.contains(serviceId: removedInviteServiceId)
                         )
                     )
@@ -104,15 +105,15 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             userInfoForNewMessage[.oldDisappearingMessageToken] = oldDisappearingMessageToken
         }
 
-        if let groupUpdateSourceAddress = groupUpdateSourceAddress {
+        if let groupUpdateSource {
             // If we know to whom this update should be attributed, record it.
             // Additionally record whether, while processing, we know that the
             // local user is the updater. This works around scenarios in which
             // the updating address may refer to a different user in the future,
             // such as a PNI moving from account to account.
 
-            userInfoForNewMessage[.groupUpdateSourceAddress] = groupUpdateSourceAddress
-            userInfoForNewMessage[.updaterKnownToBeLocalUser] = localIdentifiers.contains(address: groupUpdateSourceAddress)
+            userInfoForNewMessage[.groupUpdateSourceAddress] = SignalServiceAddress(groupUpdateSource)
+            userInfoForNewMessage[.updaterKnownToBeLocalUser] = localIdentifiers.contains(serviceId: groupUpdateSource)
         } else {
             userInfoForNewMessage[.updaterKnownToBeLocalUser] = false
         }
@@ -131,10 +132,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         let wasLocalUserInGroup = oldGroupModel?.groupMembership.isLocalUserMemberOfAnyKind ?? false
         let isLocalUserInGroup = newGroupModel.groupMembership.isLocalUserMemberOfAnyKind
 
-        if
-            let groupUpdateSourceAddress,
-            localIdentifiers.contains(address: groupUpdateSourceAddress)
-        {
+        if let groupUpdateSource, localIdentifiers.contains(serviceId: groupUpdateSource) {
             infoMessage.markAsRead(
                 atTimestamp: NSDate.ows_millisecondTimeStamp(),
                 thread: groupThread,

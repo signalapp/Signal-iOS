@@ -271,10 +271,13 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         }
 
         let disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: contactDetails.expireTimer)
-        GroupManager.remoteUpdateDisappearingMessages(withContactThread: contactThread,
-                                                      disappearingMessageToken: disappearingMessageToken,
-                                                      groupUpdateSourceAddress: nil,
-                                                      transaction: transaction)
+        GroupManager.remoteUpdateDisappearingMessages(
+            withContactThread: contactThread,
+            disappearingMessageToken: disappearingMessageToken,
+            changeAuthor: nil,
+            localIdentifiers: LocalIdentifiersObjC(localIdentifiers),
+            transaction: transaction
+        )
 
         if let verifiedProto = contactDetails.verifiedProto {
             try self.identityManager.processIncomingVerifiedProto(verifiedProto, transaction: transaction)

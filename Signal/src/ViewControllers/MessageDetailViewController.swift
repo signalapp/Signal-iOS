@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import QuickLook
 import SignalMessaging
 import SignalServiceKit
@@ -1196,7 +1197,7 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapBlockRequest(
         groupModel: TSGroupModelV2,
         requesterName: String,
-        requesterUuid: UUID
+        requesterAci: Aci
     ) {}
 
     // TODO:

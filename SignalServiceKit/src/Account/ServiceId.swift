@@ -219,6 +219,88 @@ public final class PniObjC: ServiceIdObjC {
     }
 }
 
+// MARK: - Codable
+
+@propertyWrapper
+public struct AciUuid: Codable, Equatable, Hashable, DatabaseValueConvertible {
+    public let wrappedValue: Aci
+
+    public init(wrappedValue: Aci) {
+        self.wrappedValue = wrappedValue
+    }
+
+    public init(from decoder: Decoder) throws {
+        self.wrappedValue = Aci(fromUUID: try decoder.singleValueContainer().decode(UUID.self))
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.wrappedValue.rawUUID)
+    }
+
+    public var databaseValue: DatabaseValue { wrappedValue.rawUUID.databaseValue }
+
+    public static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Self? {
+        UUID.fromDatabaseValue(dbValue).map { Self(wrappedValue: Aci(fromUUID: $0)) }
+    }
+}
+
+extension Aci {
+    public var codableUuid: AciUuid { .init(wrappedValue: self) }
+}
+
+@propertyWrapper
+public struct PniUuid: Codable, Equatable, Hashable, DatabaseValueConvertible {
+    public let wrappedValue: Pni
+
+    public init(wrappedValue: Pni) {
+        self.wrappedValue = wrappedValue
+    }
+
+    public init(from decoder: Decoder) throws {
+        self.wrappedValue = Pni(fromUUID: try decoder.singleValueContainer().decode(UUID.self))
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.wrappedValue.rawUUID)
+    }
+
+    public var databaseValue: DatabaseValue { wrappedValue.rawUUID.databaseValue }
+
+    public static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Self? {
+        UUID.fromDatabaseValue(dbValue).map { Self(wrappedValue: Pni(fromUUID: $0)) }
+    }
+}
+
+extension Pni {
+    public var codableUuid: PniUuid { .init(wrappedValue: self) }
+}
+
+@propertyWrapper
+public struct ServiceIdUppercaseString: Codable, Hashable {
+    public let wrappedValue: ServiceId
+
+    public init(wrappedValue: ServiceId) {
+        self.wrappedValue = wrappedValue
+    }
+
+    public init(from decoder: Decoder) throws {
+        self.wrappedValue = try ServiceId.parseFrom(
+            serviceIdString: try decoder.singleValueContainer().decode(String.self)
+        )
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.wrappedValue.serviceIdUppercaseString)
+    }
+}
+
+extension ServiceId {
+    public var codableUppercaseString: ServiceIdUppercaseString { .init(wrappedValue: self) }
+}
+
 // MARK: - Unit Tests
 
 #if TESTABLE_BUILD

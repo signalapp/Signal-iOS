@@ -84,6 +84,11 @@ public extension TSAccountManager {
         getOrLoadAccountState(with: transaction).localIdentifiers
     }
 
+    @objc
+    func localIdentifiersObjC(tx: SDSAnyReadTransaction) -> LocalIdentifiersObjC? {
+        return localIdentifiers(transaction: tx).map { LocalIdentifiersObjC($0) }
+    }
+
     /// May use a sneaky transaction to load state. Use with caution.
     var localIdentifiers: LocalIdentifiers? {
         getOrLoadAccountStateWithSneakyTransaction().localIdentifiers

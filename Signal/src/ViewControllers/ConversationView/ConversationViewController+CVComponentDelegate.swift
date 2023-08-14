@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import PassKit
 import QuickLook
 import SignalMessaging
@@ -739,7 +740,7 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapBlockRequest(
         groupModel: TSGroupModelV2,
         requesterName: String,
-        requesterUuid: UUID
+        requesterAci: Aci
     ) {
         AssertIsOnMainThread()
 
@@ -772,7 +773,7 @@ extension ConversationViewController: CVComponentDelegate {
                         // this call will still block them.
                         GroupManager.acceptOrDenyMemberRequestsV2(
                             groupModel: groupModel,
-                            uuids: [requesterUuid],
+                            aci: requesterAci,
                             shouldAccept: false
                         )
                     },

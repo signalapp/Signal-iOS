@@ -3,11 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
 protocol ReplaceAdminViewControllerDelegate: AnyObject {
-    func replaceAdmin(uuid: UUID)
+    func replaceAdmin(newAdminAci: Aci)
 }
 
 // MARK: -
@@ -80,11 +81,11 @@ class ReplaceAdminViewController: OWSTableViewController2 {
     }
 
     private func candidateWasSelected(candidate: SignalServiceAddress) {
-        guard let replacementAdminUuid = candidate.uuid else {
+        guard let replacementAdminAci = candidate.serviceId as? Aci else {
             owsFailDebug("Invalid replacement Admin.")
             return
         }
 
-        replaceAdminViewControllerDelegate?.replaceAdmin(uuid: replacementAdminUuid)
+        replaceAdminViewControllerDelegate?.replaceAdmin(newAdminAci: replacementAdminAci)
     }
 }

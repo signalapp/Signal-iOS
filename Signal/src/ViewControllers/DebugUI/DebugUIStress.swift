@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalCoreKit
 import SignalMessaging
 import SignalServiceKit
@@ -149,12 +150,6 @@ class DebugUIStress: DebugUIPage, Dependencies {
                 guard let fromViewController = UIApplication.shared.frontmostViewController else { return }
                 DebugUIStress.copyToAnotherGroup(groupThread, fromViewController: fromViewController)
             }))
-            if groupThread.isGroupV2Thread {
-                items.append(OWSTableItem(title: "Make all members admins", actionBlock: {
-                    DebugUIStress.makeAllMembersAdmin(groupThread)
-
-                }))
-            }
             items.append(OWSTableItem(title: "Log membership", actionBlock: {
                 DebugUIStress.logMembership(groupThread)
             }))
@@ -274,27 +269,10 @@ class DebugUIStress: DebugUIPage, Dependencies {
         }
     }
 
-    private static func makeAllMembersAdmin(_ groupThread: TSGroupThread) {
-        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-            owsFailDebug("Invalid group model.")
-            return
-        }
-        let uuids = groupModelV2.groupMembership.fullMembers.compactMap { $0.uuid }
-        firstly { () -> Promise<TSGroupThread> in
-            GroupManager.changeMemberRolesV2(groupModel: groupModelV2, uuids: uuids, role: .administrator)
-        }.done(on: DispatchQueue.global()) { (_) in
-            Logger.info("Complete.")
-        }.catch(on: DispatchQueue.global()) { error in
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
     private static func logMembership(_ groupThread: TSGroupThread) {
         let groupMembership = groupThread.groupModel.groupMembership
-        let uuids = groupMembership.allMembersOfAnyKind.compactMap { $0.uuid }
-        let phoneNumbers = groupMembership.allMembersOfAnyKind.compactMap { $0.phoneNumber }
-        Logger.info("uuids: \(uuids.map { $0.uuidString }.joined(separator: "\n")).")
-        Logger.info("phoneNumbers: \(phoneNumbers.joined(separator: "\n")).")
+        let addressStrings = groupMembership.allMembersOfAnyKind.map { $0.description }
+        Logger.info("addresses: \(addressStrings.joined(separator: "\n"))")
     }
 
     private static func deleteOtherProfiles() {

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 extension GroupUpdateInfoMessageInserterImpl {
     /// Represents the result of collapsing updates into existing messages.
@@ -19,7 +20,7 @@ extension GroupUpdateInfoMessageInserterImpl {
 
     func handlePossiblyCollapsibleMembershipChange(
         precomputedUpdateType: PrecomputedUpdateType,
-        localAci: UntypedServiceId,
+        localAci: Aci,
         groupThread: TSGroupThread,
         oldGroupModel: TSGroupModel,
         newGroupModel: TSGroupModel,
@@ -39,25 +40,25 @@ extension GroupUpdateInfoMessageInserterImpl {
         owsAssertDebug(mostRecentInfoMsg.newGroupModel == oldGroupModel)
 
         switch precomputedUpdateType {
-        case .newJoinRequestFromSingleUser(let requestingAddress):
-            guard localAci != requestingAddress.untypedServiceId else {
+        case .newJoinRequestFromSingleUser(let requestingAci):
+            guard localAci != requestingAci else {
                 return nil
             }
 
             return maybeUpdate(
                 mostRecentInfoMsg: mostRecentInfoMsg,
-                withNewJoinRequestFrom: requestingAddress,
+                withNewJoinRequestFrom: requestingAci,
                 transaction: transaction
             )
-        case .canceledJoinRequestFromSingleUser(let cancelingAddress):
-            guard localAci != cancelingAddress.untypedServiceId else {
+        case .canceledJoinRequestFromSingleUser(let cancelingAci):
+            guard localAci != cancelingAci else {
                 return nil
             }
 
             return maybeUpdate(
                 mostRecentInfoMsg: mostRecentInfoMsg,
                 andSecondMostRecentInfoMsg: secondMostRecentInfoMsgMaybe,
-                withCanceledJoinRequestFrom: cancelingAddress,
+                withCanceledJoinRequestFrom: cancelingAci,
                 newGroupModel: newGroupModel,
                 transaction: transaction
             )
@@ -80,7 +81,7 @@ extension GroupUpdateInfoMessageInserterImpl {
 
     private func maybeUpdate(
         mostRecentInfoMsg: TSInfoMessage,
-        withNewJoinRequestFrom requestingAddress: SignalServiceAddress,
+        withNewJoinRequestFrom requestingAci: Aci,
         transaction: SDSAnyWriteTransaction
     ) -> CollapsibleMembershipChangeResult? {
 
@@ -95,7 +96,7 @@ extension GroupUpdateInfoMessageInserterImpl {
         guard
             let mostRecentUpdateMessage = mostRecentInfoMsg.updateMessages?.asSingleMessage,
             case let .sequenceOfInviteLinkRequestAndCancels(count, isTail) = mostRecentUpdateMessage,
-            requestingAddress == mostRecentInfoMsg.groupUpdateSourceAddress
+            requestingAci == mostRecentInfoMsg.groupUpdateSourceAddress?.serviceId
         else {
             return nil
         }
@@ -115,7 +116,7 @@ extension GroupUpdateInfoMessageInserterImpl {
     private func maybeUpdate(
         mostRecentInfoMsg: TSInfoMessage,
         andSecondMostRecentInfoMsg secondMostRecentInfoMsg: TSInfoMessage?,
-        withCanceledJoinRequestFrom cancelingAddress: SignalServiceAddress,
+        withCanceledJoinRequestFrom cancelingAci: Aci,
         newGroupModel: TSGroupModel,
         transaction: SDSAnyWriteTransaction
     ) -> CollapsibleMembershipChangeResult? {
@@ -130,7 +131,7 @@ extension GroupUpdateInfoMessageInserterImpl {
 
         guard
             let mostRecentInfoMsgJoiner = mostRecentInfoMsg.representsSingleRequestToJoin(),
-            cancelingAddress == mostRecentInfoMsgJoiner
+            cancelingAci == mostRecentInfoMsgJoiner
         else {
             return nil
         }
@@ -139,7 +140,7 @@ extension GroupUpdateInfoMessageInserterImpl {
             let secondMostRecentInfoMsg = secondMostRecentInfoMsg,
             let updateMessage = secondMostRecentInfoMsg.updateMessages?.asSingleMessage,
             case let .sequenceOfInviteLinkRequestAndCancels(count, isTail) = updateMessage,
-            cancelingAddress == secondMostRecentInfoMsg.groupUpdateSourceAddress
+            cancelingAci == secondMostRecentInfoMsg.groupUpdateSourceAddress?.serviceId
         {
             switch mostRecentInfoMsg.updateMessages?.asSingleMessage {
             case .sequenceOfInviteLinkRequestAndCancels(0, true)?: break
@@ -222,7 +223,7 @@ private extension TSInfoMessage {
         setUpdateMessages(UpdateMessagesWrapper([singleUpdateMessage]))
     }
 
-    func representsSingleRequestToJoin() -> SignalServiceAddress? {
+    func representsSingleRequestToJoin() -> Aci? {
         guard oldDisappearingMessageToken == newDisappearingMessageToken else {
             return nil
         }
@@ -236,12 +237,12 @@ private extension TSInfoMessage {
                 newGroupMembership: newGroupModel.groupMembership,
                 newlyLearnedPniToAciAssociations: [:]
             ),
-            case .newJoinRequestFromSingleUser(let requestingAddress) = membershipEvent,
-            requestingAddress == groupUpdateSourceAddress
+            case .newJoinRequestFromSingleUser(let requestingAci) = membershipEvent,
+            requestingAci == groupUpdateSourceAddress.serviceId
         else {
             return nil
         }
 
-        return requestingAddress
+        return requestingAci
     }
 }

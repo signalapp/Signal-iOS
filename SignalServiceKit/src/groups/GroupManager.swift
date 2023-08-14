@@ -5,6 +5,7 @@
 
 import Foundation
 import LibSignalClient
+import SignalCoreKit
 
 @objc
 public class UpsertGroupResult: NSObject {
@@ -106,36 +107,30 @@ public class GroupManager: NSObject {
 
     // MARK: -
 
-    public static func canLocalUserLeaveGroupWithoutChoosingNewAdmin(localAddress: SignalServiceAddress,
-                                                                     groupMembership: GroupMembership) -> Bool {
-        guard let localUuid = localAddress.uuid else {
-            owsFailDebug("Missing localUuid.")
-            return false
-        }
-        let remainingFullMemberUuids = Set(groupMembership.fullMembers.compactMap { $0.uuid })
-        let remainingAdminUuids = Set(groupMembership.fullMemberAdministrators.compactMap { $0.uuid })
-        return canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: localUuid,
-                                                             remainingFullMemberUuids: remainingFullMemberUuids,
-                                                             remainingAdminUuids: remainingAdminUuids)
+    public static func canLocalUserLeaveGroupWithoutChoosingNewAdmin(
+        localAci: Aci,
+        groupMembership: GroupMembership
+    ) -> Bool {
+        let fullMembers = Set(groupMembership.fullMembers.compactMap { $0.serviceId as? Aci })
+        let fullMemberAdmins = Set(groupMembership.fullMemberAdministrators.compactMap { $0.serviceId as? Aci })
+        return canLocalUserLeaveGroupWithoutChoosingNewAdmin(
+            localAci: localAci,
+            fullMembers: fullMembers,
+            admins: fullMemberAdmins
+        )
     }
 
-    public static func canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: UUID,
-                                                                     remainingFullMemberUuids: Set<UUID>,
-                                                                     remainingAdminUuids: Set<UUID>) -> Bool {
-        let isLocalUserAdministrator = remainingAdminUuids.contains(localUuid)
-        guard isLocalUserAdministrator else {
-            // Only admins need to appoint new admins before leaving the group.
-            return true
+    public static func canLocalUserLeaveGroupWithoutChoosingNewAdmin(
+        localAci: Aci,
+        fullMembers: Set<Aci>,
+        admins: Set<Aci>
+    ) -> Bool {
+        // If the current user is the only admin and they're not the only member of
+        // the group, then they must select a new admin.
+        if Set([localAci]) == admins && Set([localAci]) != fullMembers {
+            return false
         }
-        guard remainingAdminUuids.count == 1 else {
-            // There's more than one admin.
-            return true
-        }
-        guard remainingFullMemberUuids.count > 1 else {
-            // There's no one else in the group, we can abandon it.
-            return true
-        }
-        return false
+        return true
     }
 
     // MARK: - Group Models
@@ -176,7 +171,7 @@ public class GroupManager: NSObject {
             return false
         }
 
-        guard address.uuid != nil else {
+        guard address.serviceId != nil else {
             Logger.warn("Member without UUID.")
             return false
         }
@@ -198,8 +193,8 @@ public class GroupManager: NSObject {
                                            newGroupSeed: NewGroupSeed? = nil,
                                            shouldSendMessage: Bool) -> Promise<TSGroupThread> {
 
-        guard let localAddress = tsAccountManager.localAddress else {
-            return Promise(error: OWSAssertionError("Missing localAddress."))
+        guard let localIdentifiers = tsAccountManager.localIdentifiers else {
+            return Promise(error: OWSAssertionError("Missing localIdentifiers."))
         }
 
         return firstly { () -> Promise<Void> in
@@ -211,8 +206,8 @@ public class GroupManager: NSObject {
             // the other members are normal users.
             var builder = GroupMembership.Builder()
             builder.addFullMembers(Set(membersParam), role: .normal)
-            builder.remove(localAddress)
-            builder.addFullMember(localAddress, role: .administrator)
+            builder.remove(localIdentifiers.aci)
+            builder.addFullMember(localIdentifiers.aci, role: .administrator)
             return builder.build()
         }.then(on: DispatchQueue.global()) { (groupMembership: GroupMembership) -> Promise<GroupMembership> in
             // Try to get profile key credentials for all group members, since
@@ -236,8 +231,8 @@ public class GroupManager: NSObject {
                     transaction: transaction
                 )
 
-                guard groupMembership.isFullMember(localAddress) else {
-                    throw OWSAssertionError("Missing localAddress.")
+                guard groupMembership.isFullMember(localIdentifiers.aci) else {
+                    throw OWSAssertionError("Missing localAci.")
                 }
 
                 // The avatar URL path will be filled in later.
@@ -291,8 +286,8 @@ public class GroupManager: NSObject {
                 let thread = self.insertGroupThreadInDatabaseAndCreateInfoMessage(
                     groupModel: groupModel,
                     disappearingMessageToken: disappearingMessageToken,
-                    groupUpdateSourceAddress: localAddress,
-                    shouldAttributeAuthor: true,
+                    groupUpdateSource: localIdentifiers.aci,
+                    localIdentifiers: localIdentifiers,
                     transaction: transaction
                 )
                 self.profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
@@ -319,10 +314,12 @@ public class GroupManager: NSObject {
     //
     // * We know their profile key.
     // * We have a profile key credential for them.
-    private static func separateInvitedMembersForNewGroup(withMembership newGroupMembership: GroupMembership,
-                                                          transaction: SDSAnyReadTransaction) -> GroupMembership {
-        guard let localUuid = tsAccountManager.localUuid else {
-            owsFailDebug("Missing localUuid.")
+    private static func separateInvitedMembersForNewGroup(
+        withMembership newGroupMembership: GroupMembership,
+        transaction tx: SDSAnyReadTransaction
+    ) -> GroupMembership {
+        guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
+            owsFailDebug("Missing localAci.")
             return newGroupMembership
         }
         var builder = GroupMembership.Builder()
@@ -333,17 +330,21 @@ public class GroupManager: NSObject {
         for address in newMembers {
             // We must call this _after_ we try to fetch profile key credentials for
             // all members.
-            let isPending = !groupsV2Swift.hasProfileKeyCredential(for: address,
-                                                                   transaction: transaction)
+            let hasCredential = !groupsV2Swift.hasProfileKeyCredential(for: address, transaction: tx)
             guard let role = newGroupMembership.role(for: address) else {
                 owsFailDebug("Missing role: \(address)")
                 continue
             }
 
-            if isPending {
-                builder.addInvitedMember(address, role: role, addedByUuid: localUuid)
+            guard let serviceId = address.serviceId else {
+                owsFailDebug("Missing serviceId.")
+                continue
+            }
+
+            if let aci = serviceId as? Aci, hasCredential {
+                builder.addFullMember(aci, role: role)
             } else {
-                builder.addFullMember(address, role: role)
+                builder.addInvitedMember(serviceId, role: role, addedByAci: localAci)
             }
         }
         return builder.build()
@@ -390,8 +391,8 @@ public class GroupManager: NSObject {
                                            groupsVersion: GroupsVersion = .V1,
                                            transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
 
-        guard let localAddress = tsAccountManager.localAddress else {
-            throw OWSAssertionError("Missing localAddress.")
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+            throw OWSAssertionError("Missing localIdentifiers.")
         }
 
         // GroupsV2 TODO: Elaborate tests to include admins, pending members, etc.
@@ -413,28 +414,35 @@ public class GroupManager: NSObject {
         let groupModel = try builder.build()
 
         // Just create it in the database, don't create it on the service.
-        return try remoteUpsertExistingGroupForTests(groupModel: groupModel,
-                                                     disappearingMessageToken: nil,
-                                                     groupUpdateSourceAddress: localAddress,
-                                                     transaction: transaction).groupThread
+        return try remoteUpsertExistingGroupForTests(
+            groupModel: groupModel,
+            disappearingMessageToken: nil,
+            groupUpdateSource: localIdentifiers.aci,
+            localIdentifiers: localIdentifiers,
+            transaction: transaction
+        ).groupThread
     }
 
     // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
-    private static func remoteUpsertExistingGroupForTests(groupModel: TSGroupModel,
-                                                          disappearingMessageToken: DisappearingMessageToken?,
-                                                          groupUpdateSourceAddress: SignalServiceAddress?,
-                                                          infoMessagePolicy: InfoMessagePolicy = .always,
-                                                          transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
+    private static func remoteUpsertExistingGroupForTests(
+        groupModel: TSGroupModel,
+        disappearingMessageToken: DisappearingMessageToken?,
+        groupUpdateSource: ServiceId?,
+        infoMessagePolicy: InfoMessagePolicy = .always,
+        localIdentifiers: LocalIdentifiers,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> UpsertGroupResult {
         owsAssertDebug(groupModel.groupsVersion == .V1)
 
         return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
             newGroupModel: groupModel,
             newDisappearingMessageToken: disappearingMessageToken,
             newlyLearnedPniToAciAssociations: [:],
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            groupUpdateSource: groupUpdateSource,
             canInsert: true,
             didAddLocalUserToV2Group: false,
             infoMessagePolicy: infoMessagePolicy,
+            localIdentifiers: localIdentifiers,
             transaction: transaction
         )
     }
@@ -444,19 +452,21 @@ public class GroupManager: NSObject {
     // MARK: - Disappearing Messages
 
     @objc
-    public static func remoteUpdateDisappearingMessages(withContactThread thread: TSThread,
-                                                        disappearingMessageToken: DisappearingMessageToken,
-                                                        groupUpdateSourceAddress: SignalServiceAddress?,
-                                                        transaction: SDSAnyWriteTransaction) {
-        guard !thread.isGroupThread else {
-            owsFailDebug("Invalid thread.")
-            return
-        }
-        _ = self.updateDisappearingMessagesInDatabaseAndCreateMessages(token: disappearingMessageToken,
-                                                                       thread: thread,
-                                                                       shouldInsertInfoMessage: true,
-                                                                       groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                       transaction: transaction)
+    public static func remoteUpdateDisappearingMessages(
+        withContactThread thread: TSContactThread,
+        disappearingMessageToken: DisappearingMessageToken,
+        changeAuthor: AciObjC?,
+        localIdentifiers: LocalIdentifiersObjC,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        _ = self.updateDisappearingMessagesInDatabaseAndCreateMessages(
+            token: disappearingMessageToken,
+            thread: thread,
+            shouldInsertInfoMessage: true,
+            changeAuthor: changeAuthor?.wrappedAciValue,
+            localIdentifiers: localIdentifiers.wrappedValue,
+            transaction: transaction
+        )
     }
 
     private static func localUpdateDisappearingMessageToken(
@@ -464,11 +474,16 @@ public class GroupManager: NSObject {
         inContactOrGroupV1Thread thread: TSThread,
         tx: SDSAnyWriteTransaction
     ) {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx) else {
+            owsFailDebug("Not registered.")
+            return
+        }
         let updateResult = self.updateDisappearingMessagesInDatabaseAndCreateMessages(
             token: disappearingMessageToken,
             thread: thread,
             shouldInsertInfoMessage: true,
-            groupUpdateSourceAddress: nil,
+            changeAuthor: nil,
+            localIdentifiers: localIdentifiers,
             transaction: tx
         )
         self.sendDisappearingMessagesConfigurationMessage(
@@ -510,7 +525,8 @@ public class GroupManager: NSObject {
         token newToken: DisappearingMessageToken,
         thread: TSThread,
         shouldInsertInfoMessage: Bool,
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        changeAuthor: ServiceId?,
+        localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     ) -> UpdateDMConfigurationResult {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
@@ -520,8 +536,8 @@ public class GroupManager: NSObject {
         if result.newConfiguration != result.oldConfiguration {
             if shouldInsertInfoMessage {
                 var remoteContactName: String?
-                if let groupUpdateSourceAddress, groupUpdateSourceAddress.isValid, !groupUpdateSourceAddress.isLocalAddress {
-                    remoteContactName = contactsManager.displayName(for: groupUpdateSourceAddress, transaction: transaction)
+                if let changeAuthor, !localIdentifiers.contains(serviceId: changeAuthor) {
+                    remoteContactName = contactsManager.displayName(for: SignalServiceAddress(changeAuthor), transaction: transaction)
                 }
                 let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
                     thread: thread,
@@ -591,7 +607,7 @@ public class GroupManager: NSObject {
 
     public static func localLeaveGroupOrDeclineInvite(
         groupThread: TSGroupThread,
-        replacementAdminUuid: UUID? = nil,
+        replacementAdminAci: Aci? = nil,
         waitForMessageProcessing: Bool = false,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<TSGroupThread> {
@@ -601,7 +617,7 @@ public class GroupManager: NSObject {
 
         return localLeaveGroupV2OrDeclineInvite(
             groupThreadId: groupThread.uniqueId,
-            replacementAdminUuid: replacementAdminUuid,
+            replacementAdminAci: replacementAdminAci,
             waitForMessageProcessing: waitForMessageProcessing,
             transaction: transaction
         )
@@ -609,13 +625,13 @@ public class GroupManager: NSObject {
 
     private static func localLeaveGroupV2OrDeclineInvite(
         groupThreadId threadId: String,
-        replacementAdminUuid: UUID?,
+        replacementAdminAci: Aci?,
         waitForMessageProcessing: Bool,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<TSGroupThread> {
         sskJobQueues.localUserLeaveGroupJobQueue.add(
             threadId: threadId,
-            replacementAdminUuid: replacementAdminUuid,
+            replacementAdminAci: replacementAdminAci,
             waitForMessageProcessing: waitForMessageProcessing,
             transaction: transaction
         )
@@ -649,18 +665,19 @@ public class GroupManager: NSObject {
 
     // MARK: - Remove From Group / Revoke Invite
 
-    public static func removeFromGroupOrRevokeInviteV2(groupModel: TSGroupModelV2,
-                                                       uuids: [UUID]) -> Promise<TSGroupThread> {
-        updateGroupV2(groupModel: groupModel,
-                      description: "Remove from group or revoke invite") { groupChangeSet in
-            for uuid in uuids {
-                owsAssertDebug(!groupModel.groupMembership.isRequestingMember(uuid))
+    public static func removeFromGroupOrRevokeInviteV2(
+        groupModel: TSGroupModelV2,
+        serviceIds: [ServiceId]
+    ) -> Promise<TSGroupThread> {
+        updateGroupV2(groupModel: groupModel, description: "Remove from group or revoke invite") { groupChangeSet in
+            for serviceId in serviceIds {
+                owsAssertDebug(!groupModel.groupMembership.isRequestingMember(serviceId))
 
-                groupChangeSet.removeMember(uuid)
+                groupChangeSet.removeMember(serviceId)
 
                 // Do not ban when revoking an invite
-                if !groupModel.groupMembership.isInvitedMember(uuid) {
-                    groupChangeSet.addBannedMember(uuid)
+                if let aci = serviceId as? Aci, !groupModel.groupMembership.isInvitedMember(serviceId) {
+                    groupChangeSet.addBannedMember(aci)
                 }
             }
         }
@@ -675,20 +692,13 @@ public class GroupManager: NSObject {
 
     // MARK: - Change Member Role
 
-    public static func changeMemberRoleV2(groupModel: TSGroupModelV2,
-                                          uuid: UUID,
-                                          role: TSGroupMemberRole) -> Promise<TSGroupThread> {
-        changeMemberRolesV2(groupModel: groupModel, uuids: [uuid], role: role)
-    }
-
-    public static func changeMemberRolesV2(groupModel: TSGroupModelV2,
-                                           uuids: [UUID],
-                                           role: TSGroupMemberRole) -> Promise<TSGroupThread> {
-        updateGroupV2(groupModel: groupModel,
-                      description: "Change member role") { groupChangeSet in
-            for uuid in uuids {
-                groupChangeSet.changeRoleForMember(uuid, role: role)
-            }
+    public static func changeMemberRoleV2(
+        groupModel: TSGroupModelV2,
+        aci: Aci,
+        role: TSGroupMemberRole
+    ) -> Promise<TSGroupThread> {
+        updateGroupV2(groupModel: groupModel, description: "Change member role") { groupChangeSet in
+            groupChangeSet.changeRoleForMember(aci, role: role)
         }
     }
 
@@ -785,21 +795,18 @@ public class GroupManager: NSObject {
         }
     }
 
-    public static func acceptOrDenyMemberRequestsV2(groupModel: TSGroupModelV2,
-                                                    uuids: [UUID],
-                                                    shouldAccept: Bool) -> Promise<TSGroupThread> {
-        let description = (shouldAccept
-                            ? "Accept group member request"
-                            : "Deny group member request")
-        return updateGroupV2(groupModel: groupModel,
-                             description: description) { groupChangeSet in
-            for uuid in uuids {
-                if shouldAccept {
-                    groupChangeSet.addMember(uuid, role: .`normal`)
-                } else {
-                    groupChangeSet.removeMember(uuid)
-                    groupChangeSet.addBannedMember(uuid)
-                }
+    public static func acceptOrDenyMemberRequestsV2(
+        groupModel: TSGroupModelV2,
+        aci: Aci,
+        shouldAccept: Bool
+    ) -> Promise<TSGroupThread> {
+        let description = (shouldAccept ? "Accept group member request" : "Deny group member request")
+        return updateGroupV2(groupModel: groupModel, description: description) { groupChangeSet in
+            if shouldAccept {
+                groupChangeSet.addMember(aci, role: .`normal`)
+            } else {
+                groupChangeSet.removeMember(aci)
+                groupChangeSet.addBannedMember(aci)
             }
         }
     }
@@ -846,10 +853,9 @@ public class GroupManager: NSObject {
 
     // MARK: - Removed from Group or Invite Revoked
 
-    public static func handleNotInGroup(groupId: Data,
-                                        transaction: SDSAnyWriteTransaction) {
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("Missing localAddress.")
+    public static func handleNotInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) else {
+            owsFailDebug("Missing localIdentifiers.")
             return
         }
         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
@@ -869,23 +875,26 @@ public class GroupManager: NSObject {
             // we're ever re-added to the group the groups v2 machinery will
             // recover.
             var groupMembershipBuilder = groupModel.groupMembership.asBuilder
-            groupMembershipBuilder.remove(localAddress)
+            groupMembershipBuilder.remove(localIdentifiers.aci)
             var groupModelBuilder = groupModel.asBuilder
             do {
                 groupModelBuilder.groupMembership = groupMembershipBuilder.build()
                 let newGroupModel = try groupModelBuilder.build()
 
-                // groupUpdateSourceAddress is nil because we don't (and can't) know who
-                // removed us or revoked our invite.
+                // groupUpdateSource is nil because we don't (and can't) know who removed
+                // us or revoked our invite.
                 //
-                // newDisappearingMessageToken is nil because we don't want to change
-                // DM state.
-                _ = try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
-                                                                                newDisappearingMessageToken: nil,
-                                                                                newlyLearnedPniToAciAssociations: [:],
-                                                                                groupUpdateSourceAddress: nil,
-                                                                                infoMessagePolicy: .always,
-                                                                                transaction: transaction)
+                // newDisappearingMessageToken is nil because we don't want to change DM
+                // state.
+                _ = try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+                    newGroupModel: newGroupModel,
+                    newDisappearingMessageToken: nil,
+                    newlyLearnedPniToAciAssociations: [:],
+                    groupUpdateSource: nil,
+                    infoMessagePolicy: .always,
+                    localIdentifiers: localIdentifiers,
+                    transaction: transaction
+                )
             } catch {
                 owsFailDebug("Error: \(error)")
             }
@@ -978,12 +987,14 @@ public class GroupManager: NSObject {
     }
 
     // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
-    public static func insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: TSGroupModel,
-                                                                       disappearingMessageToken: DisappearingMessageToken?,
-                                                                       groupUpdateSourceAddress: SignalServiceAddress?,
-                                                                       shouldAttributeAuthor: Bool,
-                                                                       infoMessagePolicy: InfoMessagePolicy = .always,
-                                                                       transaction: SDSAnyWriteTransaction) -> TSGroupThread {
+    public static func insertGroupThreadInDatabaseAndCreateInfoMessage(
+        groupModel: TSGroupModel,
+        disappearingMessageToken: DisappearingMessageToken?,
+        groupUpdateSource: ServiceId?,
+        infoMessagePolicy: InfoMessagePolicy = .always,
+        localIdentifiers: LocalIdentifiers,
+        transaction: SDSAnyWriteTransaction
+    ) -> TSGroupThread {
 
         if let groupThread = TSGroupThread.fetch(groupId: groupModel.groupId, transaction: transaction) {
             owsFail("Inserting existing group thread: \(groupThread.uniqueId).")
@@ -997,32 +1008,37 @@ public class GroupManager: NSObject {
                                         forGroupId: groupModel.groupId,
                                         transaction: transaction)
 
-        let sourceAddress: SignalServiceAddress? = (shouldAttributeAuthor
-                                                        ? groupUpdateSourceAddress
-                                                        : nil)
-
         let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
-        _ = updateDisappearingMessagesInDatabaseAndCreateMessages(token: newDisappearingMessageToken,
-                                                                  thread: groupThread,
-                                                                  shouldInsertInfoMessage: false,
-                                                                  groupUpdateSourceAddress: sourceAddress,
-                                                                  transaction: transaction)
+        _ = updateDisappearingMessagesInDatabaseAndCreateMessages(
+            token: newDisappearingMessageToken,
+            thread: groupThread,
+            shouldInsertInfoMessage: false,
+            changeAuthor: groupUpdateSource,
+            localIdentifiers: localIdentifiers,
+            transaction: transaction
+        )
 
-        autoWhitelistGroupIfNecessary(oldGroupModel: nil,
-                                      newGroupModel: groupModel,
-                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                      transaction: transaction)
+        autoWhitelistGroupIfNecessary(
+            oldGroupModel: nil,
+            newGroupModel: groupModel,
+            groupUpdateSource: groupUpdateSource,
+            localIdentifiers: localIdentifiers,
+            tx: transaction
+        )
 
         switch infoMessagePolicy {
         case .always, .insertsOnly:
-            insertGroupUpdateInfoMessage(groupThread: groupThread,
-                                         oldGroupModel: nil,
-                                         newGroupModel: groupModel,
-                                         oldDisappearingMessageToken: nil,
-                                         newDisappearingMessageToken: newDisappearingMessageToken,
-                                         newlyLearnedPniToAciAssociations: [:],
-                                         groupUpdateSourceAddress: sourceAddress,
-                                         transaction: transaction)
+            insertGroupUpdateInfoMessage(
+                groupThread: groupThread,
+                oldGroupModel: nil,
+                newGroupModel: groupModel,
+                oldDisappearingMessageToken: nil,
+                newDisappearingMessageToken: newDisappearingMessageToken,
+                newlyLearnedPniToAciAssociations: [:],
+                groupUpdateSource: groupUpdateSource,
+                localIdentifiers: localIdentifiers,
+                transaction: transaction
+            )
         default:
             break
         }
@@ -1044,19 +1060,17 @@ public class GroupManager: NSObject {
     public static func tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
         newGroupModel: TSGroupModel,
         newDisappearingMessageToken: DisappearingMessageToken?,
-        newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId],
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        newlyLearnedPniToAciAssociations: [Pni: Aci],
+        groupUpdateSource: ServiceId?,
         canInsert: Bool,
         didAddLocalUserToV2Group: Bool,
         infoMessagePolicy: InfoMessagePolicy = .always,
+        localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     ) throws -> UpsertGroupResult {
 
-        TSGroupThread.ensureGroupIdMapping(forGroupId: newGroupModel.groupId,
-                                           transaction: transaction)
-
-        let threadId = TSGroupThread.threadId(forGroupId: newGroupModel.groupId,
-                                              transaction: transaction)
+        TSGroupThread.ensureGroupIdMapping(forGroupId: newGroupModel.groupId, transaction: transaction)
+        let threadId = TSGroupThread.threadId(forGroupId: newGroupModel.groupId, transaction: transaction)
 
         guard TSGroupThread.anyExists(uniqueId: threadId, transaction: transaction) else {
             guard canInsert else {
@@ -1072,9 +1086,7 @@ public class GroupManager: NSObject {
             // etc.
             var shouldAttributeAuthor = true
             if newGroupModel.groupsVersion == .V2 {
-                if let localAddress = tsAccountManager.localAddress,
-                   newGroupModel.groupMembers.contains(localAddress),
-                   didAddLocalUserToV2Group {
+                if didAddLocalUserToV2Group, newGroupModel.groupMembers.contains(localIdentifiers.aciAddress) {
                     // Do attribute.
                 } else {
                     // Don't attribute.
@@ -1082,22 +1094,27 @@ public class GroupManager: NSObject {
                 }
             }
 
-            let thread = insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: newGroupModel,
-                                                                         disappearingMessageToken: newDisappearingMessageToken,
-                                                                         groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                         shouldAttributeAuthor: shouldAttributeAuthor,
-                                                                         infoMessagePolicy: infoMessagePolicy,
-                                                                         transaction: transaction)
+            let thread = insertGroupThreadInDatabaseAndCreateInfoMessage(
+                groupModel: newGroupModel,
+                disappearingMessageToken: newDisappearingMessageToken,
+                groupUpdateSource: shouldAttributeAuthor ? groupUpdateSource : nil,
+                infoMessagePolicy: infoMessagePolicy,
+                localIdentifiers: localIdentifiers,
+                transaction: transaction
+            )
 
             return UpsertGroupResult(action: .inserted, groupThread: thread)
         }
 
-        return try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
-                                                                           newDisappearingMessageToken: newDisappearingMessageToken,
-                                                                           newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
-                                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                           infoMessagePolicy: infoMessagePolicy,
-                                                                           transaction: transaction)
+        return try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            newGroupModel: newGroupModel,
+            newDisappearingMessageToken: newDisappearingMessageToken,
+            newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
+            groupUpdateSource: groupUpdateSource,
+            infoMessagePolicy: infoMessagePolicy,
+            localIdentifiers: localIdentifiers,
+            transaction: transaction
+        )
     }
 
     /// Update persisted group-related state for the provided models. If
@@ -1110,9 +1127,10 @@ public class GroupManager: NSObject {
     public static func updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
         newGroupModel: TSGroupModel,
         newDisappearingMessageToken: DisappearingMessageToken?,
-        newlyLearnedPniToAciAssociations: [UntypedServiceId: UntypedServiceId],
-        groupUpdateSourceAddress: SignalServiceAddress?,
+        newlyLearnedPniToAciAssociations: [Pni: Aci],
+        groupUpdateSource: ServiceId?,
         infoMessagePolicy: InfoMessagePolicy = .always,
+        localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     ) throws -> UpsertGroupResult {
 
@@ -1133,11 +1151,14 @@ public class GroupManager: NSObject {
         if let newDisappearingMessageToken = newDisappearingMessageToken {
             // shouldInsertInfoMessage is false because we only want to insert a
             // single info message if we update both DM config and thread model.
-            updateDMResult = updateDisappearingMessagesInDatabaseAndCreateMessages(token: newDisappearingMessageToken,
-                                                                                   thread: groupThread,
-                                                                                   shouldInsertInfoMessage: false,
-                                                                                   groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                                   transaction: transaction)
+            updateDMResult = updateDisappearingMessagesInDatabaseAndCreateMessages(
+                token: newDisappearingMessageToken,
+                thread: groupThread,
+                shouldInsertInfoMessage: false,
+                changeAuthor: groupUpdateSource,
+                localIdentifiers: localIdentifiers,
+                transaction: transaction
+            )
         } else {
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
             let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read)
@@ -1184,10 +1205,13 @@ public class GroupManager: NSObject {
             let hasUserFacingChange = !oldGroupModel.isEqual(to: newGroupModel,
                                                              comparisonMode: .userFacingOnly)
 
-            autoWhitelistGroupIfNecessary(oldGroupModel: oldGroupModel,
-                                          newGroupModel: newGroupModel,
-                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                          transaction: transaction)
+            autoWhitelistGroupIfNecessary(
+                oldGroupModel: oldGroupModel,
+                newGroupModel: newGroupModel,
+                groupUpdateSource: groupUpdateSource,
+                localIdentifiers: localIdentifiers,
+                tx: transaction
+            )
 
             TSGroupThread.ensureGroupIdMapping(forGroupId: newGroupModel.groupId, transaction: transaction)
 
@@ -1226,7 +1250,8 @@ public class GroupManager: NSObject {
                 oldDisappearingMessageToken: updateDMResult.oldConfiguration.asToken,
                 newDisappearingMessageToken: updateDMResult.newConfiguration.asToken,
                 newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
-                groupUpdateSourceAddress: groupUpdateSourceAddress,
+                groupUpdateSource: groupUpdateSource,
+                localIdentifiers: localIdentifiers,
                 transaction: transaction
             )
         default:
@@ -1257,65 +1282,54 @@ public class GroupManager: NSObject {
 
     // MARK: - Profiles
 
-    private static func autoWhitelistGroupIfNecessary(oldGroupModel: TSGroupModel?,
-                                                      newGroupModel: TSGroupModel,
-                                                      groupUpdateSourceAddress: SignalServiceAddress?,
-                                                      transaction: SDSAnyWriteTransaction) {
-
-        guard wasLocalUserJustAddedToTheGroup(oldGroupModel: oldGroupModel,
-                                              newGroupModel: newGroupModel) else {
-            if DebugFlags.internalLogging {
-                Logger.verbose("Local user was not just added to the group.")
-            }
+    private static func autoWhitelistGroupIfNecessary(
+        oldGroupModel: TSGroupModel?,
+        newGroupModel: TSGroupModel,
+        groupUpdateSource: ServiceId?,
+        localIdentifiers: LocalIdentifiers,
+        tx: SDSAnyWriteTransaction
+    ) {
+        guard let groupUpdateSource else {
             return
         }
 
-        guard let groupUpdateSourceAddress = groupUpdateSourceAddress else {
-            if DebugFlags.internalLogging {
-                Logger.info("No groupUpdateSourceAddress.")
-            }
+        let justAdded = wasLocalUserJustAddedToTheGroup(
+            oldGroupModel: oldGroupModel, newGroupModel: newGroupModel, localIdentifiers: localIdentifiers
+        )
+        guard justAdded else {
             return
         }
 
-        let isLocalAddress = groupUpdateSourceAddress.isLocalAddress
-        let isSystemContact = contactsManager.isSystemContact(address: groupUpdateSourceAddress,
-                                                              transaction: transaction)
-        let isUserInProfileWhitelist = profileManager.isUser(inProfileWhitelist: groupUpdateSourceAddress,
-                                                             transaction: transaction)
-        let shouldAddToWhitelist = (isLocalAddress || isSystemContact || isUserInProfileWhitelist)
+        let isAnyLocalIdentifier = localIdentifiers.contains(serviceId: groupUpdateSource)
+        let isSystemContact = contactsManager.isSystemContact(
+            address: SignalServiceAddress(groupUpdateSource), transaction: tx
+        )
+        let isUserInProfileWhitelist = profileManager.isUser(
+            inProfileWhitelist: SignalServiceAddress(groupUpdateSource), transaction: tx
+        )
+        let shouldAddToWhitelist = (isAnyLocalIdentifier || isSystemContact || isUserInProfileWhitelist)
         guard shouldAddToWhitelist else {
-            if DebugFlags.internalLogging {
-                Logger.info("Not adding to whitelist. groupUpdateSourceAddress: \(groupUpdateSourceAddress), isLocalAddress: \(isLocalAddress), isSystemContact: \(isSystemContact), isUserInProfileWhitelists: \(isUserInProfileWhitelist), ")
-            }
             return
-        }
-
-        if DebugFlags.internalLogging {
-            Logger.info("Adding to whitelist")
         }
 
         // Ensure the thread is in our profile whitelist if we're a member of the group.
         // We don't want to do this if we're just a pending member or are leaving/have
         // already left the group.
-        self.profileManager.addGroupId(toProfileWhitelist: newGroupModel.groupId,
-                                       userProfileWriter: .localUser,
-                                       transaction: transaction)
+        self.profileManager.addGroupId(
+            toProfileWhitelist: newGroupModel.groupId, userProfileWriter: .localUser, transaction: tx
+        )
     }
 
-    private static func wasLocalUserJustAddedToTheGroup(oldGroupModel: TSGroupModel?,
-                                                        newGroupModel: TSGroupModel) -> Bool {
-
-        guard let localAddress = self.tsAccountManager.localAddress else {
-            owsFailDebug("Missing localAddress.")
+    private static func wasLocalUserJustAddedToTheGroup(
+        oldGroupModel: TSGroupModel?,
+        newGroupModel: TSGroupModel,
+        localIdentifiers: LocalIdentifiers
+    ) -> Bool {
+        if let oldGroupModel, oldGroupModel.groupMembership.isFullMember(localIdentifiers.aci) {
+            // Local user already was a member.
             return false
         }
-        if let oldGroupModel = oldGroupModel {
-            guard !oldGroupModel.groupMembership.isFullMember(localAddress) else {
-                // Local user already was a member.
-                return false
-            }
-        }
-        guard newGroupModel.groupMembership.isFullMember(localAddress) else {
+        if !newGroupModel.groupMembership.isFullMember(localIdentifiers.aci) {
             // Local user is not a member.
             return false
         }
@@ -1324,11 +1338,10 @@ public class GroupManager: NSObject {
 
     // MARK: -
 
-    @objc
-    public static func storeProfileKeysFromGroupProtos(_ profileKeysByUuid: [UUID: Data]) {
+    public static func storeProfileKeysFromGroupProtos(_ profileKeysByAci: [Aci: Data]) {
         var profileKeysByAddress = [SignalServiceAddress: Data]()
-        for (uuid, profileKeyData) in profileKeysByUuid {
-            profileKeysByAddress[SignalServiceAddress(uuid: uuid)] = profileKeyData
+        for (aci, profileKeyData) in profileKeysByAci {
+            profileKeysByAddress[SignalServiceAddress(aci)] = profileKeyData
         }
         // If we receive a profile key from a user, that's "authoritative" and
         // can discard and previous key from them.
@@ -1453,23 +1466,23 @@ extension GroupManager {
             ) { groupChangeSet in
                 self.databaseStorage.read { transaction in
                     for serviceId in serviceIds {
-                        owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(serviceId.temporary_rawUUID))
+                        owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(serviceId))
 
                         // Important that at this point we already have the
                         // profile keys for these users
-                        let isPending = !self.groupsV2Swift.hasProfileKeyCredential(
+                        let hasCredential = self.groupsV2Swift.hasProfileKeyCredential(
                             for: SignalServiceAddress(serviceId),
                             transaction: transaction
                         )
 
-                        if isPending {
-                            groupChangeSet.addInvitedMember(serviceId.temporary_rawUUID, role: .normal)
+                        if let aci = serviceId as? Aci, hasCredential {
+                            groupChangeSet.addMember(aci, role: .normal)
                         } else {
-                            groupChangeSet.addMember(serviceId.temporary_rawUUID, role: .normal)
+                            groupChangeSet.addInvitedMember(serviceId, role: .normal)
                         }
 
-                        if existingGroupModel.groupMembership.isBannedMember(serviceId.temporary_rawUUID) {
-                            groupChangeSet.removeBannedMember(serviceId.temporary_rawUUID)
+                        if let aci = serviceId as? Aci, existingGroupModel.groupMembership.isBannedMember(aci) {
+                            groupChangeSet.removeBannedMember(aci)
                         }
                     }
                 }

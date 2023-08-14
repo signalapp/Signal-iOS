@@ -4,8 +4,10 @@
 //
 
 import GRDB
-@testable import SignalServiceKit
+import LibSignalClient
 import XCTest
+
+@testable import SignalServiceKit
 
 class JobRecordTest: XCTestCase {
     private let inMemoryDatabase = InMemoryDatabase()
@@ -249,19 +251,19 @@ extension LocalUserLeaveGroupJobRecord: ValidatableModel {
         (
             LocalUserLeaveGroupJobRecord(
                 threadId: "the wheels on the bus",
-                replacementAdminUuid: "go round and round",
+                replacementAdminAci: Aci.constantForTesting("00000000-0000-4000-8000-000000000AAA"),
                 waitForMessageProcessing: true,
                 label: "round and round",
                 exclusiveProcessIdentifier: "round and round!",
                 failureCount: 40000,
                 status: .obsolete
             ),
-            Data(base64Encoded: "eyJyZXBsYWNlbWVudEFkbWluVXVpZCI6ImdvIHJvdW5kIGFuZCByb3VuZCIsInN1cGVyIjp7ImZhaWx1cmVDb3VudCI6NDAwMDAsImxhYmVsIjoicm91bmQgYW5kIHJvdW5kIiwic3RhdHVzIjo0LCJ1bmlxdWVJZCI6Ijg1M0U2NkNDLTQzNUQtNDY1NS1CRDAxLTRGMDJFMzExM0ZFMiIsImV4Y2x1c2l2ZVByb2Nlc3NJZGVudGlmaWVyIjoicm91bmQgYW5kIHJvdW5kISIsInJlY29yZFR5cGUiOjc0fSwidGhyZWFkSWQiOiJ0aGUgd2hlZWxzIG9uIHRoZSBidXMiLCJ3YWl0Rm9yTWVzc2FnZVByb2Nlc3NpbmciOnRydWV9")!
+            Data(base64Encoded: "eyJyZXBsYWNlbWVudEFkbWluVXVpZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMEFBQSIsInN1cGVyIjp7ImZhaWx1cmVDb3VudCI6NDAwMDAsImxhYmVsIjoicm91bmQgYW5kIHJvdW5kIiwic3RhdHVzIjo0LCJ1bmlxdWVJZCI6Ijg1M0U2NkNDLTQzNUQtNDY1NS1CRDAxLTRGMDJFMzExM0ZFMiIsImV4Y2x1c2l2ZVByb2Nlc3NJZGVudGlmaWVyIjoicm91bmQgYW5kIHJvdW5kISIsInJlY29yZFR5cGUiOjc0fSwidGhyZWFkSWQiOiJ0aGUgd2hlZWxzIG9uIHRoZSBidXMiLCJ3YWl0Rm9yTWVzc2FnZVByb2Nlc3NpbmciOnRydWV9Cg==")!
         ),
         (
             LocalUserLeaveGroupJobRecord(
                 threadId: "the wheels on the bus",
-                replacementAdminUuid: nil,
+                replacementAdminAci: nil,
                 waitForMessageProcessing: true,
                 label: "go round and round",
                 exclusiveProcessIdentifier: "round and round!",
@@ -275,7 +277,7 @@ extension LocalUserLeaveGroupJobRecord: ValidatableModel {
     func validate(against: LocalUserLeaveGroupJobRecord) throws {
         guard
             threadId == against.threadId,
-            replacementAdminUuid == against.replacementAdminUuid,
+            replacementAdminAciString == against.replacementAdminAciString,
             waitForMessageProcessing == against.waitForMessageProcessing
         else {
             throw ValidatableModelError.failedToValidate

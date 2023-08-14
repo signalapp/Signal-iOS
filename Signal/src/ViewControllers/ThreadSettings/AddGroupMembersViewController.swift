@@ -114,7 +114,7 @@ private extension AddGroupMembersViewController {
         let newServiceIds = newRecipientSet.orderedMembers
             .compactMap { recipient -> ServiceId? in
                 if let serviceId = recipient.address?.serviceId,
-                   !oldGroupModel.groupMembership.isFullMember(serviceId.temporary_rawUUID) {
+                   !oldGroupModel.groupMembership.isFullMember(serviceId) {
                     return serviceId
                 }
 

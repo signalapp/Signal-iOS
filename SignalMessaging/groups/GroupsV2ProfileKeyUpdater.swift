@@ -238,18 +238,13 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 }
                 return self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
             }.map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> (TSGroupThread, UInt32) in
-                guard groupV2Snapshot.groupMembership.isFullMember(localAci.temporary_rawUUID) else {
+                guard groupV2Snapshot.groupMembership.isFullMember(localAci) else {
                     // We're not a full member, no need to update profile key.
                     throw GroupsV2Error.redundantChange
                 }
                 guard !groupV2Snapshot.profileKeys.values.contains(profileKeyData) else {
                     // Group state already has our current key.
                     throw GroupsV2Error.redundantChange
-                }
-                if DebugFlags.internalLogging {
-                    for (uuid, profileKey) in groupV2Snapshot.profileKeys {
-                        Logger.info("Existing profile key: \(profileKey.hexadecimalString), for uuid: \(uuid), is local: \(uuid == localAci.temporary_rawUUID)")
-                    }
                 }
                 let checkedRevision = groupV2Snapshot.revision
                 return (groupThread, checkedRevision)
@@ -299,13 +294,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                     }
                     return self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
                 }.map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> Void in
-                    if DebugFlags.internalLogging {
-                        Logger.info("updated revision: \(groupV2Snapshot.revision)")
-                        for (uuid, profileKey) in groupV2Snapshot.profileKeys {
-                            Logger.info("Existing profile key: \(profileKey.hexadecimalString), for uuid: \(uuid), is local: \(uuid == localAci.temporary_rawUUID)")
-                        }
-                    }
-                    guard groupV2Snapshot.groupMembership.isFullMember(localAci.temporary_rawUUID) else {
+                    guard groupV2Snapshot.groupMembership.isFullMember(localAci) else {
                         owsFailDebug("Not a full member.")
                         return
                     }

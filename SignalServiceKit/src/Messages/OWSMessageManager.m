@@ -324,7 +324,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ((dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0) {
         [self handleEndSessionMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0) {
-        [self handleExpirationTimerUpdateMessageWithEnvelope:envelope
+        [self handleExpirationTimerUpdateMessageWithEnvelope:decryptedEnvelope
                                                  dataMessage:dataMessage
                                                       thread:thread
                                                  transaction:transaction];
@@ -451,12 +451,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)updateDisappearingMessageConfigurationWithEnvelope:(SSKProtoEnvelope *)envelope
+- (void)updateDisappearingMessageConfigurationWithEnvelope:(DecryptedIncomingEnvelope *)decryptedEnvelope
                                                dataMessage:(SSKProtoDataMessage *)dataMessage
                                                     thread:(TSThread *)thread
                                                transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (!envelope) {
+    if (!decryptedEnvelope) {
         OWSFailDebug(@"Missing envelope.");
         return;
     }
@@ -472,20 +472,22 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing thread.");
         return;
     }
-    if (thread.isGroupThread) {
+    if (![thread isKindOfClass:[TSContactThread class]]) {
+        return;
+    }
+    LocalIdentifiersObjC *localIdentifiers = [self.tsAccountManager localIdentifiersObjCWithTx:transaction];
+    if (localIdentifiers == nil) {
+        OWSFailDebug(@"Not registered.");
         return;
     }
 
-    SignalServiceAddress *authorAddress = envelope.sourceAddress;
-    if (!authorAddress.isValid) {
-        OWSFailDebug(@"invalid authorAddress");
-        return;
-    }
+    AciObjC *authorAci = decryptedEnvelope.sourceAciObjC;
     DisappearingMessageToken *disappearingMessageToken =
         [DisappearingMessageToken tokenForProtoExpireTimer:dataMessage.expireTimer];
-    [GroupManager remoteUpdateDisappearingMessagesWithContactThread:thread
+    [GroupManager remoteUpdateDisappearingMessagesWithContactThread:(TSContactThread *)thread
                                            disappearingMessageToken:disappearingMessageToken
-                                           groupUpdateSourceAddress:authorAddress
+                                                       changeAuthor:authorAci
+                                                   localIdentifiers:localIdentifiers
                                                         transaction:transaction];
 }
 
@@ -1163,7 +1165,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self archiveSessionsFor:envelope.sourceAddress transaction:transaction];
 }
 
-- (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope
+- (void)handleExpirationTimerUpdateMessageWithEnvelope:(DecryptedIncomingEnvelope *)decryptedEnvelope
                                            dataMessage:(SSKProtoDataMessage *)dataMessage
                                                 thread:(TSThread *)thread
                                            transaction:(SDSAnyWriteTransaction *)transaction
@@ -1173,7 +1175,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self updateDisappearingMessageConfigurationWithEnvelope:envelope
+    [self updateDisappearingMessageConfigurationWithEnvelope:decryptedEnvelope
                                                  dataMessage:dataMessage
                                                       thread:thread
                                                  transaction:transaction];
@@ -1396,7 +1398,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Unexpected payment model.");
     }
 
-    [self updateDisappearingMessageConfigurationWithEnvelope:envelope
+    [self updateDisappearingMessageConfigurationWithEnvelope:decryptedEnvelope
                                                  dataMessage:dataMessage
                                                       thread:thread
                                                  transaction:transaction];
