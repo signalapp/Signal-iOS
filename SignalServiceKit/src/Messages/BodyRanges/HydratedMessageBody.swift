@@ -243,6 +243,24 @@ public class HydratedMessageBody: Equatable, Hashable {
                 hasher.combine(matchingBackgroundColor)
                 hasher.combine(matchedRanges)
             }
+
+            fileprivate static let configKey = NSAttributedString.Key("OWS.searchRange")
+
+            public func apply(
+                _ string: NSMutableAttributedString,
+                isDarkThemeEnabled: Bool
+            ) {
+                for searchMatchRange in matchedRanges {
+                    string.addAttributes(
+                        [
+                            .backgroundColor: matchingBackgroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
+                            .foregroundColor: matchingForegroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
+                            Self.configKey: self as Any
+                        ],
+                        range: searchMatchRange
+                    )
+                }
+            }
         }
 
         public let searchRanges: SearchRanges?
@@ -359,8 +377,6 @@ public class HydratedMessageBody: Equatable, Hashable {
         )
     }
 
-    private static let searchRangeConfigKey = NSAttributedString.Key("OWS.searchRange")
-
     internal static func applyAttributes(
         on string: NSMutableAttributedString,
         mentionAttributes: [NSRangedValue<HydratedMentionAttribute>],
@@ -397,18 +413,7 @@ public class HydratedMessageBody: Equatable, Hashable {
         }
 
         // Search takes priority over mentions, but not spoiler styles.
-        if let searchRanges = config.searchRanges {
-            for searchMatchRange in searchRanges.matchedRanges {
-                string.addAttributes(
-                    [
-                        .backgroundColor: searchRanges.matchingBackgroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
-                        .foregroundColor: searchRanges.matchingForegroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
-                        Self.searchRangeConfigKey: config.searchRanges as Any
-                    ],
-                    range: searchMatchRange
-                )
-            }
-        }
+        config.searchRanges?.apply(string, isDarkThemeEnabled: isDarkThemeEnabled)
 
         styleAttributes.forEach {
             $0.value.applyAttributes(
@@ -420,12 +425,6 @@ public class HydratedMessageBody: Equatable, Hashable {
             )
         }
         return string
-    }
-
-    internal static func extractSearchRangeConfigFromAttributes(
-        _ attrs: [NSAttributedString.Key: Any]
-    ) -> DisplayConfiguration.SearchRanges? {
-        return attrs[Self.searchRangeConfigKey] as? DisplayConfiguration.SearchRanges
     }
 
     // MARK: - Displaying as Plaintext

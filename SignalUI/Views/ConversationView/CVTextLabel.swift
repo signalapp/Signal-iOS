@@ -401,9 +401,18 @@ public class CVTextLabel: NSObject {
             switch config.text {
             case .text(let text):
                 attributedString = NSMutableAttributedString(string: text)
+                config.displayConfig.searchRanges?.apply(
+                    attributedString,
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                )
             case .attributedText(let attributedText):
                 attributedString = NSMutableAttributedString(attributedString: attributedText)
+                config.displayConfig.searchRanges?.apply(
+                    attributedString,
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                )
             case .messageBody(let messageBody):
+                // This will internally apply search ranges, no need to handle separately.
                 let attributedText = messageBody.asAttributedStringForDisplay(
                     config: config.displayConfig,
                     isDarkThemeEnabled: Theme.isDarkThemeEnabled
