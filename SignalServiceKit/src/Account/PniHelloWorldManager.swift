@@ -4,6 +4,7 @@
 //
 
 import Curve25519Kit
+import LibSignalClient
 import SignalCoreKit
 
 public protocol PniHelloWorldManager {
@@ -86,7 +87,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
                 localAccountId,
                 localUserAllDeviceIds
             ) = signalRecipientStore.localAccountAndDeviceIds(
-                localAci: localIdentifiers.aci.untypedServiceId,
+                localAci: localIdentifiers.aci,
                 tx: syncTx
             )
         else {
@@ -115,7 +116,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
             logger.info("Building PNI distribution parameters.")
 
             return self.pniDistributionParameterBuilder.buildPniDistributionParameters(
-                localAci: localIdentifiers.aci.untypedServiceId,
+                localAci: localIdentifiers.aci,
                 localAccountId: localAccountId,
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds,
@@ -246,14 +247,14 @@ class _PniHelloWorldManagerImpl_ProfileManager_Wrapper: _PniHelloWorldManagerImp
 
 protocol _PniHelloWorldManagerImpl_SignalRecipientStore_Shim {
     func localAccountAndDeviceIds(
-        localAci: UntypedServiceId,
+        localAci: Aci,
         tx: DBReadTransaction
     ) -> (accountId: String, deviceIds: [UInt32])?
 }
 
 class _PniHelloWorldManagerImpl_SignalRecipientStore_Wrapper: _PniHelloWorldManagerImpl_SignalRecipientStore_Shim {
     func localAccountAndDeviceIds(
-        localAci: UntypedServiceId,
+        localAci: Aci,
         tx: DBReadTransaction
     ) -> (accountId: String, deviceIds: [UInt32])? {
         guard

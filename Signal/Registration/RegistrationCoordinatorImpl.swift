@@ -3659,7 +3659,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return deps.changeNumberPniManager
             .generatePniIdentity(
                 forNewE164: e164,
-                localAci: UntypedServiceId(changeNumberState.localAci),
+                localAci: Aci(fromUUID: changeNumberState.localAci),
                 localAccountId: changeNumberState.localAccountId,
                 localDeviceId: changeNumberState.localDeviceId,
                 localUserAllDeviceIds: changeNumberState.localUserAllDeviceIds

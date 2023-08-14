@@ -140,7 +140,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         e164: E164,
         linkedDeviceIds: [UInt32]
     ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult> {
-        let aci = FutureAci.randomForTesting()
+        let aci = Aci.randomForTesting()
         let accountId: String = UUID().uuidString
 
         let localDeviceId: UInt32 = 1
@@ -224,7 +224,7 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
     var buildRequestedForDeviceIds: [[UInt32]] = []
 
     func buildPniDistributionParameters(
-        localAci: UntypedServiceId,
+        localAci: Aci,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],

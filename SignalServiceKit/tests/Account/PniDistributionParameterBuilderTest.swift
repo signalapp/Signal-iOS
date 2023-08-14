@@ -159,7 +159,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
-        let aci = FutureAci.randomForTesting()
+        let aci = Aci.randomForTesting()
         let accountId = "what's up"
 
         return pniDistributionParameterBuilder.buildPniDistributionParameters(

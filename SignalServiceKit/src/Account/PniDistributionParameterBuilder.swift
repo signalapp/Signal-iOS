@@ -4,6 +4,7 @@
 //
 
 import Curve25519Kit
+import LibSignalClient
 import SignalCoreKit
 
 public enum PniDistribution {
@@ -15,7 +16,7 @@ public enum PniDistribution {
     /// Parameters for distributing PNI information to linked devices.
     public struct Parameters {
         let pniIdentityKey: Data
-        private(set) var devicePniSignedPreKeys: [String: SignedPreKeyRecord] = [:]
+        private(set) var devicePniSignedPreKeys: [String: SignalServiceKit.SignedPreKeyRecord] = [:]
         private(set) var pniRegistrationIds: [String: UInt32] = [:]
         private(set) var deviceMessages: [DeviceMessage] = []
 
@@ -28,7 +29,7 @@ public enum PniDistribution {
         public static func mock(
             pniIdentityKeyPair: ECKeyPair,
             localDeviceId: UInt32,
-            localDevicePniSignedPreKey: SignedPreKeyRecord,
+            localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
             localDevicePniRegistrationId: UInt32
         ) -> Parameters {
             var mock = Parameters(pniIdentityKey: pniIdentityKeyPair.publicKey)
@@ -44,7 +45,7 @@ public enum PniDistribution {
 
         fileprivate mutating func addLocalDevice(
             localDeviceId: UInt32,
-            signedPreKey: SignedPreKeyRecord,
+            signedPreKey: SignalServiceKit.SignedPreKeyRecord,
             registrationId: UInt32
         ) {
             devicePniSignedPreKeys["\(localDeviceId)"] = signedPreKey
@@ -53,7 +54,7 @@ public enum PniDistribution {
 
         fileprivate mutating func addLinkedDevice(
             deviceId: UInt32,
-            signedPreKey: SignedPreKeyRecord,
+            signedPreKey: SignalServiceKit.SignedPreKeyRecord,
             registrationId: UInt32,
             deviceMessage: DeviceMessage
         ) {
@@ -86,12 +87,12 @@ protocol PniDistributionParamaterBuilder {
     /// - An encrypted message for each linked device informing them about the
     ///   new identity. Note that this message contains private key data.
     func buildPniDistributionParameters(
-        localAci: UntypedServiceId,
+        localAci: Aci,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
-        localDevicePniSignedPreKey: SignedPreKeyRecord,
+        localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) -> Guarantee<PniDistribution.ParameterGenerationResult>
 }
@@ -117,12 +118,12 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     }
 
     func buildPniDistributionParameters(
-        localAci: UntypedServiceId,
+        localAci: Aci,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
-        localDevicePniSignedPreKey: SignedPreKeyRecord,
+        localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
         var parameters = PniDistribution.Parameters(pniIdentityKey: localPniIdentityKeyPair.publicKey)
@@ -179,7 +180,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     /// generation.
     private struct LinkedDevicePniGenerationParams {
         let deviceId: UInt32
-        let signedPreKey: SignedPreKeyRecord
+        let signedPreKey: SignalServiceKit.SignedPreKeyRecord
         let registrationId: UInt32
         let deviceMessage: DeviceMessage
     }
@@ -191,7 +192,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     /// are being built. A `nil` param in a resolved promise indicates a linked
     /// device that is no longer valid, and was ignored.
     private func buildLinkedDevicePniGenerationParams(
-        localAci: UntypedServiceId,
+        localAci: Aci,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
@@ -251,10 +252,10 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     /// invalid and should be skipped.
     private func encryptPniDistributionMessage(
         recipientId: String,
-        recipientAci: UntypedServiceId,
+        recipientAci: Aci,
         recipientDeviceId: UInt32,
         identityKeyPair: ECKeyPair,
-        signedPreKey: SignedPreKeyRecord,
+        signedPreKey: SignalServiceKit.SignedPreKeyRecord,
         registrationId: UInt32
     ) -> Promise<DeviceMessage?> {
         let message = PniDistributionSyncMessage(
@@ -277,7 +278,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                 forMessagePlaintextContent: plaintextContent,
                 messageEncryptionStyle: .whisper,
                 recipientId: recipientId,
-                serviceId: recipientAci,
+                serviceId: recipientAci.untypedServiceId,
                 deviceId: recipientDeviceId,
                 isOnlineMessage: false,
                 isTransientSenderKeyDistributionMessage: false,

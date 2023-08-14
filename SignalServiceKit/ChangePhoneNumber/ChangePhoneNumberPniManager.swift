@@ -4,7 +4,7 @@
 //
 
 import Curve25519Kit
-import Foundation
+import LibSignalClient
 
 // MARK: - ChangePhoneNumberPniManager protocol
 
@@ -36,7 +36,7 @@ public protocol ChangePhoneNumberPniManager {
     /// error is returned, automatic retry is not recommended.
     func generatePniIdentity(
         forNewE164 newE164: E164,
-        localAci: UntypedServiceId,
+        localAci: Aci,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32]
@@ -62,13 +62,13 @@ public enum ChangePhoneNumberPni {
     public struct PendingState: Equatable {
         public let newE164: E164
         public let pniIdentityKeyPair: ECKeyPair
-        public let localDevicePniSignedPreKeyRecord: SignedPreKeyRecord
+        public let localDevicePniSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord
         public let localDevicePniRegistrationId: UInt32
 
         public init(
             newE164: E164,
             pniIdentityKeyPair: ECKeyPair,
-            localDevicePniSignedPreKeyRecord: SignedPreKeyRecord,
+            localDevicePniSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
             localDevicePniRegistrationId: UInt32
         ) {
             self.newE164 = newE164
@@ -124,7 +124,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
     func generatePniIdentity(
         forNewE164 newE164: E164,
-        localAci: UntypedServiceId,
+        localAci: Aci,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32]

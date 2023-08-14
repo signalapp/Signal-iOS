@@ -299,7 +299,7 @@ private class PniDistributionParamaterBuilderMock: PniDistributionParamaterBuild
     var buildRequestedDeviceIds: [[UInt32]] = []
 
     func buildPniDistributionParameters(
-        localAci _: UntypedServiceId,
+        localAci _: Aci,
         localAccountId _: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
@@ -347,7 +347,7 @@ private class SignalRecipientStoreMock: _PniHelloWorldManagerImpl_SignalRecipien
     var deviceIds: [UInt32]?
 
     func localAccountAndDeviceIds(
-        localAci: UntypedServiceId,
+        localAci: Aci,
         tx: DBReadTransaction
     ) -> (accountId: String, deviceIds: [UInt32])? {
         guard let localAccountId, let deviceIds else {

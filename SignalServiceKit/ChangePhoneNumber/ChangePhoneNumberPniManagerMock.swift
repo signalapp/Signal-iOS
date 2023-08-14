@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import LibSignalClient
 
 #if TESTABLE_BUILD
 
@@ -11,7 +11,7 @@ public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
 
     public func generatePniIdentity(
         forNewE164 newE164: E164,
-        localAci: UntypedServiceId,
+        localAci: Aci,
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32]
