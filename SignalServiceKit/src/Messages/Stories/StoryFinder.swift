@@ -270,7 +270,7 @@ public class StoryFinder: NSObject {
         let sql = """
             SELECT \(StoryMessage.columnName(.timestamp))
             FROM \(StoryMessage.databaseTableName)
-            WHERE \(StoryMessage.columnName(.authorUuid)) != '\(StoryMessage.systemStoryAuthorUUID.uuidString)'
+            WHERE \(StoryMessage.columnName(.authorUuid)) != '\(StoryMessage.systemStoryAuthor.serviceIdUppercaseString)'
             ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
             LIMIT 1
         """

@@ -347,7 +347,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     // The "Signal account" used for e.g. the onboarding story has a fixed UUID
     // we can use to prevent trying to actually reply, send a message, etc.
-    public static let systemStoryAuthorUUID = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
+    public static let systemStoryAuthor = Aci(fromUUID: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!)
 
     @discardableResult
     public static func createFromSystemAuthor(
@@ -378,7 +378,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             // sophisticated for future stories this is where we'd change it, maybe make this
             // a null timestamp and interpret that different when we read it back out.
             timestamp: timestamp,
-            authorUuid: Self.systemStoryAuthorUUID,
+            authorUuid: Self.systemStoryAuthor.temporary_rawUUID,
             groupId: nil,
             manifest: manifest,
             attachment: attachment,
@@ -949,7 +949,7 @@ extension OWSOutgoingMessageRecipientState: Codable {}
 extension SignalServiceAddress {
 
     public var isSystemStoryAddress: Bool {
-        return self.uuid == StoryMessage.systemStoryAuthorUUID
+        return self.serviceId == StoryMessage.systemStoryAuthor
     }
 }
 

@@ -981,7 +981,7 @@ class MessageManagerRequest: NSObject {
     private static func isDuplicate(_ decryptedEnvelope: DecryptedIncomingEnvelope, tx: SDSAnyReadTransaction) -> Bool {
         return InteractionFinder.existsIncomingMessage(
             timestamp: decryptedEnvelope.timestamp,
-            sourceServiceId: decryptedEnvelope.sourceAci.untypedServiceId,
+            sourceAci: decryptedEnvelope.sourceAci,
             sourceDeviceId: decryptedEnvelope.sourceDeviceId,
             transaction: tx
         )

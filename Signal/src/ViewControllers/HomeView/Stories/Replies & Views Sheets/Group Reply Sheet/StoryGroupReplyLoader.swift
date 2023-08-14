@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalCoreKit
 import SignalMessaging
 import SignalUI
@@ -51,7 +52,7 @@ class StoryGroupReplyLoader: Dependencies {
         self.storyMessage = storyMessage
         self.tableView = tableView
         self.messageBatchFetcher = StoryGroupReplyBatchFetcher(
-            storyAuthor: UntypedServiceId(storyMessage.authorUuid),
+            storyAuthor: Aci(fromUUID: storyMessage.authorUuid),
             storyTimestamp: storyMessage.timestamp
         )
         self.messageLoader = MessageLoader(
@@ -324,12 +325,12 @@ extension StoryGroupReplyLoader: DatabaseChangeDelegate {
 // MARK: - Batch Fetcher
 
 private class StoryGroupReplyBatchFetcher: MessageLoaderBatchFetcher {
-    private let storyAuthor: UntypedServiceId
+    private let storyAuthor: Aci
     private let storyTimestamp: UInt64
 
     private(set) var uniqueIdsAndRowIds = [(uniqueId: String, rowId: Int64)]()
 
-    init(storyAuthor: UntypedServiceId, storyTimestamp: UInt64) {
+    init(storyAuthor: Aci, storyTimestamp: UInt64) {
         self.storyAuthor = storyAuthor
         self.storyTimestamp = storyTimestamp
     }

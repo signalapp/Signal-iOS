@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 import SignalCoreKit
 
 public enum EditMessageQueryMode {
@@ -22,7 +23,7 @@ protocol InteractionFinderAdapter {
 
     static func fetch(rowId: Int64, transaction: ReadTransaction) throws -> TSInteraction?
 
-    static func existsIncomingMessage(timestamp: UInt64, sourceServiceId: UntypedServiceId, sourceDeviceId: UInt32, transaction: ReadTransaction) -> Bool
+    static func existsIncomingMessage(timestamp: UInt64, sourceAci: Aci, sourceDeviceId: UInt32, transaction: ReadTransaction) -> Bool
 
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
 
@@ -43,7 +44,7 @@ protocol InteractionFinderAdapter {
 
     static func enumerateGroupReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
     static func hasLocalUserReplied(storyTimestamp: UInt64, storyAuthorUuidString: String, transaction: ReadTransaction) -> Bool
-    static func groupReplyUniqueIdsAndRowIds(storyAuthor: UntypedServiceId, storyTimestamp: UInt64, transaction: ReadTransaction) -> [(String, Int64)]
+    static func groupReplyUniqueIdsAndRowIds(storyAuthor: Aci, storyTimestamp: UInt64, transaction: ReadTransaction) -> [(String, Int64)]
 
     // MARK: - instance methods
 
@@ -119,10 +120,10 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    public class func existsIncomingMessage(timestamp: UInt64, sourceServiceId: UntypedServiceId, sourceDeviceId: UInt32, transaction: SDSAnyReadTransaction) -> Bool {
+    public class func existsIncomingMessage(timestamp: UInt64, sourceAci: Aci, sourceDeviceId: UInt32, transaction: SDSAnyReadTransaction) -> Bool {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            return GRDBInteractionFinder.existsIncomingMessage(timestamp: timestamp, sourceServiceId: sourceServiceId, sourceDeviceId: sourceDeviceId, transaction: grdbRead)
+            return GRDBInteractionFinder.existsIncomingMessage(timestamp: timestamp, sourceAci: sourceAci, sourceDeviceId: sourceDeviceId, transaction: grdbRead)
         }
     }
 
@@ -249,7 +250,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     public static func groupReplyUniqueIdsAndRowIds(
-        storyAuthor: UntypedServiceId,
+        storyAuthor: Aci,
         storyTimestamp: UInt64,
         transaction: SDSAnyReadTransaction
     ) -> [(String, Int64)] {
@@ -691,7 +692,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         )
     }
 
-    static func existsIncomingMessage(timestamp: UInt64, sourceServiceId: UntypedServiceId, sourceDeviceId: UInt32, transaction: GRDBReadTransaction) -> Bool {
+    static func existsIncomingMessage(timestamp: UInt64, sourceAci: Aci, sourceDeviceId: UInt32, transaction: GRDBReadTransaction) -> Bool {
         let sql = """
             SELECT EXISTS(
                 SELECT 1
@@ -706,8 +707,8 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         """
         let arguments: StatementArguments = [
             timestamp,
-            sourceServiceId.uuidValue.uuidString,
-            SignalServiceAddress(sourceServiceId).phoneNumber,
+            sourceAci.serviceIdUppercaseString,
+            SignalServiceAddress(sourceAci).phoneNumber,
             sourceDeviceId
         ]
         do {
@@ -1002,11 +1003,11 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     static func groupReplyUniqueIdsAndRowIds(
-        storyAuthor: UntypedServiceId,
+        storyAuthor: Aci,
         storyTimestamp: UInt64,
         transaction: GRDBReadTransaction
     ) -> [(String, Int64)] {
-        guard storyAuthor.uuidValue != StoryMessage.systemStoryAuthorUUID else {
+        guard storyAuthor != StoryMessage.systemStoryAuthor else {
             // No replies on system stories.
             return []
         }
@@ -1022,7 +1023,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             return try Row.fetchAll(
                 transaction.database,
                 sql: sql,
-                arguments: [storyTimestamp, storyAuthor.uuidValue.uuidString]
+                arguments: [storyTimestamp, storyAuthor.serviceIdUppercaseString]
             ).map { ($0[0], $0[1]) }
         } catch {
             owsFail("error: \(error)")
