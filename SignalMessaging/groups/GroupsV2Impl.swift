@@ -1088,14 +1088,12 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
         behavior404: Behavior404,
         remainingRetries: UInt = 3
     ) -> Promise<HTTPResponse> {
-        guard
-            let localAci = tsAccountManager.localUuid
-        else {
-            return Promise(error: OWSAssertionError("Missing local ACI"))
+        guard let localIdentifiers = tsAccountManager.localIdentifiers else {
+            return Promise(error: OWSAssertionError("Missing localIdentifiers."))
         }
 
         return firstly {
-            self.ensureTemporalCredentials(localAci: localAci, localPni: tsAccountManager.localPni)
+            self.ensureTemporalCredentials(localAci: localIdentifiers.aci, localPni: localIdentifiers.pni)
         }.then(on: DispatchQueue.global()) { (authCredential: AuthCredentialWithPni) -> Promise<GroupsV2Request> in
             try requestBuilder(authCredential)
         }.then(on: DispatchQueue.global()) { (request: GroupsV2Request) -> Promise<HTTPResponse> in
@@ -1457,8 +1455,8 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
     }
 
     private func ensureTemporalCredentials(
-        localAci: UUID,
-        localPni: UUID?
+        localAci: Aci,
+        localPni: Pni?
     ) -> Promise<AuthCredentialWithPni> {
         let redemptionTime = Self.todaySecondsSinceEpoch
 
@@ -1509,8 +1507,8 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
     }
 
     private func retrieveTemporalCredentialsFromService(
-        localAci: UUID,
-        localPni: UUID?
+        localAci: Aci,
+        localPni: Pni?
     ) -> Promise<AuthCredentialWithPniMap> {
         let sevenDaysSeconds = 7 * Self.dayInSeconds
         let todaySeconds = Self.todaySecondsSinceEpoch
@@ -1539,7 +1537,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             var credentialMap = AuthCredentialWithPniMap()
             for temporalCredential in temporalCredentials {
                 // Verify the credentials.
-                let authCredential: AuthCredentialWithPni = try clientZkAuthOperations.receiveAuthCredentialWithPni(
+                let authCredential: AuthCredentialWithPni = try clientZkAuthOperations.receiveAuthCredentialWithPniAsServiceId(
                     aci: localAci,
                     pni: pni,
                     redemptionTime: temporalCredential.redemptionTime,
@@ -1568,7 +1566,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
     private func parseCredentialResponse(
         responseObject: Any?
-    ) throws -> (credentials: [TemporalCredential], pni: UUID) {
+    ) throws -> (credentials: [TemporalCredential], pni: Pni) {
         guard let responseObject = responseObject else {
             throw OWSAssertionError("Missing response.")
         }
@@ -1577,7 +1575,7 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
             throw OWSAssertionError("invalid response: \(String(describing: responseObject))")
         }
 
-        let pni: UUID = try params.required(key: "pni")
+        let pni = Pni(fromUUID: try params.required(key: "pni"))
         let credentials: [Any] = try params.required(key: "credentials")
 
         var temporalCredentials = [TemporalCredential]()

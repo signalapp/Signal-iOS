@@ -86,8 +86,7 @@ public extension GroupV2Params {
 
     func aci(for userId: Data) throws -> Aci {
         guard let aci = try serviceId(for: userId) as? Aci else {
-            // PNI TODO: Update this to a more appropriate error.
-            throw OWSGenericError("Wrong type of ServiceId.")
+            throw ServiceIdError.wrongServiceIdKind
         }
         return aci
     }
@@ -99,8 +98,7 @@ public extension GroupV2Params {
 
     func aci(for uuidCiphertext: UuidCiphertext) throws -> Aci {
         guard let aci = try serviceId(for: uuidCiphertext) as? Aci else {
-            // PNI TODO: Update this to a more appropriate error.
-            throw OWSGenericError("Wrong type of ServiceId.")
+            throw ServiceIdError.wrongServiceIdKind
         }
         return aci
     }
@@ -121,8 +119,7 @@ public extension GroupV2Params {
         }
 
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
-        // PNI TODO: Support PNIs.
-        let serviceId = Aci(fromUUID: try clientZkGroupCipher.decryptUuid(uuidCiphertext: uuidCiphertext))
+        let serviceId = try clientZkGroupCipher.decrypt(uuidCiphertext)
 
         Self.decryptedServiceIdCache.setObject(serviceId, forKey: cacheKey)
         return serviceId
@@ -130,8 +127,7 @@ public extension GroupV2Params {
 
     func userId(for serviceId: ServiceId) throws -> Data {
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
-        // PNI TODO: Support PNIs.
-        let uuidCiphertext = try clientZkGroupCipher.encryptUuid(uuid: serviceId.rawUUID)
+        let uuidCiphertext = try clientZkGroupCipher.encrypt(serviceId)
         let userId = uuidCiphertext.serialize().asData
 
         let cacheKey = (userId + groupSecretParamsData)
@@ -150,7 +146,7 @@ public extension GroupV2Params {
         }
 
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
-        let profileKey = try clientZkGroupCipher.decryptProfileKey(profileKeyCiphertext: profileKeyCiphertext, uuid: aci.rawUUID)
+        let profileKey = try clientZkGroupCipher.decryptProfileKey(profileKeyCiphertext: profileKeyCiphertext, userId: aci)
         let plaintext = profileKey.serialize().asData
 
         Self.decryptedProfileKeyCache.setObject(plaintext, forKey: cacheKey)

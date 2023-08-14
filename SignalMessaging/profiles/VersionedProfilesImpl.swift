@@ -149,7 +149,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             return localAci
         }.then(on: DispatchQueue.global()) { (localAci: Aci) -> Promise<HTTPResponse> in
             let localProfileKey = try self.parseProfileKey(profileKey: profileKeyToUse)
-            let commitment = try localProfileKey.getCommitment(uuid: localAci.rawUUID)
+            let commitment = try localProfileKey.getCommitment(userId: localAci)
             let commitmentData = commitment.serialize().asData
             let hasAvatar = profileAvatarData != nil
 
@@ -232,7 +232,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                                                               paddedLengths: [554],
                                                               validBase64Lengths: [776])
 
-            let profileKeyVersion = try localProfileKey.getProfileKeyVersion(uuid: localAci.rawUUID)
+            let profileKeyVersion = try localProfileKey.getProfileKeyVersion(userId: localAci)
             let profileKeyVersionString = try profileKeyVersion.asHexadecimalString()
             let request = OWSRequestFactory.versionedProfileSetRequest(
                 withName: nameValue,
@@ -300,14 +300,14 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             }
             profileKeyForRequest = profileKeyForAddress
             let profileKey: ProfileKey = try self.parseProfileKey(profileKey: profileKeyForAddress)
-            let profileKeyVersion = try profileKey.getProfileKeyVersion(uuid: aci.rawUUID)
+            let profileKeyVersion = try profileKey.getProfileKeyVersion(userId: aci)
             profileKeyVersionArg = try profileKeyVersion.asHexadecimalString()
 
             // We need to request a credential if we don't have a valid one already.
             if !(try CredentialStore.hasValidCredential(for: aci, transaction: transaction)) {
                 let clientZkProfileOperations = try self.clientZkProfileOperations()
                 let context = try clientZkProfileOperations.createProfileKeyCredentialRequestContext(
-                    uuid: aci.rawUUID,
+                    userId: aci,
                     profileKey: profileKey
                 )
                 requestContext = context

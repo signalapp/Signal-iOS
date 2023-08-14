@@ -745,8 +745,7 @@ private extension HasPniAndAciAndProfileKey {
         }
 
         guard let pni = try groupV2Params.serviceId(for: pniCiphertext) as? Pni else {
-            // PNI TODO: Use a more appropriate error.
-            throw OWSGenericError("Wrong type of ServiceId.")
+            throw ServiceIdError.wrongServiceIdKind
         }
 
         return PniAndAciProperties(

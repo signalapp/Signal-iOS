@@ -587,10 +587,11 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     OWSAssertDebug(fromRedemptionSeconds > 0);
     OWSAssertDebug(toRedemptionSeconds > 0);
 
-    NSString *path =
-        [NSString stringWithFormat:@"/v1/certificate/auth/group?redemptionStartSeconds=%llu&redemptionEndSeconds=%llu",
-                  (unsigned long long)fromRedemptionSeconds,
-                  (unsigned long long)toRedemptionSeconds];
+    NSString *path = [NSString
+        stringWithFormat:
+            @"/v1/certificate/auth/group?redemptionStartSeconds=%llu&redemptionEndSeconds=%llu&pniAsServiceId=true",
+        (unsigned long long)fromRedemptionSeconds,
+        (unsigned long long)toRedemptionSeconds];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
