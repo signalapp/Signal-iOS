@@ -288,7 +288,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         corruptionStore.setUsernameLinkCorrupted(false, tx: tx)
         usernameStore.setUsernameLink(usernameLink: usernameLink, tx: tx)
 
-        postLocalUsernameStateChangedNotification()
+        postLocalUsernameStateChangedNotification(tx: tx)
     }
 
     func setLocalUsernameWithCorruptedLink(
@@ -300,7 +300,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
         corruptionStore.setUsernameLinkCorrupted(true, tx: tx)
 
-        postLocalUsernameStateChangedNotification()
+        postLocalUsernameStateChangedNotification(tx: tx)
     }
 
     func setLocalUsernameCorrupted(tx: DBWriteTransaction) {
@@ -314,7 +314,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         usernameStore.setUsername(username: nil, tx: tx)
         usernameStore.setUsernameLink(usernameLink: nil, tx: tx)
 
-        postLocalUsernameStateChangedNotification()
+        postLocalUsernameStateChangedNotification(tx: tx)
     }
 
     func usernameLinkQRCodeColor(
@@ -334,20 +334,22 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         corruptionStore.setUsernameCorrupted(value, tx: tx)
         corruptionStore.setUsernameLinkCorrupted(value, tx: tx)
 
-        postLocalUsernameStateChangedNotification()
+        postLocalUsernameStateChangedNotification(tx: tx)
     }
 
     private func markUsernameLinkCorrupted(_ value: Bool, tx: DBWriteTransaction) {
         corruptionStore.setUsernameLinkCorrupted(value, tx: tx)
 
-        postLocalUsernameStateChangedNotification()
+        postLocalUsernameStateChangedNotification(tx: tx)
     }
 
-    private func postLocalUsernameStateChangedNotification() {
-        NotificationCenter.default.postNotificationNameAsync(
-            Usernames.localUsernameStateChangedNotification,
-            object: nil
-        )
+    private func postLocalUsernameStateChangedNotification(tx: DBWriteTransaction) {
+        tx.addAsyncCompletion(on: schedulers.main) {
+            NotificationCenter.default.postNotificationNameAsync(
+                Usernames.localUsernameStateChangedNotification,
+                object: nil
+            )
+        }
     }
 
     // MARK: Usernames and the service
