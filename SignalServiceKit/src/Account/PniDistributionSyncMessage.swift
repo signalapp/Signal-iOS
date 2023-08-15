@@ -15,15 +15,18 @@ import Curve25519Kit
 final class PniDistributionSyncMessage {
     private let pniIdentityKeyPair: ECKeyPair
     private let signedPreKey: SignedPreKeyRecord
+    private let pqLastResortPreKey: KyberPreKeyRecord
     private let registrationId: UInt32
 
     init(
         pniIdentityKeyPair: ECKeyPair,
         signedPreKey: SignedPreKeyRecord,
+        pqLastResortPreKey: KyberPreKeyRecord,
         registrationId: UInt32
     ) {
         self.pniIdentityKeyPair = pniIdentityKeyPair
         self.signedPreKey = signedPreKey
+        self.pqLastResortPreKey = pqLastResortPreKey
         self.registrationId = registrationId
     }
 
@@ -32,6 +35,7 @@ final class PniDistributionSyncMessage {
         let changeNumberBuilder = SSKProtoSyncMessagePniChangeNumber.builder()
         changeNumberBuilder.setIdentityKeyPair(Data(pniIdentityKeyPair.identityKeyPair.serialize()))
         changeNumberBuilder.setSignedPreKey(Data(try signedPreKey.asLSCRecord().serialize()))
+        changeNumberBuilder.setLastResortKyberPreKey(Data(try pqLastResortPreKey.asLSCRecord().serialize()))
         changeNumberBuilder.setRegistrationID(registrationId)
 
         let syncMessageBuilder = SSKProtoSyncMessage.builder()

@@ -15,6 +15,12 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         tx: DBWriteTransaction
     ) throws -> SignalServiceKit.KyberPreKeyRecord
 
+    /// Keys returned by this method should not be stored in the local
+    /// KyberPreKeyStore since there is no guarantee the key ID is unique.
+    func generateEphemeralLastResortKyberPreKey(
+        signedBy keyPair: ECKeyPair
+    ) throws -> SignalServiceKit.KyberPreKeyRecord
+
     func generateKyberPreKeyRecords(
         count: Int,
         signedBy keyPair: ECKeyPair,
@@ -89,15 +95,8 @@ public struct KyberPreKeyRecord: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
-        let record = try LibSignalClient.KyberPreKeyRecord(
-            id: UInt32(bitPattern: id),
-            timestamp: generatedAt.ows_millisecondsSince1970,
-            keyPair: keyPair,
-            signature: signature
-        )
-
         try container.encode(isLastResort, forKey: .isLastResort)
-        try container.encode(Data(record.serialize()), forKey: .keyData)
+        try container.encode(Data(asLSCRecord().serialize()), forKey: .keyData)
     }
 
     public init(from decoder: Decoder) throws {
@@ -112,6 +111,26 @@ public struct KyberPreKeyRecord: Codable {
         self.signature = Data(record.signature)
         self.generatedAt = Date(millisecondsSince1970: record.timestamp)
         self.isLastResort = isLastResort
+    }
+}
+
+extension KyberPreKeyRecord: Equatable {
+    public static func == (lhs: KyberPreKeyRecord, rhs: KyberPreKeyRecord) -> Bool {
+        return (
+            lhs.id == rhs.id
+            && lhs.isLastResort == rhs.isLastResort
+            && lhs.generatedAt == rhs.generatedAt
+            && lhs.signature == rhs.signature
+        )
+    }
+}
+
+extension KyberPreKeyRecord: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(isLastResort)
+        hasher.combine(generatedAt)
+        hasher.combine(signature)
     }
 }
 
@@ -180,8 +199,7 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
     private func generateKyberPreKeyRecord(
         id: Int32,
         signedBy identityKeyPair: ECKeyPair,
-        isLastResort: Bool,
-        tx: DBWriteTransaction
+        isLastResort: Bool
     ) throws -> KyberPreKeyRecord {
         let keyPair = KEMKeyPair.generate()
         let signature = try Ed25519.sign(Data(keyPair.publicKey.serialize()), with: identityKeyPair)
@@ -209,8 +227,7 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
             let record = try generateKyberPreKeyRecord(
                 id: nextKeyId,
                 signedBy: keyPair,
-                isLastResort: false,
-                tx: tx
+                isLastResort: false
             )
             nextKeyId += 1
             return record
@@ -229,11 +246,21 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         let record = try generateKyberPreKeyRecord(
             id: keyId,
             signedBy: keyPair,
-            isLastResort: true,
-            tx: tx
+            isLastResort: true
         )
         metadataStore.setInt32(keyId, key: Constants.lastKeyId, transaction: tx)
         return record
+    }
+
+    public func generateEphemeralLastResortKyberPreKey(
+        signedBy keyPair: ECKeyPair
+    ) throws -> SignalServiceKit.KyberPreKeyRecord {
+        let keyId = Int32.random(in: 1...(Constants.maxKeyId))
+        return try generateKyberPreKeyRecord(
+            id: keyId,
+            signedBy: keyPair,
+            isLastResort: true
+        )
     }
 
     // Mark as current
@@ -394,5 +421,28 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         tx: DBWriteTransaction
     ) {
         self.keyStore.removeValue(forKey: key(for: record.id), transaction: tx)
+    }
+}
+
+extension LibSignalClient.KyberPreKeyRecord {
+    func asSSKLastResortRecord() -> SignalServiceKit.KyberPreKeyRecord {
+        return SignalServiceKit.KyberPreKeyRecord(
+            Int32(bitPattern: self.id),
+            keyPair: self.keyPair,
+            signature: Data(self.signature),
+            generatedAt: Date(millisecondsSince1970: self.timestamp),
+            isLastResort: true
+        )
+    }
+}
+
+extension SignalServiceKit.KyberPreKeyRecord {
+    func asLSCRecord() throws -> LibSignalClient.KyberPreKeyRecord {
+        try LibSignalClient.KyberPreKeyRecord(
+            id: UInt32(bitPattern: self.id),
+            timestamp: self.generatedAt.ows_millisecondsSince1970,
+            keyPair: self.keyPair,
+            signature: self.signature
+        )
     }
 }

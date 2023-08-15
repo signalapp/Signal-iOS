@@ -34,6 +34,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
     private let networkManager: Shims.NetworkManager
     private let pniDistributionParameterBuilder: PniDistributionParamaterBuilder
     private let pniSignedPreKeyStore: SignalSignedPreKeyStore
+    private let pniKyberPreKeyStore: SignalKyberPreKeyStore
     private let profileManager: Shims.ProfileManager
     private let schedulers: Schedulers
     private let signalRecipientStore: Shims.SignalRecipientStore
@@ -46,6 +47,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         networkManager: Shims.NetworkManager,
         pniDistributionParameterBuilder: PniDistributionParamaterBuilder,
         pniSignedPreKeyStore: SignalSignedPreKeyStore,
+        pniKyberPreKeyStore: SignalKyberPreKeyStore,
         profileManager: Shims.ProfileManager,
         schedulers: Schedulers,
         signalRecipientStore: Shims.SignalRecipientStore,
@@ -57,6 +59,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         self.networkManager = networkManager
         self.pniDistributionParameterBuilder = pniDistributionParameterBuilder
         self.pniSignedPreKeyStore = pniSignedPreKeyStore
+        self.pniKyberPreKeyStore = pniKyberPreKeyStore
         self.profileManager = profileManager
         self.schedulers = schedulers
         self.signalRecipientStore = signalRecipientStore
@@ -103,7 +106,8 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         // Use the primary device's existing PNI identity.
         guard
             let localPniIdentityKeyPair = identityManager.pniIdentityKeyPair(tx: syncTx),
-            let localDevicePniSignedPreKey = pniSignedPreKeyStore.currentSignedPreKey(tx: syncTx)
+            let localDevicePniSignedPreKey = pniSignedPreKeyStore.currentSignedPreKey(tx: syncTx),
+            let localDevicePniPqLastResortPreKey = pniKyberPreKeyStore.getLastResortKyberPreKey(tx: syncTx)
         else {
             logger.warn("Skipping PNI Hello World, missing PNI parameters!")
             return
@@ -122,6 +126,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
                 localUserAllDeviceIds: localUserAllDeviceIds,
                 localPniIdentityKeyPair: localPniIdentityKeyPair,
                 localDevicePniSignedPreKey: localDevicePniSignedPreKey,
+                localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
                 localDevicePniRegistrationId: localDevicePniRegistrationId
             )
         }.map(on: schedulers.sync) { parameterGenerationResult throws -> PniDistribution.Parameters in

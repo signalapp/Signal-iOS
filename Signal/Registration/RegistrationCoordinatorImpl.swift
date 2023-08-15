@@ -3362,7 +3362,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             do {
                 try strongSelf.db.write { tx in
-                    strongSelf.deps.changeNumberPniManager.finalizePniIdentity(
+                    try strongSelf.deps.changeNumberPniManager.finalizePniIdentity(
                         withPendingState: pniState.asPniState(),
                         transaction: tx
                     )

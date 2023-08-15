@@ -168,7 +168,9 @@ public class DependenciesBridge {
         let pniDistributionParameterBuilder = PniDistributionParameterBuilderImpl(
             messageSender: PniDistributionParameterBuilderImpl.Wrappers.MessageSender(messageSender),
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
+            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
             schedulers: schedulers,
+            db: db,
             tsAccountManager: PniDistributionParameterBuilderImpl.Wrappers.TSAccountManager(tsAccountManager)
         )
 
@@ -185,6 +187,7 @@ public class DependenciesBridge {
             identityManager: ChangePhoneNumberPniManagerImpl.Wrappers.IdentityManager(identityManager),
             preKeyManager: ChangePhoneNumberPniManagerImpl.Wrappers.PreKeyManager(),
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
+            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
             tsAccountManager: ChangePhoneNumberPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
         )
 
@@ -263,6 +266,7 @@ public class DependenciesBridge {
             networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
             pniDistributionParameterBuilder: pniDistributionParameterBuilder,
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
+            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
             profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
             schedulers: schedulers,
             signalRecipientStore: PniHelloWorldManagerImpl.Wrappers.SignalRecipientStore(),

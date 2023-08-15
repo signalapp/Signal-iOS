@@ -31,6 +31,7 @@ class PniHelloWorldManagerTest: XCTestCase {
     private var networkManagerMock: NetworkManagerMock!
     private var pniDistributionParameterBuilderMock: PniDistributionParamaterBuilderMock!
     private var pniSignedPreKeyStoreMock: MockSignalSignedPreKeyStore!
+    private var pniKyberPreKeyStoreMock: MockKyberPreKeyStore!
     private var profileManagerMock: ProfileManagerMock!
     private var signalRecipientStoreMock: SignalRecipientStoreMock!
     private var tsAccountManagerMock: TSAccountManagerMock!
@@ -45,6 +46,7 @@ class PniHelloWorldManagerTest: XCTestCase {
         networkManagerMock = .init()
         pniDistributionParameterBuilderMock = .init()
         pniSignedPreKeyStoreMock = .init()
+        pniKyberPreKeyStoreMock = .init(dateProvider: Date.provider)
         profileManagerMock = .init()
         signalRecipientStoreMock = .init()
         tsAccountManagerMock = .init()
@@ -62,6 +64,7 @@ class PniHelloWorldManagerTest: XCTestCase {
             networkManager: networkManagerMock,
             pniDistributionParameterBuilder: pniDistributionParameterBuilderMock,
             pniSignedPreKeyStore: pniSignedPreKeyStoreMock,
+            pniKyberPreKeyStore: pniKyberPreKeyStoreMock,
             profileManager: profileManagerMock,
             schedulers: schedulers,
             signalRecipientStore: signalRecipientStoreMock,
@@ -83,6 +86,10 @@ class PniHelloWorldManagerTest: XCTestCase {
                 signedBy: keyPair
             )
         )
+        db.write { tx in
+            let key = try! pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: keyPair, tx: tx)
+            try! pniKyberPreKeyStoreMock.storeLastResortPreKeyAndMarkAsCurrent(record: key, tx: tx)
+        }
 
         pniDistributionParameterBuilderMock.buildOutcomes = [.success]
         networkManagerMock.requestShouldSucceed = true
@@ -305,6 +312,7 @@ private class PniDistributionParamaterBuilderMock: PniDistributionParamaterBuild
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
         localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
+        localDevicePniPqLastResortPreKey: SignalServiceKit.KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
         guard let buildOutcome = buildOutcomes.first else {
@@ -322,6 +330,7 @@ private class PniDistributionParamaterBuilderMock: PniDistributionParamaterBuild
                 pniIdentityKeyPair: localPniIdentityKeyPair,
                 localDeviceId: localDeviceId,
                 localDevicePniSignedPreKey: localDevicePniSignedPreKey,
+                localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
                 localDevicePniRegistrationId: localDevicePniRegistrationId
             )))
         case .failure:

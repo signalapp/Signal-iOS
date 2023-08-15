@@ -50,7 +50,7 @@ public protocol ChangePhoneNumberPniManager {
     func finalizePniIdentity(
         withPendingState pendingState: ChangePhoneNumberPni.PendingState,
         transaction: DBWriteTransaction
-    )
+    ) throws
 }
 
 // MARK: - Change-Number PNI types
@@ -63,17 +63,21 @@ public enum ChangePhoneNumberPni {
         public let newE164: E164
         public let pniIdentityKeyPair: ECKeyPair
         public let localDevicePniSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord
+        // TODO (PQXDH): 8/14/2023 - This should me made non-optional after 90 days
+        public let localDevicePniPqLastResortPreKeyRecord: KyberPreKeyRecord?
         public let localDevicePniRegistrationId: UInt32
 
         public init(
             newE164: E164,
             pniIdentityKeyPair: ECKeyPair,
             localDevicePniSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord,
+            localDevicePniPqLastResortPreKeyRecord: KyberPreKeyRecord?,
             localDevicePniRegistrationId: UInt32
         ) {
             self.newE164 = newE164
             self.pniIdentityKeyPair = pniIdentityKeyPair
             self.localDevicePniSignedPreKeyRecord = localDevicePniSignedPreKeyRecord
+            self.localDevicePniPqLastResortPreKeyRecord = localDevicePniPqLastResortPreKeyRecord
             self.localDevicePniRegistrationId = localDevicePniRegistrationId
         }
     }
@@ -101,6 +105,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
     private let identityManager: Shims.IdentityManager
     private let preKeyManager: Shims.PreKeyManager
     private let pniSignedPreKeyStore: SignalSignedPreKeyStore
+    private let pniKyberPreKeyStore: SignalKyberPreKeyStore
     private let tsAccountManager: Shims.TSAccountManager
 
     init(
@@ -109,6 +114,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         identityManager: Shims.IdentityManager,
         preKeyManager: Shims.PreKeyManager,
         pniSignedPreKeyStore: SignalSignedPreKeyStore,
+        pniKyberPreKeyStore: SignalKyberPreKeyStore,
         tsAccountManager: Shims.TSAccountManager
     ) {
         self.schedulers = schedulers
@@ -117,6 +123,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         self.identityManager = identityManager
         self.preKeyManager = preKeyManager
         self.pniSignedPreKeyStore = pniSignedPreKeyStore
+        self.pniKyberPreKeyStore = pniKyberPreKeyStore
         self.tsAccountManager = tsAccountManager
     }
 
@@ -133,10 +140,16 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
         let pniIdentityKeyPair = identityManager.generateNewIdentityKeyPair()
 
+        let localDevicePniPqLastResortPreKeyRecord = try? pniKyberPreKeyStore.generateEphemeralLastResortKyberPreKey(signedBy: pniIdentityKeyPair)
+        guard let localDevicePniPqLastResortPreKeyRecord else {
+            return Guarantee.value(.failure)
+        }
+
         let pendingState = ChangePhoneNumberPni.PendingState(
             newE164: newE164,
             pniIdentityKeyPair: pniIdentityKeyPair,
             localDevicePniSignedPreKeyRecord: pniSignedPreKeyStore.generateSignedPreKey(signedBy: pniIdentityKeyPair),
+            localDevicePniPqLastResortPreKeyRecord: localDevicePniPqLastResortPreKeyRecord,
             localDevicePniRegistrationId: tsAccountManager.generateRegistrationId()
         )
 
@@ -148,6 +161,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
                 localUserAllDeviceIds: localUserAllDeviceIds,
                 localPniIdentityKeyPair: pniIdentityKeyPair,
                 localDevicePniSignedPreKey: pendingState.localDevicePniSignedPreKeyRecord,
+                localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKeyRecord,
                 localDevicePniRegistrationId: pendingState.localDevicePniRegistrationId
             )
         }.map(on: schedulers.sync) { paramGenerationResult in
@@ -165,7 +179,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
     func finalizePniIdentity(
         withPendingState pendingState: ChangePhoneNumberPni.PendingState,
         transaction: DBWriteTransaction
-    ) {
+    ) throws {
         logger.info("Finalizing PNI identity.")
 
         // Store pending state in the right places
@@ -175,6 +189,13 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
             for: .pni,
             transaction: transaction
         )
+
+        if let newPqLastResortPreKeyRecord = pendingState.localDevicePniPqLastResortPreKeyRecord {
+            try pniKyberPreKeyStore.storeLastResortPreKeyAndMarkAsCurrent(
+                record: newPqLastResortPreKeyRecord,
+                tx: transaction
+            )
+        }
 
         let newSignedPreKeyRecord = pendingState.localDevicePniSignedPreKeyRecord
         pniSignedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
