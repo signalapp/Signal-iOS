@@ -1105,6 +1105,19 @@ private extension GroupV2UpdatesImpl {
                 owsFailDebug("Error: \(error)")
             }
         }
+        for action in changeActionsProto.promotePniPendingMembers {
+            do {
+                guard let userId = action.userID else {
+                    throw OWSAssertionError("Missing userID.")
+                }
+                let aci = try groupV2Params.aci(for: userId)
+                if aci == localAci {
+                    return true
+                }
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
+        }
         for action in changeActionsProto.promoteRequestingMembers {
             do {
                 guard let userId = action.userID else {
