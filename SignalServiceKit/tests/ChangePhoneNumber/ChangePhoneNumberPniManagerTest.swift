@@ -14,6 +14,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
     private var pniDistributionParameterBuilderMock: PniDistributionParameterBuilderMock!
     private var preKeyManagerMock: PreKeyManagerMock!
     private var signedPreKeyStoreMock: MockSignalSignedPreKeyStore!
+    private var kyberPreKeyStoreMock: MockKyberPreKeyStore!
     private var tsAccountManagerMock: TSAccountManagerMock!
 
     private var schedulers: TestSchedulers!
@@ -25,6 +26,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         identityManagerMock = .init()
         pniDistributionParameterBuilderMock = .init()
         preKeyManagerMock = .init()
+        kyberPreKeyStoreMock = .init(dateProvider: Date.provider)
         signedPreKeyStoreMock = .init()
         tsAccountManagerMock = .init()
 
@@ -39,6 +41,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
             identityManager: identityManagerMock,
             preKeyManager: preKeyManagerMock,
             pniSignedPreKeyStore: signedPreKeyStoreMock,
+            pniKyberPreKeyStore: kyberPreKeyStoreMock,
             tsAccountManager: tsAccountManagerMock
         )
     }
@@ -104,7 +107,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         ).value!.unwrapSuccess
 
         db.write { transaction in
-            changeNumberPniManager.finalizePniIdentity(
+            try! changeNumberPniManager.finalizePniIdentity(
                 withPendingState: pendingState,
                 transaction: transaction
             )
@@ -230,6 +233,7 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
         localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
+        localDevicePniPqLastResortPreKey: SignalServiceKit.KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
         guard let buildOutcome = buildOutcomes.first else {
@@ -247,6 +251,7 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
                 pniIdentityKeyPair: localPniIdentityKeyPair,
                 localDeviceId: localDeviceId,
                 localDevicePniSignedPreKey: localDevicePniSignedPreKey,
+                localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
                 localDevicePniRegistrationId: localDevicePniRegistrationId
             )))
         case .failure:

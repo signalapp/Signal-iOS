@@ -1271,6 +1271,7 @@
 		C17345BB2A5E000300C6426D /* PreKeyOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17345BA2A5E000300C6426D /* PreKeyOperation.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
+		C1939F6F2A844E4D003BAEF0 /* SignalProtocolStoreMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */; };
 		C198FDD62A37C905000BCAC9 /* SSKKyberPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */; };
 		C19AFAB82A6598D800FE3ECF /* PreKeyOperationShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19AFAB72A6598D800FE3ECF /* PreKeyOperationShims.swift */; };
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
@@ -1284,8 +1285,7 @@
 		C1E5891B2A66D67C00ECAF66 /* PreKeyTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */; };
 		C1E5891D2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */; };
 		C1EAECDF2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EAECDE2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift */; };
-		C1ED5C9F2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */; };
-		C1ED5CA12A72E3D5009AD3FC /* PreKeyTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5CA02A72E3D5009AD3FC /* PreKeyTask.swift */; };
+		C1ED5CA12A72E3D5009AD3FC /* PreKeyTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5CA02A72E3D5009AD3FC /* PreKeyTasks.swift */; };
 		CC875800737563D6891B741D /* Pods_SignalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */; };
 		D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
@@ -7786,6 +7786,14 @@
 			path = Edit;
 			sourceTree = "<group>";
 		};
+		C1939F6E2A844C6D003BAEF0 /* SignalProtocolStore */ = {
+			isa = PBXGroup;
+			children = (
+				C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */,
+			);
+			path = SignalProtocolStore;
+			sourceTree = "<group>";
+		};
 		C1DB22C129C9F93600757380 /* Edit */ = {
 			isa = PBXGroup;
 			children = (
@@ -8121,6 +8129,7 @@
 				6691E7ED2996E8E90032A68A /* OWSSignalService */,
 				6691E7F02996E9B00032A68A /* Registration */,
 				6612780F2996BDFE00A1D5A1 /* Scheduler */,
+				C1939F6E2A844C6D003BAEF0 /* SignalProtocolStore */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -8304,8 +8313,6 @@
 				F94261DF289B1B5400460798 /* SDSDatabaseStorageObservationTest.swift */,
 				F94261DC289B1B5400460798 /* SDSDatabaseStorageTest.swift */,
 				F94261DB289B1B5400460798 /* SDSKeyValueStoreTest.swift */,
-				C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */,
-				C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */,
 				C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */,
 				C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */,
 				F94261E1289B1B5400460798 /* SSKSignedPreKeyStoreTest.swift */,
@@ -12593,6 +12600,7 @@
 				F9C5CC9E289453B300548EEE /* SignalIOSProto.swift in Sources */,
 				C1CD0E362A6B0BC900307F1A /* SignalPreKeyStore.swift in Sources */,
 				F9C5CD34289453B300548EEE /* SignalProtocolStore.swift in Sources */,
+				C1939F6F2A844E4D003BAEF0 /* SignalProtocolStoreMocks.swift in Sources */,
 				88DF819D28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift in Sources */,
 				88DF819B28E1158800F8BA80 /* SignalProxy+RelayClient.swift in Sources */,
 				88DF819528E1130900F8BA80 /* SignalProxy+RelayServer.swift in Sources */,
@@ -12905,7 +12913,6 @@
 				5003BB45299F650E0037159B /* ServiceIdTest.swift in Sources */,
 				F942626C289B1B5500460798 /* SignalAccountFinderTest.swift in Sources */,
 				E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */,
-				C1ED5C9F2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift in Sources */,
 				F9B93CDC28E1FE3500B3F8A0 /* SignalProxyTest.swift in Sources */,
 				F942627E289B1B5600460798 /* SignalRecipientTest.swift in Sources */,
 				F94262A1289B1B5600460798 /* SignalServiceAddressTest.swift in Sources */,

@@ -57,6 +57,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
                 public let newE164: E164
                 public let pniIdentityKeyPair: ECKeyPair
                 public let localDevicePniSignedPreKeyRecord: SignedPreKeyRecord
+                public let localDevicePniPqLastResortPreKeyRecord: KyberPreKeyRecord?
                 public let localDevicePniRegistrationId: UInt32
             }
 
@@ -248,6 +249,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
             newE164: newE164,
             pniIdentityKeyPair: pniIdentityKeyPair,
             localDevicePniSignedPreKeyRecord: localDevicePniSignedPreKeyRecord,
+            localDevicePniPqLastResortPreKeyRecord: localDevicePniPqLastResortPreKeyRecord,
             localDevicePniRegistrationId: localDevicePniRegistrationId
         )
     }
@@ -260,6 +262,7 @@ extension ChangePhoneNumberPni.PendingState {
             newE164: newE164,
             pniIdentityKeyPair: pniIdentityKeyPair,
             localDevicePniSignedPreKeyRecord: localDevicePniSignedPreKeyRecord,
+            localDevicePniPqLastResortPreKeyRecord: localDevicePniPqLastResortPreKeyRecord,
             localDevicePniRegistrationId: localDevicePniRegistrationId
         )
     }
@@ -272,6 +275,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
         case newE164
         case pniIdentityKeyPair
         case localDevicePniSignedPreKeyRecord
+        case localDevicePniPqLastResortPreKeyRecord
         case localDevicePniRegistrationId
     }
 
@@ -280,6 +284,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
 
         self.newE164 = try container.decode(E164.self, forKey: .newE164)
         self.localDevicePniRegistrationId = try container.decode(UInt32.self, forKey: .localDevicePniRegistrationId)
+        self.localDevicePniPqLastResortPreKeyRecord = try container.decodeIfPresent(KyberPreKeyRecord.self, forKey: .localDevicePniPqLastResortPreKeyRecord)
 
         guard
             let pniIdentityKeyPair: ECKeyPair = try Self.decodeKeyedArchive(
@@ -303,6 +308,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
 
         try container.encode(newE164, forKey: .newE164)
         try container.encode(localDevicePniRegistrationId, forKey: .localDevicePniRegistrationId)
+        try container.encode(localDevicePniPqLastResortPreKeyRecord, forKey: .localDevicePniPqLastResortPreKeyRecord)
 
         try Self.encodeKeyedArchive(
             value: pniIdentityKeyPair,

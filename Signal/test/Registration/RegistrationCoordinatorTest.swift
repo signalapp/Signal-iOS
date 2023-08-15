@@ -57,9 +57,13 @@ public class RegistrationCoordinatorTest: XCTestCase {
         Stubs.date = date
         dateProvider = { self.date }
 
+        let db = MockDB()
+
         accountManagerMock = RegistrationCoordinatorImpl.TestMocks.AccountManager()
         appExpiryMock = MockAppExpiry()
-        changeNumberPniManager = ChangePhoneNumberPniManagerMock()
+        changeNumberPniManager = ChangePhoneNumberPniManagerMock(
+            mockKyberStore: MockKyberPreKeyStore(dateProvider: Date.provider)
+        )
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
         svr = SecureValueRecoveryMock()
@@ -84,8 +88,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
 
         scheduler = TestScheduler()
-
-        let db = MockDB()
 
         let dependencies = RegistrationCoordinatorDependencies(
             accountManager: accountManagerMock,

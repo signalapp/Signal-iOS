@@ -13351,6 +13351,18 @@ public class SSKProtoSyncMessagePniChangeNumber: NSObject, Codable, NSSecureCodi
     }
 
     @objc
+    public var lastResortKyberPreKey: Data? {
+        guard hasLastResortKyberPreKey else {
+            return nil
+        }
+        return proto.lastResortKyberPreKey
+    }
+    @objc
+    public var hasLastResortKyberPreKey: Bool {
+        return proto.hasLastResortKyberPreKey
+    }
+
+    @objc
     public var registrationID: UInt32 {
         return proto.registrationID
     }
@@ -13450,6 +13462,9 @@ extension SSKProtoSyncMessagePniChangeNumber {
         if let _value = signedPreKey {
             builder.setSignedPreKey(_value)
         }
+        if let _value = lastResortKyberPreKey {
+            builder.setLastResortKyberPreKey(_value)
+        }
         if hasRegistrationID {
             builder.setRegistrationID(registrationID)
         }
@@ -13491,6 +13506,17 @@ public class SSKProtoSyncMessagePniChangeNumberBuilder: NSObject {
 
     public func setSignedPreKey(_ valueParam: Data) {
         proto.signedPreKey = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setLastResortKyberPreKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.lastResortKyberPreKey = valueParam
+    }
+
+    public func setLastResortKyberPreKey(_ valueParam: Data) {
+        proto.lastResortKyberPreKey = valueParam
     }
 
     @objc

@@ -3714,6 +3714,16 @@ struct SignalServiceProtos_SyncMessage {
     /// Clears the value of `signedPreKey`. Subsequent reads from it will return its default value.
     mutating func clearSignedPreKey() {self._signedPreKey = nil}
 
+    /// Serialized libsignal-client KyberPreKeyRecord
+    var lastResortKyberPreKey: Data {
+      get {return _lastResortKyberPreKey ?? Data()}
+      set {_lastResortKyberPreKey = newValue}
+    }
+    /// Returns true if `lastResortKyberPreKey` has been explicitly set.
+    var hasLastResortKyberPreKey: Bool {return self._lastResortKyberPreKey != nil}
+    /// Clears the value of `lastResortKyberPreKey`. Subsequent reads from it will return its default value.
+    mutating func clearLastResortKyberPreKey() {self._lastResortKyberPreKey = nil}
+
     var registrationID: UInt32 {
       get {return _registrationID ?? 0}
       set {_registrationID = newValue}
@@ -3738,6 +3748,7 @@ struct SignalServiceProtos_SyncMessage {
 
     fileprivate var _identityKeyPair: Data? = nil
     fileprivate var _signedPreKey: Data? = nil
+    fileprivate var _lastResortKyberPreKey: Data? = nil
     fileprivate var _registrationID: UInt32? = nil
     fileprivate var _newE164: String? = nil
   }
@@ -8394,6 +8405,7 @@ extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "identityKeyPair"),
     2: .same(proto: "signedPreKey"),
+    5: .same(proto: "lastResortKyberPreKey"),
     3: .same(proto: "registrationId"),
     4: .same(proto: "newE164"),
   ]
@@ -8408,6 +8420,7 @@ extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message
       case 2: try { try decoder.decodeSingularBytesField(value: &self._signedPreKey) }()
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self._registrationID) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._newE164) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._lastResortKyberPreKey) }()
       default: break
       }
     }
@@ -8430,12 +8443,16 @@ extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message
     try { if let v = self._newE164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 4)
     } }()
+    try { if let v = self._lastResortKyberPreKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.PniChangeNumber, rhs: SignalServiceProtos_SyncMessage.PniChangeNumber) -> Bool {
     if lhs._identityKeyPair != rhs._identityKeyPair {return false}
     if lhs._signedPreKey != rhs._signedPreKey {return false}
+    if lhs._lastResortKyberPreKey != rhs._lastResortKyberPreKey {return false}
     if lhs._registrationID != rhs._registrationID {return false}
     if lhs._newE164 != rhs._newE164 {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

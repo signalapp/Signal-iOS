@@ -250,6 +250,14 @@ extension OWSIdentityManager {
 
 extension OWSIdentityManager {
 
+    private struct PniChangePhoneNumberData {
+        let identityKeyPair: ECKeyPair
+        let signedPreKey: SignalServiceKit.SignedPreKeyRecord
+        let lastResortKyberPreKey: SignalServiceKit.KyberPreKeyRecord
+        let registrationId: UInt32
+        let e164: E164
+    }
+
     @objc
     public func processIncomingPniChangePhoneNumber(
         proto: SSKProtoSyncMessagePniChangeNumber,
@@ -269,12 +277,7 @@ extension OWSIdentityManager {
             return
         }
 
-        guard let (
-            pniIdentityKeyPair,
-            pniSignedPreKey,
-            pniRegistrationId,
-            newE164
-        ) = deserializeIncomingPniChangePhoneNumber(proto: proto) else {
+        guard let pniChangeData = deserializeIncomingPniChangePhoneNumber(proto: proto) else {
             return
         }
 
@@ -282,26 +285,37 @@ extension OWSIdentityManager {
 
         // Store in the right places
 
+        // attempt this first and return before writing any other information
+        do {
+            try pniProtocolStore.kyberPreKeyStore.storeLastResortPreKeyAndMarkAsCurrent(
+                record: pniChangeData.lastResortKyberPreKey,
+                tx: transaction.asV2Write
+            )
+        } catch {
+            owsFailDebug("Failed to store last resort Kyber prekey")
+            return
+        }
+
         storeIdentityKeyPair(
-            pniIdentityKeyPair,
+            pniChangeData.identityKeyPair,
             for: .pni,
             transaction: transaction
         )
 
-        pniSignedPreKey.markAsAcceptedByService()
+        pniChangeData.signedPreKey.markAsAcceptedByService()
         pniProtocolStore.signedPreKeyStore.storeSignedPreKeyAsAcceptedAndCurrent(
-            signedPreKeyId: pniSignedPreKey.id,
-            signedPreKeyRecord: pniSignedPreKey,
+            signedPreKeyId: pniChangeData.signedPreKey.id,
+            signedPreKeyRecord: pniChangeData.signedPreKey,
             tx: transaction.asV2Write
         )
 
         tsAccountManager.setPniRegistrationId(
-            newRegistrationId: pniRegistrationId,
+            newRegistrationId: pniChangeData.registrationId,
             transaction: transaction
         )
 
         tsAccountManager.updateLocalPhoneNumber(
-            E164ObjC(newE164),
+            E164ObjC(pniChangeData.e164),
             aci: AciObjC(localAci),
             pni: PniObjC(Pni(fromUUID: updatedPni)),
             transaction: transaction
@@ -320,10 +334,11 @@ extension OWSIdentityManager {
 
     private func deserializeIncomingPniChangePhoneNumber(
         proto: SSKProtoSyncMessagePniChangeNumber
-    ) -> (ECKeyPair, SignalServiceKit.SignedPreKeyRecord, UInt32, E164)? {
+    ) -> PniChangePhoneNumberData? {
         guard
             let pniIdentityKeyPairData = proto.identityKeyPair,
             let pniSignedPreKeyData = proto.signedPreKey,
+            let pniLastResortKyberKeyData = proto.lastResortKyberPreKey,
             proto.hasRegistrationID, proto.registrationID > 0,
             let newE164 = E164(proto.newE164)
         else {
@@ -334,13 +349,17 @@ extension OWSIdentityManager {
         do {
             let pniIdentityKeyPair = ECKeyPair(try IdentityKeyPair(bytes: pniIdentityKeyPairData))
             let pniSignedPreKey = try LibSignalClient.SignedPreKeyRecord(bytes: pniSignedPreKeyData).asSSKRecord()
+            let pniLastResortKyberPreKey = try LibSignalClient.KyberPreKeyRecord(
+                bytes: pniLastResortKyberKeyData
+            ).asSSKLastResortRecord()
             let pniRegistrationId = proto.registrationID
 
-            return (
-                pniIdentityKeyPair,
-                pniSignedPreKey,
-                pniRegistrationId,
-                newE164
+            return PniChangePhoneNumberData(
+                identityKeyPair: pniIdentityKeyPair,
+                signedPreKey: pniSignedPreKey,
+                lastResortKyberPreKey: pniLastResortKyberPreKey,
+                registrationId: pniRegistrationId,
+                e164: newE164
             )
         } catch let error {
             owsFailDebug("Error while deserializing PNI change-number proto: \(error)")

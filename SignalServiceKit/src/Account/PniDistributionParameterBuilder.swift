@@ -16,6 +16,7 @@ public enum PniDistribution {
     public struct Parameters {
         let pniIdentityKey: Data
         private(set) var devicePniSignedPreKeys: [String: SignedPreKeyRecord] = [:]
+        private(set) var devicePniPqLastResortPreKeys: [String: KyberPreKeyRecord] = [:]
         private(set) var pniRegistrationIds: [String: UInt32] = [:]
         private(set) var deviceMessages: [DeviceMessage] = []
 
@@ -29,12 +30,14 @@ public enum PniDistribution {
             pniIdentityKeyPair: ECKeyPair,
             localDeviceId: UInt32,
             localDevicePniSignedPreKey: SignedPreKeyRecord,
+            localDevicePniPqLastResortPreKey: KyberPreKeyRecord,
             localDevicePniRegistrationId: UInt32
         ) -> Parameters {
             var mock = Parameters(pniIdentityKey: pniIdentityKeyPair.publicKey)
             mock.addLocalDevice(
                 localDeviceId: localDeviceId,
                 signedPreKey: localDevicePniSignedPreKey,
+                pqLastResortPreKey: localDevicePniPqLastResortPreKey,
                 registrationId: localDevicePniRegistrationId
             )
             return mock
@@ -45,21 +48,25 @@ public enum PniDistribution {
         fileprivate mutating func addLocalDevice(
             localDeviceId: UInt32,
             signedPreKey: SignedPreKeyRecord,
+            pqLastResortPreKey: KyberPreKeyRecord,
             registrationId: UInt32
         ) {
             devicePniSignedPreKeys["\(localDeviceId)"] = signedPreKey
+            devicePniPqLastResortPreKeys["\(localDeviceId)"] = pqLastResortPreKey
             pniRegistrationIds["\(localDeviceId)"] = registrationId
         }
 
         fileprivate mutating func addLinkedDevice(
             deviceId: UInt32,
             signedPreKey: SignedPreKeyRecord,
+            pqLastResortPreKey: KyberPreKeyRecord,
             registrationId: UInt32,
             deviceMessage: DeviceMessage
         ) {
             owsAssert(deviceId == deviceMessage.destinationDeviceId)
 
             devicePniSignedPreKeys["\(deviceId)"] = signedPreKey
+            devicePniPqLastResortPreKeys["\(deviceId)"] = pqLastResortPreKey
             pniRegistrationIds["\(deviceId)"] = registrationId
             deviceMessages.append(deviceMessage)
         }
@@ -68,6 +75,7 @@ public enum PniDistribution {
             [
                 "pniIdentityKey": pniIdentityKey.prependKeyType().base64EncodedString(),
                 "devicePniSignedPrekeys": devicePniSignedPreKeys.mapValues { OWSRequestFactory.signedPreKeyRequestParameters($0) },
+                "devicePniPqLastResortPrekeys": devicePniPqLastResortPreKeys.mapValues { OWSRequestFactory.pqPreKeyRequestParameters($0) },
                 "deviceMessages": deviceMessages.map { $0.requestParameters() },
                 "pniRegistrationIds": pniRegistrationIds
             ]
@@ -92,6 +100,7 @@ protocol PniDistributionParamaterBuilder {
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
         localDevicePniSignedPreKey: SignedPreKeyRecord,
+        localDevicePniPqLastResortPreKey: KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) -> Guarantee<PniDistribution.ParameterGenerationResult>
 }
@@ -101,18 +110,24 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
 
     private let messageSender: Shims.MessageSender
     private let pniSignedPreKeyStore: SignalSignedPreKeyStore
+    private let pniKyberPreKeyStore: SignalKyberPreKeyStore
     private let schedulers: Schedulers
+    private let db: DB
     private let tsAccountManager: Shims.TSAccountManager
 
     init(
         messageSender: Shims.MessageSender,
         pniSignedPreKeyStore: SignalSignedPreKeyStore,
+        pniKyberPreKeyStore: SignalKyberPreKeyStore,
         schedulers: Schedulers,
+        db: DB,
         tsAccountManager: Shims.TSAccountManager
     ) {
         self.messageSender = messageSender
         self.pniSignedPreKeyStore = pniSignedPreKeyStore
+        self.pniKyberPreKeyStore = pniKyberPreKeyStore
         self.schedulers = schedulers
+        self.db = db
         self.tsAccountManager = tsAccountManager
     }
 
@@ -123,6 +138,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
         localDevicePniSignedPreKey: SignedPreKeyRecord,
+        localDevicePniPqLastResortPreKey: KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32
     ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
         var parameters = PniDistribution.Parameters(pniIdentityKey: localPniIdentityKeyPair.publicKey)
@@ -131,6 +147,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         parameters.addLocalDevice(
             localDeviceId: localDeviceId,
             signedPreKey: localDevicePniSignedPreKey,
+            pqLastResortPreKey: localDevicePniPqLastResortPreKey,
             registrationId: localDevicePniRegistrationId
         )
 
@@ -162,6 +179,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                     parameters.addLinkedDevice(
                         deviceId: param.deviceId,
                         signedPreKey: param.signedPreKey,
+                        pqLastResortPreKey: param.pqLastResortPreKey,
                         registrationId: param.registrationId,
                         deviceMessage: param.deviceMessage
                     )
@@ -180,6 +198,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     private struct LinkedDevicePniGenerationParams {
         let deviceId: UInt32
         let signedPreKey: SignedPreKeyRecord
+        let pqLastResortPreKey: KyberPreKeyRecord
         let registrationId: UInt32
         let deviceMessage: DeviceMessage
     }
@@ -207,10 +226,14 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
             throw OWSGenericError(message)
         }
 
-        return localUserLinkedDeviceIds.map { linkedDeviceId -> Promise<LinkedDevicePniGenerationParams?> in
+        return try localUserLinkedDeviceIds.map { linkedDeviceId -> Promise<LinkedDevicePniGenerationParams?> in
             let logger = logger
 
             let signedPreKey = pniSignedPreKeyStore.generateSignedPreKey(signedBy: pniIdentityKeyPair)
+            let pqLastResortPreKey = try pniKyberPreKeyStore.generateEphemeralLastResortKyberPreKey(
+                signedBy: pniIdentityKeyPair
+            )
+
             let registrationId = tsAccountManager.generateRegistrationId()
 
             logger.info("Building device message for device with ID \(linkedDeviceId).")
@@ -221,6 +244,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                 recipientDeviceId: linkedDeviceId,
                 identityKeyPair: pniIdentityKeyPair,
                 signedPreKey: signedPreKey,
+                pqLastResortPreKey: pqLastResortPreKey,
                 registrationId: registrationId
             ).map(on: schedulers.sync) { deviceMessage -> LinkedDevicePniGenerationParams? in
                 guard let deviceMessage else {
@@ -233,6 +257,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                 return LinkedDevicePniGenerationParams(
                     deviceId: linkedDeviceId,
                     signedPreKey: signedPreKey,
+                    pqLastResortPreKey: pqLastResortPreKey,
                     registrationId: registrationId,
                     deviceMessage: deviceMessage
                 )
@@ -255,11 +280,13 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         recipientDeviceId: UInt32,
         identityKeyPair: ECKeyPair,
         signedPreKey: SignedPreKeyRecord,
+        pqLastResortPreKey: KyberPreKeyRecord,
         registrationId: UInt32
     ) -> Promise<DeviceMessage?> {
         let message = PniDistributionSyncMessage(
             pniIdentityKeyPair: identityKeyPair,
             signedPreKey: signedPreKey,
+            pqLastResortPreKey: pqLastResortPreKey,
             registrationId: registrationId
         )
 

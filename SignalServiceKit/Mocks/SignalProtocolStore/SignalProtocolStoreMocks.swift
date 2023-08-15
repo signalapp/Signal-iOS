@@ -213,20 +213,26 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
     }
 
     func generateLastResortKyberPreKey(signedBy keyPair: ECKeyPair, tx: DBWriteTransaction) throws -> SignalServiceKit.KyberPreKeyRecord {
-        let record = try generateKyberPreKey(signedBy: keyPair, isLastResort: true, tx: tx)
+        let record = try generateKyberPreKey(signedBy: keyPair, isLastResort: true)
+        lastResortRecords.append(record)
+        return record
+    }
+
+    func generateEphemeralLastResortKyberPreKey(signedBy keyPair: ECKeyPair) throws -> SignalServiceKit.KyberPreKeyRecord {
+        let record = try generateKyberPreKey(signedBy: keyPair, isLastResort: true)
         lastResortRecords.append(record)
         return record
     }
 
     func generateKyberPreKeyRecords(count: Int, signedBy keyPair: ECKeyPair, tx: DBWriteTransaction) throws -> [SignalServiceKit.KyberPreKeyRecord] {
         let records = try (0..<count).map { _ in
-            try generateKyberPreKey(signedBy: keyPair, isLastResort: false, tx: tx)
+            try generateKyberPreKey(signedBy: keyPair, isLastResort: false)
         }
         oneTimeRecords.append(contentsOf: records)
         return records
     }
 
-    func generateKyberPreKey(signedBy keyPair: ECKeyPair, isLastResort: Bool, tx: DBWriteTransaction) throws -> SignalServiceKit.KyberPreKeyRecord {
+    func generateKyberPreKey(signedBy keyPair: ECKeyPair, isLastResort: Bool) throws -> SignalServiceKit.KyberPreKeyRecord {
 
         let keyPair = KEMKeyPair.generate()
         let signature = try Ed25519.sign(Data(keyPair.publicKey.serialize()), with: identityKeyPair)
