@@ -100,7 +100,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
 
         return firstly(on: schedulers.sync) { () -> Promise<UntypedServiceId> in
             return self.fetchMyPniIfNecessary(localIdentifiers: localIdentifiers)
-        }.then(on: schedulers.sync) { localPni -> Promise<Void> in
+        }.then(on: schedulers.global()) { localPni -> Promise<Void> in
             let localPniIdentityPublicKeyData: Data? = self.db.read { tx in
                 self.identityManager.pniIdentityPublicKeyData(tx: tx)
             }
