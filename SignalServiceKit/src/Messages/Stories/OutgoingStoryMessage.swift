@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public class OutgoingStoryMessage: TSOutgoingMessage {
     @objc
@@ -71,7 +72,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         let storyManifest: StoryManifest = .outgoing(
             recipientStates: try thread.recipientAddresses(with: transaction)
                 .lazy
-                .compactMap { $0.uuid }
+                .compactMap { $0.serviceId }
                 .dictionaryMappingToValues { _ in
                     if let privateStoryThread = thread as? TSPrivateStoryThread {
                         guard let threadUuid = UUID(uuidString: privateStoryThread.uniqueId) else {
@@ -85,7 +86,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         )
         let storyMessage = StoryMessage(
             timestamp: Date.ows_millisecondTimestamp(),
-            authorUuid: tsAccountManager.localUuid!,
+            authorAci: tsAccountManager.localIdentifiers(transaction: transaction)!.aci,
             groupId: (thread as? TSGroupThread)?.groupId,
             manifest: storyManifest,
             attachment: attachment,
@@ -125,13 +126,13 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         let recipientAddresses = Set(privateStoryThread.recipientAddresses(with: transaction))
 
         for address in recipientAddresses {
-            guard let uuid = address.uuid else { continue }
-            if var recipient = recipientStates[uuid] {
+            guard let serviceId = address.serviceId else { continue }
+            if var recipient = recipientStates[serviceId] {
                 recipient.contexts.append(threadUuid)
                 recipient.allowsReplies = recipient.allowsReplies || privateStoryThread.allowsReplies
-                recipientStates[uuid] = recipient
+                recipientStates[serviceId] = recipient
             } else {
-                recipientStates[uuid] = .init(allowsReplies: privateStoryThread.allowsReplies, contexts: [threadUuid])
+                recipientStates[serviceId] = .init(allowsReplies: privateStoryThread.allowsReplies, contexts: [threadUuid])
             }
         }
 

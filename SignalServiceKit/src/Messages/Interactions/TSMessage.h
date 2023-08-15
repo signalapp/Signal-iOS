@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  Abstract message class.
  */
 
+@class AciObjC;
 @class GRDBReadTransaction;
 @class MessageBodyRanges;
 @class MessageSticker;
@@ -111,6 +112,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 
 // Story Context
 @property (nonatomic, readonly, nullable) NSNumber *storyTimestamp;
+@property (nonatomic, readonly, nullable) AciObjC *storyAuthorAci;
 @property (nonatomic, readonly, nullable) SignalServiceAddress *storyAuthorAddress;
 @property (nonatomic, readonly, nullable) NSString *storyAuthorUuidString;
 @property (nonatomic, readonly) BOOL isGroupStoryReply;

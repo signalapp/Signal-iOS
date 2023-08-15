@@ -52,7 +52,7 @@ class StoryGroupReplyLoader: Dependencies {
         self.storyMessage = storyMessage
         self.tableView = tableView
         self.messageBatchFetcher = StoryGroupReplyBatchFetcher(
-            storyAuthor: Aci(fromUUID: storyMessage.authorUuid),
+            storyAuthor: storyMessage.authorAci,
             storyTimestamp: storyMessage.timestamp
         )
         self.messageLoader = MessageLoader(

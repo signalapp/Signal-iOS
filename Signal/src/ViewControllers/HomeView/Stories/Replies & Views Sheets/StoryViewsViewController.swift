@@ -84,9 +84,9 @@ class StoryViewsViewController: OWSViewController {
                 .compactMap {
                     guard let viewedTimestamp = $0.value.viewedTimestamp else { return nil }
                     return Viewer(
-                        address: .init(uuid: $0.key),
-                        displayName: Self.contactsManager.displayName(for: .init(uuid: $0.key), transaction: transaction),
-                        comparableName: Self.contactsManager.comparableName(for: .init(uuid: $0.key), transaction: transaction),
+                        address: SignalServiceAddress($0.key),
+                        displayName: Self.contactsManager.displayName(for: SignalServiceAddress($0.key), transaction: transaction),
+                        comparableName: Self.contactsManager.comparableName(for: SignalServiceAddress($0.key), transaction: transaction),
                         viewedTimestamp: viewedTimestamp
                     )
                 }.sorted { lhs, rhs in

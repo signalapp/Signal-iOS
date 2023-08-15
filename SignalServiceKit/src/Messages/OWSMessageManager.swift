@@ -373,6 +373,24 @@ extension OWSMessageManager {
         }
     }
 
+    @objc
+    func handleIncomingEnvelope(
+        _ decryptedEnvelope: DecryptedIncomingEnvelope,
+        withStoryMessage storyMessage: SSKProtoStoryMessage,
+        tx: SDSAnyWriteTransaction
+    ) {
+        do {
+            try StoryManager.processIncomingStoryMessage(
+                storyMessage,
+                timestamp: decryptedEnvelope.timestamp,
+                author: decryptedEnvelope.sourceAci,
+                transaction: tx
+            )
+        } catch {
+            Logger.warn("Failed to insert story message with error \(error.localizedDescription)")
+        }
+    }
+
     @objc(OWSEditProcessingResult)
     enum EditProcessingResult: Int, Error {
         case editedMessageMissing

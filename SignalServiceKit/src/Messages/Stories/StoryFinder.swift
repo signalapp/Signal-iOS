@@ -5,12 +5,13 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 
 @objc
 public class StoryFinder: NSObject {
     public static func unviewedSenderCount(transaction: SDSAnyReadTransaction) -> Int {
-        let ownUUIDClause = tsAccountManager.localUuid.map {
-            "AND \(StoryContextAssociatedData.columnName(.contactUuid)) IS NOT '\($0)'"
+        let ownAciClause = tsAccountManager.localIdentifiers(transaction: transaction).map {
+            "AND \(StoryContextAssociatedData.columnName(.contactAci)) IS NOT '\($0.aci.serviceIdUppercaseString)'"
         } ?? ""
         let sql = """
             SELECT COUNT(*)
@@ -23,7 +24,7 @@ public class StoryFinder: NSObject {
                     OR \(StoryContextAssociatedData.columnName(.lastReadTimestamp))
                         < \(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp))
                 )
-                \(ownUUIDClause)
+                \(ownAciClause)
                 ;
         """
         do {
@@ -270,7 +271,7 @@ public class StoryFinder: NSObject {
         let sql = """
             SELECT \(StoryMessage.columnName(.timestamp))
             FROM \(StoryMessage.databaseTableName)
-            WHERE \(StoryMessage.columnName(.authorUuid)) != '\(StoryMessage.systemStoryAuthor.serviceIdUppercaseString)'
+            WHERE \(StoryMessage.columnName(.authorAci)) != '\(StoryMessage.systemStoryAuthor.serviceIdUppercaseString)'
             ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
             LIMIT 1
         """
@@ -283,17 +284,11 @@ public class StoryFinder: NSObject {
         }
     }
 
-    @objc
-    public static func story(timestamp: UInt64, author: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> StoryMessage? {
-        guard let authorUuid = author.uuid else {
-            owsFailDebug("Cannot query story for author without UUID")
-            return nil
-        }
-
+    public static func story(timestamp: UInt64, author: Aci, transaction: SDSAnyReadTransaction) -> StoryMessage? {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
-            WHERE \(StoryMessage.columnName(.authorUuid)) = '\(authorUuid.uuidString)'
+            WHERE \(StoryMessage.columnName(.authorAci)) = '\(author.serviceIdUppercaseString)'
             AND \(StoryMessage.columnName(.timestamp)) = \(timestamp)
             ORDER BY \(StoryMessage.columnName(.timestamp)) DESC
             LIMIT 1
@@ -364,8 +359,8 @@ private extension StoryContext {
         switch self {
         case .groupId(let data):
             return "\(StoryMessage.columnName(.groupId)) = x'\(data.hexadecimalString)'"
-        case .authorUuid(let uuid):
-            return "\(StoryMessage.columnName(.authorUuid)) = '\(uuid.uuidString)' AND \(StoryMessage.columnName(.groupId)) is NULL"
+        case .authorAci(let authorAci):
+            return "\(StoryMessage.columnName(.authorAci)) = '\(authorAci.serviceIdUppercaseString)' AND \(StoryMessage.columnName(.groupId)) is NULL"
         case .privateStory(let uniqueId):
             return """
                 \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.outgoing.rawValue)
@@ -391,9 +386,9 @@ extension StoryFinder {
         transaction: SDSAnyReadTransaction
     ) -> StoryContextAssociatedData? {
         switch source {
-        case .contact(let contactUuid):
+        case .contact(let contactAci):
             return try? StoryContextAssociatedData
-                .filter(Column(StoryContextAssociatedData.columnName(.contactUuid)) == contactUuid.uuidString)
+                .filter(Column(StoryContextAssociatedData.columnName(.contactAci)) == contactAci.serviceIdUppercaseString)
                 .fetchOne(transaction.unwrapGrdbRead.database)
 
         case .group(let groupId):
@@ -403,25 +398,16 @@ extension StoryFinder {
         }
     }
 
-    public static func getAssocatedData(
-        forContactAdddress address: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction
+    public static func getAssociatedData(
+        forAci contactAci: Aci,
+        tx: SDSAnyReadTransaction
     ) -> StoryContextAssociatedData? {
-        guard let uuid = address.uuid else {
-            // Non-UUID addresses predate stories; we never create
-            // any story data without a uuid so this is safe to ignore.
-            return nil
-        }
-        return getAssociatedData(forContext: .contact(contactUuid: uuid), transaction: transaction)
+        return getAssociatedData(forContext: .contact(contactAci: contactAci), transaction: tx)
     }
 
     public static func associatedData(for thread: TSThread, transaction: SDSAnyReadTransaction) -> StoryContextAssociatedData? {
-        if
-            let contactThread = thread as? TSContactThread,
-            let contactUuidString = contactThread.contactUUID,
-            let contactUuid = UUID(uuidString: contactUuidString)
-        {
-            return getAssociatedData(forContext: .contact(contactUuid: contactUuid), transaction: transaction)
+        if let contactThread = thread as? TSContactThread, let contactAci = contactThread.contactAddress.serviceId as? Aci {
+            return getAssociatedData(forContext: .contact(contactAci: contactAci), transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
             return getAssociatedData(forContext: .group(groupId: groupThread.groupId), transaction: transaction)
         } else {

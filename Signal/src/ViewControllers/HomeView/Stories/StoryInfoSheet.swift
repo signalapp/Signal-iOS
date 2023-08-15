@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalMessaging
 import SignalUI
 
@@ -140,7 +141,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
         return section
     }
 
-    private func buildStatusSections(for recipientStates: [UUID: StoryRecipientState]) -> [OWSTableSection] {
+    private func buildStatusSections(for recipientStates: [ServiceId: StoryRecipientState]) -> [OWSTableSection] {
         let recipientStates = recipientStates.filter { $1.isValidForContext(context) }
 
         var sections = [OWSTableSection]()
@@ -160,7 +161,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
             let sortedRecipientAddresses = contactsManagerImpl
                 .sortSignalServiceAddressesWithSneakyTransaction(
-                    recipients.compactMap { .init(uuid: $0.key) }
+                    recipients.compactMap { SignalServiceAddress($0.key) }
                 )
 
             let section = OWSTableSection()

@@ -898,7 +898,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
                 self.pause()
                 self.present(groupReplyVC, animated: true)
             }
-        case .authorUuid:
+        case .authorAci:
             owsAssertDebug(
                 !currentItem.message.authorAddress.isSystemStoryAddress,
                 "Should be impossible to reply to system stories"

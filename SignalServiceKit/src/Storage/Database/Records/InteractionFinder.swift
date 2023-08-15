@@ -952,7 +952,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         """
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
-            arguments: [storyMessage.timestamp, storyMessage.authorUuid.uuidString],
+            arguments: [storyMessage.timestamp, storyMessage.authorAci.serviceIdUppercaseString],
             transaction: transaction
         )
         do {

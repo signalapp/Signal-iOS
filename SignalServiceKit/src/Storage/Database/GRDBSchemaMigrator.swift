@@ -1884,7 +1884,7 @@ public class GRDBSchemaMigrator: NSObject {
                 table.column(StoryContextAssociatedData.columnName(.uniqueId))
                     .notNull()
                     .unique(onConflict: .fail)
-                table.column(StoryContextAssociatedData.columnName(.contactUuid), .text)
+                table.column(StoryContextAssociatedData.columnName(.contactAci), .text)
                 table.column(StoryContextAssociatedData.columnName(.groupId), .blob)
                 table.column(StoryContextAssociatedData.columnName(.isHidden), .boolean)
                     .notNull()
@@ -1896,7 +1896,7 @@ public class GRDBSchemaMigrator: NSObject {
             try transaction.database.create(
                 index: "index_story_context_associated_data_contact_on_contact_uuid",
                 on: StoryContextAssociatedData.databaseTableName,
-                columns: [StoryContextAssociatedData.columnName(.contactUuid)]
+                columns: [StoryContextAssociatedData.columnName(.contactAci)]
             )
             try transaction.database.create(
                 index: "index_story_context_associated_data_contact_on_group_id",

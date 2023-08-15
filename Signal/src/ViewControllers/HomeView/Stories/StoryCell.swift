@@ -73,7 +73,7 @@ class StoryCell: UITableViewCell {
         configureSubtitle(with: model)
 
         switch model.context {
-        case .authorUuid:
+        case .authorAci:
             replyImageView.image = UIImage(imageLiteralResourceName: "reply-fill-20")
         case .groupId:
             replyImageView.image = UIImage(imageLiteralResourceName: "thread-fill-20").withRenderingMode(.alwaysTemplate)

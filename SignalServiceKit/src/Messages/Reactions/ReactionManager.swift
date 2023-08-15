@@ -195,7 +195,7 @@ public class ReactionManager: NSObject {
             return .success
         } else if let storyMessage = StoryFinder.story(
             timestamp: reaction.timestamp,
-            author: SignalServiceAddress(messageAuthor),
+            author: messageAuthor,
             transaction: transaction
         ) {
             // Reaction to stories show up as normal messages, they

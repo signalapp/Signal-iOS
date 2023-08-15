@@ -188,7 +188,7 @@ public extension TSMessage {
 
     @objc
     class func tryToRemotelyDeleteMessage(
-        fromAddress authorAddress: SignalServiceAddress,
+        fromAuthor authorAci: AciObjC,
         sentAtTimestamp: UInt64,
         threadUniqueId: String?,
         serverTimestamp: UInt64,
@@ -202,10 +202,10 @@ public extension TSMessage {
         if let threadUniqueId = threadUniqueId, let messageToDelete = InteractionFinder.findMessage(
             withTimestamp: sentAtTimestamp,
             threadId: threadUniqueId,
-            author: authorAddress,
+            author: SignalServiceAddress(authorAci.wrappedAciValue),
             transaction: transaction
         ) {
-            if messageToDelete is TSOutgoingMessage, authorAddress.isLocalAddress {
+            if messageToDelete is TSOutgoingMessage, SignalServiceAddress(authorAci.wrappedAciValue).isLocalAddress {
                 messageToDelete.markMessageAsRemotelyDeleted(transaction: transaction)
                 return .success
             } else if var incomingMessageToDelete = messageToDelete as? TSIncomingMessage {
@@ -250,7 +250,7 @@ public extension TSMessage {
             }
         } else if let storyMessage = StoryFinder.story(
             timestamp: sentAtTimestamp,
-            author: authorAddress,
+            author: authorAci.wrappedAciValue,
             transaction: transaction
         ) {
             // If there are still valid contexts for this outgoing private story message, don't actually delete the model.
@@ -503,14 +503,14 @@ public extension TSMessage {
     ) {
         guard
             self.isStoryReply,
-            let storyAuthorAddress,
+            let storyAuthorAci,
             let storyTimestamp
         else {
             return
         }
         let storyMessage = StoryFinder.story(
             timestamp: storyTimestamp.uint64Value,
-            author: storyAuthorAddress,
+            author: storyAuthorAci.wrappedAciValue,
             transaction: transaction
         )
         if let storyMessage {

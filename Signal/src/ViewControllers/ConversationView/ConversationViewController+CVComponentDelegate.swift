@@ -263,16 +263,19 @@ extension ConversationViewController: CVComponentDelegate {
         owsAssertDebug(quotedReply.authorAddress.isValid)
 
         if quotedReply.isStory {
+            guard let quotedStoryAuthorAci = quotedReply.authorAddress.aci else {
+                return
+            }
             guard let quotedStory = databaseStorage.read(
-                block: { StoryFinder.story(timestamp: quotedReply.timestamp, author: quotedReply.authorAddress, transaction: $0) }
+                block: { StoryFinder.story(timestamp: quotedReply.timestamp, author: quotedStoryAuthorAci, transaction: $0) }
             ) else { return }
 
             let context: StoryContext
             if
-                let contactUUID = self.threadViewModel.contactAddress?.uuid,
+                let contactServiceId = self.threadViewModel.contactAddress?.serviceId,
                 quotedStory.authorAddress.isLocalAddress,
                 case let .outgoing(recipientStates) = quotedStory.manifest,
-                let recipientState = recipientStates[contactUUID],
+                let recipientState = recipientStates[contactServiceId],
                 let validContext = recipientState.firstValidContext()
             {
                 // If its an outgoing story from the local user and the contact
@@ -281,7 +284,7 @@ extension ConversationViewController: CVComponentDelegate {
                 context = validContext
             } else {
                 // Else fall back to thinking this is an incoming story from this contact.
-                context = .authorUuid(quotedStory.authorUuid)
+                context = .authorAci(quotedStory.authorAci)
             }
 
             let vc = StoryPageViewController(

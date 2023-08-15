@@ -323,7 +323,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
         }
 
-        if let storyContextAssociatedData = StoryFinder.getAssocatedData(forContactAdddress: address, transaction: transaction) {
+        if let storyContextAssociatedData = StoryFinder.getAssociatedData(forAci: contact.aci, tx: transaction) {
             builder.setHideStory(storyContextAssociatedData.isHidden)
         }
 
@@ -503,7 +503,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         }
 
         let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
-            sourceContext: .contact(contactUuid: contact.aci.temporary_rawUUID),
+            sourceContext: .contact(contactAci: contact.aci),
             transaction: transaction
         )
         if record.hideStory != localStoryContextAssociatedData.isHidden {

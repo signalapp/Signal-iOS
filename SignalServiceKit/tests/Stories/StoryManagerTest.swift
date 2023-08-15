@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import GRDB
+import LibSignalClient
+import XCTest
 
 @testable import SignalServiceKit
 
@@ -21,12 +22,12 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_createsPrivateStoryWithWhitelistedAuthor() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress.randomForTesting()
-        let storyMessage = try Self.makePrivateStory(author: author)
+        let author = Aci.randomForTesting()
+        let storyMessage = try Self.makePrivateStory()
 
         try write {
             profileManager.addUser(
-                toProfileWhitelist: author,
+                toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
             )
@@ -51,8 +52,8 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_dropsPrivateStoryWithUnwhitelistedAuthor() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress.randomForTesting()
-        let storyMessage = try Self.makePrivateStory(author: author)
+        let author = Aci.randomForTesting()
+        let storyMessage = try Self.makePrivateStory()
 
         try write {
             try StoryManager.processIncomingStoryMessage(
@@ -75,19 +76,19 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_dropsStoryWithBlockedAuthor() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress.randomForTesting()
-        let privateStoryMessage = try Self.makePrivateStory(author: author)
-        let groupStoryMessage = try Self.makeGroupStory(author: author)
+        let author = Aci.randomForTesting()
+        let privateStoryMessage = try Self.makePrivateStory()
+        let groupStoryMessage = try Self.makeGroupStory()
 
         try write {
             profileManager.addUser(
-                toProfileWhitelist: author,
+                toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
             )
 
             blockingManager.addBlockedAddress(
-                author,
+                SignalServiceAddress(author),
                 blockMode: .localShouldNotLeaveGroups,
                 transaction: $0
             )
@@ -119,14 +120,14 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_dropsStoryWithBlockedGroup() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress.randomForTesting()
-        let storyMessage = try Self.makeGroupStory(author: author)
+        let author = Aci.randomForTesting()
+        let storyMessage = try Self.makeGroupStory()
 
         let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
             profileManager.addUser(
-                toProfileWhitelist: author,
+                toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
             )
@@ -157,14 +158,14 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_dropsStoryWhenNotAGroupMember() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress.randomForTesting()
-        let storyMessage = try Self.makeGroupStory(author: author)
+        let author = Aci.randomForTesting()
+        let storyMessage = try Self.makeGroupStory()
 
         let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
             profileManager.addUser(
-                toProfileWhitelist: author,
+                toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
             )
@@ -191,14 +192,14 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_dropsAnnouncementStoryWhenNotAnAdmin() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress.randomForTesting()
-        let storyMessage = try Self.makeGroupStory(author: author)
+        let author = Aci.randomForTesting()
+        let storyMessage = try Self.makeGroupStory()
 
         let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
             profileManager.addUser(
-                toProfileWhitelist: author,
+                toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
             )
@@ -225,14 +226,14 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_createsAnnouncementStoryWhenAnAdmin() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress.randomForTesting()
-        let storyMessage = try Self.makeGroupStory(author: author)
+        let author = Aci.randomForTesting()
+        let storyMessage = try Self.makeGroupStory()
 
         let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
             profileManager.addUser(
-                toProfileWhitelist: author,
+                toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
             )
@@ -259,14 +260,14 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_createsStoryWhenAValidGroupMember() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress.randomForTesting()
-        let storyMessage = try Self.makeGroupStory(author: author)
+        let author = Aci.randomForTesting()
+        let storyMessage = try Self.makeGroupStory()
 
         let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
             profileManager.addUser(
-                toProfileWhitelist: author,
+                toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
             )
@@ -293,12 +294,12 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_storeAuthorProfileKey() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress.randomForTesting()
-        let storyMessage = try Self.makePrivateStory(author: author)
+        let author = Aci.randomForTesting()
+        let storyMessage = try Self.makePrivateStory()
 
         try write {
             profileManager.addUser(
-                toProfileWhitelist: author,
+                toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
             )
@@ -311,7 +312,7 @@ class StoryManagerTest: SSKBaseTestSwift {
             )
 
             let profileKey = profileManager.profileKeyData(
-                for: author,
+                for: SignalServiceAddress(author),
                 transaction: $0
             )
             XCTAssertEqual(profileKey, storyMessage.profileKey)
@@ -321,8 +322,8 @@ class StoryManagerTest: SSKBaseTestSwift {
     func testProcessIncomingStoryMessage_dropMessageThatAlreadyExists() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
-        let author = SignalServiceAddress.randomForTesting()
-        let storyMessage = try Self.makePrivateStory(author: author)
+        let author = Aci.randomForTesting()
+        let storyMessage = try Self.makePrivateStory()
 
         try write {
             try StoryMessage.create(
@@ -334,7 +335,7 @@ class StoryManagerTest: SSKBaseTestSwift {
             )
 
             profileManager.addUser(
-                toProfileWhitelist: author,
+                toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
                 transaction: $0
             )
@@ -348,7 +349,7 @@ class StoryManagerTest: SSKBaseTestSwift {
 
             let count = try StoryMessage
                 .filter(Column(StoryMessage.columnName(.timestamp)) == timestamp)
-                .filter(Column(StoryMessage.columnName(.authorUuid)) == author.uuid!.uuidString)
+                .filter(Column(StoryMessage.columnName(.authorAci)) == author.serviceIdUppercaseString)
                 .fetchCount($0.unwrapGrdbRead.database)
             XCTAssertEqual(count, 1)
         }
@@ -356,7 +357,7 @@ class StoryManagerTest: SSKBaseTestSwift {
 
     // MARK: - Helpers
 
-    static func makePrivateStory(author: SignalServiceAddress) throws -> SSKProtoStoryMessage {
+    static func makePrivateStory() throws -> SSKProtoStoryMessage {
         let storyMessageBuilder = SSKProtoStoryMessage.builder()
         storyMessageBuilder.setFileAttachment(try makeImageAttachment())
         storyMessageBuilder.setProfileKey(Randomness.generateRandomBytes(32))
@@ -371,7 +372,7 @@ class StoryManagerTest: SSKBaseTestSwift {
         return try builder.build()
     }
 
-    static func makeGroupStory(author: SignalServiceAddress) throws -> SSKProtoStoryMessage {
+    static func makeGroupStory() throws -> SSKProtoStoryMessage {
         let storyMessageBuilder = SSKProtoStoryMessage.builder()
         storyMessageBuilder.setFileAttachment(try makeImageAttachment())
         storyMessageBuilder.setProfileKey(Randomness.generateRandomBytes(32))
@@ -388,8 +389,8 @@ class StoryManagerTest: SSKBaseTestSwift {
     static func makeGroupThread(
         groupId: Data,
         announcementOnly: Bool = false,
-        members: [SignalServiceAddress] = [],
-        admins: [SignalServiceAddress] = [],
+        members: [Aci] = [],
+        admins: [Aci] = [],
         transaction: SDSAnyWriteTransaction
     ) throws {
         var membershipBuilder = GroupMembership.Builder()

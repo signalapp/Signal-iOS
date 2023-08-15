@@ -317,8 +317,7 @@ public extension OWSReceiptManager {
                 continue
             }
 
-            let senderAddress = SignalServiceAddress(senderAci)
-            let storyMessage = StoryFinder.story(timestamp: messageTimestamp, author: senderAddress, transaction: tx)
+            let storyMessage = StoryFinder.story(timestamp: messageTimestamp, author: senderAci, transaction: tx)
             if let storyMessage {
                 markStoryMessage(storyMessage)
                 continue
@@ -660,7 +659,7 @@ extension OWSReceiptManager {
     /// might arrive after the receipts.
     @objc
     func processDeliveryReceipts(
-        from recipientServiceId: UntypedServiceIdObjC,
+        from recipientServiceId: ServiceIdObjC,
         recipientDeviceId: UInt32,
         sentTimestamps: [NSNumber],
         deliveryTimestamp: UInt64,
@@ -725,7 +724,7 @@ extension OWSReceiptManager {
     /// might arrive after the receipts.
     @objc
     func processViewedReceipts(
-        from recipientServiceId: UntypedServiceIdObjC,
+        from recipientAci: AciObjC,
         recipientDeviceId: UInt32,
         sentTimestamps: [NSNumber],
         viewedTimestamp: UInt64,
@@ -736,7 +735,7 @@ extension OWSReceiptManager {
                 if self.areReadReceiptsEnabled() {
                     for message in messages {
                         message.update(
-                            withViewedRecipient: SignalServiceAddress(recipientServiceId.wrappedValue),
+                            withViewedRecipient: SignalServiceAddress(recipientAci.wrappedAciValue),
                             recipientDeviceId: recipientDeviceId,
                             viewedTimestamp: viewedTimestamp,
                             transaction: tx
@@ -747,13 +746,13 @@ extension OWSReceiptManager {
                 }
                 return true
             }
-            let localAddress = tsAccountManager.localAddress!
-            let storyMessage = StoryFinder.story(timestamp: sentTimestamp, author: localAddress, transaction: tx)
+            let localAci = tsAccountManager.localIdentifiers(transaction: tx)!.aci
+            let storyMessage = StoryFinder.story(timestamp: sentTimestamp, author: localAci, transaction: tx)
             if let storyMessage {
                 if StoryManager.areViewReceiptsEnabled {
                     storyMessage.markAsViewed(
                         at: viewedTimestamp,
-                        by: SignalServiceAddress(recipientServiceId.wrappedValue),
+                        by: recipientAci.wrappedAciValue,
                         transaction: tx
                     )
                 } else {

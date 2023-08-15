@@ -337,9 +337,9 @@ public class NotificationActionHandler: Dependencies {
                 if
                     let message = interaction as? TSMessage,
                     let storyTimestamp = message.storyTimestamp?.uint64Value,
-                    let storyAuthorAddress = message.storyAuthorAddress
+                    let storyAuthorAci = message.storyAuthorAci
                 {
-                    storyMessage = StoryFinder.story(timestamp: storyTimestamp, author: storyAuthorAddress, transaction: transaction)
+                    storyMessage = StoryFinder.story(timestamp: storyTimestamp, author: storyAuthorAci.wrappedAciValue, transaction: transaction)
                 } else {
                     storyMessage = nil
                 }

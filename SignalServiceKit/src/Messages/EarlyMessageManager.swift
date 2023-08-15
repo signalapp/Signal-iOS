@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 @objc
@@ -154,11 +155,12 @@ public class EarlyMessageManager: NSObject {
             }
         }
 
-        init(receiptType: SSKProtoReceiptMessageType, senderAddress: SignalServiceAddress, senderDeviceId: UInt32, timestamp: UInt64) {
+        // PNI TODO: This should be an Aci for read/viewed receipts.
+        init(receiptType: SSKProtoReceiptMessageType, sender: ServiceId, senderDeviceId: UInt32, timestamp: UInt64) {
             switch receiptType {
-            case .delivery: self = .outgoingMessageDelivered(sender: senderAddress, deviceId: senderDeviceId, timestamp: timestamp)
-            case .read: self = .outgoingMessageRead(sender: senderAddress, deviceId: senderDeviceId, timestamp: timestamp)
-            case .viewed: self = .outgoingMessageViewed(sender: senderAddress, deviceId: senderDeviceId, timestamp: timestamp)
+            case .delivery: self = .outgoingMessageDelivered(sender: SignalServiceAddress(sender), deviceId: senderDeviceId, timestamp: timestamp)
+            case .read: self = .outgoingMessageRead(sender: SignalServiceAddress(sender), deviceId: senderDeviceId, timestamp: timestamp)
+            case .viewed: self = .outgoingMessageViewed(sender: SignalServiceAddress(sender), deviceId: senderDeviceId, timestamp: timestamp)
             }
         }
     }
@@ -235,7 +237,7 @@ public class EarlyMessageManager: NSObject {
     @objc
     public func recordEarlyReceiptForOutgoingMessage(
         type: SSKProtoReceiptMessageType,
-        senderServiceId: UntypedServiceIdObjC,
+        senderServiceId: ServiceIdObjC,
         senderDeviceId: UInt32,
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
@@ -252,7 +254,7 @@ public class EarlyMessageManager: NSObject {
         recordEarlyReceipt(
             .init(
                 receiptType: type,
-                senderAddress: SignalServiceAddress(senderServiceId.wrappedValue),
+                sender: senderServiceId.wrappedValue,
                 senderDeviceId: senderDeviceId,
                 timestamp: timestamp
             ),
@@ -444,11 +446,15 @@ public class EarlyMessageManager: NSObject {
                 Logger.info("Applying early viewed receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
 
                 guard storyMessage.direction == .outgoing else {
-                    owsFailDebug("Unexpected message type for early read receipt for StoryMessage.")
+                    owsFailDebug("Unexpected message type for early viewed receipt for StoryMessage.")
+                    break
+                }
+                guard let senderAci = sender.aci else {
+                    // You can't send viewed receipts from your Pni.
                     break
                 }
 
-                storyMessage.markAsViewed(at: timestamp, by: sender, transaction: transaction)
+                storyMessage.markAsViewed(at: timestamp, by: senderAci, transaction: transaction)
             case .outgoingMessageDelivered(let sender, let deviceId, _):
                 Logger.info("Applying early delivery receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
 

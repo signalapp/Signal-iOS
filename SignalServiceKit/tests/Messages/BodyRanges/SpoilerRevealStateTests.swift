@@ -4,8 +4,10 @@
 //
 
 import Foundation
-@testable import SignalServiceKit
+import LibSignalClient
 import XCTest
+
+@testable import SignalServiceKit
 
 public class SpoilerRevealStateTests: XCTestCase {
 
@@ -13,11 +15,11 @@ public class SpoilerRevealStateTests: XCTestCase {
     // such that snapshots are no longer copy operations on structs but end up
     // copying some value by reference. Can't possibly cover every case, but covers some.
     func testSpoilerRevealSnapshotMakesCopy() {
-        let identifierA = InteractionSnapshotIdentifier(timestamp: 0, authorUuid: UUID().uuidString)
+        let identifierA = InteractionSnapshotIdentifier(timestamp: 0, authorAci: Aci.randomForTesting())
         let revealedIdA1 = 1
         let revealedIdA2 = 2
 
-        let identifierB = InteractionSnapshotIdentifier(timestamp: 1, authorUuid: UUID().uuidString)
+        let identifierB = InteractionSnapshotIdentifier(timestamp: 1, authorAci: Aci.randomForTesting())
         let revealedIdB1 = 3
 
         let spoilerRevealState = SpoilerRevealState()

@@ -783,13 +783,6 @@ public class SignalServiceAddressCache: NSObject {
     }
 }
 
-public extension UUID {
-
-    func asSignalServiceAddress() -> SignalServiceAddress {
-        return SignalServiceAddress(uuid: self)
-    }
-}
-
 // MARK: - Unit Tests
 
 #if TESTABLE_BUILD

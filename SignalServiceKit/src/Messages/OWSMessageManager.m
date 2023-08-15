@@ -179,9 +179,9 @@ NS_ASSUME_NONNULL_BEGIN
                                transaction:transaction];
             break;
         case OWSMessageManagerMessageTypeStoryMessage:
-            [self handleIncomingEnvelope:request.envelope
+            [self handleIncomingEnvelope:request.decryptedEnvelope
                         withStoryMessage:contentProto.storyMessage
-                             transaction:transaction];
+                                      tx:transaction];
             break;
         case OWSMessageManagerMessageTypeHasSenderKeyDistributionMessage:
             // Sender key distribution messages are not mutually exclusive. They can be
@@ -526,7 +526,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     switch (receiptMessage.unwrappedType) {
         case SSKProtoReceiptMessageTypeDelivery:
-            earlyTimestamps = [self.receiptManager processDeliveryReceiptsFrom:decryptedEnvelope.sourceServiceIdObjC
+            earlyTimestamps = [self.receiptManager processDeliveryReceiptsFrom:decryptedEnvelope.sourceAciObjC
                                                              recipientDeviceId:decryptedEnvelope.sourceDeviceId
                                                                 sentTimestamps:sentTimestamps
                                                              deliveryTimestamp:decryptedEnvelope.timestamp
@@ -541,7 +541,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         tx:transaction];
             break;
         case SSKProtoReceiptMessageTypeViewed:
-            earlyTimestamps = [self.receiptManager processViewedReceiptsFrom:decryptedEnvelope.sourceServiceIdObjC
+            earlyTimestamps = [self.receiptManager processViewedReceiptsFrom:decryptedEnvelope.sourceAciObjC
                                                            recipientDeviceId:decryptedEnvelope.sourceDeviceId
                                                               sentTimestamps:sentTimestamps
                                                              viewedTimestamp:decryptedEnvelope.timestamp
@@ -553,7 +553,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self recordEarlyReceiptOfType:receiptMessage.unwrappedType
-                   senderServiceId:decryptedEnvelope.sourceServiceIdObjC
+                   senderServiceId:decryptedEnvelope.sourceAciObjC
                     senderDeviceId:decryptedEnvelope.sourceDeviceId
                         timestamps:earlyTimestamps
                    remoteTimestamp:decryptedEnvelope.timestamp
@@ -563,7 +563,7 @@ NS_ASSUME_NONNULL_BEGIN
 // remoteTimestamp is the time the message was delivered, read, or viewed.
 // earlyTimestamps contains the collection of outgoing messages referred to by the receipt.
 - (void)recordEarlyReceiptOfType:(SSKProtoReceiptMessageType)receiptType
-                 senderServiceId:(UntypedServiceIdObjC *)senderServiceId
+                 senderServiceId:(ServiceIdObjC *)senderServiceId
                   senderDeviceId:(uint32_t)senderDeviceId
                       timestamps:(NSArray<NSNumber *> *)earlyTimestamps
                  remoteTimestamp:(uint64_t)remoteTimestamp
@@ -578,34 +578,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      timestamp:remoteTimestamp
                                                     associatedMessageTimestamp:earlyTimestamp
                                                                             tx:transaction];
-    }
-}
-
-- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
-              withStoryMessage:(SSKProtoStoryMessage *)storyMessage
-                   transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!envelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!storyMessage) {
-        OWSFailDebug(@"Missing storyMessage.");
-        return;
-    }
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
-        return;
-    }
-
-    NSError *error;
-    [StoryManager processIncomingStoryMessage:storyMessage
-                                    timestamp:envelope.timestamp
-                                       author:envelope.sourceAddress
-                                  transaction:transaction
-                                        error:&error];
-    if (error) {
-        OWSLogInfo(@"Failed to insert story message with error %@", error.localizedDescription);
     }
 }
 
@@ -947,11 +919,11 @@ NS_ASSUME_NONNULL_BEGIN
                 }
             } else if (dataMessage.delete != nil) {
                 OWSRemoteDeleteProcessingResult result =
-                    [TSMessage tryToRemotelyDeleteMessageFromAddress:envelope.sourceAddress
-                                                     sentAtTimestamp:dataMessage.delete.targetSentTimestamp
-                                                      threadUniqueId:transcript.thread.uniqueId
-                                                     serverTimestamp:envelope.serverTimestamp
-                                                         transaction:transaction];
+                    [TSMessage tryToRemotelyDeleteMessageFromAuthor:decryptedEnvelope.sourceAciObjC
+                                                    sentAtTimestamp:dataMessage.delete.targetSentTimestamp
+                                                     threadUniqueId:transcript.thread.uniqueId
+                                                    serverTimestamp:envelope.serverTimestamp
+                                                        transaction:transaction];
 
                 switch (result) {
                     case OWSRemoteDeleteProcessingResultSuccess:
@@ -1277,11 +1249,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (dataMessage.delete) {
         OWSRemoteDeleteProcessingResult result =
-            [TSMessage tryToRemotelyDeleteMessageFromAddress:envelope.sourceAddress
-                                             sentAtTimestamp:dataMessage.delete.targetSentTimestamp
-                                              threadUniqueId:thread.uniqueId
-                                             serverTimestamp:envelope.serverTimestamp
-                                                 transaction:transaction];
+            [TSMessage tryToRemotelyDeleteMessageFromAuthor:decryptedEnvelope.sourceAciObjC
+                                            sentAtTimestamp:dataMessage.delete.targetSentTimestamp
+                                             threadUniqueId:thread.uniqueId
+                                            serverTimestamp:envelope.serverTimestamp
+                                                transaction:transaction];
 
         switch (result) {
             case OWSRemoteDeleteProcessingResultSuccess:

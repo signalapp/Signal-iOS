@@ -424,7 +424,7 @@ class StoryItemMediaView: UIView {
             groupAvatarView.autoPinEdge(.leading, to: .trailing, of: authorAvatarView, withOffset: -4)
 
             return avatarContainer
-        case .authorUuid, .privateStory, .none:
+        case .authorAci, .privateStory, .none:
             return authorAvatarView
         }
     }

@@ -299,7 +299,7 @@ class CVTextTest: XCTestCase {
             textWasTruncated: true,
             revealedSpoilerIds: Set(),
             interactionUniqueId: UUID().uuidString,
-            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorUuid: nil)
+            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil)
         )
         CVTextLabel.linkifyData(
             attributedText: truncatedText,
@@ -325,7 +325,7 @@ class CVTextTest: XCTestCase {
             textWasTruncated: false,
             revealedSpoilerIds: Set(),
             interactionUniqueId: UUID().uuidString,
-            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorUuid: nil)
+            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil)
         )
         CVTextLabel.linkifyData(
             attributedText: fullText,
@@ -353,7 +353,7 @@ class CVTextTest: XCTestCase {
             textWasTruncated: true,
             revealedSpoilerIds: Set(),
             interactionUniqueId: UUID().uuidString,
-            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorUuid: nil)
+            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil)
         )
         CVTextLabel.linkifyData(
             attributedText: truncatedEmail,
@@ -377,7 +377,7 @@ class CVTextTest: XCTestCase {
             textWasTruncated: true,
             revealedSpoilerIds: Set(),
             interactionUniqueId: UUID().uuidString,
-            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorUuid: nil)
+            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil)
         )
         CVTextLabel.linkifyData(
             attributedText: truncatedPhone,

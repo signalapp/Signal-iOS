@@ -4,6 +4,7 @@
 //
 
 import GRDB
+import LibSignalClient
 import UIKit
 import SignalMessaging
 
@@ -601,9 +602,9 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         if
             let contactAddress = dataSource.contactAddress,
             !contactAddress.isLocalAddress,
-            let contactUUID = contactAddress.uuid?.uuidString
+            let contactAci = contactAddress.serviceId as? Aci
         {
-            storyContextAssociatedDataFilterPredicate = Column(StoryContextAssociatedData.columnName(.contactUuid)) == contactUUID
+            storyContextAssociatedDataFilterPredicate = Column(StoryContextAssociatedData.columnName(.contactAci)) == contactAci.serviceIdUppercaseString
         } else if let groupId = dataSource.groupId {
             // == not available for data, use single item set contains which is the same thing.
             storyContextAssociatedDataFilterPredicate = Set([groupId]).contains(Column(StoryContextAssociatedData.columnName(.groupId)))

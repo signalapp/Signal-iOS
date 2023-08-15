@@ -21,9 +21,7 @@ class ServerReceiptEnvelope: NSObject {
     var timestamp: UInt64 { validatedEnvelope.timestamp }
 
     @objc
-    var sourceServiceIdObjC: UntypedServiceIdObjC {
-        UntypedServiceIdObjC(sourceServiceId.untypedServiceId)
-    }
+    var sourceServiceIdObjC: ServiceIdObjC { ServiceIdObjC.wrapValue(sourceServiceId) }
 
     init(_ validatedEnvelope: ValidatedIncomingEnvelope) throws {
         let (sourceServiceId, sourceDeviceId) = try validatedEnvelope.validateSource(ServiceId.self)

@@ -95,8 +95,8 @@ extension StoryContext: BatchUpdateValue {
         switch self {
         case .groupId(let data):
             return data.hexadecimalString
-        case .authorUuid(let uuid):
-            return uuid.uuidString
+        case .authorAci(let authorAci):
+            return authorAci.serviceIdUppercaseString
         case .privateStory(let uniqueId):
             return uniqueId
         case .none:

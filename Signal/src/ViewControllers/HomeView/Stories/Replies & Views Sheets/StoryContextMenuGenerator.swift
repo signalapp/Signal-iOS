@@ -140,7 +140,7 @@ class StoryContextMenuGenerator: Dependencies {
         for model: StoryViewModel
     ) -> UIContextualAction? {
         guard
-            var action = Self.databaseStorage.read(block: { transaction -> GenericContextAction? in
+            let action = Self.databaseStorage.read(block: { transaction -> GenericContextAction? in
                 return self.hideAction(for: model.latestMessage, useShortTitle: true, transaction: transaction)
             })
         else {
@@ -154,7 +154,7 @@ class StoryContextMenuGenerator: Dependencies {
         for message: StoryMessage,
         thread: TSThread
     ) -> UIContextualAction? {
-        guard var action = deleteAction(for: message, in: thread) else {
+        guard let action = deleteAction(for: message, in: thread) else {
             return nil
         }
         return action.asContextualAction(backgroundColor: .ows_accentRed)
@@ -172,7 +172,7 @@ class StoryContextMenuGenerator: Dependencies {
     public func goToChatContextualAction(
         thread: TSThread
     ) -> UIContextualAction? {
-        guard var action = goToChatAction(thread: thread) else {
+        guard let action = goToChatAction(thread: thread) else {
             return nil
         }
         return action.asContextualAction(backgroundColor: .ows_accentBlue)
@@ -190,7 +190,7 @@ extension StoryContextMenuGenerator {
     ) -> GenericContextAction? {
         if
             message.authorAddress.isLocalAddress,
-            case .authorUuid = message.context
+            case .authorAci = message.context
         {
             // Can't hide your own stories unless sent to a group context
             return nil
@@ -324,15 +324,15 @@ extension StoryContextMenuGenerator {
             switch context {
             case .groupId(let groupId):
                 return TSGroupThread.fetch(groupId: groupId, transaction: transaction)?.groupNameOrDefault
-            case .authorUuid(let authorUuid):
-                if authorUuid.asSignalServiceAddress().isSystemStoryAddress {
+            case .authorAci(let authorAci):
+                if authorAci == StoryMessage.systemStoryAuthor {
                     return OWSLocalizedString(
                         "SYSTEM_ADDRESS_NAME",
                         comment: "Name to display for the 'system' sender, e.g. for release notes and the onboarding story"
                     )
                 }
                 return Self.contactsManager.shortDisplayName(
-                    for: authorUuid.asSignalServiceAddress(),
+                    for: SignalServiceAddress(authorAci),
                     transaction: transaction
                 )
             case .privateStory:

@@ -19,7 +19,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         case recordType
         case uniqueId
         case timestamp
-        case authorUuid
+        case authorAci = "authorUuid"
         case groupId
         case direction
         case manifest
@@ -33,10 +33,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     @objc
     public let timestamp: UInt64
 
-    public let authorUuid: UUID
+    public let authorAci: Aci
 
     @objc
-    public var authorAddress: SignalServiceAddress { authorUuid.asSignalServiceAddress() }
+    public var authorAddress: SignalServiceAddress { SignalServiceAddress(authorAci) }
 
     public let groupId: Data?
 
@@ -139,11 +139,11 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     public var hasReplies: Bool { replyCount > 0 }
 
-    public var context: StoryContext { groupId.map { .groupId($0) } ?? .authorUuid(authorUuid) }
+    public var context: StoryContext { groupId.map { .groupId($0) } ?? .authorAci(authorAci) }
 
     public init(
         timestamp: UInt64,
-        authorUuid: UUID,
+        authorAci: Aci,
         groupId: Data?,
         manifest: StoryManifest,
         attachment: StoryMessageAttachment,
@@ -151,7 +151,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     ) {
         self.uniqueId = UUID().uuidString
         self.timestamp = timestamp
-        self.authorUuid = authorUuid
+        self.authorAci = authorAci
         self.groupId = groupId
         switch manifest {
         case .incoming:
@@ -169,14 +169,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         withIncomingStoryMessage storyMessage: SSKProtoStoryMessage,
         timestamp: UInt64,
         receivedTimestamp: UInt64,
-        author: SignalServiceAddress,
+        author: Aci,
         transaction: SDSAnyWriteTransaction
     ) throws -> StoryMessage? {
         Logger.info("Processing StoryMessage from \(author) with timestamp \(timestamp)")
-
-        guard let authorUuid = author.uuid else {
-            throw OWSAssertionError("Author is missing UUID")
-        }
 
         let groupId: Data?
         if let masterKey = storyMessage.group?.masterKey {
@@ -190,11 +186,11 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             Logger.warn("Ignoring StoryMessage in blocked group.")
             return nil
         } else {
-            if blockingManager.isAddressBlocked(author, transaction: transaction) {
+            if blockingManager.isAddressBlocked(SignalServiceAddress(author), transaction: transaction) {
                 Logger.warn("Ignoring StoryMessage from blocked author.")
                 return nil
             }
-            if DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(author, tx: transaction.asV2Read) {
+            if DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(SignalServiceAddress(author), tx: transaction.asV2Read) {
                 Logger.warn("Ignoring StoryMessage from hidden author.")
                 return nil
             }
@@ -228,7 +224,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         // Count replies in case any came in out of order (e.g. from a recipient
         // who got the story and replied before we even got it.
         let replyCount = Self.countReplies(
-            authorUuid: authorUuid,
+            authorAci: author,
             timestamp: timestamp,
             isGroupStory: groupId != nil,
             transaction
@@ -236,7 +232,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         let record = StoryMessage(
             timestamp: timestamp,
-            authorUuid: authorUuid,
+            authorAci: author,
             groupId: groupId,
             manifest: manifest,
             attachment: attachment,
@@ -274,16 +270,15 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 let serviceIdString = recipient.destinationServiceID,
                 let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString)
             else {
-                throw OWSAssertionError("Invalid UUID on story recipient \(String(describing: recipient.destinationServiceID))")
+                throw OWSAssertionError("Invalid ServiceId on story recipient \(String(describing: recipient.destinationServiceID))")
             }
 
-            // PNI TODO: Support PNIs in this flow.
-            guard serviceId is Aci else {
+            if serviceId is Pni, !FeatureFlags.phoneNumberIdentifiers {
                 throw OWSAssertionError("Unsupported PNI on story recipient")
             }
 
             return (
-                key: serviceId.temporary_rawUUID,
+                key: serviceId,
                 value: StoryRecipientState(
                     allowsReplies: recipient.isAllowedToReply,
                     contexts: recipient.distributionListIds.compactMap { UUID(uuidString: $0) },
@@ -312,12 +307,12 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             throw OWSAssertionError("Missing attachment for StoryMessage.")
         }
 
-        let authorUuid = tsAccountManager.localUuid!
+        let authorAci = tsAccountManager.localIdentifiers(transaction: transaction)!.aci
 
         // Count replies in some recipient replied and sent us the reply
         // before our linked device sent us the transcript.
         let replyCount = Self.countReplies(
-            authorUuid: authorUuid,
+            authorAci: authorAci,
             timestamp: proto.timestamp,
             isGroupStory: groupId != nil,
             transaction
@@ -325,7 +320,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         let record = StoryMessage(
             timestamp: proto.timestamp,
-            authorUuid: authorUuid,
+            authorAci: authorAci,
             groupId: groupId,
             manifest: manifest,
             attachment: attachment,
@@ -378,7 +373,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             // sophisticated for future stories this is where we'd change it, maybe make this
             // a null timestamp and interpret that different when we read it back out.
             timestamp: timestamp,
-            authorUuid: Self.systemStoryAuthor.temporary_rawUUID,
+            authorAci: Self.systemStoryAuthor,
             groupId: nil,
             manifest: manifest,
             attachment: attachment,
@@ -411,7 +406,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
 
         switch context {
-        case .groupId, .authorUuid, .privateStory:
+        case .groupId, .authorAci, .privateStory:
             // Record on the context when the local user last read the story for this context
             if let associatedData = context.associatedData(transaction: transaction) {
                 associatedData.update(lastReadTimestamp: timestamp, transaction: transaction)
@@ -447,7 +442,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
 
         switch context {
-        case .groupId, .authorUuid, .privateStory:
+        case .groupId, .authorAci, .privateStory:
             // Record on the context when the local user last viewed the story for this context
             if let associatedData = context.associatedData(transaction: transaction) {
                 associatedData.update(lastViewedTimestamp: timestamp, transaction: transaction)
@@ -464,19 +459,19 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         receiptManager.storyWasViewed(self, circumstance: circumstance, transaction: transaction)
     }
 
-    @objc
-    public func markAsViewed(at timestamp: UInt64, by recipient: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+    public func markAsViewed(at timestamp: UInt64, by recipient: Aci, transaction: SDSAnyWriteTransaction) {
         anyUpdate(transaction: transaction) { record in
             guard case .outgoing(var recipientStates) = record.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark incoming message as viewed with wrong method.")
             }
 
-            guard let recipientUuid = recipient.uuid, var recipientState = recipientStates[recipientUuid] else {
+            // PNI TODO: We need to merge `recipientStates` during Pni/Aci merges.
+            guard var recipientState = recipientStates[recipient] else {
                 return owsFailDebug("missing recipient for viewed update")
             }
 
             recipientState.viewedTimestamp = timestamp
-            recipientStates[recipientUuid] = recipientState
+            recipientStates[recipient] = recipientState
 
             record.manifest = .outgoing(recipientStates: recipientStates)
         }
@@ -497,18 +492,12 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     }
 
     private static func countReplies(
-        authorUuid: UUID,
+        authorAci: Aci,
         timestamp: UInt64,
         isGroupStory: Bool,
         _ tx: SDSAnyReadTransaction
     ) -> UInt64 {
-        let transaction: GRDBReadTransaction
-        switch tx.readTransaction {
-        case .grdbRead(let grdbRead):
-            transaction = grdbRead
-        }
-
-        guard !SignalServiceAddress(uuid: authorUuid).isSystemStoryAddress else {
+        if authorAci == StoryMessage.systemStoryAuthor {
             // No replies on system stories.
             return 0
         }
@@ -521,9 +510,9 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 AND \(interactionColumn: .isGroupStoryReply) = ?
             """
             guard let count = try UInt64.fetchOne(
-                transaction.database,
+                tx.unwrapGrdbRead.database,
                 sql: sql,
-                arguments: [timestamp, authorUuid.uuidString, isGroupStory]
+                arguments: [timestamp, authorAci.serviceIdUppercaseString, isGroupStory]
             ) else {
                 throw OWSAssertionError("count was unexpectedly nil")
             }
@@ -541,7 +530,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 return owsFailDebug("Unexpectedly tried to mark incoming message as viewed with wrong method.")
             }
 
-            var newRecipientStates = [UUID: StoryRecipientState]()
+            var newRecipientStates = [ServiceId: StoryRecipientState]()
 
             for recipient in recipients {
                 guard
@@ -552,19 +541,18 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                     continue
                 }
 
-                // PNI TODO: Support PNIs in this flow.
-                guard serviceId is Aci else {
+                if serviceId is Pni, !FeatureFlags.phoneNumberIdentifiers {
                     owsFailDebug("Unsupported PNI for story recipient")
                     continue
                 }
 
                 let newContexts = recipient.distributionListIds.compactMap { UUID(uuidString: $0) }
 
-                if var recipientState = recipientStates[serviceId.temporary_rawUUID] {
+                if var recipientState = recipientStates[serviceId] {
                     recipientState.contexts = newContexts
-                    newRecipientStates[serviceId.temporary_rawUUID] = recipientState
+                    newRecipientStates[serviceId] = recipientState
                 } else {
-                    newRecipientStates[serviceId.temporary_rawUUID] = .init(
+                    newRecipientStates[serviceId] = .init(
                         allowsReplies: recipient.isAllowedToReply,
                         contexts: newContexts,
                         sendingState: .sent // This was sent by our linked device
@@ -576,7 +564,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
     }
 
-    public func updateRecipientStates(_ recipientStates: [UUID: StoryRecipientState], transaction: SDSAnyWriteTransaction) {
+    public func updateRecipientStates(_ recipientStates: [ServiceId: StoryRecipientState], transaction: SDSAnyWriteTransaction) {
         anyUpdate(transaction: transaction) { message in
             guard case .outgoing = message.manifest else {
                 return owsFailDebug("Unexpectedly tried to update recipient states for a non-outgoing message.")
@@ -597,8 +585,8 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             }
 
             for (address, outgoingMessageState) in outgoingMessageStates {
-                guard let uuid = address.uuid else { continue }
-                guard var recipientState = recipientStates[uuid] else { continue }
+                guard let serviceId = address.serviceId else { continue }
+                guard var recipientState = recipientStates[serviceId] else { continue }
 
                 // Only take the sending state from the message if we're in a transient state
                 if recipientState.sendingState != .sent {
@@ -606,7 +594,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 }
 
                 recipientState.sendingErrorCode = outgoingMessageState.errorCode?.intValue
-                recipientStates[uuid] = recipientState
+                recipientStates[serviceId] = recipientState
             }
 
             message.manifest = .outgoing(recipientStates: recipientStates)
@@ -638,7 +626,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         case .incoming:
             if let groupId = groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
                 return [groupThread]
-            } else if let contactThread = TSContactThread.getWithContactAddress(.init(uuid: authorUuid), transaction: transaction) {
+            } else if let contactThread = TSContactThread.getWithContactAddress(SignalServiceAddress(authorAci), transaction: transaction) {
                 return [contactThread]
             } else {
                 owsFailDebug("No thread found for an incoming story message")
@@ -715,19 +703,19 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
             Logger.info("Remotely deleting private story with timestamp \(timestamp) from dList \(thread.uniqueId)")
 
-            for (uuid, var state) in recipientStates {
+            for (serviceId, var state) in recipientStates {
                 if state.contexts.contains(threadUuid) {
                     state.contexts = state.contexts.filter { $0 != threadUuid }
 
                     // This recipient still has access via other contexts, so
                     // don't send them the delete message yet!
                     if !state.contexts.isEmpty {
-                        skippedRecipients.insert(SignalServiceAddress(uuid: uuid))
+                        skippedRecipients.insert(SignalServiceAddress(serviceId))
                     }
                 }
 
                 hasRemainingRecipients = hasRemainingRecipients || !state.contexts.isEmpty
-                recipientStates[uuid] = state
+                recipientStates[serviceId] = state
             }
 
             let deleteMessage = TSOutgoingDeleteMessage(
@@ -764,7 +752,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         return recipientStates.filter { _, state in
             return state.sendingState == .failed && errorCode == state.sendingErrorCode
-        }.map { .init(uuid: $0.key) }
+        }.map { SignalServiceAddress($0.key) }
     }
 
     public func resendMessageToFailedRecipients(transaction: SDSAnyWriteTransaction) {
@@ -791,9 +779,9 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         OutgoingStoryMessage.dedupePrivateStoryRecipients(for: messages, transaction: transaction)
 
         // Only send to recipients in the "failed" state
-        for (uuid, state) in recipientStates {
+        for (serviceId, state) in recipientStates {
             guard state.sendingState != .failed else { continue }
-            messages.forEach { $0.update(withSkippedRecipient: .init(uuid: uuid), transaction: transaction) }
+            messages.forEach { $0.update(withSkippedRecipient: SignalServiceAddress(serviceId), transaction: transaction) }
         }
 
         messages.forEach { message in
@@ -843,10 +831,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
         timestamp = try container.decode(UInt64.self, forKey: .timestamp)
-        authorUuid = try container.decode(UUID.self, forKey: .authorUuid)
+        authorAci = Aci(fromUUID: try container.decode(UUID.self, forKey: .authorAci))
         groupId = try container.decodeIfPresent(Data.self, forKey: .groupId)
         direction = try container.decode(Direction.self, forKey: .direction)
-        manifest = try container.decode(StoryManifest.self, forKey: .manifest)
+        manifest = StoryManifest(try container.decode(CodableStoryManifest.self, forKey: .manifest))
         _attachment = try container.decode(SerializedStoryMessageAttachment.self, forKey: .attachment)
         replyCount = try container.decode(UInt64.self, forKey: .replyCount)
     }
@@ -858,18 +846,41 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encode(timestamp, forKey: .timestamp)
-        try container.encode(authorUuid, forKey: .authorUuid)
+        try container.encode(authorAci.rawUUID, forKey: .authorAci)
         if let groupId = groupId { try container.encode(groupId, forKey: .groupId) }
         try container.encode(direction, forKey: .direction)
-        try container.encode(manifest, forKey: .manifest)
+        try container.encode(CodableStoryManifest(manifest), forKey: .manifest)
         try container.encode(_attachment, forKey: .attachment)
         try container.encode(replyCount, forKey: .replyCount)
     }
 }
 
-public enum StoryManifest: Codable {
+public enum StoryManifest {
     case incoming(receivedState: StoryReceivedState)
-    case outgoing(recipientStates: [UUID: StoryRecipientState])
+    case outgoing(recipientStates: [ServiceId: StoryRecipientState])
+
+    fileprivate init(_ codableStoryManifest: CodableStoryManifest) {
+        switch codableStoryManifest {
+        case .incoming(let receivedState):
+            self = .incoming(receivedState: receivedState)
+        case .outgoing(let recipientStates):
+            self = .outgoing(recipientStates: recipientStates.mapKeys(injectiveTransform: { $0.wrappedValue }))
+        }
+    }
+}
+
+private enum CodableStoryManifest: Codable {
+    case incoming(receivedState: StoryReceivedState)
+    case outgoing(recipientStates: [ServiceIdUppercaseString: StoryRecipientState])
+
+    init(_ storyManifest: StoryManifest) {
+        switch storyManifest {
+        case .incoming(let receivedState):
+            self = .incoming(receivedState: receivedState)
+        case .outgoing(let recipientStates):
+            self = .outgoing(recipientStates: recipientStates.mapKeys(injectiveTransform: { $0.codableUppercaseString }))
+        }
+    }
 }
 
 public struct StoryReceivedState: Codable {
@@ -916,7 +927,7 @@ extension StoryRecipientState {
                 return false
             }
             return contexts.contains(uuid)
-        case .groupId, .authorUuid:
+        case .groupId, .authorAci:
             return true
         case .none:
             return false

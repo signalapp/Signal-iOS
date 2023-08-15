@@ -29,7 +29,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var quotedInteractionIdentifier: InteractionSnapshotIdentifier {
             return InteractionSnapshotIdentifier(
                 timestamp: quotedReplyModel.timestamp,
-                authorUuid: quotedReplyModel.authorAddress.uuidString
+                authorAci: quotedReplyModel.authorAddress.aci
             )
         }
     }

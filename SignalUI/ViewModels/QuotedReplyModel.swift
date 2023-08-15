@@ -82,19 +82,19 @@ public class QuotedReplyModel: NSObject {
     private convenience init?(storyReplyMessage message: TSMessage, transaction: SDSAnyReadTransaction) {
         guard message.isStoryReply else { return nil }
 
-        guard let storyTimestamp = message.storyTimestamp?.uint64Value, let storyAuthorAddress = message.storyAuthorAddress else {
+        guard let storyTimestamp = message.storyTimestamp?.uint64Value, let storyAuthorAci = message.storyAuthorAci else {
             return nil
         }
 
         guard let storyMessage = StoryFinder.story(
             timestamp: storyTimestamp,
-            author: storyAuthorAddress,
+            author: storyAuthorAci.wrappedAciValue,
             transaction: transaction
         ) else {
             // Story message does not exist, return generic reply.
             self.init(
                 timestamp: storyTimestamp,
-                authorAddress: storyAuthorAddress,
+                authorAddress: SignalServiceAddress(storyAuthorAci.wrappedAciValue),
                 bodySource: .story,
                 body: OWSLocalizedString(
                     "STORY_NO_LONGER_AVAILABLE",
