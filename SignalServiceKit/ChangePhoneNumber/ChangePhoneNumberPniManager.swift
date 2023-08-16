@@ -160,6 +160,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds,
                 localPniIdentityKeyPair: pniIdentityKeyPair,
+                localE164: newE164,
                 localDevicePniSignedPreKey: pendingState.localDevicePniSignedPreKeyRecord,
                 localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKeyRecord,
                 localDevicePniRegistrationId: pendingState.localDevicePniRegistrationId

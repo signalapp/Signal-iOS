@@ -99,6 +99,7 @@ protocol PniDistributionParamaterBuilder {
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
+        localE164: E164,
         localDevicePniSignedPreKey: SignedPreKeyRecord,
         localDevicePniPqLastResortPreKey: KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32
@@ -137,6 +138,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
+        localE164: E164,
         localDevicePniSignedPreKey: SignedPreKeyRecord,
         localDevicePniPqLastResortPreKey: KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32
@@ -159,7 +161,8 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                 localAccountId: localAccountId,
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds,
-                pniIdentityKeyPair: localPniIdentityKeyPair
+                pniIdentityKeyPair: localPniIdentityKeyPair,
+                e164: localE164
             )
         } catch {
             return .value(.failure)
@@ -214,7 +217,8 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         localAccountId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
-        pniIdentityKeyPair: ECKeyPair
+        pniIdentityKeyPair: ECKeyPair,
+        e164: E164
     ) throws -> [Promise<LinkedDevicePniGenerationParams?>] {
         let localUserLinkedDeviceIds: [UInt32] = localUserAllDeviceIds.filter { deviceId in
             deviceId != localDeviceId
@@ -245,7 +249,8 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                 identityKeyPair: pniIdentityKeyPair,
                 signedPreKey: signedPreKey,
                 pqLastResortPreKey: pqLastResortPreKey,
-                registrationId: registrationId
+                registrationId: registrationId,
+                e164: e164
             ).map(on: schedulers.sync) { deviceMessage -> LinkedDevicePniGenerationParams? in
                 guard let deviceMessage else {
                     logger.warn("Missing device message - is device with ID \(linkedDeviceId) invalid?")
@@ -281,13 +286,15 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         identityKeyPair: ECKeyPair,
         signedPreKey: SignedPreKeyRecord,
         pqLastResortPreKey: KyberPreKeyRecord,
-        registrationId: UInt32
+        registrationId: UInt32,
+        e164: E164
     ) -> Promise<DeviceMessage?> {
         let message = PniDistributionSyncMessage(
             pniIdentityKeyPair: identityKeyPair,
             signedPreKey: signedPreKey,
             pqLastResortPreKey: pqLastResortPreKey,
-            registrationId: registrationId
+            registrationId: registrationId,
+            e164: e164
         )
 
         let plaintextContent: Data
