@@ -13,8 +13,8 @@ pod 'SwiftProtobuf', ">= 1.14.0"
 pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit', testspecs: ["Tests"]
 # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
-ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = 'e8fa4fdae3203582032d56695bfa701b8ef15906a5caeb7db77eac44f5db6fcf'
-pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal-client.git', tag: 'v0.30.2', testspecs: ["Tests"]
+ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '210db3205dec9b119cb924d63388e45644df8596dfaaa07335fa7f394c4ccad3'
+pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal-client.git', tag: 'v0.31.0', testspecs: ["Tests"]
 # pod 'LibSignalClient', path: '../libsignal-client', testspecs: ["Tests"]
 
 pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"], branch: 'feature/SignalClient-adoption'
