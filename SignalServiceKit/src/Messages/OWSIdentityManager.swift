@@ -253,7 +253,8 @@ extension OWSIdentityManager {
     private struct PniChangePhoneNumberData {
         let identityKeyPair: ECKeyPair
         let signedPreKey: SignalServiceKit.SignedPreKeyRecord
-        let lastResortKyberPreKey: SignalServiceKit.KyberPreKeyRecord
+        // TODO (PQXDH): 8/14/2023 - This should me made non-optional after 90 days
+        let lastResortKyberPreKey: SignalServiceKit.KyberPreKeyRecord?
         let registrationId: UInt32
         let e164: E164
     }
@@ -287,10 +288,12 @@ extension OWSIdentityManager {
 
         // attempt this first and return before writing any other information
         do {
-            try pniProtocolStore.kyberPreKeyStore.storeLastResortPreKeyAndMarkAsCurrent(
-                record: pniChangeData.lastResortKyberPreKey,
-                tx: transaction.asV2Write
-            )
+            if let lastResortKey = pniChangeData.lastResortKyberPreKey {
+                try pniProtocolStore.kyberPreKeyStore.storeLastResortPreKeyAndMarkAsCurrent(
+                    record: lastResortKey,
+                    tx: transaction.asV2Write
+                )
+            }
         } catch {
             owsFailDebug("Failed to store last resort Kyber prekey")
             return
@@ -338,7 +341,6 @@ extension OWSIdentityManager {
         guard
             let pniIdentityKeyPairData = proto.identityKeyPair,
             let pniSignedPreKeyData = proto.signedPreKey,
-            let pniLastResortKyberKeyData = proto.lastResortKyberPreKey,
             proto.hasRegistrationID, proto.registrationID > 0,
             let newE164 = E164(proto.newE164)
         else {
@@ -349,9 +351,14 @@ extension OWSIdentityManager {
         do {
             let pniIdentityKeyPair = ECKeyPair(try IdentityKeyPair(bytes: pniIdentityKeyPairData))
             let pniSignedPreKey = try LibSignalClient.SignedPreKeyRecord(bytes: pniSignedPreKeyData).asSSKRecord()
-            let pniLastResortKyberPreKey = try LibSignalClient.KyberPreKeyRecord(
-                bytes: pniLastResortKyberKeyData
-            ).asSSKLastResortRecord()
+
+            var pniLastResortKyberPreKey: KyberPreKeyRecord?
+            if let pniLastResortKyberKeyData = proto.lastResortKyberPreKey {
+                pniLastResortKyberPreKey = try LibSignalClient.KyberPreKeyRecord(
+                    bytes: pniLastResortKyberKeyData
+                ).asSSKLastResortRecord()
+            }
+
             let pniRegistrationId = proto.registrationID
 
             return PniChangePhoneNumberData(
