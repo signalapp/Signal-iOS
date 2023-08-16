@@ -39,12 +39,25 @@ class RecipientContextMenuHelper {
 
     /// Returns the `UIContextMenuActionProvider` used to configure
     /// a system context menu for a recipient with the given `address`.
-    func actionProvider(address: SignalServiceAddress) -> UIContextMenuActionProvider? {
+    func actionProvider(address: SignalServiceAddress) -> UIContextMenuActionProvider {
         return { [weak self] _ in
             guard
                 let self,
                 let fromViewController = self.fromViewController
             else {
+                return nil
+            }
+            let localAddress: SignalServiceAddress? = self.databaseStorage.read { [weak self] tx in
+                guard let self else { return nil }
+                return self.accountManager.localAddress(with: tx)
+            }
+            guard
+                let localAddress,
+                !localAddress.isEqualToAddress(address) else
+            {
+                /// There may come a day when the recipient context menu has
+                /// menu items that should be available for Note to Self, at
+                /// which point this should no longer return nil.
                 return nil
             }
             return UIMenu(children: [

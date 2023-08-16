@@ -758,7 +758,7 @@ extension RecipientPickerViewController {
         guard allSignalAccounts.isEmpty.negated else {
             return allSignalAccounts.lazy.filter { _ in true }
         }
-        var (blockedAddresses, hiddenAddresses) = databaseStorage.read { tx in
+        let (blockedAddresses, hiddenAddresses) = databaseStorage.read { tx in
             return (
                 blockingManager.blockedAddresses(transaction: tx),
                 DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: tx.asV2Read)
