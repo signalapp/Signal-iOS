@@ -232,7 +232,7 @@ public class GroupManager: NSObject {
                 )
 
                 guard groupMembership.isFullMember(localIdentifiers.aci) else {
-                    throw OWSAssertionError("Missing localAci.")
+                    throw OWSAssertionError("Local ACI is missing from group membership.")
                 }
 
                 // The avatar URL path will be filled in later.
@@ -330,7 +330,7 @@ public class GroupManager: NSObject {
         for address in newMembers {
             // We must call this _after_ we try to fetch profile key credentials for
             // all members.
-            let hasCredential = !groupsV2Swift.hasProfileKeyCredential(for: address, transaction: tx)
+            let hasCredential = groupsV2Swift.hasProfileKeyCredential(for: address, transaction: tx)
             guard let role = newGroupMembership.role(for: address) else {
                 owsFailDebug("Missing role: \(address)")
                 continue
