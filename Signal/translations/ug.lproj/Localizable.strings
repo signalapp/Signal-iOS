@@ -5420,10 +5420,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "ئۇچۇر يوللاشتىن ئىلگىرى تىزىملىتىشىڭىز كېرەك.";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "ئۈن چاقىرىش";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "سىزگە SMS ئارقىلىق دەلىللەش كودىنى يوللىيالمىدۇق. دەلىللەش كودىنى ئاۋازلىق چاقىرىق ئارقىلىق تاپشۇرۇۋېلىڭ.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "كودنى كىرگۈزۈش قېتىم سانىڭىز چەكتىن ئېشىپ كەتتى. كودنى قايتا ئەۋەتىپ قايتا سىناڭ.";
@@ -5471,10 +5471,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "«%1$@» نى دەلىللەۋاتىدۇ...";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "قىسقا ئۇچۇر يوللاڭ";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "بىز ئاۋازلىق چاقىرىق ئارقىلىق سىزگە دەلىللەش كودى يوللىيالمىدۇق. ئۇنىڭ ئورنىغا قىسقا ئۇچۇر ئارقىلىق دەلىللەش كودىنى تاپشۇرىۋېلىشنى سىناڭ.";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "رەت قىل";

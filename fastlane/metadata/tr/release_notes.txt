@@ -1,1 +1,1 @@
-• This update fixes a couple of bugs related to @ mentions. Thanks to @AlexLucasBklyn on GitHub for their help! 
+• Bu güncellemeyle, @ bahsetmelerle ilgili birkaç hata düzeltildi. Yardımları için GitHub'dan @AlexLucasBklyn'e teşekkürler! 

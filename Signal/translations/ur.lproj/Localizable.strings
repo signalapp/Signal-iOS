@@ -3734,7 +3734,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "کو بھیجا";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "چھوڑ دیں";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "نظر انداز ہو گیا";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "اپ لوڈ ہو رہا ہے";
@@ -3902,7 +3902,7 @@
 "MESSAGE_STATUS_READ" = "پڑھیں";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "چھوڑ دیں";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "نظر انداز ہو گیا";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "بھیجنے میں ناکامی";
@@ -5420,10 +5420,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "پیغام بھیجنے سے پہلے آپ کو رجسٹر کرنے کی ضرورت ہے۔";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "آڈیو کال";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "ہم آپ کو SMS کے ذریعے تصدیقی کوڈ بھیجنے سے قاصر ہیں۔ اس کے بجائے وائس کال کے ذریعے اپنا کوڈ حاصل کرنے کی کوشش کریں۔";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "آپ کوڈ کو درج کرنے کے لیے بہت مرتبہ کوششیں کر چکے ہیں۔ براہ کرم کوڈ دوبارہ بھیجیں اور دوبارہ کوشش کریں۔";
@@ -5471,10 +5471,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ کی تصدیق ہو رہی ہے…";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "sms بھیجیں";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "ہم آپ کو وائس کال کے ذریعے تصدیقی کوڈ بھیجنے سے قاصر ہیں۔ اس کے بجائے sms کے ذریعے اپنا کوڈ حاصل کرنے کی کوشش کریں۔";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "مسترد کریں";

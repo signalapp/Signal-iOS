@@ -3734,7 +3734,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "આને મોકલવામાં આવેલ છે";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "સ્કિપ";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "ન પહોંચ્યો";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "અપલોડ કરી રહ્યું છે";
@@ -3902,7 +3902,7 @@
 "MESSAGE_STATUS_READ" = "વાંચો";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "સ્કિપ";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "ન પહોંચ્યો";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "મોકલવામાં નિષ્ફળ";
@@ -5420,10 +5420,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "ફોન નંબર તમારે મેસેજ મોકલતા પહેલા રજીસ્ટર કરવાની જરૂર છે.";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "વૉઈસ કૉલ";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "અમે તમને SMS દ્વારા ચકાસણી કોડ મોકલી શક્યાં નથી. તેના બદલે વૉઇસ કૉલ દ્વારા તમારો કોડ મેળવવાનો પ્રયાસ કરો.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "તમે કોડ દાખલ કરવાના ઘણા બધા પ્રયાસો કરી લીધા છે. કૃપા કરીને કોડ ફરીથી મોકલો અને ફરી પ્રયાસ કરો.";
@@ -5471,10 +5471,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ ની ચકાસણી થઈ રહી છે…";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "SMS મોકલો";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "અમે તમને વૉઇસ કૉલ દ્વારા ચકાસણી કોડ મોકલી શક્યાં નથી. તેના બદલે SMS દ્વારા તમારો કોડ મેળવવાનો પ્રયાસ કરો.";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "અસ્વીકાર";

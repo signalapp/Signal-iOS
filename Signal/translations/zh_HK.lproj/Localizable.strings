@@ -5420,10 +5420,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "你需要先登記以傳送訊息。";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "語音通話";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "我們無法透過 SMS 短訊傳送驗證碼給你。請嘗試透過語音通話接收驗證碼。";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "你已多次嘗試輸入驗證碼。請重新傳送驗證碼，然後再試一次。";
@@ -5471,10 +5471,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "正在驗證 %1$@……";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "發送短訊";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "我們無法透過語音通話傳送驗證碼給你。請嘗試透過 SMS 短訊接收驗證碼。";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "拒絕";

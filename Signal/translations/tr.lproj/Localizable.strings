@@ -5420,10 +5420,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "İleti göndermeden önce kaydolmanız gerekiyor.";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Sesli arama";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "Sana SMS yoluyla bir doğrulama kodu gönderemedik. Bunun yerine kodunu sesli aramayla almayı dene.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Kodu girmek için çok fazla girişimde bulundun. Lütfen kodu tekrar gönder ve tekrar dene.";
@@ -5471,10 +5471,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ doğrulanıyor…";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "SMS gönder";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Sana sesli arama ile bir doğrulama kodu gönderemedik. Bunun yerine kodunu SMS ile almayı dene.";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Reddet";

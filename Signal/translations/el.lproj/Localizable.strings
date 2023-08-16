@@ -5420,10 +5420,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Θα πρέπει να εγγραφείς πριν μπορέσεις να στείλεις ένα μήνυμα.";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Βιντεοκλήση";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "Δεν μπορέσαμε να σου στείλουμε κωδικό επαλήθευσης μέσω SMS. Δοκίμασε να λάβεις τον κωδικό μέσω κλήσης.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Έχεις προσπαθήσει πάρα πολλές φορές να εισάγεις τον κωδικό. Στείλε ξανά τον κωδικό και δοκίμασε ξανά.";
@@ -5471,10 +5471,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Επαλήθευση %1$@…";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Αποστολή SMS";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Δεν μπορέσαμε να σου στείλουμε κωδικό επαλήθευσης μέσω φωνητικής κλήσης. Δοκίμασε να λάβεις τον κωδικό σου μέσω SMS.";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Απόρριψη";

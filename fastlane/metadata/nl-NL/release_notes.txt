@@ -1,1 +1,1 @@
-• This update fixes a couple of bugs related to @ mentions. Thanks to @AlexLucasBklyn on GitHub for their help! 
+• Deze update repareert een aantal bugs met betrekking tot @-vermeldingen. Met dank aan @AlexLucasBklyn op GitHub! 

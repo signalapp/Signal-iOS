@@ -5420,10 +5420,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "संदेश पाठविण्यापूर्वी आपल्याला नोंदणी करणे आवश्यक आहे.";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "व्हॉईस कॉल";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "आम्ही SMS मार्फत आपणाला सत्यापन कोड पाठवू शकत नाही. त्याऐवजी व्हॉइस कॉल मार्फत आपला कोड प्राप्त करण्याचा प्रयत्न करा.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "आपण कोड प्रविष्ट करण्याचे अनेक प्रयत्न केले आहेत. कृपया कोड पुन्हा पाठवा आणि पुन्हा प्रयत्न करा.";
@@ -5471,10 +5471,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ सत्यापित करत आहे…";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "SMS पाठवा";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "आम्ही आपणाला व्हॉईस कॉल मार्फत पडताळणी कोड पाठवू शकत नाही. त्याऐवजी आपला कोड SMS ने प्राप्त करण्याचा प्रयत्न करा.";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "नकार द्या";

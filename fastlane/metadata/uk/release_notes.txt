@@ -1,1 +1,1 @@
-• This update fixes a couple of bugs related to @ mentions. Thanks to @AlexLucasBklyn on GitHub for their help! 
+• Це оновлення містить кілька виправлень щодо @ згадок. Дякуємо @AlexLucasBklyn із GitHub за допомогу! 

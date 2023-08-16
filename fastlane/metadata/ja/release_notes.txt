@@ -1,1 +1,1 @@
-• This update fixes a couple of bugs related to @ mentions. Thanks to @AlexLucasBklyn on GitHub for their help! 
+• 今回のアップデートでは、@メンションに関するいくつかのバグが修正されています。GitHubの@AlexLucasBklyn のご協力に感謝いたします！ 

@@ -3734,7 +3734,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "ส่งถึง";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "ข้ามแล้ว";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "ส่งไม่สำเร็จ";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "กำลังอัปโหลด";
@@ -3902,7 +3902,7 @@
 "MESSAGE_STATUS_READ" = "อ่านแล้ว";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "ข้ามแล้ว";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "ส่งไม่สำเร็จ";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "การส่งล้มเหลว";
@@ -5420,10 +5420,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "คุณจำเป็นต้องลงทะเบียนก่อน จึงจะสามารถส่งข้อความได้";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "โทรเสียง";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "เราไม่สามารถส่งรหัสยืนยันผ่านทาง SMS ให้คุณได้ ลองเปลี่ยนไปรับรหัสผ่านทางการโทรแทน";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "คุณพยายามใส่รหัสหลายครั้งเกินไป โปรดส่งรหัสใหม่แล้วลองอีกครั้ง";
@@ -5471,10 +5471,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "กำลังตรวจยืนยัน %1$@…";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "ส่ง SMS";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "เราไม่สามารถส่งรหัสยืนยันผ่านทางการโทรให้คุณได้ ลองเปลี่ยนไปรับรหัสผ่านทาง SMS แทน";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "ปฏิเสธ";

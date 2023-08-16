@@ -1,1 +1,1 @@
-• This update fixes a couple of bugs related to @ mentions. Thanks to @AlexLucasBklyn on GitHub for their help! 
+• Bản cập nhật này khắc phục một số lỗi liên quan đến tính năng @ nhắc tên. Cảm ơn @AlexLucasBklyn vì đóng góp của bạn trên GitHub! 
