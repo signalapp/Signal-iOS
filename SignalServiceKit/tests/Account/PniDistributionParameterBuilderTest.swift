@@ -191,6 +191,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
     ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
         let aci = Aci.randomForTesting()
         let accountId = "what's up"
+        let e164 = E164("+17735550199")!
 
         return pniDistributionParameterBuilder.buildPniDistributionParameters(
             localAci: aci,
@@ -198,6 +199,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             localDeviceId: localDeviceId,
             localUserAllDeviceIds: localUserAllDeviceIds,
             localPniIdentityKeyPair: localPniIdentityKeyPair,
+            localE164: e164,
             localDevicePniSignedPreKey: localDevicePniSignedPreKey,
             localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
             localDevicePniRegistrationId: localDevicePniRegistrationId

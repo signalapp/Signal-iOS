@@ -103,8 +103,9 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
             return
         }
 
-        // Use the primary device's existing PNI identity.
+        // Use the primary device's existing PNI identity and e164.
         guard
+            let localE164 = E164(localIdentifiers.phoneNumber),
             let localPniIdentityKeyPair = identityManager.pniIdentityKeyPair(tx: syncTx),
             let localDevicePniSignedPreKey = pniSignedPreKeyStore.currentSignedPreKey(tx: syncTx),
             let localDevicePniPqLastResortPreKey = pniKyberPreKeyStore.getLastResortKyberPreKey(tx: syncTx)
@@ -125,6 +126,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds,
                 localPniIdentityKeyPair: localPniIdentityKeyPair,
+                localE164: localE164,
                 localDevicePniSignedPreKey: localDevicePniSignedPreKey,
                 localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
                 localDevicePniRegistrationId: localDevicePniRegistrationId

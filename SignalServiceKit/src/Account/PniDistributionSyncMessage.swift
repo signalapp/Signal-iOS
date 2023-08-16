@@ -17,17 +17,20 @@ final class PniDistributionSyncMessage {
     private let signedPreKey: SignedPreKeyRecord
     private let pqLastResortPreKey: KyberPreKeyRecord
     private let registrationId: UInt32
+    private let e164: E164
 
     init(
         pniIdentityKeyPair: ECKeyPair,
         signedPreKey: SignedPreKeyRecord,
         pqLastResortPreKey: KyberPreKeyRecord,
-        registrationId: UInt32
+        registrationId: UInt32,
+        e164: E164
     ) {
         self.pniIdentityKeyPair = pniIdentityKeyPair
         self.signedPreKey = signedPreKey
         self.pqLastResortPreKey = pqLastResortPreKey
         self.registrationId = registrationId
+        self.e164 = e164
     }
 
     /// Build a serialized message proto for this sync message.
@@ -37,6 +40,7 @@ final class PniDistributionSyncMessage {
         changeNumberBuilder.setSignedPreKey(Data(try signedPreKey.asLSCRecord().serialize()))
         changeNumberBuilder.setLastResortKyberPreKey(Data(try pqLastResortPreKey.asLSCRecord().serialize()))
         changeNumberBuilder.setRegistrationID(registrationId)
+        changeNumberBuilder.setNewE164(e164.stringValue)
 
         let syncMessageBuilder = SSKProtoSyncMessage.builder()
         syncMessageBuilder.setPniChangeNumber(changeNumberBuilder.buildInfallibly())
