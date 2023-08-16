@@ -1,4 +1,1 @@
-• It's 1965, the year before the cordless telephone was patented. People are on the edge of their seats for every landline conversation because the wires are so short. They dream of being able to move.
-• It's 1994, and cordless phones are everywhere. People walk and talk throughout the house, but they dream of being able to take their landline outside. Someone gets halfway across their backyard before the call cuts out. They've never felt so alive.
-• It's 2023, and now you can register a landline number in Signal iOS again. You're living the dream. 
-• Oh and this update also fixes a couple of bugs related to @ mentions. Thanks to @AlexLucasBklyn on GitHub for their help!
+• Every search result should feel like a highlight, but a bug was preventing the yellow highlight markers from being displayed for matches in individual chats unless the search result appeared in a message that also included a spoiler effect. Spoiler: That bug dies at the end of this update.
