@@ -18,15 +18,15 @@ class UserProfileTest: SignalBaseTest {
                                           uuid: localAddress.uuid!)
     }
 
-    func testUserProfileForUUID() {
-        let aci = FutureAci.randomForTesting()
+    func testUserProfileForAci() {
+        let aci = Aci.randomForTesting()
         let address = SignalServiceAddress(aci)
         write { transaction in
             OWSUserProfile(address: address).anyInsert(transaction: transaction)
         }
         read { transaction in
             let actual = OWSUserProfile.getFor(address, transaction: transaction)
-            XCTAssertEqual(actual?.recipientUUID, aci.uuidValue.uuidString)
+            XCTAssertEqual(actual?.recipientUUID, aci.serviceIdUppercaseString)
         }
         read { transaction in
             let actual = OWSUserProfile.getFor(SignalServiceAddress.randomForTesting(), transaction: transaction)
@@ -34,7 +34,27 @@ class UserProfileTest: SignalBaseTest {
         }
     }
 
-    func testUserProfilesForUUIDs() {
+    func testUserProfileForPni() throws {
+        guard FeatureFlags.phoneNumberIdentifiers else {
+            throw XCTSkip("Can't run this test until `SignalServiceAddress`es can be constructed by default with a PNI.")
+        }
+
+        let pni = Pni.randomForTesting()
+        let address = SignalServiceAddress(pni)
+        write { transaction in
+            OWSUserProfile(address: address).anyInsert(transaction: transaction)
+        }
+        read { transaction in
+            let actual = OWSUserProfile.getFor(address, transaction: transaction)
+            XCTAssertEqual(actual?.recipientUUID, pni.serviceIdUppercaseString)
+        }
+        read { transaction in
+            let actual = OWSUserProfile.getFor(SignalServiceAddress.randomForTesting(), transaction: transaction)
+            XCTAssertNil(actual)
+        }
+    }
+
+    func testUserProfilesForServiceIds() {
         let addresses = [SignalServiceAddress.randomForTesting(),
                          SignalServiceAddress.randomForTesting()]
         let profiles = addresses.map { OWSUserProfile(address: $0) }

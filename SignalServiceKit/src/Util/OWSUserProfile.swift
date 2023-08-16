@@ -712,6 +712,6 @@ extension OWSUserProfile {
             owsAssertDebug(address.isValid)
             return resolve(address)
         }
-        return userProfileFinder.userProfiles(for: resolvedAddresses, transaction: transaction)
+        return userProfileFinder.userProfiles(for: resolvedAddresses, tx: transaction)
     }
 }

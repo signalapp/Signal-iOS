@@ -127,8 +127,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 @property (atomic) BOOL isPniCapable;
 
 @property (atomic, readonly) NSUInteger userProfileSchemaVersion;
-@property (atomic, nullable) NSString *recipientPhoneNumber;
-@property (atomic, nullable) NSString *recipientUUID;
 
 @end
 
@@ -314,7 +312,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(!address.isLocalAddress);
     _recipientPhoneNumber = address.phoneNumber;
-    _recipientUUID = address.uuidString;
+    _recipientUUID = address.serviceIdUppercaseString;
     _userProfileSchemaVersion = kUserProfileSchemaVersion;
 
     return self;
@@ -324,7 +322,8 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
 - (SignalServiceAddress *)address
 {
-    return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID phoneNumber:self.recipientPhoneNumber];
+    return [[SignalServiceAddress alloc] initWithServiceIdString:self.recipientUUID
+                                                     phoneNumber:self.recipientPhoneNumber];
 }
 
 // When possible, update the avatar properties in lockstep.

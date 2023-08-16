@@ -41,7 +41,15 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
 
 @interface OWSUserProfile : BaseModel <OWSMaybeUserProfile>
 
+/// Represents the uppercase ServiceId string for this profile's recipient.
+///
+/// - Note
+/// This property name includes `UUID` for compatibility with SDS (to match the
+/// SQLite column), but **may not contain a valid UUID string**.
+@property (atomic, nullable) NSString *recipientUUID;
+@property (atomic, nullable) NSString *recipientPhoneNumber;
 @property (atomic, readonly) SignalServiceAddress *address;
+
 @property (atomic, readonly, nullable) OWSAES256Key *profileKey;
 @property (atomic, readonly, nullable) NSString *unfilteredGivenName;
 @property (atomic, readonly, nullable) NSString *givenName;

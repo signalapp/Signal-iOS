@@ -82,7 +82,7 @@ class UserProfileMerger: RecipientMergeObserver {
         var results = [OWSUserProfile]()
 
         // Find any profiles already associated with `serviceId`.
-        results.append(contentsOf: userProfileStore.fetchUserProfiles(for: aci.untypedServiceId, tx: tx))
+        results.append(contentsOf: userProfileStore.fetchUserProfiles(for: aci, tx: tx))
 
         // Find any profiles associated with `newPhoneNumber` that can be merged.
         for phoneNumberProfile in userProfileStore.fetchUserProfiles(for: phoneNumber, tx: tx) {

@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import LibSignalClient
 
 protocol UserProfileStore {
-    func fetchUserProfiles(for serviceId: UntypedServiceId, tx: DBReadTransaction) -> [OWSUserProfile]
+    func fetchUserProfiles(for serviceId: ServiceId, tx: DBReadTransaction) -> [OWSUserProfile]
     func fetchUserProfiles(for phoneNumber: E164, tx: DBReadTransaction) -> [OWSUserProfile]
 
     func updateUserProfile(_ userProfile: OWSUserProfile, tx: DBWriteTransaction)
@@ -14,7 +14,7 @@ protocol UserProfileStore {
 }
 
 class UserProfileStoreImpl: UserProfileStore {
-    func fetchUserProfiles(for serviceId: UntypedServiceId, tx: DBReadTransaction) -> [OWSUserProfile] {
+    func fetchUserProfiles(for serviceId: ServiceId, tx: DBReadTransaction) -> [OWSUserProfile] {
         return AnyUserProfileFinder().fetchUserProfiles(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
     func fetchUserProfiles(for phoneNumber: E164, tx: DBReadTransaction) -> [OWSUserProfile] {
@@ -35,8 +35,8 @@ class UserProfileStoreImpl: UserProfileStore {
 class MockUserProfileStore: UserProfileStore {
     var userProfiles = [OWSUserProfile]()
 
-    func fetchUserProfiles(for serviceId: UntypedServiceId, tx: DBReadTransaction) -> [OWSUserProfile] {
-        return userProfiles.filter { $0.recipientUUID == serviceId.uuidValue.uuidString }.map { $0.shallowCopy() }
+    func fetchUserProfiles(for serviceId: ServiceId, tx: DBReadTransaction) -> [OWSUserProfile] {
+        return userProfiles.filter { $0.recipientUUID == serviceId.serviceIdUppercaseString }.map { $0.shallowCopy() }
     }
 
     func fetchUserProfiles(for phoneNumber: E164, tx: DBReadTransaction) -> [OWSUserProfile] {
