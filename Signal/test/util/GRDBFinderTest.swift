@@ -106,22 +106,22 @@ class GRDBFinderTest: SignalBaseTest {
             XCTAssertNotNil(AnySignalAccountFinder().signalAccount(for: address2, transaction: transaction))
             // If we save a SignalAccount with just a phone number and UUID,
             // we should later be able to look it up using just a UUID.
-            XCTAssertNotNil(AnySignalAccountFinder().signalAccount(for: SignalServiceAddress(address2.untypedServiceId!), transaction: transaction))
+            XCTAssertNotNil(AnySignalAccountFinder().signalAccount(for: SignalServiceAddress(address2.serviceId!), transaction: transaction))
             // If we save a SignalAccount with just a phone number and UUID,
             // we should later be able to look it up using just a phone number.
             XCTAssertNotNil(AnySignalAccountFinder().signalAccount(for: SignalServiceAddress(phoneNumber: address2.phoneNumber!), transaction: transaction))
             XCTAssertNotNil(AnySignalAccountFinder().signalAccount(for: address3, transaction: transaction))
-            XCTAssertNotNil(AnySignalAccountFinder().signalAccount(for: SignalServiceAddress(address3.untypedServiceId!), transaction: transaction))
+            XCTAssertNotNil(AnySignalAccountFinder().signalAccount(for: SignalServiceAddress(address3.serviceId!), transaction: transaction))
             XCTAssertNotNil(AnySignalAccountFinder().signalAccount(for: SignalServiceAddress(phoneNumber: address3.phoneNumber!), transaction: transaction))
             XCTAssertNotNil(AnySignalAccountFinder().signalAccount(for: address4, transaction: transaction))
             // If we save a SignalAccount with just a UUID,
             // we should later be able to look it up using a UUID & phone number,
-            XCTAssertNotNil(AnySignalAccountFinder().signalAccount(for: SignalServiceAddress(serviceId: address4.untypedServiceId!, phoneNumber: "+1666777888"), transaction: transaction))
+            XCTAssertNotNil(AnySignalAccountFinder().signalAccount(for: SignalServiceAddress(serviceId: address4.serviceId!, phoneNumber: "+1666777888"), transaction: transaction))
 
             // ...these don't.
             XCTAssertNil(AnySignalAccountFinder().signalAccount(for: address5, transaction: transaction))
             XCTAssertNil(AnySignalAccountFinder().signalAccount(for: address6, transaction: transaction))
-            XCTAssertNil(AnySignalAccountFinder().signalAccount(for: SignalServiceAddress(address6.untypedServiceId!), transaction: transaction))
+            XCTAssertNil(AnySignalAccountFinder().signalAccount(for: SignalServiceAddress(address6.serviceId!), transaction: transaction))
             XCTAssertNil(AnySignalAccountFinder().signalAccount(for: SignalServiceAddress(phoneNumber: address6.phoneNumber!), transaction: transaction))
             XCTAssertNil(AnySignalAccountFinder().signalAccount(for: address7, transaction: transaction))
         }
@@ -155,22 +155,22 @@ class GRDBFinderTest: SignalBaseTest {
             XCTAssertNotNil(AnySignalRecipientFinder().signalRecipient(for: address2, transaction: transaction))
             // If we save a SignalRecipient with just a phone number and UUID,
             // we should later be able to look it up using just a UUID.
-            XCTAssertNotNil(AnySignalRecipientFinder().signalRecipient(for: SignalServiceAddress(address2.untypedServiceId!), transaction: transaction))
+            XCTAssertNotNil(AnySignalRecipientFinder().signalRecipient(for: SignalServiceAddress(address2.serviceId!), transaction: transaction))
             // If we save a SignalRecipient with just a phone number and UUID,
             // we should later be able to look it up using just a phone number.
             XCTAssertNotNil(AnySignalRecipientFinder().signalRecipient(for: SignalServiceAddress(phoneNumber: address2.phoneNumber!), transaction: transaction))
             XCTAssertNotNil(AnySignalRecipientFinder().signalRecipient(for: address3, transaction: transaction))
-            XCTAssertNotNil(AnySignalRecipientFinder().signalRecipient(for: SignalServiceAddress(address3.untypedServiceId!), transaction: transaction))
+            XCTAssertNotNil(AnySignalRecipientFinder().signalRecipient(for: SignalServiceAddress(address3.serviceId!), transaction: transaction))
             XCTAssertNotNil(AnySignalRecipientFinder().signalRecipient(for: SignalServiceAddress(phoneNumber: address3.phoneNumber!), transaction: transaction))
             XCTAssertNotNil(AnySignalRecipientFinder().signalRecipient(for: address4, transaction: transaction))
             // If we save a SignalRecipient with just a UUID,
             // we should later be able to look it up using a UUID & phone number,
-            XCTAssertNotNil(AnySignalRecipientFinder().signalRecipient(for: SignalServiceAddress(serviceId: address4.untypedServiceId!, phoneNumber: "+1666777888"), transaction: transaction))
+            XCTAssertNotNil(AnySignalRecipientFinder().signalRecipient(for: SignalServiceAddress(serviceId: address4.serviceId!, phoneNumber: "+1666777888"), transaction: transaction))
 
             // ...these don't.
             XCTAssertNil(AnySignalRecipientFinder().signalRecipient(for: address5, transaction: transaction))
             XCTAssertNil(AnySignalRecipientFinder().signalRecipient(for: address6, transaction: transaction))
-            XCTAssertNil(AnySignalRecipientFinder().signalRecipient(for: SignalServiceAddress(address6.untypedServiceId!), transaction: transaction))
+            XCTAssertNil(AnySignalRecipientFinder().signalRecipient(for: SignalServiceAddress(address6.serviceId!), transaction: transaction))
             XCTAssertNil(AnySignalRecipientFinder().signalRecipient(for: SignalServiceAddress(phoneNumber: address6.phoneNumber!), transaction: transaction))
             XCTAssertNil(AnySignalRecipientFinder().signalRecipient(for: address7, transaction: transaction))
         }
