@@ -45,7 +45,7 @@ extension OWSSyncContactsMessage {
                 contactAvatarHash: nil,
                 multipleAccountLabelText: nil,
                 recipientPhoneNumber: localAddress.phoneNumber,
-                recipientUUID: localAddress.uuidString
+                recipientServiceId: localAddress.aci
             )
             signalAccounts.append(localSignalAccount)
         }

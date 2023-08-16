@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import GRDB
+import LibSignalClient
 
 @objc
 public class AnySignalAccountFinder: NSObject {
@@ -12,20 +12,18 @@ public class AnySignalAccountFinder: NSObject {
 }
 
 extension AnySignalAccountFinder {
-    @objc(signalAccountForAddress:transaction:)
-    func signalAccount(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalAccount? {
-        switch transaction.readTransaction {
-        case .grdbRead(let transaction):
-            return grdbAdapter.signalAccount(for: address, transaction: transaction)
-        }
+    func signalAccount(
+        for address: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction
+    ) -> SignalAccount? {
+        return grdbAdapter.signalAccount(for: address, transaction: transaction.unwrapGrdbRead)
     }
 
-    func signalAccounts(for addresses: [SignalServiceAddress],
-                        transaction: SDSAnyReadTransaction) -> [SignalAccount?] {
-        switch transaction.readTransaction {
-        case .grdbRead(let transaction):
-            return grdbAdapter.signalAccounts(for: addresses, transaction: transaction)
-        }
+    func signalAccounts(
+        for addresses: [SignalServiceAddress],
+        transaction: SDSAnyReadTransaction
+    ) -> [SignalAccount?] {
+        return grdbAdapter.signalAccounts(for: addresses, transaction: transaction.unwrapGrdbRead)
     }
 }
 
@@ -35,13 +33,20 @@ class GRDBSignalAccountFinder: NSObject {
         return signalAccounts(for: [address], transaction: transaction)[0]
     }
 
-    func signalAccounts(for addresses: [SignalServiceAddress],
-                        transaction: GRDBReadTransaction) -> [SignalAccount?] {
+    func signalAccounts(
+        for addresses: [SignalServiceAddress],
+        transaction: GRDBReadTransaction
+    ) -> [SignalAccount?] {
         return Refinery<SignalServiceAddress, SignalAccount>(addresses).refine { addresses in
-            return signalAccountsForUUIDs(addresses.map { $0.uuid }, transaction: transaction)
+            return signalAccountsForServiceIds(
+                addresses.map { $0.serviceId },
+                transaction: transaction
+            )
         }.refine { addresses in
-            return signalAccountsForPhoneNumbers(addresses.map { $0.phoneNumber },
-                                                 transaction: transaction)
+            return signalAccountsForPhoneNumbers(
+                addresses.map { $0.phoneNumber },
+                transaction: transaction
+            )
         }.values
     }
 
@@ -71,32 +76,48 @@ class GRDBSignalAccountFinder: NSObject {
         return result
     }
 
-    private func signalAccountsForUUIDs(_ uuids: [UUID?], transaction: GRDBReadTransaction) -> [SignalAccount?] {
-        let accounts = signalAccountsWhere(column: SignalAccount.columnName(.recipientUUID),
-                                           anyValueIn: uuids.lazy.compactMap { $0?.uuidString },
-                                           transaction: transaction)
-        let index: [String?: [SignalAccount?]] = Dictionary(grouping: accounts) { $0?.recipientUUID }
-        return uuids.map { maybeUUID -> SignalAccount? in
-            guard let uuid = maybeUUID else {
+    private func signalAccountsForServiceIds(_ serviceIds: [ServiceId?], transaction: GRDBReadTransaction) -> [SignalAccount?] {
+        let accounts = signalAccountsWhere(
+            column: SignalAccount.columnName(.recipientServiceId),
+            anyValueIn: serviceIds.compactMap { $0?.serviceIdUppercaseString },
+            transaction: transaction
+        )
+
+        let index: [ServiceId?: [SignalAccount?]] = Dictionary(grouping: accounts) { $0?.recipientServiceId }
+        return serviceIds.map { maybeServiceId -> SignalAccount? in
+            guard
+                let serviceId = maybeServiceId,
+                let accountsForServiceId = index[serviceId],
+                let firstAccountForServiceId = accountsForServiceId.first
+            else {
                 return nil
             }
-            return index[uuid.uuidString]?.first ?? nil
+
+            return firstAccountForServiceId
         }
     }
 
-    private func signalAccountsForPhoneNumbers(_ phoneNumbers: [String?], transaction: GRDBReadTransaction) -> [SignalAccount?] {
-        return Refinery<String?, SignalAccount>(phoneNumbers).refineNonnilKeys { phoneNumbers -> [SignalAccount?] in
-            let accounts = signalAccountsWhere(column: SignalAccount.columnName(.recipientPhoneNumber),
-                                               anyValueIn: Array(phoneNumbers),
-                                               transaction: transaction)
-            let index = Dictionary(grouping: accounts) { $0?.recipientPhoneNumber }
-            let orderedAccounts = phoneNumbers.map { phoneNumber -> SignalAccount? in
-                guard let array = index[phoneNumber], let first = array.first else {
-                    return nil
-                }
-                return first
+    private func signalAccountsForPhoneNumbers(
+        _ phoneNumbers: [String?],
+        transaction: GRDBReadTransaction
+    ) -> [SignalAccount?] {
+        let accounts = signalAccountsWhere(
+            column: SignalAccount.columnName(.recipientPhoneNumber),
+            anyValueIn: phoneNumbers.compacted(),
+            transaction: transaction
+        )
+
+        let index: [String?: [SignalAccount?]] = Dictionary(grouping: accounts) { $0?.recipientPhoneNumber }
+        return phoneNumbers.map { maybePhoneNumber -> SignalAccount? in
+            guard
+                let phoneNumber = maybePhoneNumber,
+                let accountsForPhoneNumber = index[phoneNumber],
+                let firstAccountForPhoneNumber = accountsForPhoneNumber.first
+            else {
+                return nil
             }
-            return orderedAccounts
-        }.values
+
+            return firstAccountForPhoneNumber
+        }
     }
 }

@@ -14,7 +14,7 @@ class SignalAccountTest: XCTestCase {
 
     private let inMemoryDatabase = InMemoryDatabase()
 
-    func testRoundTrip() {
+    func testInMemoryDatabaseRoundTrip() {
         for (idx, (constant, _)) in SignalAccount.constants.enumerated() {
             inMemoryDatabase.insert(record: constant)
 
@@ -32,6 +32,29 @@ class SignalAccountTest: XCTestCase {
             }
 
             inMemoryDatabase.remove(model: deserialized)
+        }
+    }
+
+    func testKeyedArchiverRoundTrip() {
+        for (idx, (constant, _)) in SignalAccount.constants.enumerated() {
+            do {
+                let archivedData = try NSKeyedArchiver.archivedData(
+                    withRootObject: constant,
+                    requiringSecureCoding: false
+                )
+
+                let unarchivedAccount = try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(
+                    ofClass: SignalAccount.self,
+                    from: archivedData,
+                    requiringSecureCoding: false
+                ))
+
+                try unarchivedAccount.validate(against: constant)
+            } catch ValidatableModelError.failedToValidate {
+                XCTFail("Failed to validate constant \(idx)!")
+            } catch {
+                XCTFail("Error while validating constant \(idx)!")
+            }
         }
     }
 
@@ -81,43 +104,6 @@ class SignalAccountTest: XCTestCase {
         }
     }
 
-    func testKeyedArchiverRoundTrip() throws {
-        let aliceAci = "00000000-0000-4000-8000-000000000000"
-        let alicePhoneNumber = "+16505550100"
-        let aliceAddress = SignalServiceAddress(
-            serviceId: FutureAci.constantForTesting(aliceAci),
-            phoneNumber: nil,
-            cache: SignalServiceAddressCache(),
-            cachePolicy: .ignoreCache
-        )
-        let aliceContact = Contact(
-            address: aliceAddress,
-            phoneNumberLabel: "Mobile",
-            givenName: "Alice",
-            familyName: "Aliceson",
-            nickname: nil,
-            fullName: "Alice Aliceson"
-        )
-        let aliceAccount = SignalAccount(
-            contact: aliceContact,
-            contactAvatarHash: nil,
-            multipleAccountLabelText: "Mobile",
-            recipientPhoneNumber: alicePhoneNumber,
-            recipientUUID: aliceAci
-        )
-
-        let encodedData = try NSKeyedArchiver.archivedData(withRootObject: aliceAccount, requiringSecureCoding: false)
-        let decodedAccount = try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(
-            ofClass: SignalAccount.self, from: encodedData, requiringSecureCoding: false
-        ))
-
-        XCTAssertEqual(decodedAccount.uniqueId, aliceAccount.uniqueId)
-        XCTAssertEqual(decodedAccount.recipientUUID, aliceAccount.recipientUUID)
-        XCTAssertEqual(decodedAccount.recipientPhoneNumber, aliceAccount.recipientPhoneNumber)
-        XCTAssertEqual(decodedAccount.multipleAccountLabelText, aliceAccount.multipleAccountLabelText)
-        XCTAssertEqual(decodedAccount.contact?.fullName, aliceAccount.contact?.fullName)
-    }
-
     /// Taken from cc83e60eda, just prior to `accountSchemaVersion` == 1.
     func testHardcodedKeyedArchiverLegacyDataVersion0() throws {
         let encodedData = try XCTUnwrap(Data(base64Encoded: "YnBsaXN0MDDUAQIDBAUGISJYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoKcHCBUWFxgZVSRudWxs1gkKCwwNDg8QERITFFtyZWNpcGllbnRJZFYkY2xhc3NfEBloYXNNdWx0aXBsZUFjY291bnRDb250YWN0WHVuaXF1ZUlkXxAPTVRMTW9kZWxWZXJzaW9uXxAYbXVsdGlwbGVBY2NvdW50TGFiZWxUZXh0gAOABoAEgAOAAoAFEABcKzE2NTA1NTUwMTAwCVZNb2JpbGXSGhscHVgkY2xhc3Nlc1okY2xhc3NuYW1lpB0eHyBdU2lnbmFsQWNjb3VudF8QE1RTWWFwRGF0YWJhc2VPYmplY3RYTVRMTW9kZWxYTlNPYmplY3RfEA9OU0tleWVkQXJjaGl2ZXLRIyRUcm9vdIABAAgAEQAaACMALQAyADcAPwBFAFIAXgBlAIEAigCcALcAuQC7AL0AvwDBAMMAxQDSANMA2gDfAOgA8wD4AQYBHAElAS4BQAFDAUgAAAAAAAACAQAAAAAAAAAlAAAAAAAAAAAAAAAAAAABSg=="))
@@ -137,7 +123,7 @@ class SignalAccountTest: XCTestCase {
         ))
         XCTAssertEqual(signalAccount.grdbId, 123)
         XCTAssertEqual(signalAccount.uniqueId, "00000000-0000-4000-8000-000000000CCC")
-        XCTAssertEqual(signalAccount.recipientUUID, "00000000-0000-4000-8000-000000000AAA")
+        XCTAssertEqual(signalAccount.recipientServiceId?.serviceIdUppercaseString, "00000000-0000-4000-8000-000000000AAA")
         XCTAssertEqual(signalAccount.recipientPhoneNumber, "+16505550100")
         XCTAssertEqual(signalAccount.multipleAccountLabelText, "Mobile")
         XCTAssertNotNil(signalAccount.contact?.uniqueId, "00000000-0000-4000-8000-000000000BBB")
@@ -311,20 +297,30 @@ extension SignalAccount: ValidatableModel {
         (
             SignalAccount(
                 contact: ContactFixtures.contactA,
+                contactAvatarHash: Data(repeating: 12, count: 12),
+                multipleAccountLabelText: "boop",
+                recipientPhoneNumber: "+17735550199",
+                recipientServiceId: Pni.constantForTesting("PNI:2405EEEA-9CFF-4FB4-A9D2-FBB473018D57")
+            ),
+            Data(base64Encoded: "eyJyZWNpcGllbnRQaG9uZU51bWJlciI6IisxNzczNTU1MDE5OSIsImNvbnRhY3RBdmF0YXJIYXNoIjoiREF3TURBd01EQXdNREF3TSIsInJlY2lwaWVudFVVSUQiOiJQTkk6MjQwNUVFRUEtOUNGRi00RkI0LUE5RDItRkJCNDczMDE4RDU3IiwiY29udGFjdCI6IlluQnNhWE4wTUREVUFRSURCQVVHQndwWUpIWmxjbk5wYjI1WkpHRnlZMmhwZG1WeVZDUjBiM0JZSkc5aWFtVmpkSE1TQUFHR29GOFFEMDVUUzJWNVpXUkJjbU5vYVhabGN0RUlDVlJ5YjI5MGdBR3RDd3duS0NrcUt5d3lPVHdcL1FGVWtiblZzYk4wTkRnOFFFUklURkJVV0Z4Z1pHaHNjSFI0ZklDRWhJeUVkSFY4UUQwMVVURTF2WkdWc1ZtVnljMmx2YmxsbWFYSnpkRTVoYldWWWJHRnpkRTVoYldWZkVCZGpiMjF3WVhKaFlteGxUbUZ0WlV4aGMzUkdhWEp6ZEZoMWJtbHhkV1ZKWkY4UUVuQm9iMjVsVG5WdFltVnlUbUZ0WlUxaGNGWWtZMnhoYzNOZkVCSndZWEp6WldSUWFHOXVaVTUxYldKbGNuTmZFQlIxYzJWeVZHVjRkRkJvYjI1bFRuVnRZbVZ5YzFobWRXeHNUbUZ0WlZabGJXRnBiSE5mRUJkamIyMXdZWEpoWW14bFRtRnRaVVpwY25OMFRHRnpkRmh1YVdOcmJtRnRaWUFDZ0FTQUE0QUZnQWFBQjRBTWdBbUFDWUFMZ0FtQUJZQUZFQUJVZDJoaGRGWnRZWFJoZEdGUllWOFFKRFJDTnpVelF6a3dMVUkyT1RRdE5EYzVNaTA0TmtGQ0xURkZNemxEUmpneU9Ea3dPZE10TGhNdk1ERlhUbE11YTJWNWMxcE9VeTV2WW1wbFkzUnpvS0NBQ05Jek5EVTJXaVJqYkdGemMyNWhiV1ZZSkdOc1lYTnpaWE5jVGxORWFXTjBhVzl1WVhKNW9qYzRYRTVUUkdsamRHbHZibUZ5ZVZoT1UwOWlhbVZqZE5JdUV6bzdvSUFLMGpNMFBUNVhUbE5CY25KaGVhSTlPRmwzYjI1a1pYSm1kV3pTTXpSQlFsZERiMjUwWVdOMG8wRkRPRmhOVkV4TmIyUmxiQUFJQUJFQUdnQWtBQ2tBTWdBM0FFa0FUQUJSQUZNQVlRQm5BSUlBbEFDZUFLY0F3UURLQU44QTVnRDdBUklCR3dFaUFUd0JSUUZIQVVrQlN3Rk5BVThCVVFGVEFWVUJWd0ZaQVZzQlhRRmZBV0VCWmdGdEFXOEJsZ0dkQWFVQnNBR3hBYklCdEFHNUFjUUJ6UUhhQWQwQjZnSHpBZmdCK1FIN0FnQUNDQUlMQWhVQ0dnSWlBaVlBQUFBQUFBQUNBUUFBQUFBQUFBQkVBQUFBQUFBQUFBQUFBQUFBQUFBQ0x3PT0iLCJyZWNvcmRUeXBlIjozMCwidW5pcXVlSWQiOiI3OTNDQUJCQy1BQ0E1LTQzQUMtOTlBMi1CQ0ExOEEwRTQ0ODMiLCJtdWx0aXBsZUFjY291bnRMYWJlbFRleHQiOiJib29wIn0=")!
+        ),
+        (
+            SignalAccount(
+                contact: ContactFixtures.contactA,
                 contactAvatarHash: Data(base64Encoded: "mary"),
                 multipleAccountLabelText: "a",
                 recipientPhoneNumber: "little",
-                recipientUUID: "lamb"
+                recipientServiceId: nil // Was hardcoded to an non-ServiceId string
             ),
             Data(base64Encoded: "eyJyZWNpcGllbnRQaG9uZU51bWJlciI6ImxpdHRsZSIsImNvbnRhY3RBdmF0YXJIYXNoIjoibWFyeSIsInJlY2lwaWVudFVVSUQiOiJsYW1iIiwiY29udGFjdCI6IlluQnNhWE4wTUREVUFRSURCQVVHQndwWUpIWmxjbk5wYjI1WkpHRnlZMmhwZG1WeVZDUjBiM0JZSkc5aWFtVmpkSE1TQUFHR29GOFFEMDVUUzJWNVpXUkJjbU5vYVhabGN0RUlDVlJ5YjI5MGdBR3RDd3duS0NrcUt5d3lPVHdcL1FGVWtiblZzYk4wTkRnOFFFUklURkJVV0Z4Z1pHaHNjSFI0ZklDRWhJeUVkSFY4UUQwMVVURTF2WkdWc1ZtVnljMmx2YmxsbWFYSnpkRTVoYldWWWJHRnpkRTVoYldWZkVCZGpiMjF3WVhKaFlteGxUbUZ0WlV4aGMzUkdhWEp6ZEZoMWJtbHhkV1ZKWkY4UUVuQm9iMjVsVG5WdFltVnlUbUZ0WlUxaGNGWWtZMnhoYzNOZkVCSndZWEp6WldSUWFHOXVaVTUxYldKbGNuTmZFQlIxYzJWeVZHVjRkRkJvYjI1bFRuVnRZbVZ5YzFobWRXeHNUbUZ0WlZabGJXRnBiSE5mRUJkamIyMXdZWEpoWW14bFRtRnRaVVpwY25OMFRHRnpkRmh1YVdOcmJtRnRaWUFDZ0FTQUE0QUZnQWFBQjRBTWdBbUFDWUFMZ0FtQUJZQUZFQUJVZDJoaGRGWnRZWFJoZEdGUllWOFFKRGt5UVRrMk9EYzJMVFE0UXpNdE5EbEdNaTFCT1RGR0xVTkZSRFUwT0RFNVJESXpSTk10TGhNdk1ERlhUbE11YTJWNWMxcE9VeTV2WW1wbFkzUnpvS0NBQ05Jek5EVTJXaVJqYkdGemMyNWhiV1ZZSkdOc1lYTnpaWE5jVGxORWFXTjBhVzl1WVhKNW9qYzRYRTVUUkdsamRHbHZibUZ5ZVZoT1UwOWlhbVZqZE5JdUV6bzdvSUFLMGpNMFBUNVhUbE5CY25KaGVhSTlPRmwzYjI1a1pYSm1kV3pTTXpSQlFsZERiMjUwWVdOMG8wRkRPRmhOVkV4TmIyUmxiQUFJQUJFQUdnQWtBQ2tBTWdBM0FFa0FUQUJSQUZNQVlRQm5BSUlBbEFDZUFLY0F3UURLQU44QTVnRDdBUklCR3dFaUFUd0JSUUZIQVVrQlN3Rk5BVThCVVFGVEFWVUJWd0ZaQVZzQlhRRmZBV0VCWmdGdEFXOEJsZ0dkQWFVQnNBR3hBYklCdEFHNUFjUUJ6UUhhQWQwQjZnSHpBZmdCK1FIN0FnQUNDQUlMQWhVQ0dnSWlBaVlBQUFBQUFBQUNBUUFBQUFBQUFBQkVBQUFBQUFBQUFBQUFBQUFBQUFBQ0x3PT0iLCJyZWNvcmRUeXBlIjozMCwidW5pcXVlSWQiOiI4MEJDQzUxMS1GQTMwLTRBNzQtQUQwOS0wMEU3RUEwOUZFNEYiLCJtdWx0aXBsZUFjY291bnRMYWJlbFRleHQiOiJhIn0=")!
         ),
         (
             SignalAccount(
                 contact: ContactFixtures.contactB,
-                contactAvatarHash: Data(base64Encoded: "whose"),
+                contactAvatarHash: nil,
                 multipleAccountLabelText: "was",
                 recipientPhoneNumber: "white as",
-                recipientUUID: "snow"
+                recipientServiceId: nil // Was hardcoded to an non-ServiceId string
             ),
             Data(base64Encoded: "eyJyZWNvcmRUeXBlIjozMCwicmVjaXBpZW50VVVJRCI6InNub3ciLCJyZWNpcGllbnRQaG9uZU51bWJlciI6IndoaXRlIGFzIiwidW5pcXVlSWQiOiJBN0JDQjQ3Ny0yNDBELTQwQkQtQTIzRS1CQzM2MUM5Q0JCREIiLCJtdWx0aXBsZUFjY291bnRMYWJlbFRleHQiOiJ3YXMiLCJjb250YWN0IjoiWW5Cc2FYTjBNRERVQVFJREJBVUdCd3BZSkhabGNuTnBiMjVaSkdGeVkyaHBkbVZ5VkNSMGIzQllKRzlpYW1WamRITVNBQUdHb0Y4UUQwNVRTMlY1WldSQmNtTm9hWFpsY3RFSUNWUnliMjkwZ0FHdEN3d25LQ2txS3l3eU9Ud1wvUUZVa2JuVnNiTjBORGc4UUVSSVRGQlVXRnhnWkdoc2NIUjRmSUNFaEl5RWRIVjhRRDAxVVRFMXZaR1ZzVm1WeWMybHZibGxtYVhKemRFNWhiV1ZZYkdGemRFNWhiV1ZmRUJkamIyMXdZWEpoWW14bFRtRnRaVXhoYzNSR2FYSnpkRmgxYm1seGRXVkpaRjhRRW5Cb2IyNWxUblZ0WW1WeVRtRnRaVTFoY0ZZa1kyeGhjM05mRUJKd1lYSnpaV1JRYUc5dVpVNTFiV0psY25OZkVCUjFjMlZ5VkdWNGRGQm9iMjVsVG5WdFltVnljMWhtZFd4c1RtRnRaVlpsYldGcGJITmZFQmRqYjIxd1lYSmhZbXhsVG1GdFpVWnBjbk4wVEdGemRGaHVhV05yYm1GdFpZQUNnQVNBQTRBRmdBYUFCNEFNZ0FtQUNZQUxnQW1BQllBRkVBQlNibTlWWVdsdUozUlhjR0Z6YzJsdVoxOFFKRE13TXpjM01UYzFMVEpHTVRBdE5FUkdRaTA1TmpBd0xUZzVOa1F5TmpKRE0wVTVPZE10TGhNdk1ERlhUbE11YTJWNWMxcE9VeTV2WW1wbFkzUnpvS0NBQ05Jek5EVTJXaVJqYkdGemMyNWhiV1ZZSkdOc1lYTnpaWE5jVGxORWFXTjBhVzl1WVhKNW9qYzRYRTVUUkdsamRHbHZibUZ5ZVZoT1UwOWlhbVZqZE5JdUV6bzdvSUFLMGpNMFBUNVhUbE5CY25KaGVhSTlPRlp3YUhKaGMyWFNNelJCUWxkRGIyNTBZV04wbzBGRE9GaE5WRXhOYjJSbGJBQUlBQkVBR2dBa0FDa0FNZ0EzQUVrQVRBQlJBRk1BWVFCbkFJSUFsQUNlQUtjQXdRREtBTjhBNWdEN0FSSUJHd0VpQVR3QlJRRkhBVWtCU3dGTkFVOEJVUUZUQVZVQlZ3RlpBVnNCWFFGZkFXRUJaQUZxQVhJQm1RR2dBYWdCc3dHMEFiVUJ0d0c4QWNjQjBBSGRBZUFCN1FIMkFmc0JcL0FIK0FnTUNDd0lPQWhVQ0dnSWlBaVlBQUFBQUFBQUNBUUFBQUFBQUFBQkVBQUFBQUFBQUFBQUFBQUFBQUFBQ0x3PT0ifQ==")!
         )
@@ -341,7 +337,7 @@ extension SignalAccount: ValidatableModel {
                 contactAvatarHash: Data(base64Encoded: "mary"),
                 multipleAccountLabelText: "a",
                 recipientPhoneNumber: "little",
-                recipientUUID: "lamb"
+                recipientServiceId: nil // Was hardcoded to an non-ServiceId string
             ),
             Data(base64Encoded: "eyJyZWNpcGllbnRQaG9uZU51bWJlciI6ImxpdHRsZSIsImNvbnRhY3RBdmF0YXJIYXNoIjoibWFyeSIsInJlY2lwaWVudFVVSUQiOiJsYW1iIiwiY29udGFjdCI6IlluQnNhWE4wTUREVUFRSURCQVVHQndwWUpIWmxjbk5wYjI1WkpHRnlZMmhwZG1WeVZDUjBiM0JZSkc5aWFtVmpkSE1TQUFHR29GOFFEMDVUUzJWNVpXUkJjbU5vYVhabGN0RUlDVlJ5YjI5MGdBR3RDd3duS0NrcUt5d3lPVHdcL1FGVWtiblZzYk4wTkRnOFFFUklURkJVV0Z4Z1pHaHNjSFI0ZklDRWhJeUVkSFY4UUQwMVVURTF2WkdWc1ZtVnljMmx2YmxsbWFYSnpkRTVoYldWWWJHRnpkRTVoYldWZkVCZGpiMjF3WVhKaFlteGxUbUZ0WlV4aGMzUkdhWEp6ZEZoMWJtbHhkV1ZKWkY4UUVuQm9iMjVsVG5WdFltVnlUbUZ0WlUxaGNGWWtZMnhoYzNOZkVCSndZWEp6WldSUWFHOXVaVTUxYldKbGNuTmZFQlIxYzJWeVZHVjRkRkJvYjI1bFRuVnRZbVZ5YzFobWRXeHNUbUZ0WlZabGJXRnBiSE5mRUJkamIyMXdZWEpoWW14bFRtRnRaVVpwY25OMFRHRnpkRmh1YVdOcmJtRnRaWUFDZ0FTQUE0QUZnQWFBQjRBTWdBbUFDWUFMZ0FtQUJZQUZFQUJVZDJoaGRGWnRZWFJoZEdGUllWOFFKRUkwUWpjM1JUVXhMVGszUmpNdE5EYzJSaTA1UVRJd0xVVTFOMEpGTlRNM1JVRXlOZE10TGhNdk1ERlhUbE11YTJWNWMxcE9VeTV2WW1wbFkzUnpvS0NBQ05Jek5EVTJXaVJqYkdGemMyNWhiV1ZZSkdOc1lYTnpaWE5jVGxORWFXTjBhVzl1WVhKNW9qYzRYRTVUUkdsamRHbHZibUZ5ZVZoT1UwOWlhbVZqZE5JdUV6bzdvSUFLMGpNMFBUNVhUbE5CY25KaGVhSTlPRmwzYjI1a1pYSm1kV3pTTXpSQlFsZERiMjUwWVdOMG8wRkRPRmhOVkV4TmIyUmxiQUFJQUJFQUdnQWtBQ2tBTWdBM0FFa0FUQUJSQUZNQVlRQm5BSUlBbEFDZUFLY0F3UURLQU44QTVnRDdBUklCR3dFaUFUd0JSUUZIQVVrQlN3Rk5BVThCVVFGVEFWVUJWd0ZaQVZzQlhRRmZBV0VCWmdGdEFXOEJsZ0dkQWFVQnNBR3hBYklCdEFHNUFjUUJ6UUhhQWQwQjZnSHpBZmdCK1FIN0FnQUNDQUlMQWhVQ0dnSWlBaVlBQUFBQUFBQUNBUUFBQUFBQUFBQkVBQUFBQUFBQUFBQUFBQUFBQUFBQ0x3PT0iLCJyZWNvcmRUeXBlIjozMCwidW5pcXVlSWQiOiJoZWxsbyIsIm11bHRpcGxlQWNjb3VudExhYmVsVGV4dCI6ImEifQ==")!
         ),
@@ -351,7 +347,7 @@ extension SignalAccount: ValidatableModel {
                 contactAvatarHash: Data(base64Encoded: "whose"),
                 multipleAccountLabelText: "was",
                 recipientPhoneNumber: "white as",
-                recipientUUID: "snow"
+                recipientServiceId: nil // Was hardcoded to an non-ServiceId string
             ),
             Data(base64Encoded: "eyJyZWNvcmRUeXBlIjozMCwicmVjaXBpZW50VVVJRCI6InNub3ciLCJyZWNpcGllbnRQaG9uZU51bWJlciI6IndoaXRlIGFzIiwidW5pcXVlSWQiOiJoaSIsIm11bHRpcGxlQWNjb3VudExhYmVsVGV4dCI6IndhcyIsImNvbnRhY3QiOiJZbkJzYVhOME1ERFVBUUlEQkFVR0J3cFlKSFpsY25OcGIyNVpKR0Z5WTJocGRtVnlWQ1IwYjNCWUpHOWlhbVZqZEhNU0FBR0dvRjhRRDA1VFMyVjVaV1JCY21Ob2FYWmxjdEVJQ1ZSeWIyOTBnQUd0Q3d3bktDa3FLeXd5T1R3XC9RRlVrYm5Wc2JOME5EZzhRRVJJVEZCVVdGeGdaR2hzY0hSNGZJQ0VoSXlFZEhWOFFEMDFVVEUxdlpHVnNWbVZ5YzJsdmJsbG1hWEp6ZEU1aGJXVlliR0Z6ZEU1aGJXVmZFQmRqYjIxd1lYSmhZbXhsVG1GdFpVeGhjM1JHYVhKemRGaDFibWx4ZFdWSlpGOFFFbkJvYjI1bFRuVnRZbVZ5VG1GdFpVMWhjRllrWTJ4aGMzTmZFQkp3WVhKelpXUlFhRzl1WlU1MWJXSmxjbk5mRUJSMWMyVnlWR1Y0ZEZCb2IyNWxUblZ0WW1WeWMxaG1kV3hzVG1GdFpWWmxiV0ZwYkhOZkVCZGpiMjF3WVhKaFlteGxUbUZ0WlVacGNuTjBUR0Z6ZEZodWFXTnJibUZ0WllBQ2dBU0FBNEFGZ0FhQUI0QU1nQW1BQ1lBTGdBbUFCWUFGRUFCU2JtOVZZV2x1SjNSWGNHRnpjMmx1WjE4UUpETXdRVGRDTXpaQ0xVRTJNVVF0TkRBeE1pMUJNek5DTFVJM09UQTRORU0xT1VNNE45TXRMaE12TURGWFRsTXVhMlY1YzFwT1V5NXZZbXBsWTNSem9LQ0FDTkl6TkRVMldpUmpiR0Z6YzI1aGJXVllKR05zWVhOelpYTmNUbE5FYVdOMGFXOXVZWEo1b2pjNFhFNVRSR2xqZEdsdmJtRnllVmhPVTA5aWFtVmpkTkl1RXpvN29JQUswak0wUFQ1WFRsTkJjbkpoZWFJOU9GWndhSEpoYzJYU016UkJRbGREYjI1MFlXTjBvMEZET0ZoTlZFeE5iMlJsYkFBSUFCRUFHZ0FrQUNrQU1nQTNBRWtBVEFCUkFGTUFZUUJuQUlJQWxBQ2VBS2NBd1FES0FOOEE1Z0Q3QVJJQkd3RWlBVHdCUlFGSEFVa0JTd0ZOQVU4QlVRRlRBVlVCVndGWkFWc0JYUUZmQVdFQlpBRnFBWElCbVFHZ0FhZ0Jzd0cwQWJVQnR3RzhBY2NCMEFIZEFlQUI3UUgyQWZzQlwvQUgrQWdNQ0N3SU9BaFVDR2dJaUFpWUFBQUFBQUFBQ0FRQUFBQUFBQUFCRUFBQUFBQUFBQUFBQUFBQUFBQUFDTHc9PSJ9")!
         )
@@ -382,14 +378,8 @@ extension SignalAccount: ValidatableModel {
         )
     }
 
-    func validate(against: SignalAccount) throws {
-        guard
-            contactsAreEqual(contact, against.contact),
-            contactAvatarHash == against.contactAvatarHash,
-            multipleAccountLabelText == against.multipleAccountLabelText,
-            recipientPhoneNumber == against.recipientPhoneNumber,
-            recipientUUID == against.recipientUUID
-        else {
+    func validate(against otherAccount: SignalAccount) throws {
+        guard hasSameContent(otherAccount) else {
             throw ValidatableModelError.failedToValidate
         }
     }
@@ -407,7 +397,7 @@ extension SignalAccount: ValidatableModel {
             contactAvatarHash: Data(base64Encoded: "mary"),
             multipleAccountLabelText: "a",
             recipientPhoneNumber: "little",
-            recipientUUID: "lamb"
+            recipientServiceId: Aci.randomForTesting()
         )
     }
 }

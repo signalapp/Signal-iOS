@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import GRDB
+import LibSignalClient
 import SignalCoreKit
 
 /// We need to query the system preferences to achieve the behaviour at Messages on iOS.
@@ -34,28 +34,31 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         case contactAvatarHash
         case multipleAccountLabelText
         case recipientPhoneNumber
-        case recipientUUID
+        case recipientServiceId = "recipientUUID"
     }
 
     public var id: RowId?
     public let uniqueId: String
 
     @objc
-    private(set) public var contact: Contact?
+    public private(set) var contact: Contact?
     public let contactAvatarHash: Data?
     public let multipleAccountLabelText: String
-    @objc
-    public let recipientPhoneNumber: String?
-    @objc
-    internal(set) public var recipientUUID: String?
 
     @objc
+    public let recipientPhoneNumber: String?
+    public private(set) var recipientServiceId: ServiceId?
+    @objc
+    public var recipientServiceIdObjc: ServiceIdObjC? {
+        recipientServiceId.map { .wrapValue($0) }
+    }
+
     public convenience init(
         contact: Contact?,
         contactAvatarHash: Data?,
         multipleAccountLabelText: String?,
         recipientPhoneNumber: String?,
-        recipientUUID: String?
+        recipientServiceId: ServiceId?
     ) {
         self.init(
             id: nil,
@@ -64,7 +67,7 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
             contactAvatarHash: contactAvatarHash,
             multipleAccountLabelText: multipleAccountLabelText,
             recipientPhoneNumber: recipientPhoneNumber,
-            recipientUUID: recipientUUID
+            recipientServiceId: recipientServiceId
         )
     }
 
@@ -75,7 +78,7 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         contactAvatarHash: Data?,
         multipleAccountLabelText: String?,
         recipientPhoneNumber: String?,
-        recipientUUID: String?
+        recipientServiceId: ServiceId?
     ) {
         self.id = id
         self.uniqueId = uniqueId
@@ -83,7 +86,7 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         self.contactAvatarHash = contactAvatarHash
         self.multipleAccountLabelText = multipleAccountLabelText ?? ""
         self.recipientPhoneNumber = recipientPhoneNumber
-        self.recipientUUID = recipientUUID
+        self.recipientServiceId = recipientServiceId
     }
 
     public init(from decoder: Decoder) throws {
@@ -107,7 +110,8 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         contactAvatarHash = try container.decodeIfPresent(Data.self, forKey: .contactAvatarHash)
         multipleAccountLabelText = try container.decode(String.self, forKey: .multipleAccountLabelText)
         recipientPhoneNumber = try container.decodeIfPresent(String.self, forKey: .recipientPhoneNumber)
-        recipientUUID = try container.decodeIfPresent(String.self, forKey: .recipientUUID)
+        recipientServiceId = try container.decodeIfPresent(String.self, forKey: .recipientServiceId)
+            .flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -125,7 +129,7 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         try container.encodeIfPresent(contactAvatarHash, forKey: .contactAvatarHash)
         try container.encode(multipleAccountLabelText, forKey: .multipleAccountLabelText)
         try container.encodeIfPresent(recipientPhoneNumber, forKey: .recipientPhoneNumber)
-        try container.encodeIfPresent(recipientUUID, forKey: .recipientUUID)
+        try container.encodeIfPresent(recipientServiceId?.serviceIdUppercaseString, forKey: .recipientServiceId)
     }
 
     private enum NSCoderKeys: String {
@@ -137,7 +141,7 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         case multipleAccountLabelText
         case recipientId
         case recipientPhoneNumber
-        case recipientUUID
+        case recipientServiceId = "recipientUUID"
     }
 
     public init?(coder: NSCoder) {
@@ -165,7 +169,8 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         } else {
             self.recipientPhoneNumber = decodeObject(of: NSString.self, forKey: .recipientPhoneNumber) as String?
         }
-        self.recipientUUID = decodeObject(of: NSString.self, forKey: .recipientUUID) as String?
+        self.recipientServiceId = (decodeObject(of: NSString.self, forKey: .recipientServiceId) as String?)
+            .flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
     }
 
     public func encode(with coder: NSCoder) {
@@ -179,7 +184,16 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
         encodeObject(contactAvatarHash, forKey: .contactAvatarHash)
         encodeObject(multipleAccountLabelText, forKey: .multipleAccountLabelText)
         encodeObject(recipientPhoneNumber, forKey: .recipientPhoneNumber)
-        encodeObject(recipientUUID, forKey: .recipientUUID)
+        encodeObject(recipientServiceId?.serviceIdUppercaseString, forKey: .recipientServiceId)
+    }
+}
+
+// MARK: - Update in place
+
+extension SignalAccount {
+    func updateServiceId(_ newServiceId: ServiceId, tx: SDSAnyWriteTransaction) {
+        recipientServiceId = newServiceId
+        anyOverwritingUpdate(transaction: tx)
     }
 }
 
@@ -187,13 +201,16 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable, NSCoding
 
 extension SignalAccount {
     @objc
-    public convenience init(address: SignalServiceAddress) {
+    public convenience init(
+        contact: Contact? = nil,
+        address: SignalServiceAddress
+    ) {
         self.init(
-            contact: nil,
+            contact: contact,
             contactAvatarHash: nil,
             multipleAccountLabelText: nil,
             recipientPhoneNumber: address.phoneNumber,
-            recipientUUID: address.uuidString
+            recipientServiceId: address.serviceId
         )
     }
 }
@@ -324,11 +341,11 @@ extension SignalAccount {
 
     @objc
     public var recipientAddress: SignalServiceAddress {
-        SignalServiceAddress(uuidString: recipientUUID, phoneNumber: recipientPhoneNumber)
+        SignalServiceAddress(serviceId: recipientServiceId, phoneNumber: recipientPhoneNumber)
     }
 
     public var addressComponentsDescription: String {
-        SignalServiceAddress.addressComponentsDescription(uuidString: recipientUUID, phoneNumber: recipientPhoneNumber)
+        recipientAddress.description
     }
 }
 
@@ -340,7 +357,7 @@ extension SignalAccount {
         // NOTE: We don't want to compare contactAvatarJpegData. It can't change
         // without contactAvatarHash changing as well.
         recipientPhoneNumber == otherAccount.recipientPhoneNumber
-        && recipientUUID == otherAccount.recipientUUID
+        && recipientServiceId == otherAccount.recipientServiceId
         && multipleAccountLabelText == otherAccount.multipleAccountLabelText
         && contactAvatarHash == otherAccount.contactAvatarHash
         && contactHasSameContent(otherAccount.contact)
@@ -406,7 +423,7 @@ extension SignalAccount: NSCopying {
             contactAvatarHash: self.contactAvatarHash,
             multipleAccountLabelText: self.multipleAccountLabelText,
             recipientPhoneNumber: self.recipientPhoneNumber,
-            recipientUUID: self.recipientUUID
+            recipientServiceId: self.recipientServiceId
         )
     }
 }

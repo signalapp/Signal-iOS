@@ -276,7 +276,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             XCTAssertEqual(newAccount.uniqueId, oldAccount.uniqueId)
             XCTAssertEqual(newAccount.recipientPhoneNumber, phoneNumber.stringValue)
-            XCTAssertEqual(newAccount.recipientUUID, newAci.serviceIdUppercaseString)
+            XCTAssertEqual(newAccount.recipientServiceId, newAci)
         }
     }
 

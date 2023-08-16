@@ -546,6 +546,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         address: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
     ) -> Bool {
+        // PNI TODO: when we have PNIs in ContactRecords, we should be careful about if we operating on the ACI or PNI here.
 
         let localAccount = contactsManager.fetchSignalAccount(for: address, transaction: transaction)
 
@@ -595,7 +596,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 contactAvatarHash: nil,
                 multipleAccountLabelText: multipleAccountLabelText,
                 recipientPhoneNumber: address.phoneNumber,
-                recipientUUID: address.uuidString
+                recipientServiceId: address.serviceId
             )
         } else {
             newAccount = nil

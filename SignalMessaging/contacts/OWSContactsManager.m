@@ -517,7 +517,7 @@ NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
 {
     SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
     if (!signalAccount) {
-        signalAccount = [[SignalAccount alloc] initWithAddress:address];
+        signalAccount = [[SignalAccount alloc] initWithContact:nil address:address];
     }
     
     return [self comparableNameForSignalAccount:signalAccount transaction:transaction];

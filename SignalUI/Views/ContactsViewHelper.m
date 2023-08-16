@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSHashTable<id<ContactsViewHelperObserver>> *observers;
 
 @property (nonatomic) NSDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap;
-@property (nonatomic) NSDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap;
+@property (nonatomic) NSDictionary<ServiceIdObjC *, SignalAccount *> *serviceIdSignalAccountMap;
 
 @property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
 
@@ -139,8 +139,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     SignalAccount *_Nullable signalAccount;
 
-    if (address.uuid) {
-        signalAccount = self.uuidSignalAccountMap[address.uuid];
+    if (address.serviceIdObjC) {
+        signalAccount = self.serviceIdSignalAccountMap[address.serviceIdObjC];
     }
 
     if (!signalAccount && address.phoneNumber) {
@@ -177,7 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(!CurrentAppContext().isNSE);
 
     NSMutableDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap = [NSMutableDictionary new];
-    NSMutableDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap = [NSMutableDictionary new];
+    NSMutableDictionary<ServiceIdObjC *, SignalAccount *> *serviceIdSignalAccountMap = [NSMutableDictionary new];
 
     __block NSArray<SignalAccount *> *systemContactSignalAccounts;
     __block NSArray<SignalServiceAddress *> *signalConnectionAddresses;
@@ -198,7 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<SignalAccount *> *accountsToProcess = [systemContactSignalAccounts mutableCopy];
     for (SignalServiceAddress *address in signalConnectionAddresses) {
-        [accountsToProcess addObject:[[SignalAccount alloc] initWithAddress:address]];
+        [accountsToProcess addObject:[[SignalAccount alloc] initWithContact:nil address:address]];
     }
 
     NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
@@ -214,14 +214,14 @@ NS_ASSUME_NONNULL_BEGIN
         if (signalAccount.recipientPhoneNumber) {
             phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
         }
-        if (signalAccount.recipientUUID) {
-            uuidSignalAccountMap[signalAccount.recipientUUID] = signalAccount;
+        if (signalAccount.recipientServiceIdObjc) {
+            serviceIdSignalAccountMap[signalAccount.recipientServiceIdObjc] = signalAccount;
         }
         [signalAccounts addObject:signalAccount];
     }
 
     self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
-    self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
+    self.serviceIdSignalAccountMap = [serviceIdSignalAccountMap copy];
     self.signalAccounts = [self.contactsManagerImpl sortSignalAccountsWithSneakyTransaction:signalAccounts];
 
     [self fireDidUpdateContacts];
@@ -234,7 +234,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Check for matches against "Note to Self".
     NSMutableArray<SignalAccount *> *signalAccountsToSearch = [self.signalAccounts mutableCopy];
-    SignalAccount *selfAccount = [[SignalAccount alloc] initWithAddress:self.localAddress];
+    SignalAccount *selfAccount = [[SignalAccount alloc] initWithContact:nil address:self.localAddress];
     [signalAccountsToSearch addObject:selfAccount];
     return [self.fullTextSearcher filterSignalAccounts:signalAccountsToSearch
                                         withSearchText:searchText

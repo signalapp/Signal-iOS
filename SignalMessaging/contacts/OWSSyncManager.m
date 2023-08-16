@@ -475,11 +475,7 @@ typedef NS_ENUM(NSUInteger, OWSContactSyncMode) {
 {
     // OWSContactsOutputStream requires all signalAccount to have a contact.
     Contact *contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
-    return [[SignalAccount alloc] initWithContact:contact
-                                contactAvatarHash:nil
-                         multipleAccountLabelText:nil
-                             recipientPhoneNumber:localAddress.phoneNumber
-                                    recipientUUID:localAddress.uuidString];
+    return [[SignalAccount alloc] initWithContact:contact address:localAddress];
 }
 
 - (void)clearFullSyncRequestIdIfMatches:(nullable NSString *)requestId transaction:(SDSAnyWriteTransaction *)transaction

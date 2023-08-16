@@ -668,6 +668,8 @@ extension OWSContactsManager {
             // TODO: Confirm ordering.
             signalRecipients.sort { $0.address.compare($1.address) == .orderedAscending }
             for signalRecipient in signalRecipients {
+                // PNI TODO: if the recipient does not have an ACI, make sure we use their PNI here instead.
+
                 if seenAddresses.contains(signalRecipient.address) {
                     continue
                 }
@@ -682,8 +684,9 @@ extension OWSContactsManager {
                     contact: contact,
                     contactAvatarHash: contactAvatarHash,
                     multipleAccountLabelText: multipleAccountLabelText,
-                    recipientPhoneNumber: signalRecipient.address.phoneNumber,
-                    recipientUUID: signalRecipient.address.uuidString)
+                    recipientPhoneNumber: signalRecipient.phoneNumber,
+                    recipientServiceId: signalRecipient.aci
+                )
                 signalAccounts.append(signalAccount)
             }
         }
