@@ -84,11 +84,12 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Invalid groupId.");
             return nil;
         }
-    } else if (sentProto.destinationServiceID) {
+    } else if (sentProto.destinationServiceID || sentProto.destinationE164) {
         SignalServiceAddress *destinationAddress =
-            [[SignalServiceAddress alloc] initWithServiceIdString:sentProto.destinationServiceID];
+            [[SignalServiceAddress alloc] initWithServiceIdString:sentProto.destinationServiceID
+                                                      phoneNumber:sentProto.destinationE164];
         if (!destinationAddress.isValid) {
-            OWSFailDebug(@"Invalid serviceID.");
+            OWSFailDebug(@"Invalid destinationAddress.");
             return nil;
         }
         _recipientAddress = destinationAddress;

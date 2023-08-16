@@ -870,19 +870,22 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
 
-            // If we observe a linked device sending our profile key to another user,
-            // we can infer that that user belongs in our profile whitelist.
-            SignalServiceAddress *destinationAddress =
-                [[SignalServiceAddress alloc] initWithServiceIdString:syncMessage.sent.destinationServiceID];
-            if (dataMessage && destinationAddress.isValid && dataMessage.hasProfileKey) {
+            if (dataMessage && dataMessage.hasProfileKey) {
                 if (groupId != nil) {
                     [self.profileManager addGroupIdToProfileWhitelist:groupId
                                                     userProfileWriter:UserProfileWriter_LocalUser
                                                           transaction:transaction];
                 } else {
-                    [self.profileManager addUserToProfileWhitelist:destinationAddress
-                                                 userProfileWriter:UserProfileWriter_LocalUser
-                                                       transaction:transaction];
+                    // If we observe a linked device sending our profile key to another user,
+                    // we can infer that that user belongs in our profile whitelist.
+                    SignalServiceAddress *destinationAddress =
+                        [[SignalServiceAddress alloc] initWithServiceIdString:syncMessage.sent.destinationServiceID
+                                                                  phoneNumber:syncMessage.sent.destinationE164];
+                    if (destinationAddress.isValid) {
+                        [self.profileManager addUserToProfileWhitelist:destinationAddress
+                                                     userProfileWriter:UserProfileWriter_LocalUser
+                                                           transaction:transaction];
+                    }
                 }
             }
 
