@@ -965,7 +965,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
                 self.setMessageBody(messageBody, animated: true)
 
                 showEditMessageView(animated: animateChanges)
-            } else {
+            } else if oldValue != nil {
                 editThumbnail = nil
                 self.setMessageBody(nil, animated: true)
                 hideEditMessageView(animated: animateChanges)
