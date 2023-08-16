@@ -910,9 +910,6 @@
 /* Error indicating that the user's old phone number is not valid. */
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Số điện thoại cũ không đúng. Vui lòng nhập một số điện thoại đúng để đổi số của bạn.";
 
-/* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Nhập mã PIN cho số điện thoại mới của bạn. Mã này khác với mã xác minh gửi qua SMS.";
-
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Đây là mẫu xem trước của màu cuộc trò chuyện.";
 
@@ -1713,9 +1710,6 @@
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Ngưng truyền tải?";
-
-/* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Nếu bạn còn thiết bị iOS cũ, bạn có thể chuyển tài khoản và tin nhắn một cách an toàn sang thiết bị này.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
 "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Nếu bạn trước đó đang sử dụng Signal trên một iPad được kết nối, bạn có thể chuyển tài khoản và tin nhắn một cách an toàn sang thiết bị này.";
@@ -3214,6 +3208,24 @@
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "Trung tâm Hỗ trợ";
 
+/* A format for the 'remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
+"HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "Remove %1$@?";
+
+/* An explanation of the consequences of removing a user. */
+"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "You won't see this person when searching. You'll get a message request if they message you in the future.";
+
+/* Button label for the 'remove' button */
+"HIDE_RECIPIENT_BUTTON" = "Remove";
+
+/* Toast message confirming the recipient was removed. Embeds {{The name of the user who was removed.}}.. */
+"HIDE_RECIPIENT_CONFIRMATION_TOAST" = "%1$@ has been removed.";
+
+/* An explanation of why a user was not successfully removed and what to do. */
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_EXPLANATION" = "Check your connection and try again.";
+
+/* Title for an action sheet indicating that the user was not successfully removed. Embeds {{name of user we attempted to hide}}. */
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "Unable to remove %1$@";
+
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Các cuộc trò chuyện đã lưu trữ";
 
@@ -4177,9 +4189,6 @@
 /* Label for the 'ok' button. */
 "OK" = "OK";
 
-/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Mã PIN không chính xác. Đã hết số lần thử.";
-
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_CREATE_NEW_PIN" = "Tạo PIN mới";
 
@@ -4206,9 +4215,6 @@
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Bỏ qua Nhập mã PIN? ";
-
-/* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Thêm dấu chỉ vào tin nhắn để chứng minh bạn là người thật";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Đăng kí iPad";
@@ -4255,9 +4261,6 @@
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Xin chờ một vài phút trước khi thử lại. (%1$@)";
 
-/* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Nhập số điện thoại của bạn";
-
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Số điện thoại không hợp lệ. Xin hãy nhập một số điện thoại hợp lệ để đăng ký.";
 
@@ -4267,35 +4270,11 @@
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Tìm hiểu Thêm Về PIN";
 
-/* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "Để bảo vệ tính riêng tư và bảo mật cho tài khoản của bạn, chúng tôi đã khóa tài khoản trong vòng 7 ngày. \n\nSau 7 ngày không sử dụng, bạn sẽ có thể đăng ký lại số điện thoại này mà không cần mã PIN của bạn. Tất cả nội dung đều sẽ bị xóa.";
-
-/* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Tìm hiểu thêm về tài khoản bị khóa";
-
-/* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Tài khoản bị Khóa";
-
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Mã PIN không chính xác";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Bạn đã hết số lần thử mã PIN, nhưng bạn vẫn có thể thử truy cập tài khoản Signal bằng cách xác minh số điện thoại của mình. Để đảm bảo bảo mật và tính riêng tư, tài khoản mới của bạn sẽ được khôi phục nhưng thông tin hồ sơ và cài đặt thì không.";
-
-/* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Nhập mã PIN bạn đã tạo cho tài khoản. Mã này khác với mã xác minh SMS của bạn.";
-
-/* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Nhập mã PIN của bạn";
-
-/* Title label for profile creation step of onboarding */
-"ONBOARDING_PROFILE_CREATION_TITLE" = "Thông tin cá nhân của bạn";
-
-/* Placeholder text for the family name field of the profile creation view. */
-"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Tên Họ (Không bắt buộc)";
-
-/* Placeholder text for the given name field of the profile creation view. */
-"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "Tên Đầu (Bắt buộc)";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Điều khoản & Quyền riêng tư";
@@ -4326,9 +4305,6 @@
 
 /* Label for a button to get help entering a verification code when registering. */
 "ONBOARDING_VERIFICATION_HELP_LINK" = "Bạn gặp vấn đề khi đăng ký?";
-
-/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "Mã này không chính xác";
 
 /* Label for button to resend SMS verification code. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Gửi lại Mã";
@@ -4843,12 +4819,6 @@
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Cảnh báo";
 
-/* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Mã PIN của bạn không được lưu. Chúng tôi sẽ yêu cầu bạn tạo mã PIN sau.";
-
-/* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "Không thể tạo mã PIN";
-
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Mã PIN mã hoá các thông tin được lưu trữ với Signal để chỉ mình bạn có thể truy cập được. Thông tin người dùng, cài đặt, và các liên hệ sẽ được khôi phục khi bạn cài lại Signal. Bạn không cần điền PIN mỗi lần mở ứng dụng.";
 
@@ -5128,9 +5098,6 @@
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Thông tin cá nhân của bạn được bảo mật hai chiều. Thông tin cá nhân của bạn và các thay đổi trong đó sẽ hiện lên cho các liên hệ của bạn và khi bạn bắt đầu hoặc đồng ý cuộc trò chuyện mới.";
 
-/* Button to save the profile view in the profile view. */
-"PROFILE_VIEW_SAVE_BUTTON" = "Lưu";
-
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Hồ sơ";
 
@@ -5278,14 +5245,8 @@
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Mã PIN là một mã ít nhất 4 kí tự bạn tạo ra và có thể bao gồm số hoặc chữ và số. Nếu bạn không nhớ được mã PIN, bạn có thể tạo mã mới. Bạn có thể đăng ký và dùng tài khoản của bạn nhưng bạn sẽ mất một số cài đặt được lưu lại như thông tin người dùng.";
 
-/* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Mã PIN là một mã ít nhất 4 kí tự bạn tạo ra. Nếu bạn không nhớ được mã PIN, bạn sẽ phải chờ 7 ngày để đăng ký lại tài khoản.";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Mã PIN không chính xác";
-
-/* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Xác thực mã PIN…";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Chào mừng!";
@@ -5293,7 +5254,7 @@
 /* Body of action sheet shown when rate-limited during registration. */
 "REGISTER_RATE_LIMITING_ALERT" = "Bạn đã thử quá nhiều lần. Vui lòng chờ ít phút trước khi thử lại.";
 
-/* action sheet body */
+/* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "Bạn đã thử quá nhiều lần. Vui lòng chờ một phút trước khi thử lại.";
 
 /* No comment provided by engineer. */
@@ -5329,15 +5290,6 @@
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "Lỗi Đăng ký";
 
-/* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Chúng tôi không thể kích hoạt tài khoản của bạn cho tới khi bạn xác thực mã chúng tôi đã gửi.";
-
-/* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "Để tiếp tục, kiểm tra kết nối Internet của điện thoại của bạn và thử lại.";
-
-/* Alert title for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Kiểm tra Kết nối";
-
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
 "REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Tài khoản của bạn đã bị khóa để đảm bảo sự riêng tư và bảo mật. Sau %1$@ ngày không sử dụng tài khoản, bạn có thể đăng ký lại số điện thoại này mà không cần mã PIN. Tuy nhiên, toàn bộ dữ liệu sẽ bị xóa.";
 
@@ -5355,9 +5307,6 @@
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
 "REGISTRATION_NETWORK_ERROR_TITLE" = "Kiểm tra Kết nối";
-
-/* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "Định dạng số điện thoại này không được hỗ trợ, vui lòng liên hệ bộ phận hỗ trợ.";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Nhập số điện thoại của bạn để bắt đầu.";
@@ -5420,10 +5369,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Bạn cần đăng ký trước khi có thể gửi tin nhắn.";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Gọi thoại";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "Chúng tôi không thể gửi cho bạn mã xác minh thông qua tin nhắn SMS. Thử nhận mã của bạn qua cuộc gọi thoại.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Bạn đã thử nhập mã quá nhiều lần. Vui lòng gửi lại mã và thử lại.";
@@ -5437,9 +5386,6 @@
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "Mã bạn nhập không hợp lệ. Vui lòng gửi lại mã và thử lại.";
 
-/* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Xác thực Không thành công";
-
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Mã bạn nhập vào không khớp với mã chúng tôi đã gửi. Bạn có muốn kiểm tra lại không?";
 
@@ -5451,12 +5397,6 @@
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Số Điện thoại Không hợp lệ";
-
-/* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Vui lòng nhập số điện thoại để đăng ký.";
-
-/* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Không có Số Điện thoại";
 
 /* Message for confirmation alert during phone number registration. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Mã xác nhận sẽ được gửi đến số điện thoại này. Số điện thoại ở trên của bạn có chính xác không?";
@@ -5471,10 +5411,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Đang xác thực %1$@…";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Gửi SMS";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Chúng tôi không thể gửi mã xác nhận cho bạn qua cuộc gọi thoại. Hãy thử nhận mã qua tin nhắn SMS.";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Từ chối";
@@ -5821,9 +5761,6 @@
 /* Label for button in settings views to change phone number */
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Đổi số điện thoại";
 
-/* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Số điện thoại của bạn đã được đổi thành %1$@";
-
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Thay đổi số";
 
@@ -5847,9 +5784,6 @@
 
 /* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Số điện thoại";
-
-/* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Đang xác thực %1$@";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Sử dụng mẫu này để đổi số điện thoại hiện tại của bạn thành số mới. Bạn không thể hoàn tác thay đổi này.\n\nTrước khi tiếp tục, hãy đảm bảo rằng số điện thoại mới của bạn có thể nhận SMS hoặc cuộc gọi.";

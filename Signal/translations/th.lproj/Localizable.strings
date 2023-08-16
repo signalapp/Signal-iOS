@@ -910,9 +910,6 @@
 /* Error indicating that the user's old phone number is not valid. */
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "หมายเลขโทรศัพท์เดิมไม่ถูกต้อง กรุณากรอกหมายเลขโทรศัพท์ที่ถูกต้องเพื่อเปลี่ยนหมายเลขของคุณ";
 
-/* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "ใส่รหัส PIN สำหรับหมายเลขโทรศัพท์ใหม่ รหัสนี้จะไม่เหมือนกับรหัสตรวจยืนยันทาง SMS";
-
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "นี่คือตัวอย่างสีแชท";
 
@@ -1713,9 +1710,6 @@
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "หยุดการถ่ายโอนหรือไม่?";
-
-/* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "ถ้าคุณมีอุปกรณ์ iOS เครื่องเก่า คุณสามารถถ่ายโอนบัญชีและข้อความของคุณมาสู่อุปกรณ์นี้อย่างปลอดภัย";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
 "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "ถ้าคุณเคยเชื่อมโยง Signal ของคุณเข้ากับ iPad คุณสามารถถ่ายโอนบัญชีและข้อความของคุณมาสู่อุปกรณ์นี้อย่างปลอดภัย";
@@ -3214,6 +3208,24 @@
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "ศูนย์ความช่วยเหลือ";
 
+/* A format for the 'remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
+"HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "Remove %1$@?";
+
+/* An explanation of the consequences of removing a user. */
+"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "You won't see this person when searching. You'll get a message request if they message you in the future.";
+
+/* Button label for the 'remove' button */
+"HIDE_RECIPIENT_BUTTON" = "Remove";
+
+/* Toast message confirming the recipient was removed. Embeds {{The name of the user who was removed.}}.. */
+"HIDE_RECIPIENT_CONFIRMATION_TOAST" = "%1$@ has been removed.";
+
+/* An explanation of why a user was not successfully removed and what to do. */
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_EXPLANATION" = "Check your connection and try again.";
+
+/* Title for an action sheet indicating that the user was not successfully removed. Embeds {{name of user we attempted to hide}}. */
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "Unable to remove %1$@";
+
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "แชทที่ถูกเก็บในที่เก็บถาวร";
 
@@ -3734,7 +3746,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "ส่งถึง";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "ข้ามแล้ว";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "ส่งไม่สำเร็จ";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "กำลังอัปโหลด";
@@ -3902,7 +3914,7 @@
 "MESSAGE_STATUS_READ" = "อ่านแล้ว";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "ข้ามแล้ว";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "ส่งไม่สำเร็จ";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "การส่งล้มเหลว";
@@ -4177,9 +4189,6 @@
 /* Label for the 'ok' button. */
 "OK" = "ตกลง";
 
-/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "รหัส PIN ไม่ถูกต้อง คุณได้ทดลองถึงจำนวนที่จำกัดแล้ว";
-
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_CREATE_NEW_PIN" = "สร้างรหัส PIN ใหม่";
 
@@ -4206,9 +4215,6 @@
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "ข้ามการใส่รหัส PIN หรือไม่?";
-
-/* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "เพิ่มลูกเล่นในข้อความของคุณ";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "ลงทะเบียนไอแพด";
@@ -4255,9 +4261,6 @@
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "กรุณารออีกสัก 2-3 นาทีก่อนลองใหม่อีกครั้ง (%1$@)";
 
-/* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "ป้อนหมายเลขโทรศัพท์ของคุณ";
-
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "หมายเลขโทรศัพท์ไม่ถูกรูปแบบ กรุณาป้อนหมายเลขโทรศัพท์ตามรูปแบบที่ถูกต้องเพื่อลงทะเบียน";
 
@@ -4267,35 +4270,11 @@
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "เรียนรู้เพิ่มเติมเกี่ยวกับรหัส PIN";
 
-/* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "เพื่อปกป้องความเป็นส่วนตัวของคุณและความมั่นคงปลอดภัยของบัญชีของคุณ เราได้ล็อกบัญชีเป็นเวลา 7 วัน\n\nหลังจาก 7 วันของการหยุดเคลื่อนไหว คุณสามารถที่จะลงทะเบียนหมายเลขโทรศัพท์นี้ได้อีกครั้ง โดยไม่จำเป็นต้องใช้รหัส PIN ของคุณ เนื้อหาทั้งหมดจะถูกล้างทิ้ง";
-
-/* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "เรียนรู้เพิ่มเติมเกี่ยวกับบัญชีที่ถูกล็อก";
-
-/* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "บัญชีถูกล็อก";
-
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "รหัส PIN ไม่ถูกต้อง";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "คุณลองใส่ PIN จนครบจำนวนครั้งที่อนุญาตแล้ว แต่คุณยังสามารถลองเข้าถึงบัญชี Signal ของคุณได้ด้วยการยืนยันหมายเลขโทรศัพท์ เพื่อความเป็นส่วนตัวและความปลอดภัยของคุณ บัญชีของคุณจะถูกกู้คืนโดยปราศจากข้อมูลโปรไฟล์หรือการตั้งค่าที่คุณบันทึกไว้";
-
-/* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "ใส่รหัส PIN ที่คุณสร้างขึ้นมาสำหรับบัญชีของคุณ รหัสนี้แตกต่างจากรหัสตรวจยืนยันทาง SMS";
-
-/* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "ใส่ PIN ของคุณ";
-
-/* Title label for profile creation step of onboarding */
-"ONBOARDING_PROFILE_CREATION_TITLE" = "โปรไฟล์ของคุณ";
-
-/* Placeholder text for the family name field of the profile creation view. */
-"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "นามสกุล (ไม่จำเป็น)";
-
-/* Placeholder text for the given name field of the profile creation view. */
-"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "ชื่อ (ต้องมี)";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "เงื่อนไขและนโยบายความเป็นส่วนตัว";
@@ -4326,9 +4305,6 @@
 
 /* Label for a button to get help entering a verification code when registering. */
 "ONBOARDING_VERIFICATION_HELP_LINK" = "หากประสบปัญหาในการลงทะเบียน";
-
-/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "รหัสนี้ไม่ถูกต้อง";
 
 /* Label for button to resend SMS verification code. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "ส่งรหัสอีกครั้ง";
@@ -4843,12 +4819,6 @@
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "คำเตือน";
 
-/* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "รหัส PIN ของคุณไม่ถูกบันทึก เราจะเตือนให้คุณสร้างรหัส PIN ทีหลัง";
-
-/* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "การสร้างรหัส PIN ล้มเหลว";
-
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "รหัส PIN รักษาข้อมูลที่เก็บไว้ใน Signal ได้เข้ารหัสไว้ ดังนั้นจึงมีแต่คุณที่เข้าถึงข้อมูลนี้ได้ โปรไฟล์ของคุณ การตั้งค่า และรายชื่อผู้ติดต่อจะถูกกู้คืนเมื่อคุณติดตั้งแอปอีกครั้ง คุณไม่จำเป็นต้องมีรหัส PIN ของคุณเพื่อเปิดแอป";
 
@@ -5128,9 +5098,6 @@
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "โปรไฟล์ของคุณถูกเข้ารหัสตั้งแต่ต้นทางถึงปลายทาง ผู้ติดต่อและผู้ใช้ที่คุณเริ่มต้นหรือตอบรับแชทใหม่จะเห็นโปรไฟล์และการเปลี่ยนแปลงในโปรไฟล์ของคุณ";
 
-/* Button to save the profile view in the profile view. */
-"PROFILE_VIEW_SAVE_BUTTON" = "บันทึก";
-
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "โปรไฟล์";
 
@@ -5278,14 +5245,8 @@
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "PIN ของคุณคือรหัส 4+ หลักที่คุณสร้างไว้โดยอาจจะเป็นตัวเลขหรือตัวอักษรผสมกับตัวเลข หากจำ PIN ของตัวเองไม่ได้ คุณสามารถสร้างขึ้นมาใหม่ได้ คุณจะลงทะเบียนและใช้บัญชีได้ แต่จะสูญเสียการตั้งค่าเดิมบางรายการ เช่น ข้อมูลโปรไฟล์";
 
-/* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "รหัส PIN ของคุณคือรหัส 4+ หลักที่คุณสร้างไว้ ถ้าคุณไม่สามารถจำรหัส PIN ของคุณได้ คุณจะต้องรออีก 7 วันเพื่อลงทะเบียนบัญชีของคุณใหม่";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN ไม่ถูกต้อง";
-
-/* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "กำลังตรวจยืนยันรหัส PIN…";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "ยินดีต้อนรับ!";
@@ -5293,7 +5254,7 @@
 /* Body of action sheet shown when rate-limited during registration. */
 "REGISTER_RATE_LIMITING_ALERT" = "คุณลองหลายครั้งเกินไป กรุณารอสักครู่แล้วลองใหม่อีกครั้ง";
 
-/* action sheet body */
+/* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "คุณลองบ่อยครั้งเกินไป กรุณารอสักนาทีก่อนจะลองใหม่";
 
 /* No comment provided by engineer. */
@@ -5329,15 +5290,6 @@
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "การลงทะเบียนมีข้อผิดพลาด";
 
-/* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "เราไม่สามารถเปิดใช้งานบัญชีของคุณจนกว่าคุณจะตรวจยืนยันรหัสที่เราส่งให้คุณ";
-
-/* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "หากต้องการดำเนินการต่อ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของโทรศัพท์คุณแล้วลองใหม่อีกครั้ง";
-
-/* Alert title for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "ตรวจสอบการเชื่อมต่อ";
-
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
 "REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "บัญชีของคุณถูกล็อกเพื่อปกป้องความเป็นส่วนตัวและความปลอดภัย หากไม่มีความเคลื่อนไหวภายใน %1$@ คุณจะสามารถลงทะเบียนหมายเลขโทรศัพท์นี้ได้อีกครั้งโดยไม่ต้องใช้ PIN โดยเนื้อหาทั้งหมดจะถูกลบ";
 
@@ -5355,9 +5307,6 @@
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
 "REGISTRATION_NETWORK_ERROR_TITLE" = "ตรวจสอบการเชื่อมต่อ";
-
-/* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "ไม่รองรับรูปแบบหมายเลขโทรศัพท์นี้ โปรดติดต่อฝ่ายสนับสนุน";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "ใส่หมายเลขโทรศัพท์ของคุณเพื่อเริ่มต้นใช้งาน";
@@ -5420,10 +5369,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "คุณจำเป็นต้องลงทะเบียนก่อน จึงจะสามารถส่งข้อความได้";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "โทรเสียง";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "เราไม่สามารถส่งรหัสยืนยันผ่านทาง SMS ให้คุณได้ ลองเปลี่ยนไปรับรหัสผ่านทางการโทรแทน";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "คุณพยายามใส่รหัสหลายครั้งเกินไป โปรดส่งรหัสใหม่แล้วลองอีกครั้ง";
@@ -5437,9 +5386,6 @@
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "รหัสที่คุณใส่ไม่ถูกต้อง โปรดส่งรหัสใหม่แล้วลองอีกครั้ง";
 
-/* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "การตรวจยืนยันล้มเหลว";
-
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "ตัวเลขที่คุณส่งมาไม่ตรงกับที่เราส่งให้ ต้องการตรวจสอบอีกครั้งหรือไม่";
 
@@ -5451,12 +5397,6 @@
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "หมายเลขโทรศัพท์ไม่ถูกรูปแบบ";
-
-/* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "โปรดป้อนหมายเลขโทรศัพท์เพื่อลงทะเบียน";
-
-/* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "ไม่มีหมายเลขโทรศัพท์";
 
 /* Message for confirmation alert during phone number registration. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "รหัสยืนยันจะถูกส่งไปยังหมายเลขโทรศัพท์นี้ หมายเลขโทรศัพท์ข้างบนของคุณถูกต้องหรือไม่?";
@@ -5471,10 +5411,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "กำลังตรวจยืนยัน %1$@…";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "ส่ง SMS";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "เราไม่สามารถส่งรหัสยืนยันผ่านทางการโทรให้คุณได้ ลองเปลี่ยนไปรับรหัสผ่านทาง SMS แทน";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "ปฏิเสธ";
@@ -5821,9 +5761,6 @@
 /* Label for button in settings views to change phone number */
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "เปลี่ยนหมายเลขโทรศัพท์";
 
-/* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "หมายเลขโทรศัพท์ถูกเปลี่ยนเป็น %1$@";
-
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "เปลี่ยนหมายเลขโทรศัพท์";
 
@@ -5847,9 +5784,6 @@
 
 /* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "หมายเลขโทรศัพท์";
-
-/* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "กำลังตรวจยืนยัน %1$@";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "ใช้สิ่งนี้เพื่อเปลี่ยนหมายเลขโทรศัพท์ปัจจุบันของคุณเป็นหมายเลขโทรศัพท์ใหม่ คุณไม่สามารถยกเลิกการเปลี่ยนแปลงนี้ได้ \n\nก่อนดำเนินการต่อ อย่าลืมตรวจสอบว่าหมายเลขใหม่สามารถรับ SMS หรือการโทรได้";

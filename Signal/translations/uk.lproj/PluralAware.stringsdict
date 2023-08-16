@@ -1137,26 +1137,6 @@
 			<string>%1$d глядача</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Невірний PIN-код. Залишилась %1$d спроба.</string>
-			<key>few</key>
-			<string>Невірний PIN-код. Залишилось %1$d спроби.</string>
-			<key>many</key>
-			<string>Невірний PIN-код. Залишилось %1$d спроб.</string>
-			<key>other</key>
-			<string>Невірний PIN-код. Залишилось %1$d спроби.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1275,46 +1255,6 @@
 			<string>Настроювана сторі · %1$d глядачів</string>
 			<key>other</key>
 			<string>Настроювана сторі · %1$d глядача</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>У вас залишилась %1$d спроба. Якщо спроби закінчаться, ви зможете створити новий PIN-код. Ви зможете зареєструватися і користуватися своїм акаунтом, але втратите деякі збережені параметри, наприклад інформацію профілю.</string>
-			<key>few</key>
-			<string>У вас залишилося %1$d спроби. Якщо спроби закінчаться, ви зможете створити новий PIN-код. Ви зможете зареєструватися і користуватися своїм акаунтом, але втратите деякі збережені параметри, наприклад інформацію профілю.</string>
-			<key>many</key>
-			<string>У вас залишилось %1$d спроб. Якщо спроби закінчаться, ви зможете створити новий PIN-код. Ви зможете зареєструватися і користуватися своїм акаунтом, але втратите деякі збережені параметри, наприклад інформацію профілю.</string>
-			<key>other</key>
-			<string>У вас залишилось %1$d спроби. Якщо спроби закінчаться, ви зможете створити новий PIN-код. Ви зможете зареєструватися і користуватися своїм акаунтом, але втратите деякі збережені параметри, наприклад інформацію профілю.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>У вас залишилась %1$d спроба. Якщо спроби закінчаться, ваш акаунт буде заблоковано. Через 7 днів без активності ви зможете зареєструватися знову без PIN-коду. Акаунт буде стертий, а весь вміст видалений.</string>
-			<key>few</key>
-			<string>У вас залишилося %1$d спроби. Якщо спроби закінчаться, ваш акаунт буде заблоковано. Через 7 днів без активності ви зможете зареєструватися знову без PIN-коду. Акаунт буде стертий, а весь вміст видалений.</string>
-			<key>many</key>
-			<string>У вас залишилось %1$d спроб. Якщо спроби закінчаться, ваш акаунт буде заблоковано. Через 7 днів без активності ви зможете зареєструватися знову без PIN-коду. Акаунт буде стертий, а весь вміст видалений.</string>
-			<key>other</key>
-			<string>У вас залишилось %1$d спроби. Якщо спроби закінчаться, ваш акаунт буде заблоковано. Через 7 днів без активності ви зможете зареєструватися знову без PIN-коду. Акаунт буде стертий, а весь вміст видалений.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

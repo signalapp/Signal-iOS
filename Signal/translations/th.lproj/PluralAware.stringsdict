@@ -795,20 +795,6 @@
 			<string>ผู้ชม %1$d คน</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>รหัส PIN ไม่ถูกต้อง ลองได้อีก %1$d ครั้ง</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -891,34 +877,6 @@
 			<string>d</string>
 			<key>other</key>
 			<string>สตอรี่ที่กำหนดเอง · ผู้ชม %1$d คน</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>ลองได้อีก %1$d ครั้ง คุณสามารถสร้างรหัส PIN ใหม่ได้หากลองจนครบจำนวนครั้งแล้ว คุณจะลงทะเบียนและใช้บัญชีได้ แต่จะสูญเสียการตั้งค่าเดิม เช่น ข้อมูลโปรไฟล์</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>ลองได้อีก %1$d ครั้ง บัญชีของคุณจะถูกล็อกหากลองจนครบจำนวนครั้งแล้ว หากไม่มีความเคลื่อนไหวภายใน 7 วัน คุณจะสามารถลงทะเบียนได้อีกครั้งโดยไม่ต้องใช้ PIN โดยบัญชีของคุณจะถูกล้างและเนื้อหาทั้งหมดจะถูกลบ</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

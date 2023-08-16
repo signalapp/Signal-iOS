@@ -795,20 +795,6 @@
 			<string>%1$d كۆرۈرمەن</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>خاتا PIN. %1$d كىرگۈزۈش پۇرسىتى قالدى.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -891,34 +877,6 @@
 			<string>d</string>
 			<key>other</key>
 			<string>خاسلاشتۇرۇلغان ھېكايە · %1$d كۆرۈرمەن</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>سىزنىڭ يەنە %1$d قېتىملىق پۇرسىتىڭىز قالدى. سىناق قېتىم سانى چەككە يەتسە، يېڭىدىن بىر PIN قۇرسىڭىز بولىدۇ. ھېساباتىڭىزنى تىزىملىتالايسىز ۋە ئىشلىتەلەيسىز، ئەمما سەپلىمە ھۆججەت دېگەندەك ئۇچۇرلىرىڭىز ساقلانغان تەڭشەكلەرنى يوقىتىپ قويىسىز.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>سىزنىڭ يەنە %1$d قېتىملىق پۇرسىتىڭىز قالدى. سىناق قېتىم سانى چەككە يەتسە، ھېساباتىڭىز قۇلۇپلىنىدۇ. 7 كۈن مەشغۇلات قىلىنمىغاندىن كېيىن، PIN كىرگۈزمەي ھېساباتىڭىزنى قايتا تىزىملىتالايسىز. ھېساباتىڭىز پۈتۈنلەي تازىلىنىپ، بارلىق مەزمۇنلار ئۆچۈرۈلىدۇ.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

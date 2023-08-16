@@ -909,22 +909,6 @@
 			<string>%1$d tittare</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Felaktig pinkod. %1$d försök kvar.</string>
-			<key>other</key>
-			<string>Felaktig pinkod. %1$d försök kvar.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1019,38 +1003,6 @@
 			<string>Anpassad story · %1$d tittare</string>
 			<key>other</key>
 			<string>Anpassad story · %1$d tittare</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Du har %1$d försök kvar. Om du får slut på försök kan du skapa en ny pinkod. Du kan registrera och använda ditt konto men du kommer att förlora några sparade inställningar, till exempel din profilinformation.</string>
-			<key>other</key>
-			<string>Du har %1$d försök kvar. Om du får slut på försök kan du skapa en ny pinkod. Du kan registrera och använda ditt konto men du kommer att förlora några sparade inställningar, till exempel din profilinformation.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Du har %1$d försök kvar. Om dina försök tar slut kommer ditt konto att låsas. Efter 7 dagars inaktivitet kan du registrera dig igen utan din pinkod. Ditt konto rensas och allt innehåll tas bort.</string>
-			<key>other</key>
-			<string>Du har %1$d försök kvar. Om dina försök tar slut kommer ditt konto att låsas. Efter 7 dagars inaktivitet kan du registrera dig igen utan din pinkod. Ditt konto rensas och allt innehåll tas bort.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

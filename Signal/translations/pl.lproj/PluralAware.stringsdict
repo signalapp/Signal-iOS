@@ -1137,26 +1137,6 @@
 			<string>%1$d odbiorców</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Nieprawidłowy kod PIN. Pozostała %1$d próba.</string>
-			<key>few</key>
-			<string>Nieprawidłowy kod PIN. Pozostały %1$d próby.</string>
-			<key>many</key>
-			<string>Nieprawidłowy kod PIN. Pozostało %1$d prób.</string>
-			<key>other</key>
-			<string>Nieprawidłowy kod PIN. Pozostało %1$d próby.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1275,46 +1255,6 @@
 			<string>Relacja niestandardowa · %1$d odbiorców</string>
 			<key>other</key>
 			<string>Relacja niestandardowa · %1$d odbiorców</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Pozostała Ci %1$d próba. Po wyczerpaniu dostępnych prób możesz utworzyć nowy PIN. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje o Twoim profilu.</string>
-			<key>few</key>
-			<string>Pozostały Ci %1$d próby. Po wyczerpaniu dostępnych prób możesz utworzyć nowy PIN. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje o Twoim profilu.</string>
-			<key>many</key>
-			<string>Pozostało Ci %1$d prób. Po wyczerpaniu dostępnych prób możesz utworzyć nowy PIN. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje o Twoim profilu.</string>
-			<key>other</key>
-			<string>Pozostało Ci %1$d prób. Po wyczerpaniu dostępnych prób możesz utworzyć nowy PIN. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje o Twoim profilu.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Pozostała Ci %1$d próba. Po wyczerpaniu dostępnych prób twoje konto zostanie zablokowane. Po 7 dniach braku aktywności możesz zarejestrować się ponownie, bez użycia kodu PIN. Twoje konto zostanie skasowane, a cała jego zawartość usunięta.</string>
-			<key>few</key>
-			<string>Pozostały Ci %1$d próby. Po wyczerpaniu dostępnych prób twoje konto zostanie zablokowane. Po 7 dniach braku aktywności możesz zarejestrować się ponownie, bez użycia kodu PIN. Twoje konto zostanie skasowane, a cała jego zawartość usunięta.</string>
-			<key>many</key>
-			<string>Pozostało Ci %1$d prób. Po wyczerpaniu dostępnych prób twoje konto zostanie zablokowane. Po 7 dniach braku aktywności możesz zarejestrować się ponownie, bez użycia kodu PIN. Twoje konto zostanie skasowane, a cała jego zawartość usunięta.</string>
-			<key>other</key>
-			<string>Pozostały Ci %1$d próby. Po wyczerpaniu dostępnych prób twoje konto zostanie zablokowane. Po 7 dniach nieaktywności możesz zarejestrować się ponownie, bez użycia kodu PIN. Twoje konto zostanie skasowane, a cała jego zawartość usunięta.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

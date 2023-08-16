@@ -910,9 +910,6 @@
 /* Error indicating that the user's old phone number is not valid. */
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "الرقم القديم غير صالح، فضلًا أدخل رقم هاتف صالح.";
 
-/* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "أَدخل رقم التعريف الشخصي لرقم الهاتف الجديد. هذا مختلف عن رمز التحقق عبر الرسالة القصيرة.";
-
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "إليك معاينة للون الدردشة.";
 
@@ -1713,9 +1710,6 @@
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "هل تُريد إيقاف الإنتقال؟";
-
-/* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "إذا كان جهازك الـiOS القديم متاحاً، يمكنك نقل حسابك والرسائل بأمان إلى هذا الجهاز.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
 "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "إذا كُنتَ تَستخدِم سيجنال مُسبقًا عَلى جِهاز iPad مُرتَبِط، يُمكِنُكَ نَقل حِسابك وَالرَّسائِل إلى هَذَا الجِهاز بِشَكل آمن.";
@@ -3214,6 +3208,24 @@
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "مَركَزُ الدَّعم";
 
+/* A format for the 'remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
+"HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "Remove %1$@?";
+
+/* An explanation of the consequences of removing a user. */
+"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "You won't see this person when searching. You'll get a message request if they message you in the future.";
+
+/* Button label for the 'remove' button */
+"HIDE_RECIPIENT_BUTTON" = "Remove";
+
+/* Toast message confirming the recipient was removed. Embeds {{The name of the user who was removed.}}.. */
+"HIDE_RECIPIENT_CONFIRMATION_TOAST" = "%1$@ has been removed.";
+
+/* An explanation of why a user was not successfully removed and what to do. */
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_EXPLANATION" = "Check your connection and try again.";
+
+/* Title for an action sheet indicating that the user was not successfully removed. Embeds {{name of user we attempted to hide}}. */
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "Unable to remove %1$@";
+
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "الدردشات المؤرشفة";
 
@@ -3734,7 +3746,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "أُرسِلَت إلى";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "تمَّ التخطي";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "تعذّر التسليم";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "يَجري الرَّفع";
@@ -3902,7 +3914,7 @@
 "MESSAGE_STATUS_READ" = "تمت القراءة";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "تم تجاوزه";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "تعذّر التسليم";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "فشل الإرسال";
@@ -4177,9 +4189,6 @@
 /* Label for the 'ok' button. */
 "OK" = "حسنًا";
 
-/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN غير صحيح. انتهت المُحاولات.";
-
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_CREATE_NEW_PIN" = "إنشاء PIN جديد";
 
@@ -4206,9 +4215,6 @@
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "تجاهُل إدخال PIN؟";
-
-/* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "أضف لمسة إنسانية إلى رسائلك";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "تسجيل iPad";
@@ -4255,9 +4261,6 @@
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "يُرجى الانتِظار بضع دقائق قبل المُحاولة مرة أُخرى. (%1$@)";
 
-/* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "يُرجى إدخال رقم هاتفك";
-
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "رقم غير صالِح. للتَّسجيل يُرجى إدخال رقم هاتف صالِح.";
 
@@ -4267,35 +4270,11 @@
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "تعرّف على المزيد حول الـPIN";
 
-/* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "لحماية خصوصيتك وأمن الحساب الخاص بك، لقد أقفلنا حِسابكَ لمُدة سبعة أيام.\n\nبعد سبعة أيام من عدم النشاط، سوف تستطيع تسجيل رقم الهاتف هذا مرة أُخرى دون الحاجة إلى الـPIN. سيتم مسح جميع المُحتويات نهائياً.";
-
-/* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "تعرف على المزيد حول الحِسابات المُقفلة";
-
-/* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "لقد تمَّ قَفل الحِساب";
-
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN غير صحيح";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين رقم التعريف الشخصي، لكن يُمكنك الوصول إلى حساب سيجنال الخاص بِكَ عبر التحقق من رقم هاتفك. للحفاظ على خصوصيتك وأمانك سَيُستعاد حسابك من غير أي معلومات ملف شخصي أو إعدادات محفوظة مُسبقًا.";
-
-/* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "أدخل الـPIN الذى أنشأته للحساب الخاص بِكَ مُسبقًا. هذا مُختلف عن رمز SMS الخاص بِكَ للتحقق.";
-
-/* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "أدخل PIN الخاص بِكَ";
-
-/* Title label for profile creation step of onboarding */
-"ONBOARDING_PROFILE_CREATION_TITLE" = "ملفُّكَ الشَّخصيّ";
-
-/* Placeholder text for the family name field of the profile creation view. */
-"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "الاسم الأخير (اختياري)";
-
-/* Placeholder text for the given name field of the profile creation view. */
-"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "الاسم الأول (مُتَطلَّب)";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "الشُروط وَسياسة الخُصُوصِية";
@@ -4326,9 +4305,6 @@
 
 /* Label for a button to get help entering a verification code when registering. */
 "ONBOARDING_VERIFICATION_HELP_LINK" = "هل تواجه مشكلة في التسجيل؟";
-
-/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "هذا الرمز غير صحيح";
 
 /* Label for button to resend SMS verification code. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "أعِد إرسال الرمز";
@@ -4843,12 +4819,6 @@
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "تحذير";
 
-/* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "لم يُحفَظ الـPIN الخاص بك. سنُطالِبُك بإنشاء PIN لاحقًا.";
-
-/* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "فشل إنشاء الـPIN";
-
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "الـPIN يُبقي المعلومات المحفوظة مع سيجنال مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
 
@@ -5128,9 +5098,6 @@
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "حسابك الشَّخصيّ مُعمّى مِنَ النِهاية إلى النِهاية. إنَّ حسابك الشَّخصي وأي تغييرات تطرأ عليه ستكون مرئية لِجهات اتصالك وعندما تبدأ أو تقبل دردشة جديدة.";
 
-/* Button to save the profile view in the profile view. */
-"PROFILE_VIEW_SAVE_BUTTON" = "حفظ";
-
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "الملف الشخصي";
 
@@ -5278,14 +5245,8 @@
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "إنَّ الرقم التعريفي الشخصي الخاص بك عِبارة عَن رمز أنشأته مكوّن من أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقامًا أو حُروفًا. إذا لم تستطع تَذكُر الرقم التعريفي الشخصي الخاص بك، تستطيع إنشاء واحِد جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة، مِثل معلومات حسابك الشخصي.";
 
-/* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "إنَّ الـPIN الخاص بك عبارة عن أربع خانات رقمية أنت قد أنشأتها. إذا لم تستطع تَذكُر الـPIN الخاص بك، يجبُ عليك الانتظار لمدة سبعة أيام لكي تُعيد تسجيل الحساب الخاص بك.";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "إنَّ الـPIN غير صحيح";
-
-/* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "جارٍ التَّحَقُّق مِن الـ PIN…";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "مرحبًا!";
@@ -5293,7 +5254,7 @@
 /* Body of action sheet shown when rate-limited during registration. */
 "REGISTER_RATE_LIMITING_ALERT" = "حاولت كثيرًا. يُرجى الانتِظار بضع دقائق قبل المُحاولة مرة أُخرى.";
 
-/* action sheet body */
+/* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "حاولت كثيرًا. فضلًا انتظر دقيقة واحدة قبل إعادة المحاولة.";
 
 /* No comment provided by engineer. */
@@ -5329,15 +5290,6 @@
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "خطأ في التسجيل";
 
-/* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "لا نستطيع تفعيل حسابك إلى أن تتحقق من الرمز الذي أرسلناه لك.";
-
-/* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "للمُتابعة، تأكَّد أنَّ الهاتف الخاص بك مُتَّصل بالانترنت ثمَّ حاول مرَّة أُخرى.";
-
-/* Alert title for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "تأكَّد مِنَ الاِتِّصال";
-
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
 "REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "لقد تم قفل حسابك لِحماية خصوصيتك وأمانك. بعد %1$@ من خمول حسابك، سَيكون بإمكانك إعادة التسجيل برقم هاتفك دون الحاجة إلى رقم التعريف الشخصي. ستُحذَف جميع محتويات حسابك.";
 
@@ -5355,9 +5307,6 @@
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
 "REGISTRATION_NETWORK_ERROR_TITLE" = "تأكَّد مِنَ الاِتِّصال";
-
-/* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "صيغة رقم الهاتف هذه غير مدعومة، فضلًا تواصل مع الدعم.";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "أدخل رقم هاتفك للبدء.";
@@ -5420,10 +5369,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "يجب عليك التسجيل قبل أن تتمكن من إرسال رسالة.";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "مكالمة صوتية";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "تعذّر إرسال رمز التحقق عبر رسالة SMS. حاول الحصول على رمزك عبر مكالمة نصية بدلاً من ذلك.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "لقد قمت بمحاولات كثيرة لإدخال الرمز. يُرجى إعادة إرسال الرمز والمحاولة من جديد.";
@@ -5437,9 +5386,6 @@
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "الرمز الذي أدخلته غير صحيح. يُرجى إعادة إرسال الرمز والمحاولة من جديد.";
 
-/* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "فشل التحقق";
-
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "الأرقام التي أدخلتها لا تتطابق مع التي أرسلناها. لم لا تتأكد مجدداً؟";
 
@@ -5451,12 +5397,6 @@
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "رقم هاتف غير صالح";
-
-/* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "فضلاً أدخل رقم هاتف للتسجيل.";
-
-/* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "لا يوجد رقم هاتف";
 
 /* Message for confirmation alert during phone number registration. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "سَوف يتمُّ إرسال رَمز تَحقُّق إلى هذا الرَّقم. هل رقمُ هاتِفك أعلاه صحيح؟";
@@ -5471,10 +5411,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "جارٍ التَّحَقُّق مِن %1$@…";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "أرسل رسالة";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "تعذّر إرسال رمز التحقق عبر مكالمة صوتية. حاول الحصول على رمزك عبر مكالمة نصية بدلاً من ذلك.";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "رفض";
@@ -5821,9 +5761,6 @@
 /* Label for button in settings views to change phone number */
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "تغيير رقم الهاتف";
 
-/* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "رقم هاتفك أصبح %1$@";
-
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "تغيير الرقم";
 
@@ -5847,9 +5784,6 @@
 
 /* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "رقم الهاتف";
-
-/* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "جاري التحقق من %1$@";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "يمكنك تغيير رقم هاتفك الحالي برقم جديد. لا يمكن التراجع عن هذا الإجراء.\n\nقبل الاستمرار, تأكد أن رقمك الجديد يمكنه تلقي الرسائل القصيرة أو المكالمات.";

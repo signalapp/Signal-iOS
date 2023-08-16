@@ -909,22 +909,6 @@
 			<string>%1$d espectadors</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>PIN incorrecte. Es queda %1$d intent.</string>
-			<key>other</key>
-			<string>PIN incorrecte. Et queden %1$d intents.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1019,38 +1003,6 @@
 			<string>Història personalitzada · %1$d espectador</string>
 			<key>other</key>
 			<string>Història personalitzada · %1$d espectadors</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Et queda 1 intent. Si esgotes els intents, pots crear un PIN nou. Pots registrar-te i utilitzar el teu compte, però perdràs algunes configuracions, com ara la informació del perfil.</string>
-			<key>other</key>
-			<string>Et queden %1$d intents. Si esgotes els intents, pots crear un PIN nou. Pots registrar-te i utilitzar el teu compte, però perdràs alguns dels teus ajustos, com ara la informació del perfil.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Et queda %1$d intent. Si esgotes els intents, el teu compte es bloquejarà. Al cap de 7 dies d&apos;inactivitat, pots tornar-te a registrar sense el PIN. El teu compte s&apos;esborrarà i se&apos;n suprimirà tot el contingut.</string>
-			<key>other</key>
-			<string>Et queden %1$d intents. Si esgotes els intents, el teu compte es bloquejarà. Al cap de 7 dies d&apos;inactivitat, pots tornar-te a registrar sense el PIN. El teu compte s&apos;esborrarà i se&apos;n suprimirà tot el contingut.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

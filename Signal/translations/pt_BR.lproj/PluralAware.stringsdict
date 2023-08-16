@@ -909,22 +909,6 @@
 			<string>%1$d visualizadores</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>PIN incorreto. %1$d tentativa restante.</string>
-			<key>other</key>
-			<string>PIN incorreto. %1$d tentativas restantes.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1019,38 +1003,6 @@
 			<string>Story personalizado · %1$d visualizador</string>
 			<key>other</key>
 			<string>Story personalizado · %1$d visualizadores</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Você tem %1$d tentativa restante. Se não acertar, pode criar um PIN novo. Você pode se registrar e usar sua conta, mas perderá algumas configurações salvas como as informações do seu perfil.</string>
-			<key>other</key>
-			<string>Você tem %1$d tentativas restantes. Se não acertar, pode criar um PIN novo. Você pode se registrar e usar sua conta, mas perderá algumas configurações salvas como as informações do seu perfil.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Você tem %1$d tentativa restante. Se não conseguir se lembrar do seu PIN, sua conta será bloqueada. Depois de 7 dias de inatividade, você pode se registrar novamente sem usar seu PIN. Sua conta será excluída e seu conteúdo apagado.</string>
-			<key>other</key>
-			<string>Você tem %1$d tentativas restantes. Se não conseguir se lembrar do seu PIN, sua conta será bloqueada. Depois de 7 dias de inatividade, você pode se registrar novamente sem usar seu PIN. Sua conta será excluída e seu conteúdo apagado.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

@@ -909,22 +909,6 @@
 			<string>%1$d بازدیدکننده</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>پین نادرست است. %1$d تلاش دیگر باقی مانده است.</string>
-			<key>other</key>
-			<string>پین نادرست است. %1$d تلاش دیگر باقی مانده است.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1019,38 +1003,6 @@
 			<string>استوری سفارشی · %1$d بازدیدکننده</string>
 			<key>other</key>
 			<string>استوری سفارشی · %1$d بازدیدکننده</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d تلاش باقیمانده دارید. اگر فرصت‌هایتان تمام شد، می‌توانید پین جدید ایجاد کنید. می‌توانید ثبت‌نام کنید و از حساب کاربری خود استفاده کنید اما برخی تنظیمات ذخیره‌شده مانند اطلاعات نمایه‌تان را از دست می‌دهید.</string>
-			<key>other</key>
-			<string>%1$d تلاش باقیمانده دارید. اگر فرصت‌هایتان تمام شد، می‌توانید پین جدید ایجاد کنید. می‌توانید ثبت‌نام کنید و از حساب کاربری خود استفاده کنید اما برخی تنظیمات ذخیره‌شده مانند اطلاعات نمایه‌تان را از دست می‌دهید.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>شما %1$d تلاش باقیمانده دارید. اگر فرصت‌هایتان تمام شود، حسابتان قفل خواهد شد. پس از ۷ روز عدم فعالیت، می‌توانید بدون پین دوباره ثبت‌نام کنید. حساب شما به حالت خالی اول برگردانده می‌شود و تمام محتوا پاک می‌شود.</string>
-			<key>other</key>
-			<string>شما %1$d تلاش باقیمانده دارید. اگر فرصت‌هایتان تمام شود، حسابتان قفل خواهد شد. پس از ۷ روز عدم فعالیت، می‌توانید بدون پین دوباره ثبت‌نام کنید. حساب شما به حالت خالی اول برگردانده می‌شود و تمام محتوا پاک می‌شود.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

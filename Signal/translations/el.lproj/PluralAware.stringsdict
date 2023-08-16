@@ -909,22 +909,6 @@
 			<string>%1$d θεατές</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Λάθος PIN. Απομένει %1$d προσπάθεια.</string>
-			<key>other</key>
-			<string>Λάθος ΡΙΝ. Απομένουν %1$d προσπάθειες.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1019,38 +1003,6 @@
 			<string>Προσαρμοσμένη ιστορία · %1$d θεατής</string>
 			<key>other</key>
 			<string>Προσαρμοσμένη ιστορία · %1$d θεατές</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Σου απομένει %1$d προσπάθεια. Αν εξαντλήσεις τις προσπάθειες, μπορείς να δημιουργήσεις νέο PIN. Μπορείς να εγγραφείς και να χρησιμοποιήσεις τον λογαριασμό σου, αλλά θα χάσεις κάποιες αποθηκευμένες ρυθμίσεις όπως τις πληροφορίες προφίλ.</string>
-			<key>other</key>
-			<string>Σου απομένουν %1$d προσπάθειες. Αν εξαντλήσεις τις προσπάθειες, μπορείς να δημιουργήσεις νέο PIN. Μπορείς να εγγραφείς και να χρησιμοποιήσεις τον λογαριασμό σου αλλά θα χάσεις κάποιες αποθηκευμένες ρυθμίσεις όπως τις πληροφορίες προφίλ.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Σου απομένει %1$d προσπάθεια. Εάν την εξαντλήσεις, ο λογαριασμός σου θα κλειδωθεί. Μετά από 7 ημέρες αδράνειας, μπορείς να εγγραφείς ξανά χωρίς το PIN σου. Ο λογαριασμός σου θα διαγραφεί μαζί με όλο το περιεχόμενό του.</string>
-			<key>other</key>
-			<string>Σου απομένουν %1$d προσπάθειες. Εάν τις εξαντλήσεις, ο λογαριασμός σου θα κλειδωθεί. Μετά από 7 ημέρες αδράνειας, μπορείς να εγγραφείς ξανά χωρίς το PIN σου. Ο λογαριασμός σου θα διαγραφεί μαζί με όλο το περιεχόμενό του.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

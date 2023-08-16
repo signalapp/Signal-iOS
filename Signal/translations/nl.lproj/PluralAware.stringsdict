@@ -909,22 +909,6 @@
 			<string>%1$d kijkers</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Foutieve pincode. %1$d poging resterend.</string>
-			<key>other</key>
-			<string>Foutieve pincode. %1$d pogingen resterend.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1019,38 +1003,6 @@
 			<string>Aangepast verhaal · %1$d kijker</string>
 			<key>other</key>
 			<string>Aangepast verhaal · %1$d kijkers</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Je hebt nog %1$d poging. Als je geen pogingen meer over hebt, kun je nog wel een nieuwe pincode aanmaken. Je kunt dan opnieuw registreren en je account gebruiken, maar opgeslagen instellingen zoals je profielinformatie worden verwijderd.</string>
-			<key>other</key>
-			<string>Je hebt nog %1$d pogingen. Als je geen pogingen meer over hebt, kun je nog wel een nieuwe pincode aanmaken. Je kunt dan opnieuw registreren en je account gebruiken, maar opgeslagen instellingen zoals je profielinformatie worden verwijderd.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Je hebt nog %1$d poging. Als je geen pogingen meer over hebt, wordt Signal voor dit telefoonnummer tijdelijk vergrendeld. Na 7 dagen kun je je telefoonnummer opnieuw registreren zonder je pincode. Je account wordt verwijderd en alle inhoud wordt gewist.</string>
-			<key>other</key>
-			<string>Je hebt nog %1$d pogingen. Als je geen pogingen meer over hebt, wordt Signal voor dit telefoonnummer tijdelijk vergrendeld. Na 7 dagen kun je je telefoonnummer opnieuw registreren zonder je pincode. Je account wordt verwijderd en alle inhoud wordt gewist.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

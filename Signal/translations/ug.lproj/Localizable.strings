@@ -910,9 +910,6 @@
 /* Error indicating that the user's old phone number is not valid. */
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "كونا تېلېفون نومۇرى ئىناۋەتسىز. نومۇرىڭىزنى ئ‍ۆزگەرتىش ئۈچۈن ئىناۋەتلىك تېلېفون نومۇرى كىرگۈزۈڭ.";
 
-/* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "يېڭى تېلېفون نومۇرى ئۈچۈن PIN كىرگۈزۈڭ. بۇ SMS دەلىللەش كودىڭىز بىلەن ئوخشىمايدۇ.";
-
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "پاراڭ رەڭگىنى بۇ جايدا ئالدىن كۆرگىلى بولىدۇ.";
 
@@ -1713,9 +1710,6 @@
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "يۆتكەشنى توختىتامدۇ؟";
-
-/* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "ئەگەر كونا iOS ئۈسكۈنىڭىز بولسا، ھېسابات ۋە ئۇچۇرلىرىڭىزنى بىخەتەر ھالدا يېڭى ئۈسكۈنىڭىزگە يۆتكىيەلەيسىز.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
 "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "ئەگەر سىز ئىلگىرى  iPad كە باغلانغان Signal ئىشلەتكەن بولسىڭىز، ھېسابات ۋە ئۇچۇرلىرىڭىزنى بۇ ئۈسكۈنىگە بىخەتەر يۆتكىيەلەيسىز.";
@@ -3214,6 +3208,24 @@
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "قوللاش مەركىزى";
 
+/* A format for the 'remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
+"HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "Remove %1$@?";
+
+/* An explanation of the consequences of removing a user. */
+"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "You won't see this person when searching. You'll get a message request if they message you in the future.";
+
+/* Button label for the 'remove' button */
+"HIDE_RECIPIENT_BUTTON" = "Remove";
+
+/* Toast message confirming the recipient was removed. Embeds {{The name of the user who was removed.}}.. */
+"HIDE_RECIPIENT_CONFIRMATION_TOAST" = "%1$@ has been removed.";
+
+/* An explanation of why a user was not successfully removed and what to do. */
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_EXPLANATION" = "Check your connection and try again.";
+
+/* Title for an action sheet indicating that the user was not successfully removed. Embeds {{name of user we attempted to hide}}. */
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "Unable to remove %1$@";
+
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "ئارخىپلانغان پاراڭلار";
 
@@ -4177,9 +4189,6 @@
 /* Label for the 'ok' button. */
 "OK" = "بولىدۇ";
 
-/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN خاتا. سىناش قېتىمىڭىز تۈگىدى.";
-
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_CREATE_NEW_PIN" = "يېڭى PIN قۇرۇڭ";
 
@@ -4206,9 +4215,6 @@
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PIN كىرگۈزۈشتىن ئاتلاپ كېتەمسىز؟";
-
-/* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "ئۇچۇرىڭىزغا ھېسسىيات قوشۇڭ";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad تىزىملىتىڭ";
@@ -4255,9 +4261,6 @@
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "قايتا سىناشتىن بۇرۇن بىر قانچە مىنۇت ساقلاڭ. (%1$@)";
 
-/* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "تېلېفون نومۇرىڭىزنى كىرگۈزۈڭ";
-
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "ئىناۋەتسىز تېلېفون نومۇرى. تىزىملىتىش ئۈچۈن ئىناۋەتلىك تېلېفون نومۇرىنى كىرگۈزۈڭ.";
 
@@ -4267,35 +4270,11 @@
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "PIN ھەققىدە تېخىمۇ كۆپ بىلىم";
 
-/* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "شەخسىي مەخپىيەتلىكىڭىزنى قوغداش ۋە بىخەتەرلىك سەۋەبىدىن، ھېسابىڭىزنى 7 كۈنلۈك قۇلۇپلاپ قويدۇق.\n\n ھېسابىڭىز 7 كۈنگىچە ھەرىكەتسىز تۇرغاندىن كېيىن بۇ تېلېفون نومۇرىڭىزنى ئىشلىتىپ، PIN ئىشلەتمەي تۇرۇپمۇ قايتىدىن تىزىملىتالايسىز. بارلىق مەزمۇنلار ئۆچۈرۈلۈپ كېتىدۇ.  ";
-
-/* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "قۇلۇپلانغان ھېساباتلار ھەققىدىكى تەپسىلاتلار";
-
-/* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "ھېسابات قۇلۇپلاندى";
-
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "خاتا PIN";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "‫PIN پۇرسىتىڭىز تۈگەپ كەتتى ، ئەمما تېلېفون نومۇرىڭىزنى دەلىللەش ئارقىلىق Signal ھېساباتىڭىزنى يەنىلا زىيارەت قىلالايسىز. شەخسىي مەخپىيەتلىكىڭىز ۋە بىخەتەرلىكىڭىز ئۈچۈن ھېساباتىڭىز ساقلانغان ئارخىپ ئۇچۇرلىرىڭىز ۋە تەڭشەكلىرىڭىز ساقلانمىغان ھالەتتە ئەسلىگە كېلىدۇ.";
-
-/* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "ھېساباتىڭىز ئۈچۈن قۇرغان PIN نىڭىزنى كىرگۈزۈڭ. بۇ سىزنىڭ قىسقا ئۇچۇرلۇق دەلىللەش كودىڭىزغا ئوخشىمايدۇ.";
-
-/* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "PIN ڭىزنى كىرگۈزۈڭ";
-
-/* Title label for profile creation step of onboarding */
-"ONBOARDING_PROFILE_CREATION_TITLE" = "ئارخىپىڭىز";
-
-/* Placeholder text for the family name field of the profile creation view. */
-"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "تەگئات (ئىختىيارى)";
-
-/* Placeholder text for the given name field of the profile creation view. */
-"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "ئىسىم (زۆرۈر)";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "شەرتلەر &  مەخپىيەتلىك تۈزۈمى";
@@ -4326,9 +4305,6 @@
 
 /* Label for a button to get help entering a verification code when registering. */
 "ONBOARDING_VERIFICATION_HELP_LINK" = "تىزىملىتىشتا قىيىنچىلىققا يولۇقتىڭىزمۇ؟";
-
-/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "مەزكۇر كود خاتا";
 
 /* Label for button to resend SMS verification code. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "كودنى قايتا ئەۋەت";
@@ -4843,12 +4819,6 @@
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "ئاگاھلاندۇرۇش";
 
-/* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "PIN ساقلانمىدى. بىز سەل تۇرۇپ PIN قۇرۇشنى ئەسكەرتىمىز.";
-
-/* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "PIN قۇرۇش مەغلۇب بولدى";
-
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "PINلەر Signalدا ساقلانغان ئۇچۇرلارنى مەخپىيلەشتۈرۈپ ساقلايدۇ. شۇڭا سىزلا زىيارەت قىلالايسىز. ئارخىپىڭىز، سەپلىمىلىرىڭىز ۋە ئالاقەداشلىرىڭىز Signal نى قايتا قاچىلىغىنىڭىزدا ئەسلىگە كەلتۈرىلىدۇ. ئەپنى ئېچىش PIN نىڭىز كېرەك ئەمەس.";
 
@@ -5128,9 +5098,6 @@
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "سەپلىمە ھۆججىتىڭىز ئۇچتىن-ئۇچقا شىفىرلانغان. يېڭى سۆھبەت باشلىسىڭىز ياكى قوشۇلسىڭىز، ئالاقەداشلىرىڭىز ۋە سۆھبەتداشلىرىڭىز سەپلىمە ھۆججىتىڭىز ۋە ئۆزگىرىشلەرنى كۆرەلەيدۇ.";
 
-/* Button to save the profile view in the profile view. */
-"PROFILE_VIEW_SAVE_BUTTON" = "ساقلا";
-
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "ئارخىپ";
 
@@ -5278,14 +5245,8 @@
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "PIN كودى 4 خانىدىن كۆپ سان ياكى ھەرپ ۋە ساندىن تەركىب تاپقان كود. ئەگەر PIN نى ئەسلىيەلمىسىڭىز، يېڭىدىن بىرنى قۇرسىڭىز بولىدۇ. ھېساباتىڭىزنى تىزىملىتالايسىز ۋە ئىشلىتەلەيسىز، ئەمما سەپلىمە ھۆججەتكە ئوخشاش ئۇچۇرلىرىڭىز ساقلانغان تەڭشەكلەرنى يوقىتىپ قويىسىز.";
 
-/* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "PIN كودىڭىز 4 خانىدىن كۆپ ساندىن تەركىب تاپقان كود. ئەگەر PIN نى ئەسلىيەلمىسىڭىز، ھېساباتىڭىزنى قايتا تىزىملىتىش ئۈچۈن 7 كۈن كۈتىسىز.";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "خاتا PIN";
-
-/* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "PIN دەلىللەۋاتىدۇ…";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "مەرھابا!";
@@ -5293,7 +5254,7 @@
 /* Body of action sheet shown when rate-limited during registration. */
 "REGISTER_RATE_LIMITING_ALERT" = "سىناش قېتىم سانى چەكتىن ئېشىپ كەتتى. قايتا سىناشتىن بۇرۇن بىر قانچە مىنۇت ساقلاڭ.";
 
-/* action sheet body */
+/* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "سىز بەك كۆپ قېتىم سىناپ بولدىڭىز. قايتا سىناپ بېقىشتىن بۇرۇن بىر مىنۇتتەك ساقلاڭ.";
 
 /* No comment provided by engineer. */
@@ -5329,15 +5290,6 @@
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "تىزىملىتىش خاتالىقى";
 
-/* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "بىز سىزگە يوللىغان دەلىللەش كودىنى دەلىللىمىگۈچە ھېساباتىڭىزنى ئاكتىپلىيالمايمىز.";
-
-/* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "داۋاملاشتۇرۇشتا، تېلېفونىڭىزنىڭ ئىنتېرنېت باغلىنىشىنى تەكشۈرۈپ ئاندىن قايتا سىناڭ.";
-
-/* Alert title for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "باغلىنىشنى تەكشۈر";
-
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
 "REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "ھېساباتىڭىز شەخسىي مەخپىيەتلىكىڭىز ۋە بىخەتەرلىكىڭىزنى قوغداش ئۈچۈن قۇلۇپلاندى. ھېساباتىڭىزدا %1$@ كۈنگىچە مەشغۇلات ئېلىپ بېرىلمىغاندىن كېيىن بۇ تېلېفون نومۇرىڭىز ئارقىلىق PIN ئىشلەتمەي قايتا تىزىملىتالايسىز. بارلىق مەزمۇنلار ئۆچۈرۈلىدۇ.";
 
@@ -5355,9 +5307,6 @@
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
 "REGISTRATION_NETWORK_ERROR_TITLE" = "ئۇلىنىشنى تەكشۈرۈڭ";
-
-/* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "بۇ تېلېفون نومۇر پىچىمىنى قوللىمايدۇ، قوللاش مۇلازىمىتى بىلەن ئالاقە قىلىڭ.";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "باشلاش ئۈچۈن تېلېفون نومۇرىڭىزنى كىرگۈزۈڭ.";
@@ -5420,10 +5369,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "ئۇچۇر يوللاشتىن ئىلگىرى تىزىملىتىشىڭىز كېرەك.";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "ئۈن چاقىرىش";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "سىزگە SMS ئارقىلىق دەلىللەش كودىنى يوللىيالمىدۇق. دەلىللەش كودىنى ئاۋازلىق چاقىرىق ئارقىلىق تاپشۇرۇۋېلىڭ.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "كودنى كىرگۈزۈش قېتىم سانىڭىز چەكتىن ئېشىپ كەتتى. كودنى قايتا ئەۋەتىپ قايتا سىناڭ.";
@@ -5437,9 +5386,6 @@
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "سىز كىرگۈزگەن كود ئىناۋەتسىز. كودنى قايتا ئەۋەتىپ قايتا سىناڭ.";
 
-/* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "دەلىللىيەلمىدى";
-
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "سىز يوللىغان سان بىلەن بىز ئەۋەتكەن سان ماس كەلمىدى. قايتا تەكشۈرەمسىز؟";
 
@@ -5451,12 +5397,6 @@
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "ئىناۋەتسىز تېلېفون نومۇر";
-
-/* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "تېلېفون نومۇرىدىن بىرنى كىرگۈزۈپ تىزىملىتىڭ.";
-
-/* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "تېلېفون نومۇر يوق";
 
 /* Message for confirmation alert during phone number registration. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "دەلىللەش كودى مەزكۇر تېلېفون نومۇرىغا يوللىنىدۇ. تۆۋەندىكى تېلېفون نومۇرى توغرىمۇ؟";
@@ -5471,10 +5411,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "«%1$@» نى دەلىللەۋاتىدۇ...";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "قىسقا ئۇچۇر يوللاڭ";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "بىز ئاۋازلىق چاقىرىق ئارقىلىق سىزگە دەلىللەش كودى يوللىيالمىدۇق. ئۇنىڭ ئورنىغا قىسقا ئۇچۇر ئارقىلىق دەلىللەش كودىنى تاپشۇرىۋېلىشنى سىناڭ.";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "رەت قىل";
@@ -5821,9 +5761,6 @@
 /* Label for button in settings views to change phone number */
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "تېلېفون نومۇرىنى ئۆزگەرت";
 
-/* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "تېلېفون نومۇرىڭىز «%1$@» گە ئۆزگەردى";
-
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "نومۇرنى ئۆزگەرت";
 
@@ -5847,9 +5784,6 @@
 
 /* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "تېلېفون نومۇرى";
-
-/* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "‏%1$@ نى دەلىللەۋاتىدۇ ";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "بۇنى ئىشلىتىپ ھازىرقى نومۇرڭىزنى يېڭى تېلېفون نومۇرىغا ئۆزگەرتىڭ..\n\nباشلاشتىن بۇرۇن، يېڭى نومۇرىڭىز بىلەن SMS قوبۇل قىلىپ، چاقىرىق قىلالايدىغىنىڭىزنى جەزم قىلىڭ.";

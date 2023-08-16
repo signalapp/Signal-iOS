@@ -1023,24 +1023,6 @@
 			<string>%1$d de Spectatori</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>PIN incorect. %1$d încercare rămasă.</string>
-			<key>few</key>
-			<string>PIN incorect. %1$d încercări rămase.</string>
-			<key>other</key>
-			<string>PIN incorect. %1$d de încercări rămase.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1147,42 +1129,6 @@
 			<string>Poveste personalizată · %1$d spectatori</string>
 			<key>other</key>
 			<string>Poveste personalizată · %1$d de spectatori</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Mai ai o încercare rămasă. Dacă rămâi fără încercări, poți crea un PIN nou. Poți să te înregistrezi și să-ți utilizezi contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.</string>
-			<key>few</key>
-			<string>Mai ai %1$d încercări rămase. Dacă rămâi fără încercări, poți crea un PIN nou. Poți să te înregistrezi și să-ți utilizezi contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.</string>
-			<key>other</key>
-			<string>Mai ai %1$d de încercări rămasă. Dacă rămâi fără încercări, poți crea un PIN nou. Poți să te înregistrezi și să-ți utilizezi contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Mai ai %1$d încercare rămasă. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți înregistra din nou fără PIN. Contul tău va fi eliminat și tot conținutul acestuia șters.</string>
-			<key>few</key>
-			<string>Mai ai %1$d încercări rămase. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți înregistra din nou fără PIN. Contul tău va fi eliminat și tot conținutul acestuia șters.</string>
-			<key>other</key>
-			<string>Mai ai %1$d de încercări rămase. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți înregistra din nou fără PIN. Contul tău va fi eliminat și tot conținutul acestuia șters.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

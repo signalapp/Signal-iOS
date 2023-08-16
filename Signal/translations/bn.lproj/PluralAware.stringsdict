@@ -909,22 +909,6 @@
 			<string>%1$d জন দর্শক</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>ভুল পিন। %1$dটি সুযোগ বাকি আছে।</string>
-			<key>other</key>
-			<string>ভুল পিন। %1$dটি সুযোগ বাকি আছে।</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1019,38 +1003,6 @@
 			<string>কাস্টম স্টোরি · %1$d জন দর্শক</string>
 			<key>other</key>
 			<string>কাস্টম স্টোরি · %1$d জন দর্শক</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনি একটি নতুন পিন তৈরি করতে পারবেন। আপনি নিজের অ্যাকাউন্টটি নিবন্ধন করতে এবং ব্যবহার করতে পারেন, তবে আপনি আপনার প্রোফাইল তথ্যের মতো কিছু সেভ করা সেটিংস হারাবেন।</string>
-			<key>other</key>
-			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনি একটি নতুন পিন তৈরি করতে পারবেন। আপনি নিজের অ্যাকাউন্টটি নিবন্ধন করতে এবং ব্যবহার করতে পারেন, তবে আপনি আপনার প্রোফাইল তথ্যের মতো কিছু সেভ করা সেটিংস হারাবেন।</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনার অ্যাকাউন্ট লক করা হবে। 7 দিন নিষ্ক্রিয় থাকার পর, আপনি আপনার পিন ছাড়াই পুনরায় নিবন্ধন করতে পারবেন। আপনার অ্যাকাউন্ট মুছে ফেলা হবে এবং সকল কন্টেন্টও মুছে ফেলা হবে।</string>
-			<key>other</key>
-			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনার অ্যাকাউন্ট লক করা হবে। 7 দিন নিষ্ক্রিয় থাকার পর, আপনি আপনার পিন ছাড়াই পুনরায় নিবন্ধন করতে পারবেন। আপনার অ্যাকাউন্ট মুছে ফেলা হবে এবং সকল কন্টেন্টও মুছে ফেলা হবে।</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

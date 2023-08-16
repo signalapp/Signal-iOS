@@ -909,22 +909,6 @@
 			<string>%1$d seere</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Forkert pinkode. %1$d forsøg tilbage</string>
-			<key>other</key>
-			<string>Forkert pinkode. %1$d forsøg tilbage.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1019,38 +1003,6 @@
 			<string>Brugerdefineret historie · %1$d seer</string>
 			<key>other</key>
 			<string>Brugerdefineret historie · %1$d seere</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Du har 1 forsøg tilbage. Hvis du løber tør for forsøg, kan du oprette en ny pinkode. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom dine profiloplysninger.</string>
-			<key>other</key>
-			<string>Du har %1$d forsøg tilbage. Hvis du løber tør for forsøg, kan du oprette en ny pinkode. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom dine profiloplysninger.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Du har 1 forsøg tilbage. Hvis du løber tør for forsøg, vil din konto blive låst. Efter syv dages inaktivitet, kan du genregistrere uden din pinkode. Din konto vil blive ryddet og alt indhold slettet.</string>
-			<key>other</key>
-			<string>Du har %1$d forsøg tilbage. Hvis du løber tør for forsøg, vil din konto blive låst. Efter syv dages inaktivitet, kan du genregistrere uden din pinkode. Din konto vil blive ryddet og alt indhold slettet.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

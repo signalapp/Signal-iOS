@@ -1137,26 +1137,6 @@
 			<string>%1$d sledujících</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Nesprávný PIN. Zbývá %1$d pokus.</string>
-			<key>few</key>
-			<string>Nesprávný PIN. Zbývají %1$d pokusy.</string>
-			<key>many</key>
-			<string>Nesprávný PIN. Zbývá %1$d pokusů.</string>
-			<key>other</key>
-			<string>Nesprávný PIN. Zbývá %1$d pokusů.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1275,46 +1255,6 @@
 			<string>Vlastní příběh · %1$d sledujících</string>
 			<key>other</key>
 			<string>Vlastní příběh · %1$d sledujících</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Zbývá vám %1$d pokus. Pokud vám pokusy dojdou, můžete si vytvořit nový PIN. Můžete se zaregistrovat a používat svůj účet, ale ztratíte některá uložená nastavení, např. informace v profilu.</string>
-			<key>few</key>
-			<string>Zbývají vám %1$d pokusy. Pokud vám pokusy dojdou, můžete si vytvořit nový PIN. Můžete se zaregistrovat a používat svůj účet, ale ztratíte některá uložená nastavení, např. informace v profilu.</string>
-			<key>many</key>
-			<string>Zbývá vám %1$d pokusů. Pokud vám pokusy dojdou, můžete si vytvořit nový PIN. Můžete se zaregistrovat a používat svůj účet, ale ztratíte některá uložená nastavení, např. informace v profilu.</string>
-			<key>other</key>
-			<string>Zbývají vám %1$d pokusů. Pokud vám pokusy dojdou, můžete si vytvořit nový PIN. Můžete se zaregistrovat a používat svůj účet, ale ztratíte některá uložená nastavení, např. informace v profilu.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Zbývá vám %1$d pokus. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez vašeho PIN. Váš účet bude zrušen a veškerý obsah smazán.</string>
-			<key>few</key>
-			<string>Zbývají vám %1$d pokusy. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez vašeho PIN. Váš účet bude zrušen a veškerý obsah smazán.</string>
-			<key>many</key>
-			<string>Zbývá vám %1$d pokusů. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez vašeho PIN. Váš účet bude zrušen a veškerý obsah smazán.</string>
-			<key>other</key>
-			<string>Zbývá vám %1$d pokusů. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez vašeho PIN. Váš účet bude zrušen a veškerý obsah smazán.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

@@ -909,22 +909,6 @@
 			<string>%1$d Görüntüleyen</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Yanlış PIN. %1$d deneme hakkın kaldı.</string>
-			<key>other</key>
-			<string>Yanlış PIN. %1$d deneme hakkın kaldı.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1019,38 +1003,6 @@
 			<string>Özel hikaye · %1$d Görüntüleyen</string>
 			<key>other</key>
 			<string>Özel hikaye · %1$d Görüntüleyen</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d deneme hakkın kaldı. Eğer hakkın biterse, yeni bir PIN oluşturabilirsin. Hesabını kaydedebilir ve kullanabilirsin ancak profil bilgilerin gibi kaydedilmiş bazı ayarları kaybedersin.</string>
-			<key>other</key>
-			<string>%1$d deneme hakkın kaldı. Eğer hakkın biterse, yeni bir PIN oluşturabilirsin. Hesabını kaydedebilir ve kullanabilirsin ancak profil bilgilerin gibi kaydedilmiş bazı ayarları kaybedersin.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d deneme hakkın kaldı. Hakkın biterse hesabın kilitlenecektir. 7 gün hareketsizlikten sonra PIN olmadan tekrar kaydolabilirsin. Hesabın ve tüm içeriğin silinecektir.</string>
-			<key>other</key>
-			<string>%1$d deneme hakkın kaldı. Hakkın biterse hesabın kilitlenecektir. 7 gün hareketsizlikten sonra PIN olmadan tekrar kaydolabilirsin. Hesabın ve tüm içeriğin silinecektir.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

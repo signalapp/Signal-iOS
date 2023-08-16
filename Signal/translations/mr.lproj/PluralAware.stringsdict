@@ -909,22 +909,6 @@
 			<string>%1$d दर्शक</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>चुकीचा PIN. %1$d प्रयत्न शिल्लक आहे.</string>
-			<key>other</key>
-			<string>चुकीचा PIN. %1$d प्रयत्न शिल्लक आहेत.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1019,38 +1003,6 @@
 			<string>सानुकूल स्टोरी · %1$d दर्शक</string>
 			<key>other</key>
 			<string>सानुकूल स्टोरी %1$d दर्शक</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>आपल्याकडे %1$d प्रयत्न शिल्लक आहे. जरी आपले प्रयत्न संपले, तरी आपण एक नवीन PIN तयार करू शकता. आपण नोंदणी करू शकता आणि आपले अकाऊंट वापरू शकता परंतु आपली प्रोफाईल माहिती यासारख्या काही जतन केलेल्या सेटिंग आपण गमवाल.</string>
-			<key>other</key>
-			<string>आपल्याकडे %1$d प्रयत्न शिल्लक आहेत. जरी आपले प्रयत्न संपले, तरी आपण एक नवीन PIN तयार करू शकता. आपण नोंदणी करू शकता आणि आपले अकाऊंट वापरू शकता परंतु आपली प्रोफाईल माहिती यासारख्या काही जतन केलेल्या सेटिंग आपण गमवाल.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>आपल्याकडे %1$d प्रयत्न शिल्लक आहे. जरी आपले प्रयत्न संपले तर आपले अकाऊंट लॉक केले जाईल. 7 दिवसांच्या निष्क्रियतेनंतर, आपण आपल्या PIN शिवाय पुन्हा नोंदणी करू शकता. आपले अकाऊंट साफ केले जाईल आणि सर्व माहिती हटवली जाईल.</string>
-			<key>other</key>
-			<string>आपल्याकडे %1$d प्रयत्न शिल्लक आहेत. जरी आपले प्रयत्न संपले तर आपले अकाऊंट लॉक केले जाईल. 7 दिवसांच्या निष्क्रियतेनंतर, आपण आपल्या PIN शिवाय पुन्हा नोंदणी करू शकता. आपले अकाऊंट साफ केले जाईल आणि सर्व माहिती हटवली जाईल.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

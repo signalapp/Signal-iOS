@@ -1137,26 +1137,6 @@
 			<string>%1$d gledatelja</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Netočan PIN. Preostao je još %1$d pokušaj.</string>
-			<key>few</key>
-			<string>Netočan PIN. Preostala su još %1$d pokušaja.</string>
-			<key>many</key>
-			<string>Netočan PIN. Preostalo je još %1$d pokušaja.</string>
-			<key>other</key>
-			<string>Netočan PIN. Preostalo je još %1$d pokušaja.</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1275,46 +1255,6 @@
 			<string>Prilagođena priča · %1$d gledatelja</string>
 			<key>other</key>
 			<string>Prilagođena priča · %1$d gledatelja</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Preostao vam je %1$d pokušaj. Ako vam ponestane pokušaja, možete stvoriti novi PIN. Možete se registrirati i koristiti svoj račun, ali ćete izgubiti neke spremljene postavke poput podataka o vašem profilu.</string>
-			<key>few</key>
-			<string>Preostala su vam %1$d pokušaja. Ako vam ponestane pokušaja, možete stvoriti novi PIN. Možete se registrirati i koristiti svoj račun, ali ćete izgubiti neke spremljene postavke poput podataka o vašem profilu.</string>
-			<key>many</key>
-			<string>Preostalo vam je %1$d pokušaja. Ako vam ponestane pokušaja, možete stvoriti novi PIN. Možete se registrirati i koristiti svoj račun, ali ćete izgubiti neke spremljene postavke poput podataka o vašem profilu.</string>
-			<key>other</key>
-			<string>Preostalo vam je %1$d pokušaja. Ako vam ponestane pokušaja, možete stvoriti novi PIN. Možete se registrirati i koristiti svoj račun, ali ćete izgubiti neke spremljene postavke poput podataka o vašem profilu.</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Preostao vam je %1$d pokušaj. Ako vam ponestane pokušaja, vaš će račun biti zaključan. Nakon 7 dana neaktivnosti možete se ponovno registrirati bez PIN-a. Vaš račun i sav njegov sadržaj bit će izbrisani.</string>
-			<key>few</key>
-			<string>Preostala su vam %1$d pokušaja. Ako vam ponestane pokušaja, vaš će račun biti zaključan. Nakon 7 dana neaktivnosti možete se ponovno registrirati bez PIN-a. Vaš račun i sav njegov sadržaj bit će izbrisani.</string>
-			<key>many</key>
-			<string>Preostalo vam je %1$d pokušaja. Ako vam ponestane pokušaja, vaš će račun biti zaključan. Nakon 7 dana neaktivnosti možete se ponovno registrirati bez PIN-a. Vaš račun i sav njegov sadržaj bit će izbrisani.</string>
-			<key>other</key>
-			<string>Preostalo vam je %1$d pokušaja. Ako vam ponestane pokušaja, vaš će račun biti zaključan. Nakon 7 dana neaktivnosti možete se ponovno registrirati bez PIN-a. Vaš račun i sav njegov sadržaj bit će izbrisani.</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

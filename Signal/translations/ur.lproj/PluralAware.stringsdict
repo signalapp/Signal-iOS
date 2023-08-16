@@ -909,22 +909,6 @@
 			<string>%1$d ناظرین</string>
 		</dict>
 	</dict>
-	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>PIN غلط ہے۔ %1$d کوشش باقی ہے۔</string>
-			<key>other</key>
-			<string>PIN غلط ہے۔ %1$d کوششیں باقی ہیں۔</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1019,38 +1003,6 @@
 			<string>کسٹم سٹوری · %1$d ناظر</string>
 			<key>other</key>
 			<string>کسٹم سٹوری · %1$d ناظرین</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>آپ کی %1$d کوشش بقایا ہے۔ اگر آپ کی کوششیں ختم ہو گئیں، تو آپ نیا پِن تخلیق کر سکتے ہیں۔ آپ رجسٹر ہو سکتے اور اپنا اکاؤنٹ استعمال کر سکتے ہیں لیکن آپ اپنی پروفائل کی معلومات جیسی کچھ محفوظ کردہ سیٹنگز سے محروم ہو جائیں گے۔</string>
-			<key>other</key>
-			<string>آپ کی %1$d کوششیں بقایا ہیں۔ اگر آپ کی کوششیں ختم ہو گئیں، تو آپ نیا پِن تخلیق کر سکتے ہیں۔ آپ رجسٹر ہو سکتے اور اپنا اکاؤنٹ استعمال کر سکتے ہیں لیکن آپ اپنی پروفائل کی معلومات جیسی کچھ محفوظ کردہ سیٹنگز سے محروم ہو جائیں گے۔</string>
-		</dict>
-	</dict>
-	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>آپ کی %1$d کوشش بقایا ہے۔ اگر آپ کی کوششیں ختم ہو گئیں تو آپ کا اکاؤنٹ لاک کر دیا جائے گا۔ غیر فعالیت کے 7 دنوں کے بعد، آپ اپنے پِن کے بغیر دوبارہ رجسٹر ہو سکتے ہیں۔ آپ کا اکاؤنٹ صاف اور تمام مواد ڈیلیٹ کر دیا جائے گا۔</string>
-			<key>other</key>
-			<string>آپ کی %1$d کوششیں بقایا ہیں۔ اگر آپ کی کوششیں ختم ہو گئیں تو آپ کا اکاؤنٹ لاک کر دیا جائے گا۔ غیر فعالیت کے 7 دنوں کے بعد، آپ اپنے پِن کے بغیر دوبارہ رجسٹر ہو سکتے ہیں۔ آپ کا اکاؤنٹ صاف اور تمام مواد ڈیلیٹ کر دیا جائے گا۔</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

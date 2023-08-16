@@ -910,9 +910,6 @@
 /* Error indicating that the user's old phone number is not valid. */
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "पुराना फ़ोन नंबर अमान्य है। अपना नंबर बदलने के लिए कृपया एक मान्य फ़ोन नंबर दर्ज करें।";
 
-/* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "नए फ़ोन नंबर के लिए पिन दर्ज करें। यह आपके SMS सत्यापन कोड से अलग होता है।";
-
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "ये चैट रंग का पूर्वावलोकन है।";
 
@@ -1713,9 +1710,6 @@
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "ट्रान्सफर रोकें?";
-
-/* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "अगर आपके पास अपना पुराना iOS डिवाइस हो तो आप अपना खाता और सारे संदेश सुरक्षित रूप से इस डिवाइस पर ट्रांसफ़र कर सकते हैं।";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
 "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "अगर आप Signal को किसी लिंक किए हुए iPad पर पहले से इस्तेमाल कर रहे थे तो आप अपना खाता और सारे संदेश सुरक्षित रूप से इस डिवाइस पर ट्रांसफ़र कर सकते हैं।";
@@ -3214,6 +3208,24 @@
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "सहायता केंद्र";
 
+/* A format for the 'remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
+"HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "Remove %1$@?";
+
+/* An explanation of the consequences of removing a user. */
+"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "You won't see this person when searching. You'll get a message request if they message you in the future.";
+
+/* Button label for the 'remove' button */
+"HIDE_RECIPIENT_BUTTON" = "Remove";
+
+/* Toast message confirming the recipient was removed. Embeds {{The name of the user who was removed.}}.. */
+"HIDE_RECIPIENT_CONFIRMATION_TOAST" = "%1$@ has been removed.";
+
+/* An explanation of why a user was not successfully removed and what to do. */
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_EXPLANATION" = "Check your connection and try again.";
+
+/* Title for an action sheet indicating that the user was not successfully removed. Embeds {{name of user we attempted to hide}}. */
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "Unable to remove %1$@";
+
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "संग्रहीत की हुई चैट";
 
@@ -4177,9 +4189,6 @@
 /* Label for the 'ok' button. */
 "OK" = "ठीक";
 
-/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "पिन ग़लत था। आपके सारे मौके खत्म हो गये हैं।";
-
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_CREATE_NEW_PIN" = "नया पिन बनाएँ";
 
@@ -4206,9 +4215,6 @@
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "पिन दर्ज करना स्किप करें?";
-
-/* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "हम देखना चाहते हैं कि आप रोबोट तो नहीं हैं";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad पंजीकृत करें";
@@ -4255,9 +4261,6 @@
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "दोबारा प्रयास करने से पहले कृपया कुछ मिनट इंतज़ार करें। (%1$@)";
 
-/* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "अपना फ़ोन नंबर दर्ज करें";
-
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "अमान्य फ़ोन नंबर। रजिस्टर करने के लिए कृपया एक मान्य फ़ोन नंबर दर्ज करें।";
 
@@ -4267,35 +4270,11 @@
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "पिन के बारे में और जानें";
 
-/* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "आपके खाते की गुप्तता और सुरक्षा के बचाव के लिये, हमने आपका  खाता 7 दिन के लिये लाॅक कर दिया है।\n\n7 दिन की निष्क्रियता के बाद, आप अपने फ़ोन नंबर से, बिना पिन कि सहायता के, पुनः पंजीकरण कर पाएँगे । सभी सामग्री हटा दी जाएगी।";
-
-/* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "लॉक्ड ख़ातों के बारे में और जानें";
-
-/* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "ख़ाता लॉक";
-
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "ग़लत पिन";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "आपका पिन अनुमान समाप्त हो गया है, लेकिन आप अभी भी अपना फ़ोन नंबर सत्यापित करके अपने Signal अकाउंट तक पहुँचने का प्रयास कर सकते हैं। आपकी निजता और सुरक्षा के लिए आपका अकाउंट बिना किसी सहेजी गई प्रोफ़ाइल जानकारी या सेटिंग के पुनर्स्थापित कर दिया जाएगा।";
-
-/* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "अपने ख़ाते के लिये बनाया गया पिन डालें। ये पिन आपके SMS सत्यापण कोड से अलग है।";
-
-/* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "अपना पिन डालें";
-
-/* Title label for profile creation step of onboarding */
-"ONBOARDING_PROFILE_CREATION_TITLE" = "आपकी प्रोफ़ाइल";
-
-/* Placeholder text for the family name field of the profile creation view. */
-"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "अंतिम नाम (वैकल्पिक)";
-
-/* Placeholder text for the given name field of the profile creation view. */
-"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "प्रथम नाम (आवश्यक)";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "नियम और गोपनीयता नीति";
@@ -4326,9 +4305,6 @@
 
 /* Label for a button to get help entering a verification code when registering. */
 "ONBOARDING_VERIFICATION_HELP_LINK" = "पंजीकरण में परेशानी हो रही है?";
-
-/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "यह कोड ग़लत है";
 
 /* Label for button to resend SMS verification code. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "कोड फ़िर से भेजें";
@@ -4843,12 +4819,6 @@
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "चेतावनी";
 
-/* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "आपका पिन सहेजा नहीं गया था| हम आपको बाद में एक पिन बनाने के लिए संकेत देंगे।";
-
-/* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "पिन निर्माण विफल रहा";
-
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "पिन Signal द्वारा संग्रहीत जानकारी को एन्क्रिप्ट रखता है, ताकी सिर्फ़ आप उसे देख पाएँ। आपका प्रोफ़ाइल, सेटिंग्स, और संपर्क, अपके Signal इंस्टाॅल के बाद, पुनः स्थापित हो जाऐंगे। ऐप को खोलने के लिए आपको पिन की ज़रूरत नहीं होगी।";
 
@@ -5128,9 +5098,6 @@
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "आपकी प्रोफ़ाइल एंड-टू-एंड एन्क्रिप्टेड है। जब आप नई चैट शुरू या स्वीकार करते हैं तो आपकी प्रोफ़ाइल और उसके परिवर्तन आपके संपर्कों को दिखाई देंगे।";
 
-/* Button to save the profile view in the profile view. */
-"PROFILE_VIEW_SAVE_BUTTON" = "सेव करें";
-
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "प्रोफ़ाइल";
 
@@ -5278,14 +5245,8 @@
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "आपका पिन कम से कम 4 अक्षरों का कोड होता है जो न्यूमेरिक या अल्फ़ान्यूमेरिक हो सकता है। अगर आप अपना पिन याद नहीं कर पा रहे हैं तो, आप नया पिन बना सकते हैं। आप पंजीकरण करके अपना अकाउंट इस्तेमाल कर सकते हैं पर आप कुछ सेटिंग्स खो देंगे जैसे प्रोफ़ाइल की जानकारी।";
 
-/* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "आपका पिन कम से कम 4 अक्षरों का कोड होता है जो न्यूमेरिक या अल्फ़ान्यूमेरिक हो सकता है। अगर आप अपना पिन याद नहीं कर पा रहे हैं तो, आपको 7 दिन रुक कर अपना खाता पुनः पंजीकृत करना होगा।";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "ग़लत पिन";
-
-/* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "पिन सत्यापित किया जा रहा है…";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "स्वागत है!";
@@ -5293,7 +5254,7 @@
 /* Body of action sheet shown when rate-limited during registration. */
 "REGISTER_RATE_LIMITING_ALERT" = "आपने बहुत बार कोशिश की है। दोबारा प्रयास करने से पहले कृपया कुछ मिनट इंतज़ार करें।";
 
-/* action sheet body */
+/* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "आपने बहुत बार कोशिश कर ली। कृपया थोङी देर रुक कर कोशिश करें।";
 
 /* No comment provided by engineer. */
@@ -5329,15 +5290,6 @@
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "पंजीकरन में गलती";
 
-/* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "हम तब तक आपका खाता सत्यापित नहीं कर सकते जब तक आप हमें आपको भेजा गया कोड ना बता दें।";
-
-/* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "आगे बढ़ने के लिए, अपने फ़ोन के इंटरनेट कनेक्शन की जाँच करें और दोबारा प्रयास करें।";
-
-/* Alert title for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "कनेक्शन जाँचें";
-
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
 "REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "आपकी निजता और सुरक्षा की रक्षा के लिए आपका अकाउंट लॉक कर दिया गया है। आपके अकाउंट में निष्क्रियता के %1$@ के बाद आप अपने पिन की आवश्यकता के बिना इस फोन नंबर को फिर से रजिस्टर करने में सक्षम होंगे। सभी सामग्री डिलीट कर दी जाएगी।";
 
@@ -5355,9 +5307,6 @@
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
 "REGISTRATION_NETWORK_ERROR_TITLE" = "कनेक्शन जाँचें";
-
-/* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "यह नंबर का फार्मेट समर्थित नहीं है, कृपया Signal समर्थन से संपर्क करें|";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "आरंभ करने के लिए अपना फोन नंबर दर्ज करें।";
@@ -5420,10 +5369,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "आपको कोई मेसेज भेजने से पहले पंजीकृत होना होगाा।";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "वीडियो कॉल";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "We couldn't send you a verification code via SMS. Try receiving your code via voice call instead.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "हम आपको SMS द्वारा सत्यापन कोड नहीं भेज सकते। इसके बजाय वॉयस कॉल द्वारा अपना कोड प्राप्त करने का प्रयास करें।";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "आपने कोड दर्ज करने के लिए बहुत अधिक प्रयास किए हैं। कृपया कोड पुनः भेजकर दोबारा प्रयास करें।";
@@ -5437,9 +5386,6 @@
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "आपके द्वारा दर्ज किया गया कोड मान्य नहीं है। कृपया कोड पुनः भेजकर दोबारा प्रयास करें।";
 
-/* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "सत्यापन असफल";
-
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "आपके दिये हुए नंबर उन नंबरों से मेल नहीं खाते जो हमने भेजे थे। क्या आप एक बार और जांच करना चाहेंगे?";
 
@@ -5451,12 +5397,6 @@
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "अवैध फ़ोन नंबर";
-
-/* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "कृपया पंजीकरन के लिये कोई फ़ोन नंबर डालें";
-
-/* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "कोई फ़ोन नंबर नहीं";
 
 /* Message for confirmation alert during phone number registration. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "इस नंबर पर एक सत्यापन कोड भेजा जाएगा। क्या ऊपर दिया गया आपका फ़ोन नंबर सही है?";
@@ -5471,10 +5411,10 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ सत्यापित किया जा रहा है…";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Send sms";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "SMS भेजें";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "We couldn't send you a verification code via voice call. Try receiving your code via sms instead.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "हम वॉयस कॉल के माध्यम से आपको सत्यापन कोड नहीं भेज सके। इसके बजाय अपना कोड SMS के माध्यम से प्राप्त करने का प्रयास करें।";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "अस्वीकार करें";
@@ -5821,9 +5761,6 @@
 /* Label for button in settings views to change phone number */
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "फ़ोन नंबर बदलें";
 
-/* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "आपका फ़ोन नंबर बदलकर %1$@ कर दिया गया है";
-
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "नंबर बदलें";
 
@@ -5847,9 +5784,6 @@
 
 /* Label for the 'phone number' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "फ़ोन नंबर";
-
-/* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "%1$@ को सत्यापित कर रहा है";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "अपने मौजूदा फ़ोन नंबर को नए फ़ोन नंबर से बदलने के लिए इसका उपयोग करें। आप इस बदलाव को पहले जैसा नहीं कर सकते हैं।\n\nजारी रखने से पहले सुनिश्चित कर लें कि आपके नए नंबर पर SMS या कॉल आ सकते हों।";
