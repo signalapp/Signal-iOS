@@ -236,8 +236,8 @@ public extension TSMessage {
                     return .invalidDelete
                 }
 
-                guard serverTimestamp - messageToDeleteServerTimestamp < kDayInMs else {
-                    owsFailDebug("Ignoring message delete sent more than a day after the original message")
+                guard serverTimestamp - messageToDeleteServerTimestamp < (2 * kDayInMs) else {
+                    owsFailDebug("Ignoring message delete sent more than 48 hours after the original message")
                     return .invalidDelete
                 }
 
