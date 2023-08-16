@@ -387,7 +387,7 @@ private class ProfileFetcherMock: LearnMyOwnPniManagerImpl.Shims.ProfileFetcher 
         return true
     }
 
-    func fetchPniIdentityPublicKey(localPni: UntypedServiceId) -> Promise<Data?> {
+    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<Data?> {
         guard profileFetchFuture == nil else {
             XCTFail("Fetch already in-flight!")
             return Promise(error: OWSGenericError("Fetch already in flight!"))

@@ -57,10 +57,13 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
 
     /// Wrap everything in a chained promise so we don't issue requests
     /// concurrently and end up with broken state.
+    ///
     /// Before making requests (but after getting dequeued) each call will
-    /// check local state to see if things corrected while enqueued, so enqueuing
-    /// is cheap.
-    /// NOTE: this only ever gets called in one place, on app launch, so this safety
+    /// check local state to see if things corrected while enqueued, so
+    /// enqueuing is cheap.
+    ///
+    /// - Note
+    /// This only ever gets called in one place, on app launch, so this safety
     /// is overkill. But it doesn't hurt to have.
     private lazy var learnMyOwnPniChainedPromise = ChainedPromise(scheduler: schedulers.main)
 
@@ -98,12 +101,13 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
             return .value(())
         }
 
-        return firstly(on: schedulers.sync) { () -> Promise<UntypedServiceId> in
+        return firstly(on: schedulers.sync) { () -> Promise<Pni> in
             return self.fetchMyPniIfNecessary(localIdentifiers: localIdentifiers)
         }.then(on: schedulers.global()) { localPni -> Promise<Void> in
             let localPniIdentityPublicKeyData: Data? = self.db.read { tx in
                 self.identityManager.pniIdentityPublicKeyData(tx: tx)
             }
+
             return self.createPniKeysIfNecessary(
                 localPni: localPni,
                 localPniIdentityPublicKeyData: localPniIdentityPublicKeyData
@@ -114,15 +118,15 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
         }
     }
 
-    private func fetchMyPniIfNecessary(localIdentifiers: LocalIdentifiers) -> Promise<UntypedServiceId> {
+    private func fetchMyPniIfNecessary(localIdentifiers: LocalIdentifiers) -> Promise<Pni> {
         if let localPni = localIdentifiers.pni {
             logger.info("Skipping PNI fetch, PNI already available.")
-            return .value(localPni.untypedServiceId)
+            return .value(localPni)
         }
 
         return firstly(on: self.schedulers.sync) { () -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> in
             self.accountServiceClient.getAccountWhoAmI()
-        }.map(on: schedulers.global()) { whoAmI -> UntypedServiceId in
+        }.map(on: schedulers.global()) { whoAmI -> Pni in
             let remoteE164 = whoAmI.e164
             let remoteAci = Aci(fromUUID: whoAmI.aci)
             let remotePni = Pni(fromUUID: whoAmI.pni)
@@ -147,7 +151,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
                 )
             }
 
-            return remotePni.untypedServiceId
+            return remotePni
         }
     }
 
@@ -156,7 +160,7 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
     /// This method ensures the local PNI identity key matches that on the
     /// service.
     private func createPniKeysIfNecessary(
-        localPni: UntypedServiceId,
+        localPni: Pni,
         localPniIdentityPublicKeyData: Data?
     ) -> Promise<Void> {
         return firstly(on: schedulers.sync) { () -> Guarantee<Bool> in
@@ -278,7 +282,7 @@ class _LearnMyOwnPniManagerImpl_IdentityManager_Wrapper: _LearnMyOwnPniManagerIm
 // MARK: ProfileFetcher
 
 protocol _LearnMyOwnPniManagerImpl_ProfileFetcher_Shim {
-    func fetchPniIdentityPublicKey(localPni: UntypedServiceId) -> Promise<Data?>
+    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<Data?>
 }
 
 class _LearnMyOwnPniManagerImpl_ProfileFetcher_Wrapper: _LearnMyOwnPniManagerImpl_ProfileFetcher_Shim {
@@ -288,11 +292,11 @@ class _LearnMyOwnPniManagerImpl_ProfileFetcher_Wrapper: _LearnMyOwnPniManagerImp
         self.schedulers = schedulers
     }
 
-    func fetchPniIdentityPublicKey(localPni: UntypedServiceId) -> Promise<Data?> {
+    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<Data?> {
         let logger = LearnMyOwnPniManagerImpl.logger
 
         return ProfileFetcherJob.fetchProfilePromise(
-            serviceId: Pni(fromUUID: localPni.uuidValue),
+            serviceId: localPni,
             mainAppOnly: true,
             ignoreThrottling: true,
             shouldUpdateStore: false
