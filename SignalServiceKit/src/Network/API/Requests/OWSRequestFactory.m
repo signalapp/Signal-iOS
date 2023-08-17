@@ -146,14 +146,13 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)recipientPreKeyRequestWithServiceId:(UntypedServiceIdObjC *)serviceId
++ (TSRequest *)recipientPreKeyRequestWithServiceId:(ServiceIdObjC *)serviceId
                                           deviceId:(uint32_t)deviceId
                                        udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
                                      requestPqKeys:(BOOL)requestPqKeys
 {
     NSString *format = requestPqKeys ? @"%@/%@/%u?pq=true" : @"%@/%@/%u";
-    NSString *path =
-        [NSString stringWithFormat:format, self.textSecureKeysAPI, serviceId.uuidValue.UUIDString, deviceId];
+    NSString *path = [NSString stringWithFormat:format, self.textSecureKeysAPI, serviceId.serviceIdString, deviceId];
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
@@ -312,7 +311,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [capabilities copy];
 }
 
-+ (TSRequest *)submitMessageRequestWithServiceId:(UntypedServiceIdObjC *)serviceId
++ (TSRequest *)submitMessageRequestWithServiceId:(ServiceIdObjC *)serviceId
                                         messages:(NSArray<DeviceMessage *> *)messages
                                        timestamp:(uint64_t)timestamp
                                      udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
@@ -323,7 +322,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
     OWSAssertDebug(timestamp > 0);
 
-    NSString *path = [self.textSecureMessagesAPI stringByAppendingString:serviceId.uuidValue.UUIDString];
+    NSString *path = [self.textSecureMessagesAPI stringByAppendingString:serviceId.serviceIdString];
 
     path = [path stringByAppendingFormat:@"?story=%@", isStory ? @"true" : @"false"];
 

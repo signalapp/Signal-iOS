@@ -8,7 +8,7 @@ import LibSignalClient
 
 public protocol SignalSessionStore: LibSignalClient.SessionStore {
     func containsActiveSession(
-        for serviceId: UntypedServiceId,
+        for serviceId: ServiceId,
         deviceId: Int32,
         tx: DBReadTransaction
     ) -> Bool
@@ -64,7 +64,7 @@ public protocol SignalSessionStore: LibSignalClient.SessionStore {
 
 extension SSKSessionStore: SignalSessionStore {
 
-    public func containsActiveSession(for serviceId: UntypedServiceId, deviceId: Int32, tx: DBReadTransaction) -> Bool {
+    public func containsActiveSession(for serviceId: ServiceId, deviceId: Int32, tx: DBReadTransaction) -> Bool {
         containsActiveSession(for: serviceId, deviceId: deviceId, transaction: SDSDB.shimOnlyBridge(tx))
     }
 

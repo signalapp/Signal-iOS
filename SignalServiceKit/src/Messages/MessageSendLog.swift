@@ -173,7 +173,7 @@ public class MessageSendLog {
     }
 
     func fetchPayload(
-        recipientServiceId: UntypedServiceId,
+        recipientServiceId: ServiceId,
         recipientDeviceId: UInt32,
         timestamp: UInt64,
         tx: SDSAnyReadTransaction
@@ -192,7 +192,7 @@ public class MessageSendLog {
             let request = Payload
                 .joining(required: Payload.hasMany(Recipient.self).aliased(recipientAlias))
                 .filter(Column("sentTimestamp") == timestamp)
-                .filter(recipientAlias[Column("recipientUUID")] == recipientServiceId.uuidValue.uuidString)
+                .filter(recipientAlias[Column("recipientUUID")] == recipientServiceId.serviceIdUppercaseString)
                 .filter(recipientAlias[Column("recipientDeviceId")] == Int64(recipientDeviceId))
             existingValue = try fetchUniquePayload(query: request, tx: tx)
         } catch {
@@ -271,13 +271,13 @@ public class MessageSendLog {
 
     func deviceIdsPendingDelivery(
         for payloadId: Int64,
-        recipientServiceId: UntypedServiceId,
+        recipientServiceId: ServiceId,
         tx: SDSAnyReadTransaction
     ) -> [UInt32?]? {
         do {
             return try Recipient
                 .filter(Column("payloadId") == payloadId)
-                .filter(Column("recipientUuid") == recipientServiceId.uuidValue.uuidString)
+                .filter(Column("recipientUuid") == recipientServiceId.serviceIdUppercaseString)
                 .select(Column("recipientDeviceId"), as: Int64.self)
                 .fetchAll(tx.unwrapGrdbRead.database)
                 .map { UInt32(exactly: $0) }
@@ -289,7 +289,7 @@ public class MessageSendLog {
 
     func recordPendingDelivery(
         payloadId: Int64,
-        recipientServiceId: UntypedServiceId,
+        recipientServiceId: ServiceId,
         recipientDeviceId: UInt32,
         message: TSOutgoingMessage,
         tx: SDSAnyWriteTransaction
@@ -300,7 +300,7 @@ public class MessageSendLog {
         do {
             try Recipient(
                 payloadId: payloadId,
-                recipientUUID: recipientServiceId.uuidValue.uuidString,
+                recipientUUID: recipientServiceId.serviceIdUppercaseString,
                 recipientDeviceId: Int64(recipientDeviceId)
             ).insert(tx.unwrapGrdbWrite.database)
         } catch let error as DatabaseError where error.extendedResultCode == .SQLITE_CONSTRAINT_FOREIGNKEY {
@@ -319,7 +319,7 @@ public class MessageSendLog {
 
     func recordSuccessfulDelivery(
         message: TSOutgoingMessage,
-        recipientServiceId: UntypedServiceId,
+        recipientServiceId: ServiceId,
         recipientDeviceId: UInt32,
         tx: SDSAnyWriteTransaction
     ) {
@@ -334,7 +334,7 @@ public class MessageSendLog {
             let db = tx.unwrapGrdbWrite.database
             try Recipient
                 .filter(Column("payloadId") == payloadId)
-                .filter(Column("recipientUuid") == recipientServiceId.uuidValue.uuidString)
+                .filter(Column("recipientUuid") == recipientServiceId.serviceIdUppercaseString)
                 .filter(Column("recipientDeviceId") == recipientDeviceId)
                 .deleteAll(db)
 

@@ -59,7 +59,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             let aci = Aci.randomForTesting()
-            _ = recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx.asV2Write)
+            _ = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
             XCTAssertNotNil(fetchRecipient(aci: aci, transaction: tx))
         }
     }
@@ -106,7 +106,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-            let uuidRecipient = recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx.asV2Write)
+            let uuidRecipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
             let phoneNumberRecipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write)
             let mergedRecipient = mergeHighTrust(aci: aci, phoneNumber: phoneNumber, transaction: tx)
 
@@ -589,7 +589,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         let aci = Aci.randomForTesting()
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-            let recipient = recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx.asV2Write)
+            let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
             XCTAssertNotNil(recipient.unregisteredAtTimestamp)
 
             recipient.markAsRegisteredAndSave(tx: tx)
@@ -626,7 +626,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             for testCase in testCases {
-                let recipient = recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting().untypedServiceId, tx: tx.asV2Write)
+                let recipient = recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting(), tx: tx.asV2Write)
                 recipient.modifyAndSave(deviceIdsToAdd: Array(testCase.initialDeviceIds), deviceIdsToRemove: [], tx: tx)
                 recipient.markAsRegisteredAndSave(deviceId: testCase.addedDeviceId, tx: tx)
                 XCTAssertEqual(Set(recipient.deviceIds), testCase.expectedDeviceIds, "\(testCase)")

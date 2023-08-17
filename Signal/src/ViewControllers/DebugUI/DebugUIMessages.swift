@@ -3289,7 +3289,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 let outgoingMessage = outgoingMessageBuilder.build(transaction: transaction)
                 outgoingMessage.anyInsert(transaction: transaction)
                 outgoingMessage.update(withFakeMessageState: .sent, transaction: transaction)
-                outgoingMessage.update(withSentRecipient: UntypedServiceIdObjC(incomingSenderAci.untypedServiceId), wasSentByUD: false, transaction: transaction)
+                outgoingMessage.update(withSentRecipient: ServiceIdObjC.wrapValue(incomingSenderAci), wasSentByUD: false, transaction: transaction)
                 outgoingMessage.update(
                     withDeliveredRecipient: SignalServiceAddress(incomingSenderAci),
                     recipientDeviceId: 0,

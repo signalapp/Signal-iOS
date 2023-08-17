@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 
 public protocol RecipientFetcher {
-    func fetchOrCreate(serviceId: UntypedServiceId, tx: DBWriteTransaction) -> SignalRecipient
+    func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient
     func fetchOrCreate(phoneNumber: E164, tx: DBWriteTransaction) -> SignalRecipient
 }
 
@@ -18,11 +18,12 @@ class RecipientFetcherImpl: RecipientFetcher {
         self.recipientStore = recipientStore
     }
 
-    func fetchOrCreate(serviceId: UntypedServiceId, tx: DBWriteTransaction) -> SignalRecipient {
-        if let serviceIdRecipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx) {
+    func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient {
+        if let serviceIdRecipient = recipientStore.fetchRecipient(serviceId: serviceId.untypedServiceId, transaction: tx) {
             return serviceIdRecipient
         }
-        let newInstance = SignalRecipient(aci: Aci(fromUUID: serviceId.uuidValue), phoneNumber: nil)
+        // PNI TODO: Put the PNI in the PNI column once it exists.
+        let newInstance = SignalRecipient(aci: Aci(fromUUID: serviceId.temporary_rawUUID), phoneNumber: nil)
         recipientStore.insertRecipient(newInstance, transaction: tx)
         return newInstance
     }

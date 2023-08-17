@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalServiceAddress;
 @class SignedPreKeyRecord;
 @class TSRequest;
-@class UntypedServiceIdObjC;
 
 typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
     TSVerificationTransportVoice = 1,
@@ -72,7 +71,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                             transport:(TSVerificationTransport)transport
     NS_SWIFT_NAME(requestVerificationCodeRequest(e164:preauthChallenge:captchaToken:transport:));
 
-+ (TSRequest *)submitMessageRequestWithServiceId:(UntypedServiceIdObjC *)serviceId
++ (TSRequest *)submitMessageRequestWithServiceId:(ServiceIdObjC *)serviceId
                                         messages:(NSArray<DeviceMessage *> *)messages
                                        timestamp:(uint64_t)timestamp
                                      udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
@@ -103,7 +102,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)currentSignedPreKeyRequest;
 
-+ (TSRequest *)recipientPreKeyRequestWithServiceId:(UntypedServiceIdObjC *)serviceId
++ (TSRequest *)recipientPreKeyRequestWithServiceId:(ServiceIdObjC *)serviceId
                                           deviceId:(uint32_t)deviceId
                                        udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
                                      requestPqKeys:(BOOL)requestPqKeys;

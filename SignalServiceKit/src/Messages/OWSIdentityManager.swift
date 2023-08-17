@@ -127,7 +127,7 @@ extension OWSIdentityManager {
         case .default:
             applyVerificationState(
                 .default,
-                serviceId: aci.untypedServiceId,
+                aci: aci,
                 identityKey: identityKey,
                 overwriteOnConflict: false,
                 transaction: transaction
@@ -135,7 +135,7 @@ extension OWSIdentityManager {
         case .verified:
             applyVerificationState(
                 .verified,
-                serviceId: aci.untypedServiceId,
+                aci: aci,
                 identityKey: identityKey,
                 overwriteOnConflict: true,
                 transaction: transaction
@@ -149,13 +149,13 @@ extension OWSIdentityManager {
 
     private func applyVerificationState(
         _ verificationState: OWSVerificationState,
-        serviceId: UntypedServiceId,
+        aci: Aci,
         identityKey: Data,
         overwriteOnConflict: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        let recipientId = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write).uniqueId
+        let recipientId = recipientFetcher.fetchOrCreate(serviceId: aci, tx: transaction.asV2Write).uniqueId
         var recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: transaction)
 
         let shouldSaveIdentityKey: Bool
@@ -163,13 +163,13 @@ extension OWSIdentityManager {
 
         if let recipientIdentity {
             if recipientIdentity.accountId != recipientId {
-                return owsFailDebug("Unexpected recipientId for \(serviceId)")
+                return owsFailDebug("Unexpected recipientId for \(aci)")
             }
             let didChangeIdentityKey = recipientIdentity.identityKey != identityKey
             if didChangeIdentityKey, !overwriteOnConflict {
                 // The conflict case where we receive a verification sync message whose
                 // identity key disagrees with the local identity key for this recipient.
-                Logger.warn("Non-matching identityKey for \(serviceId)")
+                Logger.warn("Non-matching identityKey for \(aci)")
                 return
             }
             shouldSaveIdentityKey = didChangeIdentityKey
@@ -187,18 +187,18 @@ extension OWSIdentityManager {
         if shouldSaveIdentityKey {
             // Ensure a remote identity exists for this key. We may be learning about
             // it for the first time.
-            saveRemoteIdentity(identityKey, address: SignalServiceAddress(serviceId), transaction: transaction)
+            saveRemoteIdentity(identityKey, address: SignalServiceAddress(aci), transaction: transaction)
             recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientId, transaction: transaction)
         }
 
         guard let recipientIdentity else {
-            return owsFailDebug("Missing expected identity for \(serviceId)")
+            return owsFailDebug("Missing expected identity for \(aci)")
         }
         guard recipientIdentity.accountId == recipientId else {
-            return owsFailDebug("Unexpected recipientId for \(serviceId)")
+            return owsFailDebug("Unexpected recipientId for \(aci)")
         }
         guard recipientIdentity.identityKey == identityKey else {
-            return owsFailDebug("Unexpected identityKey for \(serviceId)")
+            return owsFailDebug("Unexpected identityKey for \(aci)")
         }
 
         if recipientIdentity.verificationState == verificationState {
@@ -207,13 +207,13 @@ extension OWSIdentityManager {
 
         let oldVerificationState = OWSVerificationStateToString(recipientIdentity.verificationState)
         let newVerificationState = OWSVerificationStateToString(verificationState)
-        Logger.info("for \(serviceId): \(oldVerificationState) -> \(newVerificationState)")
+        Logger.info("for \(aci): \(oldVerificationState) -> \(newVerificationState)")
 
         recipientIdentity.update(with: verificationState, transaction: transaction)
 
         if shouldInsertChangeMessages {
             saveChangeMessages(
-                address: SignalServiceAddress(serviceId),
+                address: SignalServiceAddress(aci),
                 verificationState: verificationState,
                 isLocalChange: false,
                 transaction: transaction
@@ -380,31 +380,31 @@ extension OWSIdentityManager {
 
     @objc(shouldSharePhoneNumberWithAddress:transaction:)
     func shouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        guard let serviceId = recipient.untypedServiceId else {
+        guard let serviceId = recipient.serviceId else {
             return false
         }
         return shouldSharePhoneNumber(with: serviceId, transaction: transaction)
     }
 
-    func shouldSharePhoneNumber(with serviceId: UntypedServiceId, transaction: SDSAnyReadTransaction) -> Bool {
-        let uuidString = serviceId.uuidValue.uuidString
-        return shareMyPhoneNumberStore.getBool(uuidString, defaultValue: false, transaction: transaction)
+    func shouldSharePhoneNumber(with serviceId: ServiceId, transaction: SDSAnyReadTransaction) -> Bool {
+        let serviceIdString = serviceId.serviceIdUppercaseString
+        return shareMyPhoneNumberStore.getBool(serviceIdString, defaultValue: false, transaction: transaction)
     }
 
     func setShouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
-        guard let recipientUuid = recipient.uuidString else {
+        guard let recipientServiceIdString = recipient.serviceIdUppercaseString else {
             owsFailDebug("recipient has no UUID, should not be trying to share phone number with them")
             return
         }
-        shareMyPhoneNumberStore.setBool(true, key: recipientUuid, transaction: transaction)
+        shareMyPhoneNumberStore.setBool(true, key: recipientServiceIdString, transaction: transaction)
     }
 
     @objc(clearShouldSharePhoneNumberWithAddress:transaction:)
     func clearShouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
-        guard let recipientUuid = recipient.uuidString else {
+        guard let recipientServiceIdString = recipient.serviceIdUppercaseString else {
             return
         }
-        shareMyPhoneNumberStore.removeValue(forKey: recipientUuid, transaction: transaction)
+        shareMyPhoneNumberStore.removeValue(forKey: recipientServiceIdString, transaction: transaction)
     }
 
     @objc(clearShouldSharePhoneNumberForEveryoneWithTransaction:)

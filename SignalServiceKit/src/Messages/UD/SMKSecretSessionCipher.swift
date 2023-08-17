@@ -55,8 +55,8 @@ public struct SMKDecryptResult {
 // MARK: -
 
 fileprivate extension ProtocolAddress {
-    convenience init(from senderAddress: SealedSenderAddress) throws {
-        try self.init(name: senderAddress.uuidString, deviceId: senderAddress.deviceId)
+    convenience init(from senderAddress: SealedSenderAddress) {
+        self.init(senderAddress.senderAci, deviceId: senderAddress.deviceId)
     }
 }
 
@@ -111,7 +111,7 @@ public class SMKSecretSessionCipher: NSObject {
     // MARK: - Public
 
     public func encryptMessage(
-        for serviceId: UntypedServiceId,
+        for serviceId: ServiceId,
         deviceId: UInt32,
         paddedPlaintext: Data,
         contentHint: UnidentifiedSenderMessageContent.ContentHint,
@@ -119,7 +119,7 @@ public class SMKSecretSessionCipher: NSObject {
         senderCertificate: SenderCertificate,
         protocolContext: StoreContext
     ) throws -> Data {
-        let recipientAddress = try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: deviceId)
+        let recipientAddress = ProtocolAddress(serviceId, deviceId: deviceId)
 
         let ciphertextMessage = try signalEncrypt(
             message: paddedPlaintext,
@@ -151,7 +151,7 @@ public class SMKSecretSessionCipher: NSObject {
                                     contentHint: UnidentifiedSenderMessageContent.ContentHint = .default,
                                     protocolContext: StoreContext?) throws -> Data {
 
-        let senderAddress = try ProtocolAddress(from: senderCertificate.sender)
+        let senderAddress = ProtocolAddress(from: senderCertificate.sender)
         let ciphertext = try groupEncrypt(
             paddedPlaintext,
             from: senderAddress,

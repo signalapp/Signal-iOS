@@ -222,7 +222,7 @@ public struct UsernameQuerier {
         username: String,
         tx: SDSAnyWriteTransaction
     ) {
-        let recipient = recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx.asV2Write)
+        let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
         recipient.markAsRegisteredAndSave(tx: tx)
 
         let isUsernameBestIdentifier = Usernames.BetterIdentifierChecker.assembleByQuerying(

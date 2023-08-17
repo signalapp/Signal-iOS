@@ -223,7 +223,7 @@ public extension TSOutgoingMessage {
         recipientDeviceId deviceId: UInt32,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard let serviceId = recipientAddress.untypedServiceId else {
+        guard let serviceId = recipientAddress.serviceId else {
             // We can't be sharing our phone number b/c there's no ServiceId.
             return
         }
@@ -333,7 +333,7 @@ extension TSOutgoingMessage {
     @objc
     func clearMessageSendLogEntry(forRecipient address: SignalServiceAddress, deviceId: UInt32, tx: SDSAnyWriteTransaction) {
         // MSL entries will only exist for addresses with UUIDs
-        guard let serviceId = address.untypedServiceId else {
+        guard let serviceId = address.serviceId else {
             return
         }
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
@@ -364,8 +364,8 @@ public extension TSOutgoingMessage {
                 throw OWSAssertionError("Missing local thread")
             }
 
-            guard let localUuid = Self.tsAccountManager.localUuid else {
-                throw OWSAssertionError("Missing local uuid")
+            guard let localIdentifiers = Self.tsAccountManager.localIdentifiers(transaction: tx) else {
+                throw OWSAssertionError("Missing localIdentifiers.")
             }
 
             guard let transcript = self.buildTranscriptSyncMessage(localThread: localThread, transaction: tx) else {
@@ -381,9 +381,9 @@ public extension TSOutgoingMessage {
                 plaintextContent: serializedMessage.plaintextData,
                 plaintextPayloadId: serializedMessage.payloadId,
                 thread: localThread,
-                serviceId: UntypedServiceId(localUuid),
+                serviceId: localIdentifiers.aci,
                 udSendingAccess: nil,
-                localAddress: Self.tsAccountManager.localAddress!,
+                localIdentifiers: localIdentifiers,
                 sendErrorBlock: nil
             )
         }.then { messageSend -> Promise<Void> in

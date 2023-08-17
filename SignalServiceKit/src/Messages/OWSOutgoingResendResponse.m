@@ -67,7 +67,7 @@
     }
     if (originalThread.usesSenderKey &&
         [[originalThread recipientAddressesWithTransaction:transaction] containsObject:recipient]) {
-        NSData *skdmBytes = [self.senderKeyStore skdmBytesForThread:originalThread writeTx:transaction];
+        NSData *skdmBytes = [self.senderKeyStore skdmBytesForThread:originalThread tx:transaction];
         [contentBuilder setSenderKeyDistributionMessage:skdmBytes];
 
         self.didAppendSKDM = (skdmBytes != nil);
@@ -83,7 +83,7 @@
     }
 }
 
-- (void)updateWithSentRecipient:(UntypedServiceIdObjC *)serviceId
+- (void)updateWithSentRecipient:(ServiceIdObjC *)serviceId
                     wasSentByUD:(BOOL)wasSentByUD
                     transaction:(SDSAnyWriteTransaction *)transaction
 {

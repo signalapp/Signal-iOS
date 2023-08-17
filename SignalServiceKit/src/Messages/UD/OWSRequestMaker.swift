@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 @objc
@@ -71,7 +72,7 @@ public final class RequestMaker: Dependencies {
     private let label: String
     private let requestFactoryBlock: RequestFactoryBlock
     private let udAuthFailureBlock: UDAuthFailureBlock
-    private let serviceId: UntypedServiceId
+    private let serviceId: ServiceId
     private let address: SignalServiceAddress
     private let udAccess: OWSUDAccess?
     private let authedAccount: AuthedAccount
@@ -81,7 +82,7 @@ public final class RequestMaker: Dependencies {
         label: String,
         requestFactoryBlock: @escaping RequestFactoryBlock,
         udAuthFailureBlock: @escaping UDAuthFailureBlock,
-        serviceId: UntypedServiceId,
+        serviceId: ServiceId,
         udAccess: OWSUDAccess?,
         authedAccount: AuthedAccount,
         options: Options

@@ -90,7 +90,7 @@ public class SSKSessionStore: NSObject {
     }
 
     public func containsActiveSession(
-        for serviceId: UntypedServiceId,
+        for serviceId: ServiceId,
         deviceId: Int32,
         transaction: SDSAnyReadTransaction
     ) -> Bool {

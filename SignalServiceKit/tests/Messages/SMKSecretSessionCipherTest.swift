@@ -14,14 +14,14 @@ import SignalCoreKit
 class SMKSecretSessionCipherTest: XCTestCase {
 
     private lazy var aliceMockClient = MockClient(
-        serviceId: FutureAci.constantForTesting("aaaaaaaa-7000-11eb-b32a-33b8a8a487a6"),
+        aci: Aci.constantForTesting("aaaaaaaa-7000-11eb-b32a-33b8a8a487a6"),
         phoneNumber: E164("+16505550100")!,
         deviceId: 1,
         registrationId: 1234
     )
 
     private lazy var bobMockClient = MockClient(
-        serviceId: FutureAci.constantForTesting("bbbbbbbb-7000-11eb-b32a-33b8a8a487a6"),
+        aci: Aci.constantForTesting("bbbbbbbb-7000-11eb-b32a-33b8a8a487a6"),
         phoneNumber: E164("+16505550101")!,
         deviceId: 1,
         registrationId: 1234
@@ -55,7 +55,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
         // NOTE: The java tests don't bother padding the plaintext.
         let alicePlaintext = "smert za smert".data(using: .utf8)!
         let ciphertext = try! aliceCipher.encryptMessage(
-            for: bobMockClient.serviceId,
+            for: bobMockClient.aci,
             deviceId: bobMockClient.deviceId,
             paddedPlaintext: alicePlaintext,
             contentHint: .default,
@@ -82,7 +82,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
         // assertEquals(plaintext.first().getDeviceId(), 1);
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "smert za smert")
         XCTAssertEqual(bobPlaintext.senderDeviceId, aliceMockClient.deviceId)
-        XCTAssertEqual(bobPlaintext.senderAci.untypedServiceId, aliceMockClient.serviceId)
+        XCTAssertEqual(bobPlaintext.senderAci, aliceMockClient.aci)
         XCTAssertEqual(bobPlaintext.senderE164, aliceMockClient.phoneNumber.stringValue)
     }
 
@@ -116,7 +116,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
         let aliceGroupId = Randomness.generateRandomBytes(6)
         let aliceContentHint = UnidentifiedSenderMessageContent.ContentHint.implicit
         let ciphertext = try! aliceCipher.encryptMessage(
-            for: bobMockClient.serviceId,
+            for: bobMockClient.aci,
             deviceId: bobMockClient.deviceId,
             paddedPlaintext: alicePlaintext,
             contentHint: aliceContentHint,
@@ -160,7 +160,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                     originalSenderDeviceId: knownSenderError.senderDeviceId
                 )
             )
-            XCTAssertEqual(knownSenderError.senderAci.untypedServiceId, aliceMockClient.serviceId)
+            XCTAssertEqual(knownSenderError.senderAci, aliceMockClient.aci)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -196,7 +196,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
         let aliceContentHint = UnidentifiedSenderMessageContent.ContentHint.resendable
 
         let ciphertext = try! aliceCipher.encryptMessage(
-            for: bobMockClient.serviceId,
+            for: bobMockClient.aci,
             deviceId: bobMockClient.deviceId,
             paddedPlaintext: alicePlaintext,
             contentHint: aliceContentHint,
@@ -240,7 +240,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                     originalSenderDeviceId: knownSenderError.senderDeviceId
                 )
             )
-            XCTAssertEqual(knownSenderError.senderAci.untypedServiceId, aliceMockClient.serviceId)
+            XCTAssertEqual(knownSenderError.senderAci, aliceMockClient.aci)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -274,7 +274,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
         // NOTE: The java tests don't bother padding the plaintext.
         let alicePlaintext = "smert za smert".data(using: String.Encoding.utf8)!
         let ciphertext = try! aliceCipher.encryptMessage(
-            for: bobMockClient.serviceId,
+            for: bobMockClient.aci,
             deviceId: bobMockClient.deviceId,
             paddedPlaintext: alicePlaintext,
             contentHint: .default,
@@ -365,7 +365,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
 
         // Verify
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "beltalowda")
-        XCTAssertEqual(bobPlaintext.senderAci.untypedServiceId, aliceMockClient.serviceId)
+        XCTAssertEqual(bobPlaintext.senderAci, aliceMockClient.aci)
         XCTAssertEqual(bobPlaintext.senderDeviceId, aliceMockClient.deviceId)
         XCTAssertEqual(bobPlaintext.messageType, .senderKey)
     }
@@ -422,7 +422,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
             // Verify: We need to make sure that the sender, group, and contentHint are preserved
             // through decryption failures because of missing a missing sender key. This will
             // help with recovery.
-            XCTAssertEqual(knownSenderError.senderAci.untypedServiceId, aliceMockClient.serviceId)
+            XCTAssertEqual(knownSenderError.senderAci, aliceMockClient.aci)
             XCTAssertEqual(knownSenderError.senderDeviceId, UInt32(aliceMockClient.deviceId))
             XCTAssertEqual(Data(knownSenderError.groupId!), "inyalowda".data(using: String.Encoding.utf8)!)
             XCTAssertEqual(knownSenderError.contentHint, .resendable)

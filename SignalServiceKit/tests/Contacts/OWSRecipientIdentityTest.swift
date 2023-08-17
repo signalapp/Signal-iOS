@@ -11,17 +11,17 @@ import XCTest
 @testable import SignalServiceKit
 
 class OWSRecipientIdentityTest: SSKBaseTestSwift {
-    private lazy var localAci = FutureAci.randomForTesting()
-    private lazy var aliceAci = FutureAci.randomForTesting()
-    private lazy var bobAci = FutureAci.randomForTesting()
-    private lazy var charlieAci = FutureAci.randomForTesting()
-    private var recipients: [UntypedServiceId] {
+    private lazy var localAci = Aci.randomForTesting()
+    private lazy var aliceAci = Aci.randomForTesting()
+    private lazy var bobAci = Aci.randomForTesting()
+    private lazy var charlieAci = Aci.randomForTesting()
+    private var recipients: [ServiceId] {
         [aliceAci, bobAci, charlieAci, localAci]
     }
     private var groupThread: TSGroupThread!
-    private var identityKeys = [UntypedServiceId: Data]()
+    private var identityKeys = [ServiceId: Data]()
 
-    private func identityKey(_ serviceId: UntypedServiceId) -> Data {
+    private func identityKey(_ serviceId: ServiceId) -> Data {
         if let value = identityKeys[serviceId] {
             return value
         }
@@ -32,10 +32,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
 
     private func createFakeGroup() throws {
         // Create local account.
-        tsAccountManager.registerForTests(
-            withLocalNumber: "+16505550100",
-            uuid: localAci.uuidValue
-        )
+        tsAccountManager.registerForTests(localIdentifiers: LocalIdentifiers(aci: localAci, pni: nil, phoneNumber: "+16505550100"))
         // Create recipients.
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher

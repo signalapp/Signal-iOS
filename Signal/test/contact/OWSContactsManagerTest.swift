@@ -45,10 +45,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         write { tx in
             for serviceId in serviceIds {
-                let recipient = recipientFetcher.fetchOrCreate(
-                    serviceId: serviceId.untypedServiceId,
-                    tx: tx.asV2Write
-                )
+                let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
                 recipient.markAsRegisteredAndSave(tx: tx)
             }
         }
@@ -176,10 +173,10 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     func testGetPhoneNumbersFromProfiles() {
-        let aliceAci = FutureAci.randomForTesting()
+        let aliceAci = Aci.randomForTesting()
         let aliceAddress = SignalServiceAddress(serviceId: aliceAci, phoneNumber: "+17035559901")
 
-        let bobAci = FutureAci.randomForTesting()
+        let bobAci = Aci.randomForTesting()
         let bobAddress = SignalServiceAddress(serviceId: bobAci, phoneNumber: "+17035559902")
 
         let bogusAddress = SignalServiceAddress.randomForTesting()

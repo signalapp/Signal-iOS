@@ -169,7 +169,7 @@ class RecipientMergerImpl: RecipientMerger {
         tx: DBWriteTransaction
     ) -> SignalRecipient {
         guard let phoneNumber else {
-            return recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx)
+            return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         }
         return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, tx: tx)
     }
@@ -181,7 +181,7 @@ class RecipientMergerImpl: RecipientMerger {
         tx: DBWriteTransaction
     ) -> SignalRecipient {
         guard let phoneNumber else {
-            return recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx)
+            return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         }
         return mergeIfNotLocalIdentifier(localIdentifiers: localIdentifiers, aci: aci, phoneNumber: phoneNumber, tx: tx)
     }
@@ -207,7 +207,7 @@ class RecipientMergerImpl: RecipientMerger {
         tx: DBWriteTransaction
     ) -> SignalRecipient {
         if localIdentifiers.contains(serviceId: aci) || localIdentifiers.contains(phoneNumber: phoneNumber) {
-            return recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx)
+            return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         }
         return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: false, tx: tx)
     }

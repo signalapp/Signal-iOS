@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 /// Provides parameters required for assembling a UD (sealed-sender) message.
 @objc
@@ -29,47 +30,30 @@ public protocol UDSendingParamsProvider {
 // OWSMessageSend.
 @objc
 public class OWSMessageSend: NSObject, UDSendingParamsProvider {
-    @objc
     public let message: TSOutgoingMessage
 
-    @objc
     public let plaintextContent: Data
 
-    @objc(plaintextPayloadId)
-    @available(swift, obsoleted: 1.0)
-    public var plaintextPayloadIdObjc: NSNumber? { plaintextPayloadId.map { NSNumber(value: $0) } }
     public let plaintextPayloadId: Int64?
 
-    @objc
     public let thread: TSThread
 
-    @objc
-    public let serviceId: UntypedServiceIdObjC
-
-    @objc
-    public let address: SignalServiceAddress
+    public let serviceId: ServiceId
 
     private static let kMaxRetriesPerRecipient: Int = 3
 
     private let _remainingAttempts = AtomicValue<Int>(OWSMessageSend.kMaxRetriesPerRecipient)
-    @objc
     public var remainingAttempts: Int {
         get { return _remainingAttempts.get() }
         set { _remainingAttempts.set(newValue) }
     }
 
-    @objc
-    public let localAddress: SignalServiceAddress
-
-    @objc
-    public let isLocalAddress: Bool
+    public let localIdentifiers: LocalIdentifiers
 
     public let promise: Promise<Void>
 
-    @objc
     public let success: () -> Void
 
-    @objc
     public let failure: (Error) -> Void
 
     public init(
@@ -77,19 +61,17 @@ public class OWSMessageSend: NSObject, UDSendingParamsProvider {
         plaintextContent: Data,
         plaintextPayloadId: Int64?,
         thread: TSThread,
-        serviceId: UntypedServiceId,
+        serviceId: ServiceId,
         udSendingAccess: OWSUDSendingAccess?,
-        localAddress: SignalServiceAddress,
+        localIdentifiers: LocalIdentifiers,
         sendErrorBlock: ((Error) -> Void)?
     ) {
         self.message = message
         self.plaintextContent = plaintextContent
         self.plaintextPayloadId = plaintextPayloadId
         self.thread = thread
-        self.serviceId = UntypedServiceIdObjC(serviceId)
-        self.address = SignalServiceAddress(serviceId)
-        self.localAddress = localAddress
-        self.isLocalAddress = address.isLocalAddress
+        self.serviceId = serviceId
+        self.localIdentifiers = localIdentifiers
 
         let (promise, future) = Promise<Void>.pending()
         self.promise = promise
@@ -111,30 +93,25 @@ public class OWSMessageSend: NSObject, UDSendingParamsProvider {
     // MARK: - UDSendingParamsProvider
 
     private var _udSendingAccess = AtomicOptional<OWSUDSendingAccess>(nil)
-    @objc
     public private(set) var udSendingAccess: OWSUDSendingAccess? {
         get { return _udSendingAccess.get() }
         set { _udSendingAccess.set(newValue) }
     }
 
-    @objc
     public var contentHint: SealedSenderContentHint {
         message.contentHint
     }
 
-    @objc
     public func envelopeGroupId(transaction: SDSAnyReadTransaction) -> Data? {
         message.envelopeGroupIdWithTransaction(transaction)
     }
 
-    @objc
     public func disableUDAuth() {
         udSendingAccess = nil
     }
 
     // MARK: - Getters
 
-    @objc
     public var isUDSend: Bool {
         return udSendingAccess != nil
     }

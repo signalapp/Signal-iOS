@@ -42,7 +42,7 @@ public class OWSAccountIdFinder: NSObject {
     ) -> SignalRecipient {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         let recipient: SignalRecipient
-        if let serviceId = address.untypedServiceId {
+        if let serviceId = address.serviceId {
             recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write)
         } else if let phoneNumber = address.e164 {
             recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: transaction.asV2Write)

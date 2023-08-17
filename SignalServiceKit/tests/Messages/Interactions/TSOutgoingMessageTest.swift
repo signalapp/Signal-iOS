@@ -11,7 +11,7 @@ import XCTest
 class TSOutgoingMessageTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
-        tsAccountManager.registerForTests(withLocalNumber: "+17775550101", uuid: UUID(), pni: UUID())
+        tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
         _ = identityManager.generateAndPersistNewIdentityKey(for: .aci)
         _ = identityManager.generateAndPersistNewIdentityKey(for: .pni)
     }
@@ -30,7 +30,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testShouldNotStartExpireTimerWithMessageThatDoesNotExpire() {
         write { transaction in
-            let otherAci = FutureAci.randomForTesting()
+            let otherAci = Aci.randomForTesting()
             let otherAddress = SignalServiceAddress(serviceId: otherAci, phoneNumber: "+12223334444")
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
@@ -39,7 +39,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             XCTAssertFalse(message.shouldStartExpireTimer())
 
-            message.update(withSentRecipient: UntypedServiceIdObjC(otherAci), wasSentByUD: false, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: false, transaction: transaction)
 
             XCTAssertFalse(message.shouldStartExpireTimer())
         }
@@ -47,7 +47,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testShouldStartExpireTimerWithSentMessage() {
         write { transaction in
-            let otherAci = FutureAci.randomForTesting()
+            let otherAci = Aci.randomForTesting()
             let otherAddress = SignalServiceAddress(serviceId: otherAci, phoneNumber: "+12223334444")
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
@@ -57,7 +57,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             XCTAssertFalse(message.shouldStartExpireTimer())
 
-            message.update(withSentRecipient: UntypedServiceIdObjC(otherAci), wasSentByUD: false, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: false, transaction: transaction)
 
             XCTAssertTrue(message.shouldStartExpireTimer())
         }
@@ -80,7 +80,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testNoPniSignatureByDefault() {
         write { transaction in
-            let otherAddress = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+12223334444")
+            let otherAddress = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+12223334444")
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = 100
@@ -93,7 +93,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testPniSignatureWhenNeeded() {
         write { transaction in
-            let otherAddress = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+12223334444")
+            let otherAddress = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+12223334444")
             identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
 
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
@@ -116,7 +116,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testReceiptClearsSharePhoneNumber() {
         write { transaction in
-            let otherAci = FutureAci.randomForTesting()
+            let otherAci = Aci.randomForTesting()
             let otherAddress = SignalServiceAddress(serviceId: otherAci, phoneNumber: "+12223334444")
             identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
 
@@ -126,7 +126,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: UntypedServiceIdObjC(otherAci), wasSentByUD: true, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: true, transaction: transaction)
 
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
@@ -153,7 +153,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testReceiptClearsSharePhoneNumberOnlyOnLastDevice() {
         write { transaction in
-            let otherAci = FutureAci.randomForTesting()
+            let otherAci = Aci.randomForTesting()
             let otherAddress = SignalServiceAddress(serviceId: otherAci, phoneNumber: "+12223334444")
             identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
 
@@ -163,7 +163,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: UntypedServiceIdObjC(otherAci), wasSentByUD: true, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: true, transaction: transaction)
 
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
@@ -207,7 +207,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testReceiptDoesNotClearSharePhoneNumberIfNotSealedSender() {
         write { transaction in
-            let otherAci = FutureAci.randomForTesting()
+            let otherAci = Aci.randomForTesting()
             let otherAddress = SignalServiceAddress(serviceId: otherAci, phoneNumber: "+12223334444")
             identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
 
@@ -217,7 +217,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: UntypedServiceIdObjC(otherAci), wasSentByUD: false, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: false, transaction: transaction)
 
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
@@ -245,7 +245,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testReceiptDoesNotClearSharePhoneNumberIfNoPniSignature() {
         write { transaction in
-            let otherAci = FutureAci.randomForTesting()
+            let otherAci = Aci.randomForTesting()
             let otherAddress = SignalServiceAddress(serviceId: otherAci, phoneNumber: "+12223334444")
 
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
@@ -254,7 +254,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: UntypedServiceIdObjC(otherAci), wasSentByUD: true, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: true, transaction: transaction)
 
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
@@ -282,7 +282,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
     }
 
     func testReceiptDoesNotClearSharePhoneNumberIfPniHasChanged() {
-        let otherAci = FutureAci.randomForTesting()
+        let otherAci = Aci.randomForTesting()
         let otherAddress = SignalServiceAddress(serviceId: otherAci, phoneNumber: "+12223334444")
         var message: TSOutgoingMessage!
 
@@ -295,7 +295,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
-            message.update(withSentRecipient: UntypedServiceIdObjC(otherAci), wasSentByUD: true, transaction: transaction)
+            message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: true, transaction: transaction)
 
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!

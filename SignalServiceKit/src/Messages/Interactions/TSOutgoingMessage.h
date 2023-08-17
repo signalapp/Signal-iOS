@@ -74,7 +74,6 @@ typedef NS_ENUM(NSInteger, EncryptionStyle) {
 @class ServiceIdObjC;
 @class SignalServiceAddress;
 @class TSOutgoingMessageBuilder;
-@class UntypedServiceIdObjC;
 
 @interface TSOutgoingMessageRecipientState : MTLModel
 
@@ -284,7 +283,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 #pragma mark - Update With... Methods
 
 // This method is used to record a successful send to one recipient.
-- (void)updateWithSentRecipient:(UntypedServiceIdObjC *)serviceId
+- (void)updateWithSentRecipient:(ServiceIdObjC *)serviceId
                     wasSentByUD:(BOOL)wasSentByUD
                     transaction:(SDSAnyWriteTransaction *)transaction;
 

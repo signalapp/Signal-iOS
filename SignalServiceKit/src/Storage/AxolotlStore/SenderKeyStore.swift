@@ -9,8 +9,8 @@ import LibSignalClient
 public class SenderKeyStore: NSObject {
     public typealias DistributionId = UUID
     fileprivate typealias KeyId = String
-    fileprivate static func buildKeyId(addressUuid: UUID, distributionId: DistributionId) -> KeyId {
-        "\(addressUuid.uuidString).\(distributionId.uuidString)"
+    fileprivate static func buildKeyId(authorAci: Aci, distributionId: DistributionId) -> KeyId {
+        "\(authorAci.serviceIdUppercaseString).\(distributionId.uuidString)"
     }
 
     // MARK: - Storage properties
@@ -40,12 +40,11 @@ public class SenderKeyStore: NSObject {
     }
 
     /// Returns a list of addresses that may not have the current device's sender key for the thread.
-    @objc
     public func recipientsInNeedOfSenderKey(
         for thread: TSThread,
-        serviceIds: [UntypedServiceIdObjC],
+        serviceIds: [ServiceId],
         readTx: SDSAnyReadTransaction
-    ) -> [UntypedServiceIdObjC] {
+    ) -> [ServiceId] {
         var serviceIdsNeedingSenderKey = Set(serviceIds)
 
         storageLock.withLock {
@@ -61,7 +60,7 @@ public class SenderKeyStore: NSObject {
             // Iterate over each cached recipient. If no new devices or reregistrations have occurred since
             // we last recorded an SKDM send, we can skip sending to them.
             for (address, sendInfo) in keyMetadata.sentKeyInfo {
-                guard let serviceId = address.untypedServiceIdObjC else {
+                guard let serviceId = address.serviceId else {
                     continue
                 }
                 do {
@@ -69,7 +68,7 @@ public class SenderKeyStore: NSObject {
 
                     // Only remove the recipient in question from our send targets if the cached state contains
                     // every device from the current state. Any new devices mean we need to re-send.
-                    let currentRecipientState = try KeyRecipient.currentState(for: serviceId.wrappedValue, transaction: readTx)
+                    let currentRecipientState = try KeyRecipient.currentState(for: serviceId, transaction: readTx)
                     if priorSendRecipientState.containsEveryDevice(from: currentRecipientState) {
                         serviceIdsNeedingSenderKey.remove(serviceId)
                     }
@@ -77,9 +76,9 @@ public class SenderKeyStore: NSObject {
                     // It's likely there's no session for the current recipient. Maybe it was cleared?
                     // In this case, we just assume we need to send a new SKDM
                     if case SignalError.invalidState(_) = error {
-                        Logger.warn("Invalid session state. Cannot build recipient state for \(address). \(error)")
+                        Logger.warn("Invalid session state. Cannot build recipient state for \(serviceId). \(error)")
                     } else {
-                        owsFailDebug("Failed to fetch current recipient state for \(address): \(error)")
+                        owsFailDebug("Failed to fetch current recipient state for \(serviceId): \(error)")
                     }
                 }
             }
@@ -91,7 +90,7 @@ public class SenderKeyStore: NSObject {
     @objc
     public func recordSenderKeySent(
         for thread: TSThread,
-        to serviceId: UntypedServiceIdObjC,
+        to serviceId: ServiceIdObjC,
         timestamp: UInt64,
         writeTx: SDSAnyWriteTransaction) throws {
         try storageLock.withLock {
@@ -109,7 +108,7 @@ public class SenderKeyStore: NSObject {
 
     public func resetSenderKeyDeliveryRecord(
         for thread: TSThread,
-        serviceId: UntypedServiceId,
+        serviceId: ServiceId,
         writeTx: SDSAnyWriteTransaction
     ) {
         storageLock.withLock {
@@ -173,14 +172,33 @@ public class SenderKeyStore: NSObject {
     }
 
     @objc
-    public func skdmBytesForThread(_ thread: TSThread, writeTx: SDSAnyWriteTransaction) -> Data? {
+    public func skdmBytesForThread(_ thread: TSThread, tx: SDSAnyWriteTransaction) -> Data? {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx) else {
+            return nil
+        }
+        return skdmBytesForThread(
+            thread,
+            localAci: localIdentifiers.aci,
+            localDeviceId: tsAccountManager.storedDeviceId(transaction: tx),
+            tx: tx
+        )
+    }
+
+    public func skdmBytesForThread(
+        _ thread: TSThread,
+        localAci: Aci,
+        localDeviceId: UInt32,
+        tx: SDSAnyWriteTransaction
+    ) -> Data? {
         do {
-            let localAddress = try ProtocolAddress.localAddress
-            let distributionId = distributionIdForSendingToThread(thread, writeTx: writeTx)
-            let skdm = try SenderKeyDistributionMessage(from: localAddress,
-                                                        distributionId: distributionId,
-                                                        store: self,
-                                                        context: writeTx)
+            let localAddress = ProtocolAddress(localAci, deviceId: localDeviceId)
+            let distributionId = distributionIdForSendingToThread(thread, writeTx: tx)
+            let skdm = try SenderKeyDistributionMessage(
+                from: localAddress,
+                distributionId: distributionId,
+                store: self,
+                context: tx
+            )
             return Data(skdm.serialize())
         } catch {
             owsFailDebug("Failed to construct sender key message: \(error)")
@@ -198,22 +216,34 @@ extension SenderKeyStore: LibSignalClient.SenderKeyStore {
         record: SenderKeyRecord,
         context: StoreContext
     ) throws {
-        guard let addressUuid = sender.uuid else {
-            throw OWSAssertionError("Invalid protocol address: must have UUID")
+        let tx = context.asTransaction
+
+        guard let senderAci = sender.serviceId as? Aci else {
+            throw OWSAssertionError("Invalid protocol address: must have ACI")
         }
 
-        return try storageLock.withLock {
-            let writeTx = context.asTransaction
-            let keyId = Self.buildKeyId(addressUuid: addressUuid, distributionId: distributionId)
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx) else {
+            throw OWSAssertionError("Not registered.")
+        }
+
+        return storageLock.withLock {
+            let keyId = Self.buildKeyId(authorAci: senderAci, distributionId: distributionId)
 
             var updatedValue: KeyMetadata
-            if let existingMetadata = getKeyMetadata(for: keyId, readTx: writeTx) {
+            if let existingMetadata = getKeyMetadata(for: keyId, readTx: tx) {
                 updatedValue = existingMetadata
             } else {
-                updatedValue = try KeyMetadata(record: record, sender: sender, distributionId: distributionId)
+                updatedValue = KeyMetadata(
+                    record: record,
+                    senderAci: senderAci,
+                    senderDeviceId: sender.deviceId,
+                    localIdentifiers: localIdentifiers,
+                    localDeviceId: tsAccountManager.storedDeviceId(transaction: tx),
+                    distributionId: distributionId
+                )
             }
             updatedValue.record = record
-            setMetadata(updatedValue, writeTx: writeTx)
+            setMetadata(updatedValue, writeTx: tx)
         }
     }
 
@@ -222,13 +252,13 @@ extension SenderKeyStore: LibSignalClient.SenderKeyStore {
         distributionId: UUID,
         context: StoreContext
     ) throws -> SenderKeyRecord? {
-        guard let addressUuid = sender.uuid else {
-            throw OWSAssertionError("Invalid protocol address: must have UUID")
+        guard let senderAci = sender.serviceId as? Aci else {
+            throw OWSAssertionError("Invalid protocol address: must have ACI")
         }
 
         return storageLock.withLock {
             let readTx = context.asTransaction
-            let keyId = Self.buildKeyId(addressUuid: addressUuid, distributionId: distributionId)
+            let keyId = Self.buildKeyId(authorAci: senderAci, distributionId: distributionId)
             let metadata = getKeyMetadata(for: keyId, readTx: readTx)
             return metadata?.record
         }
@@ -295,14 +325,14 @@ extension SenderKeyStore {
     fileprivate func keyIdForSendingToThreadId(_ threadId: ThreadUniqueId, readTx: SDSAnyReadTransaction) -> KeyId? {
         storageLock.assertOwner()
 
-        guard let localUuid = tsAccountManager.localUuid else {
-            owsFailDebug("No local uuid")
+        guard let localAci = tsAccountManager.localIdentifiers(transaction: readTx)?.aci else {
+            owsFailDebug("Not registered.")
             return nil
         }
         guard let distributionId = distributionIdForSendingToThreadId(threadId, readTx: readTx) else {
             return nil
         }
-        return Self.buildKeyId(addressUuid: localUuid, distributionId: distributionId)
+        return Self.buildKeyId(authorAci: localAci, distributionId: distributionId)
     }
 
     fileprivate func distributionIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> DistributionId {
@@ -321,12 +351,12 @@ extension SenderKeyStore {
     fileprivate func keyIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> KeyId? {
         storageLock.assertOwner()
 
-        guard let localUuid = tsAccountManager.localUuid else {
-            owsFailDebug("No local uuid")
+        guard let localAci = tsAccountManager.localIdentifiers(transaction: writeTx)?.aci else {
+            owsFailDebug("Not registered.")
             return nil
         }
         let distributionId = distributionIdForSendingToThreadId(threadId, writeTx: writeTx)
-        return Self.buildKeyId(addressUuid: localUuid, distributionId: distributionId)
+        return Self.buildKeyId(authorAci: localAci, distributionId: distributionId)
     }
 
     // MARK: Migration
@@ -357,7 +387,7 @@ extension SenderKeyStore {
     // This method traverses all groups where `recipient` is a member and logs out information on any sent
     // sender key distribution messages.
     public func logSKDMInfo(for recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) {
-        guard let localUuid = tsAccountManager.localUuid else { return }
+        guard let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci else { return }
 
         // To avoid doing too much work for a flood of failed decryptions, we'll only honor an SKDM log
         // dump request every 10s. That's frequent enough to be captured in a log zip.
@@ -379,7 +409,7 @@ extension SenderKeyStore {
                 guard let distributionId = distributionId else { return }
 
                 // Once we have a distributionId, for a thread, we'll log *something* for the thread
-                let keyId = Self.buildKeyId(addressUuid: localUuid, distributionId: distributionId)
+                let keyId = Self.buildKeyId(authorAci: localAci, distributionId: distributionId)
                 let keyMetadata: KeyMetadata?
                 do {
                     keyMetadata = try keyMetadataStore.getCodableValue(forKey: keyId, transaction: transaction)
@@ -456,7 +486,7 @@ private struct KeyRecipient: Codable, Dependencies {
     }
 
     /// Build a KeyRecipient for the given address by fetching all of the devices and corresponding registrationIds
-    static func currentState(for serviceId: UntypedServiceId, transaction: SDSAnyReadTransaction) throws -> KeyRecipient {
+    static func currentState(for serviceId: ServiceId, transaction: SDSAnyReadTransaction) throws -> KeyRecipient {
         guard
             let recipient = SignalRecipient.fetchRecipient(
                 for: SignalServiceAddress(serviceId),
@@ -467,7 +497,7 @@ private struct KeyRecipient: Codable, Dependencies {
             throw OWSAssertionError("Invalid device array")
         }
         let deviceIds = recipient.deviceIds
-        let protocolAddresses = try deviceIds.map { try ProtocolAddress(uuid: serviceId.uuidValue, deviceId: $0) }
+        let protocolAddresses = deviceIds.map { ProtocolAddress(serviceId, deviceId: $0) }
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         let devices: [Device] = try protocolAddresses.map {
             // We have to fetch the registrationId since deviceIds can be reused.
@@ -496,9 +526,10 @@ private struct KeyRecipient: Codable, Dependencies {
 /// Stores information about a sender key, it's owner, it's distributionId, and all recipients who have been sent the sender key
 private struct KeyMetadata {
     let distributionId: SenderKeyStore.DistributionId
-    let ownerUuid: UUID
+    @AciUuid var ownerAci: Aci
     let ownerDeviceId: UInt32
-    var keyId: String { SenderKeyStore.buildKeyId(addressUuid: ownerUuid, distributionId: distributionId) }
+
+    var keyId: String { SenderKeyStore.buildKeyId(authorAci: ownerAci, distributionId: distributionId) }
 
     private var serializedRecord: Data
     var record: SenderKeyRecord? {
@@ -525,17 +556,19 @@ private struct KeyMetadata {
     private(set) var sentKeyInfo: [SignalServiceAddress: SKDMSendInfo]
     var currentRecipients: Set<SignalServiceAddress> { Set(sentKeyInfo.keys) }
 
-    init(record: SenderKeyRecord, sender: ProtocolAddress, distributionId: SenderKeyStore.DistributionId) throws {
-        guard let uuid = sender.uuid else {
-            throw OWSAssertionError("Invalid sender. Must have UUID")
-        }
-
+    init(
+        record: SenderKeyRecord,
+        senderAci: Aci,
+        senderDeviceId: UInt32,
+        localIdentifiers: LocalIdentifiers,
+        localDeviceId: UInt32,
+        distributionId: SenderKeyStore.DistributionId
+    ) {
         self.serializedRecord = Data(record.serialize())
         self.distributionId = distributionId
-        self.ownerUuid = uuid
-        self.ownerDeviceId = sender.deviceId
-
-        self.isForEncrypting = sender.isCurrentDevice
+        self._ownerAci = AciUuid(wrappedValue: senderAci)
+        self.ownerDeviceId = senderDeviceId
+        self.isForEncrypting = senderAci == localIdentifiers.aci && senderDeviceId == localDeviceId
         self.creationDate = Date()
         self.sentKeyInfo = [:]
     }
@@ -549,11 +582,11 @@ private struct KeyMetadata {
         return (expirationDate.isAfterNow && isForEncrypting)
     }
 
-    mutating func resetDeliveryRecord(for serviceId: UntypedServiceId) {
+    mutating func resetDeliveryRecord(for serviceId: ServiceId) {
         sentKeyInfo[SignalServiceAddress(serviceId)] = nil
     }
 
-    mutating func recordSKDMSent(at timestamp: UInt64, serviceId: UntypedServiceId, transaction: SDSAnyReadTransaction) throws {
+    mutating func recordSKDMSent(at timestamp: UInt64, serviceId: ServiceId, transaction: SDSAnyReadTransaction) throws {
         let recipient = try KeyRecipient.currentState(for: serviceId, transaction: transaction)
         let sendInfo = SKDMSendInfo(skdmTimestamp: timestamp, keyRecipient: recipient)
         sentKeyInfo[SignalServiceAddress(serviceId)] = sendInfo
@@ -563,7 +596,7 @@ private struct KeyMetadata {
 extension KeyMetadata: Codable {
     enum CodingKeys: String, CodingKey {
         case distributionId
-        case ownerUuid
+        case ownerAci = "ownerUuid"
         case ownerDeviceId
         case serializedRecord
 
@@ -578,13 +611,13 @@ extension KeyMetadata: Codable {
     }
 
     init(from decoder: Decoder) throws {
-        let container   = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
         let legacyValues = try decoder.container(keyedBy: CodingKeys.LegacyKeys.self)
 
-        distributionId  = try container.decode(SenderKeyStore.DistributionId.self, forKey: .distributionId)
-        ownerUuid       = try container.decode(UUID.self, forKey: .ownerUuid)
-        ownerDeviceId   = try container.decode(UInt32.self, forKey: .ownerDeviceId)
-        creationDate    = try container.decode(Date.self, forKey: .creationDate)
+        distributionId = try container.decode(SenderKeyStore.DistributionId.self, forKey: .distributionId)
+        _ownerAci = try container.decode(AciUuid.self, forKey: .ownerAci)
+        ownerDeviceId = try container.decode(UInt32.self, forKey: .ownerDeviceId)
+        creationDate = try container.decode(Date.self, forKey: .creationDate)
         isForEncrypting = try container.decode(Bool.self, forKey: .isForEncrypting)
 
         // We used to store this as an Array, but that serializes poorly in most Codable formats. Now we use Data.
@@ -624,29 +657,4 @@ extension KeyMetadata: Codable {
 private typealias ThreadUniqueId = String
 fileprivate extension TSThread {
     var threadUniqueId: ThreadUniqueId { uniqueId }
-}
-
-extension ProtocolAddress {
-    static var localAddress: ProtocolAddress {
-        get throws {
-            guard let aci = SSKEnvironment.shared.tsAccountManager.localUuid else {
-                throw OWSAssertionError("No address for the local account")
-            }
-            let deviceId = SSKEnvironment.shared.tsAccountManager.storedDeviceId
-            return try ProtocolAddress(uuid: aci, deviceId: deviceId)
-        }
-    }
-
-    convenience init(uuid: UUID, deviceId: UInt32) throws {
-        try self.init(name: uuid.uuidString, deviceId: deviceId)
-    }
-
-    var uuid: UUID? {
-        UUID(uuidString: name)
-    }
-
-    var isCurrentDevice: Bool {
-        let tsAccountManager = SSKEnvironment.shared.tsAccountManager
-        return (uuid == tsAccountManager.localUuid) && (deviceId == tsAccountManager.storedDeviceId)
-    }
 }

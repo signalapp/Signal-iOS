@@ -8,23 +8,21 @@ import SignalServiceKit
 import LibSignalClient
 
 class MockClient {
-    var protocolAddress: ProtocolAddress {
-        try! ProtocolAddress(name: serviceId.uuidValue.uuidString, deviceId: deviceId)
-    }
+    var protocolAddress: ProtocolAddress { ProtocolAddress(aci, deviceId: deviceId) }
 
     var sealedSenderAddress: SealedSenderAddress {
         try! SealedSenderAddress(
             e164: phoneNumber.stringValue,
-            uuidString: serviceId.uuidValue.uuidString,
+            uuidString: aci.serviceIdString,
             deviceId: UInt32(deviceId)
         )
     }
 
     var localIdentifiers: LocalIdentifiers {
-        LocalIdentifiers(aci: Aci(fromUUID: serviceId.uuidValue), pni: nil, phoneNumber: phoneNumber.stringValue)
+        LocalIdentifiers(aci: aci, pni: nil, phoneNumber: phoneNumber.stringValue)
     }
 
-    let serviceId: UntypedServiceId
+    let aci: Aci
     let phoneNumber: E164
     let deviceId: UInt32
     let registrationId: Int32
@@ -38,8 +36,8 @@ class MockClient {
     let identityStore: InMemorySignalProtocolStore
     let senderKeyStore: InMemorySignalProtocolStore
 
-    init(serviceId: UntypedServiceId, phoneNumber: E164, deviceId: UInt32, registrationId: Int32) {
-        self.serviceId = serviceId
+    init(aci: Aci, phoneNumber: E164, deviceId: UInt32, registrationId: Int32) {
+        self.aci = aci
         self.phoneNumber = phoneNumber
         self.deviceId = deviceId
         self.registrationId = registrationId

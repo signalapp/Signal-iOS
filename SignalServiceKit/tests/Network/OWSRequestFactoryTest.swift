@@ -56,10 +56,10 @@ class OWSRequestFactoryTest: XCTestCase {
     func testSubmitMessageRequest() throws {
         let udAccessKey = try getUdAccessKey()
 
-        let serviceId = FutureAci.randomForTesting()
+        let serviceId = Aci.randomForTesting()
 
         let request = OWSRequestFactory.submitMessageRequest(
-            withServiceId: UntypedServiceIdObjC(serviceId),
+            withServiceId: ServiceIdObjC.wrapValue(serviceId),
             messages: [],
             timestamp: 1234,
             udAccessKey: udAccessKey,
@@ -70,7 +70,7 @@ class OWSRequestFactoryTest: XCTestCase {
 
         let url = try XCTUnwrap(request.url, "request.url")
         XCTAssertEqual(request.httpMethod, "PUT")
-        XCTAssertEqual(url.path, "v1/messages/\(serviceId.uuidValue.uuidString)")
+        XCTAssertEqual(url.path, "v1/messages/\(serviceId.serviceIdString)")
         XCTAssertEqual(Set(request.parameters.keys), Set(["messages", "timestamp", "online", "urgent"]))
         XCTAssertEqual(request.parameters["messages"] as? NSArray, [])
         XCTAssertEqual(request.parameters["timestamp"] as? UInt, 1234)

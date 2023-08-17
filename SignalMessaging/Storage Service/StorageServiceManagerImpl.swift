@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 import SwiftProtobuf
 
@@ -267,7 +268,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         Logger.info("Recording pending update for addresses: \(updatedAddresses)")
 
         updatePendingMutations {
-            $0.updatedServiceIds.formUnion(updatedAddresses.lazy.compactMap({ $0.untypedServiceId }))
+            $0.updatedServiceIds.formUnion(updatedAddresses.lazy.compactMap({ $0.serviceId }))
         }
     }
 
@@ -415,7 +416,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
 private struct PendingMutations {
     var updatedAccountIds = Set<AccountId>()
-    var updatedServiceIds = Set<UntypedServiceId>()
+    var updatedServiceIds = Set<ServiceId>()
     var updatedGroupV2MasterKeys = Set<Data>()
     var updatedStoryDistributionListIds = Set<Data>()
     var updatedLocalAccount = false
@@ -532,8 +533,11 @@ class StorageServiceOperation: OWSOperation {
         allAccountIds.formUnion(pendingMutations.updatedAccountIds)
 
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        allAccountIds.formUnion(pendingMutations.updatedServiceIds.lazy.map {
-            recipientFetcher.fetchOrCreate(serviceId: $0, tx: tx.asV2Write).uniqueId
+        allAccountIds.formUnion(pendingMutations.updatedServiceIds.lazy.compactMap { (serviceId: ServiceId) -> String? in
+            if serviceId is Pni, !FeatureFlags.phoneNumberIdentifiers {
+                return nil
+            }
+            return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write).uniqueId
         })
 
         // Then, update State with all these pending mutations.

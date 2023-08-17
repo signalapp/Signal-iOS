@@ -4,22 +4,22 @@
 //
 
 import Foundation
+import LibSignalClient
 
 extension OWSOutgoingResendResponse {
-    @objc
     convenience init?(
-        address: SignalServiceAddress,
+        aci: Aci,
         deviceId: UInt32,
         failedTimestamp: UInt64,
         didResetSession: Bool,
         tx: SDSAnyWriteTransaction
     ) {
-        let targetThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: tx)
+        let targetThread = TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(aci), transaction: tx)
         let builder = TSOutgoingMessageBuilder(thread: targetThread)
 
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
-        if let serviceId = address.untypedServiceId, let payloadRecord = messageSendLog.fetchPayload(
-            recipientServiceId: serviceId,
+        if let payloadRecord = messageSendLog.fetchPayload(
+            recipientServiceId: aci,
             recipientDeviceId: deviceId,
             timestamp: failedTimestamp,
             tx: tx
@@ -36,7 +36,7 @@ extension OWSOutgoingResendResponse {
             // this was a sender key group. This will be re-marked as delivered on
             // success if we included an SKDM in the resend response
             if let originalThread, originalThread.isGroupThread {
-                Self.senderKeyStore.resetSenderKeyDeliveryRecord(for: originalThread, serviceId: serviceId, writeTx: tx)
+                Self.senderKeyStore.resetSenderKeyDeliveryRecord(for: originalThread, serviceId: aci, writeTx: tx)
             }
 
             self.init(

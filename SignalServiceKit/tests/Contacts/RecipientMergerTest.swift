@@ -158,7 +158,7 @@ class RecipientMergerTest: XCTestCase {
                         tx: transaction
                     )
                 case (_, let aci?, _):
-                    _ = recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: transaction)
+                    _ = recipientFetcher.fetchOrCreate(serviceId: aci, tx: transaction)
                 case (_, _, let phoneNumber):
                     _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber!, tx: transaction)
                 }

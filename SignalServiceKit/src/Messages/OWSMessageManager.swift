@@ -567,7 +567,7 @@ extension OWSMessageManager {
             let skdm = try SenderKeyDistributionMessage(bytes: skdmData.map { $0 })
             let sourceAci = decryptedEnvelope.sourceAci
             let sourceDeviceId = decryptedEnvelope.sourceDeviceId
-            let protocolAddress = try ProtocolAddress(uuid: sourceAci.temporary_rawUUID, deviceId: sourceDeviceId)
+            let protocolAddress = ProtocolAddress(sourceAci, deviceId: sourceDeviceId)
             try processSenderKeyDistributionMessage(skdm, from: protocolAddress, store: senderKeyStore, context: writeTx)
 
             Logger.info("Processed incoming sender key distribution message from \(sourceAci).\(sourceDeviceId)")
@@ -583,7 +583,7 @@ extension OWSMessageManager {
         withDecryptionErrorMessage bytes: Data,
         transaction writeTx: SDSAnyWriteTransaction
     ) {
-        let sourceServiceId = decryptedEnvelope.sourceAci.untypedServiceId
+        let sourceAci = decryptedEnvelope.sourceAci
         let sourceDeviceId = decryptedEnvelope.sourceDeviceId
 
         do {
@@ -592,7 +592,7 @@ extension OWSMessageManager {
                 Logger.info("Received a DecryptionError message targeting a linked device. Ignoring.")
                 return
             }
-            let protocolAddress = try ProtocolAddress(uuid: sourceServiceId.uuidValue, deviceId: sourceDeviceId)
+            let protocolAddress = ProtocolAddress(sourceAci, deviceId: sourceDeviceId)
 
             let didPerformSessionReset: Bool
 
@@ -605,7 +605,7 @@ extension OWSMessageManager {
                 if try sessionRecord?.currentRatchetKeyMatches(ratchetKey) == true {
                     Logger.info("Decryption error included ratchet key. Archiving...")
                     sessionStore.archiveSession(
-                        for: SignalServiceAddress(sourceServiceId),
+                        for: SignalServiceAddress(sourceAci),
                         deviceId: Int32(sourceDeviceId),
                         tx: writeTx.asV2Write
                     )
@@ -617,13 +617,13 @@ extension OWSMessageManager {
             } else {
                 // If we don't have a ratchet key, this was a sender key session message.
                 // Let's log any info about SKDMs that we had sent to the address requesting resend
-                senderKeyStore.logSKDMInfo(for: SignalServiceAddress(sourceServiceId), transaction: writeTx)
+                senderKeyStore.logSKDMInfo(for: SignalServiceAddress(sourceAci), transaction: writeTx)
                 didPerformSessionReset = false
             }
 
             Logger.warn("Performing message resend of timestamp \(errorMessage.timestamp)")
             let resendResponse = OWSOutgoingResendResponse(
-                address: SignalServiceAddress(sourceServiceId),
+                aci: sourceAci,
                 deviceId: sourceDeviceId,
                 failedTimestamp: errorMessage.timestamp,
                 didResetSession: didPerformSessionReset,
@@ -911,7 +911,7 @@ extension OWSMessageManager {
 
         // Check if the SignalRecipient (used for sending messages) knows about
         // this device.
-        let recipient = DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: aci.untypedServiceId, tx: tx.asV2Write)
+        let recipient = DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
         if !recipient.deviceIds.contains(deviceId) {
             Logger.info("Message received from unknown linked device; adding to local SignalRecipient: \(deviceId).")
             recipient.modifyAndSave(deviceIdsToAdd: [deviceId], deviceIdsToRemove: [], tx: tx)

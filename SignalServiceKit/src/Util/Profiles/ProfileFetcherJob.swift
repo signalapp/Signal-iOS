@@ -316,7 +316,7 @@ public class ProfileFetcherJob: NSObject {
             udAuthFailureBlock: {
                 // Do nothing
             },
-            serviceId: serviceId.untypedServiceId,
+            serviceId: serviceId,
             udAccess: udAccess,
             authedAccount: self.options.authedAccount,
             options: [.allowIdentifiedFallback, .isProfileFetch]

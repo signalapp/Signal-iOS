@@ -667,14 +667,14 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                             }];
 }
 
-- (void)updateWithSentRecipient:(UntypedServiceIdObjC *)serviceId
+- (void)updateWithSentRecipient:(ServiceIdObjC *)serviceId
                     wasSentByUD:(BOOL)wasSentByUD
                     transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(serviceId);
     OWSAssertDebug(transaction);
 
-    SignalServiceAddress *recipientAddress = [[SignalServiceAddress alloc] initWithUntypedServiceIdObjC:serviceId];
+    SignalServiceAddress *recipientAddress = [[SignalServiceAddress alloc] initWithServiceIdObjC:serviceId];
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
                                                 TSOutgoingMessageRecipientState *_Nullable recipientState

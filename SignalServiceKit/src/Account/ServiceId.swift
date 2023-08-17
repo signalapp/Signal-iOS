@@ -278,6 +278,26 @@ extension Pni {
 }
 
 @propertyWrapper
+public struct ServiceIdString: Codable, Hashable {
+    public let wrappedValue: ServiceId
+
+    public init(wrappedValue: ServiceId) {
+        self.wrappedValue = wrappedValue
+    }
+
+    public init(from decoder: Decoder) throws {
+        self.wrappedValue = try ServiceId.parseFrom(
+            serviceIdString: try decoder.singleValueContainer().decode(String.self)
+        )
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.wrappedValue.serviceIdString)
+    }
+}
+
+@propertyWrapper
 public struct ServiceIdUppercaseString: Codable, Hashable {
     public let wrappedValue: ServiceId
 

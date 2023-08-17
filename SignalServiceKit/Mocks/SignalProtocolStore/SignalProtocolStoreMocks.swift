@@ -20,7 +20,7 @@ internal class MockSignalProtocolStore: SignalProtocolStore {
 }
 
 class MockSessionStore: SignalSessionStore {
-    func containsActiveSession(for serviceId: UntypedServiceId, deviceId: Int32, tx: DBReadTransaction) -> Bool { false }
+    func containsActiveSession(for serviceId: ServiceId, deviceId: Int32, tx: DBReadTransaction) -> Bool { false }
     func containsActiveSession(forAccountId accountId: String, deviceId: Int32, tx: DBReadTransaction) -> Bool { false }
     func archiveAllSessions(for address: SignalServiceAddress, tx: DBWriteTransaction) { }
     func archiveAllSessions(forAccountId accountId: String, tx: DBWriteTransaction) { }
