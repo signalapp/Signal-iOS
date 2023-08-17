@@ -80,7 +80,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 @implementation TSAccountManager
 
 @synthesize phoneNumberAwaitingVerification = _phoneNumberAwaitingVerification;
-@synthesize uuidAwaitingVerification = _uuidAwaitingVerification;
+@synthesize aciAwaitingVerification = _aciAwaitingVerification;
 @synthesize pniAwaitingVerification = _pniAwaitingVerification;
 
 - (instancetype)init
@@ -118,14 +118,14 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     }
 }
 
-- (nullable NSUUID *)uuidAwaitingVerification
+- (nullable AciObjC *)aciAwaitingVerification
 {
     @synchronized(self) {
-        return _uuidAwaitingVerification;
+        return _aciAwaitingVerification;
     }
 }
 
-- (nullable NSUUID *)pniAwaitingVerification
+- (nullable PniObjC *)pniAwaitingVerification
 {
     @synchronized(self) {
         return _pniAwaitingVerification;
@@ -143,14 +143,14 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
                                                            userInfo:nil];
 }
 
-- (void)setUuidAwaitingVerification:(NSUUID *_Nullable)uuidAwaitingVerification
+- (void)setAciAwaitingVerification:(AciObjC *_Nullable)aciAwaitingVerification
 {
     @synchronized(self) {
-        _uuidAwaitingVerification = uuidAwaitingVerification;
+        _aciAwaitingVerification = aciAwaitingVerification;
     }
 }
 
-- (void)setPniAwaitingVerification:(NSUUID *_Nullable)pniAwaitingVerification
+- (void)setPniAwaitingVerification:(PniObjC *_Nullable)pniAwaitingVerification
 {
     @synchronized(self) {
         _pniAwaitingVerification = pniAwaitingVerification;
@@ -228,11 +228,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 {
     OWSLogInfo(@"");
     E164ObjC *phoneNumber;
-    NSUUID *aci;
-    NSUUID *pni;
+    AciObjC *aci;
+    PniObjC *pni;
     @synchronized(self) {
         phoneNumber = self.phoneNumberAwaitingVerification;
-        aci = self.uuidAwaitingVerification;
+        aci = self.aciAwaitingVerification;
         pni = self.pniAwaitingVerification;
     }
 
@@ -249,10 +249,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     }
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self storeLocalNumber:phoneNumber
-                           aci:[[AciObjC alloc] initWithUuidValue:aci]
-                           pni:[[PniObjC alloc] initWithUuidValue:pni]
-                   transaction:transaction];
+        [self storeLocalNumber:phoneNumber aci:aci pni:pni transaction:transaction];
     });
 
     [self postRegistrationStateDidChangeNotification];
@@ -310,9 +307,9 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (nullable NSUUID *)localUuidWithAccountState:(TSAccountState *)accountState
 {
     @synchronized(self) {
-        NSUUID *awaitingVerif = self.uuidAwaitingVerification;
+        AciObjC *awaitingVerif = self.aciAwaitingVerification;
         if (awaitingVerif) {
-            return awaitingVerif;
+            return awaitingVerif.rawUUID;
         }
     }
 
@@ -332,9 +329,9 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (nullable NSUUID *)localPniWithAccountState:(TSAccountState *)accountState
 {
     @synchronized(self) {
-        NSUUID *awaitingVerif = self.pniAwaitingVerification;
+        PniObjC *awaitingVerif = self.pniAwaitingVerification;
         if (awaitingVerif) {
-            return awaitingVerif;
+            return awaitingVerif.rawUUID;
         }
     }
 
@@ -435,7 +432,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 {
     @synchronized(self) {
         self.phoneNumberAwaitingVerification = nil;
-        self.uuidAwaitingVerification = nil;
+        self.aciAwaitingVerification = nil;
         self.pniAwaitingVerification = nil;
 
         [self.keyValueStore removeAllWithTransaction:transaction];

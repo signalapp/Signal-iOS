@@ -184,9 +184,8 @@ public extension TSAccountManager {
         getOrLoadAccountStateWithSneakyTransaction().reregistrationPhoneNumber
     }
 
-    @objc
-    var reregistrationUUID: UUID? {
-        getOrLoadAccountStateWithSneakyTransaction().reregistrationUUID
+    var reregistrationAci: Aci? {
+        getOrLoadAccountStateWithSneakyTransaction().reregistrationAci
     }
 
     @objc
@@ -267,7 +266,7 @@ public extension TSAccountManager {
             loadAccountState(with: transaction)
 
             phoneNumberAwaitingVerification = nil
-            uuidAwaitingVerification = nil
+            aciAwaitingVerification = nil
             pniAwaitingVerification = nil
         }
 

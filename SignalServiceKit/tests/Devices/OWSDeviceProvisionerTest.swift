@@ -40,9 +40,9 @@ class OWSDeviceProvisionerTest: XCTestCase {
 
         let myAciIdentityKeyPair = IdentityKeyPair.generate()
         let myPniIdentityKeyPair = IdentityKeyPair.generate()
-        let myAci = UUID()
+        let myAci = Aci.randomForTesting()
         let myPhoneNumber = "+16505550100"
-        let myPni = UUID()
+        let myPni = Pni.randomForTesting()
         let profileKey = Cryptography.generateRandomBytes(UInt(ProfileKey.SIZE))
         let readReceiptsEnabled = true
 
@@ -51,9 +51,9 @@ class OWSDeviceProvisionerTest: XCTestCase {
             myPniIdentityKeyPair: myPniIdentityKeyPair,
             theirPublicKey: Data(linkedDeviceCipher.secondaryDevicePublicKey.keyData),
             theirEphemeralDeviceId: "",
-            myAci: myAci,
+            myAci: myAci.temporary_rawUUID,
             myPhoneNumber: myPhoneNumber,
-            myPni: myPni,
+            myPni: myPni.temporary_rawUUID,
             profileKey: profileKey,
             readReceiptsEnabled: readReceiptsEnabled,
             provisioningService: mockDeviceProvisioningService,

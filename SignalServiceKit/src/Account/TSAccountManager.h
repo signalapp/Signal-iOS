@@ -66,8 +66,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
 @property (nonatomic, nullable) E164ObjC *phoneNumberAwaitingVerification;
-@property (nonatomic, nullable) NSUUID *uuidAwaitingVerification;
-@property (nonatomic, nullable) NSUUID *pniAwaitingVerification;
+@property (nonatomic, nullable) AciObjC *aciAwaitingVerification;
+@property (nonatomic, nullable) PniObjC *pniAwaitingVerification;
 
 #pragma mark - Initializers
 

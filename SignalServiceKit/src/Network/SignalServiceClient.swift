@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 @objc
 public enum SignalServiceError: Int, Error {
@@ -28,13 +29,13 @@ public protocol SignalServiceClient {
     func registerPreKeys(
         for identity: OWSIdentity,
         identityKey: IdentityKey,
-        signedPreKeyRecord: SignedPreKeyRecord?,
-        preKeyRecords: [PreKeyRecord]?,
+        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
+        preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,
         pqPreKeyRecords: [KyberPreKeyRecord]?,
         auth: ChatServiceAuth
     ) -> Promise<Void>
-    func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void>
+    func setCurrentSignedPreKey(_ signedPreKey: SignalServiceKit.SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void>
     func requestUDSenderCertificate(uuidOnly: Bool) -> Promise<Data>
     func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
     func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI>
@@ -93,8 +94,8 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
     public func registerPreKeys(
         for identity: OWSIdentity,
         identityKey: IdentityKey,
-        signedPreKeyRecord: SignedPreKeyRecord?,
-        preKeyRecords: [PreKeyRecord]?,
+        signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
+        preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,
         pqPreKeyRecords: [KyberPreKeyRecord]?,
         auth: ChatServiceAuth
@@ -113,7 +114,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
         return networkManager.makePromise(request: request).asVoid()
     }
 
-    public func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
+    public func setCurrentSignedPreKey(_ signedPreKey: SignalServiceKit.SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
         Logger.debug("")
 
         let request = OWSRequestFactory.registerSignedPrekeyRequest(for: identity, signedPreKey: signedPreKey)
@@ -223,7 +224,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
             }
 
             let deviceId: UInt32 = try parser.required(key: "deviceId")
-            let pni: UUID = try parser.required(key: "pni")
+            let pni = Pni(fromUUID: try parser.required(key: "pni"))
 
             return VerifySecondaryDeviceResponse(pni: pni, deviceId: deviceId)
         }.recover { error -> Promise<VerifySecondaryDeviceResponse> in
@@ -288,6 +289,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient, Dependencie
 // MARK: -
 
 public struct VerifySecondaryDeviceResponse {
-    public let pni: UUID
+    public let pni: Pni
     public let deviceId: UInt32
 }

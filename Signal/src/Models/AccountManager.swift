@@ -58,15 +58,11 @@ public class AccountManager: NSObject, Dependencies {
         // * Secondary devices _cannot_ be re-linked to primaries with a different uuid.
         if tsAccountManager.isReregistering {
             var canChangePhoneNumbers = false
-            if let oldUUID = tsAccountManager.reregistrationUUID,
-               let newUUID = provisionMessage.aci {
-                if !tsAccountManager.isPrimaryDevice,
-                   oldUUID != newUUID {
-                    Logger.verbose("oldUUID: \(oldUUID)")
-                    Logger.verbose("newUUID: \(newUUID)")
+            if let oldAci = tsAccountManager.reregistrationAci, let newAci = provisionMessage.aci {
+                if !tsAccountManager.isPrimaryDevice, oldAci != newAci {
                     Logger.warn("Cannot re-link with a different uuid.")
                     return Promise(error: AccountManagerError.reregistrationDifferentAccount)
-                } else if oldUUID == newUUID {
+                } else if oldAci == newAci {
                     // Secondary devices _can_ re-link to primaries with different
                     // phone numbers if the uuid is present and has not changed.
                     canChangePhoneNumbers = true
@@ -78,8 +74,6 @@ public class AccountManager: NSObject, Dependencies {
             if !canChangePhoneNumbers,
                let reregistrationPhoneNumber = tsAccountManager.reregistrationPhoneNumber,
                reregistrationPhoneNumber != provisionMessage.phoneNumber {
-                Logger.verbose("reregistrationPhoneNumber: \(reregistrationPhoneNumber)")
-                Logger.verbose("provisionMessage.phoneNumber: \(provisionMessage.phoneNumber)")
                 Logger.warn("Cannot re-register with a different phone number.")
                 return Promise(error: AccountManagerError.reregistrationDifferentAccount)
             }
@@ -90,8 +84,8 @@ public class AccountManager: NSObject, Dependencies {
         }
 
         tsAccountManager.phoneNumberAwaitingVerification = E164ObjC(phoneNumber)
-        tsAccountManager.uuidAwaitingVerification = provisionMessage.aci
-        tsAccountManager.pniAwaitingVerification = provisionMessage.pni
+        tsAccountManager.aciAwaitingVerification = provisionMessage.aci.map { AciObjC($0) }
+        tsAccountManager.pniAwaitingVerification = provisionMessage.pni.map { PniObjC($0) }
 
         let serverAuthToken = generateServerAuthToken()
 
@@ -139,11 +133,11 @@ public class AccountManager: NSObject, Dependencies {
             )
         }.done { (response: VerifySecondaryDeviceResponse) in
             if let pniFromPrimary = self.tsAccountManager.pniAwaitingVerification {
-                if pniFromPrimary != response.pni {
+                if pniFromPrimary.wrappedPniValue != response.pni {
                     throw OWSAssertionError("primary PNI is out of sync with the server")
                 }
             } else {
-                self.tsAccountManager.pniAwaitingVerification = response.pni
+                self.tsAccountManager.pniAwaitingVerification = PniObjC(response.pni)
             }
 
             self.databaseStorage.write { transaction in

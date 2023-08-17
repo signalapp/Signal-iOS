@@ -33,7 +33,7 @@ class TSAccountState: NSObject {
 
     let isReregistering: Bool
     let reregistrationPhoneNumber: String?
-    let reregistrationUUID: UUID?
+    let reregistrationAci: Aci?
 
     var isRegistered: Bool { localIdentifiers != nil }
     let isDeregistered: Bool
@@ -97,9 +97,9 @@ class TSAccountState: NSObject {
         deviceId = getUInt32(TSAccountManager_DeviceIdKey) ?? 1
 
         reregistrationPhoneNumber = getString(TSAccountManager_ReregisteringPhoneNumberKey)
-        // TODO: Eventually require reregistrationUUID during re-registration.
-        reregistrationUUID = getUuid(TSAccountManager_ReregisteringUUIDKey)
-        // TODO: Support re-registration with only reregistrationUUID.
+        // TODO: Eventually require reregistrationAci during re-registration.
+        reregistrationAci = getUuid(TSAccountManager_ReregisteringUUIDKey).map { Aci(fromUUID: $0) }
+        // TODO: Support re-registration with only reregistrationAci.
         isReregistering = reregistrationPhoneNumber != nil
 
         isDeregistered = getBool(TSAccountManager_IsDeregisteredKey) ?? false

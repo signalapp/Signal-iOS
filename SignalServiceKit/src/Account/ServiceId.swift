@@ -167,6 +167,9 @@ public class ServiceIdObjC: NSObject, NSCopying {
     public var serviceIdUppercaseString: String { wrappedValue.serviceIdUppercaseString }
 
     @objc
+    public var rawUUID: UUID { wrappedValue.rawUUID }
+
+    @objc
     public override var hash: Int { wrappedValue.hashValue }
 
     @objc

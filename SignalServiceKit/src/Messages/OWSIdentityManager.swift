@@ -265,7 +265,7 @@ extension OWSIdentityManager {
     ) {
         guard
             let updatedPniString,
-            let updatedPni = UUID(uuidString: updatedPniString)
+            let updatedPni = UUID(uuidString: updatedPniString).map({ Pni(fromUUID: $0) })
         else {
             owsFailDebug("Missing or invalid updated PNI string while processing incoming PNI change-number sync message!")
             return
@@ -318,7 +318,7 @@ extension OWSIdentityManager {
         tsAccountManager.updateLocalPhoneNumber(
             E164ObjC(pniChangeData.e164),
             aci: AciObjC(localAci),
-            pni: PniObjC(Pni(fromUUID: updatedPni)),
+            pni: PniObjC(updatedPni),
             transaction: transaction
         )
 

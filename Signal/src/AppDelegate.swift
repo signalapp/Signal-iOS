@@ -464,12 +464,12 @@ extension AppDelegate {
                 if
                     let reregNumber = tsAccountManager.reregistrationPhoneNumber,
                     let reregE164 = E164(reregNumber),
-                    let reregAci = tsAccountManager.reregistrationUUID
+                    let reregAci = tsAccountManager.reregistrationAci
                 {
                     Logger.info("Found legacy re-registration; continuing in new registration")
                     // A user who started re-registration before the new
                     // registration flow shipped; kick them to new re-reg.
-                    desiredMode = .reRegistering(.init(e164: reregE164, aci: reregAci))
+                    desiredMode = .reRegistering(.init(e164: reregE164, aci: reregAci.temporary_rawUUID))
                 } else {
                     Logger.info("Found legacy initial registration; continuing in new registration")
                     desiredMode = .registering

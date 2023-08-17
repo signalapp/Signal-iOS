@@ -3,15 +3,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-
-import LibSignalClient
 import CommonCrypto
+import Curve25519Kit
+import Foundation
+import LibSignalClient
 
 public struct ProvisionMessage {
-    public let aci: UUID?
+    public let aci: Aci?
     public let phoneNumber: String
-    public let pni: UUID?
+    public let pni: Pni?
     public let aciIdentityKeyPair: ECKeyPair
     public let pniIdentityKeyPair: ECKeyPair
     public let profileKey: OWSAES256Key
@@ -124,34 +124,36 @@ public class ProvisioningCipher {
             throw ProvisioningError.invalidProvisionMessage("missing number from provisioning message")
         }
 
-        let aci: UUID? = try {
+        let aci: Aci? = try {
             guard proto.hasAci, let aciString = proto.aci else { return nil }
-            guard let aci = UUID(uuidString: aciString) else {
+            guard let aci = Aci.parseFrom(aciString: aciString) else {
                 throw ProvisioningError.invalidProvisionMessage("invalid ACI from provisioning message")
             }
             return aci
         }()
 
-        let pni: UUID? = try {
+        let pni: Pni? = try {
             guard proto.hasPni, let pniString = proto.pni else { return nil }
             if let pni = UUID(uuidString: pniString) {
-                return pni
+                return Pni(fromUUID: pni)
             } else if let serviceId = try? ServiceId.parseFrom(serviceIdString: pniString), let pni = serviceId as? Pni {
-                return pni.rawUUID
+                return pni
             } else {
                 throw ProvisioningError.invalidProvisionMessage("invalid PNI from provisioning message")
             }
         }()
 
-        return ProvisionMessage(aci: aci,
-                                phoneNumber: phoneNumber,
-                                pni: pni,
-                                aciIdentityKeyPair: ECKeyPair(aciIdentityKeyPair),
-                                pniIdentityKeyPair: ECKeyPair(pniIdentityKeyPair),
-                                profileKey: profileKey,
-                                areReadReceiptsEnabled: areReadReceiptsEnabled,
-                                primaryUserAgent: primaryUserAgent,
-                                provisioningCode: provisioningCode,
-                                provisioningVersion: provisioningVersion)
+        return ProvisionMessage(
+            aci: aci,
+            phoneNumber: phoneNumber,
+            pni: pni,
+            aciIdentityKeyPair: ECKeyPair(aciIdentityKeyPair),
+            pniIdentityKeyPair: ECKeyPair(pniIdentityKeyPair),
+            profileKey: profileKey,
+            areReadReceiptsEnabled: areReadReceiptsEnabled,
+            primaryUserAgent: primaryUserAgent,
+            provisioningCode: provisioningCode,
+            provisioningVersion: provisioningVersion
+        )
     }
 }
