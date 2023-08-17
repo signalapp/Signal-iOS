@@ -10,7 +10,6 @@ import XCTest
 @testable import SignalServiceKit
 
 final class UsernameValidationManagerTest: XCTestCase {
-    typealias UntypedServiceId = SignalServiceKit.UntypedServiceId
     typealias Username = String
 
     private var mockAccountServiceClient: MockAccountServiceClient!

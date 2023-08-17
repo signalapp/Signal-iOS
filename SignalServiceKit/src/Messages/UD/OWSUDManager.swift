@@ -723,15 +723,15 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return false
         }
 
-        guard sender.e164 == nil || sender.e164 == tsAccountManager.localNumber else {
+        let localIdentifiers = tsAccountManager.localIdentifiers
+
+        guard sender.e164 == nil || sender.e164 == localIdentifiers?.phoneNumber else {
             Logger.warn("Sender certificate has incorrect phone number")
             return false
         }
 
-        owsAssert(tsAccountManager.localUuid != nil)
-        // Note that the certificate's UUID string may not be the same form as what UUID.uuidString produces.
-        guard UUID(uuidString: sender.uuidString) == tsAccountManager.localUuid else {
-            Logger.warn("Sender certificate has incorrect UUID")
+        guard sender.senderAci == localIdentifiers!.aci else {
+            Logger.warn("Sender certificate has incorrect ACI")
             return false
         }
 

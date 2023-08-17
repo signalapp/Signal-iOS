@@ -60,12 +60,6 @@ fileprivate extension ProtocolAddress {
     }
 }
 
-fileprivate extension SignalServiceAddress {
-    convenience init(_ address: SealedSenderAddress) {
-        self.init(uuid: UUID(uuidString: address.uuidString), phoneNumber: address.e164)
-    }
-}
-
 fileprivate extension SMKMessageType {
     init(_ messageType: CiphertextMessage.MessageType) {
         switch messageType {

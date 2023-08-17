@@ -24,14 +24,14 @@
 
 @implementation TSMessageStorageTests
 
-- (UntypedServiceIdObjC *)localAci
+- (AciObjC *)localAci
 {
-    return [[UntypedServiceIdObjC alloc] initWithUuidString:@"00000000-0000-4000-8000-000000000000"];
+    return [[AciObjC alloc] initWithAciString:@"00000000-0000-4000-8000-000000000000"];
 }
 
 - (SignalServiceAddress *)localAddress
 {
-    return [[SignalServiceAddress alloc] initWithUntypedServiceIdObjC:[self localAci]];
+    return [[SignalServiceAddress alloc] initWithServiceIdObjC:[self localAci]];
 }
 
 - (AciObjC *)otherAci

@@ -695,7 +695,7 @@ extension OWSReceiptManager {
     /// might arrive after the receipts.
     @objc
     func processReadReceipts(
-        from recipientServiceId: UntypedServiceIdObjC,
+        from recipientAci: AciObjC,
         recipientDeviceId: UInt32,
         sentTimestamps: [NSNumber],
         readTimestamp: UInt64,
@@ -710,7 +710,7 @@ extension OWSReceiptManager {
                 // from us in that thread. Or maybe this state should hang on the thread?
                 for message in messages {
                     message.update(
-                        withReadRecipient: SignalServiceAddress(recipientServiceId.wrappedValue),
+                        withReadRecipient: SignalServiceAddress(recipientAci.wrappedValue),
                         recipientDeviceId: recipientDeviceId,
                         readTimestamp: readTimestamp,
                         transaction: tx

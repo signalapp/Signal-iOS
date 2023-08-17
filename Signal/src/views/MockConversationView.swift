@@ -77,7 +77,7 @@ class MockConversationView: UIView {
 
     private let thread = MockThread(
         // Use a v5 UUID that's in a separate namespace from ACIs/PNIs.
-        contactAddress: SignalServiceAddress(UntypedServiceId(uuidString: "00000000-0000-5000-8000-000000000000")!)
+        contactAddress: SignalServiceAddress(try! ServiceId.parseFrom(serviceIdString: "00000000-0000-5000-8000-000000000000"))
     )
 
     override var frame: CGRect {

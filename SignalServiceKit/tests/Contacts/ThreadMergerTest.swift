@@ -267,7 +267,7 @@ final class ThreadMergerTest: XCTestCase {
     func testThreadReplyInfoJustPhoneNumber() {
         threadStore.threads = [serviceIdThread, phoneNumberThread]
         db.write { tx in
-            threadReplyInfoStore.save(ThreadReplyInfo(timestamp: 2, author: aci.untypedServiceId), for: phoneNumberThread.uniqueId, tx: tx)
+            threadReplyInfoStore.save(ThreadReplyInfo(timestamp: 2, author: aci), for: phoneNumberThread.uniqueId, tx: tx)
         }
         performDefaultMerge()
         db.read { tx in
@@ -279,8 +279,8 @@ final class ThreadMergerTest: XCTestCase {
     func testThreadReplyInfoBoth() {
         threadStore.threads = [serviceIdThread, phoneNumberThread]
         db.write { tx in
-            threadReplyInfoStore.save(ThreadReplyInfo(timestamp: 3, author: aci.untypedServiceId), for: serviceIdThread.uniqueId, tx: tx)
-            threadReplyInfoStore.save(ThreadReplyInfo(timestamp: 4, author: aci.untypedServiceId), for: phoneNumberThread.uniqueId, tx: tx)
+            threadReplyInfoStore.save(ThreadReplyInfo(timestamp: 3, author: aci), for: serviceIdThread.uniqueId, tx: tx)
+            threadReplyInfoStore.save(ThreadReplyInfo(timestamp: 4, author: aci), for: phoneNumberThread.uniqueId, tx: tx)
         }
         performDefaultMerge()
         db.read { tx in

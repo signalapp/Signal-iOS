@@ -318,8 +318,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 }
 
                 let replyInfo: ThreadReplyInfoObjC?
-                if let quotedReply, let serviceId = quotedReply.authorAddress.untypedServiceId {
-                    replyInfo = ThreadReplyInfoObjC(ThreadReplyInfo(timestamp: quotedReply.timestamp, author: serviceId))
+                if let quotedReply, let aci = quotedReply.authorAddress.aci {
+                    replyInfo = ThreadReplyInfoObjC(ThreadReplyInfo(timestamp: quotedReply.timestamp, author: aci))
                 } else {
                     replyInfo = nil
                 }
@@ -368,7 +368,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         if quotedReply?.timestamp != persistedQuotedReply?.timestamp {
             return true
         }
-        if quotedReply?.authorAddress.untypedServiceId != persistedQuotedReply?.author {
+        if quotedReply?.authorAddress.aci != persistedQuotedReply?.author {
             return true
         }
         return false

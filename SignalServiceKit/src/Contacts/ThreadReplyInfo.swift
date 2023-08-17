@@ -4,15 +4,16 @@
 //
 
 import Foundation
+import LibSignalClient
 
 /// Describes a message that is being replied to in a draft.
 public struct ThreadReplyInfo: Codable {
     public let timestamp: UInt64
-    public let author: UntypedServiceId
+    @AciUuid public var author: Aci
 
-    public init(timestamp: UInt64, author: UntypedServiceId) {
+    public init(timestamp: UInt64, author: Aci) {
         self.timestamp = timestamp
-        self.author = author
+        self._author = author.codableUuid
     }
 }
 

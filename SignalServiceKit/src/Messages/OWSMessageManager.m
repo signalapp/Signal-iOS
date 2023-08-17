@@ -512,7 +512,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                             tx:transaction];
             break;
         case SSKProtoReceiptMessageTypeRead:
-            earlyTimestamps = [self.receiptManager processReadReceiptsFrom:decryptedEnvelope.sourceServiceIdObjC
+            earlyTimestamps = [self.receiptManager processReadReceiptsFrom:decryptedEnvelope.sourceAciObjC
                                                          recipientDeviceId:decryptedEnvelope.sourceDeviceId
                                                             sentTimestamps:sentTimestamps
                                                              readTimestamp:decryptedEnvelope.timestamp

@@ -54,10 +54,6 @@ public class LocalIdentifiers {
         return serviceId == aci || serviceId == pni
     }
 
-    public func contains(serviceId: UntypedServiceId) -> Bool {
-        return serviceId == aci.untypedServiceId || serviceId == pni?.untypedServiceId
-    }
-
     /// Checks if `phoneNumber` refers to ourself.
     public func contains(phoneNumber: E164) -> Bool {
         return contains(phoneNumber: phoneNumber.stringValue)

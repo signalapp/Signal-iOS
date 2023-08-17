@@ -430,16 +430,16 @@ extension OWSIdentityManager {
 
             let elements = self.databaseStorage.read { transaction in
                 batchAddresses.compactMap { address -> [String: String]? in
-                    guard let uuid = address.uuid else { return nil }
+                    guard let serviceId = address.serviceId else { return nil }
                     guard let identityKey = self.identityKey(for: address, transaction: transaction) else { return nil }
 
-                    let rawIdentityKey = (identityKey as NSData).prependKeyType()
-                    guard let identityKeyDigest = Cryptography.computeSHA256Digest(rawIdentityKey as Data) else {
+                    let rawIdentityKey = identityKey.prependKeyType()
+                    guard let identityKeyDigest = Cryptography.computeSHA256Digest(rawIdentityKey) else {
                         owsFailDebug("Failed to calculate SHA-256 digest for batch identity key update")
                         return nil
                     }
 
-                    return ["uuid": uuid.uuidString, "fingerprint": Data(identityKeyDigest.prefix(4)).base64EncodedString()]
+                    return ["uuid": serviceId.serviceIdString, "fingerprint": Data(identityKeyDigest.prefix(4)).base64EncodedString()]
                 }
             }
 
@@ -463,7 +463,10 @@ extension OWSIdentityManager {
 
             self.databaseStorage.write { transaction in
                 for element in responseElements {
-                    guard let uuidString = element["uuid"], let uuid = UUID(uuidString: uuidString) else {
+                    guard
+                        let serviceIdString = element["uuid"],
+                        let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString)
+                    else {
                         owsFailDebug("Invalid uuid in batch identity response")
                         continue
                     }
@@ -478,12 +481,12 @@ extension OWSIdentityManager {
                         continue
                     }
 
-                    guard let identityKey = try? (rawIdentityKey as NSData).removeKeyType() as Data else {
+                    guard let identityKey = try? rawIdentityKey.removeKeyType() else {
                         owsFailDebug("Failed to remove type byte from identity key in batch identity response")
                         continue
                     }
 
-                    let address = SignalServiceAddress(uuid: uuid)
+                    let address = SignalServiceAddress(serviceId)
                     Logger.info("Identity key changed via batch request for address \(address)")
 
                     self.saveRemoteIdentity(

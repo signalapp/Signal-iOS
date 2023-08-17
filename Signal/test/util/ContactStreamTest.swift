@@ -14,11 +14,7 @@ class ContactStreamTest: SignalBaseTest {
 
     override func setUp() {
         super.setUp()
-
-        // ensure local client has necessary "registered" state
-        let localE164Identifier = "+13235551234"
-        let localUUID = UUID(uuidString: "83DF967A-5CBD-43EB-AE9A-571A930F78D6")!
-        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
+        tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
     }
 
     // MARK: -
@@ -27,9 +23,9 @@ class ContactStreamTest: SignalBaseTest {
 
     func test_writeContactSync() throws {
         let signalAccounts = [
-            SignalAccount(address: .init(phoneNumber: "+13231111111")),
-            SignalAccount(address: .init(uuidString: "31ce1412-9a28-4e6f-b4ee-222222222222")),
-            SignalAccount(address: .init(uuidString: "1d4ab045-88fb-4c4e-9f6a-333333333333", phoneNumber: "+13213333333"))
+            SignalAccount(address: SignalServiceAddress(phoneNumber: "+13231111111")),
+            SignalAccount(address: SignalServiceAddress(aciString: "31ce1412-9a28-4e6f-b4ee-222222222222")),
+            SignalAccount(address: SignalServiceAddress(aciString: "1d4ab045-88fb-4c4e-9f6a-333333333333", phoneNumber: "+13213333333"))
         ]
 
         let streamData = try buildContactSyncData(signalAccounts: signalAccounts)

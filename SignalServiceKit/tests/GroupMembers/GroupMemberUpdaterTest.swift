@@ -172,7 +172,7 @@ class GroupMemberUpdaterTest: XCTestCase {
 
     private func makeAddress(serviceId: String?, phoneNumber: String?) -> SignalServiceAddress {
         return SignalServiceAddress(
-            uuid: serviceId.map { UUID(uuidString: $0)! },
+            serviceId: serviceId.map { try! ServiceId.parseFrom(serviceIdString: $0) },
             phoneNumber: phoneNumber,
             cache: mockSignalServiceAddressCache,
             cachePolicy: .ignoreCache
