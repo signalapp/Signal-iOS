@@ -158,14 +158,12 @@ public class ViewOnceMessages: NSObject {
         }
     }
 
-    @objc(OWSViewOnceSyncMessageProcessingResult)
-    public enum ViewOnceSyncMessageProcessingResult: Int, Error {
-        case associatedMessageMissing
+    public enum ViewOnceSyncMessageProcessingResult {
+        case associatedMessageMissing(senderAci: Aci, associatedMessageTimestamp: UInt64)
         case invalidSyncMessage
         case success
     }
 
-    @objc
     public class func processIncomingSyncMessage(
         _ message: SSKProtoSyncMessageViewOnceOpen,
         envelope: SSKProtoEnvelope,
@@ -209,7 +207,7 @@ public class ViewOnceMessages: NSObject {
             return .invalidSyncMessage
         }
         guard interactions.count > 0 else {
-            return .associatedMessageMissing
+            return .associatedMessageMissing(senderAci: messageSender, associatedMessageTimestamp: messageIdTimestamp)
         }
         if interactions.count > 1 {
             owsFailDebug("More than one message from the same sender with the same timestamp found.")

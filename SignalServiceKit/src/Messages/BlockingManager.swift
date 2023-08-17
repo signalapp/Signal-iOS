@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 public enum BlockMode: UInt {
@@ -300,8 +301,12 @@ extension BlockingManager {
 // MARK: - Syncing
 
 extension BlockingManager {
-    @objc
-    public func processIncomingSync(blockedPhoneNumbers: Set<String>, blockedAcis: Set<AciObjC>, blockedGroupIds: Set<Data>, transaction: SDSAnyWriteTransaction) {
+    public func processIncomingSync(
+        blockedPhoneNumbers: Set<String>,
+        blockedAcis: Set<Aci>,
+        blockedGroupIds: Set<Data>,
+        tx transaction: SDSAnyWriteTransaction
+    ) {
         Logger.info("")
         transaction.addAsyncCompletionOnMain {
             NotificationCenter.default.post(name: Self.blockedSyncDidComplete, object: nil)
@@ -316,7 +321,7 @@ extension BlockingManager {
                 }
             }
             blockedAcis.forEach { aci in
-                newBlockedAddresses.insert(SignalServiceAddress(aci.wrappedAciValue))
+                newBlockedAddresses.insert(SignalServiceAddress(aci))
             }
 
             // We store the list of blocked groups as GroupModels (not group ids)

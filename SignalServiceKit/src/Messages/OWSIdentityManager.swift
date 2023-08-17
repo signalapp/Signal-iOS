@@ -113,7 +113,6 @@ extension OWSIdentityManager {
 // MARK: - Verified
 
 extension OWSIdentityManager {
-    @objc
     public func processIncomingVerifiedProto(_ verified: SSKProtoVerified, transaction: SDSAnyWriteTransaction) throws {
         guard let aci = Aci.parseFrom(aciString: verified.destinationAci) else {
             return owsFailDebug("Verification state sync message missing destination.")
@@ -259,7 +258,6 @@ extension OWSIdentityManager {
         let e164: E164
     }
 
-    @objc
     public func processIncomingPniChangePhoneNumber(
         proto: SSKProtoSyncMessagePniChangeNumber,
         updatedPni updatedPniString: String?,

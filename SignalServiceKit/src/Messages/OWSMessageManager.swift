@@ -239,8 +239,269 @@ extension OWSMessageManager {
         }
     }
 
+    @objc(groupIdForDataMessage:)
+    func groupId(for dataMessage: SSKProtoDataMessage) -> Data? {
+        guard let groupContext = dataMessage.groupV2 else {
+            return nil
+        }
+        guard let masterKey = groupContext.masterKey else {
+            owsFailDebug("Missing masterKey.")
+            return nil
+        }
+        do {
+            return try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey).groupId
+        } catch {
+            owsFailDebug("Invalid group context.")
+            return nil
+        }
+    }
+
     @objc
-    func handleIncomingSyncRequest(_ request: SSKProtoSyncMessageRequest, transaction: SDSAnyWriteTransaction) {
+    func handleIncomingEnvelope(
+        _ decryptedEnvelope: DecryptedIncomingEnvelope,
+        syncMessage: SSKProtoSyncMessage,
+        plaintextData: Data,
+        wasReceivedByUD: Bool,
+        serverDeliveryTimestamp: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) {
+        guard decryptedEnvelope.sourceAci == tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
+            // Sync messages should only come from linked devices.
+            owsFailDebug("Received sync message from another user.")
+            return
+        }
+
+        let envelope = decryptedEnvelope.envelope
+        if let sent = syncMessage.sent {
+            guard SDS.fitsInInt64(sent.timestamp) else {
+                owsFailDebug("Invalid timestamp.")
+                return
+            }
+
+            if let dataMessage = sent.message {
+                let groupId = groupId(for: dataMessage)
+                if let groupId {
+                    TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: tx)
+                }
+
+                guard SDS.fitsInInt64(sent.expirationStartTimestamp) else {
+                    owsFailDebug("Invalid expirationStartTimestamp.")
+                    return
+                }
+
+                guard let transcript = OWSIncomingSentMessageTranscript(
+                    proto: sent, serverTimestamp: decryptedEnvelope.serverTimestamp, transaction: tx
+                ) else {
+                    owsFailDebug("Couldn't parse transcript.")
+                    return
+                }
+
+                if dataMessage.hasProfileKey {
+                    if let groupId {
+                        profileManager.addGroupId(
+                            toProfileWhitelist: groupId, userProfileWriter: .localUser, transaction: tx
+                        )
+                    } else {
+                        // If we observe a linked device sending our profile key to another user,
+                        // we can infer that that user belongs in our profile whitelist.
+                        let destinationAddress = SignalServiceAddress(
+                            serviceIdString: sent.destinationServiceID,
+                            phoneNumber: sent.destinationE164
+                        )
+                        if destinationAddress.isValid {
+                            profileManager.addUser(
+                                toProfileWhitelist: destinationAddress, userProfileWriter: .localUser, transaction: tx
+                            )
+                        }
+                    }
+                }
+
+                if let reaction = dataMessage.reaction {
+                    guard let thread = transcript.thread else {
+                        owsFailDebug("Could not process reaction from sync transcript.")
+                        return
+                    }
+                    let result = ReactionManager.processIncomingReaction(
+                        reaction,
+                        thread: thread,
+                        reactor: decryptedEnvelope.sourceAciObjC,
+                        timestamp: sent.timestamp,
+                        serverTimestamp: decryptedEnvelope.serverTimestamp,
+                        expiresInSeconds: dataMessage.expireTimer,
+                        sentTranscript: transcript,
+                        transaction: tx
+                    )
+                    switch result {
+                    case .success, .invalidReaction:
+                        break
+                    case .associatedMessageMissing:
+                        let messageAuthor = Aci.parseFrom(aciString: reaction.targetAuthorAci)
+                        earlyMessageManager.recordEarlyEnvelope(
+                            envelope,
+                            plainTextData: plaintextData,
+                            wasReceivedByUD: wasReceivedByUD,
+                            serverDeliveryTimestamp: serverDeliveryTimestamp,
+                            associatedMessageTimestamp: reaction.timestamp,
+                            associatedMessageAuthor: messageAuthor.map { AciObjC($0) },
+                            transaction: tx
+                        )
+                    }
+                } else if let delete = dataMessage.delete {
+                    let result = TSMessage.tryToRemotelyDeleteMessage(
+                        fromAuthor: decryptedEnvelope.sourceAciObjC,
+                        sentAtTimestamp: delete.targetSentTimestamp,
+                        threadUniqueId: transcript.thread?.uniqueId,
+                        serverTimestamp: decryptedEnvelope.serverTimestamp,
+                        transaction: tx
+                    )
+                    switch result {
+                    case .success:
+                        break
+                    case .invalidDelete:
+                        Logger.error("Failed to remotely delete message \(delete.targetSentTimestamp)")
+                    case .deletedMessageMissing:
+                        earlyMessageManager.recordEarlyEnvelope(
+                            envelope,
+                            plainTextData: plaintextData,
+                            wasReceivedByUD: wasReceivedByUD,
+                            serverDeliveryTimestamp: serverDeliveryTimestamp,
+                            associatedMessageTimestamp: delete.targetSentTimestamp,
+                            associatedMessageAuthor: decryptedEnvelope.sourceAciObjC,
+                            transaction: tx
+                        )
+                    }
+                } else if let groupCallUpdate = dataMessage.groupCallUpdate {
+                    if let groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) {
+                        let pendingTask = OWSMessageManager.buildPendingTask(label: "GroupCallUpdate")
+                        callMessageHandler?.receivedGroupCallUpdateMessage(
+                            groupCallUpdate,
+                            for: groupThread,
+                            serverReceivedTimestamp: decryptedEnvelope.timestamp,
+                            completion: { pendingTask.complete() }
+                        )
+                    } else {
+                        Logger.warn("Received GroupCallUpdate for unknown groupId")
+                    }
+                } else {
+                    OWSRecordTranscriptJob.processIncomingSentMessageTranscript(transcript, transaction: tx)
+                }
+            } else if sent.isStoryTranscript {
+                do {
+                    try StoryManager.processStoryMessageTranscript(sent, transaction: tx)
+                } catch {
+                    owsFailDebug("Failed to process story message transcript \(error)")
+                }
+            } else if let editMessage = sent.editMessage {
+                let result = handleIncomingEnvelope(
+                    decryptedEnvelope, sentMessage: sent, editMessage: editMessage, transaction: tx
+                )
+                switch result {
+                case .success, .invalidEdit:
+                    break
+                case .editedMessageMissing:
+                    earlyMessageManager.recordEarlyEnvelope(
+                        envelope,
+                        plainTextData: plaintextData,
+                        wasReceivedByUD: wasReceivedByUD,
+                        serverDeliveryTimestamp: serverDeliveryTimestamp,
+                        associatedMessageTimestamp: editMessage.targetSentTimestamp,
+                        associatedMessageAuthor: decryptedEnvelope.sourceAciObjC,
+                        transaction: tx
+                    )
+                }
+            }
+        } else if let request = syncMessage.request {
+            handleIncomingSyncRequest(request, tx: tx)
+        } else if let blocked = syncMessage.blocked {
+            Logger.info("Received blocked sync message.")
+            handleSyncedBlocklist(blocked, tx: tx)
+        } else if !syncMessage.read.isEmpty {
+            Logger.info("Received \(syncMessage.read.count) read receipt(s) in sync message")
+            let earlyReceipts = receiptManager.processReadReceiptsFromLinkedDevice(
+                syncMessage.read, readTimestamp: decryptedEnvelope.timestamp, tx: tx
+            )
+            for readReceiptProto in earlyReceipts {
+                let messageAuthor = Aci.parseFrom(aciString: readReceiptProto.senderAci)
+                earlyMessageManager.recordEarlyReadReceiptFromLinkedDevice(
+                    timestamp: decryptedEnvelope.timestamp,
+                    associatedMessageTimestamp: readReceiptProto.timestamp,
+                    associatedMessageAuthor: messageAuthor.map { AciObjC($0) },
+                    transaction: tx
+                )
+            }
+        } else if !syncMessage.viewed.isEmpty {
+            Logger.info("Received \(syncMessage.viewed.count) viewed receipt(s) in sync message")
+            let earlyReceipts = receiptManager.processViewedReceiptsFromLinkedDevice(
+                syncMessage.viewed, viewedTimestamp: decryptedEnvelope.timestamp, tx: tx
+            )
+            for viewedReceiptProto in earlyReceipts {
+                let messageAuthor = Aci.parseFrom(aciString: viewedReceiptProto.senderAci)
+                earlyMessageManager.recordEarlyViewedReceiptFromLinkedDevice(
+                    timestamp: decryptedEnvelope.timestamp,
+                    associatedMessageTimestamp: viewedReceiptProto.timestamp,
+                    associatedMessageAuthor: messageAuthor.map { AciObjC($0) },
+                    transaction: tx
+                )
+            }
+        } else if let verified = syncMessage.verified {
+            do {
+                try identityManager.processIncomingVerifiedProto(verified, transaction: tx)
+                identityManager.fireIdentityStateChangeNotification(after: tx)
+            } catch {
+                Logger.warn("Couldn't process verification state \(error)")
+            }
+        } else if !syncMessage.stickerPackOperation.isEmpty {
+            Logger.info("Received sticker pack operation(s): \(syncMessage.stickerPackOperation.count)")
+            for packOperationProto in syncMessage.stickerPackOperation {
+                StickerManager.processIncomingStickerPackOperation(packOperationProto, transaction: tx)
+            }
+        } else if let viewOnceOpen = syncMessage.viewOnceOpen {
+            Logger.info("Received view-once read receipt sync message")
+            let result = ViewOnceMessages.processIncomingSyncMessage(viewOnceOpen, envelope: envelope, transaction: tx)
+            switch result {
+            case .success, .invalidSyncMessage:
+                break
+            case .associatedMessageMissing(let senderAci, let associatedMessageTimestamp):
+                earlyMessageManager.recordEarlyEnvelope(
+                    envelope,
+                    plainTextData: plaintextData,
+                    wasReceivedByUD: wasReceivedByUD,
+                    serverDeliveryTimestamp: serverDeliveryTimestamp,
+                    associatedMessageTimestamp: associatedMessageTimestamp,
+                    associatedMessageAuthor: AciObjC(senderAci),
+                    transaction: tx
+                )
+            }
+        } else if let configuration = syncMessage.configuration {
+            syncManager.processIncomingConfigurationSyncMessage(configuration, transaction: tx)
+        } else if let contacts = syncMessage.contacts {
+            syncManager.processIncomingContactsSyncMessage(contacts, transaction: tx)
+        } else if let fetchLatest = syncMessage.fetchLatest {
+            syncManager.processIncomingFetchLatestSyncMessage(fetchLatest, transaction: tx)
+        } else if let keys = syncMessage.keys {
+            syncManager.processIncomingKeysSyncMessage(keys, transaction: tx)
+        } else if let messageRequestResponse = syncMessage.messageRequestResponse {
+            syncManager.processIncomingMessageRequestResponseSyncMessage(messageRequestResponse, transaction: tx)
+        } else if let outgoingPayment = syncMessage.outgoingPayment {
+            // An "incoming" sync message notifies us of an "outgoing" payment.
+            paymentsHelper.processIncomingPaymentSyncMessage(
+                outgoingPayment, messageTimestamp: serverDeliveryTimestamp, transaction: tx
+            )
+        } else if let callEvent = syncMessage.callEvent {
+            Logger.info("Received call event sync message.")
+            CallRecord.createOrUpdateForSyncMessage(
+                callEvent, messageTimestamp: decryptedEnvelope.timestamp, transaction: tx
+            )
+        } else if let pniChangeNumber = syncMessage.pniChangeNumber {
+            identityManager.processIncomingPniChangePhoneNumber(
+                proto: pniChangeNumber, updatedPni: envelope.updatedPni, transaction: tx
+            )
+        } else {
+            Logger.warn("Ignoring unsupported sync message.")
+        }
+    }
+
+    private func handleIncomingSyncRequest(_ request: SSKProtoSyncMessageRequest, tx: SDSAnyWriteTransaction) {
         guard tsAccountManager.isRegisteredPrimaryDevice else {
             // Don't respond to sync requests from a linked device.
             return
@@ -270,7 +531,7 @@ extension OWSMessageManager {
         case .configuration:
             // We send _two_ responses to the "configuration request".
             syncManager.sendConfigurationSyncMessage()
-            StickerManager.syncAllInstalledPacks(transaction: transaction)
+            StickerManager.syncAllInstalledPacks(transaction: tx)
 
         case .keys:
             syncManager.sendKeysSyncMessage()
@@ -278,6 +539,23 @@ extension OWSMessageManager {
         case .unknown, .none:
             owsFailDebug("Ignoring sync request with unexpected type")
         }
+    }
+
+    private func handleSyncedBlocklist(_ blocked: SSKProtoSyncMessageBlocked, tx: SDSAnyWriteTransaction) {
+        var blockedAcis = Set<Aci>()
+        for aciString in blocked.acis {
+            guard let aci = Aci.parseFrom(aciString: aciString) else {
+                owsFailDebug("Blocked ACI was nil.")
+                continue
+            }
+            blockedAcis.insert(aci)
+        }
+        blockingManager.processIncomingSync(
+            blockedPhoneNumbers: Set(blocked.numbers),
+            blockedAcis: blockedAcis,
+            blockedGroupIds: Set(blocked.groupIds),
+            tx: tx
+        )
     }
 
     private func handleIncomingEnvelope(
@@ -398,16 +676,12 @@ extension OWSMessageManager {
         case success
     }
 
-    @objc
-    func handleIncomingEnvelope(
+    private func handleIncomingEnvelope(
         _ decryptedEnvelope: DecryptedIncomingEnvelope,
-        editSyncMessage: SSKProtoSyncMessage,
+        sentMessage: SSKProtoSyncMessageSent,
+        editMessage: SSKProtoEditMessage,
         transaction tx: SDSAnyWriteTransaction
     ) -> EditProcessingResult {
-
-        guard let sentMessage = editSyncMessage.sent else {
-            return .invalidEdit
-        }
 
         guard let transcript = OWSIncomingSentMessageTranscript(
             proto: sentMessage,
@@ -420,11 +694,6 @@ extension OWSMessageManager {
 
         guard let thread = transcript.thread else {
             Logger.warn("Missing edit message thread.")
-            return .invalidEdit
-        }
-
-        guard let editMessage = editSyncMessage.sent?.editMessage else {
-            Logger.warn("Missing edit message.")
             return .invalidEdit
         }
 

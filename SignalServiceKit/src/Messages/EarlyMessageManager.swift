@@ -263,7 +263,6 @@ public class EarlyMessageManager: NSObject {
         )
     }
 
-    @objc
     public func recordEarlyReadReceiptFromLinkedDevice(
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
@@ -288,7 +287,6 @@ public class EarlyMessageManager: NSObject {
         )
     }
 
-    @objc
     public func recordEarlyViewedReceiptFromLinkedDevice(
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,

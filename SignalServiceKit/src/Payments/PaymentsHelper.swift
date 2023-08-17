@@ -31,7 +31,6 @@ public protocol PaymentsHelper: AnyObject {
     func setLastKnownLocalPaymentAddressProtoData(_ data: Data?, transaction: SDSAnyWriteTransaction)
     func lastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) -> Data?
 
-    @objc(processIncomingPaymentSyncMessage:messageTimestamp:transaction:)
     func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
                                            messageTimestamp: UInt64,
                                            transaction: SDSAnyWriteTransaction)

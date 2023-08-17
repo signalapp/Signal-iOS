@@ -1209,13 +1209,8 @@ public class StickerManager: NSObject {
                                   transaction: transaction)
     }
 
-    @objc
     public class func processIncomingStickerPackOperation(_ proto: SSKProtoSyncMessageStickerPackOperation,
                                                           transaction: SDSAnyWriteTransaction) {
-        guard tsAccountManager.isRegisteredAndReady else {
-            return
-        }
-
         let packID: Data = proto.packID
         let packKey: Data = proto.packKey
         guard let stickerPackInfo = StickerPackInfo.parse(packId: packID, packKey: packKey) else {

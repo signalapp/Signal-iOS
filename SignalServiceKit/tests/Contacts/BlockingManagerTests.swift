@@ -160,9 +160,9 @@ class BlockingManagerTests: SSKBaseTestSwift {
         databaseStorage.write { writeTx in
             blockingManager.processIncomingSync(
                 blockedPhoneNumbers: blockedE164s,
-                blockedAcis: Set(blockedAcis.map { AciObjC($0) }),
+                blockedAcis: Set(blockedAcis),
                 blockedGroupIds: blockedGroupIds,
-                transaction: writeTx)
+                tx: writeTx)
         }
 
         // Verify

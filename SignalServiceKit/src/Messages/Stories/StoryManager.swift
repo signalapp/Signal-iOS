@@ -121,7 +121,6 @@ public class StoryManager: NSObject {
         earlyMessageManager.applyPendingMessages(for: message, transaction: transaction)
     }
 
-    @objc
     public class func processStoryMessageTranscript(
         _ proto: SSKProtoSyncMessageSent,
         transaction: SDSAnyWriteTransaction

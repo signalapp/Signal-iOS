@@ -40,7 +40,6 @@ struct ReceiptForLinkedDevice: Codable {
 
 // MARK: -
 
-@objc
 public extension OWSReceiptManager {
 
     private var toLinkedDevicesReadReceiptMapStore: SDSKeyValueStore {
@@ -51,6 +50,7 @@ public extension OWSReceiptManager {
         return SDSKeyValueStore(collection: "OWSReceiptManager.toLinkedDevicesViewedReceiptMapStore")
     }
 
+    @objc
     func processReceiptsForLinkedDevices(completion: @escaping () -> Void) {
         let didWork = databaseStorage.write { transaction -> Bool in
             let readReceiptsForLinkedDevices: [ReceiptForLinkedDevice]
@@ -113,6 +113,7 @@ public extension OWSReceiptManager {
         }
     }
 
+    @objc
     func enqueueLinkedDeviceReadReceipt(forMessage message: TSIncomingMessage,
                                         transaction: SDSAnyWriteTransaction) {
         let threadUniqueId = message.uniqueThreadId
@@ -142,6 +143,7 @@ public extension OWSReceiptManager {
         }
     }
 
+    @objc
     func enqueueLinkedDeviceViewedReceipt(forIncomingMessage message: TSIncomingMessage,
                                           transaction: SDSAnyWriteTransaction) {
 
@@ -153,6 +155,7 @@ public extension OWSReceiptManager {
         )
     }
 
+    @objc
     func enqueueLinkedDeviceViewedReceipt(forOutgoingMessage message: TSOutgoingMessage,
                                           transaction: SDSAnyWriteTransaction) {
 
@@ -169,6 +172,7 @@ public extension OWSReceiptManager {
         )
     }
 
+    @objc
     func enqueueLinkedDeviceReadReceipt(
         forStoryMessage message: StoryMessage,
         transaction: SDSAnyWriteTransaction
@@ -199,6 +203,7 @@ public extension OWSReceiptManager {
         }
     }
 
+    @objc
     func enqueueLinkedDeviceViewedReceipt(
         forStoryMessage message: StoryMessage,
         transaction: SDSAnyWriteTransaction
@@ -216,6 +221,7 @@ public extension OWSReceiptManager {
         )
     }
 
+    @objc
     func enqueueSenderViewedReceipt(
         forStoryMessage message: StoryMessage,
         transaction: SDSAnyWriteTransaction
@@ -266,7 +272,6 @@ public extension OWSReceiptManager {
         }
     }
 
-    @nonobjc
     private func processReceiptsFromLinkedDevice<T>(
         _ receiptProtos: [T],
         senderAci: KeyPath<T, String?>,

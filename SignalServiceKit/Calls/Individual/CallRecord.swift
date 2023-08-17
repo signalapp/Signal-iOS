@@ -247,7 +247,6 @@ public final class CallRecord: NSObject, SDSCodableModel, Decodable {
         Self.sendSyncMessage(forInteraction: interaction, record: callRecord, transaction: transaction)
     }
 
-    @objc
     public static func createOrUpdateForSyncMessage(
         _ callEvent: SSKProtoSyncMessageCallEvent,
         messageTimestamp: UInt64,
