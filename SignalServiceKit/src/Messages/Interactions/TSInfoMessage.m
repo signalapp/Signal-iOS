@@ -22,7 +22,7 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceAddress
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyUpdaterKnownToBeLocalUser
     = @"InfoMessageUserInfoKeyUpdaterWasLocalUser";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyProfileChanges = @"InfoMessageUserInfoKeyProfileChanges";
-const InfoMessageUserInfoKey InfoMessageUserInfoKeyChangePhoneNumberUuid
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyChangePhoneNumberAciString
     = @"InfoMessageUserInfoKeyChangePhoneNumberUuid";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyChangePhoneNumberOld = @"InfoMessageUserInfoKeyChangePhoneNumberOld";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyChangePhoneNumberNew = @"InfoMessageUserInfoKeyChangePhoneNumberNew";
@@ -287,17 +287,17 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageProfileUpdate:
             return [self profileChangeDescriptionWithTransaction:transaction];
         case TSInfoMessagePhoneNumberChange: {
-            NSString *_Nullable uuidString = self.infoMessageUserInfo[InfoMessageUserInfoKeyChangePhoneNumberUuid];
-            if (uuidString == nil) {
+            NSString *_Nullable aciString = self.infoMessageUserInfo[InfoMessageUserInfoKeyChangePhoneNumberAciString];
+            if (aciString == nil) {
                 OWSFailDebug(@"Invalid info message");
                 return @"";
             }
-            NSUUID *_Nullable uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
-            if (uuid == nil) {
+            AciObjC *aci = [[AciObjC alloc] initWithAciString:aciString];
+            if (aci == nil) {
                 OWSFailDebug(@"Invalid info message");
                 return @"";
             }
-            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuid:uuid];
+            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithServiceIdObjC:aci];
             NSString *userName = [self.contactsManager displayNameForAddress:address transaction:transaction];
 
             NSString *format = OWSLocalizedString(@"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT",

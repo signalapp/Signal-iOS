@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalMessaging
 import SignalServiceKit
 import SignalUI
@@ -668,10 +669,16 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                 return // never collapse
             case .phoneNumberChange:
                 // Only collapse if the previous message was a change number for the same user
-                guard case .phoneNumberChange = previousInfoMessage.messageType,
-                let previousMessageUuid = previousInfoMessage.infoMessageUserInfo?[.changePhoneNumberUuid] as? String,
-                let currentMessageUuid = infoMessage.infoMessageUserInfo?[.changePhoneNumberUuid] as? String else { return }
-                previousItem.itemViewState.shouldCollapseSystemMessageAction = previousMessageUuid != currentMessageUuid
+                guard
+                    case .phoneNumberChange = previousInfoMessage.messageType,
+                    let previousAciString = previousInfoMessage.infoMessageUserInfo?[.changePhoneNumberAciString] as? String,
+                    let previousAci = Aci.parseFrom(aciString: previousAciString),
+                    let currentAciString = infoMessage.infoMessageUserInfo?[.changePhoneNumberAciString] as? String,
+                    let currentAci = Aci.parseFrom(aciString: currentAciString)
+                else {
+                    return
+                }
+                previousItem.itemViewState.shouldCollapseSystemMessageAction = previousAci != currentAci
             default:
                 // always collapse matching types
                 previousItem.itemViewState.shouldCollapseSystemMessageAction

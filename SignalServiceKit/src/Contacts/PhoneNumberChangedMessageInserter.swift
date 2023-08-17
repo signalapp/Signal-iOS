@@ -47,7 +47,7 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
                 return
             }
             let infoMessage = TSInfoMessage(thread: thread, messageType: .phoneNumberChange, infoMessageUserInfo: [
-                .changePhoneNumberUuid: mergedRecipient.aci.serviceIdUppercaseString,
+                .changePhoneNumberAciString: mergedRecipient.aci.serviceIdUppercaseString,
                 .changePhoneNumberOld: oldPhoneNumber,
                 .changePhoneNumberNew: mergedRecipient.newPhoneNumber.stringValue
             ])

@@ -1299,8 +1299,8 @@ extension CVComponentSystemMessage {
         case .phoneNumberChange:
             guard
                 let userInfo = infoMessage.infoMessageUserInfo,
-                let uuidString = userInfo[.changePhoneNumberUuid] as? String,
-                let uuid = UUID(uuidString: uuidString),
+                let aciString = userInfo[.changePhoneNumberAciString] as? String,
+                let aci = Aci.parseFrom(aciString: aciString),
                 let phoneNumberOld = userInfo[.changePhoneNumberOld] as? String,
                 let phoneNumberNew = userInfo[.changePhoneNumberNew] as? String
             else {
@@ -1323,11 +1323,11 @@ extension CVComponentSystemMessage {
                 return nil
             }
 
-            return Action(title: OWSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
-                          accessibilityIdentifier: "update_contact",
-                          action: .didTapPhoneNumberChange(uuid: uuid,
-                                                           phoneNumberOld: phoneNumberOld,
-                                                           phoneNumberNew: phoneNumberNew))
+            return Action(
+                title: OWSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
+                accessibilityIdentifier: "update_contact",
+                action: .didTapPhoneNumberChange(aci: aci, phoneNumberOld: phoneNumberOld, phoneNumberNew: phoneNumberNew)
+            )
         }
     }
 

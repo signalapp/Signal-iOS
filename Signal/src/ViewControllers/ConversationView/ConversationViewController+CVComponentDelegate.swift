@@ -816,7 +816,7 @@ extension ConversationViewController: CVComponentDelegate {
         )
     }
 
-    public func didTapPhoneNumberChange(uuid: UUID, phoneNumberOld: String, phoneNumberNew: String) {
+    public func didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String) {
         guard let navigationController else {
             return owsFailDebug("Missing navigationController.")
         }
@@ -830,7 +830,7 @@ extension ConversationViewController: CVComponentDelegate {
                     return nil
                 }
 
-                let address = SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumberNew)
+                let address = SignalServiceAddress(serviceId: aci, phoneNumber: phoneNumberNew)
                 let result = self.contactsViewHelper.contactViewController(
                     for: address,
                     editImmediately: true,

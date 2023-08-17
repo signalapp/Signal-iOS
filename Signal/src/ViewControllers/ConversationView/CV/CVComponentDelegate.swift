@@ -193,9 +193,7 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     func didTapUpdateSystemContact(_ address: SignalServiceAddress,
                                    newNameComponents: PersonNameComponents)
-    func didTapPhoneNumberChange(uuid: UUID,
-                                 phoneNumberOld: String,
-                                 phoneNumberNew: String)
+    func didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String)
 
     func didTapViewOnceAttachment(_ interaction: TSInteraction)
 
@@ -232,7 +230,7 @@ struct CVMessageAction: Equatable {
         case didTapBlockRequest(groupModel: TSGroupModelV2, requesterName: String, requesterAci: Aci)
         case didTapShowUpgradeAppUI
         case didTapUpdateSystemContact(address: SignalServiceAddress, newNameComponents: PersonNameComponents)
-        case didTapPhoneNumberChange(uuid: UUID, phoneNumberOld: String, phoneNumberNew: String)
+        case didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String)
         case didTapIndividualCall(call: TSCall)
         case didTapGroupCall
         case didTapSendMessage(contactShare: ContactShareViewModel)
@@ -272,8 +270,8 @@ struct CVMessageAction: Equatable {
                 delegate.didTapShowUpgradeAppUI()
             case .didTapUpdateSystemContact(let address, let newNameComponents):
                 delegate.didTapUpdateSystemContact(address, newNameComponents: newNameComponents)
-            case .didTapPhoneNumberChange(let uuid, let phoneNumberOld, let phoneNumberNew):
-                delegate.didTapPhoneNumberChange(uuid: uuid, phoneNumberOld: phoneNumberOld, phoneNumberNew: phoneNumberNew)
+            case .didTapPhoneNumberChange(let aci, let phoneNumberOld, let phoneNumberNew):
+                delegate.didTapPhoneNumberChange(aci: aci, phoneNumberOld: phoneNumberOld, phoneNumberNew: phoneNumberNew)
             case .didTapIndividualCall(let call):
                 delegate.didTapIndividualCall(call)
             case .didTapGroupCall:

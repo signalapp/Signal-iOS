@@ -1209,7 +1209,7 @@ extension MessageDetailViewController: CVComponentDelegate {
                                    newNameComponents: PersonNameComponents) {}
 
     // TODO:
-    func didTapPhoneNumberChange(uuid: UUID, phoneNumberOld: String, phoneNumberNew: String) {}
+    func didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String) {}
 
     func didTapViewOnceAttachment(_ interaction: TSInteraction) {
         guard let renderItem = renderItem else {

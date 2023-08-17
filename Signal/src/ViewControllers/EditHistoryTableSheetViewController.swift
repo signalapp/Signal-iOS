@@ -422,10 +422,7 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
         _ address: SignalServiceAddress,
         newNameComponents: PersonNameComponents) {}
 
-    func didTapPhoneNumberChange(
-        uuid: UUID,
-        phoneNumberOld: String,
-        phoneNumberNew: String) {}
+    func didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String) {}
 
     func didTapViewOnceAttachment(_ interaction: TSInteraction) {}
 
