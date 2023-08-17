@@ -348,9 +348,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Send delivery receipts for "valid data" messages received via UD.
     if (wasReceivedByUD) {
-        [self.outgoingReceiptManager enqueueDeliveryReceiptForEnvelope:envelope
-                                                       messageUniqueId:message.uniqueId
-                                                           transaction:transaction];
+        [self.outgoingReceiptManager enqueueDeliveryReceiptFor:decryptedEnvelope
+                                               messageUniqueId:message.uniqueId
+                                                            tx:transaction];
     }
 }
 

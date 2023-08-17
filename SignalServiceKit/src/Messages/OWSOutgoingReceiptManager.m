@@ -15,10 +15,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^ReceiptProcessCompletion)(void);
-
-NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType);
-
 NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
 {
     switch (receiptType) {
@@ -110,7 +106,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
 }
 
 // Schedules a processing pass, unless one is already scheduled.
-- (void)processWithCompletion:(nullable ReceiptProcessCompletion)completion
+- (void)processWithCompletion:(void (^_Nullable)(void))completion
 {
     if (!AppReadiness.isAppReady && !CurrentAppContext().isRunningTests) {
         OWSFailDebug(@"Outgoing receipts require app is ready");
@@ -204,7 +200,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
                 // If an address is excluded, we don't bother sending a receipt.
                 // We remove it from our fetched list, and dequeue it from our pending receipt set
                 MessageReceiptSet *receiptSet = receiptSetsToSend[address];
-                [self dequeueReceiptsForAddress:address receiptSet:receiptSet receiptType:receiptType];
+                [self dequeueReceiptsFor:address receiptSet:receiptSet receiptType:receiptType];
                 [receiptSetsToSend removeObjectForKey:address];
             }
             queuedReceiptMap = [receiptSetsToSend copy];
@@ -269,13 +265,13 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
 
                         // DURABLE CLEANUP - we could replace the custom durability logic in this class
                         // with a durable JobQueue.
-                        [self dequeueReceiptsForAddress:address receiptSet:receiptSet receiptType:receiptType];
+                        [self dequeueReceiptsFor:address receiptSet:receiptSet receiptType:receiptType];
                     })
                     .catchInBackground(^(NSError *error) {
                         OWSLogError(@"Failed to send %@ receipts to sender with error: %@", receiptName, error);
 
                         if ([MessageSenderNoSuchSignalRecipientError isNoSuchSignalRecipientError:error]) {
-                            [self dequeueReceiptsForAddress:address receiptSet:receiptSet receiptType:receiptType];
+                            [self dequeueReceiptsFor:address receiptSet:receiptSet receiptType:receiptType];
                         }
                     });
         });
@@ -284,79 +280,6 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
     }
 
     return [sendPromises copy];
-}
-
-- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope
-                          messageUniqueId:(nullable NSString *)messageUniqueId
-                              transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self enqueueReceiptForAddress:envelope.sourceAddress
-                         timestamp:envelope.timestamp
-                   messageUniqueId:messageUniqueId
-                       receiptType:OWSReceiptType_Delivery
-                       transaction:transaction];
-}
-
-- (void)enqueueReadReceiptForAddress:(SignalServiceAddress *)address
-                           timestamp:(uint64_t)timestamp
-                     messageUniqueId:(nullable NSString *)messageUniqueId
-                         transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self enqueueReceiptForAddress:address
-                         timestamp:timestamp
-                   messageUniqueId:messageUniqueId
-                       receiptType:OWSReceiptType_Read
-                       transaction:transaction];
-}
-
-- (void)enqueueViewedReceiptForAddress:(SignalServiceAddress *)address
-                             timestamp:(uint64_t)timestamp
-                       messageUniqueId:(nullable NSString *)messageUniqueId
-                           transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self enqueueReceiptForAddress:address
-                         timestamp:timestamp
-                   messageUniqueId:messageUniqueId
-                       receiptType:OWSReceiptType_Viewed
-                       transaction:transaction];
-}
-
-- (void)enqueueReceiptForAddress:(SignalServiceAddress *)address
-                       timestamp:(uint64_t)timestamp
-                 messageUniqueId:(nullable NSString *)messageUniqueId
-                     receiptType:(OWSReceiptType)receiptType
-                     transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(address.isValid);
-    if (timestamp < 1) {
-        OWSFailDebug(@"Invalid timestamp.");
-        return;
-    }
-
-    NSString *label = [NSString stringWithFormat:@"Receipt Send: %@", NSStringForOWSReceiptType(receiptType)];
-    PendingTask *pendingTask = [self.pendingTasks buildPendingTaskWithLabel:label];
-
-    MessageReceiptSet *persistedSet = [self fetchAndMergeReceiptSetWithType:receiptType
-                                                                    address:address
-                                                                transaction:transaction];
-    [persistedSet insertWithTimestamp:timestamp messageUniqueId:messageUniqueId];
-    [self storeReceiptSet:persistedSet type:receiptType address:address transaction:transaction];
-    [transaction addAsyncCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-                                       block:^{ [self processWithCompletion:^{ [pendingTask complete]; }]; }];
-}
-
-- (void)dequeueReceiptsForAddress:(SignalServiceAddress *)address
-                       receiptSet:(MessageReceiptSet *)dequeueSet
-                      receiptType:(OWSReceiptType)receiptType
-{
-    OWSAssertDebug(address.isValid);
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        MessageReceiptSet *persistedSet = [self fetchAndMergeReceiptSetWithType:receiptType
-                                                                        address:address
-                                                                    transaction:transaction];
-        [persistedSet subtract:dequeueSet];
-        [self storeReceiptSet:persistedSet type:receiptType address:address transaction:transaction];
-    });
 }
 
 - (SDSKeyValueStore *)storeForReceiptType:(OWSReceiptType)receiptType

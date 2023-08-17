@@ -158,7 +158,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
                 messageTimestamp: Int64(message.timestamp),
                 messageUniqueId: message.uniqueId,
                 authorPhoneNumber: nil,
-                authorUuid: contactAci.serviceIdUppercaseString
+                authorAci: contactAci
             )
             try pendingReadReceipt.insert(transaction.unwrapGrdbWrite.database)
         }

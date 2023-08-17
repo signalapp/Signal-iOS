@@ -19,6 +19,8 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
     OWSReceiptType_Viewed,
 };
 
+NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType);
+
 @interface OWSOutgoingReceiptManager : NSObject
 
 + (SDSKeyValueStore *)deliveryReceiptStore;
@@ -26,22 +28,10 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
+- (void)processWithCompletion:(void (^_Nullable)(void))completion;
+
 // TODO: Make this private.
 @property (nonatomic, readonly) PendingTasks *pendingTasks;
-
-- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope
-                          messageUniqueId:(nullable NSString *)messageUniqueId
-                              transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (void)enqueueReadReceiptForAddress:(SignalServiceAddress *)messageAuthorAddress
-                           timestamp:(uint64_t)timestamp
-                     messageUniqueId:(nullable NSString *)messageUniqueId
-                         transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (void)enqueueViewedReceiptForAddress:(SignalServiceAddress *)messageAuthorAddress
-                             timestamp:(uint64_t)timestamp
-                       messageUniqueId:(nullable NSString *)messageUniqueId
-                           transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

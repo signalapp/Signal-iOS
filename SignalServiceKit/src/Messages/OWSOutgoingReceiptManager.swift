@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 @objc
@@ -40,18 +41,93 @@ class MessageReceiptSet: NSObject, Codable {
 
 extension OWSOutgoingReceiptManager {
     @objc
-    func fetchAllReceiptSets(type: OWSReceiptType, transaction tx: SDSAnyReadTransaction) -> [SignalServiceAddress: MessageReceiptSet] {
-        return Dictionary(
-            uniqueKeysWithValues: (
-                Set(store(for: type).allKeys(transaction: tx).compactMap { SignalServiceAddress(identifier: $0) })
-                    .map { ($0, fetchReceiptSet(type: type, preferredKey: $0.uuidString, secondaryKey: $0.phoneNumber, tx: tx).receiptSet) }
-            )
+    func enqueueDeliveryReceipt(
+        for decryptedEnvelope: DecryptedIncomingEnvelope,
+        messageUniqueId: String?,
+        tx: SDSAnyWriteTransaction
+    ) {
+        enqueueReceipt(
+            for: SignalServiceAddress(decryptedEnvelope.sourceAci),
+            timestamp: decryptedEnvelope.timestamp,
+            messageUniqueId: messageUniqueId,
+            receiptType: .delivery,
+            tx: tx
         )
     }
 
     @objc
+    public func enqueueReadReceipt(
+        for address: SignalServiceAddress,
+        timestamp: UInt64,
+        messageUniqueId: String?,
+        tx: SDSAnyWriteTransaction
+    ) {
+        enqueueReceipt(
+            for: address,
+            timestamp: timestamp,
+            messageUniqueId: messageUniqueId,
+            receiptType: .read,
+            tx: tx
+        )
+    }
+
+    @objc
+    public func enqueueViewedReceipt(
+        for address: SignalServiceAddress,
+        timestamp: UInt64,
+        messageUniqueId: String?,
+        tx: SDSAnyWriteTransaction
+    ) {
+        enqueueReceipt(
+            for: address,
+            timestamp: timestamp,
+            messageUniqueId: messageUniqueId,
+            receiptType: .viewed,
+            tx: tx
+        )
+    }
+
+    private func enqueueReceipt(
+        for address: SignalServiceAddress,
+        timestamp: UInt64,
+        messageUniqueId: String?,
+        receiptType: OWSReceiptType,
+        tx: SDSAnyWriteTransaction
+    ) {
+        owsAssertDebug(address.isValid)
+        guard timestamp >= 1 else {
+            owsFailDebug("Invalid timestamp.")
+            return
+        }
+        let pendingTask = pendingTasks.buildPendingTask(label: "Receipt Send: \(NSStringForOWSReceiptType(receiptType))")
+        let persistedSet = fetchAndMergeReceiptSet(type: receiptType, address: address, transaction: tx)
+        persistedSet.insert(timestamp: timestamp, messageUniqueId: messageUniqueId)
+        storeReceiptSet(persistedSet, type: receiptType, address: address, transaction: tx)
+        tx.addAsyncCompletionOffMain { self.process(completion: { pendingTask.complete() }) }
+    }
+
+    @objc
+    func dequeueReceipts(for address: SignalServiceAddress, receiptSet: MessageReceiptSet, receiptType: OWSReceiptType) {
+        owsAssertDebug(address.isValid)
+        databaseStorage.asyncWrite { tx in
+            let persistedSet = self.fetchAndMergeReceiptSet(type: receiptType, address: address, transaction: tx)
+            persistedSet.subtract(receiptSet)
+            self.storeReceiptSet(persistedSet, type: receiptType, address: address, transaction: tx)
+        }
+    }
+
+    @objc
+    func fetchAllReceiptSets(type: OWSReceiptType, transaction tx: SDSAnyReadTransaction) -> [SignalServiceAddress: MessageReceiptSet] {
+        return Dictionary(
+            uniqueKeysWithValues: (
+                Set(store(for: type).allKeys(transaction: tx).compactMap { SignalServiceAddress(identifier: $0) })
+                    .map { ($0, fetchReceiptSet(type: type, preferredKey: $0.aciUppercaseString, secondaryKey: $0.phoneNumber, tx: tx).receiptSet) }
+            )
+        )
+    }
+
     func fetchAndMergeReceiptSet(type: OWSReceiptType, address: SignalServiceAddress, transaction tx: SDSAnyWriteTransaction) -> MessageReceiptSet {
-        return fetchAndMerge(type: type, preferredKey: address.uuidString, secondaryKey: address.phoneNumber, tx: tx)
+        return fetchAndMerge(type: type, preferredKey: address.aciUppercaseString, secondaryKey: address.phoneNumber, tx: tx)
     }
 
     private func fetchReceiptSet(
@@ -102,7 +178,7 @@ extension OWSOutgoingReceiptManager {
 
     @objc
     func storeReceiptSet(_ receiptSet: MessageReceiptSet, type: OWSReceiptType, address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
-        guard let key = address.uuidString ?? address.phoneNumber else {
+        guard let key = address.aciUppercaseString ?? address.phoneNumber else {
             return owsFailDebug("Invalid address")
         }
         _storeReceiptSet(receiptSet, type: type, key: key, tx: transaction)
@@ -134,8 +210,8 @@ extension OWSOutgoingReceiptManager {
 
 fileprivate extension SignalServiceAddress {
     convenience init?(identifier: String) {
-        if let uuid = UUID(uuidString: identifier) {
-            self.init(uuid: uuid)
+        if let aci = Aci.parseFrom(aciString: identifier) {
+            self.init(aci)
         } else if identifier.isStructurallyValidE164 {
             self.init(phoneNumber: identifier)
         } else {

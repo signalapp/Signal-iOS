@@ -779,9 +779,9 @@ extension OWSMessageManager {
 
         if wasReceivedByUD {
             self.outgoingReceiptManager.enqueueDeliveryReceipt(
-                for: decryptedEnvelope.envelope,
+                for: decryptedEnvelope,
                 messageUniqueId: message.uniqueId,
-                transaction: tx
+                tx: tx
             )
 
             if

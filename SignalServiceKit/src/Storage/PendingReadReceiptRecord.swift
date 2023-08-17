@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 
 public struct PendingReadReceiptRecord: Codable, FetchableRecord, PersistableRecord {
     public static let databaseTableName = "pending_read_receipts"
@@ -13,15 +14,24 @@ public struct PendingReadReceiptRecord: Codable, FetchableRecord, PersistableRec
     public let threadId: Int64
     public let messageTimestamp: Int64
     public let messageUniqueId: String?
-    public let authorUuid: String?
+    public let authorAciString: String?
     public let authorPhoneNumber: String?
 
-    public init(threadId: Int64, messageTimestamp: Int64, messageUniqueId: String?, authorPhoneNumber: String?, authorUuid: String?) {
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case threadId
+        case messageTimestamp
+        case messageUniqueId
+        case authorAciString = "authorUuid"
+        case authorPhoneNumber
+    }
+
+    public init(threadId: Int64, messageTimestamp: Int64, messageUniqueId: String?, authorPhoneNumber: String?, authorAci: Aci?) {
         self.threadId = threadId
         self.messageTimestamp = messageTimestamp
         self.messageUniqueId = messageUniqueId
-        self.authorUuid = authorUuid
-        self.authorPhoneNumber = (authorUuid == nil) ? authorPhoneNumber : nil
+        self.authorAciString = authorAci?.serviceIdUppercaseString
+        self.authorPhoneNumber = (authorAci == nil) ? authorPhoneNumber : nil
     }
 
     public init(from decoder: Decoder) throws {
@@ -30,8 +40,8 @@ public struct PendingReadReceiptRecord: Codable, FetchableRecord, PersistableRec
         self.threadId = try container.decode(Int64.self, forKey: .threadId)
         self.messageTimestamp = try container.decode(Int64.self, forKey: .messageTimestamp)
         self.messageUniqueId = try container.decodeIfPresent(String.self, forKey: .messageUniqueId)
-        self.authorUuid = try container.decodeIfPresent(String.self, forKey: .authorUuid)
-        self.authorPhoneNumber = (self.authorUuid == nil) ? try container.decodeIfPresent(String.self, forKey: .authorPhoneNumber) : nil
+        self.authorAciString = try container.decodeIfPresent(String.self, forKey: .authorAciString)
+        self.authorPhoneNumber = (self.authorAciString == nil) ? try container.decodeIfPresent(String.self, forKey: .authorPhoneNumber) : nil
     }
 
     mutating public func didInsert(with rowID: Int64, for column: String?) {

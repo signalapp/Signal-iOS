@@ -239,7 +239,7 @@ public extension OWSReceiptManager {
             for: message.authorAddress,
             timestamp: message.timestamp,
             messageUniqueId: message.uniqueId,
-            transaction: transaction
+            tx: transaction
         )
     }
 
