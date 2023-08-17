@@ -14,27 +14,42 @@ import UIKit
 
 public class FingerprintViewController: OWSViewController, OWSNavigationChildController {
 
-    public class func present(from viewController: UIViewController, address: SignalServiceAddress) {
-        owsAssertBeta(address.isValid)
+    public class func present(
+        from viewController: UIViewController,
+        address theirAddress: SignalServiceAddress
+    ) {
+        owsAssertBeta(theirAddress.isValid)
 
-        guard let recipientIdentity = OWSIdentityManager.shared.recipientIdentity(for: address) else {
+        guard let theirRecipientIdentity = OWSIdentityManager.shared.recipientIdentity(for: theirAddress) else {
             OWSActionSheets.showActionSheet(
-                title: NSLocalizedString("CANT_VERIFY_IDENTITY_ALERT_TITLE",
-                                         comment: "Title for alert explaining that a user cannot be verified."),
-                message: NSLocalizedString("CANT_VERIFY_IDENTITY_ALERT_MESSAGE",
-                                           comment: "Message for alert explaining that a user cannot be verified.")
+                title: OWSLocalizedString(
+                    "CANT_VERIFY_IDENTITY_ALERT_TITLE",
+                    comment: "Title for alert explaining that a user cannot be verified."
+                ),
+                message: OWSLocalizedString(
+                    "CANT_VERIFY_IDENTITY_ALERT_MESSAGE",
+                    comment: "Message for alert explaining that a user cannot be verified."
+                )
             )
             return
         }
 
-        guard let fingerprintResult = OWSFingerprintBuilder(
-            accountManager: TSAccountManager.shared,
-            contactsManager: SSKEnvironment.shared.contactsManagerRef
-        ).fingerprints(theirSignalAddress: address, theirIdentityKey: recipientIdentity.identityKey) else {
+        guard let fingerprintResult = databaseStorage.read(block: { tx in
+            return OWSFingerprintBuilder(
+                contactsManager: contactsManager,
+                identityManager: identityManager,
+                tsAccountManager: tsAccountManager
+            ).fingerprints(
+                theirAddress: theirAddress,
+                theirRecipientIdentity: theirRecipientIdentity,
+                tx: tx
+            )
+        }) else {
             let actionSheet = ActionSheetController(message: OWSLocalizedString(
                 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES",
                 comment: "Alert shown when the user needs to exchange messages to see the safety number."
             ))
+
             actionSheet.addAction(.init(title: CommonStrings.learnMore, style: .default, handler: { _ in
                 guard let vc = CurrentAppContext().frontmostViewController() else {
                     return
@@ -42,15 +57,16 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
                 Self.showLearnMoreUrl(from: vc)
             }))
             actionSheet.addAction(OWSActionSheets.cancelAction)
+
             viewController.presentActionSheet(actionSheet)
             return
         }
 
         let fingerprintViewController = FingerprintViewController(
             fingerprints: fingerprintResult.fingerprints,
-            defaultIndex: fingerprintResult.defaultIndex,
-            recipientAddress: address,
-            recipientIdentity: recipientIdentity
+            initialDisplayIndex: fingerprintResult.initialDisplayIndex,
+            recipientAddress: theirAddress,
+            recipientIdentity: theirRecipientIdentity
         )
         let navigationController = OWSNavigationController(rootViewController: fingerprintViewController)
         viewController.present(navigationController, animated: true)
@@ -77,7 +93,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
     public init(
         fingerprints: [OWSFingerprint],
-        defaultIndex: Int,
+        initialDisplayIndex: Int,
         recipientAddress: SignalServiceAddress,
         recipientIdentity: OWSRecipientIdentity
     ) {
@@ -88,7 +104,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         self.recipientIdentity = recipientIdentity
         self.identityKey = recipientIdentity.identityKey
         self.fingerprints = fingerprints
-        self.selectedIndex = defaultIndex
+        self.selectedIndex = initialDisplayIndex
 
         super.init()
 
@@ -128,6 +144,9 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        // TODO: This doesn't seem to work, maybe because the views haven't been sized yet. When we build with Xcode 15, we can use `viewIsAppearing()`.
+        if #available(iOS 17, *) { owsFailDebug("Canary to fix this when we're building with Xcode 15!") }
+        fingerprintCarouselPageControl.currentPage = selectedIndex
         scrollToSelectedIndex(animated: false)
     }
 

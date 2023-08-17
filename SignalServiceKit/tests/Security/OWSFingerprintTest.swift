@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
+import LibSignalClient
 import SignalServiceKit
+import XCTest
 
 final class OWSFingerprintTest: XCTestCase {
 
@@ -17,8 +18,8 @@ final class OWSFingerprintTest: XCTestCase {
 
         let aliceToBobFingerprint = OWSFingerprint(
             source: .e164(myE164: aliceE164, theirE164: bobE164),
-            myIdentityKey: aliceIdentityKey,
-            theirIdentityKey: bobIdentityKey,
+            myAciIdentityKey: aliceIdentityKey,
+            theirAciIdentityKey: bobIdentityKey,
             theirName: "Bob",
             hashIterations: 2
         )
@@ -40,43 +41,70 @@ final class OWSFingerprintTest: XCTestCase {
     }
 
     func testTextMatchesReciprocally() {
-        let aliceE164 = E164("+19995550101")!
-        let bobE164 = E164("+18885550102")!
-        let charlieE164 = E164("+17775550103")!
+        let sourceSets: [(
+            aliceToBob: OWSFingerprint.Source,
+            bobToAlice: OWSFingerprint.Source,
+            charlieToAlice: OWSFingerprint.Source
+        )] = [
+            {
+                let aliceE164 = E164("+19995550101")!
+                let bobE164 = E164("+18885550102")!
+                let charlieE164 = E164("+17775550103")!
+
+                return (
+                    .e164(myE164: aliceE164, theirE164: bobE164),
+                    .e164(myE164: bobE164, theirE164: aliceE164),
+                    .e164(myE164: charlieE164, theirE164: aliceE164)
+                )
+            }(),
+            {
+                let aliceAci = Aci.randomForTesting()
+                let bobAci = Aci.randomForTesting()
+                let charlieAci = Aci.randomForTesting()
+
+                return (
+                    .aci(myAci: aliceAci, theirAci: bobAci),
+                    .aci(myAci: bobAci, theirAci: aliceAci),
+                    .aci(myAci: charlieAci, theirAci: aliceAci)
+                )
+            }()
+        ]
 
         let aliceIdentityKey = Curve25519.generateKeyPair().publicKey
         let bobIdentityKey = Curve25519.generateKeyPair().publicKey
         let charlieIdentityKey = Curve25519.generateKeyPair().publicKey
 
-        let aliceToBobFingerprint = OWSFingerprint(
-            source: .e164(myE164: aliceE164, theirE164: bobE164),
-            myIdentityKey: aliceIdentityKey,
-            theirIdentityKey: bobIdentityKey,
-            theirName: "Bob",
-            hashIterations: 2
-        )
-        let bobToAliceFingerprint = OWSFingerprint(
-            source: .e164(myE164: bobE164, theirE164: aliceE164),
-            myIdentityKey: bobIdentityKey,
-            theirIdentityKey: aliceIdentityKey,
-            theirName: "Alice",
-            hashIterations: 2
-        )
-        XCTAssertEqual(
-            aliceToBobFingerprint.displayableText,
-            bobToAliceFingerprint.displayableText
-        )
+        for (aliceToBob, bobToAlice, charlieToAlice) in sourceSets {
+            let aliceToBobFingerprint = OWSFingerprint(
+                source: aliceToBob,
+                myAciIdentityKey: aliceIdentityKey,
+                theirAciIdentityKey: bobIdentityKey,
+                theirName: "Bob",
+                hashIterations: 2
+            )
+            let bobToAliceFingerprint = OWSFingerprint(
+                source: bobToAlice,
+                myAciIdentityKey: bobIdentityKey,
+                theirAciIdentityKey: aliceIdentityKey,
+                theirName: "Alice",
+                hashIterations: 2
+            )
+            XCTAssertEqual(
+                aliceToBobFingerprint.displayableText,
+                bobToAliceFingerprint.displayableText
+            )
 
-        let charlieToAliceFingerprint = OWSFingerprint(
-            source: .e164(myE164: charlieE164, theirE164: aliceE164),
-            myIdentityKey: charlieIdentityKey,
-            theirIdentityKey: aliceIdentityKey,
-            theirName: "Alice",
-            hashIterations: 2
-        )
-        XCTAssertNotEqual(
-            aliceToBobFingerprint.displayableText,
-            charlieToAliceFingerprint.displayableText
-        )
+            let charlieToAliceFingerprint = OWSFingerprint(
+                source: charlieToAlice,
+                myAciIdentityKey: charlieIdentityKey,
+                theirAciIdentityKey: aliceIdentityKey,
+                theirName: "Alice",
+                hashIterations: 2
+            )
+            XCTAssertNotEqual(
+                aliceToBobFingerprint.displayableText,
+                charlieToAliceFingerprint.displayableText
+            )
+        }
     }
 }

@@ -204,6 +204,10 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(uuid: uuid, phoneNumber: phoneNumber, ignoreCache: false)
     }
 
+    public convenience init(serviceId: ServiceId?, e164: E164?) {
+        self.init(serviceId: serviceId, phoneNumber: e164?.stringValue)
+    }
+
     public convenience init(serviceId: ServiceId?, phoneNumber: String?) {
         self.init(serviceId: serviceId, phoneNumber: phoneNumber, ignoreCache: false)
     }

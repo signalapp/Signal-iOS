@@ -99,6 +99,8 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
         @"+974" : @"QA",
         // UAE
         @"+971" : @"AE",
+        // Cuba
+        @"+53" : @"CU",
     };
 }
 
