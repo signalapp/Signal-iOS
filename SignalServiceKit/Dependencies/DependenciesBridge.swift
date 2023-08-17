@@ -104,7 +104,8 @@ public class DependenciesBridge {
         storageServiceManager: StorageServiceManager,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager,
-        websocketFactory: WebSocketFactory
+        websocketFactory: WebSocketFactory,
+        jobQueues: SSKJobQueues
     ) -> DependenciesBridge {
         let result = DependenciesBridge(
             accountServiceClient: accountServiceClient,
@@ -128,7 +129,8 @@ public class DependenciesBridge {
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
             tsConstants: TSConstants.shared, // This is safe to hard-code.
-            websocketFactory: websocketFactory
+            websocketFactory: websocketFactory,
+            jobQueues: jobQueues
         )
         _shared = result
         return result
@@ -156,7 +158,8 @@ public class DependenciesBridge {
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
-        websocketFactory: WebSocketFactory
+        websocketFactory: WebSocketFactory,
+        jobQueues: SSKJobQueues
     ) {
         self.schedulers = DispatchQueueSchedulers()
         self.db = SDSDB(databaseStorage: databaseStorage)
@@ -345,7 +348,8 @@ public class DependenciesBridge {
         self.recipientHidingManager = RecipientHidingManagerImpl(
             profileManager: profileManager,
             storageServiceManager: storageServiceManager,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
+            jobQueues: jobQueues
         )
 
         self.signalProtocolStoreManager = signalProtocolStoreManager

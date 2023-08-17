@@ -76,6 +76,7 @@ public class MockSSKEnvironment: SSKEnvironment {
         let syncManager = OWSMockSyncManager()
         let tsAccountManager = TSAccountManager()
         let webSocketFactory = WebSocketFactoryMock()
+        let sskJobQueues = SSKJobQueues()
 
         let dependenciesBridge = DependenciesBridge.setupSingleton(
             accountServiceClient: accountServiceClient,
@@ -98,7 +99,8 @@ public class MockSSKEnvironment: SSKEnvironment {
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
-            websocketFactory: webSocketFactory
+            websocketFactory: webSocketFactory,
+            jobQueues: sskJobQueues
         )
 
         // Set up ourselves
@@ -138,7 +140,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let subscriptionManager = MockSubscriptionManager()
         let systemStoryManager = SystemStoryManagerMock()
         let remoteMegaphoneFetcher = RemoteMegaphoneFetcher()
-        let sskJobQueues = SSKJobQueues()
         let contactDiscoveryManager = ContactDiscoveryManagerImpl(
             db: dependenciesBridge.db,
             recipientFetcher: dependenciesBridge.recipientFetcher,

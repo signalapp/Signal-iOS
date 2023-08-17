@@ -241,7 +241,6 @@ public extension OWSProfileManager {
 
         return allWhitelistedNumbers.filter { candidate in
             let address = SignalServiceAddress(phoneNumber: candidate)
-            // TODO recipientHiding: something similar to be done for hiding?
             return blockingManager.isAddressBlocked(address, transaction: readTx)
         }
     }
@@ -252,7 +251,6 @@ public extension OWSProfileManager {
 
         return allWhitelistedUUIDs.filter { candidate in
             let address = SignalServiceAddress(uuidString: candidate)
-            // TODO recipientHiding: something similar to be done for hiding?
             return blockingManager.isAddressBlocked(address, transaction: readTx)
         }
     }
@@ -785,6 +783,41 @@ extension OWSProfileManager {
         }
         self.settingsStore.removeValue(forKey: kPendingProfileUpdateKey, transaction: transaction)
         return true
+    }
+}
+
+public extension OWSProfileManager {
+
+    /// Rotates the local profile key. Intended specifically
+    /// for the use case of recipient hiding.
+    ///
+    /// - Parameter tx: The transaction to use for this operation.
+    @objc
+    func rotateProfileKeyUponRecipientHideObjC(tx: SDSAnyReadTransaction) {
+        owsAssertDebug(AppReadiness.isAppReady)
+        guard !CurrentAppContext().isNSE else { return }
+        guard tsAccountManager.isRegistered(transaction: tx) else {
+            OWSLogger.verbose("[Recipient Hiding] Not rotating profile key on unregistered device.")
+            return
+        }
+        guard tsAccountManager.isPrimaryDevice(transaction: tx) else {
+            OWSLogger.verbose("[Recipient Hiding] Not rotating profile key on non-primary device.")
+            return
+        }
+        /// This method removes `intersectingPhoneNumbers` and `intersectingUUIDs`
+        /// from the whitelist in addition to rotating the profile key. In the
+        /// case of recipient hiding, we must do this work earlier elsewhere.
+        /// It is important that we do NOT let `rotateProfileKey` manage the
+        /// whitelisting when hiding recipients; hence, `intersectingPhoneNumbers`
+        /// and `intersectingUUIDs` must be empty arrays.
+        ///
+        /// TODO: Add retry mechanism if rotation fails.
+        rotateProfileKey(
+            intersectingPhoneNumbers: [], // keep as empty array!
+            intersectingUUIDs: [], // keep as empty array!
+            intersectingGroupIds: [],
+            authedAccount: AuthedAccount.implicit()
+        )
     }
 }
 

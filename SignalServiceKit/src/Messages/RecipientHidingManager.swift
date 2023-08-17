@@ -80,15 +80,18 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
     private let profileManager: ProfileManagerProtocol
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
+    private let jobQueues: SSKJobQueues
 
     public init(
         profileManager: ProfileManagerProtocol,
         storageServiceManager: StorageServiceManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
+        jobQueues: SSKJobQueues
     ) {
         self.profileManager = profileManager
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
+        self.jobQueues = jobQueues
     }
 
     public func hiddenRecipients(tx: DBReadTransaction) -> Set<SignalRecipient> {
@@ -194,20 +197,26 @@ private extension RecipientHidingManagerImpl {
         ) {
             let message = TSInfoMessage(thread: thread, messageType: .contactHidden)
             message.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+        }
 
-            /// TODO recipientHiding:
-            /// - Throw out other user's profile key if not in group with user.
-            /// - Throw away existing Stories from hidden user.
-            /// - Remove hidden user from Story distribution lists.
-            /// - If this is primary device, rotate own Profile Key if not in group with them.
-            if wasLocallyInitiated {
-                profileManager.removeUser(
-                    fromProfileWhitelist: recipient.address,
-                    userProfileWriter: .storageService,
-                    transaction: SDSDB.shimOnlyBridge(tx)
-                )
-                storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
-            }
+        /// TODO recipientHiding:
+        /// - Throw out other user's profile key if not in group with user.
+        /// - Throw away existing Stories from hidden user.
+        /// - Remove hidden user from Story distribution lists.
+        if wasLocallyInitiated {
+            profileManager.removeUser(
+                fromProfileWhitelist: recipient.address,
+                userProfileWriter: .storageService,
+                transaction: SDSDB.shimOnlyBridge(tx)
+            )
+            storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
+        }
+
+        if tsAccountManager.isPrimaryDevice(transaction: SDSDB.shimOnlyBridge(tx)) {
+            // Profile key rotations should only be initiated by the primary device.
+            self.profileManager.rotateProfileKeyUponRecipientHide(
+                withTx: SDSDB.shimOnlyBridge(tx)
+            )
         }
     }
 
@@ -231,6 +240,22 @@ private extension RecipientHidingManagerImpl {
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
             storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
+        }
+
+        if
+            let thread = TSContactThread.getWithContactAddress(
+                recipient.address,
+                transaction: SDSDB.shimOnlyBridge(tx)
+            )
+        {
+            let profileKeyMessage = OWSProfileKeyMessage(
+                thread: thread,
+                transaction: SDSDB.shimOnlyBridge(tx)
+            )
+            self.jobQueues.messageSenderJobQueue.add(
+                message: profileKeyMessage.asPreparer,
+                transaction: SDSDB.shimOnlyBridge(tx)
+            )
         }
     }
 }

@@ -70,6 +70,7 @@ public class AppSetup {
         let storageServiceManager = StorageServiceManagerImpl.shared
         let syncManager = OWSSyncManager(default: ())
         let tsAccountManager = TSAccountManager()
+        let sskJobQueues = SSKJobQueues()
 
         let dependenciesBridge = DependenciesBridge.setupSingleton(
             accountServiceClient: accountServiceClient,
@@ -92,7 +93,8 @@ public class AppSetup {
             storageServiceManager: storageServiceManager,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
-            websocketFactory: webSocketFactory
+            websocketFactory: webSocketFactory,
+            jobQueues: sskJobQueues
         )
 
         // MARK: SignalMessaging environment properties
@@ -143,7 +145,6 @@ public class AppSetup {
         let subscriptionManager = SubscriptionManagerImpl()
         let systemStoryManager = SystemStoryManager()
         let remoteMegaphoneFetcher = RemoteMegaphoneFetcher()
-        let sskJobQueues = SSKJobQueues()
         let contactDiscoveryManager = ContactDiscoveryManagerImpl(
             db: dependenciesBridge.db,
             recipientFetcher: dependenciesBridge.recipientFetcher,

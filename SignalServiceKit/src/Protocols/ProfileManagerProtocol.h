@@ -12,6 +12,7 @@
 @class OWSUserProfileBadgeInfo;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
+@class SignalRecipient;
 
 @protocol SSKMaybeString;
 
@@ -192,6 +193,14 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTransaction:
     (SDSAnyReadTransaction *)transaction;
+
+/**
+ * Rotates the local profile key. Intended specifically for the
+ * use case of recipient hiding.
+ *
+ * @param tx The transaction to use for this operation.
+ */
+- (void)rotateProfileKeyUponRecipientHideWithTx:(SDSAnyReadTransaction *)tx;
 
 @end
 

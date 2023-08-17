@@ -472,26 +472,16 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return [groupId hexadecimalString];
 }
 
-- (void)rotateLocalProfileKeyIfNecessary {
+- (void)rotateLocalProfileKeyIfNecessary
+{
+    OWSAssertDebug(AppReadiness.isAppReady);
+
     if (CurrentAppContext().isNSE) {
         return;
     }
     if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
         OWSAssertDebug(self.tsAccountManager.isRegistered);
-        OWSLogVerbose(@"Not rotating profile key on non-primary device");
-        return;
-    }
-
-    [self rotateLocalProfileKeyIfNecessaryWithSuccess:^{} failure:^(NSError *error) {}];
-}
-
-- (void)rotateLocalProfileKeyIfNecessaryWithSuccess:(dispatch_block_t)success
-                                            failure:(ProfileManagerFailureBlock)failure {
-    OWSAssertDebug(AppReadiness.isAppReady);
-
-    if (!self.tsAccountManager.isRegistered) {
-        OWSFailDebug(@"tsAccountManager.isRegistered was unexpectedly false");
-        success();
+        OWSLogVerbose(@"Not rotating profile key on unregistered and/or non-primary device");
         return;
     }
 
@@ -531,15 +521,13 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                     [self.groupsV2 processProfileKeyUpdates];
                 }
             }
-            return success();
+            return;
         }
 
         [self rotateProfileKeyWithIntersectingPhoneNumbers:victimPhoneNumbers
                                          intersectingUUIDs:victimUUIDs
                                       intersectingGroupIds:victimGroupIds
-                                             authedAccount:AuthedAccount.implicit]
-            .done(^(id value) { success(); })
-            .catch(^(NSError *error) { failure(error); });
+                                             authedAccount:AuthedAccount.implicit];
     });
 }
 
@@ -1819,6 +1807,11 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                            userProfileWriter:UserProfileWriter_MetadataUpdate
                                authedAccount:authedAccount
                                  transaction:transaction];
+}
+
+- (void)rotateProfileKeyUponRecipientHideWithTx:(nonnull SDSAnyReadTransaction *)tx
+{
+    [self rotateProfileKeyUponRecipientHideObjCWithTx:tx];
 }
 
 #pragma mark - Notifications

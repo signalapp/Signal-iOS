@@ -378,6 +378,12 @@ NS_ASSUME_NONNULL_BEGIN
     return @[];
 }
 
+- (void)rotateProfileKeyUponRecipientHideWithTx:(SDSAnyReadTransaction *)tx
+{
+    // Do nothing.
+}
+
+
 @end
 
 #endif
