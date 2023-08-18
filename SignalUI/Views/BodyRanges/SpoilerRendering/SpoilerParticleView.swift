@@ -117,6 +117,7 @@ internal class SpoilerParticleView: MTKView {
         self.framebufferOnly = false
         self.preferredFramesPerSecond = Int(1 / fidelity.frameDelay)
         layer.isOpaque = false
+        layer.shouldRasterize = true
         // Start out paused until objects can be set.
         self.isPaused = true
     }
