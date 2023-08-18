@@ -678,7 +678,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                 else {
                     return
                 }
-                previousItem.itemViewState.shouldCollapseSystemMessageAction = previousAci != currentAci
+                previousItem.itemViewState.shouldCollapseSystemMessageAction = previousAci == currentAci
             default:
                 // always collapse matching types
                 previousItem.itemViewState.shouldCollapseSystemMessageAction
