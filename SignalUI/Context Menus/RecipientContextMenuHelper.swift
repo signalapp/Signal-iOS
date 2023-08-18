@@ -86,10 +86,24 @@ class RecipientContextMenuHelper {
             image: UIImage(named: "minus-circle")
         ) { [weak self] _ in
             guard let self else { return }
-            self.displayHideRecipientActionSheet(
-                address: address,
-                fromViewController: fromViewController
-            )
+            if self.isSystemContact(address: address) {
+                self.displayViewContactActionSheet(
+                    address: address,
+                    fromViewController: fromViewController
+                )
+            } else {
+                self.displayHideRecipientActionSheet(
+                    address: address,
+                    fromViewController: fromViewController
+                )
+            }
+        }
+    }
+
+    /// Whether the given `address` corresponds with a system contact.
+    private func isSystemContact(address: SignalServiceAddress) -> Bool {
+        return databaseStorage.read { tx in
+            contactsManager.isSystemContact(address: address, transaction: tx) ?? false
         }
     }
 
@@ -208,6 +222,64 @@ class RecipientContextMenuHelper {
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
+            style: .cancel
+        ))
+        fromViewController.presentActionSheet(actionSheet)
+    }
+
+    /// Displays an action sheet letting the user know that
+    /// they cannot remove the indicated recipient without
+    /// first removing them from their system contacts.
+    ///
+    /// - Parameter address: Address of the recipient to hide.
+    /// - Parameter fromViewController: The view controller from which to present the action sheet.
+    private func displayViewContactActionSheet(
+        address: SignalServiceAddress,
+        fromViewController: UIViewController
+    ) {
+        guard address.isValid else {
+            owsFailDebug("Invalid address: \(address).")
+            return
+        }
+        let (localAddress, recipientDisplayName) = databaseStorage.read { tx in
+            let localAddress = accountManager.localAddress(with: tx)
+            let recipientDisplayName = contactsManager.displayName(
+                for: address,
+                transaction: tx
+            ).formattedForActionSheetTitle()
+            return (localAddress, recipientDisplayName)
+        }
+        guard
+            let localAddress,
+            !localAddress.isEqualToAddress(address) else
+        {
+            owsFailDebug("Remove recipient option should not have been shown in context menu for Note to Self, so we shouldn't be able to get here.")
+            return
+        }
+        let actionSheetTitle = String(
+            format: OWSLocalizedString(
+                "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE",
+                comment: "A format for the 'unable to remove user' action sheet title. Embeds {{the removed user's name or phone number}}."
+            ),
+            recipientDisplayName
+        )
+
+        let actionSheet = ActionSheetController(
+            title: actionSheetTitle,
+            message: OWSLocalizedString(
+                "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION",
+                comment: "An explanation of why the user cannot be removed."
+            )
+        )
+
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString("VIEW_CONTACT_BUTTON", comment: "Button label for the 'View Contact' button"),
+            handler: { _ in
+                // TODO: present contact sheet
+            }
+        ))
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.okayButton,
             style: .cancel
         ))
         fromViewController.presentActionSheet(actionSheet)
