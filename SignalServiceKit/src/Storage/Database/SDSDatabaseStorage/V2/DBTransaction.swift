@@ -14,7 +14,7 @@ import Foundation
 /// Users can bridge to `SDSAnyReadTransaction` by using `SDSDB.shimOnlyBridge`;
 /// this is made intentionally cumbersome as it should **never** be used in
 /// any concrete class and **only** in shim classes that bridge to old-style code.
-public protocol DBReadTransaction {}
+public protocol DBReadTransaction: AnyObject {}
 
 /// Wrapper around `SDSAnyWriteTransaction` that allows the generation
 /// of a "fake" instance in tests without touching existing code.

@@ -723,6 +723,8 @@
 		50A5AA9D2A7475A900CF2ECC /* OutgoingReactionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */; };
 		50AA3EC329F1C4B900EC50A3 /* RecipientFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */; };
 		50BD86AF2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */; };
+		50C38CAB2A8EA7210030A731 /* DB+TimeBatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAA2A8EA7210030A731 /* DB+TimeBatching.swift */; };
+		50C38CAD2A8EB2610030A731 /* DB+TimeBatchingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAC2A8EB2610030A731 /* DB+TimeBatchingTest.swift */; };
 		50CB431C298860C700841A34 /* SystemContactsDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CB431B298860C700841A34 /* SystemContactsDataProvider.swift */; };
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
 		50D5E2412980AD6F00899660 /* LinkValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2402980AD6F00899660 /* LinkValidator.swift */; };
@@ -3238,6 +3240,8 @@
 		50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingReactionMessage.swift; sourceTree = "<group>"; };
 		50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientFetcher.swift; sourceTree = "<group>"; };
 		50BD86AE2A3CFF89005B6AC1 /* ResendMessagePromptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResendMessagePromptBuilder.swift; sourceTree = "<group>"; };
+		50C38CAA2A8EA7210030A731 /* DB+TimeBatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DB+TimeBatching.swift"; sourceTree = "<group>"; };
+		50C38CAC2A8EB2610030A731 /* DB+TimeBatchingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DB+TimeBatchingTest.swift"; sourceTree = "<group>"; };
 		50CB431B298860C700841A34 /* SystemContactsDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemContactsDataProvider.swift; sourceTree = "<group>"; };
 		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
 		50D5E2402980AD6F00899660 /* LinkValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkValidator.swift; sourceTree = "<group>"; };
@@ -6746,6 +6750,7 @@
 		6673FF85297B690C00F96CFD /* V2 */ = {
 			isa = PBXGroup;
 			children = (
+				50C38CAA2A8EA7210030A731 /* DB+TimeBatching.swift */,
 				6673FF86297B694C00F96CFD /* DB.swift */,
 				6673FF88297B6AF800F96CFD /* DBTransaction.swift */,
 				6673FF8A297B6FA800F96CFD /* SDSDB.swift */,
@@ -8501,6 +8506,7 @@
 				F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */,
 				F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */,
 				F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */,
+				50C38CAC2A8EB2610030A731 /* DB+TimeBatchingTest.swift */,
 				F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */,
 				F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */,
 				D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */,
@@ -12101,6 +12107,7 @@
 				F9C5CDD9289453B400548EEE /* DataSource.m in Sources */,
 				F9C5CE4D289453B400548EEE /* Date+SSK.swift in Sources */,
 				6600F36C298DAA6200B1EDB7 /* DateProvider.swift in Sources */,
+				50C38CAB2A8EA7210030A731 /* DB+TimeBatching.swift in Sources */,
 				6673FF87297B694C00F96CFD /* DB.swift in Sources */,
 				6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */,
 				F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */,
@@ -12777,6 +12784,7 @@
 				F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */,
 				F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */,
 				F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */,
+				50C38CAD2A8EB2610030A731 /* DB+TimeBatchingTest.swift in Sources */,
 				F94C912428FDECC40065DF75 /* DecimalTest.swift in Sources */,
 				F942629B289B1B5600460798 /* DeliveryReceiptContextTests.swift in Sources */,
 				F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */,
