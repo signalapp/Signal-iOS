@@ -186,18 +186,8 @@ public class SDSDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBReadTransaction) -> T
-    ) -> T {
-        return databaseStorage.read(file: file, function: function, line: line, block: {block(ReadTx($0))})
-    }
-
-    // throws version
-    public func read<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
         block: (DBReadTransaction) throws -> T
-    ) throws -> T {
+    ) rethrows -> T {
         return try databaseStorage.read(file: file, function: function, line: line, block: {try block(ReadTx($0))})
     }
 
@@ -205,18 +195,8 @@ public class SDSDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBWriteTransaction) -> T
-    ) -> T {
-        return databaseStorage.write(file: file, function: function, line: line, block: {block(WriteTx($0))})
-    }
-
-    // throws version
-    public func write<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
         block: (DBWriteTransaction) throws -> T
-    ) throws -> T {
+    ) rethrows -> T {
         return try databaseStorage.write(file: file, function: function, line: line, block: {try block(WriteTx($0))})
     }
 }

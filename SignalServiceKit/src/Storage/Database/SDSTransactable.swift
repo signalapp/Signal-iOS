@@ -185,71 +185,69 @@ public extension SDSTransactable {
 
 public extension SDSTransactable {
     @discardableResult
-    func read<T>(file: String = #file,
-                 function: String = #function,
-                 line: Int = #line,
-                 block: (SDSAnyReadTransaction) -> T) -> T {
-        var value: T!
-        read(file: file, function: function, line: line) { (transaction) in
-            value = block(transaction)
-        }
-        return value
+    func read<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (SDSAnyReadTransaction) throws -> T
+    ) rethrows -> T {
+        return try _read(file: file, function: function, line: line, block: block, rescue: { throw $0 })
     }
 
-    @discardableResult
-    func read<T>(file: String = #file,
-                 function: String = #function,
-                 line: Int = #line,
-                 block: (SDSAnyReadTransaction) throws -> T) throws -> T {
+    // The "rescue" pattern is used in LibDispatch (and replicated here) to
+    // allow "rethrows" to work properly.
+    private func _read<T>(
+        file: String,
+        function: String,
+        line: Int,
+        block: (SDSAnyReadTransaction) throws -> T,
+        rescue: (Error) throws -> Void
+    ) rethrows -> T {
         var value: T!
         var thrown: Error?
-        read(file: file, function: function, line: line) { (transaction) in
+        read(file: file, function: function, line: line) { tx in
             do {
-                value = try block(transaction)
+                value = try block(tx)
             } catch {
                 thrown = error
             }
         }
-
-        if let error = thrown {
-            throw error.grdbErrorForLogging
-        }
-
-        return value
-    }
-
-    @discardableResult
-    func write<T>(file: String = #file,
-                  function: String = #function,
-                  line: Int = #line,
-                  block: (SDSAnyWriteTransaction) -> T) -> T {
-        var value: T!
-        write(file: file,
-              function: function,
-              line: line) { (transaction) in
-            value = block(transaction)
+        if let thrown {
+            try rescue(thrown.grdbErrorForLogging)
         }
         return value
     }
 
     @discardableResult
-    func write<T>(file: String = #file,
-                  function: String = #function,
-                  line: Int = #line,
-                  block: (SDSAnyWriteTransaction) throws -> T) throws -> T {
+    func write<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (SDSAnyWriteTransaction) throws -> T
+    ) rethrows -> T {
+        return try _write(file: file, function: function, line: line, block: block, rescue: { throw $0 })
+    }
+
+    // The "rescue" pattern is used in LibDispatch (and replicated here) to
+    // allow "rethrows" to work properly.
+    private func _write<T>(
+        file: String,
+        function: String,
+        line: Int,
+        block: (SDSAnyWriteTransaction) throws -> T,
+        rescue: (Error) throws -> Void
+    ) rethrows -> T {
         var value: T!
         var thrown: Error?
-        write(file: file,
-              function: function,
-              line: line) { (transaction) in
+        write(file: file, function: function, line: line) { tx in
             do {
-                value = try block(transaction)
+                value = try block(tx)
             } catch {
                 thrown = error
             }
         }
-        if let error = thrown {
-            throw error.grdbErrorForLogging
+        if let thrown {
+            try rescue(thrown.grdbErrorForLogging)
         }
         return value
     }

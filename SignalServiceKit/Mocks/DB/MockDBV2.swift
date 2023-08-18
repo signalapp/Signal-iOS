@@ -255,22 +255,8 @@ public class MockDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBReadTransaction) -> T
-    ) -> T {
-        return queue.sync {
-            let t = block(self.makeRead())
-            self.closeTransaction()
-            return t
-        }
-    }
-
-    // throws version
-    public func read<T>(
-        file: String,
-        function: String,
-        line: Int,
         block: (DBReadTransaction) throws -> T
-    ) throws -> T {
+    ) rethrows -> T {
         return try queue.sync {
             let t = try block(self.makeRead())
             self.closeTransaction()
@@ -282,22 +268,8 @@ public class MockDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) -> T
-    ) -> T {
-        return queue.sync {
-            let t = block(self.makeWrite())
-            self.closeTransaction()
-            return t
-        }
-    }
-
-    // throws version
-    public func write<T>(
-        file: String,
-        function: String,
-        line: Int,
         block: (DBWriteTransaction) throws -> T
-    ) throws -> T {
+    ) rethrows -> T {
         return try queue.sync {
             let t = try block(self.makeWrite())
             self.closeTransaction()

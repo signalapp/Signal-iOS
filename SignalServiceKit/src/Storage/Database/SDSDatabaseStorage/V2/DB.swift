@@ -108,31 +108,15 @@ public protocol DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBReadTransaction) -> T
-    ) -> T
-
-    // throws version
-    func read<T>(
-        file: String,
-        function: String,
-        line: Int,
         block: (DBReadTransaction) throws -> T
-    ) throws -> T
+    ) rethrows -> T
 
-    func write<T>(
-        file: String,
-        function: String,
-        line: Int,
-        block: (DBWriteTransaction) -> T
-    ) -> T
-
-    // throws version
     func write<T>(
         file: String,
         function: String,
         line: Int,
         block: (DBWriteTransaction) throws -> T
-    ) throws -> T
+    ) rethrows -> T
 }
 
 // MARK: - Default arguments
@@ -244,18 +228,8 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBReadTransaction) -> T
-    ) -> T {
-        return read(file: file, function: function, line: line, block: block)
-    }
-
-    // throws version
-    public func read<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
         block: (DBReadTransaction) throws -> T
-    ) throws -> T {
+    ) rethrows -> T {
         return try read(file: file, function: function, line: line, block: block)
     }
 
@@ -263,18 +237,8 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBWriteTransaction) -> T
-    ) -> T {
-        return write(file: file, function: function, line: line, block: block)
-    }
-
-    // throws version
-    public func write<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
         block: (DBWriteTransaction) throws -> T
-    ) throws -> T {
+    ) rethrows -> T {
         return try write(file: file, function: function, line: line, block: block)
     }
 }

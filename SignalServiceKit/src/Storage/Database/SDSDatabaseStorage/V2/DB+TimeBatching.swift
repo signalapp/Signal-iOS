@@ -40,33 +40,10 @@ extension DB {
         line: Int = #line,
         block: (T, DBWriteTransaction) throws -> Void
     ) rethrows {
-        try _enumerateWithTimeBatchedWriteTx(
-            objects,
-            yieldTxAfter: yieldTxAfter,
-            file: file,
-            function: function,
-            line: line,
-            block: block,
-            rescue: { throw $0 }
-        )
-    }
-
-    // The "rescue" pattern is used in LibDispatch (and replicated here) to
-    // allow "rethrows" to work properly.
-    private func _enumerateWithTimeBatchedWriteTx<T>(
-        _ objects: some Sequence<T>,
-        yieldTxAfter: TimeInterval,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        block: (T, DBWriteTransaction) throws -> Void,
-        rescue: (Error) throws -> Void
-    ) rethrows {
         var isDone = false
-        var thrownError: Error?
         var objectEnumerator = objects.makeIterator()
         while !isDone {
-            write(file: file, function: function, line: line) { tx in
+            try write(file: file, function: function, line: line) { tx in
                 let startTime = CACurrentMediaTime()
                 while true {
                     guard let object = objectEnumerator.next() else {
@@ -74,13 +51,7 @@ extension DB {
                         isDone = true
                         return
                     }
-                    do {
-                        try block(object, tx)
-                    } catch {
-                        thrownError = error
-                        isDone = true
-                        return
-                    }
+                    try block(object, tx)
                     let elapsedTime = CACurrentMediaTime() - startTime
                     guard elapsedTime < yieldTxAfter else {
                         // We're done with this batch, so we want another transaction.
@@ -89,9 +60,6 @@ extension DB {
                     // Process another object with this transaction...
                 }
             }
-        }
-        if let thrownError {
-            try rescue(thrownError)
         }
     }
 }
