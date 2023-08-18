@@ -156,15 +156,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface TSContactThread (SDS)
-
-@property (nonatomic, nullable) NSString *contactPhoneNumber;
-@property (nonatomic, nullable) NSString *contactUUID;
-
-@end
-
-#pragma mark -
-
 @interface OWSUserProfile (SDS)
 
 @property (atomic, nullable, readonly) NSString *profileName;

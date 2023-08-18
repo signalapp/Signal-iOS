@@ -64,7 +64,7 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
         }
 
         // Only insert "change phone number" interaction in 1:1 thread if it already exists.
-        if let thread = threadStore.fetchThread(serviceId: mergedRecipient.aci.untypedServiceId, tx: tx) {
+        if let thread = threadStore.fetchThread(serviceId: mergedRecipient.aci, tx: tx) {
             insertChangeMessage(thread: thread)
         }
     }

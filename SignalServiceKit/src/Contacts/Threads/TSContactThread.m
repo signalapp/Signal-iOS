@@ -16,8 +16,6 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
 
 @interface TSContactThread ()
 
-@property (nonatomic, nullable) NSString *contactPhoneNumber;
-@property (nonatomic, nullable) NSString *contactUUID;
 @property (nonatomic, readonly) NSUInteger contactThreadSchemaVersion;
 
 @end
@@ -116,7 +114,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     OWSAssertDebug(contactAddress.isValid);
 
     if (self = [super init]) {
-        _contactUUID = contactAddress.uuidString;
+        _contactUUID = contactAddress.serviceIdUppercaseString;
         _contactPhoneNumber = contactAddress.phoneNumber;
         _contactThreadSchemaVersion = TSContactThreadSchemaVersion;
     }
@@ -166,7 +164,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 - (SignalServiceAddress *)contactAddress
 {
-    return [[SignalServiceAddress alloc] initWithUuidString:self.contactUUID phoneNumber:self.contactPhoneNumber];
+    return [[SignalServiceAddress alloc] initWithServiceIdString:self.contactUUID phoneNumber:self.contactPhoneNumber];
 }
 
 - (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(SDSAnyReadTransaction *)transaction

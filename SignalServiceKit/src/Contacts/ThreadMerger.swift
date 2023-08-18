@@ -218,7 +218,7 @@ final class ThreadMerger: RecipientMergeObserver {
         var threadsToMerge = [TSContactThread]()
 
         // We include all ServiceId threads in the merge.
-        threadsToMerge.append(contentsOf: threadStore.fetchContactThreads(serviceId: aci.untypedServiceId, tx: tx))
+        threadsToMerge.append(contentsOf: threadStore.fetchContactThreads(serviceId: aci, tx: tx))
 
         for thread in threadStore.fetchContactThreads(phoneNumber: phoneNumber.stringValue, tx: tx) {
             if thread.contactUUID == nil {

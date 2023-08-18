@@ -11,6 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSContactThread : TSThread
 
+/// Represents the uppercase ServiceId string for this contact.
+/// - Note
+/// This property name includes `UUID` for compatibility with SDS (to match the
+/// SQLite column), but **may not contain a valid UUID string**.
+@property (nonatomic, nullable) NSString *contactUUID;
+@property (nonatomic, nullable) NSString *contactPhoneNumber;
+
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;

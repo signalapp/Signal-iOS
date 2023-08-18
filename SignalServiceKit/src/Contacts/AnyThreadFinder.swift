@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import GRDB
+import LibSignalClient
 
 @objc
 public class AnyContactThreadFinder: NSObject {
@@ -22,7 +22,7 @@ public extension AnyContactThreadFinder {
         }
     }
 
-    func contactThreads(for serviceId: UntypedServiceId, tx: SDSAnyReadTransaction) -> [TSContactThread] {
+    func contactThreads(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> [TSContactThread] {
         switch tx.readTransaction {
         case .grdbRead(let tx):
             return grdbAdapter.contactThreads(for: serviceId, tx: tx)
@@ -42,7 +42,7 @@ public extension AnyContactThreadFinder {
 @objc
 class GRDBContactThreadFinder: NSObject {
     func contactThread(for address: SignalServiceAddress, tx: GRDBReadTransaction) -> TSContactThread? {
-        if let serviceId = address.untypedServiceId, let thread = contactThreads(for: serviceId, tx: tx).first {
+        if let serviceId = address.serviceId, let thread = contactThreads(for: serviceId, tx: tx).first {
             return thread
         }
         if let phoneNumber = address.phoneNumber, let thread = contactThreads(for: phoneNumber, tx: tx).first {
@@ -51,10 +51,10 @@ class GRDBContactThreadFinder: NSObject {
         return nil
     }
 
-    fileprivate func contactThreads(for serviceId: UntypedServiceId, tx: GRDBReadTransaction) -> [TSContactThread] {
-        let uuidString = serviceId.uuidValue.uuidString
+    fileprivate func contactThreads(for serviceId: ServiceId, tx: GRDBReadTransaction) -> [TSContactThread] {
+        let serviceIdString = serviceId.serviceIdUppercaseString
         let sql = "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .contactUUID) = ?"
-        return fetchContactThreads(sql: sql, arguments: [uuidString], tx: tx)
+        return fetchContactThreads(sql: sql, arguments: [serviceIdString], tx: tx)
     }
 
     fileprivate func contactThreads(for phoneNumber: String, tx: GRDBReadTransaction) -> [TSContactThread] {
