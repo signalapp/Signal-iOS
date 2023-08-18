@@ -3995,6 +3995,18 @@
 		D9CAFAE92A53CB1F00B32BDE /* UsernameLinkTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkTooltipView.swift; sourceTree = "<group>"; };
 		D9CD40612A155C4800545803 /* TSInfoMessage+UpdateMessagesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+UpdateMessagesTest.swift"; sourceTree = "<group>"; };
 		D9D321692A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingGroupCallUpdateMessageTest.swift; sourceTree = "<group>"; };
+		D9D3217A2A8FEA9B004FC110 /* KeyBackup.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = KeyBackup.proto; path = SignalServiceKit/protobuf/KeyBackup.proto; sourceTree = SOURCE_ROOT; };
+		D9D3217B2A8FEA9B004FC110 /* Groups.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Groups.proto; path = SignalServiceKit/protobuf/Groups.proto; sourceTree = SOURCE_ROOT; };
+		D9D3217C2A8FEA9B004FC110 /* DeviceTransfer.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = DeviceTransfer.proto; path = SignalServiceKit/protobuf/DeviceTransfer.proto; sourceTree = SOURCE_ROOT; };
+		D9D3217D2A8FEA9C004FC110 /* Fingerprint.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Fingerprint.proto; path = SignalServiceKit/protobuf/Fingerprint.proto; sourceTree = SOURCE_ROOT; };
+		D9D3217E2A8FEA9C004FC110 /* SessionRecord.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = SessionRecord.proto; path = SignalServiceKit/protobuf/SessionRecord.proto; sourceTree = SOURCE_ROOT; };
+		D9D3217F2A8FEA9C004FC110 /* SignalIOS.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = SignalIOS.proto; path = SignalServiceKit/protobuf/SignalIOS.proto; sourceTree = SOURCE_ROOT; };
+		D9D321802A8FEA9C004FC110 /* StorageService.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = StorageService.proto; path = SignalServiceKit/protobuf/StorageService.proto; sourceTree = SOURCE_ROOT; };
+		D9D321812A8FEA9C004FC110 /* SignalService.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = SignalService.proto; path = SignalServiceKit/protobuf/SignalService.proto; sourceTree = SOURCE_ROOT; };
+		D9D321822A8FEA9C004FC110 /* Provisioning.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Provisioning.proto; path = SignalServiceKit/protobuf/Provisioning.proto; sourceTree = SOURCE_ROOT; };
+		D9D321832A8FEA9C004FC110 /* cdsi.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = cdsi.proto; path = SignalServiceKit/protobuf/cdsi.proto; sourceTree = SOURCE_ROOT; };
+		D9D321842A8FEA9D004FC110 /* svr2.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = svr2.proto; path = SignalServiceKit/protobuf/svr2.proto; sourceTree = SOURCE_ROOT; };
+		D9D321852A8FEA9D004FC110 /* WebSocketResources.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = WebSocketResources.proto; path = SignalServiceKit/protobuf/WebSocketResources.proto; sourceTree = SOURCE_ROOT; };
 		D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkPresentQRCodeViewController.swift; sourceTree = "<group>"; };
 		D9DCFDA82A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuPresentingTableViewCell.swift; sourceTree = "<group>"; };
 		D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHeaderButton.swift; sourceTree = "<group>"; };
@@ -8090,6 +8102,25 @@
 			path = ChangePhoneNumber;
 			sourceTree = "<group>";
 		};
+		D9D321792A8FEA7A004FC110 /* Specifications */ = {
+			isa = PBXGroup;
+			children = (
+				D9D321832A8FEA9C004FC110 /* cdsi.proto */,
+				D9D3217C2A8FEA9B004FC110 /* DeviceTransfer.proto */,
+				D9D3217D2A8FEA9C004FC110 /* Fingerprint.proto */,
+				D9D3217B2A8FEA9B004FC110 /* Groups.proto */,
+				D9D3217A2A8FEA9B004FC110 /* KeyBackup.proto */,
+				D9D321822A8FEA9C004FC110 /* Provisioning.proto */,
+				D9D3217E2A8FEA9C004FC110 /* SessionRecord.proto */,
+				D9D3217F2A8FEA9C004FC110 /* SignalIOS.proto */,
+				D9D321812A8FEA9C004FC110 /* SignalService.proto */,
+				D9D321802A8FEA9C004FC110 /* StorageService.proto */,
+				D9D321842A8FEA9D004FC110 /* svr2.proto */,
+				D9D321852A8FEA9D004FC110 /* WebSocketResources.proto */,
+			);
+			name = Specifications;
+			sourceTree = "<group>";
+		};
 		D9DCFDAC2A3BB22800C73C0B /* QRCodes */ = {
 			isa = PBXGroup;
 			children = (
@@ -8963,6 +8994,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C5C9A2289453B100548EEE /* Generated */,
+				D9D321792A8FEA7A004FC110 /* Specifications */,
 				F9C5C9B9289453B100548EEE /* SSKProto+OWS.swift */,
 			);
 			name = Protos;
