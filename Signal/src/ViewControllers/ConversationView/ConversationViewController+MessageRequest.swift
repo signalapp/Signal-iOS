@@ -60,8 +60,7 @@ extension ConversationViewController: MessageRequestDelegate {
         })
 
         if let addedByAci = groupMembership.addedByAci(forInvitedMember: invitedAtServiceId) {
-            let addedByAddress = SignalServiceAddress(addedByAci)
-            let addedByName = contactsManager.displayName(for: addedByAddress)
+            let addedByName = contactsManager.displayName(for: SignalServiceAddress(addedByAci))
 
             actionSheet.addAction(ActionSheetAction(
                 title: String(
@@ -73,7 +72,7 @@ extension ConversationViewController: MessageRequestDelegate {
                 ),
                 style: .default
             ) { [weak self] _ in
-                self?.blockUserAndDelete(addedByAddress)
+                self?.blockUserAndDelete(addedByAci)
             })
 
             actionSheet.addAction(ActionSheetAction(
@@ -85,7 +84,7 @@ extension ConversationViewController: MessageRequestDelegate {
                 ),
                 style: .default
             ) { [weak self] _ in
-                self?.blockUserAndGroupAndDelete(addedByAddress)
+                self?.blockUserAndGroupAndDelete(addedByAci)
             })
         }
 
@@ -211,36 +210,42 @@ extension ConversationViewController: MessageRequestDelegate {
         }
     }
 
-    func blockUserAndDelete(_ address: SignalServiceAddress) {
+    private func blockUserAndDelete(_ aci: Aci) {
         // Do not leave the group while blocking the thread; we'll
         // that below so that we can surface an error to the user
         // if leaving the group fails.
         databaseStorage.write { transaction in
-            blockingManager.addBlockedAddress(address,
-                                              blockMode: .localShouldNotLeaveGroups,
-                                              transaction: transaction)
+            blockingManager.addBlockedAddress(
+                SignalServiceAddress(aci),
+                blockMode: .localShouldNotLeaveGroups,
+                transaction: transaction
+            )
         }
-        syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
-                                                          responseType: .delete)
+        syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread, responseType: .delete)
         leaveAndSoftDeleteThread()
     }
 
-    func blockUserAndGroupAndDelete(_ address: SignalServiceAddress) {
+    private func blockUserAndGroupAndDelete(_ aci: Aci) {
         ConversationViewController.databaseStorage.write { transaction in
             if let groupThread = self.thread as? TSGroupThread {
                 // Do not leave the group while blocking the thread; we'll
                 // that below so that we can surface an error to the user
                 // if leaving the group fails.
-                self.blockingManager.addBlockedGroup(groupModel: groupThread.groupModel,
-                                                     blockMode: .localShouldNotLeaveGroups,
-                                                     transaction: transaction)
+                self.blockingManager.addBlockedGroup(
+                    groupModel: groupThread.groupModel,
+                    blockMode: .localShouldNotLeaveGroups,
+                    transaction: transaction
+                )
             } else {
                 owsFailDebug("Invalid thread.")
             }
-            self.blockingManager.addBlockedAddress(address, blockMode: .localShouldNotLeaveGroups, transaction: transaction)
+            self.blockingManager.addBlockedAddress(
+                SignalServiceAddress(aci),
+                blockMode: .localShouldNotLeaveGroups,
+                transaction: transaction
+            )
         }
-        syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
-                                                          responseType: .blockAndDelete)
+        syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread, responseType: .blockAndDelete)
         leaveAndSoftDeleteThread()
     }
 

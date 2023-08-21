@@ -23,26 +23,26 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
         // Setup
         let originalChangeToken = dut.changeToken
         let blockedGroup = generateRandomGroupModel()
-        let blockedUUID = CommonGenerator.address(hasUUID: true, hasPhoneNumber: false)
+        let blockedAci = CommonGenerator.address(hasUUID: true, hasPhoneNumber: false)
         let blockedPhoneNumber = CommonGenerator.address(hasUUID: false, hasPhoneNumber: true)
         let blockedBoth = CommonGenerator.address(hasUUID: true, hasPhoneNumber: true)
 
         // Test
         // We add everthing twice, only the first pass should return true (i.e. didChange)
         XCTAssertTrue(dut.addBlockedGroup(blockedGroup))
-        XCTAssertTrue(dut.addBlockedAddress(blockedUUID))
+        XCTAssertTrue(dut.addBlockedAddress(blockedAci))
         XCTAssertTrue(dut.addBlockedAddress(blockedPhoneNumber))
         XCTAssertTrue(dut.addBlockedAddress(blockedBoth))
 
         XCTAssertFalse(dut.addBlockedGroup(blockedGroup))
-        XCTAssertFalse(dut.addBlockedAddress(blockedUUID))
+        XCTAssertFalse(dut.addBlockedAddress(blockedAci))
         XCTAssertFalse(dut.addBlockedAddress(blockedPhoneNumber))
         XCTAssertFalse(dut.addBlockedAddress(blockedBoth))
 
         // Verify — All added addresses are contained in each set
         XCTAssertEqual(dut.blockedGroupMap[blockedGroup.groupId], blockedGroup)
-        XCTAssertTrue(dut.blockedUUIDStrings.contains(blockedUUID.uuidString!))
-        XCTAssertTrue(dut.blockedUUIDStrings.contains(blockedBoth.uuidString!))
+        XCTAssertTrue(dut.blockedAcis.contains(blockedAci.aci!))
+        XCTAssertTrue(dut.blockedAcis.contains(blockedBoth.aci!))
         XCTAssertTrue(dut.blockedPhoneNumbers.contains(blockedPhoneNumber.phoneNumber!))
         XCTAssertTrue(dut.blockedPhoneNumbers.contains(blockedBoth.phoneNumber!))
         XCTAssertTrue(dut.isDirty, "Mutations should mark the state as dirty")
@@ -67,7 +67,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
 
         let initialBlockedGroupCount = dut.blockedGroupMap.count
         let initialPhoneNumberBlockCount = dut.blockedPhoneNumbers.count
-        let initialUUIDBlockCount = dut.blockedUUIDStrings.count
+        let initialAciBlockCount = dut.blockedAcis.count
 
         // Test
         // Remove both a known entry and a known non-entry
@@ -78,7 +78,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
 
         // Verify — One and only one item in each set should have been removed
         XCTAssertEqual(dut.blockedGroupMap.count + 1, initialBlockedGroupCount)
-        XCTAssertEqual(dut.blockedUUIDStrings.count + 1, initialUUIDBlockCount)
+        XCTAssertEqual(dut.blockedAcis.count + 1, initialAciBlockCount)
         XCTAssertEqual(dut.blockedPhoneNumbers.count + 1, initialPhoneNumberBlockCount)
         XCTAssertTrue(dut.isDirty, "Mutations should mark the state as dirty")
         XCTAssertTrue(dut.changeToken == originalChangeToken, "Change tokens shouldn't update until we persist")
@@ -89,33 +89,41 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
         var replacementAddresses = generateAddresses(count: 50)
         var replacementGroups = generateGroupMap(count: 50)
 
+        func replaceWithCurrentValues() {
+            dut.replace(
+                blockedPhoneNumbers: Set(replacementAddresses.compactMap({ $0.phoneNumber })),
+                blockedAcis: Set(replacementAddresses.compactMap({ $0.aci })),
+                blockedGroups: replacementGroups
+            )
+        }
+
         // Test
-        dut.replace(blockedAddresses: Set(), blockedGroups: Dictionary())
+        dut.replace(blockedPhoneNumbers: Set(), blockedAcis: Set(), blockedGroups: Dictionary())
         let replaceEmptyWithEmpty = dut.isDirty
         dut._testingOnly_resetDirtyBit()
 
-        dut.replace(blockedAddresses: replacementAddresses, blockedGroups: replacementGroups)
+        replaceWithCurrentValues()
         let replaceEmptyWithFull = dut.isDirty
         dut._testingOnly_resetDirtyBit()
 
-        dut.replace(blockedAddresses: replacementAddresses, blockedGroups: replacementGroups)
+        replaceWithCurrentValues()
         let replaceFullWithFull = dut.isDirty
         dut._testingOnly_resetDirtyBit()
 
         replacementAddresses.insert(CommonGenerator.address())
-        dut.replace(blockedAddresses: replacementAddresses, blockedGroups: replacementGroups)
+        replaceWithCurrentValues()
         let replaceFullWithAnExtraAddress = dut.isDirty
         dut._testingOnly_resetDirtyBit()
 
         let newGroup = generateRandomGroupModel()
         replacementGroups[newGroup.groupId] = newGroup
-        dut.replace(blockedAddresses: replacementAddresses, blockedGroups: replacementGroups)
+        replaceWithCurrentValues()
         let replaceFullWithAnExtraGroup = dut.isDirty
         dut._testingOnly_resetDirtyBit()
 
         replacementAddresses.insert(CommonGenerator.address())
-        dut.replace(blockedAddresses: replacementAddresses, blockedGroups: replacementGroups)
-        dut.replace(blockedAddresses: replacementAddresses, blockedGroups: replacementGroups)
+        replaceWithCurrentValues()
+        replaceWithCurrentValues()
         let replaceFullWithTheSameAddressesTwice = dut.isDirty
         dut._testingOnly_resetDirtyBit()
 
@@ -200,7 +208,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
         // Setup — Simulate migration to the new format by throwing a bunch of fake data into the KVS container
         let oldAddresses = generateAddresses(count: 30)
         let oldPhoneNumberStrings = oldAddresses.compactMap { $0.phoneNumber }
-        let oldUUIDStrings = oldAddresses.compactMap { $0.uuidString }
+        let oldAcis = oldAddresses.compactMap { $0.aci }
         let oldGroupMap = generateGroupMap(count: 30)
 
         typealias Key = BlockingManager.State.PersistenceKey
@@ -208,8 +216,8 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
         databaseStorage.write {
             storage.setObject(oldPhoneNumberStrings, key: Key.blockedPhoneNumbersKey.rawValue, transaction: $0)
             storage.setObject(oldPhoneNumberStrings, key: Key.Legacy.syncedBlockedPhoneNumbersKey.rawValue, transaction: $0)
-            storage.setObject(oldUUIDStrings, key: Key.blockedUUIDsKey.rawValue, transaction: $0)
-            storage.setObject(oldUUIDStrings, key: Key.Legacy.syncedBlockedUUIDsKey.rawValue, transaction: $0)
+            storage.setObject(oldAcis.map { $0.serviceIdUppercaseString }, key: Key.blockedAciStringsKey.rawValue, transaction: $0)
+            storage.setObject(oldAcis.map { $0.serviceIdUppercaseString }, key: Key.Legacy.syncedBlockedUUIDsKey.rawValue, transaction: $0)
             storage.setObject(oldGroupMap, key: Key.blockedGroupMapKey.rawValue, transaction: $0)
             storage.setObject(Array(oldGroupMap.keys), key: Key.Legacy.syncedBlockedGroupIdsKey.rawValue, transaction: $0)
         }
@@ -223,7 +231,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
 
             // Verify
             XCTAssertEqual(Set(oldPhoneNumberStrings), dut.blockedPhoneNumbers)
-            XCTAssertEqual(Set(oldUUIDStrings), dut.blockedUUIDStrings)
+            XCTAssertEqual(Set(oldAcis), dut.blockedAcis)
             XCTAssertEqual(oldGroupMap, dut.blockedGroupMap)
             XCTAssertTrue(dut.needsSync(transaction: $0), "Block state requires a sync on first migration")
         }
@@ -258,7 +266,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
             dut.reloadIfNecessary($0)
 
             XCTAssertEqual(dut.blockedPhoneNumbers, Set([testAddress.phoneNumber!]))
-            XCTAssertEqual(dut.blockedUUIDStrings, Set([testAddress.uuidString!]))
+            XCTAssertEqual(dut.blockedAcis, Set([testAddress.aci!]))
             XCTAssertEqual(dut.blockedGroupMap[testGroup.groupId], testGroup)
 
             XCTAssertEqual(dut.changeToken, changeTokenAfterUpdate)
@@ -314,8 +322,8 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
 
             // Verify #1
             XCTAssertNotEqual(oldChangeToken, remoteState.changeToken)
-            XCTAssertEqual(remoteState.blockedPhoneNumbers, Set(blockedAddresses.compactMap { $0.phoneNumber}))
-            XCTAssertEqual(remoteState.blockedUUIDStrings, Set(blockedAddresses.compactMap { $0.uuidString}))
+            XCTAssertEqual(remoteState.blockedPhoneNumbers, Set(blockedAddresses.compactMap { $0.phoneNumber }))
+            XCTAssertEqual(remoteState.blockedAcis, Set(blockedAddresses.compactMap { $0.aci }))
             XCTAssertEqual(remoteState.blockedGroupMap, blockedGroups)
         }
 
@@ -332,7 +340,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
             // Verify #2
             XCTAssertNotEqual(oldChangeToken, dut.changeToken)
             removedBlock.phoneNumber.map { XCTAssertFalse(dut.blockedPhoneNumbers.contains($0)) }
-            removedBlock.uuidString.map { XCTAssertFalse(dut.blockedUUIDStrings.contains($0)) }
+            removedBlock.aci.map { XCTAssertFalse(dut.blockedAcis.contains($0)) }
             XCTAssertEqual(dut.blockedGroupMap, blockedGroups)
         }
     }
@@ -342,7 +350,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
     func assertInitalState(_ state: BlockingManager.State) {
         XCTAssertEqual(dut.isDirty, false)
         XCTAssertEqual(dut.blockedPhoneNumbers.count, 0)
-        XCTAssertEqual(dut.blockedUUIDStrings.count, 0)
+        XCTAssertEqual(dut.blockedAcis.count, 0)
         XCTAssertEqual(dut.blockedGroupMap.count, 0)
     }
 

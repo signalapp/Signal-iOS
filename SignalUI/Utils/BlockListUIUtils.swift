@@ -36,38 +36,34 @@ public class BlockListUIUtils: Dependencies {
         completion: Completion?
     ) {
         let displayName = contactsManager.displayName(for: address)
-        showBlockAddressesActionSheet([address], displayName: displayName, from: viewController, completion: completion)
+        showBlockAddressesActionSheet(address, displayName: displayName, from: viewController, completion: completion)
     }
 
     private static func showBlockAddressesActionSheet(
-        _ addresses: [SignalServiceAddress],
+        _ address: SignalServiceAddress,
         displayName: String,
         from viewController: UIViewController,
         completion: Completion?
     ) {
-        owsAssertDebug(!addresses.isEmpty)
+        owsAssertDebug(address.isValid)
         owsAssertDebug(!displayName.isEmpty)
 
-        for address in addresses {
-            owsAssertDebug(address.isValid)
-
-            if address.isLocalAddress {
-                showOkActionSheet(
-                    title: OWSLocalizedString(
-                        "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE",
-                        comment: "The title of the 'You can't block yourself' alert."
-                    ),
-                    message: OWSLocalizedString(
-                        "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE",
-                        comment: "The message of the 'You can't block yourself' alert."
-                    ),
-                    from: viewController,
-                    completion: { _ in
-                        completion?(false)
-                    }
-                )
-                return
-            }
+        if address.isLocalAddress {
+            showOkActionSheet(
+                title: OWSLocalizedString(
+                    "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE",
+                    comment: "The title of the 'You can't block yourself' alert."
+                ),
+                message: OWSLocalizedString(
+                    "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE",
+                    comment: "The message of the 'You can't block yourself' alert."
+                ),
+                from: viewController,
+                completion: { _ in
+                    completion?(false)
+                }
+            )
+            return
         }
 
         let actionSheetTitle = String(
@@ -89,7 +85,7 @@ public class BlockListUIUtils: Dependencies {
             accessibilityIdentifier: "BlockListUIUtils.block",
             style: .destructive,
             handler: { _ in
-                blockAddresses(addresses, displayName: displayName, from: viewController) { _ in
+                blockAddress(address, displayName: displayName, from: viewController) { _ in
                     completion?(true)
                 }
             }
@@ -145,20 +141,17 @@ public class BlockListUIUtils: Dependencies {
         viewController.presentActionSheet(actionSheet)
     }
 
-    private static func blockAddresses(
-        _ addresses: [SignalServiceAddress],
+    private static func blockAddress(
+        _ address: SignalServiceAddress,
         displayName: String,
         from viewController: UIViewController,
         completion: ((ActionSheetAction) -> Void)?
     ) {
-        owsAssertDebug(!addresses.isEmpty)
         owsAssertDebug(!displayName.isEmpty)
+        owsAssertDebug(address.isValid)
 
         databaseStorage.write { tx in
-            for address in addresses {
-                owsAssertDebug(address.isValid)
-                self.blockingManager.addBlockedAddress(address, blockMode: .localShouldLeaveGroups, transaction: tx)
-            }
+            self.blockingManager.addBlockedAddress(address, blockMode: .localShouldLeaveGroups, transaction: tx)
         }
 
         showOkActionSheet(

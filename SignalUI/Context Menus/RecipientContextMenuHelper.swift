@@ -103,7 +103,7 @@ class RecipientContextMenuHelper {
     /// Whether the given `address` corresponds with a system contact.
     private func isSystemContact(address: SignalServiceAddress) -> Bool {
         return databaseStorage.read { tx in
-            contactsManager.isSystemContact(address: address, transaction: tx) ?? false
+            contactsManager.isSystemContact(address: address, transaction: tx)
         }
     }
 
