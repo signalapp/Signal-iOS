@@ -2443,7 +2443,11 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.dataMigration_populateGroupMember) { transaction in
             let cursor = TSThread.grdbFetchCursor(
-                sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
+                sql: """
+                    SELECT *
+                    FROM \(ThreadRecord.databaseTableName)
+                    WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)
+                """,
                 transaction: transaction
             )
 
@@ -2460,7 +2464,10 @@ public class GRDBSchemaMigrator: NSObject {
                     // not been populated yet at this point in time. We want to record
                     // as close to a fully qualified address as we can in the database,
                     // so defer to the address from the signal recipient (if one exists)
-                    let recipient = GRDBSignalRecipientFinder().signalRecipient(for: address, transaction: transaction)
+                    let recipient = SignalRecipientFinder().signalRecipient(
+                        for: address,
+                        tx: transaction.asAnyRead
+                    )
                     let memberAddress = recipient?.address ?? address
 
                     guard TSGroupMember.groupMember(
@@ -2474,7 +2481,10 @@ public class GRDBSchemaMigrator: NSObject {
                         return
                     }
 
-                    let latestInteraction = interactionFinder.latestInteraction(from: memberAddress, transaction: transaction.asAnyWrite)
+                    let latestInteraction = interactionFinder.latestInteraction(
+                        from: memberAddress,
+                        transaction: transaction.asAnyWrite
+                    )
                     let memberRecord = TSGroupMember(
                         serviceId: memberAddress.untypedServiceId,
                         phoneNumber: memberAddress.phoneNumber,
@@ -2594,7 +2604,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_syncGroupStories) { transaction in
-            for thread in AnyThreadFinder().storyThreads(includeImplicitGroupThreads: false, transaction: transaction.asAnyRead) {
+            for thread in ThreadFinder().storyThreads(includeImplicitGroupThreads: false, transaction: transaction.asAnyRead) {
                 guard let thread = thread as? TSGroupThread else { continue }
                 self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
             }

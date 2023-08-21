@@ -7,93 +7,55 @@ import GRDB
 import LibSignalClient
 
 @objc
-public class AnyUserProfileFinder: NSObject {
-    let grdbAdapter = GRDBUserProfileFinder()
-}
-
-public extension AnyUserProfileFinder {
+public class UserProfileFinder: NSObject {
     @objc(userProfileForAddress:transaction:)
-    func userProfile(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
+    public func userProfile(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
         return userProfiles(for: [address], tx: transaction)[0]
     }
 
     func userProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {
-        let userProfiles = grdbAdapter.userProfiles(for: addresses, transaction: tx.unwrapGrdbRead)
+        let userProfiles = Refinery<SignalServiceAddress, OWSUserProfile>(addresses).refine { addresses in
+            return userProfilesFor(serviceIds: addresses.map { $0.serviceId }, tx: tx)
+        }.refine { addresses in
+            return userProfilesFor(phoneNumbers: addresses.map { $0.phoneNumber }, tx: tx)
+        }.values
+
         userProfiles.forEach { $0?.loadBadgeContent(with: tx) }
         return userProfiles
     }
 
-    func fetchUserProfiles(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> [OWSUserProfile] {
-        let userProfiles = grdbAdapter.fetchUserProfiles(for: serviceId, tx: tx.unwrapGrdbRead)
-        userProfiles.forEach { $0.loadBadgeContent(with: tx) }
-        return userProfiles
-    }
-
-    func fetchUserProfiles(for phoneNumber: String, tx: SDSAnyReadTransaction) -> [OWSUserProfile] {
-        let userProfiles = grdbAdapter.fetchUserProfiles(for: phoneNumber, tx: tx.unwrapGrdbRead)
-        userProfiles.forEach { $0.loadBadgeContent(with: tx) }
-        return userProfiles
-    }
-
-    func enumerateMissingAndStaleUserProfiles(transaction: SDSAnyReadTransaction, block: @escaping (OWSUserProfile) -> Void) {
-        grdbAdapter.enumerateMissingAndStaleUserProfiles(
-            transaction: transaction.unwrapGrdbRead,
-            block: block
-        )
-    }
-}
-
-// MARK: -
-
-@objc
-class GRDBUserProfileFinder: NSObject {
-    func userProfiles(for addresses: [SignalServiceAddress], transaction: GRDBReadTransaction) -> [OWSUserProfile?] {
-        return Refinery<SignalServiceAddress, OWSUserProfile>(addresses).refine { addresses in
-            return userProfilesForServiceIds(addresses.map { $0.serviceId }, transaction: transaction)
-        }.refine { addresses in
-            return userProfilesForPhoneNumbers(addresses.map { $0.phoneNumber }, transaction: transaction)
-        }.values
-    }
-
-    fileprivate func fetchUserProfiles(for serviceId: ServiceId, tx: GRDBReadTransaction) -> [OWSUserProfile] {
-        return userProfilesWhere(
+    func fetchUserProfiles(serviceId: ServiceId, tx: SDSAnyReadTransaction) -> [OWSUserProfile] {
+        let userProfiles = userProfilesWhere(
             column: "\(userProfileColumn: .recipientUUID)",
             anyValueIn: [serviceId.serviceIdUppercaseString],
-            transaction: tx
+            tx: tx
         )
+
+        userProfiles.forEach { $0.loadBadgeContent(with: tx) }
+        return userProfiles
     }
 
-    fileprivate func fetchUserProfiles(for phoneNumber: String, tx: GRDBReadTransaction) -> [OWSUserProfile] {
-        return userProfilesWhere(
+    func fetchUserProfiles(phoneNumber: String, tx: SDSAnyReadTransaction) -> [OWSUserProfile] {
+        let userProfiles = userProfilesWhere(
             column: "\(userProfileColumn: .recipientPhoneNumber)",
             anyValueIn: [phoneNumber],
-            transaction: tx
+            tx: tx
         )
+
+        userProfiles.forEach { $0.loadBadgeContent(with: tx) }
+        return userProfiles
     }
 
-    private func userProfilesWhere(column: String, anyValueIn values: [String], transaction: GRDBReadTransaction) -> [OWSUserProfile] {
-        let qms = Array(repeating: "?", count: values.count).joined(separator: ", ")
-        let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(column) in (\(qms))"
-        do {
-            return try OWSUserProfile.grdbFetchCursor(sql: sql,
-                                                      arguments: StatementArguments(values),
-                                                      transaction: transaction).all()
-        } catch {
-            owsFailDebug("Error fetching profiles where \(column) in \(values): \(error)")
-            return []
-        }
-    }
-
-    fileprivate func userProfilesForServiceIds(
-        _ optionalServiceIds: [ServiceId?],
-        transaction: GRDBReadTransaction
+    private func userProfilesFor(
+        serviceIds optionalServiceIds: [ServiceId?],
+        tx: SDSAnyReadTransaction
     ) -> [OWSUserProfile?] {
         return Refinery<ServiceId?, OWSUserProfile>(optionalServiceIds)
             .refineNonnilKeys { (serviceIds: AnySequence<ServiceId>) -> [OWSUserProfile?] in
                 let profiles = userProfilesWhere(
                     column: "\(userProfileColumn: .recipientUUID)",
                     anyValueIn: Array(serviceIds.map { $0.serviceIdUppercaseString }),
-                    transaction: transaction
+                    tx: tx
                 )
 
                 let index = Dictionary(grouping: profiles) { $0?.recipientUUID }
@@ -104,28 +66,51 @@ class GRDBUserProfileFinder: NSObject {
             }.values
     }
 
-    fileprivate func userProfilesForPhoneNumbers(
-        _ phoneNumbers: [String?],
-        transaction: GRDBReadTransaction
+    private func userProfilesFor(
+        phoneNumbers optionalPhoneNumbers: [String?],
+        tx: SDSAnyReadTransaction
     ) -> [OWSUserProfile?] {
-        return Refinery<String?, OWSUserProfile>(phoneNumbers)
-            .refineNonnilKeys { (phoneNumberSequence: AnySequence<String>) -> [OWSUserProfile?] in
+        return Refinery<String?, OWSUserProfile>(optionalPhoneNumbers)
+            .refineNonnilKeys { (phoneNumbers: AnySequence<String>) -> [OWSUserProfile?] in
                 let profiles = userProfilesWhere(
                     column: "\(userProfileColumn: .recipientPhoneNumber)",
-                    anyValueIn: Array(phoneNumberSequence),
-                    transaction: transaction
+                    anyValueIn: Array(phoneNumbers),
+                    tx: tx
                 )
 
                 let index = Dictionary(grouping: profiles) { $0?.recipientPhoneNumber }
-                return phoneNumberSequence.map { phoneNumber in
+                return phoneNumbers.map { phoneNumber in
                     let maybeArray = index[phoneNumber]
                     return maybeArray?[0]
                 }
             }.values
     }
 
+    private func userProfilesWhere(
+        column: String,
+        anyValueIn values: [String],
+        tx: SDSAnyReadTransaction
+    ) -> [OWSUserProfile] {
+        let qms = Array(repeating: "?", count: values.count).joined(separator: ", ")
+        let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(column) in (\(qms))"
+        do {
+            return try OWSUserProfile.grdbFetchCursor(
+                sql: sql,
+                arguments: StatementArguments(values),
+                transaction: tx.unwrapGrdbRead
+            ).all()
+        } catch {
+            owsFailDebug("Error fetching profiles where \(column) in \(values): \(error)")
+            return []
+        }
+    }
+}
+
+// MARK: -
+
+extension UserProfileFinder {
     func enumerateMissingAndStaleUserProfiles(
-        transaction: GRDBReadTransaction,
+        transaction tx: SDSAnyReadTransaction,
         block: @escaping (OWSUserProfile) -> Void
     ) {
         // We are only interested in active users, e.g. users
@@ -156,14 +141,18 @@ class GRDBUserProfileFinder: NSObject {
         FROM \(UserProfileRecord.databaseTableName)
         WHERE \(userProfileColumn: .lastMessagingDate) > ?
         AND (
-        \(userProfileColumn: .lastFetchDate) < ? OR
-        \(userProfileColumn: .lastFetchDate) IS NULL
+            \(userProfileColumn: .lastFetchDate) < ? OR
+            \(userProfileColumn: .lastFetchDate) IS NULL
         )
         ORDER BY \(userProfileColumn: .lastFetchDate) ASC
         LIMIT 50
         """
         let arguments: StatementArguments = [convertDateForGrdb(activeDate), convertDateForGrdb(staleDate)]
-        let cursor = OWSUserProfile.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
+        let cursor = OWSUserProfile.grdbFetchCursor(
+            sql: sql,
+            arguments: arguments,
+            transaction: tx.unwrapGrdbRead
+        )
 
         do {
             while let userProfile = try cursor.next() {

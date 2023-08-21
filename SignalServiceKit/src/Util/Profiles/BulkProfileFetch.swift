@@ -316,7 +316,7 @@ public class BulkProfileFetch: NSObject {
             formatter.timeStyle = .short
 
             var userProfiles = [OWSUserProfile]()
-            let userProfileFinder = AnyUserProfileFinder()
+            let userProfileFinder = UserProfileFinder()
             userProfileFinder.enumerateMissingAndStaleUserProfiles(transaction: transaction) { (userProfile: OWSUserProfile) in
                 guard !userProfile.publicAddress.isLocalAddress else {
                     // Ignore the local user.

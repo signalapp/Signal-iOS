@@ -266,21 +266,21 @@ public extension OWSUserProfile {
     /// The profile can affect how accounts, recipients, contact threads, and
     /// group threads are indexed, so we need to re-index them whenever the
     /// profile changes.
-    func reindexAssociatedModels(transaction: SDSAnyWriteTransaction) {
-        if let signalAccount = AnySignalAccountFinder().signalAccount(for: address, transaction: transaction) {
-            FullTextSearchFinder.modelWasUpdated(model: signalAccount, transaction: transaction)
+    func reindexAssociatedModels(transaction tx: SDSAnyWriteTransaction) {
+        if let signalAccount = SignalAccountFinder().signalAccount(for: address, tx: tx) {
+            FullTextSearchFinder.modelWasUpdated(model: signalAccount, transaction: tx)
         }
 
-        if let signalRecipient = AnySignalRecipientFinder().signalRecipient(for: address, transaction: transaction) {
-            FullTextSearchFinder.modelWasUpdated(model: signalRecipient, transaction: transaction)
+        if let signalRecipient = SignalRecipientFinder().signalRecipient(for: address, tx: tx) {
+            FullTextSearchFinder.modelWasUpdated(model: signalRecipient, transaction: tx)
         }
 
-        if let contactThread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
-            FullTextSearchFinder.modelWasUpdated(model: contactThread, transaction: transaction)
+        if let contactThread = TSContactThread.getWithContactAddress(address, transaction: tx) {
+            FullTextSearchFinder.modelWasUpdated(model: contactThread, transaction: tx)
         }
 
-        TSGroupMember.enumerateGroupMembers(for: address, transaction: transaction) { groupMember, _ in
-            FullTextSearchFinder.modelWasUpdated(model: groupMember, transaction: transaction)
+        TSGroupMember.enumerateGroupMembers(for: address, transaction: tx) { groupMember, _ in
+            FullTextSearchFinder.modelWasUpdated(model: groupMember, transaction: tx)
         }
     }
 }

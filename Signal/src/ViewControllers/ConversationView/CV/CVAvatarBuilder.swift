@@ -57,7 +57,7 @@ public class CVAvatarBuilder: Dependencies {
                     // TODO: Badges — Unify with ConversationAvatarDataSource
                     return OWSProfileManager.shared.localUserProfile()
                 } else {
-                    return AnyUserProfileFinder().userProfile(for: address, transaction: transaction)
+                    return UserProfileFinder().userProfile(for: address, transaction: transaction)
                 }
             }()
 

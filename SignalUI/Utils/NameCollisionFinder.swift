@@ -67,7 +67,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
 
         if
             onlySearchIfMessageRequest,
-            !contactThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+            !contactThread.hasPendingMessageRequest(transaction: transaction)
         {
             return []
         }

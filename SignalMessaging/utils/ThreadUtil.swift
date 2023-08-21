@@ -185,7 +185,7 @@ public extension ThreadUtil {
 
 extension ThreadUtil {
     private static func shouldSetUniversalTimer(for thread: TSThread, tx: SDSAnyReadTransaction) -> Bool {
-        GRDBThreadFinder.shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: tx.unwrapGrdbRead)
+        ThreadFinder().shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: tx)
     }
 
     private static func setUniversalTimer(for thread: TSThread, tx: SDSAnyWriteTransaction) {
@@ -201,7 +201,7 @@ extension ThreadUtil {
     }
 
     private static func shouldAddThreadToProfileWhitelist(_ thread: TSThread, tx: SDSAnyReadTransaction) -> Bool {
-        let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: tx.unwrapGrdbRead)
+        let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: tx)
 
         // If we're creating this thread or we have a pending message request,
         // any action we trigger should share our profile.

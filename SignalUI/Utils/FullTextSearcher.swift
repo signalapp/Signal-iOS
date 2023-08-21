@@ -619,7 +619,7 @@ public class FullTextSearcher: NSObject {
             // Filter out users with whom we've never had contact.
             return true
         }
-        return thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+        return thread.hasPendingMessageRequest(transaction: transaction)
     }
 
     func matchesNoteToSelf(searchText: String, transaction: SDSAnyReadTransaction) -> Bool {

@@ -423,7 +423,6 @@ class DebugUIMisc: DebugUIPage, Dependencies {
                 guard let thread = thread as? TSContactThread else {
                     return
                 }
-                Logger.verbose("TSContactThread: \(thread.addressComponentsDescription)")
             }
         }
     }

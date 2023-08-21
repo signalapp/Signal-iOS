@@ -96,7 +96,7 @@ extension AudioAttachment: Dependencies {
                 return
             }
             let circumstance: OWSReceiptCircumstance = (
-                latestThread.hasPendingMessageRequest(transaction: tx.unwrapGrdbWrite)
+                latestThread.hasPendingMessageRequest(transaction: tx)
                 ? .onThisDeviceWhilePendingMessageRequest
                 : .onThisDevice
             )

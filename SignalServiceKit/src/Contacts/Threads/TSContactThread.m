@@ -26,9 +26,9 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
 
 #pragma mark - Dependencies
 
-+ (AnyContactThreadFinder *)threadFinder
++ (ContactThreadFinder *)threadFinder
 {
-    return [AnyContactThreadFinder new];
+    return [ContactThreadFinder new];
 }
 
 #pragma mark -

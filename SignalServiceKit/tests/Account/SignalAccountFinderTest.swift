@@ -66,9 +66,9 @@ class SignalAccountFinderTest: SSKBaseTestSwift {
             account1
         ]
 
-        read { transaction in
-            let accountFinder = AnySignalAccountFinder()
-            let actualAccounts = accountFinder.signalAccounts(for: addressesToFetch, transaction: transaction)
+        read { tx in
+            let accountFinder = SignalAccountFinder()
+            let actualAccounts = accountFinder.signalAccounts(for: addressesToFetch, tx: tx)
             XCTAssertEqual(
                 actualAccounts.map { $0?.recipientAddress },
                 expectedAccounts.map { $0?.recipientAddress }

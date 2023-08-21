@@ -135,8 +135,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 - (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)updateWithUpdatedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
-- (BOOL)hasPendingMessageRequestWithTransaction:(GRDBReadTransaction *)transaction
-    NS_SWIFT_NAME(hasPendingMessageRequest(transaction:));
 
 #pragma mark Archival
 

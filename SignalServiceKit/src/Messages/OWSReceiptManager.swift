@@ -582,7 +582,7 @@ public extension OWSReceiptManager {
     }
 
     private func linkedDeviceReceiptCircumstance(for thread: TSThread, tx: SDSAnyReadTransaction) -> OWSReceiptCircumstance {
-        if thread.hasPendingMessageRequest(transaction: tx.unwrapGrdbRead) {
+        if thread.hasPendingMessageRequest(transaction: tx) {
             return .onLinkedDeviceWhilePendingMessageRequest
         } else {
             return .onLinkedDevice

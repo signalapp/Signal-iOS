@@ -67,7 +67,7 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
             for _ in 0..<readCount {
                 var observedCount = 0
                 do {
-                    try AnyThreadFinder().enumerateVisibleThreads(isArchived: isArchived, transaction: transaction) { _ in
+                    try ThreadFinder().enumerateVisibleThreads(isArchived: isArchived, transaction: transaction) { _ in
                         observedCount += 1
                     }
                 } catch {

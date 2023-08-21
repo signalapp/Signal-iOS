@@ -78,7 +78,7 @@ public class CLVLoader: Dependencies {
     private static func loadRenderStateInternal(viewInfo: CLVViewInfo,
                                                 transaction: SDSAnyReadTransaction) throws -> CLVRenderState {
 
-        let threadFinder = AnyThreadFinder()
+        let threadFinder = ThreadFinder()
         let isViewingArchive = viewInfo.chatListMode == .archive
 
         var pinnedThreads = [TSThread]()

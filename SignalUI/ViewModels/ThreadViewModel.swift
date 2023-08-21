@@ -64,7 +64,7 @@ public class ThreadViewModel: NSObject {
         let unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction.unwrapGrdbRead)
         self.unreadCount = unreadCount
         self.hasUnreadMessages = associatedData.isMarkedUnread || unreadCount > 0
-        self.hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+        self.hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction)
 
         self.lastMessageForInbox = thread.lastInteractionForInbox(transaction: transaction)
 

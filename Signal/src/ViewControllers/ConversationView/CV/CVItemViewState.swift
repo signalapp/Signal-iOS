@@ -698,11 +698,13 @@ private extension MessageLoader {
     var shouldShowThreadDetails: Bool {
         !canLoadOlder
     }
+
     func shouldShowUnknownThreadWarning(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
         !canLoadOlder && NSObject.contactsManagerImpl.shouldShowUnknownThreadWarning(thread: thread, transaction: transaction)
     }
+
     func shouldShowDefaultDisappearingMessageTimer(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
-        GRDBThreadFinder.shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: transaction.unwrapGrdbRead)
+        ThreadFinder().shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: transaction)
     }
 }
 

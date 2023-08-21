@@ -159,7 +159,7 @@ public struct CLVViewInfo: Equatable {
                       hasVisibleReminders: Bool,
                       transaction: SDSAnyReadTransaction) -> CLVViewInfo {
         do {
-            let threadFinder = AnyThreadFinder()
+            let threadFinder = ThreadFinder()
             let archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
             let inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
             let hasArchivedThreadsRow = (chatListMode == .inbox && archiveCount > 0)

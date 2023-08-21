@@ -98,6 +98,10 @@ public extension TSThread {
         }
         return groupModel.isAnnouncementsOnly
     }
+
+    func hasPendingMessageRequest(transaction: SDSAnyReadTransaction) -> Bool {
+        return ThreadFinder().hasPendingMessageRequest(thread: self, transaction: transaction)
+    }
 }
 
 // MARK: -
@@ -227,15 +231,5 @@ extension TSThread {
             author: localAddress,
             transaction: transaction
         ) as? TSOutgoingMessage
-    }
-}
-
-// MARK: - Drafts
-
-extension TSContactThread {
-    @objc
-    public var addressComponentsDescription: String {
-        SignalServiceAddress.addressComponentsDescription(uuidString: contactUUID,
-                                                          phoneNumber: contactPhoneNumber)
     }
 }

@@ -925,7 +925,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     func updateMutualGroupThreads() {
         guard let contactThread = thread as? TSContactThread else { return }
         databaseStorage.read { transaction in
-            self.hasGroupThreads = GRDBThreadFinder.existsGroupThread(transaction: transaction.unwrapGrdbRead)
+            self.hasGroupThreads = ThreadFinder().existsGroupThread(transaction: transaction)
             self.mutualGroupThreads = TSGroupThread.groupThreads(
                 with: contactThread.contactAddress,
                 transaction: transaction

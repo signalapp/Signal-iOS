@@ -855,7 +855,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
                 // TODO: Badges — Expose badge info about local user profile on OWSUserProfile
                 userProfile = OWSProfileManager.shared.localUserProfile()
             } else {
-                userProfile = AnyUserProfileFinder().userProfile(for: targetAddress, transaction: $0)
+                userProfile = UserProfileFinder().userProfile(for: targetAddress, transaction: $0)
             }
             return userProfile?.primaryBadge?.fetchBadgeContent(transaction: $0)
         }

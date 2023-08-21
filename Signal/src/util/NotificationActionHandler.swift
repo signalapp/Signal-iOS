@@ -344,7 +344,7 @@ public class NotificationActionHandler: Dependencies {
                     storyMessage = nil
                 }
 
-                let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+                let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction)
 
                 return NotificationMessage(
                     thread: thread,

@@ -305,7 +305,7 @@ public struct StoryConversationItem {
             return thread.lastSentStoryTimestamp?.uint64Value ?? 0
         }
 
-        let threads = AnyThreadFinder().storyThreads(
+        let threads = ThreadFinder().storyThreads(
             includeImplicitGroupThreads: includeImplicitGroupThreads,
             transaction: transaction
         )

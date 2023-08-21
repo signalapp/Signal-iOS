@@ -37,11 +37,11 @@ class ThreadStoreImpl: ThreadStore {
     }
 
     func fetchContactThreads(serviceId: ServiceId, tx: DBReadTransaction) -> [TSContactThread] {
-        AnyContactThreadFinder().contactThreads(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
+        ContactThreadFinder().contactThreads(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread] {
-        AnyContactThreadFinder().contactThreads(for: phoneNumber, tx: SDSDB.shimOnlyBridge(tx))
+        ContactThreadFinder().contactThreads(for: phoneNumber, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {

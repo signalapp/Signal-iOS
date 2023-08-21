@@ -15,14 +15,14 @@ protocol RecipientDataStore {
 }
 
 class RecipientDataStoreImpl: RecipientDataStore {
-    func fetchRecipient(serviceId: UntypedServiceId, transaction: DBReadTransaction) -> SignalRecipient? {
-        AnySignalRecipientFinder()
-            .signalRecipientForUUID(serviceId.uuidValue, transaction: SDSDB.shimOnlyBridge(transaction))
+    func fetchRecipient(serviceId: UntypedServiceId, transaction tx: DBReadTransaction) -> SignalRecipient? {
+        SignalRecipientFinder()
+            .signalRecipientForUUID(serviceId.uuidValue, tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient? {
-        AnySignalRecipientFinder()
-            .signalRecipientForPhoneNumber(phoneNumber, transaction: SDSDB.shimOnlyBridge(transaction))
+    func fetchRecipient(phoneNumber: String, transaction tx: DBReadTransaction) -> SignalRecipient? {
+        SignalRecipientFinder()
+            .signalRecipientForPhoneNumber(phoneNumber, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     func insertRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {

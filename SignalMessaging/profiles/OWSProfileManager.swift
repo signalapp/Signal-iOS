@@ -125,17 +125,17 @@ public extension OWSProfileManager {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    func objc_allWhitelistedRegisteredAddresses(transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+    func objc_allWhitelistedRegisteredAddresses(transaction tx: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         var addresses = Set<SignalServiceAddress>()
-        for uuid in whitelistedUUIDsStore.allKeys(transaction: transaction) {
+        for uuid in whitelistedUUIDsStore.allKeys(transaction: tx) {
             addresses.insert(SignalServiceAddress(uuidString: uuid))
         }
-        for phoneNumber in whitelistedPhoneNumbersStore.allKeys(transaction: transaction) {
+        for phoneNumber in whitelistedPhoneNumbersStore.allKeys(transaction: tx) {
             addresses.insert(SignalServiceAddress(phoneNumber: phoneNumber))
         }
 
         return Array(
-            AnySignalRecipientFinder().signalRecipients(for: Array(addresses), transaction: transaction)
+            SignalRecipientFinder().signalRecipients(for: Array(addresses), tx: tx)
                 .lazy.filter { $0.isRegistered }.map { $0.address }
         )
     }

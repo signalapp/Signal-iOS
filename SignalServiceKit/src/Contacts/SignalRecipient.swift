@@ -363,7 +363,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             }
         }
 
-        if let contactThread = AnyContactThreadFinder().contactThread(for: newAddress, transaction: transaction) {
+        if let contactThread = ContactThreadFinder().contactThread(for: newAddress, tx: transaction) {
             SDSDatabaseStorage.shared.touch(thread: contactThread, shouldReindex: true, transaction: transaction)
         }
 

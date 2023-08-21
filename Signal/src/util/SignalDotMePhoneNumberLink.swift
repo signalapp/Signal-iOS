@@ -27,8 +27,8 @@ class SignalDotMePhoneNumberLink: Dependencies {
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: true) { modal in
             firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Set<SignalRecipient>> in
-                let existingRecipient = databaseStorage.read { transaction in
-                    AnySignalRecipientFinder().signalRecipientForPhoneNumber(phoneNumber, transaction: transaction)
+                let existingRecipient = databaseStorage.read { tx in
+                    SignalRecipientFinder().signalRecipientForPhoneNumber(phoneNumber, tx: tx)
                 }
                 if let existingRecipient, existingRecipient.isRegistered {
                     return Promise.value([existingRecipient])

@@ -674,15 +674,15 @@ public class SignalAccountReadCache: NSObject {
     typealias ValueType = SignalAccount
 
     private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
-        private let accountFinder = AnySignalAccountFinder()
+        private let accountFinder = SignalAccountFinder()
 
-        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-            accountFinder.signalAccount(for: key, transaction: transaction)
+        override func read(key: KeyType, transaction tx: SDSAnyReadTransaction) -> ValueType? {
+            accountFinder.signalAccount(for: key, tx: tx)
         }
 
         override func read(keys: [SignalAccountReadCache.KeyType],
-                           transaction: SDSAnyReadTransaction) -> [SignalAccountReadCache.ValueType?] {
-            accountFinder.signalAccounts(for: keys, transaction: transaction)
+                           transaction tx: SDSAnyReadTransaction) -> [SignalAccountReadCache.ValueType?] {
+            accountFinder.signalAccounts(for: keys, tx: tx)
         }
 
         override func key(forValue value: ValueType) -> KeyType {
@@ -751,10 +751,8 @@ public class SignalRecipientReadCache: NSObject {
     typealias ValueType = SignalRecipient
 
     private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
-        private let recipientFinder = AnySignalRecipientFinder()
-
-        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-            recipientFinder.signalRecipient(for: key, transaction: transaction)
+        override func read(key: KeyType, transaction tx: SDSAnyReadTransaction) -> ValueType? {
+            SignalRecipientFinder().signalRecipient(for: key, tx: tx)
         }
 
         override func key(forValue value: ValueType) -> KeyType {

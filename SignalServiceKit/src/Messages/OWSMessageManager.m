@@ -1164,7 +1164,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
     if (envelope.sourceAddress.isLocalAddress) {
-        BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
+        BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction];
         OWSFailDebug(@"Incoming messages from yourself are not supported.");
         // Don't send a read receipt for messages sent by ourselves.
         [message markAsReadAtTimestamp:envelope.timestamp

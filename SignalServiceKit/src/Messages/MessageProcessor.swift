@@ -165,7 +165,7 @@ public class MessageProcessor: NSObject {
             SDSDatabaseStorage.shared.read { transaction in
                 // We may have legacy process jobs queued. We want to schedule them for
                 // processing immediately when we launch, so that we can drain the old queue.
-                let legacyProcessingJobRecords = AnyMessageContentJobFinder().allJobs(transaction: transaction)
+                let legacyProcessingJobRecords = LegacyMessageJobFinder().allJobs(transaction: transaction)
                 for jobRecord in legacyProcessingJobRecords {
                     let completion: (Error?) -> Void = { _ in
                         SDSDatabaseStorage.shared.write { jobRecord.anyRemove(transaction: $0) }

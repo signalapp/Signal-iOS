@@ -58,7 +58,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
     public var opaqueHeight: CGFloat { view.height - gradientBackdrop.height }
 
     private weak var delegate: GetStartedBannerViewControllerDelegate?
-    private let threadFinder = AnyThreadFinder()
+    private let threadFinder = ThreadFinder()
     private var bannerContent: [GetStartedBannerEntry] = []
 
     // MARK: - Lifecycle

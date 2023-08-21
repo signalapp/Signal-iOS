@@ -1934,7 +1934,7 @@
 		F9C5CCDE289453B300548EEE /* TSThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F8289453B100548EEE /* TSThread.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCDF289453B300548EEE /* TSThread+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F9289453B100548EEE /* TSThread+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCE0289453B300548EEE /* SignalRecipientFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FA289453B100548EEE /* SignalRecipientFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCE1289453B300548EEE /* AnyThreadFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FB289453B100548EEE /* AnyThreadFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
+		F9C5CCE1289453B300548EEE /* ContactThreadFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FB289453B100548EEE /* ContactThreadFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCE2289453B300548EEE /* SignalServiceAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FC289453B100548EEE /* SignalServiceAddress.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCE3289453B300548EEE /* TSGroupMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FD289453B100548EEE /* TSGroupMember.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCE4289453B300548EEE /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FE289453B100548EEE /* Contact.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -2091,7 +2091,7 @@
 		F9C5CDA0289453B400548EEE /* IncomingGroupsV2MessageJob.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACA289453B200548EEE /* IncomingGroupsV2MessageJob.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDA1289453B400548EEE /* GroupsV2MessageJobFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACB289453B200548EEE /* GroupsV2MessageJobFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDA2289453B400548EEE /* GroupsV2MessageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACC289453B200548EEE /* GroupsV2MessageProcessor.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDA4289453B400548EEE /* MessageContentJobFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACE289453B200548EEE /* MessageContentJobFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
+		F9C5CDA4289453B400548EEE /* LegacyMessageJobFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACE289453B200548EEE /* LegacyMessageJobFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDA5289453B400548EEE /* IncomingGroupsV2MessageJob+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDA9289453B400548EEE /* OWSUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAD4289453B200548EEE /* OWSUpload.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -4553,7 +4553,7 @@
 		F9C5C9F8289453B100548EEE /* TSThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSThread.m; sourceTree = "<group>"; };
 		F9C5C9F9289453B100548EEE /* TSThread+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSThread+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C9FA289453B100548EEE /* SignalRecipientFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalRecipientFinder.swift; sourceTree = "<group>"; };
-		F9C5C9FB289453B100548EEE /* AnyThreadFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyThreadFinder.swift; sourceTree = "<group>"; };
+		F9C5C9FB289453B100548EEE /* ContactThreadFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactThreadFinder.swift; sourceTree = "<group>"; };
 		F9C5C9FC289453B100548EEE /* SignalServiceAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceAddress.swift; sourceTree = "<group>"; };
 		F9C5C9FD289453B100548EEE /* TSGroupMember.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSGroupMember.swift; sourceTree = "<group>"; };
 		F9C5C9FE289453B100548EEE /* Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
@@ -4710,7 +4710,7 @@
 		F9C5CACA289453B200548EEE /* IncomingGroupsV2MessageJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IncomingGroupsV2MessageJob.m; sourceTree = "<group>"; };
 		F9C5CACB289453B200548EEE /* GroupsV2MessageJobFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2MessageJobFinder.swift; sourceTree = "<group>"; };
 		F9C5CACC289453B200548EEE /* GroupsV2MessageProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2MessageProcessor.swift; sourceTree = "<group>"; };
-		F9C5CACE289453B200548EEE /* MessageContentJobFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageContentJobFinder.swift; sourceTree = "<group>"; };
+		F9C5CACE289453B200548EEE /* LegacyMessageJobFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyMessageJobFinder.swift; sourceTree = "<group>"; };
 		F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "IncomingGroupsV2MessageJob+SDS.swift"; sourceTree = "<group>"; };
 		F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncomingGroupsV2MessageJob.h; sourceTree = "<group>"; };
 		F9C5CAD4289453B200548EEE /* OWSUpload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSUpload.swift; sourceTree = "<group>"; };
@@ -9066,12 +9066,12 @@
 			children = (
 				F9C5C9D5289453B100548EEE /* Discovery */,
 				F9C5C9E3289453B100548EEE /* Threads */,
-				F9C5C9FB289453B100548EEE /* AnyThreadFinder.swift */,
 				500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */,
 				F9C5C9FF289453B100548EEE /* Contact+Swift.swift */,
 				F9C5C9E2289453B100548EEE /* Contact.h */,
 				F9C5C9CD289453B100548EEE /* Contact.m */,
 				F9C5C9FE289453B100548EEE /* Contact.swift */,
+				F9C5C9FB289453B100548EEE /* ContactThreadFinder.swift */,
 				502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */,
 				5003BB42299F034D0037159B /* E164.swift */,
 				506695E929C52F2F00B6D8D0 /* GroupMemberMergeObserver.swift */,
@@ -9450,7 +9450,7 @@
 				F9C5CACF289453B200548EEE /* IncomingGroupsV2MessageJob+SDS.swift */,
 				F9C5CAD1289453B200548EEE /* IncomingGroupsV2MessageJob.h */,
 				F9C5CACA289453B200548EEE /* IncomingGroupsV2MessageJob.m */,
-				F9C5CACE289453B200548EEE /* MessageContentJobFinder.swift */,
+				F9C5CACE289453B200548EEE /* LegacyMessageJobFinder.swift */,
 			);
 			path = Receiving;
 			sourceTree = "<group>";
@@ -12077,7 +12077,6 @@
 				F915A76E29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift in Sources */,
 				F9C5CD5F289453B300548EEE /* AccountIdFinder.swift in Sources */,
 				F9C5CCA9289453B300548EEE /* AccountServiceClient.swift in Sources */,
-				F9C5CCE1289453B300548EEE /* AnyThreadFinder.swift in Sources */,
 				F9C5CE13289453B400548EEE /* AppContext.m in Sources */,
 				F9C5CE40289453B400548EEE /* AppExpiry.swift in Sources */,
 				F9C5CE52289453B400548EEE /* AppReadiness.swift in Sources */,
@@ -12125,6 +12124,7 @@
 				5049FA2F28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift in Sources */,
 				66C2B1542A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift in Sources */,
 				F9C5CCF8289453B300548EEE /* ContactsInputStream.swift in Sources */,
+				F9C5CCE1289453B300548EEE /* ContactThreadFinder.swift in Sources */,
 				F9C5CDCA289453B400548EEE /* ContentProxy.swift in Sources */,
 				F962B38A293F9F1F00765BD8 /* CRC32.swift in Sources */,
 				F9C5CDF4289453B400548EEE /* Currency.swift in Sources */,
@@ -12256,6 +12256,7 @@
 				D9CA5BF729B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift in Sources */,
 				F9C5CE0E289453B400548EEE /* LegacyChangePhoneNumber.swift in Sources */,
 				D9AE0ADB29188A170063488B /* LegacyMessageDecryptJobRecord.swift in Sources */,
+				F9C5CDA4289453B400548EEE /* LegacyMessageJobFinder.swift in Sources */,
 				F9C5CD44289453B300548EEE /* LegacyMessageKeys.m in Sources */,
 				F9C5CD40289453B300548EEE /* LegacyReceivingChain.m in Sources */,
 				F9C5CD3E289453B300548EEE /* LegacyRootKey.m in Sources */,
@@ -12279,7 +12280,6 @@
 				F9C5CBC9289453B300548EEE /* MessageBody.swift in Sources */,
 				66FC636F29DF797700F00DAC /* MessageBodyRanges.swift in Sources */,
 				668444802A3289C700DBED7C /* MessageBodyStyle.swift in Sources */,
-				F9C5CDA4289453B400548EEE /* MessageContentJobFinder.swift in Sources */,
 				F9C5CC6D289453B300548EEE /* MessageFetcherJob.swift in Sources */,
 				F9C5CC4E289453B300548EEE /* MessagePipelineSupervisor.swift in Sources */,
 				F9C5CC63289453B300548EEE /* MessageProcessor.swift in Sources */,

@@ -59,7 +59,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
             var result = [TSGroupThread]()
 
             do {
-                try AnyThreadFinder().enumerateGroupThreads(transaction: transaction) { thread in
+                try ThreadFinder().enumerateGroupThreads(transaction: transaction) { thread in
                     guard thread.isGroupV2Thread else { return }
 
                     let threadViewModel = ThreadViewModel(

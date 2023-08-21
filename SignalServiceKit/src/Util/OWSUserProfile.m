@@ -199,9 +199,9 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     return @"UserProfile";
 }
 
-+ (AnyUserProfileFinder *)userProfileFinder
++ (UserProfileFinder *)userProfileFinder
 {
-    return [AnyUserProfileFinder new];
+    return [UserProfileFinder new];
 }
 
 + (SignalServiceAddress *)localProfileAddress

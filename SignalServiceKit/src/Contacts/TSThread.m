@@ -522,11 +522,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     [INInteraction deleteInteractionsWithGroupIdentifier:self.uniqueId completion:^(NSError *error) {}];
 }
 
-- (BOOL)hasPendingMessageRequestWithTransaction:(GRDBReadTransaction *)transaction
-{
-    return [GRDBThreadFinder hasPendingMessageRequestWithThread:self transaction:transaction];
-}
-
 #pragma mark - Archival
 
 + (BOOL)legacyIsArchivedWithLastMessageDate:(nullable NSDate *)lastMessageDate

@@ -103,7 +103,7 @@ public class LongTextViewController: OWSViewController {
             }
 
             let hasPendingMessageRequest = databaseStorage.read { transaction in
-                itemViewModel.thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+                itemViewModel.thread.hasPendingMessageRequest(transaction: transaction)
             }
             CVComponentBodyText.configureTextView(
                 messageTextView,

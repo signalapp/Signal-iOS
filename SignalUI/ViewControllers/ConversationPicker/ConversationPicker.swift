@@ -386,11 +386,11 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 }
             }
 
-            try! AnyThreadFinder().enumerateVisibleThreads(isArchived: false, transaction: transaction) { thread in
+            try! ThreadFinder().enumerateVisibleThreads(isArchived: false, transaction: transaction) { thread in
                 addThread(thread)
             }
 
-            try! AnyThreadFinder().enumerateVisibleThreads(isArchived: true, transaction: transaction) { thread in
+            try! ThreadFinder().enumerateVisibleThreads(isArchived: true, transaction: transaction) { thread in
                 addThread(thread)
             }
 

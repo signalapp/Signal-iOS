@@ -462,7 +462,7 @@ public class OWSAttachmentDownloads: NSObject {
             return !Self.profileManager.isThread(inProfileWhitelist: thread, transaction: tx)
         }
 
-        return GRDBThreadFinder.hasPendingMessageRequest(thread: thread, transaction: tx.unwrapGrdbRead)
+        return ThreadFinder().hasPendingMessageRequest(thread: thread, transaction: tx)
     }
 
     private func isDownloadBlockedByAutoDownloadSettings(

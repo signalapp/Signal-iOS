@@ -620,7 +620,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         let notificationBody: String = {
-            if thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
+            if thread.hasPendingMessageRequest(transaction: transaction) {
                 return NotificationStrings.incomingMessageRequestNotification
             }
 

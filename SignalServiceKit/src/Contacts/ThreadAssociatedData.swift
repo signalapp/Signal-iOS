@@ -268,7 +268,7 @@ public extension TSThread {
     }
 
     fileprivate func markAllAsRead(transaction: SDSAnyWriteTransaction) {
-        let hasPendingMessageRequest = hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+        let hasPendingMessageRequest = hasPendingMessageRequest(transaction: transaction)
         let circumstance: OWSReceiptCircumstance = hasPendingMessageRequest
             ? .onThisDeviceWhilePendingMessageRequest
             : .onThisDevice

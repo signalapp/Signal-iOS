@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^OWSUserProfileCompletion)(void);
 
-@class AnyUserProfileFinder;
 @class AuthedAccount;
 @class OWSAES256Key;
 @class OWSUserProfileBadgeInfo;
@@ -18,6 +17,7 @@ typedef void (^OWSUserProfileCompletion)(void);
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
 @class UserProfileChanges;
+@class UserProfileFinder;
 
 extern NSNotificationName const kNSNotificationNameProfileWhitelistDidChange;
 extern NSNotificationName const kNSNotificationNameLocalProfileDidChange;
@@ -117,7 +117,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 // --- CODE GENERATION MARKER
 
 @property (atomic, readonly, class) SignalServiceAddress *localProfileAddress;
-@property (nonatomic, readonly, class) AnyUserProfileFinder *userProfileFinder;
+@property (nonatomic, readonly, class) UserProfileFinder *userProfileFinder;
 
 + (BOOL)isLocalProfileAddress:(SignalServiceAddress *)address;
 + (SignalServiceAddress *)resolveUserProfileAddress:(SignalServiceAddress *)address;

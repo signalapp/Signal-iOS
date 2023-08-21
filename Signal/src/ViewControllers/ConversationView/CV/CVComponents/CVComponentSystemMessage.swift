@@ -1338,7 +1338,7 @@ extension CVComponentSystemMessage {
         // TODO: Respect -canCall from ConversationViewController
 
         let hasPendingMessageRequest = {
-            thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+            thread.hasPendingMessageRequest(transaction: transaction)
         }
 
         switch call.callType {

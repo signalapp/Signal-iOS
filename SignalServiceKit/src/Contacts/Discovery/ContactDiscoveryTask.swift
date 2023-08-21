@@ -108,8 +108,10 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             // *only* mark the addresses without any UUIDs as unregistered. Everything
             // else we ignore; we will identify their current registration status
             // either when attempting to send a message or when fetching their profile.
-            let finder = AnySignalRecipientFinder()
-            let recipient = finder.signalRecipientForPhoneNumber(phoneNumber.stringValue, transaction: SDSDB.shimOnlyBridge(tx))
+            let recipient = SignalRecipientFinder().signalRecipientForPhoneNumber(
+                phoneNumber.stringValue,
+                tx: SDSDB.shimOnlyBridge(tx)
+            )
             // PNI TODO: Also check for PNIs here.
             guard let recipient, recipient.serviceId == nil else {
                 return

@@ -15,10 +15,10 @@ protocol UserProfileStore {
 
 class UserProfileStoreImpl: UserProfileStore {
     func fetchUserProfiles(for serviceId: ServiceId, tx: DBReadTransaction) -> [OWSUserProfile] {
-        return AnyUserProfileFinder().fetchUserProfiles(for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
+        return UserProfileFinder().fetchUserProfiles(serviceId: serviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
     func fetchUserProfiles(for phoneNumber: E164, tx: DBReadTransaction) -> [OWSUserProfile] {
-        return AnyUserProfileFinder().fetchUserProfiles(for: phoneNumber.stringValue, tx: SDSDB.shimOnlyBridge(tx))
+        return UserProfileFinder().fetchUserProfiles(phoneNumber: phoneNumber.stringValue, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     func updateUserProfile(_ userProfile: OWSUserProfile, tx: DBWriteTransaction) {

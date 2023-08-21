@@ -148,7 +148,7 @@ fileprivate extension OWSContactsManager {
         if cache.contains(address: address) {
             return false
         }
-        if !contactThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
+        if !contactThread.hasPendingMessageRequest(transaction: transaction) {
             cache.add(address: address)
             return false
         }
@@ -182,7 +182,7 @@ fileprivate extension OWSContactsManager {
             // DO NOT add to the cache.
             return false
         }
-        if !groupThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
+        if !groupThread.hasPendingMessageRequest(transaction: transaction) {
             cache.add(groupThread: groupThread)
             return false
         }

@@ -77,7 +77,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
 
     private func sendAnyReadyReceipts(threads: [TSThread], transaction: GRDBReadTransaction) throws {
         let pendingReadReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
-            guard !thread.hasPendingMessageRequest(transaction: transaction) else {
+            guard !thread.hasPendingMessageRequest(transaction: transaction.asAnyRead) else {
                 Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
                 return []
             }
@@ -86,7 +86,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
         }
 
         let pendingViewedReceipts: [PendingViewedReceiptRecord] = try threads.flatMap { thread -> [PendingViewedReceiptRecord] in
-            guard !thread.hasPendingMessageRequest(transaction: transaction) else {
+            guard !thread.hasPendingMessageRequest(transaction: transaction.asAnyRead) else {
                 Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
                 return []
             }
@@ -110,7 +110,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
 
     private func removeAnyReadyReceipts(threads: [TSThread], transaction: GRDBReadTransaction) throws {
         let pendingReadReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
-            guard !thread.hasPendingMessageRequest(transaction: transaction) else {
+            guard !thread.hasPendingMessageRequest(transaction: transaction.asAnyRead) else {
                 Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
                 return []
             }
@@ -119,7 +119,7 @@ public class MessageRequestPendingReceipts: Dependencies, PendingReceiptRecorder
         }
 
         let pendingViewedReceipts: [PendingViewedReceiptRecord] = try threads.flatMap { thread -> [PendingViewedReceiptRecord] in
-            guard !thread.hasPendingMessageRequest(transaction: transaction) else {
+            guard !thread.hasPendingMessageRequest(transaction: transaction.asAnyRead) else {
                 Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
                 return []
             }

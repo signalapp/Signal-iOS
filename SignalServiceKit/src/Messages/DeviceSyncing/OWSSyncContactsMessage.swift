@@ -63,7 +63,8 @@ extension OWSSyncContactsMessage {
                 if let contactThread {
                     let associatedData = ThreadAssociatedData.fetchOrDefault(for: contactThread, ignoreMissing: false, transaction: tx)
                     isArchived = NSNumber(value: associatedData.isArchived)
-                    inboxPosition = AnyThreadFinder().sortIndexObjc(thread: contactThread, transaction: tx)
+                    inboxPosition = try? ThreadFinder().sortIndex(thread: contactThread, transaction: tx)
+                        .map { NSNumber(value: $0) }
                     let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
                     dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(contactThread), tx: tx.asV2Read)
                 }
