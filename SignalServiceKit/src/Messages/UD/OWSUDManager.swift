@@ -127,16 +127,13 @@ public protocol OWSUDManager: AnyObject {
     @objc
     var phoneNumberAccessStore: SDSKeyValueStore { get }
     @objc
-    var uuidAccessStore: SDSKeyValueStore { get }
+    var serviceIdAccessStore: SDSKeyValueStore { get }
 
     @objc
     func warmCaches()
 
     @objc
     var trustRoot: ECPublicKey { get }
-
-    @objc
-    func isUDVerboseLoggingEnabled() -> Bool
 
     // MARK: - Recipient State
 
@@ -203,7 +200,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public let phoneNumberAccessStore = SDSKeyValueStore(collection: "kUnidentifiedAccessCollection")
     @objc
-    public let uuidAccessStore = SDSKeyValueStore(collection: "kUnidentifiedAccessUUIDCollection")
+    public let serviceIdAccessStore = SDSKeyValueStore(collection: "kUnidentifiedAccessUUIDCollection")
 
     // MARK: Local Configuration State
 
@@ -227,8 +224,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     //
     // TODO: We might not want to use comprehensive caches here.
     private var phoneNumberAccessCache = [String: UnidentifiedAccessMode]()
-    // PNI TODO: Change this type to Aci or ServiceId.
-    private var uuidAccessCache = [UUID: UnidentifiedAccessMode]()
+    private var serviceIdAccessCache = [ServiceId: UnidentifiedAccessMode]()
 
     @objc
     public required override init() {
@@ -265,23 +261,33 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             self.unfairLock.withLock {
                 self.phoneNumberAccessStore.enumerateKeysAndObjects(transaction: transaction) { (phoneNumber: String, anyValue: Any, _) in
                     guard let mode = parseUnidentifiedAccessMode(anyValue) else {
+                        databaseStorage.asyncWrite { tx in
+                            self.phoneNumberAccessStore.removeValue(forKey: phoneNumber, transaction: tx)
+                        }
                         return
                     }
                     self.phoneNumberAccessCache[phoneNumber] = mode
                 }
-                self.uuidAccessStore.enumerateKeysAndObjects(transaction: transaction) { (uuidString: String, anyValue: Any, _) in
-                    guard let uuid = UUID(uuidString: uuidString) else {
-                        owsFailDebug("Invalid uuid: \(uuidString)")
+                var serviceIdAccessCache = [ServiceId: UnidentifiedAccessMode]()
+                self.serviceIdAccessStore.enumerateKeysAndObjects(transaction: transaction) { (serviceIdString: String, anyValue: Any, _) in
+                    guard
+                        let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString),
+                        serviceIdAccessCache[serviceId] == nil,
+                        let mode = parseUnidentifiedAccessMode(anyValue)
+                    else {
+                        // If it's not valid, or if there's duplicates, remove them. (It's possible
+                        // to have duplicates because of lowercase/uppercase UUID strings.)
+                        databaseStorage.asyncWrite { tx in
+                            self.serviceIdAccessStore.removeValue(forKey: serviceIdString, transaction: tx)
+                        }
                         return
                     }
-                    guard let mode = parseUnidentifiedAccessMode(anyValue) else {
-                        return
-                    }
-                    self.uuidAccessCache[uuid] = mode
+                    serviceIdAccessCache[serviceId] = mode
                 }
+                self.serviceIdAccessCache.merge(serviceIdAccessCache, uniquingKeysWith: { _, new in new })
 
                 if DebugFlags.internalLogging {
-                    Logger.info("phoneNumberAccessCache: \(phoneNumberAccessCache.count), uuidAccessCache: \(uuidAccessCache.count), ")
+                    Logger.info("phoneNumberAccessCache: \(phoneNumberAccessCache.count), serviceIdAccessCache: \(serviceIdAccessCache.count), ")
                 }
             }
         }
@@ -326,13 +332,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         _ = ensureSenderCertificates(certificateExpirationPolicy: .strict)
     }
 
-    // MARK: -
-
-    @objc
-    public func isUDVerboseLoggingEnabled() -> Bool {
-        return false
-    }
-
     // MARK: - Recipient state
 
     @objc
@@ -341,13 +340,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func unidentifiedAccessMode(forAddress address: SignalServiceAddress) -> UnidentifiedAccessMode {
-
         // Read from caches.
-        var existingUUIDValue: UnidentifiedAccessMode?
+        var existingServiceIdValue: UnidentifiedAccessMode?
         var existingPhoneNumberValue: UnidentifiedAccessMode?
         unfairLock.withLock {
-            if let uuid = address.uuid {
-                existingUUIDValue = self.uuidAccessCache[uuid]
+            if let serviceId = address.serviceId {
+                existingServiceIdValue = self.serviceIdAccessCache[serviceId]
             }
             if let phoneNumber = address.phoneNumber {
                 existingPhoneNumberValue = self.phoneNumberAccessCache[phoneNumber]
@@ -357,10 +355,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         // Resolve current value; determine if we need to update cache and database.
         let existingValue: UnidentifiedAccessMode?
         var shouldUpdateValues = false
-        if let existingUUIDValue = existingUUIDValue, let existingPhoneNumberValue = existingPhoneNumberValue {
-
-            // If UUID and Phone Number setting don't align, defer to UUID and update phone number
-            if existingPhoneNumberValue != existingUUIDValue {
+        if let existingServiceIdValue, let existingPhoneNumberValue {
+            // If ServiceId and Phone Number setting don't align, use .disabled and refresh it.
+            if existingPhoneNumberValue != existingServiceIdValue {
                 Logger.warn("Unexpected UD value mismatch; updating UD state.")
                 shouldUpdateValues = true
                 existingValue = .disabled
@@ -368,27 +365,27 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                 // Fetch profile for this user to determine current UD state.
                 self.bulkProfileFetch.fetchProfile(address: address)
             } else {
-                existingValue = existingUUIDValue
+                existingValue = existingServiceIdValue
             }
-        } else if let existingPhoneNumberValue = existingPhoneNumberValue {
+        } else if let existingPhoneNumberValue {
             existingValue = existingPhoneNumberValue
 
-            // We had phone number entry but not UUID, update UUID value
-            if nil != address.uuidString {
+            // We had phone number entry but not ServiceId, update ServiceId value.
+            if address.serviceId != nil {
                 shouldUpdateValues = true
             }
-        } else if let existingUUIDValue = existingUUIDValue {
-            existingValue = existingUUIDValue
+        } else if let existingServiceIdValue {
+            existingValue = existingServiceIdValue
 
-            // We had UUID entry but not phone number, update phone number value
-            if nil != address.phoneNumber {
+            // We had ServiceId entry but not phone number, update phone number value.
+            if address.phoneNumber != nil {
                 shouldUpdateValues = true
             }
         } else {
             existingValue = nil
         }
 
-        if let existingValue = existingValue, shouldUpdateValues {
+        if let existingValue, shouldUpdateValues {
             setUnidentifiedAccessMode(existingValue, address: address)
         }
 
@@ -405,11 +402,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         // Update cache immediately.
         var didChange = false
         self.unfairLock.withLock {
-            if let uuid = address.uuid {
-                if self.uuidAccessCache[uuid] != mode {
+            if let serviceId = address.serviceId {
+                if self.serviceIdAccessCache[serviceId] != mode {
                     didChange = true
                 }
-                self.uuidAccessCache[uuid] = mode
+                self.serviceIdAccessCache[serviceId] = mode
             }
             if let phoneNumber = address.phoneNumber {
                 if self.phoneNumberAccessCache[phoneNumber] != mode {
@@ -422,22 +419,22 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return
         }
         // Update database async.
-        databaseStorage.asyncWrite { transaction in
-            if let uuid = address.uuid {
-                self.uuidAccessStore.setInt(mode.rawValue, key: uuid.uuidString, transaction: transaction)
+        databaseStorage.asyncWrite { tx in
+            if let serviceId = address.serviceId {
+                self.serviceIdAccessStore.setInt(mode.rawValue, key: serviceId.serviceIdUppercaseString, transaction: tx)
             }
             if let phoneNumber = address.phoneNumber {
-                self.phoneNumberAccessStore.setInt(mode.rawValue, key: phoneNumber, transaction: transaction)
+                self.phoneNumberAccessStore.setInt(mode.rawValue, key: phoneNumber, transaction: tx)
             }
         }
     }
 
     public func fetchAllAciUakPairs(tx: SDSAnyReadTransaction) -> [AciObjC: SMKUDAccessKey] {
         let acis = self.unfairLock.withLock {
-            self.uuidAccessCache.compactMap { (serviceId, mode) -> Aci? in
+            self.serviceIdAccessCache.compactMap { (serviceId, mode) -> Aci? in
                 switch mode {
                 case .enabled, .unrestricted, .unknown:
-                    return Aci(fromUUID: serviceId)
+                    return serviceId as? Aci
                 case .disabled:
                     return nil
                 }
@@ -474,18 +471,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     public func udAccess(forAddress address: SignalServiceAddress, requireSyncAccess: Bool) -> OWSUDAccess? {
         if requireSyncAccess {
             guard tsAccountManager.localAddress != nil else {
-                if isUDVerboseLoggingEnabled() {
-                    Logger.info("UD disabled for \(address), no local number.")
-                }
                 owsFailDebug("Missing local number.")
                 return nil
             }
             if address.isLocalAddress {
                 let selfAccessMode = unidentifiedAccessMode(forAddress: address)
                 guard selfAccessMode != .disabled else {
-                    if isUDVerboseLoggingEnabled() {
-                        Logger.info("UD disabled for \(address), UD disabled for sync messages.")
-                    }
                     return nil
                 }
             }
@@ -496,45 +487,27 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         switch accessMode {
         case .unrestricted:
             // Unrestricted users should use a random key.
-            if isUDVerboseLoggingEnabled() {
-                Logger.info("UD enabled for \(address) with random key.")
-            }
             let udAccessKey = randomUDAccessKey()
             return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: true)
         case .unknown:
             // Unknown users should use a derived key if possible,
             // and otherwise use a random key.
             if let udAccessKey = udAccessKey(forAddress: address) {
-                if isUDVerboseLoggingEnabled() {
-                    Logger.info("UD unknown for \(address); trying derived key.")
-                }
                 return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
             } else {
-                if isUDVerboseLoggingEnabled() {
-                    Logger.info("UD unknown for \(address); trying random key.")
-                }
                 let udAccessKey = randomUDAccessKey()
                 return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: true)
             }
         case .enabled:
             guard let udAccessKey = udAccessKey(forAddress: address) else {
-                if isUDVerboseLoggingEnabled() {
-                    Logger.info("UD disabled for \(address), no profile key for this recipient.")
-                }
                 // Not an error.
                 // We can only use UD if the user has UD enabled _and_
                 // we know their profile key.
                 Logger.warn("Missing profile key for UD-enabled user: \(address).")
                 return nil
             }
-            if isUDVerboseLoggingEnabled() {
-                Logger.info("UD enabled for \(address).")
-            }
             return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
         case .disabled:
-            if isUDVerboseLoggingEnabled() {
-                Logger.info("UD disabled for \(address), UD not enabled for this recipient.")
-            }
             return nil
         }
     }
