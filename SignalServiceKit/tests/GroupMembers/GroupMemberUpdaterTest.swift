@@ -126,7 +126,7 @@ class GroupMemberUpdaterTest: XCTestCase {
             for oldGroupMember in oldGroupMembers {
                 mockGroupMemberStore.insert(
                     fullGroupMember: TSGroupMember(
-                        serviceId: oldGroupMember.serviceId.map { UntypedServiceId(uuidString: $0)! },
+                        serviceId: oldGroupMember.serviceId.map { try! ServiceId.parseFrom(serviceIdString: $0) },
                         phoneNumber: oldGroupMember.phoneNumber,
                         groupThreadId: groupThread.uniqueId,
                         lastInteractionTimestamp: oldGroupMember.interactionTimestamp
@@ -150,7 +150,7 @@ class GroupMemberUpdaterTest: XCTestCase {
 
         XCTAssertEqual(groupMembers.count, newGroupMembers.count)
         for (actualGroupMember, expectedGroupMember) in zip(groupMembers, newGroupMembers) {
-            XCTAssertEqual(actualGroupMember.serviceId?.uuidValue.uuidString, expectedGroupMember.serviceId, "\(expectedGroupMember)")
+            XCTAssertEqual(actualGroupMember.serviceId?.serviceIdUppercaseString, expectedGroupMember.serviceId, "\(expectedGroupMember)")
             XCTAssertEqual(actualGroupMember.phoneNumber, expectedGroupMember.phoneNumber, "\(expectedGroupMember)")
             XCTAssertEqual(actualGroupMember.lastInteractionTimestamp, expectedGroupMember.interactionTimestamp, "\(expectedGroupMember)")
         }

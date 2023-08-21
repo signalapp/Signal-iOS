@@ -296,7 +296,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             // that were provided.
             for address in addresses {
                 let groupMember = TSGroupMember(
-                    serviceId: address.aci?.untypedServiceId,
+                    serviceId: address.aci,
                     phoneNumber: address.phoneNumber?.stringValue,
                     groupThreadId: groupThread.uniqueId,
                     lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
@@ -314,7 +314,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
     private func assertEqual(groupMembers: [TSGroupMember], expectedAddresses: [(aci: Aci?, phoneNumber: E164?)]) {
         let actualValues = Set(groupMembers.lazy.map {
-            "\($0.serviceId?.uuidValue.uuidString ?? "nil")-\($0.phoneNumber ?? "nil")"
+            "\($0.serviceId?.serviceIdUppercaseString ?? "nil")-\($0.phoneNumber ?? "nil")"
         })
         let expectedValues = Set(expectedAddresses.lazy.map {
             "\($0.aci?.serviceIdUppercaseString ?? "nil")-\($0.phoneNumber?.stringValue ?? "nil")"

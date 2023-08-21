@@ -81,13 +81,17 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
             let phoneNumber = groupMember.phoneNumber
 
             let expectedAddress = expectedAddresses.remove(SignalServiceAddress(
-                uuid: serviceId?.uuidValue,
+                serviceId: serviceId,
                 phoneNumber: phoneNumber,
                 cache: signalServiceAddressCache,
                 cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
             ))
 
-            if let expectedAddress, expectedAddress.untypedServiceId == serviceId, expectedAddress.phoneNumber == phoneNumber {
+            if
+                let expectedAddress,
+                expectedAddress.serviceId == serviceId,
+                expectedAddress.phoneNumber == phoneNumber
+            {
                 // The value on disk already matches the source of truth; do nothing.
                 continue
             }
@@ -98,7 +102,7 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
             if let expectedAddress {
                 // It needs to be updated, so copy fields from the removed group member.
                 groupMembersToInsert.append(TSGroupMember(
-                    serviceId: expectedAddress.untypedServiceId,
+                    serviceId: expectedAddress.serviceId,
                     phoneNumber: expectedAddress.phoneNumber,
                     groupThreadId: groupThreadId,
                     lastInteractionTimestamp: groupMember.lastInteractionTimestamp
@@ -115,7 +119,7 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
                 transaction: transaction
             )
             groupMembersToInsert.append(TSGroupMember(
-                serviceId: expectedAddress.untypedServiceId,
+                serviceId: expectedAddress.serviceId,
                 phoneNumber: expectedAddress.phoneNumber,
                 groupThreadId: groupThreadId,
                 lastInteractionTimestamp: latestInteractionTimestamp ?? 0

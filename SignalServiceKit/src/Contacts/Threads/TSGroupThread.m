@@ -216,30 +216,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     // Now it's done explicitly where we update the group model, and not for other updates.
 }
 
-- (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super updateWithInsertedMessage:message transaction:transaction];
-
-    SignalServiceAddress *_Nullable senderAddress;
-    if ([message isKindOfClass:[TSOutgoingMessage class]]) {
-        senderAddress = self.tsAccountManager.localAddress;
-    } else if ([message isKindOfClass:[TSIncomingMessage class]]) {
-        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-        senderAddress = incomingMessage.authorAddress;
-    }
-
-    if (senderAddress) {
-        TSGroupMember *_Nullable groupMember = [TSGroupMember groupMemberForAddress:senderAddress
-                                                                    inGroupThreadId:self.uniqueId
-                                                                        transaction:transaction];
-        if (groupMember) {
-            [groupMember updateWithLastInteractionTimestamp:message.timestamp transaction:transaction];
-        } else {
-            OWSFailDebug(@"Unexpectedly missing group member record");
-        }
-    }
-}
-
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];

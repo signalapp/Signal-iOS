@@ -2486,7 +2486,7 @@ public class GRDBSchemaMigrator: NSObject {
                         transaction: transaction.asAnyWrite
                     )
                     let memberRecord = TSGroupMember(
-                        serviceId: memberAddress.untypedServiceId,
+                        serviceId: memberAddress.serviceId,
                         phoneNumber: memberAddress.phoneNumber,
                         groupThreadId: groupThread.uniqueId,
                         lastInteractionTimestamp: latestInteraction?.timestamp ?? 0

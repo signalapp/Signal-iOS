@@ -3,10 +3,30 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import GRDB
+import LibSignalClient
 
-@objc
+/// Represents a full member of a group.
+///
+/// Importantly, this means that invited and requesting group members are
+/// **not** represented by a ``TSGroupMember``. See the notes below for more
+/// details.
+///
+/// - Note
+/// A ``TSGroupMember`` stores both a serviceId and phone number. Full members
+/// of a V2 group can only be represented by their ACI - so for V2 group
+/// members the serviceId can be expected to be an ACI. However, phone
+/// number-only members of legacy V1 groups may end up with a PNI; for example,
+/// that phone-number-only member may become re-registered, and we may
+/// subsequently learn about their PNI.
+/// 
+/// - Note
+/// At the time of writing there exists a `UNIQUE INDEX` on the phone number and
+/// group thread ID columns of this model. This is currently safe, as it's
+/// impossible for a single phone number (a single account) to be in a group as
+/// two different full members. However, it **is** possible for the same account
+/// to be both an invited member (by their PNI) and a full member (by their
+/// ACI). Take care if this model is ever extended to include invited members.
 public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_TSGroupMember"
     public static var recordType: UInt { SDSRecordType.groupMember.rawValue }
@@ -24,12 +44,17 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
 
     public var id: Int64?
     public let uniqueId: String
-    public let serviceId: UntypedServiceId?
+    public let serviceId: ServiceId?
     public let phoneNumber: String?
     public let groupThreadId: String
     public private(set) var lastInteractionTimestamp: UInt64
 
-    required public init(serviceId: UntypedServiceId?, phoneNumber: String?, groupThreadId: String, lastInteractionTimestamp: UInt64) {
+    required public init(
+        serviceId: ServiceId?,
+        phoneNumber: String?,
+        groupThreadId: String,
+        lastInteractionTimestamp: UInt64
+    ) {
         self.uniqueId = UUID().uuidString
         self.serviceId = serviceId
         self.phoneNumber = phoneNumber
@@ -48,7 +73,8 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
         groupThreadId = try container.decode(String.self, forKey: .groupThreadId)
-        serviceId = try container.decodeIfPresent(UntypedServiceId.self, forKey: .serviceId)
+        serviceId = try container.decodeIfPresent(String.self, forKey: .serviceId)
+            .flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
         phoneNumber = try container.decodeIfPresent(String.self, forKey: .phoneNumber)
         lastInteractionTimestamp = try container.decode(UInt64.self, forKey: .lastInteractionTimestamp)
     }
@@ -59,22 +85,27 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
         try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encode(groupThreadId, forKey: .groupThreadId)
-        try container.encodeIfPresent(serviceId?.uuidValue, forKey: .serviceId)
+        try container.encodeIfPresent(serviceId?.serviceIdUppercaseString, forKey: .serviceId)
         try container.encodeIfPresent(phoneNumber, forKey: .phoneNumber)
         try container.encode(lastInteractionTimestamp, forKey: .lastInteractionTimestamp)
     }
 
     // MARK: -
 
-    @objc
-    public func updateWithLastInteractionTimestamp(_ lastInteractionTimestamp: UInt64, transaction: SDSAnyWriteTransaction) {
+    public func updateWith(
+        lastInteractionTimestamp: UInt64,
+        transaction: SDSAnyWriteTransaction
+    ) {
         anyUpdate(transaction: transaction) { groupMember in
             groupMember.lastInteractionTimestamp = lastInteractionTimestamp
         }
     }
 
-    @objc(groupMemberForAddress:inGroupThreadId:transaction:)
-    public class func groupMember(for address: SignalServiceAddress, in groupThreadId: String, transaction: SDSAnyReadTransaction) -> TSGroupMember? {
+    public class func groupMember(
+        for address: SignalServiceAddress,
+        in groupThreadId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> TSGroupMember? {
         let sql = """
             SELECT * FROM \(databaseTableName)
             WHERE (\(columnName(.serviceId)) = ? OR \(columnName(.serviceId)) IS NULL)
@@ -88,7 +119,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
             return try fetchOne(
                 transaction.unwrapGrdbRead.database,
                 sql: sql,
-                arguments: [address.uuidString, address.phoneNumber, groupThreadId]
+                arguments: [address.serviceIdUppercaseString, address.phoneNumber, groupThreadId]
             )
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
@@ -100,7 +131,6 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
         }
     }
 
-    @objc(enumerateGroupMembersForAddress:withTransaction:block:)
     public class func enumerateGroupMembers(
         for address: SignalServiceAddress,
         transaction: SDSAnyReadTransaction,
@@ -117,7 +147,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
             let cursor = try fetchCursor(
                 transaction.unwrapGrdbRead.database,
                 sql: sql,
-                arguments: [address.uuidString, address.phoneNumber]
+                arguments: [address.serviceIdUppercaseString, address.phoneNumber]
             )
             while let member = try cursor.next() {
                 var stop: ObjCBool = false
@@ -132,22 +162,16 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
             owsFail("Failed to enumerate group membership.")
         }
     }
-
-    @objc
-    var addressComponentsDescription: String {
-        SignalServiceAddress.addressComponentsDescription(
-            uuidString: serviceId?.uuidValue.uuidString,
-            phoneNumber: phoneNumber
-        )
-    }
 }
 
 // MARK: -
 
 public extension TSGroupThread {
     @objc(groupThreadsWithAddress:transaction:)
-    class func groupThreads(with address: SignalServiceAddress,
-                            transaction: SDSAnyReadTransaction) -> [TSGroupThread] {
+    class func groupThreads(
+        with address: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction
+    ) -> [TSGroupThread] {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId)) FROM \(TSGroupMember.databaseTableName)
             WHERE (\(TSGroupMember.columnName(.serviceId)) = ? OR \(TSGroupMember.columnName(.serviceId)) IS NULL)
@@ -162,15 +186,18 @@ public extension TSGroupThread {
             let cursor = try String.fetchCursor(
                 transaction.unwrapGrdbRead.database,
                 sql: sql,
-                arguments: [address.uuidString, address.phoneNumber]
+                arguments: [address.serviceIdUppercaseString, address.phoneNumber]
             )
 
             while let groupThreadId = try cursor.next() {
-                guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId,
-                                                                          transaction: transaction) else {
+                guard let groupThread = TSGroupThread.anyFetchGroupThread(
+                    uniqueId: groupThreadId,
+                    transaction: transaction
+                ) else {
                     owsFailDebug("Missing group thread")
                     continue
                 }
+
                 groupThreads.append(groupThread)
             }
         } catch {
@@ -184,7 +211,6 @@ public extension TSGroupThread {
         return groupThreads
     }
 
-    @objc(enumerateGroupThreadsWithAddress:transaction:block:)
     class func enumerateGroupThreads(
         with address: SignalServiceAddress,
         transaction: SDSAnyReadTransaction,
@@ -201,7 +227,7 @@ public extension TSGroupThread {
         let cursor = try! String.fetchCursor(
             transaction.unwrapGrdbRead.database,
             sql: sql,
-            arguments: [address.uuidString, address.phoneNumber]
+            arguments: [address.serviceIdUppercaseString, address.phoneNumber]
         )
 
         while let groupThreadId = try! cursor.next() {
@@ -216,9 +242,10 @@ public extension TSGroupThread {
         }
     }
 
-    @objc(groupThreadIdsWithAddress:transaction:)
-    class func groupThreadIds(with address: SignalServiceAddress,
-                              transaction: SDSAnyReadTransaction) -> [String] {
+    class func groupThreadIds(
+        with address: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction
+    ) -> [String] {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId))
             FROM \(TSGroupMember.databaseTableName)
@@ -229,9 +256,11 @@ public extension TSGroupThread {
         """
 
         return transaction.unwrapGrdbRead.database.strictRead { database in
-            try String.fetchAll(database,
-                                sql: sql,
-                                arguments: [address.uuidString, address.phoneNumber])
+            try String.fetchAll(
+                database,
+                sql: sql,
+                arguments: [address.serviceIdUppercaseString, address.phoneNumber]
+            )
         }
     }
 }

@@ -50,7 +50,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
                 for fullMemberAddress in thread.groupMembership.fullMembers {
                     groupMemberStore.insert(
                         fullGroupMember: TSGroupMember(
-                            serviceId: fullMemberAddress.untypedServiceId,
+                            serviceId: fullMemberAddress.serviceId,
                             phoneNumber: fullMemberAddress.phoneNumber,
                             groupThreadId: thread.uniqueId,
                             lastInteractionTimestamp: 0),

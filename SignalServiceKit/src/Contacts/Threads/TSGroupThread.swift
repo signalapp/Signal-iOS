@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
+
+// MARK: -
 
 public extension TSGroupThread {
     func updateWithStorySendEnabled(
@@ -43,6 +45,8 @@ public extension TSGroupThread {
     }
 }
 
+// MARK: -
+
 public extension TSThreadStoryViewMode {
     var storageServiceMode: StorageServiceProtoGroupV2RecordStorySendMode {
         switch self {
@@ -72,6 +76,43 @@ public extension TSThreadStoryViewMode {
         }
     }
 }
+
+// MARK: -
+
+extension TSGroupThread {
+    override open func update(
+        withInsertedMessage message: TSInteraction,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        super.update(withInsertedMessage: message, transaction: tx)
+
+        let senderAddress: SignalServiceAddress? = {
+            if message is TSOutgoingMessage {
+                return tsAccountManager.localAddress(with: tx)
+            } else if let incomingMessage = message as? TSIncomingMessage {
+                return incomingMessage.authorAddress
+            }
+
+            return nil
+        }()
+
+        guard let senderAddress else { return }
+
+        guard let groupMember = TSGroupMember.groupMember(
+            for: senderAddress, in: uniqueId, transaction: tx
+        ) else {
+            owsFailDebug("Unexpectedly missing group member record!")
+            return
+        }
+
+        groupMember.updateWith(
+            lastInteractionTimestamp: message.timestamp,
+            transaction: tx
+        )
+    }
+}
+
+// MARK: - Testable build
 
 #if TESTABLE_BUILD
 
