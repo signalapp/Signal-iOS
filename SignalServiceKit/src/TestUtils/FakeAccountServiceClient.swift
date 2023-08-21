@@ -42,8 +42,8 @@ public class FakeAccountServiceClient: AccountServiceClient {
     public override func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
         return Promise {
             $0.resolve(WhoAmIRequestFactory.Responses.WhoAmI(
-                aci: FutureAci.randomForTesting().uuidValue,
-                pni: FuturePni.randomForTesting().uuidValue,
+                aci: Aci.randomForTesting(),
+                pni: Pni.randomForTesting(),
                 e164: E164("+17735550199")!,
                 usernameHash: nil
             ))

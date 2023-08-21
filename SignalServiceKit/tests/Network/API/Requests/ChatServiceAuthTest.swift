@@ -15,23 +15,23 @@ final class ChatServiceAuthTest: XCTestCase {
     }
 
     func testExplicit() {
-        let uuidString = "125A6D22-5364-4583-9132-66227867D9EC"
-        let aci = UUID(uuidString: uuidString)!
+        let aciString = "125a6d22-5364-4583-9132-66227867d9ec"
+        let aci = Aci.constantForTesting(aciString)
 
-        let auth = ChatServiceAuth.explicit(aci: aci, password: "foo bar")
+        let auth = ChatServiceAuth.explicit(aci: AciObjC(aci), password: "foo bar")
 
-        XCTAssertEqual(auth.credentials, .explicit(username: uuidString, password: "foo bar"))
+        XCTAssertEqual(auth.credentials, .explicit(username: aciString, password: "foo bar"))
     }
 
     func testEquality() {
-        let uuid1 = FutureAci.randomForTesting().uuidValue
-        let uuid2 = FutureAci.randomForTesting().uuidValue
+        let aci1 = Aci.randomForTesting()
+        let aci2 = Aci.randomForTesting()
 
         let implicit = ChatServiceAuth.implicit()
-        let explicit1 = ChatServiceAuth.explicit(aci: uuid1, password: "foo bar")
-        let explicit2 = ChatServiceAuth.explicit(aci: uuid1, password: "foo bar")
-        let explicit3 = ChatServiceAuth.explicit(aci: uuid1, password: "baz qux")
-        let explicit4 = ChatServiceAuth.explicit(aci: uuid2, password: "foo bar")
+        let explicit1 = ChatServiceAuth.explicit(aci: AciObjC(aci1), password: "foo bar")
+        let explicit2 = ChatServiceAuth.explicit(aci: AciObjC(aci1), password: "foo bar")
+        let explicit3 = ChatServiceAuth.explicit(aci: AciObjC(aci1), password: "baz qux")
+        let explicit4 = ChatServiceAuth.explicit(aci: AciObjC(aci2), password: "foo bar")
 
         for auth in [implicit, explicit1, explicit2, explicit3, explicit4] {
             XCTAssertEqual(auth, auth)

@@ -128,8 +128,8 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
             self.accountServiceClient.getAccountWhoAmI()
         }.map(on: schedulers.global()) { whoAmI -> Pni in
             let remoteE164 = whoAmI.e164
-            let remoteAci = Aci(fromUUID: whoAmI.aci)
-            let remotePni = Pni(fromUUID: whoAmI.pni)
+            let remoteAci = whoAmI.aci
+            let remotePni = whoAmI.pni
 
             self.logger.info("Successfully fetched PNI: \(remotePni)")
 

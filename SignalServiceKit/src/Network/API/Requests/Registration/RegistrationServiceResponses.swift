@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public enum RegistrationServiceResponses {
 
@@ -313,9 +314,9 @@ public enum RegistrationServiceResponses {
 
     public struct AccountIdentityResponse: Codable, Equatable {
         /// The users account identifier.
-        public let aci: UUID
+        @AciUuid public var aci: Aci
         /// The user's phone number identifier.
-        public let pni: UUID
+        @PniUuid public var pni: Pni
         /// The phone number associated with the PNI.
         public let e164: E164
         /// The username associated with the ACI.
@@ -323,9 +324,9 @@ public enum RegistrationServiceResponses {
         /// Whether the account has any data in SVR.
         public let hasPreviouslyUsedSVR: Bool
 
-        public init(aci: UUID, pni: UUID, e164: E164, username: String?, hasPreviouslyUsedSVR: Bool) {
-            self.aci = aci
-            self.pni = pni
+        public init(aci: Aci, pni: Pni, e164: E164, username: String?, hasPreviouslyUsedSVR: Bool) {
+            self._aci = aci.codableUuid
+            self._pni = pni.codableUuid
             self.e164 = e164
             self.username = username
             self.hasPreviouslyUsedSVR = hasPreviouslyUsedSVR

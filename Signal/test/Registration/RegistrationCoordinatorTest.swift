@@ -3368,7 +3368,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private enum Stubs {
 
         static let e164 = E164("+17875550100")!
-        static let aci = FutureAci.randomForTesting().uuidValue
+        static let aci = Aci.randomForTesting()
         static let pinCode = "1234"
 
         static let regRecoveryPwData = Data(repeating: 8, count: 8)
@@ -3410,7 +3410,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         static func accountIdentityResponse() -> RegistrationServiceResponses.AccountIdentityResponse {
             return RegistrationServiceResponses.AccountIdentityResponse(
                 aci: aci,
-                pni: FuturePni.randomForTesting().uuidValue,
+                pni: Pni.randomForTesting(),
                 e164: e164,
                 username: nil,
                 hasPreviouslyUsedSVR: false

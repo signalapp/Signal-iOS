@@ -394,10 +394,10 @@ public class RemoteConfig: BaseFlags {
         let aci: Aci
         switch account.info {
         case .explicit(let explicitAccount):
-            aci = Aci(fromUUID: explicitAccount.aci)
+            aci = explicitAccount.aci
         case .implicit:
             guard let localAci = TSAccountManager.shared.localIdentifiers?.aci else {
-                owsFailDebug("Missing local UUID")
+                owsFailDebug("Missing localAci.")
                 return false
             }
             aci = localAci

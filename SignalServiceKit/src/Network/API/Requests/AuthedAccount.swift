@@ -10,12 +10,12 @@ import LibSignalClient
 public class AuthedAccount: NSObject {
 
     public struct Explicit: Equatable {
-        public let aci: UUID
-        public let pni: UUID
+        public let aci: Aci
+        public let pni: Pni
         public let e164: E164
         public let authPassword: String
 
-        public init(aci: UUID, pni: UUID, e164: E164, authPassword: String) {
+        public init(aci: Aci, pni: Pni, e164: E164, authPassword: String) {
             self.aci = aci
             self.pni = pni
             self.e164 = e164
@@ -43,8 +43,8 @@ public class AuthedAccount: NSObject {
     }
 
     public static func explicit(
-        aci: UUID,
-        pni: UUID,
+        aci: Aci,
+        pni: Pni,
         e164: E164,
         authPassword: String
     ) -> AuthedAccount {
@@ -118,14 +118,14 @@ extension AuthedAccount.Explicit {
     }
 
     public func localUserAddress() -> SignalServiceAddress {
-        return SignalServiceAddress(uuid: aci, phoneNumber: e164.stringValue)
+        return SignalServiceAddress(serviceId: aci, phoneNumber: e164.stringValue)
     }
 
     public var localIdentifiers: LocalIdentifiers {
-        return LocalIdentifiers(aci: Aci(fromUUID: aci), pni: Pni(fromUUID: pni), phoneNumber: e164.stringValue)
+        return LocalIdentifiers(aci: aci, pni: pni, phoneNumber: e164.stringValue)
     }
 
     public var chatServiceAuth: ChatServiceAuth {
-        return .explicit(aci: aci, password: authPassword)
+        return .explicit(aci: AciObjC(aci), password: authPassword)
     }
 }

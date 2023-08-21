@@ -30,10 +30,10 @@ public class ChatServiceAuth: NSObject {
 
     @objc
     public static func explicit(
-        aci: UUID,
+        aci: AciObjC,
         password: String
     ) -> ChatServiceAuth {
-        return ChatServiceAuth(.explicit(username: aci.uuidString, password: password))
+        return ChatServiceAuth(.explicit(username: aci.serviceIdString, password: password))
     }
 
     public override var hash: Int {

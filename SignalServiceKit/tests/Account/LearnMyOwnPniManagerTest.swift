@@ -264,7 +264,7 @@ class LearnMyOwnPniManagerTest: XCTestCase {
 
 private extension WhoAmIRequestFactory.Responses.WhoAmI {
     init(aci: Aci, pni: Pni, e164: E164) {
-        self.init(aci: aci.rawUUID, pni: pni.rawUUID, e164: e164, usernameHash: nil)
+        self.init(aci: aci, pni: pni, e164: e164, usernameHash: nil)
     }
 }
 

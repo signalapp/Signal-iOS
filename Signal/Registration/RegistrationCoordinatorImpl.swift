@@ -934,8 +934,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             deps.tsAccountManager.didRegister(
                 e164: accountIdentity.e164,
-                aci: Aci(fromUUID: accountIdentity.aci),
-                pni: Pni(fromUUID: accountIdentity.pni),
+                aci: accountIdentity.aci,
+                pni: accountIdentity.pni,
                 authToken: accountIdentity.authPassword,
                 tx
             )
@@ -3375,7 +3375,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     Logger.info(
                         """
                         Recording new phone number
-                        localAci: \(changeNumberState.localAci.uuidString),
+                        localAci: \(changeNumberState.localAci),
                         localE164: \(changeNumberState.oldE164.stringValue),
                         serviceAci: \(accountIdentity.aci),
                         servicePni: \(accountIdentity.pni),
@@ -3387,8 +3387,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     // syncing out-of-date state to storage service.
                     strongSelf.deps.tsAccountManager.updateLocalPhoneNumber(
                         e164: accountIdentity.e164,
-                        aci: Aci(fromUUID: accountIdentity.aci),
-                        pni: Pni(fromUUID: accountIdentity.pni),
+                        aci: accountIdentity.aci,
+                        pni: accountIdentity.pni,
                         tx
                     )
                     // Make sure we update our local account.
@@ -3442,7 +3442,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 db.write { tx in
                     deps.tsAccountManager.resetForReregistration(
                         e164: state.e164,
-                        aci: Aci(fromUUID: state.aci),
+                        aci: state.aci,
                         tx
                     )
                     updatePersistedState(tx) {
@@ -3659,7 +3659,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return deps.changeNumberPniManager
             .generatePniIdentity(
                 forNewE164: e164,
-                localAci: Aci(fromUUID: changeNumberState.localAci),
+                localAci: changeNumberState.localAci,
                 localAccountId: changeNumberState.localAccountId,
                 localDeviceId: changeNumberState.localDeviceId,
                 localUserAllDeviceIds: changeNumberState.localUserAllDeviceIds
@@ -3742,7 +3742,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return Service
             .makeWhoAmIRequest(
                 auth: ChatServiceAuth.explicit(
-                    aci: changeNumberState.localAci,
+                    aci: AciObjC(changeNumberState.localAci),
                     password: changeNumberState.oldAuthToken
                 ),
                 signalService: deps.signalService,
@@ -3913,8 +3913,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     struct AccountIdentity: Codable {
-        let aci: UUID
-        let pni: UUID
+        @AciUuid var aci: Aci
+        @PniUuid var pni: Pni
         let e164: E164
         let hasPreviouslyUsedSVR: Bool
 
@@ -3924,7 +3924,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         let authPassword: String
 
         var authUsername: String {
-            return aci.uuidString
+            return aci.serviceIdString
         }
 
         var authedAccount: AuthedAccount {
@@ -3932,7 +3932,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         var chatServiceAuth: ChatServiceAuth {
-            return ChatServiceAuth.explicit(aci: aci, password: authPassword)
+            return ChatServiceAuth.explicit(aci: AciObjC(aci), password: authPassword)
         }
     }
 

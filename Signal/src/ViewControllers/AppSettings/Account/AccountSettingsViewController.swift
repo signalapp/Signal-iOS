@@ -262,12 +262,11 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 return .disallowed
             }
             guard
-                let localAddress = tsAccountManager.localAddress(with: transaction),
-                let localAci = localAddress.uuid,
-                let localE164 = localAddress.e164,
+                let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction),
+                let localE164 = E164(localIdentifiers.phoneNumber),
                 let authToken = tsAccountManager.storedServerAuthToken(transaction: transaction),
                 let localRecipient = SignalRecipient.fetchRecipient(
-                    for: localAddress,
+                    for: localIdentifiers.aciAddress,
                     onlyIfRegistered: false,
                     tx: transaction
                 ),
@@ -281,7 +280,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             return .allowed(RegistrationMode.ChangeNumberParams(
                 oldE164: localE164,
                 oldAuthToken: authToken,
-                localAci: localAci,
+                localAci: localIdentifiers.aci,
                 localAccountId: localAccountId,
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds

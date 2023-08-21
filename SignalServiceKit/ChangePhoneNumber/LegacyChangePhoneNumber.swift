@@ -45,14 +45,14 @@ public class LegacyChangePhoneNumber: NSObject {
         /// Our account's new E164 on the service.
         let newServiceE164: E164
         /// Our account's ACI on the service.
-        let serviceAci: UUID
+        let serviceAci: Aci
         /// Our account's PNI on the service.
-        let servicePni: UUID
+        let servicePni: Pni
 
         public init(
             newServiceE164: E164,
-            serviceAci: UUID,
-            servicePni: UUID
+            serviceAci: Aci,
+            servicePni: Pni
         ) {
             self.newServiceE164 = newServiceE164
             self.serviceAci = serviceAci
@@ -78,8 +78,8 @@ public class LegacyChangePhoneNumber: NSObject {
         if let successfulChangeParams {
             do {
                 try updateLocalPhoneNumber(
-                    forServiceAci: Aci(fromUUID: successfulChangeParams.serviceAci),
-                    servicePni: Pni(fromUUID: successfulChangeParams.servicePni),
+                    forServiceAci: successfulChangeParams.serviceAci,
+                    servicePni: successfulChangeParams.servicePni,
                     serviceE164: successfulChangeParams.newServiceE164,
                     transaction: transaction
                 )
@@ -190,8 +190,8 @@ public class LegacyChangePhoneNumber: NSObject {
         }.map(on: DispatchQueue.global()) { whoAmIResponse throws in
             try self.databaseStorage.write { transaction in
                 try self.updateLocalPhoneNumber(
-                    forServiceAci: Aci(fromUUID: whoAmIResponse.aci),
-                    servicePni: Pni(fromUUID: whoAmIResponse.pni),
+                    forServiceAci: whoAmIResponse.aci,
+                    servicePni: whoAmIResponse.pni,
                     serviceE164: whoAmIResponse.e164,
                     transaction: transaction
                 )

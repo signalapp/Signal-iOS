@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public enum WhoAmIRequestFactory {
 
@@ -17,8 +18,8 @@ public enum WhoAmIRequestFactory {
                 case usernameHash
             }
 
-            public let aci: UUID
-            public let pni: UUID
+            @AciUuid public var aci: Aci
+            @PniUuid public var pni: Pni
             public let e164: E164
             public let usernameHash: String?
         }

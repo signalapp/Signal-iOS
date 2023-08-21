@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 
 /// Loads a `RegistrationCoordinator`.
@@ -37,18 +38,18 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
 
         public struct ReRegisteringState: Codable, Equatable {
             public let e164: E164
-            public let aci: UUID
+            @AciUuid public var aci: Aci
 
-            fileprivate init(e164: E164, aci: UUID) {
+            fileprivate init(e164: E164, aci: Aci) {
                 self.e164 = e164
-                self.aci = aci
+                self._aci = aci.codableUuid
             }
         }
 
         public struct ChangeNumberState: Codable, Equatable {
             public let oldE164: E164
             public let oldAuthToken: String
-            public let localAci: UUID
+            @AciUuid public var localAci: Aci
             public let localAccountId: String
             public let localDeviceId: UInt32
             public let localUserAllDeviceIds: [UInt32]
@@ -56,8 +57,8 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
             public struct PendingPniState: Equatable {
                 public let newE164: E164
                 public let pniIdentityKeyPair: ECKeyPair
-                public let localDevicePniSignedPreKeyRecord: SignedPreKeyRecord
-                public let localDevicePniPqLastResortPreKeyRecord: KyberPreKeyRecord?
+                public let localDevicePniSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord
+                public let localDevicePniPqLastResortPreKeyRecord: SignalServiceKit.KyberPreKeyRecord?
                 public let localDevicePniRegistrationId: UInt32
             }
 
@@ -66,7 +67,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
             fileprivate init(
                 oldE164: E164,
                 oldAuthToken: String,
-                localAci: UUID,
+                localAci: Aci,
                 localAccountId: String,
                 localDeviceId: UInt32,
                 localUserAllDeviceIds: [UInt32],
@@ -74,7 +75,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
             ) {
                 self.oldE164 = oldE164
                 self.oldAuthToken = oldAuthToken
-                self.localAci = localAci
+                self._localAci = localAci.codableUuid
                 self.localAccountId = localAccountId
                 self.localDeviceId = localDeviceId
                 self.localUserAllDeviceIds = localUserAllDeviceIds
@@ -233,9 +234,9 @@ extension RegistrationCoordinatorLoaderImpl.Mode {
         case .registering:
             return "initial registration"
         case .reRegistering(let reRegisteringState):
-            return "re-registration aci:\(reRegisteringState.aci.uuidString) e164:\(reRegisteringState.e164.stringValue)"
+            return "re-registration aci:\(reRegisteringState.aci) e164:\(reRegisteringState.e164.stringValue)"
         case .changingNumber(let changeNumberState):
-            return "changing number: aci:\(changeNumberState.localAci.uuidString) old e164:\(changeNumberState.oldE164.stringValue)"
+            return "changing number: aci:\(changeNumberState.localAci) old e164:\(changeNumberState.oldE164.stringValue)"
         }
     }
 }
@@ -291,7 +292,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
                 fromDecodingContainer: container,
                 forKey: .pniIdentityKeyPair
             ),
-            let localDevicePniSignedPreKeyRecord: SignedPreKeyRecord = try Self.decodeKeyedArchive(
+            let localDevicePniSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord = try Self.decodeKeyedArchive(
                 fromDecodingContainer: container,
                 forKey: .localDevicePniSignedPreKeyRecord
             )
