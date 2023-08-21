@@ -675,10 +675,8 @@ public class FullTextSearcher: NSObject {
         }
 
         let getMentionedMessages: (SignalServiceAddress) -> [TSMessage] = { address in
-            return MentionFinder.messagesMentioning(
-                address: address,
-                transaction: transaction.unwrapGrdbRead
-            )
+            guard let aci = address.aci else { return [] }
+            return MentionFinder.messagesMentioning(aci: aci, tx: transaction)
         }
 
         func appendMessage(_ message: TSMessage, snippet: CVTextValue?) {
@@ -978,11 +976,10 @@ public class FullTextSearcher: NSObject {
                 guard thread.recipientAddresses(with: transaction).contains(recipient.address) || recipient.address.isLocalAddress else {
                     return
                 }
-                let messagesMentioningAccount = MentionFinder.messagesMentioning(
-                    address: recipient.address,
-                    in: thread,
-                    transaction: transaction.unwrapGrdbRead
-                )
+                guard let aci = recipient.aci else {
+                    return
+                }
+                let messagesMentioningAccount = MentionFinder.messagesMentioning(aci: aci, in: thread, tx: transaction)
                 messagesMentioningAccount.forEach { appendMessage($0) }
             default:
                 owsFailDebug("Unexpected match of type \(type(of: match))")

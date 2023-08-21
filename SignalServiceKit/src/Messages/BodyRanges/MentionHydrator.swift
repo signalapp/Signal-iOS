@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public enum MentionHydrationOption {
     /// Do not hydrate the mention; this leaves the string as it was in the original,
@@ -15,29 +16,29 @@ public enum MentionHydrationOption {
     case hydrate(String)
 }
 
-public typealias MentionHydrator = (UUID) -> MentionHydrationOption
+public typealias MentionHydrator = (Aci) -> MentionHydrationOption
 
 public class ContactsMentionHydrator {
 
     public static func mentionHydrator(
-        excludedUuids: Set<UUID>? = nil,
+        excludedAcis: Set<Aci>? = nil,
         transaction: DBReadTransaction
     ) -> MentionHydrator {
-        return { mentionUuid in
-            if excludedUuids?.contains(mentionUuid) == true {
+        return { mentionAci in
+            if excludedAcis?.contains(mentionAci) == true {
                 return .preserveMention
             }
             return .hydrate(
-                Self.hydrateMention(with: mentionUuid, transaction: transaction).1
+                Self.hydrateMention(with: mentionAci, transaction: transaction).1
             )
         }
     }
 
     public static func hydrateMention(
-        with mentionUuid: UUID,
+        with mentionAci: Aci,
         transaction: DBReadTransaction
     ) -> (SignalServiceAddress, String) {
-        let address = SignalServiceAddress(uuid: mentionUuid)
+        let address = SignalServiceAddress(mentionAci)
         let displayName = GlobalDependencies.contactsManager.displayName(
             for: address,
             transaction: SDSDB.shimOnlyBridge(transaction)

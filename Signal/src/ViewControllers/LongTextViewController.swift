@@ -293,7 +293,7 @@ public class LongTextViewController: OWSViewController {
                         groupViewHelper!.delegate = self
                     }
 
-                    let address = SignalServiceAddress(uuid: mentionItem.mentionUUID)
+                    let address = SignalServiceAddress(mentionItem.mentionAci)
                     let actionSheet = MemberActionSheet(
                         address: address,
                         groupViewHelper: groupViewHelper,

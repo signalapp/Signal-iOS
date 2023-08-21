@@ -492,19 +492,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    // If we have any mentions, we need to save them to aid in querying
-    // for messages that mention a given user. We only need to save one
-    // mention record per UUID, even if the same UUID is mentioned
-    // multiple times in the message.
-    if (self.bodyRanges.hasMentions) {
-        NSSet<NSUUID *> *uniqueMentionUuids = [NSSet setWithArray:self.bodyRanges.mentions.allValues];
-        for (NSUUID *uuid in uniqueMentionUuids) {
-            TSMention *mention = [[TSMention alloc] initWithUniqueMessageId:self.uniqueId
-                                                             uniqueThreadId:self.uniqueThreadId
-                                                                 uuidString:uuid.UUIDString];
-            [mention anyInsertObjcWithTransaction:transaction];
-        }
-    }
+    [self insertMentionsInDatabaseWithTx:transaction];
 
     [self updateStoredShouldStartExpireTimer];
 

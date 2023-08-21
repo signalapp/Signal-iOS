@@ -5,6 +5,7 @@
 
 import AVFAudio
 import Foundation
+import LibSignalClient
 
 /// The result of stripping, filtering, and hydrating mentions in a `MessageBody`.
 /// This object can be held durably in memory as a way to cache mention hydrations
@@ -136,7 +137,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             case .preserveMention:
                 // Preserve the mention without replacement and proceed.
                 unhydratedMentions.append(.init(
-                    UnhydratedMentionAttribute.fromOriginalRange(mention.range, mentionUuid: mention.value),
+                    UnhydratedMentionAttribute.fromOriginalRange(mention.range, mentionAci: mention.value),
                     range: newMentionRange
                 ))
                 continue
@@ -155,7 +156,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                     finalMentionAttributes.append(.init(
                         HydratedMentionAttribute.fromOriginalRange(
                             mention.range,
-                            mentionUuid: mention.value,
+                            mentionAci: mention.value,
                             displayName: displayName
                         ),
                         range: NSRange(location: newMentionRange.location, length: finalMentionLength)
@@ -455,13 +456,13 @@ public class HydratedMessageBody: Equatable, Hashable {
     public func asMessageBodyForForwarding(
         preservingAllMentions: Bool = false
     ) -> MessageBody {
-        var mentionsDict = [NSRange: UUID]()
+        var mentionsDict = [NSRange: Aci]()
         unhydratedMentions.forEach {
-            mentionsDict[$0.range] = $0.value.mentionUuid
+            mentionsDict[$0.range] = $0.value.mentionAci
         }
         if preservingAllMentions {
             mentionAttributes.forEach {
-                mentionsDict[$0.range] = $0.value.mentionUuid
+                mentionsDict[$0.range] = $0.value.mentionAci
             }
         }
 
@@ -477,12 +478,12 @@ public class HydratedMessageBody: Equatable, Hashable {
     // MARK: - Editing
 
     internal func asEditableMessageBody() -> EditableMessageBodyTextStorage.Body {
-        var mentions = [NSRange: UUID]()
+        var mentions = [NSRange: Aci]()
         self.mentionAttributes.forEach {
-            mentions[$0.range] = $0.value.mentionUuid
+            mentions[$0.range] = $0.value.mentionAci
         }
         self.unhydratedMentions.forEach {
-            mentions[$0.range] = $0.value.mentionUuid
+            mentions[$0.range] = $0.value.mentionAci
         }
         var flattenedStyles = [NSRangedValue<SingleStyle>]()
         var runningStyles = [SingleStyle: (StyleIdType, NSRange)]()
@@ -571,12 +572,12 @@ public class HydratedMessageBody: Equatable, Hashable {
             finalLength = possibleOverlappingMention.location
         }
 
-        var mentionHydrationStrings = [UUID: String]()
+        var mentionHydrationStrings = [Aci: String]()
         let mentions = self.mentionAttributes.filter({
             guard $0.range.location < finalLength else {
                 return false
             }
-            mentionHydrationStrings[$0.value.mentionUuid] = $0.value.displayName
+            mentionHydrationStrings[$0.value.mentionAci] = $0.value.displayName
             return true
         })
         let unhydratedMentions = self.unhydratedMentions.filter { $0.range.upperBound <= finalLength }
@@ -602,12 +603,12 @@ public class HydratedMessageBody: Equatable, Hashable {
             mentionAttributes: mentions,
             styleAttributes: styles
         )
-        // Strip. Its less efficient, but avoids code repetition to go through message body.
+        // Strip. It's less efficient but avoids code repetition to go through message body.
         return newSelf
             .asMessageBodyForForwarding(preservingAllMentions: true)
             .filterStringForDisplay()
-            .hydrating(mentionHydrator: { mentionUuid in
-                guard let string = mentionHydrationStrings[mentionUuid] else {
+            .hydrating(mentionHydrator: { mentionAci in
+                guard let string = mentionHydrationStrings[mentionAci] else {
                     return .preserveMention
                 }
                 return .hydrate(string)
@@ -708,7 +709,7 @@ public class HydratedMessageBody: Equatable, Hashable {
     public enum TappableItem {
         public struct Mention {
             public let range: NSRange
-            public let mentionUuid: UUID
+            public let mentionAci: Aci
         }
 
         public struct UnrevealedSpoiler {
@@ -778,7 +779,7 @@ public class HydratedMessageBody: Equatable, Hashable {
         }
         mentionAttributes.forEach {
             setRange(
-                value: TappableItem.Mention(range: $0.range, mentionUuid: $0.value.mentionUuid),
+                value: TappableItem.Mention(range: $0.range, mentionAci: $0.value.mentionAci),
                 key: mentionKey,
                 range: $0.range
             )
@@ -801,7 +802,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             if let unrevealedSpoiler = attrs[unrevealedSpoilerKey] as? TappableItem.UnrevealedSpoiler {
                 items.append(.unrevealedSpoiler(.init(range: range, id: unrevealedSpoiler.id)))
             } else if let mention = attrs[mentionKey] as? TappableItem.Mention {
-                items.append(.mention(.init(range: range, mentionUuid: mention.mentionUuid)))
+                items.append(.mention(.init(range: range, mentionAci: mention.mentionAci)))
             } else if let dataItem = attrs[dataKey] as? TextCheckingDataItem {
                 items.append(.data(dataItem.copyInNewRange(range)))
             }

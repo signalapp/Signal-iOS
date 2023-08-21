@@ -184,7 +184,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                             ))
                         case .mention(let mentionItem):
                             return .mention(mentionItem: CVTextLabel.MentionItem(
-                                mentionUUID: mentionItem.mentionUuid,
+                                mentionAci: mentionItem.mentionAci,
                                 range: mentionItem.range
                             ))
                         case .data(let dataItem):

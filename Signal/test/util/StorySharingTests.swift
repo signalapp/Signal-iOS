@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -38,12 +39,12 @@ class StorySharingTests: SignalBaseTest {
     }
 
     func testMentionFlattening() {
-        let mentionUuid = UUID()
+        let mentionAci = Aci.randomForTesting()
         let range = NSRange(location: 0, length: MessageBody.mentionPlaceholder.utf16.count)
         let output = StorySharing.text(
             for: .init(
                 text: "\(MessageBody.mentionPlaceholder) Some text",
-                ranges: .init(mentions: [range: mentionUuid], styles: [])
+                ranges: .init(mentions: [range: mentionAci], styles: [])
             ),
             with: nil
         )?.text

@@ -505,9 +505,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
             // Always notify if you have been @mentioned
             if
-                let mentionedUuids = incomingMessage.bodyRanges?.mentions.values,
-                let localUuid = tsAccountManager.localUuid,
-                mentionedUuids.contains(where: { $0 == localUuid }) {
+                let mentionedAcis = incomingMessage.bodyRanges?.mentions.values,
+                let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci,
+                mentionedAcis.contains(where: { $0 == localAci }) {
                 return true
             }
 

@@ -54,6 +54,24 @@ public extension TSMessage {
         }
     }
 
+    // MARK: - Mentions
+
+    @objc
+    func insertMentionsInDatabase(tx: SDSAnyWriteTransaction) {
+        guard let bodyRanges else {
+            return
+        }
+        // If we have any mentions, we need to save them to aid in querying for
+        // messages that mention a given user. We only need to save one mention
+        // record per ACI, even if the same ACI is mentioned multiple times in the
+        // message.
+        let uniqueMentionedAcis = Set(bodyRanges.mentions.values)
+        for mentionedAci in uniqueMentionedAcis {
+            let mention = TSMention(uniqueMessageId: uniqueId, uniqueThreadId: uniqueThreadId, aci: mentionedAci)
+            mention.anyInsert(transaction: tx)
+        }
+    }
+
     // MARK: - Reactions
 
     var reactionFinder: ReactionFinder {

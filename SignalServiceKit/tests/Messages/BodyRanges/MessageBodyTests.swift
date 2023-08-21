@@ -16,7 +16,7 @@ final class MessageBodyTests: XCTestCase {
 
     // MARK: - Hydration
 
-    let uuids = (0...5).map { _ in FutureAci.randomForTesting().uuidValue }
+    let acis = (0...5).map { _ in Aci.randomForTesting() }
 
     func testHydration_noMentions() {
         runHydrationTest(
@@ -42,19 +42,19 @@ final class MessageBodyTests: XCTestCase {
                 text: "Hello @",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 6, length: 1): uuids[0]
+                        NSRange(location: 6, length: 1): acis[0]
                     ],
                     styles: []
                 )
             ),
-            names: [uuids[0]: "Luke"],
+            names: [acis[0]: "Luke"],
             output: .init(
                 hydratedText: "Hello @Luke",
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 6, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "Luke"
                         ),
                         range: NSRange(location: 6, length: 5)
@@ -71,17 +71,17 @@ final class MessageBodyTests: XCTestCase {
                 text: "Hello @ and @, how is @?",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 6, length: 1): uuids[0],
-                        NSRange(location: 12, length: 1): uuids[1],
-                        NSRange(location: 22, length: 1): uuids[2]
+                        NSRange(location: 6, length: 1): acis[0],
+                        NSRange(location: 12, length: 1): acis[1],
+                        NSRange(location: 22, length: 1): acis[2]
                     ],
                     styles: []
                 )
             ),
             names: [
-                uuids[0]: "Luke",
-                uuids[1]: "Leia",
-                uuids[2]: "Han"
+                acis[0]: "Luke",
+                acis[1]: "Leia",
+                acis[2]: "Han"
             ],
             output: .init(
                 hydratedText: "Hello @Luke and @Leia, how is @Han?",
@@ -89,7 +89,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 6, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "Luke"
                         ),
                         range: NSRange(location: 6, length: 5)
@@ -97,7 +97,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 12, length: 1),
-                            mentionUuid: uuids[1],
+                            mentionAci: acis[1],
                             displayName: "Leia"
                         ),
                         range: NSRange(location: 16, length: 5)
@@ -105,7 +105,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 22, length: 1),
-                            mentionUuid: uuids[2],
+                            mentionAci: acis[2],
                             displayName: "Han"
                         ),
                         range: NSRange(location: 30, length: 4)
@@ -124,17 +124,17 @@ final class MessageBodyTests: XCTestCase {
                 text: "Hello @wasd and @1, how is ?",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 6, length: 5): uuids[0],
-                        NSRange(location: 16, length: 2): uuids[1],
-                        NSRange(location: 27, length: 0): uuids[2]
+                        NSRange(location: 6, length: 5): acis[0],
+                        NSRange(location: 16, length: 2): acis[1],
+                        NSRange(location: 27, length: 0): acis[2]
                     ],
                     styles: []
                 )
             ),
             names: [
-                uuids[0]: "Luke",
-                uuids[1]: "Leia",
-                uuids[2]: "Han"
+                acis[0]: "Luke",
+                acis[1]: "Leia",
+                acis[2]: "Han"
             ],
             output: .init(
                 hydratedText: "Hello @Luke and @Leia, how is @Han?",
@@ -142,7 +142,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 6, length: 5),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "Luke"
                         ),
                         range: NSRange(location: 6, length: 5)
@@ -150,7 +150,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 16, length: 2),
-                            mentionUuid: uuids[1],
+                            mentionAci: acis[1],
                             displayName: "Leia"
                         ),
                         range: NSRange(location: 16, length: 5)
@@ -158,7 +158,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 27, length: 0),
-                            mentionUuid: uuids[2],
+                            mentionAci: acis[2],
                             displayName: "Han"
                         ),
                         range: NSRange(location: 30, length: 4)
@@ -175,22 +175,22 @@ final class MessageBodyTests: XCTestCase {
                 text: "Hello @ and @, how is @?",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 6, length: 1): uuids[0],
-                        NSRange(location: 12, length: 1): uuids[1],
-                        NSRange(location: 22, length: 1): uuids[2]
+                        NSRange(location: 6, length: 1): acis[0],
+                        NSRange(location: 12, length: 1): acis[1],
+                        NSRange(location: 22, length: 1): acis[2]
                     ],
                     styles: []
                 )
             ),
             names: [
-                uuids[0]: "Luke",
-                uuids[2]: "Han"
+                acis[0]: "Luke",
+                acis[2]: "Han"
             ],
             output: .init(
                 hydratedText: "Hello @Luke and @, how is @Han?",
                 unhydratedMentions: [
                     .init(
-                        .fromOriginalRange(NSRange(location: 12, length: 1), mentionUuid: uuids[1]),
+                        .fromOriginalRange(NSRange(location: 12, length: 1), mentionAci: acis[1]),
                         range: NSRange(location: 16, length: 1)
                     )
                 ],
@@ -198,7 +198,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 6, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "Luke"
                         ),
                         range: NSRange(location: 6, length: 5)
@@ -206,7 +206,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 22, length: 1),
-                            mentionUuid: uuids[2],
+                            mentionAci: acis[2],
                             displayName: "Han"
                         ),
                         range: NSRange(location: 26, length: 4)
@@ -264,7 +264,7 @@ final class MessageBodyTests: XCTestCase {
                 text: "This is bold, italic, and mono, @.",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 32, length: 1): uuids[0]
+                        NSRange(location: 32, length: 1): acis[0]
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 8, length: 4)),
@@ -273,14 +273,14 @@ final class MessageBodyTests: XCTestCase {
                     ]
                 )
             ),
-            names: [uuids[0]: "Luke"],
+            names: [acis[0]: "Luke"],
             output: .init(
                 hydratedText: "This is bold, italic, and mono, @Luke.",
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 32, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "Luke"
                         ),
                         range: NSRange(location: 32, length: 5)
@@ -316,7 +316,7 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, this is bold, italic, and mono",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): uuids[0]
+                        NSRange(location: 0, length: 1): acis[0]
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 11, length: 4)),
@@ -325,14 +325,14 @@ final class MessageBodyTests: XCTestCase {
                     ]
                 )
             ),
-            names: [uuids[0]: "Luke"],
+            names: [acis[0]: "Luke"],
             output: .init(
                 hydratedText: "@Luke, this is bold, italic, and mono",
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "Luke"
                         ),
                         range: NSRange(location: 0, length: 5)
@@ -368,21 +368,21 @@ final class MessageBodyTests: XCTestCase {
                 text: "Use the force, @",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 15, length: 1): uuids[0]
+                        NSRange(location: 15, length: 1): acis[0]
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 0, length: 16))
                     ]
                 )
             ),
-            names: [uuids[0]: "Luke"],
+            names: [acis[0]: "Luke"],
             output: .init(
                 hydratedText: "Use the force, @Luke",
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 15, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "Luke"
                         ),
                         range: NSRange(location: 15, length: 5)
@@ -414,10 +414,10 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, @@@, @@@@@@@@@@@@@@@ and @@@ are stylish people.",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): uuids[0],
-                        NSRange(location: 3, length: 3): uuids[1],
-                        NSRange(location: 8, length: 15): uuids[2],
-                        NSRange(location: 28, length: 3): uuids[3]
+                        NSRange(location: 0, length: 1): acis[0],
+                        NSRange(location: 3, length: 3): acis[1],
+                        NSRange(location: 8, length: 15): acis[2],
+                        NSRange(location: 28, length: 3): acis[3]
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 0, length: 51)),
@@ -428,10 +428,10 @@ final class MessageBodyTests: XCTestCase {
                 )
             ),
             names: [
-                uuids[0]: "BoldGuy",
-                uuids[1]: "BoldItalicGuy",
-                uuids[2]: "BoldMonoGuy",
-                uuids[3]: "BoldSpoilerGuy"
+                acis[0]: "BoldGuy",
+                acis[1]: "BoldItalicGuy",
+                acis[2]: "BoldMonoGuy",
+                acis[3]: "BoldSpoilerGuy"
             ],
             output: .init(
                 hydratedText: "@BoldGuy, @BoldItalicGuy, @BoldMonoGuy and @BoldSpoilerGuy are stylish people.",
@@ -439,7 +439,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "BoldGuy"
                         ),
                         range: NSRange(location: 0, length: 8)
@@ -447,7 +447,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 3, length: 3),
-                            mentionUuid: uuids[1],
+                            mentionAci: acis[1],
                             displayName: "BoldItalicGuy"
                         ),
                         range: NSRange(location: 10, length: 14)
@@ -455,7 +455,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 8, length: 15),
-                            mentionUuid: uuids[2],
+                            mentionAci: acis[2],
                             displayName: "BoldMonoGuy"
                         ),
                         range: NSRange(location: 26, length: 12)
@@ -463,7 +463,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 28, length: 3),
-                            mentionUuid: uuids[3],
+                            mentionAci: acis[3],
                             displayName: "BoldSpoilerGuy"
                         ),
                         range: NSRange(location: 43, length: 15)
@@ -544,10 +544,10 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, @@@, @@@@@@@@@@@@@@@ and @@@ are stylish people.",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): uuids[0],
-                        NSRange(location: 3, length: 3): uuids[1],
-                        NSRange(location: 8, length: 15): uuids[2],
-                        NSRange(location: 28, length: 3): uuids[3]
+                        NSRange(location: 0, length: 1): acis[0],
+                        NSRange(location: 3, length: 3): acis[1],
+                        NSRange(location: 8, length: 15): acis[2],
+                        NSRange(location: 28, length: 3): acis[3]
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 0, length: 51)),
@@ -558,20 +558,20 @@ final class MessageBodyTests: XCTestCase {
                 )
             ),
             names: [
-                uuids[0]: "BoldGuy",
-                uuids[3]: "BoldSpoilerGuy"
+                acis[0]: "BoldGuy",
+                acis[3]: "BoldSpoilerGuy"
             ],
             output: .init(
                 hydratedText: "@BoldGuy, @@@, @@@@@@@@@@@@@@@ and @BoldSpoilerGuy are stylish people.",
                 unhydratedMentions: [
-                    .init(.fromOriginalRange(NSRange(location: 3, length: 3), mentionUuid: uuids[1]), range: NSRange(location: 10, length: 3)),
-                    .init(.fromOriginalRange(NSRange(location: 8, length: 15), mentionUuid: uuids[2]), range: NSRange(location: 15, length: 15))
+                    .init(.fromOriginalRange(NSRange(location: 3, length: 3), mentionAci: acis[1]), range: NSRange(location: 10, length: 3)),
+                    .init(.fromOriginalRange(NSRange(location: 8, length: 15), mentionAci: acis[2]), range: NSRange(location: 15, length: 15))
                 ],
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "BoldGuy"
                         ),
                         range: NSRange(location: 0, length: 8)
@@ -579,7 +579,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 28, length: 3),
-                            mentionUuid: uuids[3],
+                            mentionAci: acis[3],
                             displayName: "BoldSpoilerGuy"
                         ),
                         range: NSRange(location: 35, length: 15)
@@ -652,15 +652,15 @@ final class MessageBodyTests: XCTestCase {
                 text: "שלום @. שלום @.",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 5, length: 1): uuids[0],
-                        NSRange(location: 13, length: 1): uuids[1]
+                        NSRange(location: 5, length: 1): acis[0],
+                        NSRange(location: 13, length: 1): acis[1]
                     ],
                     styles: []
                 )
             ),
             names: [
-                uuids[0]: "לוק",
-                uuids[1]: "ליאה"
+                acis[0]: "לוק",
+                acis[1]: "ליאה"
             ],
             output: .init(
                 hydratedText: "שלום לוק@. שלום ליאה@.",
@@ -668,7 +668,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 5, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "לוק"
                         ),
                         range: NSRange(location: 5, length: 4)
@@ -676,7 +676,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 13, length: 1),
-                            mentionUuid: uuids[1],
+                            mentionAci: acis[1],
                             displayName: "ליאה"
                         ),
                         range: NSRange(location: 16, length: 5)
@@ -694,21 +694,21 @@ final class MessageBodyTests: XCTestCase {
                 text: "השתמש בכוח, @",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 12, length: 1): uuids[0]
+                        NSRange(location: 12, length: 1): acis[0]
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 5, length: 3))
                     ]
                 )
             ),
-            names: [uuids[0]: "לוק"],
+            names: [acis[0]: "לוק"],
             output: .init(
                 hydratedText: "השתמש בכוח, לוק@",
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 12, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "לוק"
                         ),
                         range: NSRange(location: 12, length: 4)
@@ -731,21 +731,21 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, השתמש בכוח",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): uuids[0]
+                        NSRange(location: 0, length: 1): acis[0]
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 5, length: 3))
                     ]
                 )
             ),
-            names: [uuids[0]: "לוק"],
+            names: [acis[0]: "לוק"],
             output: .init(
                 hydratedText: "לוק@, השתמש בכוח",
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "לוק"
                         ),
                         range: NSRange(location: 0, length: 4)
@@ -770,21 +770,21 @@ final class MessageBodyTests: XCTestCase {
                 text: "השתמש בכוח, @",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 12, length: 1): uuids[0]
+                        NSRange(location: 12, length: 1): acis[0]
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 0, length: 13))
                     ]
                 )
             ),
-            names: [uuids[0]: "לוק"],
+            names: [acis[0]: "לוק"],
             output: .init(
                 hydratedText: "השתמש בכוח, לוק@",
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 12, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "לוק"
                         ),
                         range: NSRange(location: 12, length: 4)
@@ -807,21 +807,21 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, השתמש בכוח",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): uuids[0]
+                        NSRange(location: 0, length: 1): acis[0]
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 0, length: 13))
                     ]
                 )
             ),
-            names: [uuids[0]: "לוק"],
+            names: [acis[0]: "לוק"],
             output: .init(
                 hydratedText: "לוק@, השתמש בכוח",
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "לוק"
                         ),
                         range: NSRange(location: 0, length: 4)
@@ -846,21 +846,21 @@ final class MessageBodyTests: XCTestCase {
                 text: "השתמש בכוח, @@@",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 12, length: 3): uuids[0]
+                        NSRange(location: 12, length: 3): acis[0]
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 5, length: 8))
                     ]
                 )
             ),
-            names: [uuids[0]: "לוק"],
+            names: [acis[0]: "לוק"],
             output: .init(
                 hydratedText: "השתמש בכוח, לוק@",
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 12, length: 3),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "לוק"
                         ),
                         range: NSRange(location: 12, length: 4)
@@ -882,21 +882,21 @@ final class MessageBodyTests: XCTestCase {
                 text: "@@@, השתמש בכוח",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 3): uuids[0]
+                        NSRange(location: 0, length: 3): acis[0]
                     ],
                     styles: [
                         .init(.italic, range: NSRange(location: 1, length: 8))
                     ]
                 )
             ),
-            names: [uuids[0]: "לוק"],
+            names: [acis[0]: "לוק"],
             output: .init(
                 hydratedText: "לוק@, השתמש בכוח",
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 3),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "לוק"
                         ),
                         range: NSRange(location: 0, length: 4)
@@ -921,8 +921,8 @@ final class MessageBodyTests: XCTestCase {
                 text: "@@@ engaña a @@@",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 3): uuids[0],
-                        NSRange(location: 13, length: 3): uuids[1]
+                        NSRange(location: 0, length: 3): acis[0],
+                        NSRange(location: 13, length: 3): acis[1]
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 1, length: 9)),
@@ -932,8 +932,8 @@ final class MessageBodyTests: XCTestCase {
                 )
             ),
             names: [
-                uuids[0]: "José",
-                uuids[1]: "María"
+                acis[0]: "José",
+                acis[1]: "María"
             ],
             output: .init(
                 hydratedText: "@José engaña a @María",
@@ -941,7 +941,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 3),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "José"
                         ),
                         range: NSRange(location: 0, length: 5)
@@ -949,7 +949,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 13, length: 3),
-                            mentionUuid: uuids[1],
+                            mentionAci: acis[1],
                             displayName: "María"
                         ),
                         range: NSRange(location: 15, length: 6)
@@ -1009,8 +1009,8 @@ final class MessageBodyTests: XCTestCase {
                 text: firstMention + firstEmojis + middleWord + secondEmojis + secondMention,
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 3): uuids[0],
-                        NSRange(location: secondMentionLocation + 1, length: 3): uuids[1]
+                        NSRange(location: 0, length: 3): acis[0],
+                        NSRange(location: secondMentionLocation + 1, length: 3): acis[1]
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 1, length: 3 + firstEmojiLength + 5)),
@@ -1020,8 +1020,8 @@ final class MessageBodyTests: XCTestCase {
                 )
             ),
             names: [
-                uuids[0]: "Luke",
-                uuids[1]: "Leia"
+                acis[0]: "Luke",
+                acis[1]: "Leia"
             ],
             output: .init(
                 hydratedText: "@Luke 🤗👨‍👨‍👧‍👦hello👩‍❤️‍👨🌗 @Leia",
@@ -1029,7 +1029,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 3),
-                            mentionUuid: uuids[0],
+                            mentionAci: acis[0],
                             displayName: "Luke"
                         ),
                         range: NSRange(location: 0, length: 5)
@@ -1037,7 +1037,7 @@ final class MessageBodyTests: XCTestCase {
                     .init(
                         .fromOriginalRange(
                             NSRange(location: secondMentionLocation + 1, length: 3),
-                            mentionUuid: uuids[1],
+                            mentionAci: acis[1],
                             displayName: "Leia"
                         ),
                         range: NSRange(location: secondMentionLocation + 3, length: 5)
@@ -1093,15 +1093,15 @@ final class MessageBodyTests: XCTestCase {
 
     private func runHydrationTest(
         input: MessageBody,
-        names: [UUID: String],
+        names: [Aci: String],
         output: HydratedMessageBody,
         isRTL: Bool = false,
         file: StaticString = #file,
         line: UInt = #line
     ) {
         let hydrated = input.hydrating(
-            mentionHydrator: { uuid in
-                if let displayName = names[uuid] {
+            mentionHydrator: { aci in
+                if let displayName = names[aci] {
                     return .hydrate(displayName)
                 } else {
                     return .preserveMention

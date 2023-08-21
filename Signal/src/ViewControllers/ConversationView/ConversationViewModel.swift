@@ -26,10 +26,10 @@ class ConversationViewModel {
         }
 
         let unreadMentionMessageIds = MentionFinder.messagesMentioning(
-            address: NSObject.tsAccountManager.localAddress!,
+            aci: NSObject.tsAccountManager.localIdentifiers(transaction: tx)!.aci,
             in: thread,
             includeReadMessages: false,
-            transaction: tx.unwrapGrdbRead
+            tx: tx
         ).map { $0.uniqueId }
 
         return ConversationViewModel(

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 
 public class CVTextLabel: NSObject {
@@ -10,11 +11,11 @@ public class CVTextLabel: NSObject {
     // MARK: -
 
     public struct MentionItem: Equatable {
-        public let mentionUUID: UUID
+        public let mentionAci: Aci
         public let range: NSRange
 
-        public init(mentionUUID: UUID, range: NSRange) {
-            self.mentionUUID = mentionUUID
+        public init(mentionAci: Aci, range: NSRange) {
+            self.mentionAci = mentionAci
             self.range = range
         }
     }

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public protocol EditableMessageBodyDelegate: AnyObject {
 
@@ -117,7 +118,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
 
     internal struct Body: Equatable {
         var hydratedText: String
-        var mentions: [NSRange: UUID]
+        var mentions: [NSRange: Aci]
         var flattenedStyles: [NSRangedValue<SingleStyle>]
     }
 
@@ -187,7 +188,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         // If the change is within a mention, that mention is eliminated.
         // Note that the hydrated text of the mention is preserved; its just plaintext now.
         var intersectingMentionRanges = [NSRange]()
-        body.mentions.forEach { (mentionRange, mentionUuid) in
+        body.mentions.forEach { (mentionRange, mentionAci) in
             if
                 // An insert, which can happen in the middle of a mention.
                 (range.length == 0 && mentionRange.contains(range.location))
@@ -197,7 +198,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             } else if range.upperBound <= mentionRange.location {
                 // If the change is before a mention, we have to shift the mention.
                 body.mentions[mentionRange] = nil
-                body.mentions[NSRange(location: mentionRange.location + changeInLength, length: mentionRange.length)] = mentionUuid
+                body.mentions[NSRange(location: mentionRange.location + changeInLength, length: mentionRange.length)] = mentionAci
             }
         }
         if
@@ -304,21 +305,21 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         super.edited(editActions, range: range, changeInLength: changeInLength)
     }
 
-    public func replaceCharacters(in range: NSRange, withMentionUUID mentionUuid: UUID, txProvider: ReadTxProvider) {
-        let hydrator = makeMentionHydrator(for: Array(body.mentions.values) + [mentionUuid], txProvider: txProvider)
-        replaceCharacters(in: range, withMentionUUID: mentionUuid, hydrator: hydrator, insertSpaceAfter: true)
+    public func replaceCharacters(in range: NSRange, withMentionAci mentionAci: Aci, txProvider: ReadTxProvider) {
+        let hydrator = makeMentionHydrator(for: Array(body.mentions.values) + [mentionAci], txProvider: txProvider)
+        replaceCharacters(in: range, withMentionAci: mentionAci, hydrator: hydrator, insertSpaceAfter: true)
     }
 
     private func replaceCharacters(
         in range: NSRange,
-        withMentionUUID mentionUuid: UUID,
+        withMentionAci mentionAci: Aci,
         hydrator: CacheMentionHydrator,
         insertSpaceAfter: Bool
     ) {
         let hydratedTextBeforeChange = body.hydratedText
         var modifiedRange = range
         let hydratedMention: String
-        switch hydrator.hydrator(mentionUuid) {
+        switch hydrator.hydrator(mentionAci) {
         case .hydrate(let mentionString):
             if CurrentAppContext().isRTL {
                 hydratedMention = mentionString + Mention.prefix
@@ -362,7 +363,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         ).removingPlaceholders()
         // Any space isn't included in the mention's range.
         let mentionRange = NSRange(location: range.location, length: (hydratedMention as NSString).length)
-        body.mentions[mentionRange] = mentionUuid
+        body.mentions[mentionRange] = mentionAci
 
         // Put the cursor after the space, if any
         let newSelectedRange = NSRange(location: mentionRange.upperBound + (suffix as NSString).length, length: 0)
@@ -623,7 +624,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         for mention in insertedBody.mentions {
             self.replaceCharacters(
                 in: NSRange(location: range.location + mention.key.location, length: mention.key.length),
-                withMentionUUID: mention.value,
+                withMentionAci: mention.value,
                 hydrator: hydrator,
                 insertSpaceAfter: false
             )
@@ -828,10 +829,10 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                 )
             }
         }
-        let orderedMentions: [NSRangedValue<UUID>] = body.mentions.lazy
-            .compactMap({ (range: NSRange, uuid: UUID) -> NSRangedValue<UUID>? in
+        let orderedMentions: [NSRangedValue<Aci>] = body.mentions.lazy
+            .compactMap({ (range: NSRange, aci: Aci) -> NSRangedValue<Aci>? in
                 guard let subrange else {
-                    return .init(uuid, range: range)
+                    return .init(aci, range: range)
                 }
                 guard
                     let intersection = range.intersection(subrange),
@@ -841,7 +842,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     return nil
                 }
                 return .init(
-                    uuid,
+                    aci,
                     range: NSRange(
                         location: intersection.location - subrange.location,
                         length: intersection.length
@@ -853,7 +854,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             })
 
         let mentionPlaceholderLength = (MessageBody.mentionPlaceholder as NSString).length
-        var finalMentions = [NSRange: UUID]()
+        var finalMentions = [NSRange: Aci]()
         var mentionOffset = 0
         for mention in orderedMentions {
             let effectiveRange = NSRange(location: mention.range.location + mentionOffset, length: mention.range.length)
@@ -914,8 +915,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     // MARK: - Hydrating
 
     private var mentionCacheKey: String?
-    private var mentionCache = [UUID: String]()
-    private var skippedMentionUUIDS = Set<UUID>()
+    private var mentionCache = [Aci: String]()
+    private var skippedMentionAcis = Set<Aci>()
 
     /// This object represents the results of already having opened, and finished with, a
     /// transaction to read mention hydrated names. We cache the results, put them in this
@@ -926,15 +927,15 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     /// Note that if this gets out of sync with the DB because some contact name changes that's ultimately fine;
     /// we un-hydrate mentions before we send them so this state is only for display of the message being composed.
     class CacheMentionHydrator {
-        private let mentionCache: [UUID: String]
+        private let mentionCache: [Aci: String]
 
-        init(mentionCache: [UUID: String]) {
+        init(mentionCache: [Aci: String]) {
             self.mentionCache = mentionCache
         }
 
         var hydrator: MentionHydrator {
-            return { [mentionCache] uuid in
-                guard let mentionString = mentionCache[uuid] else {
+            return { [mentionCache] aci in
+                guard let mentionString = mentionCache[aci] else {
                     return .preserveMention
                 }
                 return .hydrate(mentionString)
@@ -946,8 +947,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         return makeMentionHydrator(for: Array(self.body.mentions.values), txProvider: db.readTxProvider)
     }
 
-    private func makeMentionHydrator(for mentions: [UUID], txProvider: ReadTxProvider) -> CacheMentionHydrator {
-        var mentionCache: [UUID: String]
+    private func makeMentionHydrator(for mentions: [Aci], txProvider: ReadTxProvider) -> CacheMentionHydrator {
+        var mentionCache: [Aci: String]
         if let mentionCacheKey, mentionCacheKey == editableBodyDelegate?.mentionCacheInvalidationKey() {
             mentionCache = self.mentionCache
         } else {
@@ -955,16 +956,16 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             mentionCache = [:]
         }
         // If all mentions are in the cache, no need to recompute.
-        if !mentions.allSatisfy({ mentionCache[$0] != nil || skippedMentionUUIDS.contains($0) }) {
+        if !mentions.allSatisfy({ mentionCache[$0] != nil || skippedMentionAcis.contains($0) }) {
             // If any are missing, we have to open a transaction and put them in the cache.
             txProvider { tx in
                 let hydrator = editableBodyDelegate?.editableMessageBodyHydrator(tx: tx) ?? ContactsMentionHydrator.mentionHydrator(transaction: tx)
-                mentions.forEach { uuid in
-                    switch hydrator(uuid) {
+                mentions.forEach { aci in
+                    switch hydrator(aci) {
                     case .hydrate(let hydratedString):
-                        mentionCache[uuid] = hydratedString
+                        mentionCache[aci] = hydratedString
                     case .preserveMention:
-                        skippedMentionUUIDS.insert(uuid)
+                        skippedMentionAcis.insert(aci)
                     }
                 }
             }

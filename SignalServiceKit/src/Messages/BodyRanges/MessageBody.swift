@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 /// MessageBody is a container for a message's body as well as the `MessageBodyRanges` that
 /// apply to it.
@@ -83,8 +84,8 @@ public class MessageBody: NSObject, NSCopying, NSSecureCoding {
         let strippedPrefixLength = originalText.range(of: filteredText as String).location
         let filteredStringEntireRange = NSRange(location: 0, length: filteredText.length)
 
-        var adjustedMentions = [NSRange: UUID]()
-        let orderedAdjustedMentions: [NSRangedValue<UUID>] = ranges.orderedMentions.compactMap { mention in
+        var adjustedMentions = [NSRange: Aci]()
+        let orderedAdjustedMentions: [NSRangedValue<Aci>] = ranges.orderedMentions.compactMap { mention in
             guard
                 let newRange = NSRange(
                     location: mention.range.location - strippedPrefixLength,
@@ -148,18 +149,18 @@ extension MessageBody {
             return hydrating(mentionHydrator: { _ in return .preserveMention }, isRTL: isRTL)
         }
 
-        let groupMemberUuids: Set<UUID>
+        let groupMemberAcis: Set<Aci>
         if let groupThread = context as? TSGroupThread, groupThread.isGroupV2Thread {
-            groupMemberUuids = Set(groupThread.recipientAddresses(with: transaction.asAnyRead).compactMap(\.uuid))
+            groupMemberAcis = Set(groupThread.recipientAddresses(with: transaction.asAnyRead).compactMap(\.aci))
         } else {
-            groupMemberUuids = Set()
+            groupMemberAcis = Set()
         }
         // We want to preserve mentions for group members of the detination group,
         // not hydrate them. They will be hydrated by us and all other members
         // with their own info when they actually get rendered. Non-members may
         // not be known to everyone so we need to hydrate them out.
         let mentionHydrator = ContactsMentionHydrator.mentionHydrator(
-            excludedUuids: groupMemberUuids,
+            excludedAcis: groupMemberAcis,
             transaction: transaction.asAnyRead.asV2Read
         )
 
@@ -181,7 +182,7 @@ extension MessageBody {
             return self
         }
         let mentionHydrator = ContactsMentionHydrator.mentionHydrator(
-            excludedUuids: Set(possibleAddresses.compactMap(\.uuid)),
+            excludedAcis: Set(possibleAddresses.compactMap(\.aci)),
             transaction: transaction
         )
         return hydrating(mentionHydrator: mentionHydrator, isRTL: isRTL).asMessageBodyForForwarding()

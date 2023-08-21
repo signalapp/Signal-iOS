@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public typealias MentionIDType = Int
 
@@ -36,52 +37,52 @@ internal protocol MentionAttribute: Equatable, Hashable {
     /// Really this is just the original range of the mention, hashed. But that detail is
     /// irrelevant to everthing outside of this class.
     var id: MentionIDType { get }
-    var mentionUuid: UUID { get }
+    var mentionAci: Aci { get }
 }
 
 internal struct UnhydratedMentionAttribute: MentionAttribute {
 
     internal let id: MentionIDType
-    internal let mentionUuid: UUID
+    internal let mentionAci: Aci
 
-    internal static func fromOriginalRange(_ range: NSRange, mentionUuid: UUID) -> Self {
+    internal static func fromOriginalRange(_ range: NSRange, mentionAci: Aci) -> Self {
         var hasher = Hasher()
         hasher.combine(range)
         let id = hasher.finalize()
-        return .init(id: id, mentionUuid: mentionUuid)
+        return .init(id: id, mentionAci: mentionAci)
     }
 
-    private init(id: MentionIDType, mentionUuid: UUID) {
+    private init(id: MentionIDType, mentionAci: Aci) {
         self.id = id
-        self.mentionUuid = mentionUuid
+        self.mentionAci = mentionAci
     }
 }
 
 internal struct HydratedMentionAttribute: MentionAttribute {
 
     internal let id: MentionIDType
-    internal let mentionUuid: UUID
+    internal let mentionAci: Aci
     /// Name without the prefix.
     internal let displayName: String
 
     internal static func fromOriginalRange(
         _ range: NSRange,
-        mentionUuid: UUID,
+        mentionAci: Aci,
         displayName: String
     ) -> Self {
         var hasher = Hasher()
         hasher.combine(range)
         let id = hasher.finalize()
-        return .init(id: id, mentionUuid: mentionUuid, displayName: displayName)
+        return .init(id: id, mentionAci: mentionAci, displayName: displayName)
     }
 
     private init(
         id: MentionIDType,
-        mentionUuid: UUID,
+        mentionAci: Aci,
         displayName: String
     ) {
         self.id = id
-        self.mentionUuid = mentionUuid
+        self.mentionAci = mentionAci
         self.displayName = displayName
     }
 

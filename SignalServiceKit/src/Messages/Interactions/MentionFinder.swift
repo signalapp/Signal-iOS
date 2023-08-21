@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 import SignalCoreKit
 
 // MARK: -
@@ -12,23 +13,21 @@ import SignalCoreKit
 @objc
 public class MentionFinder: NSObject {
 
-    @objc
     public class func messagesMentioning(
-        address: SignalServiceAddress,
+        aci: Aci,
         in thread: TSThread? = nil,
         includeReadMessages: Bool = true,
-        transaction: GRDBReadTransaction
+        tx: SDSAnyReadTransaction
     ) -> [TSMessage] {
-        guard let uuidString = address.uuidString else { return [] }
         var sql = """
             SELECT interaction.*
             FROM \(InteractionRecord.databaseTableName) as interaction
             INNER JOIN \(TSMention.databaseTableName) as mention
                 ON mention.\(TSMention.columnName(.uniqueMessageId)) = interaction.\(interactionColumn: .uniqueId)
-                AND mention.\(TSMention.columnName(.uuidString)) = ?
+                AND mention.\(TSMention.columnName(.aciString)) = ?
         """
 
-        var arguments = [uuidString]
+        var arguments = [aci.serviceIdUppercaseString]
 
         var next = "WHERE"
 
@@ -48,7 +47,7 @@ public class MentionFinder: NSObject {
 
         sql += " ORDER BY \(interactionColumn: .id)"
 
-        let cursor = TSMessage.grdbFetchCursor(sql: sql, arguments: StatementArguments(arguments), transaction: transaction)
+        let cursor = TSMessage.grdbFetchCursor(sql: sql, arguments: StatementArguments(arguments), transaction: tx.unwrapGrdbRead)
 
         var messages = [TSMessage]()
 

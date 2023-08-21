@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalMessaging
 
 public protocol BodyRangesTextViewDelegate: UITextViewDelegate {
@@ -87,13 +88,13 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
         guard let mentionDelegate = mentionDelegate else {
             return owsFailDebug("Can't replace characters without delegate")
         }
-        guard let mentionUuid = mentionAddress.uuid else {
-            return owsFailDebug("Can't insert a mention without a uuid")
+        guard let mentionAci = mentionAddress.aci else {
+            return owsFailDebug("Can't insert a mention without an ACI")
         }
 
         let body = MessageBody(
             text: "@",
-            ranges: MessageBodyRanges(mentions: [NSRange(location: 0, length: 1): mentionUuid], styles: [])
+            ranges: MessageBodyRanges(mentions: [NSRange(location: 0, length: 1): mentionAci], styles: [])
         )
         let (hydrated, possibleAddresses) = DependenciesBridge.shared.db.read { tx in
             return (
@@ -105,7 +106,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
 
         if possibleAddresses.contains(mentionAddress) {
             editableBody.beginEditing()
-            editableBody.replaceCharacters(in: range, withMentionUUID: mentionUuid, txProvider: DependenciesBridge.shared.db.readTxProvider)
+            editableBody.replaceCharacters(in: range, withMentionAci: mentionAci, txProvider: DependenciesBridge.shared.db.readTxProvider)
             editableBody.endEditing()
         } else {
             // If we shouldn't resolve the mention, insert the plaintext representation.
@@ -668,18 +669,18 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
     }
 
     public func editableMessageBodyHydrator(tx: DBReadTransaction) -> MentionHydrator {
-        var possibleMentionUUIDs = Set<UUID>()
+        var possibleMentionAcis = Set<Aci>()
         mentionDelegate?.textViewMentionPickerPossibleAddresses(self, tx: tx).forEach {
-            if let uuid = $0.uuid {
-                possibleMentionUUIDs.insert(uuid)
+            if let aci = $0.aci {
+                possibleMentionAcis.insert(aci)
             }
         }
         let hydrator = ContactsMentionHydrator.mentionHydrator(transaction: tx)
-        return { uuid in
-            guard possibleMentionUUIDs.contains(uuid) else {
+        return { aci in
+            guard possibleMentionAcis.contains(aci) else {
                 return .preserveMention
             }
-            return hydrator(uuid)
+            return hydrator(aci)
         }
     }
 

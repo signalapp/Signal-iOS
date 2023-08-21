@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 
 @objc
 public final class TSMention: NSObject, SDSCodableModel, Decodable {
@@ -17,32 +18,27 @@ public final class TSMention: NSObject, SDSCodableModel, Decodable {
         case uniqueId
         case uniqueMessageId
         case uniqueThreadId
-        case uuidString
+        case aciString = "uuidString"
         case creationTimestamp
     }
 
     public var id: Int64?
+
     @objc
     public let uniqueId: String
-
     @objc
     public let uniqueMessageId: String
-    @objc
+
     public let uniqueThreadId: String
-    @objc
-    public let uuidString: String
-    @objc
+    public let aciString: String
     public let creationDate: Date
+    public var address: SignalServiceAddress { SignalServiceAddress(aciString: aciString) }
 
-    @objc
-    public var address: SignalServiceAddress { SignalServiceAddress(uuidString: uuidString) }
-
-    @objc
-    required public init(uniqueMessageId: String, uniqueThreadId: String, uuidString: String) {
+    required public init(uniqueMessageId: String, uniqueThreadId: String, aci: Aci) {
         self.uniqueId = UUID().uuidString
         self.uniqueMessageId = uniqueMessageId
         self.uniqueThreadId = uniqueThreadId
-        self.uuidString = uuidString
+        self.aciString = aci.serviceIdUppercaseString
         self.creationDate = Date()
     }
 
@@ -59,7 +55,7 @@ public final class TSMention: NSObject, SDSCodableModel, Decodable {
 
         uniqueMessageId = try container.decode(String.self, forKey: .uniqueMessageId)
         uniqueThreadId = try container.decode(String.self, forKey: .uniqueThreadId)
-        uuidString = try container.decode(String.self, forKey: .uuidString)
+        aciString = try container.decode(String.self, forKey: .aciString)
         creationDate = try container.decode(Date.self, forKey: .creationTimestamp)
     }
 
@@ -72,13 +68,8 @@ public final class TSMention: NSObject, SDSCodableModel, Decodable {
 
         try container.encode(uniqueMessageId, forKey: .uniqueMessageId)
         try container.encode(uniqueThreadId, forKey: .uniqueThreadId)
-        try container.encode(uuidString, forKey: .uuidString)
+        try container.encode(aciString, forKey: .aciString)
         try container.encode(creationDate, forKey: .creationTimestamp)
-    }
-
-    @objc
-    public func anyInsertObjc(transaction: SDSAnyWriteTransaction) {
-        anyInsert(transaction: transaction)
     }
 
     @objc
