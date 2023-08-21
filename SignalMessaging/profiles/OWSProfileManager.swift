@@ -141,30 +141,137 @@ public extension OWSProfileManager {
     }
 
     @objc
-    @available(swift, obsoleted: 1.0)
-    func rotateProfileKey(
-        intersectingPhoneNumbers: [String],
-        intersectingUUIDs: [String],
-        intersectingGroupIds: [Data],
-        authedAccount: AuthedAccount
-    ) -> AnyPromise {
-        return AnyPromise(rotateProfileKey(
-            intersectingPhoneNumbers: intersectingPhoneNumbers,
-            intersectingUUIDs: intersectingUUIDs,
-            intersectingGroupIds: intersectingGroupIds,
-            authedAccount: authedAccount
+    internal func rotateLocalProfileKeyIfNecessary() {
+        DispatchQueue.global().async {
+            self.databaseStorage.write { tx in
+                self.rotateProfileKeyIfNecessary(tx: tx)
+            }
+        }
+    }
+
+    private func rotateProfileKeyIfNecessary(tx: SDSAnyWriteTransaction) {
+        if CurrentAppContext().isNSE, !AppReadiness.isAppReady {
+            return
+        }
+
+        let isPrimaryDevice = tsAccountManager.isPrimaryDevice(transaction: tx)
+        guard
+            tsAccountManager.isRegistered(transaction: tx),
+            isPrimaryDevice
+        else {
+            owsAssertDebug(self.tsAccountManager.isRegistered)
+            Logger.verbose("Not rotating profile key on unregistered and/or non-primary device")
+            return
+        }
+
+        let lastGroupProfileKeyCheckTimestamp = self.lastGroupProfileKeyCheckTimestamp(tx: tx)
+        let triggers = [
+            self.blocklistRotationTriggerIfNeeded(tx: tx),
+            self.recipientHidingTriggerIfNeeded(tx: tx),
+            self.leaveGroupTriggerIfNeeded(tx: tx)
+        ].compacted()
+
+        guard !triggers.isEmpty else {
+            // No need to rotate the profile key.
+            if isPrimaryDevice {
+                // But if it's been more than a week since we checked that our groups are up to date, schedule that.
+                if -(lastGroupProfileKeyCheckTimestamp?.timeIntervalSinceNow ?? 0) > kWeekInterval {
+                    self.groupsV2.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
+                    self.setLastGroupProfileKeyCheckTimestamp(tx: tx)
+                    tx.addAsyncCompletionOffMain {
+                        self.groupsV2.processProfileKeyUpdates()
+                    }
+                }
+            }
+            return
+        }
+
+        tx.addAsyncCompletionOffMain {
+            self.rotateProfileKey(triggers: triggers, authedAccount: AuthedAccount.implicit())
+        }
+    }
+
+    private enum RotateProfileKeyTrigger {
+        /// We need to rotate because one or more whitelist members is also on the blocklist.
+        /// Those members may be a phone numbers, uuids, or groupIds, which are provided.
+        /// Once rotation is complete, these members should be removed from the whitelist;
+        /// their presence in the whitelist _and_ blocklist is what durably determines a rotation
+        /// is needed, so prematurely removing them and then failing to rotate means we won't retry.
+        case blocklistChange(BlocklistChange)
+
+        struct BlocklistChange {
+            let phoneNumbers: [String]
+            let uuids: [String]
+            let groupIds: [Data]
+        }
+
+        /// When we hide a recipient, we immediately update the whitelist and asynchronously
+        /// do a rotation. The date is when we set this trigger; if we _started_ a rotation
+        /// after this date, the condition is satisfied when the rotation completes. Otherwise
+        /// a rotation is needed.
+        case recipientHiding(Date)
+
+        /// When we leave a group, that group had a hidden/blocked recipient, and we have no
+        /// other groups in common with that recipient, we rotate (so they lose access to our latest
+        /// profile key).
+        /// The date is when we set this trigger; if we _started_ a rotation after this date, the
+        /// condition is satisfied when the rotation completes. Otherwise a rotation is needed.
+        case leftGroupWithHiddenOrBlockedRecipient(Date)
+    }
+
+    private func blocklistRotationTriggerIfNeeded(tx: SDSAnyReadTransaction) -> RotateProfileKeyTrigger? {
+        let victimPhoneNumbers = self.blockedPhoneNumbersInWhitelist(transaction: tx)
+        let victimUUIDs = self.blockedUUIDsInWhitelist(transaction: tx)
+        let victimGroupIds = self.blockedGroupIDsInWhitelist(transaction: tx)
+
+        if victimPhoneNumbers.isEmpty, victimUUIDs.isEmpty, victimGroupIds.isEmpty {
+            // No need to rotate the profile key.
+            return nil
+        }
+        return .blocklistChange(.init(
+            phoneNumbers: victimPhoneNumbers,
+            uuids: victimUUIDs,
+            groupIds: victimGroupIds
         ))
     }
 
-    func rotateProfileKey(
-        intersectingPhoneNumbers: [String],
-        intersectingUUIDs: [String],
-        intersectingGroupIds: [Data],
+    private func recipientHidingTriggerIfNeeded(tx: SDSAnyReadTransaction) -> RotateProfileKeyTrigger? {
+        // If it's not nil, we should rotate. After rotating, we always write nil (if it succeeded),
+        // so presence is the only trigger.
+        // The actual date value is only used to disambiguate if a _new_ trigger got added while rotating.
+        guard let triggerDate = self.recipientHidingTriggerTimestamp(tx: tx) else {
+            return nil
+        }
+        return .recipientHiding(triggerDate)
+    }
+
+    private func leaveGroupTriggerIfNeeded(tx: SDSAnyReadTransaction) -> RotateProfileKeyTrigger? {
+        // If it's not nil, we should rotate. After rotating, we always write nil (if it succeeded),
+        // so presence is the only trigger.
+        // The actual date value is only used to disambiguate if a _new_ trigger got added while rotating.
+        guard let triggerDate = self.leaveGroupTriggerTimestamp(tx: tx) else {
+            return nil
+        }
+        return .leftGroupWithHiddenOrBlockedRecipient(triggerDate)
+    }
+
+    @discardableResult
+    private func rotateProfileKey(
+        triggers: [RotateProfileKeyTrigger],
         authedAccount: AuthedAccount
     ) -> Promise<Void> {
+        guard !isRotatingProfileKey else {
+            return .value(())
+        }
+
         guard tsAccountManager.isRegisteredPrimaryDevice else {
             return Promise(error: OWSAssertionError("tsAccountManager.isRegistered was unexpectedly false"))
         }
+
+        isRotatingProfileKey = true
+        var needsAnotherRotation = false
+
+        let rotationStartDate = Date()
 
         Logger.info("Beginning profile key rotation.")
 
@@ -210,21 +317,24 @@ public extension OWSProfileManager {
                 // It's more efficient to process them after the intermediary steps are done.
                 self.groupsV2.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: transaction)
 
-                // It's absolutely essential that these values are persisted in the same transaction
-                // in which we persist our new profile key, since storing them is what marks the
-                // profile key rotation as "complete" (removing newly blocked users from the whitelist).
-                self.whitelistedPhoneNumbersStore.removeValues(
-                    forKeys: intersectingPhoneNumbers,
-                    transaction: transaction
-                )
-                self.whitelistedUUIDsStore.removeValues(
-                    forKeys: intersectingUUIDs,
-                    transaction: transaction
-                )
-                self.whitelistedGroupsStore.removeValues(
-                    forKeys: intersectingGroupIds.map { self.groupKey(forGroupId: $0) },
-                    transaction: transaction
-                )
+                triggers.forEach { trigger in
+                    switch trigger {
+                    case .blocklistChange(let values):
+                        self.didRotateProfileKeyFromBlocklistTrigger(values, tx: transaction)
+                    case .recipientHiding(let triggerDate):
+                        needsAnotherRotation = needsAnotherRotation || self.didRotateProfileKeyFromHidingTrigger(
+                            rotationStartDate: rotationStartDate,
+                            triggerDate: triggerDate,
+                            tx: transaction
+                        )
+                    case .leftGroupWithHiddenOrBlockedRecipient(let triggerDate):
+                        needsAnotherRotation = needsAnotherRotation || self.didRotateProfileKeyFromLeaveGroupTrigger(
+                            rotationStartDate: rotationStartDate,
+                            triggerDate: triggerDate,
+                            tx: transaction
+                        )
+                    }
+                }
             }
         }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             Logger.info("Updating account attributes after profile key rotation.")
@@ -232,7 +342,75 @@ public extension OWSProfileManager {
         }.done(on: DispatchQueue.global()) {
             Logger.info("Completed profile key rotation.")
             self.groupsV2.processProfileKeyUpdates()
+        }.ensure {
+            self.isRotatingProfileKey = false
+            if needsAnotherRotation {
+                self.rotateLocalProfileKeyIfNecessary()
+            }
         }
+    }
+
+    private func didRotateProfileKeyFromBlocklistTrigger(
+        _ trigger: RotateProfileKeyTrigger.BlocklistChange,
+        tx: SDSAnyWriteTransaction
+    ) {
+        // It's absolutely essential that these values are persisted in the same transaction
+        // in which we persist our new profile key, since storing them is what marks the
+        // profile key rotation as "complete" (removing newly blocked users from the whitelist).
+        self.whitelistedPhoneNumbersStore.removeValues(
+            forKeys: trigger.phoneNumbers,
+            transaction: tx
+        )
+        self.whitelistedUUIDsStore.removeValues(
+            forKeys: trigger.uuids,
+            transaction: tx
+        )
+        self.whitelistedGroupsStore.removeValues(
+            forKeys: trigger.groupIds.map { self.groupKey(forGroupId: $0) },
+            transaction: tx
+        )
+    }
+
+    // Returns true if another rotation is needed.
+    private func didRotateProfileKeyFromHidingTrigger(
+        rotationStartDate: Date,
+        triggerDate: Date,
+        tx: SDSAnyWriteTransaction
+    ) -> Bool {
+        // Fetch the latest trigger date, it might have changed if we triggered
+        // a rotation again.
+        guard let latestTriggerDate = self.recipientHidingTriggerTimestamp(tx: tx) else {
+            // If it's been wiped, we are good to go.
+            return false
+        }
+        if rotationStartDate > latestTriggerDate {
+            // We can wipe; we started rotating after the trigger came in.
+            self.setRecipientHidingTriggerTimestamp(nil, tx: tx)
+            return false
+        }
+        // We need another rotation.
+        return true
+    }
+
+    // Returns true if another rotation is needed.
+    private func didRotateProfileKeyFromLeaveGroupTrigger(
+        rotationStartDate: Date,
+        triggerDate: Date,
+        tx: SDSAnyWriteTransaction
+    ) -> Bool {
+        // Fetch the latest trigger date, it might have changed if we triggered
+        // a rotation again.
+        guard let latestTriggerDate = self.leaveGroupTriggerTimestamp(tx: tx) else {
+            // If it's been wiped, we are good to go.
+            return false
+        }
+        if rotationStartDate > latestTriggerDate {
+            // We can wipe; we started rotating after the trigger came in.
+            self.setLeaveGroupTriggerTimestamp(nil, tx: tx)
+            return false
+        }
+        // We need another rotation.
+        return true
     }
 
     @objc
@@ -786,16 +964,14 @@ extension OWSProfileManager {
     }
 }
 
-public extension OWSProfileManager {
+internal extension OWSProfileManager {
 
     /// Rotates the local profile key. Intended specifically
     /// for the use case of recipient hiding.
     ///
     /// - Parameter tx: The transaction to use for this operation.
     @objc
-    func rotateProfileKeyUponRecipientHideObjC(tx: SDSAnyReadTransaction) {
-        owsAssertDebug(AppReadiness.isAppReady)
-        guard !CurrentAppContext().isNSE else { return }
+    func rotateProfileKeyUponRecipientHideObjC(tx: SDSAnyWriteTransaction) {
         guard tsAccountManager.isRegistered(transaction: tx) else {
             OWSLogger.verbose("[Recipient Hiding] Not rotating profile key on unregistered device.")
             return
@@ -804,20 +980,69 @@ public extension OWSProfileManager {
             OWSLogger.verbose("[Recipient Hiding] Not rotating profile key on non-primary device.")
             return
         }
-        /// This method removes `intersectingPhoneNumbers` and `intersectingUUIDs`
-        /// from the whitelist in addition to rotating the profile key. In the
-        /// case of recipient hiding, we must do this work earlier elsewhere.
-        /// It is important that we do NOT let `rotateProfileKey` manage the
-        /// whitelisting when hiding recipients; hence, `intersectingPhoneNumbers`
-        /// and `intersectingUUIDs` must be empty arrays.
-        ///
-        /// TODO: Add retry mechanism if rotation fails.
-        rotateProfileKey(
-            intersectingPhoneNumbers: [], // keep as empty array!
-            intersectingUUIDs: [], // keep as empty array!
-            intersectingGroupIds: [],
-            authedAccount: AuthedAccount.implicit()
-        )
+        // We schedule in the NSE by writing state; the actual rotation
+        // will bail early, though.
+        self.setRecipientHidingTriggerTimestamp(Date(), tx: tx)
+        self.rotateProfileKeyIfNecessary(tx: tx)
+    }
+
+    @objc
+    func forceRotateLocalProfileKeyForGroupDepartureObjc(tx: SDSAnyWriteTransaction) {
+        guard tsAccountManager.isRegistered(transaction: tx) else {
+            OWSLogger.verbose("Not rotating profile key on unregistered device.")
+            return
+        }
+        guard tsAccountManager.isPrimaryDevice(transaction: tx) else {
+            OWSLogger.verbose("Not rotating profile key on non-primary device.")
+            return
+        }
+        // We schedule in the NSE by writing state; the actual rotation
+        // will bail early, though.
+        self.setLeaveGroupTriggerTimestamp(Date(), tx: tx)
+        self.rotateProfileKeyIfNecessary(tx: tx)
+    }
+}
+
+// MARK: - Profile Key Rotation Metadata
+
+fileprivate extension OWSProfileManager {
+
+    private static let kLastGroupProfileKeyCheckTimestampKey = "lastGroupProfileKeyCheckTimestamp"
+
+    func lastGroupProfileKeyCheckTimestamp(tx: SDSAnyReadTransaction) -> Date? {
+        return self.metadataStore.getDate(Self.kLastGroupProfileKeyCheckTimestampKey, transaction: tx)
+    }
+
+    func setLastGroupProfileKeyCheckTimestamp(tx: SDSAnyWriteTransaction) {
+        return self.metadataStore.setDate(Date(), key: Self.kLastGroupProfileKeyCheckTimestampKey, transaction: tx)
+    }
+
+    private static let recipientHidingTriggerTimestampKey = "recipientHidingTriggerTimestampKey"
+
+    func recipientHidingTriggerTimestamp(tx: SDSAnyReadTransaction) -> Date? {
+        return self.metadataStore.getDate(Self.recipientHidingTriggerTimestampKey, transaction: tx)
+    }
+
+    func setRecipientHidingTriggerTimestamp(_ date: Date?, tx: SDSAnyWriteTransaction) {
+        guard let date else {
+            self.metadataStore.removeValue(forKey: Self.recipientHidingTriggerTimestampKey, transaction: tx)
+            return
+        }
+        return self.metadataStore.setDate(date, key: Self.recipientHidingTriggerTimestampKey, transaction: tx)
+    }
+
+    private static let leaveGroupTriggerTimestampKey = "leaveGroupTriggerTimestampKey"
+
+    func leaveGroupTriggerTimestamp(tx: SDSAnyReadTransaction) -> Date? {
+        return self.metadataStore.getDate(Self.leaveGroupTriggerTimestampKey, transaction: tx)
+    }
+
+    func setLeaveGroupTriggerTimestamp(_ date: Date?, tx: SDSAnyWriteTransaction) {
+        guard let date else {
+            self.metadataStore.removeValue(forKey: Self.leaveGroupTriggerTimestampKey, transaction: tx)
+            return
+        }
+        return self.metadataStore.setDate(date, key: Self.leaveGroupTriggerTimestampKey, transaction: tx)
     }
 }
 

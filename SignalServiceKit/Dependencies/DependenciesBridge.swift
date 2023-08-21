@@ -80,6 +80,7 @@ public class DependenciesBridge {
     public let localUsernameManager: LocalUsernameManager
     public let usernameValidationManager: UsernameValidationManager
 
+    let groupMemberStore: GroupMemberStore
     let groupMemberUpdater: GroupMemberUpdater
 
     /// Initialize and configure the ``DependenciesBridge`` singleton.
@@ -286,6 +287,7 @@ public class DependenciesBridge {
 
         self.chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: self.keyValueStoreFactory)
         let groupMemberStore = GroupMemberStoreImpl()
+        self.groupMemberStore = groupMemberStore
         let interactionStore = InteractionStoreImpl()
         self.threadAssociatedDataStore = ThreadAssociatedDataStoreImpl()
         self.threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: self.keyValueStoreFactory)

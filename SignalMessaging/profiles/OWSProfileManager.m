@@ -29,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 const NSUInteger kOWSProfileManager_MaxAvatarDiameterPixels = 1024;
 NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_UserProfileWriter";
-static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfileKeyCheckTimestamp";
 
 @interface OWSProfileManager ()
 
@@ -38,8 +37,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
 @property (nonatomic, readonly) AtomicUInt *profileAvatarDataLoadCounter;
 @property (nonatomic, readonly) AtomicUInt *profileAvatarImageLoadCounter;
-
-@property (nonatomic, readonly) SDSKeyValueStore *metadataStore;
 
 @property (nonatomic, readonly) id<RecipientHidingManager> recipientHidingManager;
 
@@ -472,63 +469,9 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return [groupId hexadecimalString];
 }
 
-- (void)rotateLocalProfileKeyIfNecessary
+- (void)forceRotateLocalProfileKeyForGroupDepartureWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(AppReadiness.isAppReady);
-
-    if (CurrentAppContext().isNSE) {
-        return;
-    }
-    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
-        OWSAssertDebug(self.tsAccountManager.isRegistered);
-        OWSLogVerbose(@"Not rotating profile key on unregistered and/or non-primary device");
-        return;
-    }
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        __block NSArray<NSString *> *victimPhoneNumbers = @[];
-        __block NSArray<NSString *> *victimUUIDs = @[];
-        __block NSArray<NSData *> *victimGroupIds = @[];
-        __block NSDate *lastGroupProfileKeyCheckTimestamp = nil;
-        [self.databaseStorage
-            readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                victimPhoneNumbers = [self blockedPhoneNumbersInWhitelistWithTransaction:transaction];
-                victimUUIDs = [self blockedUUIDsInWhitelistWithTransaction:transaction];
-                victimGroupIds = [self blockedGroupIDsInWhitelistWithTransaction:transaction];
-                lastGroupProfileKeyCheckTimestamp = [self.metadataStore getDate:kLastGroupProfileKeyCheckTimestampKey
-                                                                    transaction:transaction];
-            }
-                     file:__FILE__
-                 function:__FUNCTION__
-                     line:__LINE__];
-
-        NSUInteger victimCount = 0;
-        victimCount += victimPhoneNumbers.count;
-        victimCount += victimUUIDs.count;
-        victimCount += victimGroupIds.count;
-        if (victimCount == 0) {
-            // No need to rotate the profile key.
-            if (self.tsAccountManager.isPrimaryDevice) {
-                // But if it's been more than a week since we checked that our groups are up to date, schedule that.
-                if (lastGroupProfileKeyCheckTimestamp == nil
-                    || -lastGroupProfileKeyCheckTimestamp.timeIntervalSinceNow > kWeekInterval) {
-                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                        [self.groupsV2 scheduleAllGroupsV2ForProfileKeyUpdateWithTransaction:transaction];
-                        [self.metadataStore setDate:[NSDate date]
-                                                key:kLastGroupProfileKeyCheckTimestampKey
-                                        transaction:transaction];
-                    });
-                    [self.groupsV2 processProfileKeyUpdates];
-                }
-            }
-            return;
-        }
-
-        [self rotateProfileKeyWithIntersectingPhoneNumbers:victimPhoneNumbers
-                                         intersectingUUIDs:victimUUIDs
-                                      intersectingGroupIds:victimGroupIds
-                                             authedAccount:AuthedAccount.implicit];
-    });
+    [self forceRotateLocalProfileKeyForGroupDepartureObjcWithTx:transaction];
 }
 
 #pragma mark - Profile Whitelist
@@ -1809,7 +1752,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                                  transaction:transaction];
 }
 
-- (void)rotateProfileKeyUponRecipientHideWithTx:(nonnull SDSAnyReadTransaction *)tx
+- (void)rotateProfileKeyUponRecipientHideWithTx:(nonnull SDSAnyWriteTransaction *)tx
 {
     [self rotateProfileKeyUponRecipientHideObjCWithTx:tx];
 }

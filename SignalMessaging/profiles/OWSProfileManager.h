@@ -131,6 +131,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (nullable NSString *)profileBioForDisplayForAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;
 
+- (void)forceRotateLocalProfileKeyForGroupDepartureWithTransaction:(SDSAnyWriteTransaction *)transaction;
+
 #pragma mark - Clean Up
 
 + (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction;
@@ -147,6 +149,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (void)logLocalProfile;
 #endif
+
+#pragma mark - Internals exposed for Swift
+
+@property (nonatomic, readonly) SDSKeyValueStore *metadataStore;
+@property (atomic, readwrite) BOOL isRotatingProfileKey;
 
 @end
 

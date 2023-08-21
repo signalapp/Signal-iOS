@@ -378,11 +378,15 @@ NS_ASSUME_NONNULL_BEGIN
     return @[];
 }
 
-- (void)rotateProfileKeyUponRecipientHideWithTx:(SDSAnyReadTransaction *)tx
+- (void)rotateProfileKeyUponRecipientHideWithTx:(SDSAnyWriteTransaction *)tx
 {
     // Do nothing.
 }
 
+- (void)forceRotateLocalProfileKeyForGroupDepartureWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
 
 @end
 

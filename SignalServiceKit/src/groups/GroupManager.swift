@@ -1166,6 +1166,8 @@ public class GroupManager: NSObject {
         }
 
         // Step 3: If any member was removed, make sure we rotate our sender key session
+        // If we were removed, check for any blocked members and rotate our profile key
+        // if this is the only mutual group with them.
         let oldGroupModel = groupThread.groupModel
         if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
            let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
@@ -1175,6 +1177,55 @@ public class GroupManager: NSObject {
 
             if oldMembers.subtracting(newMembers).isEmpty == false {
                 senderKeyStore.resetSenderKeySession(for: groupThread, transaction: transaction)
+            }
+
+            if
+                tsAccountManager.isPrimaryDevice(transaction: transaction),
+                let localAddress = tsAccountManager.localIdentifiers(transaction: transaction).map({
+                    return SignalServiceAddress($0.aci)
+                }),
+                oldMembers.contains(localAddress),
+                !newMembers.contains(localAddress) {
+                // If we were a member and are no longer a member, check for blocked users.
+                var shouldRotateProfileKey = false
+                memberLoop: for member in oldMembers {
+                    if
+                        let memberServiceId = member.untypedServiceId,
+                        blockingManager.isAddressBlocked(member, transaction: transaction)
+                            || DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(member, tx: transaction.asV2Read)
+                    {
+                        // There is a blocked user in the group. Check if there are other
+                        // mutual groups where we are a full member.
+                        let mutualGroupThreads = DependenciesBridge.shared.groupMemberStore
+                            .groupThreadIds(
+                                withFullMember: memberServiceId,
+                                tx: transaction.asV2Read
+                            )
+                            .lazy
+                            .compactMap { groupThreadId in
+                                return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
+                            }
+                            .filter { groupThread in
+                                // We only want groups where we are a requesting or
+                                // full member (which is when we share our profile key.
+                                return groupThread.groupMembership.isFullMember(localAddress)
+                                    || groupThread.groupMembership.isRequestingMember(localAddress)
+                            }
+                        // If there is exactly one group, its this one we are leaving!
+                        // We should rotate, as its the last group we have in common.
+                        if mutualGroupThreads.count == 1 {
+                            shouldRotateProfileKey = true
+                            break memberLoop
+                        }
+                    }
+                }
+                if shouldRotateProfileKey {
+                    // This can fail and will not retry. More would could be done to make this
+                    // durable, but for now this is best effort. Regardless, we might have stale
+                    // group state and our determination of shared group membership above could
+                    // be wrong, so this is best effort no matter what.
+                    profileManager.forceRotateLocalProfileKeyForGroupDeparture(with: transaction)
+                }
             }
         }
 
