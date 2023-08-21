@@ -180,12 +180,12 @@ class DisplayableTextTest: XCTestCase {
         assertNotLinkifies("hello https://google.com \u{202D} goodbye")
         assertNotLinkifies("hello https://google.com \u{202E} goodbye")
 
-        // Forbidden box drawing characters anywhere in the string
-        assertNotLinkifies("hello ┋ https://google.com")
-        assertNotLinkifies("hello ▛ https://google.com")
-        assertNotLinkifies("hello ◷ https://google.com")
-        assertNotLinkifies("hello https://google.com ┋ goodbye")
-        assertNotLinkifies("hello https://google.com ▛ goodbye")
-        assertNotLinkifies("hello https://google.com ◷ goodbye")
+        // Forbidden box drawing characters in the link
+        assertLinkifies("hello ┋ https://google.com")
+        assertLinkifies("hello ▛ https://google.com")
+        assertLinkifies("hello ◷ https://google.com")
+        assertNotLinkifies("hello https://google┋.com goodbye")
+        assertNotLinkifies("hello https://google▛.com goodbye")
+        assertNotLinkifies("hello https://google◷.com goodbye")
     }
 }

@@ -7,18 +7,35 @@ import Foundation
 
 public enum LinkValidator {
     public static func canParseURLs(in entireMessage: String) -> Bool {
-        if entireMessage.unicodeScalars.contains(where: isProblematicCodepoint(_:)) {
+        if entireMessage.unicodeScalars.contains(where: isProblematicCodepointAnywhereInString(_:)) {
             return false
         }
         return true
     }
 
-    private static func isProblematicCodepoint(_ scalar: UnicodeScalar) -> Bool {
+    public static func isValidLink(linkText: String) -> Bool {
+        if linkText.unicodeScalars.contains(where: isProblematicCodepointInLink(_:)) {
+            return false
+        }
+        return true
+    }
+
+    private static func isProblematicCodepointAnywhereInString(_ scalar: UnicodeScalar) -> Bool {
         switch scalar {
         case "\u{202C}", // POP DIRECTIONAL FORMATTING
             "\u{202D}", // LEFT-TO-RIGHT OVERRIDE
             "\u{202E}": // RIGHT-TO-LEFT OVERRIDE
             return true
+        default:
+            return false
+        }
+    }
+
+    private static func isProblematicCodepointInLink(_ scalar: UnicodeScalar) -> Bool {
+        if isProblematicCodepointAnywhereInString(scalar) {
+            return true
+        }
+        switch scalar {
         case "\u{2500}"..."\u{25FF}": // Box Drawing, Block Elements, Geometric Shapes
             return true
         default:

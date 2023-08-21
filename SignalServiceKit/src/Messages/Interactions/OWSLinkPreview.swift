@@ -117,7 +117,7 @@ public class OWSLinkPreview: MTLModel, Codable {
             Logger.error("Url not present in body")
             throw LinkPreviewError.invalidPreview
         }
-        guard LinkValidator.canParseURLs(in: body) else {
+        guard LinkValidator.canParseURLs(in: body), LinkValidator.isValidLink(linkText: previewProto.url) else {
             Logger.error("Discarding link preview; can't parse URLs in message.")
             throw LinkPreviewError.invalidPreview
         }
@@ -700,6 +700,10 @@ extension URL {
             }
             let delimiterIndex = sourceString.firstIndex(where: { Self.urlDelimeters.contains($0) })
             rawHostname = String(sourceString[..<(delimiterIndex ?? sourceString.endIndex)])
+
+            guard LinkValidator.isValidLink(linkText: sourceString) else {
+                return false
+            }
         } else {
             // The hostname will be punycode and all ASCII
             rawHostname = host

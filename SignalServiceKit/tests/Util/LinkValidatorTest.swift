@@ -97,7 +97,11 @@ class LinkValidatorTest: XCTestCase {
             ("alice bob https://signal.org/url_1 jim https://signal.org/url_2 carol", "https://signal.org/url_1"),
 
             // If there's too much text, we can't parse any URLs.
-            ("https://signal.org " + String(repeating: "A", count: 4096), nil)
+            ("https://signal.org " + String(repeating: "A", count: 4096), nil),
+
+            // Code points that are valid outside the link, but not inside
+            ("▶ https://signal.org", "https://signal.org"),
+            ("https://si▶gnal.org", nil)
         ]
         for (entireMessage, expectedValue) in testCases {
             let actualValue = LinkValidator.firstLinkPreviewURL(in: entireMessage)

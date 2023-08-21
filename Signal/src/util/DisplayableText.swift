@@ -141,6 +141,9 @@ public class DisplayableText: NSObject {
         }
 
         func isValidLink(linkText: String) -> Bool {
+            guard LinkValidator.isValidLink(linkText: linkText) else {
+                return false
+            }
             guard let hostRegex = DisplayableText.hostRegex else {
                 owsFailDebug("hostRegex was unexpectedly nil")
                 return false
