@@ -907,6 +907,18 @@ public class KeyBackupServiceImpl: SecureValueRecovery {
                 return firstly {
                     urlSession.promiseForTSRequest(request)
                 }.recover(on: schedulers.global()) { error -> Promise<HTTPResponse> in
+                    if
+                        !error.isNetworkFailureOrTimeout,
+                        let httpCode = error.httpStatusCode,
+                        httpCode < 500,
+                        httpCode >= 400
+                    {
+                        // If we get a 4XX error, throw out the cached token. We can always
+                        // fetch a new one next time we send a request, and this ensures we don't
+                        // end up in a loop with a bad token.
+                        self.db.write(block: self.clearNextToken(transaction:))
+                    }
+
                     // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
                     if let httpError = error as? OWSHTTPError {
                         throw httpError
