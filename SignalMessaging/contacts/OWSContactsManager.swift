@@ -1005,6 +1005,10 @@ extension OWSContactsManager {
                     intersectedRecipients: intersectedRecipients,
                     tx: tx
                 )
+                self.unhideRecipientsIfNeeded(
+                    addressBookPhoneNumbers: addressBookPhoneNumbers,
+                    tx: tx.asV2Write
+                )
                 self.didFinishIntersection(mode: intersectionMode, phoneNumbers: phoneNumbersToIntersect, tx: tx)
             }
         }
@@ -1062,6 +1066,35 @@ extension OWSContactsManager {
                 continue  // They were already registered -- no notification.
             }
             NewAccountDiscovery.postNotification(for: signalRecipient, tx: tx)
+        }
+    }
+
+    /// We cannot hide a contact that is in our address book.
+    /// As a result, when a contact that was hidden is added to the address book,
+    /// we must unhide them.
+    private func unhideRecipientsIfNeeded(
+        addressBookPhoneNumbers: Set<String>?,
+        tx: DBWriteTransaction
+    ) {
+        guard FeatureFlags.recipientHiding else {
+            return
+        }
+        guard let addressBookPhoneNumbers else {
+            return
+        }
+        let recipientHidingManager = DependenciesBridge.shared.recipientHidingManager
+        for hiddenRecipient in recipientHidingManager.hiddenRecipients(tx: tx) {
+            guard let phoneNumber = hiddenRecipient.phoneNumber else {
+                continue // Intersecting with contacts by phone number
+            }
+            guard addressBookPhoneNumbers.contains(phoneNumber) else {
+                continue  // Not in the address book -- no unhiding.
+            }
+            DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
+                hiddenRecipient,
+                wasLocallyInitiated: true,
+                tx: tx
+            )
         }
     }
 
