@@ -415,6 +415,11 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
     @objc
     func customUIMenuPromptReplace(_ sender: Any?) { super.perform(uiMenuPromptReplaceAction, with: sender) }
 
+    private let uiMenuTranslateAction = Selector(("_translate:"))
+    private let customUIMenuTranslateAction = #selector(customUIMenuTranslate)
+    @objc
+    func customUIMenuTranslate(_ sender: Any?) { super.perform(uiMenuTranslateAction, with: sender) }
+
     private let uiMenuLookUpAction = Selector(("_define:"))
     private let customUIMenuLookUpAction = #selector(customUIMenuLookUp)
     @objc
@@ -478,6 +483,8 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
             return super.canPerformAction(uiMenuLookUpAction, withSender: sender)
         case customUIMenuShareAction:
             return super.canPerformAction(uiMenuShareAction, withSender: sender)
+        case customUIMenuTranslateAction:
+            return true
 
         // The second stage of replace (picking the thing to replace with) is allowed.
         case uiMenuReplaceAction:
@@ -548,6 +555,13 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
                             comment: "Option in selected text edit menu to look up word definitions"
                         ),
                         action: #selector(customUIMenuLookUp)
+                    ),
+                    UIMenuItem(
+                        title: OWSLocalizedString(
+                            "TEXT_MENU_TRANSLATE",
+                            comment: "Option in selected text edit menu to translate the word"
+                        ),
+                        action: #selector(customUIMenuTranslate)
                     ),
                     UIMenuItem(
                         title: OWSLocalizedString(
