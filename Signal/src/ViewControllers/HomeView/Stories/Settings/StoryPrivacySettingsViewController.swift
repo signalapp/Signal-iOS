@@ -104,18 +104,21 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         }
 
         for item in storyItems {
-            myStoriesSection.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let cell = self?.tableView.dequeueReusableCell(withIdentifier: StoryThreadCell.reuseIdentifier) as? StoryThreadCell else {
-                    owsFailDebug("Missing cell.")
-                    return UITableViewCell()
+            myStoriesSection.add(OWSTableItem(
+                customCellBlock: { [weak self] in
+                    guard let cell = self?.tableView.dequeueReusableCell(withIdentifier: StoryThreadCell.reuseIdentifier) as? StoryThreadCell else {
+                        owsFailDebug("Missing cell.")
+                        return UITableViewCell()
+                    }
+                    Self.databaseStorage.read { transaction in
+                        cell.configure(conversationItem: item, transaction: transaction)
+                    }
+                    return cell
+                },
+                actionBlock: { [weak self] in
+                    self?.showSettings(for: item)
                 }
-                Self.databaseStorage.read { transaction in
-                    cell.configure(conversationItem: item, transaction: transaction)
-                }
-                return cell
-            }) { [weak self] in
-                self?.showSettings(for: item)
-            })
+            ))
         }
 
         let viewReceiptsSection = OWSTableSection()

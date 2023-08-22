@@ -201,15 +201,20 @@ private extension RecipientHidingManagerImpl {
 
         /// TODO recipientHiding:
         /// - Throw out other user's profile key if not in group with user.
-        /// - Throw away existing Stories from hidden user.
-        /// - Remove hidden user from Story distribution lists.
         if wasLocallyInitiated {
             profileManager.removeUser(
                 fromProfileWhitelist: recipient.address,
                 userProfileWriter: .storageService,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
+            StoryManager.removeAddressFromAllPrivateStoryThreads(recipient.address, tx: SDSDB.shimOnlyBridge(tx))
             storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
+        }
+
+        // Stories are always sent from an ACI. We will start dropping new stories
+        // from the recipient; delete any existing ones we already have.
+        if let aci = recipient.aci {
+            StoryManager.deleteAllStories(forSender: aci, tx: SDSDB.shimOnlyBridge(tx))
         }
 
         if tsAccountManager.isPrimaryDevice(transaction: SDSDB.shimOnlyBridge(tx)) {

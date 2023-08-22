@@ -159,6 +159,13 @@ extension BlockingManager {
                 storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
             }
         }
+
+        // We will start dropping new stories from the blocked address;
+        // delete any existing ones we already have.
+        if let aci = address.aci {
+            StoryManager.deleteAllStories(forSender: aci, tx: transaction)
+        }
+        StoryManager.removeAddressFromAllPrivateStoryThreads(address, tx: transaction)
     }
 
     public func removeBlockedAddress(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
