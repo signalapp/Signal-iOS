@@ -56,7 +56,7 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
         }
 
         // Only insert "change phone number" interactions for full members.
-        for threadId in groupMemberStore.groupThreadIds(withFullMember: mergedRecipient.aci.untypedServiceId, tx: tx) {
+        for threadId in groupMemberStore.groupThreadIds(withFullMember: mergedRecipient.aci, tx: tx) {
             guard let thread = threadStore.fetchGroupThread(uniqueId: threadId, tx: tx) else {
                 continue
             }

@@ -506,6 +506,34 @@ public extension GroupMembership {
             return false
         }
     }
+
+    /// Is this user's profile key exposed to the group?
+    func hasProfileKeyInGroup(serviceId: ServiceId) -> Bool {
+        guard let memberState = memberStates[SignalServiceAddress(serviceId)] else {
+            return false
+        }
+
+        switch memberState {
+        case .fullMember, .requesting:
+            return true
+        case .invited:
+            return false
+        }
+    }
+
+    /// Can this user view the profile keys in the group?
+    func canViewProfileKeys(serviceId: ServiceId) -> Bool {
+        guard let memberState = memberStates[SignalServiceAddress(serviceId)] else {
+            return false
+        }
+
+        switch memberState {
+        case .fullMember, .invited:
+            return true
+        case .requesting:
+            return false
+        }
+    }
 }
 
 // MARK: - Builder

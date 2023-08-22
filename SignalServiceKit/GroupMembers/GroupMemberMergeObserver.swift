@@ -26,7 +26,7 @@ class GroupMemberMergeObserverImpl: RecipientMergeObserver {
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
         let groupThreadIds: [String] = (
-            groupMemberStore.groupThreadIds(withFullMember: mergedRecipient.aci.untypedServiceId, tx: tx)
+            groupMemberStore.groupThreadIds(withFullMember: mergedRecipient.aci, tx: tx)
             + groupMemberStore.groupThreadIds(withFullMember: mergedRecipient.newPhoneNumber, tx: tx)
         )
         resolveGroupMembers(in: groupThreadIds, tx: tx)

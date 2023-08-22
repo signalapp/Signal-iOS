@@ -6498,8 +6498,10 @@
 		506695ED29C5337700B6D8D0 /* GroupMembers */ = {
 			isa = PBXGroup;
 			children = (
+				506695E929C52F2F00B6D8D0 /* GroupMemberMergeObserver.swift */,
 				506695EB29C5305800B6D8D0 /* GroupMemberStore.swift */,
 				506695EE29C533A400B6D8D0 /* GroupMemberUpdater.swift */,
+				F9C5C9FD289453B100548EEE /* TSGroupMember.swift */,
 			);
 			path = GroupMembers;
 			sourceTree = "<group>";
@@ -9074,7 +9076,6 @@
 				F9C5C9FB289453B100548EEE /* ContactThreadFinder.swift */,
 				502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */,
 				5003BB42299F034D0037159B /* E164.swift */,
-				506695E929C52F2F00B6D8D0 /* GroupMemberMergeObserver.swift */,
 				F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */,
 				F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */,
 				F9C5C9F1289453B100548EEE /* OWSDisappearingMessagesConfiguration.m */,
@@ -9100,7 +9101,6 @@
 				5033D45E29D4DAAC007FEADA /* ThreadMerger.swift */,
 				45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */,
 				502D45472A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift */,
-				F9C5C9FD289453B100548EEE /* TSGroupMember.swift */,
 				F9C5C9F9289453B100548EEE /* TSThread+SDS.swift */,
 				F9C5C9D2289453B100548EEE /* TSThread.h */,
 				F9C5C9F8289453B100548EEE /* TSThread.m */,

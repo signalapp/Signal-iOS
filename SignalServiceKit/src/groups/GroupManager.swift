@@ -1165,15 +1165,19 @@ public class GroupManager: NSObject {
             updateDMResult = UpdateDMConfigurationResult(oldConfiguration: dmConfiguration, newConfiguration: dmConfiguration)
         }
 
-        // Step 3: If any member was removed, make sure we rotate our sender key session
-        // If we were removed, check for any blocked members and rotate our profile key
-        // if this is the only mutual group with them.
+        // Step 3: If any member was removed, make sure we rotate our sender key
+        // session.
+        //
+        // If *we* were removed, check if the group contained any blocked
+        // members and make a best-effort attempt to rotate our profile key if
+        // this was our only mutual group with them.
         let oldGroupModel = groupThread.groupModel
-        if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
-           let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
-
-            let oldMembers = oldGroupModelV2.membership.allMembersOfAnyKind
-            let newMembers = newGroupModelV2.membership.allMembersOfAnyKind
+        if
+            let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
+            let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2
+        {
+            let oldMembers = oldGroupModelV2.membership.allMembersOfAnyKindServiceIds
+            let newMembers = newGroupModelV2.membership.allMembersOfAnyKindServiceIds
 
             if oldMembers.subtracting(newMembers).isEmpty == false {
                 senderKeyStore.resetSenderKeySession(for: groupThread, transaction: transaction)
@@ -1181,24 +1185,35 @@ public class GroupManager: NSObject {
 
             if
                 tsAccountManager.isPrimaryDevice(transaction: transaction),
-                let localAddress = tsAccountManager.localIdentifiers(transaction: transaction).map({
-                    return SignalServiceAddress($0.aci)
-                }),
-                oldMembers.contains(localAddress),
-                !newMembers.contains(localAddress) {
-                // If we were a member and are no longer a member, check for blocked users.
+                let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci,
+                oldGroupModelV2.membership.hasProfileKeyInGroup(serviceId: localAci),
+                !newGroupModelV2.membership.hasProfileKeyInGroup(serviceId: localAci)
+            {
+                // If our profile key is no longer exposed to the group - for
+                // example, we've left the group - check if the group had any
+                // blocked users to whom our profile key was exposed.
                 var shouldRotateProfileKey = false
-                memberLoop: for member in oldMembers {
+                for member in oldMembers {
+                    let memberAddress = SignalServiceAddress(member)
+
                     if
-                        let memberServiceId = member.untypedServiceId,
-                        blockingManager.isAddressBlocked(member, transaction: transaction)
-                            || DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(member, tx: transaction.asV2Read)
+                        (
+                            blockingManager.isAddressBlocked(memberAddress, transaction: transaction)
+                            || DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(memberAddress, tx: transaction.asV2Read)
+                        ),
+                        newGroupModelV2.membership.canViewProfileKeys(serviceId: member)
                     {
-                        // There is a blocked user in the group. Check if there are other
-                        // mutual groups where we are a full member.
+                        // Make a best-effort attempt to find other groups with
+                        // this blocked user in which our profile key is
+                        // exposed.
+                        //
+                        // We can only efficiently query for groups in which
+                        // they are a full member, although that may not be all
+                        // the groups in which they can see your profile key.
+                        // Best effort.
                         let mutualGroupThreads = DependenciesBridge.shared.groupMemberStore
                             .groupThreadIds(
-                                withFullMember: memberServiceId,
+                                withFullMember: member,
                                 tx: transaction.asV2Read
                             )
                             .lazy
@@ -1206,24 +1221,19 @@ public class GroupManager: NSObject {
                                 return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
                             }
                             .filter { groupThread in
-                                // We only want groups where we are a requesting or
-                                // full member (which is when we share our profile key.
-                                return groupThread.groupMembership.isFullMember(localAddress)
-                                    || groupThread.groupMembership.isRequestingMember(localAddress)
+                                return groupThread.groupMembership.hasProfileKeyInGroup(serviceId: localAci)
                             }
-                        // If there is exactly one group, its this one we are leaving!
-                        // We should rotate, as its the last group we have in common.
+
+                        // If there is exactly one group, it's the one we are leaving!
+                        // We should rotate, as it's the last group we have in common.
                         if mutualGroupThreads.count == 1 {
                             shouldRotateProfileKey = true
-                            break memberLoop
+                            break
                         }
                     }
                 }
+
                 if shouldRotateProfileKey {
-                    // This can fail and will not retry. More would could be done to make this
-                    // durable, but for now this is best effort. Regardless, we might have stale
-                    // group state and our determination of shared group membership above could
-                    // be wrong, so this is best effort no matter what.
                     profileManager.forceRotateLocalProfileKeyForGroupDeparture(with: transaction)
                 }
             }
