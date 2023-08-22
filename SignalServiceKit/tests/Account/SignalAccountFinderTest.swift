@@ -17,7 +17,7 @@ class SignalAccountFinderTest: SSKBaseTestSwift {
         tsAccountManager.registerForTests(withLocalNumber: localAddress.phoneNumber!, uuid: localAddress.uuid!)
     }
 
-    private func createAccount(serviceId: UntypedServiceId, phoneNumber: E164?) -> SignalAccount {
+    private func createAccount(serviceId: ServiceId, phoneNumber: E164?) -> SignalAccount {
         write {
             let account = SignalAccount(address: SignalServiceAddress(serviceId: serviceId, phoneNumber: phoneNumber?.stringValue))
             account.anyInsert(transaction: $0)
@@ -26,31 +26,37 @@ class SignalAccountFinderTest: SSKBaseTestSwift {
     }
 
     func testFetchAccounts() {
-        let sid1 = FutureAci.randomForTesting()
+        let aci1 = Aci.randomForTesting()
         let pn1 = E164("+16505550100")!
-        let account1 = createAccount(serviceId: sid1, phoneNumber: pn1)
+        let account1 = createAccount(serviceId: aci1, phoneNumber: pn1)
 
-        let sid2 = FutureAci.randomForTesting()
-        let account2 = createAccount(serviceId: sid2, phoneNumber: nil)
+        let aci2 = Aci.randomForTesting()
+        let account2 = createAccount(serviceId: aci2, phoneNumber: nil)
 
         // Nothing prevents us from creating multiple accounts for the same recipient.
-        let sid3 = FutureAci.randomForTesting()
+        let aci3 = Aci.randomForTesting()
         let pn3 = E164("+16505550101")!
-        let account3a = createAccount(serviceId: sid3, phoneNumber: pn3)
-        _ = createAccount(serviceId: sid3, phoneNumber: pn3)
+        let account3 = createAccount(serviceId: aci3, phoneNumber: pn3)
+        _ = createAccount(serviceId: aci3, phoneNumber: pn3)
 
         // Create an account but don't fetch it.
-        let sid4 = FutureAci.randomForTesting()
-        _ = createAccount(serviceId: sid4, phoneNumber: nil)
+        let aci4 = Aci.randomForTesting()
+        _ = createAccount(serviceId: aci4, phoneNumber: nil)
 
         // Create a ServiceId without an account.
-        let sid5 = FutureAci.randomForTesting()
+        let aci5 = Aci.randomForTesting()
+
+        // Create an account for a PNI-only contact
+        let pni6 = Pni.randomForTesting()
+        let pn6 = E164("+17735550155")!
+        let account6 = createAccount(serviceId: pni6, phoneNumber: pn6)
 
         let addressesToFetch: [SignalServiceAddress] = [
-            SignalServiceAddress(sid1),
-            SignalServiceAddress(sid2),
-            SignalServiceAddress(sid3),
-            SignalServiceAddress(sid5),
+            SignalServiceAddress(aci1),
+            SignalServiceAddress(aci2),
+            SignalServiceAddress(aci3),
+            SignalServiceAddress(aci5),
+            SignalServiceAddress(pni6),
 
             // In practice, every SignalAccount has a UUID, and we should be populating
             // the UUID for phone number-only addresses. However, keep this around for
@@ -61,8 +67,9 @@ class SignalAccountFinderTest: SSKBaseTestSwift {
         let expectedAccounts: [SignalAccount?] = [
             account1,
             account2,
-            account3a,
+            account3,
             nil,
+            account6,
             account1
         ]
 

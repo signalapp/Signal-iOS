@@ -16,18 +16,18 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
         let myAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
         let myPhoneNumber1 = E164("+16505550111")!
         let myPhoneNumber2 = E164("+16505550122")!
-        let myAddress1 = ssaCache.makeAddress(serviceId: myAci.untypedServiceId, phoneNumber: myPhoneNumber1)
+        let myAddress1 = ssaCache.makeAddress(serviceId: myAci, phoneNumber: myPhoneNumber1)
 
         let aliceAci = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
         let alicePhoneNumber1 = E164("+16505550133")!
         let alicePhoneNumber2 = E164("+16505550144")!
-        let aliceAddress1 = ssaCache.makeAddress(serviceId: aliceAci.untypedServiceId, phoneNumber: alicePhoneNumber1)
+        let aliceAddress1 = ssaCache.makeAddress(serviceId: aliceAci, phoneNumber: alicePhoneNumber1)
 
         let bobAci = Aci.constantForTesting("00000000-0000-4000-8000-00000000000B")
         let bobPhoneNumber1: E164? = nil
         let bobPhoneNumber2 = E164("+16505550166")!
         let bobPhoneNumber3 = E164("+16505550177")!
-        let bobAddress1 = ssaCache.makeAddress(serviceId: bobAci.untypedServiceId, phoneNumber: bobPhoneNumber1)
+        let bobAddress1 = ssaCache.makeAddress(serviceId: bobAci, phoneNumber: bobPhoneNumber1)
 
         let groupWithEveryone = TSGroupThread.forUnitTest(groupId: 1, groupMembers: [myAddress1, aliceAddress1, bobAddress1])
         let groupWithoutAlice = TSGroupThread.forUnitTest(groupId: 2, groupMembers: [myAddress1, bobAddress1])

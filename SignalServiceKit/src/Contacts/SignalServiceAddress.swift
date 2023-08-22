@@ -796,7 +796,7 @@ extension SignalServiceAddress {
 }
 
 extension SignalServiceAddressCache {
-    func makeAddress(serviceId: UntypedServiceId?, phoneNumber: E164?) -> SignalServiceAddress {
+    func makeAddress(serviceId: ServiceId?, phoneNumber: E164?) -> SignalServiceAddress {
         SignalServiceAddress(
             serviceId: serviceId,
             phoneNumber: phoneNumber?.stringValue,

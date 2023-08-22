@@ -20,7 +20,7 @@ private class MockGroupMemberUpdaterTemporaryShims: GroupMemberUpdaterTemporaryS
         transaction: DBReadTransaction
     ) -> UInt64? {
         let resultIndex = fetchableLatestInteractionTimestamps.firstIndex {
-            $0.groupThreadId == groupThreadId && $0.serviceId == groupMemberAddress.untypedServiceId?.uuidValue.uuidString
+            $0.groupThreadId == groupThreadId && $0.serviceId == groupMemberAddress.serviceId?.serviceIdUppercaseString
         }
         let result = fetchableLatestInteractionTimestamps.remove(at: resultIndex!)
         return result.interactionTimestamp

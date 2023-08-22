@@ -12,7 +12,7 @@ class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
 
     func testMergeAddress() {
         // Setup – Store two different receipt sets for a uuid and an e164
-        let uuidAddress = SignalServiceAddress.randomForTesting()
+        let aciAddress = SignalServiceAddress(Aci.randomForTesting())
         let uuidReceiptSet = MessageReceiptSet()
         uuidReceiptSet.insert(timestamp: 1234, messageUniqueId: "uuid")
 
@@ -21,12 +21,12 @@ class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
         e164ReceiptSet.insert(timestamp: 5678, messageUniqueId: "e164")
 
         databaseStorage.write { writeTx in
-            outgoingReceiptManager.storeReceiptSet(uuidReceiptSet, type: .delivery, address: uuidAddress, transaction: writeTx)
+            outgoingReceiptManager.storeReceiptSet(uuidReceiptSet, type: .delivery, address: aciAddress, transaction: writeTx)
             outgoingReceiptManager.storeReceiptSet(e164ReceiptSet, type: .delivery, address: e164Address, transaction: writeTx)
         }
 
         // Test – Fetch the receipt set for a merged address
-        let mergedAddress = SignalServiceAddress(serviceId: uuidAddress.untypedServiceId!, phoneNumber: e164Address.phoneNumber!)
+        let mergedAddress = SignalServiceAddress(serviceId: aciAddress.aci!, phoneNumber: e164Address.phoneNumber!)
         let mergedReceipt = databaseStorage.write { tx in
             outgoingReceiptManager.fetchAndMergeReceiptSet(type: .delivery, address: mergedAddress, transaction: tx)
         }
@@ -40,22 +40,22 @@ class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
 
     func testMergeAll() {
         // Setup – Store two different receipt sets for a uuid and an e164
-        let uuidAddress = SignalServiceAddress.randomForTesting()
-        let uuidReceiptSet = MessageReceiptSet()
-        uuidReceiptSet.insert(timestamp: 1234, messageUniqueId: "uuid")
+        let aciAddress = SignalServiceAddress(Aci.randomForTesting())
+        let aciReceiptSet = MessageReceiptSet()
+        aciReceiptSet.insert(timestamp: 1234, messageUniqueId: "uuid")
 
         let e164Address = SignalServiceAddress(phoneNumber: "+1234567890")
         let e164ReceiptSet = MessageReceiptSet()
         e164ReceiptSet.insert(timestamp: 5678, messageUniqueId: "e164")
 
         databaseStorage.write { writeTx in
-            outgoingReceiptManager.storeReceiptSet(uuidReceiptSet, type: .delivery, address: uuidAddress, transaction: writeTx)
+            outgoingReceiptManager.storeReceiptSet(aciReceiptSet, type: .delivery, address: aciAddress, transaction: writeTx)
             outgoingReceiptManager.storeReceiptSet(e164ReceiptSet, type: .delivery, address: e164Address, transaction: writeTx)
         }
 
         // Test – Mark the merged address as high trust, then fetch all receipt sets
         signalServiceAddressCache.updateRecipient(
-            SignalRecipient(aci: uuidAddress.aci, phoneNumber: e164Address.e164)
+            SignalRecipient(aci: aciAddress.aci, phoneNumber: e164Address.e164)
         )
         let allReceipts = databaseStorage.read { readTx in
             outgoingReceiptManager.fetchAllReceiptSets(type: .delivery, transaction: readTx)
@@ -63,8 +63,8 @@ class OWSOutgoingReceiptManagerTests: SSKBaseTestSwift, Dependencies {
 
         // Verify – The resulting dictionary contains one element. Maps the merged address to the merged receipt
         XCTAssertEqual(allReceipts.count, 1)
-        XCTAssertEqual(allReceipts.keys.first?.untypedServiceId, uuidAddress.untypedServiceId)
-        XCTAssertEqual(allReceipts.keys.first?.phoneNumber, e164Address.phoneNumber)
+        XCTAssertEqual(allReceipts.keys.first!.serviceId, aciAddress.aci!)
+        XCTAssertEqual(allReceipts.keys.first!.phoneNumber, e164Address.phoneNumber)
 
         XCTAssertTrue(allReceipts.values.first!.timestamps.contains(1234))
         XCTAssertTrue(allReceipts.values.first!.timestamps.contains(5678))

@@ -64,9 +64,9 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
         // use values contained in the cache.
         var expectedAddresses = Set<SignalServiceAddress>()
         for fullMemberAddress in groupThread.groupMembership.fullMembers {
-            if let serviceId = fullMemberAddress.untypedServiceId {
+            if let serviceId = fullMemberAddress.serviceId {
                 expectedAddresses.insert(SignalServiceAddress(
-                    uuid: serviceId.uuidValue,
+                    serviceId: serviceId,
                     phoneNumber: nil,
                     cache: signalServiceAddressCache,
                     cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
