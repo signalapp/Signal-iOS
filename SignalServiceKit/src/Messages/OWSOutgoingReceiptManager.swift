@@ -99,6 +99,12 @@ extension OWSOutgoingReceiptManager {
             owsFailDebug("Invalid timestamp.")
             return
         }
+        let isHiddenRecipient = FeatureFlags.recipientHiding
+            && DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: tx.asV2Read)
+        guard !isHiddenRecipient else {
+            // Don't send receipts to hidden recipients.
+            return
+        }
         let pendingTask = pendingTasks.buildPendingTask(label: "Receipt Send: \(NSStringForOWSReceiptType(receiptType))")
         let persistedSet = fetchAndMergeReceiptSet(type: receiptType, address: address, transaction: tx)
         persistedSet.insert(timestamp: timestamp, messageUniqueId: messageUniqueId)
