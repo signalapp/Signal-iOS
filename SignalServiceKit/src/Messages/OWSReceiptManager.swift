@@ -21,20 +21,24 @@ struct ReceiptForLinkedDevice: Codable {
         self.timestamp = timestamp
     }
 
-    var asLinkedDeviceReadReceipt: OWSLinkedDeviceReadReceipt {
+    var asLinkedDeviceReadReceipt: OWSLinkedDeviceReadReceipt? {
+        guard let senderAci = senderAddress.aci else { return nil }
         return OWSLinkedDeviceReadReceipt(
-            senderAddress: senderAddress,
+            senderAci: AciObjC(senderAci),
             messageUniqueId: messageUniqueId,
             messageIdTimestamp: messageIdTimestamp,
-            readTimestamp: timestamp)
+            readTimestamp: timestamp
+        )
     }
 
-    var asLinkedDeviceViewedReceipt: OWSLinkedDeviceViewedReceipt {
+    var asLinkedDeviceViewedReceipt: OWSLinkedDeviceViewedReceipt? {
+        guard let senderAci = senderAddress.aci else { return nil }
         return OWSLinkedDeviceViewedReceipt(
-            senderAddress: senderAddress,
+            senderAci: AciObjC(senderAci),
             messageUniqueId: messageUniqueId,
             messageIdTimestamp: messageIdTimestamp,
-            viewedTimestamp: timestamp)
+            viewedTimestamp: timestamp
+        )
     }
 }
 
@@ -79,18 +83,20 @@ public extension OWSReceiptManager {
             }
 
             if !readReceiptsForLinkedDevices.isEmpty {
-                let receiptsForMessage = readReceiptsForLinkedDevices.map { $0.asLinkedDeviceReadReceipt }
-                let message = OWSReadReceiptsForLinkedDevicesMessage(thread: thread, readReceipts: receiptsForMessage, transaction: transaction)
-
-                self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                let readReceiptsToSend = readReceiptsForLinkedDevices.compactMap { $0.asLinkedDeviceReadReceipt }
+                if !readReceiptsToSend.isEmpty {
+                    let message = OWSReadReceiptsForLinkedDevicesMessage(thread: thread, readReceipts: readReceiptsToSend, transaction: transaction)
+                    self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                }
                 self.toLinkedDevicesReadReceiptMapStore.removeAll(transaction: transaction)
             }
 
             if !viewedReceiptsForLinkedDevices.isEmpty {
-                let receiptsForMessage = viewedReceiptsForLinkedDevices.map { $0.asLinkedDeviceViewedReceipt }
-                let message = OWSViewedReceiptsForLinkedDevicesMessage(thread: thread, viewedReceipts: receiptsForMessage, transaction: transaction)
-
-                self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                let viewedReceiptsToSend = viewedReceiptsForLinkedDevices.compactMap { $0.asLinkedDeviceViewedReceipt }
+                if !viewedReceiptsToSend.isEmpty {
+                    let message = OWSViewedReceiptsForLinkedDevicesMessage(thread: thread, viewedReceipts: viewedReceiptsToSend, transaction: transaction)
+                    self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                }
                 self.toLinkedDevicesViewedReceiptMapStore.removeAll(transaction: transaction)
             }
 
@@ -392,7 +398,7 @@ public extension OWSReceiptManager {
                 return
             }
 
-            let localAddress = self.tsAccountManager.localAddress
+            let localAci = self.tsAccountManager.localIdentifiers?.aci
             let readTimestamp = Date.ows_millisecondTimestamp()
             let maxBatchSize = 500
 
@@ -444,11 +450,13 @@ public extension OWSReceiptManager {
                         while batchQuotaRemaining > 0, let message = try cursor.next() {
                             message.markUnreadReactionsAsRead(transaction: transaction)
 
-                            if let localAddress = localAddress {
-                                let receipt = OWSLinkedDeviceReadReceipt(senderAddress: localAddress,
-                                                                         messageUniqueId: message.uniqueId,
-                                                                         messageIdTimestamp: message.timestamp,
-                                                                         readTimestamp: readTimestamp)
+                            if let localAci {
+                                let receipt = OWSLinkedDeviceReadReceipt(
+                                    senderAci: AciObjC(localAci),
+                                    messageUniqueId: message.uniqueId,
+                                    messageIdTimestamp: message.timestamp,
+                                    readTimestamp: readTimestamp
+                                )
                                 receiptsForMessage.append(receipt)
                             }
 

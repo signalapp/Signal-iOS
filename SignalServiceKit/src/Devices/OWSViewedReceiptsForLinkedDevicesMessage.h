@@ -8,6 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AciObjC;
 @class SDSAnyReadTransaction;
 @class SignalServiceAddress;
 
@@ -21,10 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithSenderAddress:(SignalServiceAddress *)address
-                      messageUniqueId:(nullable NSString *)messageUniqueId
-                   messageIdTimestamp:(uint64_t)messageIdTimestamp
-                      viewedTimestamp:(uint64_t)viewedTimestamp NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSenderAci:(AciObjC *)senderAci
+                  messageUniqueId:(nullable NSString *)messageUniqueId
+               messageIdTimestamp:(uint64_t)messageIdTimestamp
+                  viewedTimestamp:(uint64_t)viewedTimestamp NS_DESIGNATED_INITIALIZER;
 
 @end
 

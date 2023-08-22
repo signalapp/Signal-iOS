@@ -20,20 +20,20 @@ NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
 
 @implementation OWSLinkedDeviceReadReceipt
 
-- (instancetype)initWithSenderAddress:(SignalServiceAddress *)address
-                      messageUniqueId:(nullable NSString *)messageUniqueId
-                   messageIdTimestamp:(uint64_t)messageIdTimestamp
-                        readTimestamp:(uint64_t)readTimestamp
+- (instancetype)initWithSenderAci:(AciObjC *)senderAci
+                  messageUniqueId:(nullable NSString *)messageUniqueId
+               messageIdTimestamp:(uint64_t)messageIdTimestamp
+                    readTimestamp:(uint64_t)readTimestamp
 {
-    OWSAssertDebug(address.isValid && messageIdTimestamp > 0);
+    OWSAssertDebug(messageIdTimestamp > 0);
 
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _senderPhoneNumber = address.phoneNumber;
-    _senderUUID = address.uuidString;
+    _senderPhoneNumber = nil;
+    _senderUUID = senderAci.serviceIdUppercaseString;
     _messageUniqueId = messageUniqueId;
     _messageIdTimestamp = messageIdTimestamp;
     _readTimestamp = readTimestamp;
@@ -76,7 +76,7 @@ NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
 
 - (SignalServiceAddress *)senderAddress
 {
-    return [[SignalServiceAddress alloc] initWithUuidString:self.senderUUID phoneNumber:self.senderPhoneNumber];
+    return [[SignalServiceAddress alloc] initWithAciString:self.senderUUID phoneNumber:self.senderPhoneNumber];
 }
 
 @end
