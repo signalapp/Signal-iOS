@@ -274,8 +274,9 @@ class RecipientContextMenuHelper {
 
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString("VIEW_CONTACT_BUTTON", comment: "Button label for the 'View Contact' button"),
-            handler: { _ in
-                // TODO: present contact sheet
+            handler: { [weak self] _ in
+                guard let self else { return }
+                self.displayDeleteContactViewController(address: address, fromViewController: fromViewController)
             }
         ))
         actionSheet.addAction(ActionSheetAction(
@@ -285,10 +286,35 @@ class RecipientContextMenuHelper {
         fromViewController.presentActionSheet(actionSheet)
     }
 
+    /// Displays a view controller with a simplified contact
+    /// view and the option to delete this contact.
+    ///
+    /// - Parameter address: The address of the contact to
+    ///   potentially be deleted.
+    /// - Parameter fromViewController: The view controller
+    ///   from which to present this contact deletion view
+    ///   controller.
+    private func displayDeleteContactViewController(
+        address: SignalServiceAddress,
+        fromViewController: UIViewController
+    ) {
+        let deleteContactViewController = DeleteSystemContactViewController(
+            address: address,
+            viewControllerPresentingToast: fromViewController,
+            contactsManager: contactsManager,
+            databaseStorage: databaseStorage
+        )
+        let navigationController = OWSNavigationController()
+        navigationController.setViewControllers([deleteContactViewController], animated: false)
+        fromViewController.presentFormSheet(navigationController, animated: true)
+    }
+
     /// Displays a toast confirming the successful hide of a recipient.
     ///
     /// - Parameter fromViewController: The view controller from which to
     ///   present the toast.
+    /// - Parameter displayName: The the display name of the user who has
+    ///   been hidden.
     private func displaySuccessToast(
         fromViewController: UIViewController,
         displayName: String
