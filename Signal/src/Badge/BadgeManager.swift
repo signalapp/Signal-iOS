@@ -36,7 +36,7 @@ public class BadgeManager {
             serialScheduler: serialScheduler,
             fetchBadgeValue: {
                 databaseStorage.read { tx in
-                    InteractionFinder.unreadCountInAllThreads(transaction: tx.unwrapGrdbRead)
+                    InteractionFinder.unreadCountInAllThreads(transaction: tx)
                 }
             }
         )

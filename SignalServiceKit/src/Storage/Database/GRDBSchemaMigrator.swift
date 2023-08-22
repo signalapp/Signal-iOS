@@ -1478,9 +1478,9 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.tunedConversationLoadIndices) { transaction in
             // These two indices are hyper-tuned for queries used to fetch the conversation load window. Specifically:
-            // - GRDBInteractionFinder.count(excludingPlaceholders:transaction:)
-            // - GRDBInteractionFinder.distanceFromLatest(interactionUniqueId:excludingPlaceholders:transaction:)
-            // - GRDBInteractionFinder.enumerateInteractions(range:excludingPlaceholders:transaction:block:)
+            // - InteractionFinder.count(excludingPlaceholders:transaction:)
+            // - InteractionFinder.distanceFromLatest(interactionUniqueId:excludingPlaceholders:transaction:)
+            // - InteractionFinder.enumerateInteractions(range:excludingPlaceholders:transaction:block:)
             //
             // These indices are partial, covering and as small as possible. The columns selected appear
             // redundant, but this is to avoid the SQLite query planner from selecting a less-optimal,
@@ -2343,7 +2343,7 @@ public class GRDBSchemaMigrator: NSObject {
                 return .success(())
             }
 
-            let maxId = GRDBInteractionFinder.maxRowId(transaction: transaction)
+            let maxId = InteractionFinder.maxRowId(transaction: transaction.asAnyRead)
             SSKPreferences.setMessageRequestInteractionIdEpoch(maxId, transaction: transaction)
             return .success(())
         }

@@ -274,7 +274,7 @@ public extension TSThread {
             : .onThisDevice
 
         let finder = InteractionFinder(threadUniqueId: uniqueId)
-        var cursor = finder.fetchAllUnreadMessages(transaction: transaction.unwrapGrdbRead)
+        var cursor = finder.fetchAllUnreadMessages(transaction: transaction)
         do {
             while let message = try cursor.next() {
                 message.markAsRead(
@@ -290,6 +290,6 @@ public extension TSThread {
         }
 
         // Just to be defensive, we'll also check for unread messages.
-        owsAssertDebug(finder.unreadCount(transaction: transaction.unwrapGrdbRead) == 0)
+        owsAssertDebug(finder.unreadCount(transaction: transaction) == 0)
     }
 }

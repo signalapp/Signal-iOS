@@ -207,11 +207,11 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
             if let cachedResults = recentProfileUpdateMessages { return cachedResults }
 
             let sortId = recentProfileUpdateSearchStartId(transaction: transaction) ?? 0
-            let finder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
+            let finder = InteractionFinder(threadUniqueId: thread.uniqueId)
 
             // Build a map from (SignalServiceAddress) -> (List of recent profile update messages)
             let results: [SignalServiceAddress: [TSInfoMessage]] = finder
-                .profileUpdateInteractions(afterSortId: sortId, transaction: transaction.unwrapGrdbRead)
+                .profileUpdateInteractions(afterSortId: sortId, transaction: transaction)
                 .reduce(into: [:]) { dictBuilder, message in
                     guard let address = message.profileChangeAddress else { return }
                     dictBuilder[address, default: []].append(message)

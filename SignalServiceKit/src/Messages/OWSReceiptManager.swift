@@ -383,7 +383,7 @@ public extension OWSReceiptManager {
             let hasMessagesToMarkRead = self.databaseStorage.read { transaction in
                 return interactionFinder.hasMessagesToMarkRead(
                     beforeSortId: sortId,
-                    transaction: transaction.unwrapGrdbRead
+                    transaction: transaction
                 )
             }
             guard hasMessagesToMarkRead else {
@@ -412,7 +412,7 @@ public extension OWSReceiptManager {
                 batchQuotaRemaining = maxBatchSize
                 self.databaseStorage.write { transaction in
                     var cursor = interactionFinder.fetchUnreadMessages(beforeSortId: sortId,
-                                                                       transaction: transaction.unwrapGrdbRead)
+                                                                       transaction: transaction)
                     do {
                         while batchQuotaRemaining > 0, let readItem = try cursor.next() {
                             readItem.markAsRead(atTimestamp: readTimestamp,
@@ -438,7 +438,7 @@ public extension OWSReceiptManager {
                     var receiptsForMessage: [OWSLinkedDeviceReadReceipt] = []
                     var cursor = interactionFinder.fetchMessagesWithUnreadReactions(
                         beforeSortId: sortId,
-                        transaction: transaction.unwrapGrdbRead)
+                        transaction: transaction)
 
                     do {
                         while batchQuotaRemaining > 0, let message = try cursor.next() {
@@ -485,7 +485,7 @@ public extension OWSReceiptManager {
         var readUniqueIds = [String]()
         let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
         var cursor = interactionFinder.fetchUnreadMessages(beforeSortId: sortId,
-                                                           transaction: transaction.unwrapGrdbRead)
+                                                           transaction: transaction)
         do {
             while let readItem = try cursor.next() {
                 readItem.markAsRead(atTimestamp: readTimestamp,

@@ -19,7 +19,7 @@ class InteractionFinderPerformanceTests: PerformanceBaseTest {
 
             startMeasuring()
             read { transaction in
-                let unreadCount = InteractionFinder.unreadCountInAllThreads(transaction: transaction.unwrapGrdbRead)
+                let unreadCount = InteractionFinder.unreadCountInAllThreads(transaction: transaction)
                 XCTAssertEqual(unreadCount, nThreads * nMessagesPerThread)
             }
             stopMeasuring()

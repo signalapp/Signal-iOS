@@ -97,7 +97,7 @@ class InteractionFinderTest: SSKBaseTestSwift {
         // Unread count should be just the unarchived threads
 
         read { transaction in
-            let unreadCount = InteractionFinder.unreadCountInAllThreads(transaction: transaction.unwrapGrdbRead)
+            let unreadCount = InteractionFinder.unreadCountInAllThreads(transaction: transaction)
             XCTAssertEqual(unarchivedCount, unreadCount)
         }
     }
@@ -118,9 +118,9 @@ class InteractionFinderTest: SSKBaseTestSwift {
 
         // Query for the attachments in one specific thread.
         var actualUniqueIds = Set<String>()
-        let finder = GRDBInteractionFinder(threadUniqueId: threads[0].uniqueId)
+        let finder = InteractionFinder(threadUniqueId: threads[0].uniqueId)
         read { transaction in
-            try! finder.enumerateMessagesWithAttachments(transaction: transaction.unwrapGrdbRead) { message, _ in
+            try! finder.enumerateMessagesWithAttachments(transaction: transaction) { message, _ in
                 actualUniqueIds.insert(message.uniqueId)
             }
         }

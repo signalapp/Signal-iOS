@@ -149,7 +149,7 @@ public class ThreadFinder: Dependencies {
         // If this is a group thread and we're not a member, never show the message request.
         if isGroupThread, !isLocalUserInGroup { return false }
 
-        let interactionFinder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
+        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
 
         if
             let thread = thread as? TSContactThread,
@@ -161,7 +161,7 @@ public class ThreadFinder: Dependencies {
             // If the user hides a contact and said contact subsequently sends an incoming
             // message, we display the message request UI.
             return interactionFinder.mostRecentInteraction(
-                transaction: transaction.unwrapGrdbRead
+                transaction: transaction
             )?.interactionType == .incomingMessage
         }
 
@@ -178,7 +178,7 @@ public class ThreadFinder: Dependencies {
             // in which case we want to show a pending message request. If the thread
             // is otherwise empty, we don't want to show the message request.
             if interactionFinder.hasGroupUpdateInfoMessage(
-                transaction: transaction.unwrapGrdbRead
+                transaction: transaction
             ) { return true }
         }
 
@@ -187,7 +187,7 @@ public class ThreadFinder: Dependencies {
         // actually have been triggered by us, but if we sent one of these then the thread
         // should be in our profile white list and not make it to this check.
         guard interactionFinder.possiblyHasIncomingMessages(
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         ) else { return false }
 
         return true
@@ -220,8 +220,8 @@ public class ThreadFinder: Dependencies {
         }
 
         // Make sure there has been no user initiated interactions.
-        return !GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
-            .hasUserInitiatedInteraction(transaction: tx.unwrapGrdbRead)
+        return !InteractionFinder(threadUniqueId: thread.uniqueId)
+            .hasUserInitiatedInteraction(transaction: tx)
     }
 
     public func threads(withThreadIds threadIds: Set<String>, transaction: SDSAnyReadTransaction) throws -> Set<TSThread> {

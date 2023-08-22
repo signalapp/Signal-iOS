@@ -683,7 +683,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         databaseStorage.asyncWrite { tx in
             Logger.info("Cleaning up placeholders")
             var nextExpirationDate: Date?
-            GRDBInteractionFinder.enumeratePlaceholders(transaction: tx.unwrapGrdbWrite) { placeholder in
+            InteractionFinder.enumeratePlaceholders(transaction: tx) { placeholder in
                 guard placeholder.expirationDate.isBeforeNow else {
                     nextExpirationDate = [nextExpirationDate, placeholder.expirationDate].compacted().min()
                     return

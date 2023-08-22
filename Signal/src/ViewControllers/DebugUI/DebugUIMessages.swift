@@ -3563,62 +3563,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         }
     }
 
-    private static func deleteLastMessages(_ count: UInt, inThread thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        Logger.info("deleteLastMessages")
-
-        var interactionIds = [String]()
-        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
-        do {
-            try interactionFinder.enumerateInteractionIds(transaction: transaction) { interactionId, stop in
-                interactionIds.append(interactionId)
-                if interactionIds.count >= count {
-                    stop.pointee = true
-                }
-            }
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return
-        }
-
-        for interactionId in interactionIds {
-            guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId, transaction: transaction) else {
-                owsFailDebug("Couldn't load interaction.")
-                continue
-            }
-            interaction.anyRemove(transaction: transaction)
-        }
-    }
-
-    private static func deleteRandomRecentMessages(_ count: UInt, inThread thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        Logger.info("deleteRandomRecentMessages: \(count)")
-
-        let recentMessageCount: Int = 10
-        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
-        var interactionIds = [String]()
-        do {
-            try interactionFinder.enumerateInteractionIds(transaction: transaction) { interactionId, stop in
-                interactionIds.append(interactionId)
-                if interactionIds.count >= recentMessageCount {
-                    stop.pointee = true
-                }
-            }
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return
-        }
-
-        for _ in 0..<count {
-            guard let randomIndex = interactionIds.indices.randomElement() else { break }
-
-            let interactionId = interactionIds.remove(at: randomIndex)
-            guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId, transaction: transaction) else {
-                owsFailDebug("Couldn't load interaction.")
-                continue
-            }
-            interaction.anyRemove(transaction: transaction)
-        }
-    }
-
     private static func insertAndDeleteNewOutgoingMessages(_ count: UInt, inThread thread: TSThread, transaction: SDSAnyWriteTransaction) {
         Logger.info("insertAndDeleteNewOutgoingMessages: \(count)")
 
@@ -3916,12 +3860,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             }, { transaction in
                 let messageCount = UInt.random(in: 1...4)
                 deleteRandomMessages(messageCount, inThread: thread, transaction: transaction)
-            }, { transaction in
-                let messageCount = UInt.random(in: 1...4)
-                deleteLastMessages(messageCount, inThread: thread, transaction: transaction)
-            }, { transaction in
-                let messageCount = UInt.random(in: 1...4)
-                deleteRandomRecentMessages(messageCount, inThread: thread, transaction: transaction)
             }, { transaction in
                 let messageCount = UInt.random(in: 1...4)
                 insertAndDeleteNewOutgoingMessages(messageCount, inThread: thread, transaction: transaction)

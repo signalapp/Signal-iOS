@@ -241,7 +241,7 @@ class NotificationService: UNNotificationServiceExtension {
             globalEnvironment.processingMessageCounter.decrementOrZero()
             // If we're completing normally, try to update the badge on the app icon.
             let badgeValue = Self.databaseStorage.read { tx in
-                InteractionFinder.unreadCountInAllThreads(transaction: tx.unwrapGrdbRead)
+                InteractionFinder.unreadCountInAllThreads(transaction: tx)
             }
             self?.completeSilently(badgeValue: badgeValue, logger: logger)
         }.catch(on: DispatchQueue.global()) { error in

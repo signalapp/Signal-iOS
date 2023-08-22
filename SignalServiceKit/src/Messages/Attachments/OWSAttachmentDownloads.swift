@@ -827,8 +827,8 @@ public extension OWSAttachmentDownloads {
         var attachmentStreams = [TSAttachmentStream]()
 
         do {
-            let finder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
-            try finder.enumerateMessagesWithAttachments(transaction: transaction.unwrapGrdbRead) { (message, _) in
+            let finder = InteractionFinder(threadUniqueId: thread.uniqueId)
+            try finder.enumerateMessagesWithAttachments(transaction: transaction) { (message, _) in
                 let (promise, future) = Promise<Void>.pending()
                 promises.append(promise)
                 self.enqueueDownloadOfAttachments(forMessageId: message.uniqueId,

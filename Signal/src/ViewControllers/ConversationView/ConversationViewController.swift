@@ -73,7 +73,7 @@ public final class ConversationViewController: OWSViewController {
         // We always need to find where the unread divider should be placed, even
         // if we opened the chat by tapping on a search result.
         let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
-        let oldestUnreadMessage = try? interactionFinder.oldestUnreadInteraction(transaction: tx.unwrapGrdbRead)
+        let oldestUnreadMessage = try? interactionFinder.oldestUnreadInteraction(transaction: tx)
 
         let loadAroundMessageId: String?
         let scrollToMessageId: String?

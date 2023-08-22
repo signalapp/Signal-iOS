@@ -72,7 +72,7 @@ open class LightweightCallManager: NSObject, Dependencies {
     @discardableResult
     public func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread, timestamp: UInt64) -> Guarantee<Void> {
         databaseStorage.write(.promise) { writeTx in
-            let results = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
+            let results = InteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
 
             // Any call in our database that hasn't ended yet that doesn't match the current era
             // must have ended by definition. We do that update now.
@@ -122,7 +122,7 @@ open class LightweightCallManager: NSObject, Dependencies {
         AssertNotOnMainThread()
 
         databaseStorage.write { writeTx in
-            guard !GRDBInteractionFinder.existsGroupCallMessageForEraId(eraId, thread: thread, transaction: writeTx) else { return }
+            guard !InteractionFinder.existsGroupCallMessageForEraId(eraId, thread: thread, transaction: writeTx) else { return }
 
             Logger.info("Inserting placeholder group call message with eraId: \(eraId)")
             let message = OWSGroupCallMessage(eraId: eraId, joinedMemberUuids: [], creatorUuid: nil, thread: thread, sentAtTimestamp: timestamp)
