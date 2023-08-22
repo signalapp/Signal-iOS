@@ -150,7 +150,7 @@ public extension OWSProfileManager {
     }
 
     private func rotateProfileKeyIfNecessary(tx: SDSAnyWriteTransaction) {
-        if CurrentAppContext().isNSE, !AppReadiness.isAppReady {
+        if CurrentAppContext().isNSE || !AppReadiness.isAppReady {
             return
         }
 
