@@ -127,8 +127,8 @@ public extension OWSProfileManager {
     @available(swift, obsoleted: 1.0)
     func objc_allWhitelistedRegisteredAddresses(transaction tx: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         var addresses = Set<SignalServiceAddress>()
-        for uuid in whitelistedUUIDsStore.allKeys(transaction: tx) {
-            addresses.insert(SignalServiceAddress(uuidString: uuid))
+        for serviceIdString in whitelistedServiceIdsStore.allKeys(transaction: tx) {
+            addresses.insert(SignalServiceAddress(serviceIdString: serviceIdString))
         }
         for phoneNumber in whitelistedPhoneNumbersStore.allKeys(transaction: tx) {
             addresses.insert(SignalServiceAddress(phoneNumber: phoneNumber))
@@ -201,7 +201,7 @@ public extension OWSProfileManager {
 
         struct BlocklistChange {
             let phoneNumbers: [String]
-            let uuids: [String]
+            let serviceIds: [ServiceId]
             let groupIds: [Data]
         }
 
@@ -220,17 +220,17 @@ public extension OWSProfileManager {
     }
 
     private func blocklistRotationTriggerIfNeeded(tx: SDSAnyReadTransaction) -> RotateProfileKeyTrigger? {
-        let victimPhoneNumbers = self.blockedPhoneNumbersInWhitelist(transaction: tx)
-        let victimUUIDs = self.blockedUUIDsInWhitelist(transaction: tx)
-        let victimGroupIds = self.blockedGroupIDsInWhitelist(transaction: tx)
+        let victimPhoneNumbers = self.blockedPhoneNumbersInWhitelist(tx: tx)
+        let victimServiceIds = self.blockedServiceIdsInWhitelist(tx: tx)
+        let victimGroupIds = self.blockedGroupIDsInWhitelist(tx: tx)
 
-        if victimPhoneNumbers.isEmpty, victimUUIDs.isEmpty, victimGroupIds.isEmpty {
+        if victimPhoneNumbers.isEmpty, victimServiceIds.isEmpty, victimGroupIds.isEmpty {
             // No need to rotate the profile key.
             return nil
         }
         return .blocklistChange(.init(
             phoneNumbers: victimPhoneNumbers,
-            uuids: victimUUIDs,
+            serviceIds: victimServiceIds,
             groupIds: victimGroupIds
         ))
     }
@@ -361,8 +361,8 @@ public extension OWSProfileManager {
             forKeys: trigger.phoneNumbers,
             transaction: tx
         )
-        self.whitelistedUUIDsStore.removeValues(
-            forKeys: trigger.uuids,
+        self.whitelistedServiceIdsStore.removeValues(
+            forKeys: trigger.serviceIds.map { $0.serviceIdUppercaseString },
             transaction: tx
         )
         self.whitelistedGroupsStore.removeValues(
@@ -413,33 +413,31 @@ public extension OWSProfileManager {
         return true
     }
 
-    @objc
-    func blockedPhoneNumbersInWhitelist(transaction readTx: SDSAnyReadTransaction) -> [String] {
-        let allWhitelistedNumbers = whitelistedPhoneNumbersStore.allKeys(transaction: readTx)
+    private func blockedPhoneNumbersInWhitelist(tx: SDSAnyReadTransaction) -> [String] {
+        let allWhitelistedNumbers = whitelistedPhoneNumbersStore.allKeys(transaction: tx)
 
         return allWhitelistedNumbers.filter { candidate in
             let address = SignalServiceAddress(phoneNumber: candidate)
-            return blockingManager.isAddressBlocked(address, transaction: readTx)
+            return blockingManager.isAddressBlocked(address, transaction: tx)
         }
     }
 
-    @objc
-    func blockedUUIDsInWhitelist(transaction readTx: SDSAnyReadTransaction) -> [String] {
-        let allWhitelistedUUIDs = whitelistedUUIDsStore.allKeys(transaction: readTx)
+    private func blockedServiceIdsInWhitelist(tx: SDSAnyReadTransaction) -> [ServiceId] {
+        let allWhitelistedServiceIds = whitelistedServiceIdsStore.allKeys(transaction: tx).compactMap {
+            try? ServiceId.parseFrom(serviceIdString: $0)
+        }
 
-        return allWhitelistedUUIDs.filter { candidate in
-            let address = SignalServiceAddress(uuidString: candidate)
-            return blockingManager.isAddressBlocked(address, transaction: readTx)
+        return allWhitelistedServiceIds.filter { candidate in
+            return blockingManager.isAddressBlocked(SignalServiceAddress(candidate), transaction: tx)
         }
     }
 
-    @objc
-    func blockedGroupIDsInWhitelist(transaction readTx: SDSAnyReadTransaction) -> [Data] {
-        let allWhitelistedGroupKeys = whitelistedGroupsStore.allKeys(transaction: readTx)
+    private func blockedGroupIDsInWhitelist(tx: SDSAnyReadTransaction) -> [Data] {
+        let allWhitelistedGroupKeys = whitelistedGroupsStore.allKeys(transaction: tx)
 
         return allWhitelistedGroupKeys.lazy
             .compactMap { self.groupIdForGroupKey($0) }
-            .filter { blockingManager.isGroupIdBlocked($0, transaction: readTx) }
+            .filter { blockingManager.isGroupIdBlocked($0, transaction: tx) }
     }
 
     private func groupIdForGroupKey(_ groupKey: String) -> Data? {

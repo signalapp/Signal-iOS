@@ -43,7 +43,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
 
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedPhoneNumbersStore;
-@property (nonatomic, readonly) SDSKeyValueStore *whitelistedUUIDsStore;
+@property (nonatomic, readonly) SDSKeyValueStore *whitelistedServiceIdsStore;
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedGroupsStore;
 @property (nonatomic, readonly) BadgeStore *badgeStore;
 

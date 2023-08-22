@@ -97,7 +97,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     _whitelistedPhoneNumbersStore =
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_UserWhitelistCollection"];
-    _whitelistedUUIDsStore =
+    _whitelistedServiceIdsStore =
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_UserUUIDWhitelistCollection"];
     _whitelistedGroupsStore =
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_GroupWhitelistCollection"];
@@ -482,11 +482,11 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.whitelistedPhoneNumbersStore removeAllWithTransaction:transaction];
-        [self.whitelistedUUIDsStore removeAllWithTransaction:transaction];
+        [self.whitelistedServiceIdsStore removeAllWithTransaction:transaction];
         [self.whitelistedGroupsStore removeAllWithTransaction:transaction];
         
         OWSAssertDebug(0 == [self.whitelistedPhoneNumbersStore numberOfKeysWithTransaction:transaction]);
-        OWSAssertDebug(0 == [self.whitelistedUUIDsStore numberOfKeysWithTransaction:transaction]);
+        OWSAssertDebug(0 == [self.whitelistedServiceIdsStore numberOfKeysWithTransaction:transaction]);
         OWSAssertDebug(0 == [self.whitelistedGroupsStore numberOfKeysWithTransaction:transaction]);
     });
 }
@@ -520,10 +520,10 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             OWSLogError(@"\t profile whitelist user phone number: %@", key);
         }
         OWSLogError(@"%@: %lu",
-            self.whitelistedUUIDsStore.collection,
-            (unsigned long)[self.whitelistedUUIDsStore numberOfKeysWithTransaction:transaction]);
-        for (NSString *key in [self.whitelistedUUIDsStore allKeysWithTransaction:transaction]) {
-            OWSLogError(@"\t profile whitelist user uuid: %@", key);
+            self.whitelistedServiceIdsStore.collection,
+            (unsigned long)[self.whitelistedServiceIdsStore numberOfKeysWithTransaction:transaction]);
+        for (NSString *key in [self.whitelistedServiceIdsStore allKeysWithTransaction:transaction]) {
+            OWSLogError(@"\t profile whitelist user service id: %@", key);
         }
         OWSLogError(@"%@: %lu",
             self.whitelistedGroupsStore.collection,
@@ -679,9 +679,9 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         // It's possible we white listed one but not both, so we check each.
 
         BOOL notInWhitelist = NO;
-        if (address.uuidString) {
-            BOOL currentlyWhitelisted = [self.whitelistedUUIDsStore hasValueForKey:address.uuidString
-                                                                       transaction:transaction];
+        if (address.serviceIdUppercaseString) {
+            BOOL currentlyWhitelisted = [self.whitelistedServiceIdsStore hasValueForKey:address.serviceIdUppercaseString
+                                                                            transaction:transaction];
             if (!currentlyWhitelisted) {
                 notInWhitelist = YES;
             }
@@ -717,9 +717,9 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         // so we check each.
 
         BOOL isInWhitelist = NO;
-        if (address.uuidString) {
-            BOOL currentlyWhitelisted = [self.whitelistedUUIDsStore hasValueForKey:address.uuidString
-                                                                       transaction:transaction];
+        if (address.serviceIdUppercaseString) {
+            BOOL currentlyWhitelisted = [self.whitelistedServiceIdsStore hasValueForKey:address.serviceIdUppercaseString
+                                                                            transaction:transaction];
             if (currentlyWhitelisted) {
                 isInWhitelist = YES;
             }
@@ -751,8 +751,9 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 
     for (SignalServiceAddress *address in addressesToRemove) {
-        if (address.uuidString) {
-            [self.whitelistedUUIDsStore removeValueForKey:address.uuidString transaction:transaction];
+        if (address.serviceIdUppercaseString) {
+            [self.whitelistedServiceIdsStore removeValueForKey:address.serviceIdUppercaseString
+                                                   transaction:transaction];
         }
 
         if (address.phoneNumber) {
@@ -793,8 +794,8 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 
     for (SignalServiceAddress *address in addressesToAdd) {
-        if (address.uuidString) {
-            [self.whitelistedUUIDsStore setBool:YES key:address.uuidString transaction:transaction];
+        if (address.serviceIdUppercaseString) {
+            [self.whitelistedServiceIdsStore setBool:YES key:address.serviceIdUppercaseString transaction:transaction];
         }
 
         if (address.phoneNumber) {
@@ -836,8 +837,9 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 
     BOOL result = NO;
-    if (address.uuidString) {
-        result = [self.whitelistedUUIDsStore hasValueForKey:address.uuidString transaction:transaction];
+    if (address.serviceIdUppercaseString) {
+        result = [self.whitelistedServiceIdsStore hasValueForKey:address.serviceIdUppercaseString
+                                                     transaction:transaction];
     }
 
     if (!result && address.phoneNumber) {
