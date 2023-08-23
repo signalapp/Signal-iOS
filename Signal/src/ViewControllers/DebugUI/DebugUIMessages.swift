@@ -3343,7 +3343,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         }
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: senderClient)
-        envelopeBuilder.setSourceServiceID(senderClient.uuidIdentifier)
+        envelopeBuilder.setSourceServiceID(senderClient.serviceId.serviceIdString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageProcessor.processReceivedEnvelopeData(
             envelopeData,

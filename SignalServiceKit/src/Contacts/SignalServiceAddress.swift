@@ -557,16 +557,16 @@ public class SignalServiceAddressCache: NSObject {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
         databaseStorage.read { transaction in
-            if let localAddress = tsAccountManager.localAddress(with: transaction) {
+            if let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) {
                 updateRecipient(
-                    aci: localAddress.untypedServiceId,
+                    aci: localIdentifiers.aci,
                     // PNI TODO: Fetch our own PNI once it's stored on our SignalRecipient.
                     //
                     // (Even though our own PNI may be available at this point, we should have
                     // a recipient for ourselves, so we'd immediately overwrite it during the
                     // `anyEnumerate` below.)
                     pni: nil,
-                    phoneNumber: localAddress.phoneNumber
+                    phoneNumber: localIdentifiers.phoneNumber
                 )
             }
 
@@ -578,14 +578,14 @@ public class SignalServiceAddressCache: NSObject {
 
     func updateRecipient(_ signalRecipient: SignalRecipient) {
         updateRecipient(
-            aci: signalRecipient.serviceId,
+            aci: signalRecipient.aci,
             // PNI TODO: Fetch the recipientPNI once that property is available.
             pni: nil,
             phoneNumber: signalRecipient.phoneNumber
         )
     }
 
-    private func updateRecipient(aci: UntypedServiceId?, pni: UntypedServiceId?, phoneNumber: String?) {
+    private func updateRecipient(aci: Aci?, pni: Pni?, phoneNumber: String?) {
         state.update { cacheState in
             // This cache associates phone numbers to the other identifiers. If we
             // don't have a phone number, there's nothing to associate.
@@ -599,10 +599,7 @@ public class SignalServiceAddressCache: NSObject {
             }
 
             let oldServiceIds: [ServiceId] = cacheState.phoneNumberToServiceIds[phoneNumber] ?? []
-            let newServiceIds: [ServiceId] = [
-                aci.map { Aci(fromUUID: $0.uuidValue) },
-                pni.map { Pni(fromUUID: $0.uuidValue) }
-            ].compacted()
+            let newServiceIds: [ServiceId] = [aci, pni].compacted()
 
             // If this phone number still points at the same ServiceIds, there's
             // nothing to change.
@@ -792,7 +789,7 @@ public class SignalServiceAddressCache: NSObject {
 #if TESTABLE_BUILD
 
 extension SignalServiceAddress {
-    static func randomForTesting() -> SignalServiceAddress { SignalServiceAddress(FutureAci.randomForTesting()) }
+    static func randomForTesting() -> SignalServiceAddress { SignalServiceAddress(Aci.randomForTesting()) }
 }
 
 extension SignalServiceAddressCache {

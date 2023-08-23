@@ -96,14 +96,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 - (nullable NSUUID *)localPniWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(localPni(with:));
 
-@property (readonly, nullable, class) SignalServiceAddress *localAddress;
-@property (readonly, nullable) SignalServiceAddress *localAddress;
-
-+ (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(localAddress(with:));
-- (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(localAddress(with:));
-
 - (void)setStoredServerAuthToken:(NSString *)authToken
                         deviceId:(UInt32)deviceId
                      transaction:(SDSAnyWriteTransaction *)transaction;

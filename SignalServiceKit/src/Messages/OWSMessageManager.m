@@ -1137,7 +1137,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Check for any placeholders inserted because of a previously undecryptable message
     // The sender may have resent the message. If so, we should swap it in place of the placeholder
     [message insertOrReplacePlaceholderFrom:[[SignalServiceAddress alloc]
-                                                initWithUntypedServiceIdObjC:decryptedEnvelope.sourceServiceIdObjC]
+                                                initWithServiceIdObjC:decryptedEnvelope.sourceAciObjC]
                                 transaction:transaction];
 
     // Inserting the message may have modified the thread on disk, so reload it.

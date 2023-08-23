@@ -113,28 +113,21 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
-    private func trySendReactiveProfileKey(
-        to sourceAddress: SignalServiceAddress,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        guard let sourceUuid = sourceAddress.uuidString else {
-            return owsFailDebug("Unexpectedly missing UUID for sender \(sourceAddress)")
-        }
-
+    private func trySendReactiveProfileKey(to sourceAci: Aci, tx transaction: SDSAnyWriteTransaction) {
         let store = SDSKeyValueStore(collection: "OWSMessageDecrypter+ReactiveProfileKey")
 
-        let lastProfileKeyMessageDate = store.getDate(sourceUuid, transaction: transaction)
+        let lastProfileKeyMessageDate = store.getDate(sourceAci.serviceIdUppercaseString, transaction: transaction)
         let timeSinceProfileKeyMessage = abs(lastProfileKeyMessageDate?.timeIntervalSinceNow ?? .infinity)
         guard timeSinceProfileKeyMessage > RemoteConfig.reactiveProfileKeyAttemptInterval else {
-            Logger.warn("Skipping reactive profile key message after non-UD message from \(sourceAddress), last reactive profile key message sent \(lastProfileKeyMessageDate!.ows_millisecondsSince1970).")
+            Logger.warn("Skipping reactive profile key message after non-UD message from \(sourceAci), last reactive profile key message sent \(lastProfileKeyMessageDate!.ows_millisecondsSince1970).")
             return
         }
 
-        Logger.info("Sending reactive profile key message after non-UD message from: \(sourceAddress)")
-        store.setDate(Date(), key: sourceUuid, transaction: transaction)
+        Logger.info("Sending reactive profile key message after non-UD message from: \(sourceAci)")
+        store.setDate(Date(), key: sourceAci.serviceIdUppercaseString, transaction: transaction)
 
         let contactThread = TSContactThread.getOrCreateThread(
-            withContactAddress: sourceAddress,
+            withContactAddress: SignalServiceAddress(sourceAci),
             transaction: transaction
         )
 
@@ -147,12 +140,12 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     isHighPriority: true,
                     transaction: transaction
                 ).done(on: DispatchQueue.global()) {
-                    Logger.info("Successfully sent reactive profile key message after non-UD message from \(sourceAddress)")
+                    Logger.info("Successfully sent reactive profile key message after non-UD message from \(sourceAci)")
                 }.catch(on: DispatchQueue.global()) { error in
                     if error is UntrustedIdentityError {
-                        Logger.info("Failed to send reactive profile key message after non-UD message from \(sourceAddress) (\(error))")
+                        Logger.info("Failed to send reactive profile key message after non-UD message from \(sourceAci) (\(error))")
                     } else {
-                        owsFailDebug("Failed to send reactive profile key message after non-UD message from \(sourceAddress) (\(error))")
+                        owsFailDebug("Failed to send reactive profile key message after non-UD message from \(sourceAci) (\(error))")
                     }
                 }
             }
@@ -434,7 +427,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     identityStore: identityManager.store(for: localIdentity, transaction: transaction),
                     context: transaction
                 )
-                sendReactiveProfileKeyIfNecessary(address: SignalServiceAddress(sourceAci), transaction: transaction)
+                sendReactiveProfileKeyIfNecessary(to: sourceAci, tx: transaction)
             case .preKey:
                 if tsAccountManager.isRegisteredAndReady(transaction: transaction) {
                     DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction.asV2Read)
@@ -496,13 +489,12 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
-    private func sendReactiveProfileKeyIfNecessary(address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
-        guard !address.isLocalAddress else {
-            Logger.debug("Skipping send of reactive profile key to self")
+    private func sendReactiveProfileKeyIfNecessary(to sourceAci: Aci, tx transaction: SDSAnyWriteTransaction) {
+        if tsAccountManager.localIdentifiers(transaction: transaction)?.aci == sourceAci {
             return
         }
 
-        guard !blockingManager.isAddressBlocked(address, transaction: transaction) else {
+        if blockingManager.isAddressBlocked(SignalServiceAddress(sourceAci), transaction: transaction) {
             Logger.info("Skipping send of reactive profile key to blocked address")
             return
         }
@@ -514,7 +506,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 // This user is whitelisted, they should have our profile key / be sending UD messages
                 // Send them our profile key in case they somehow lost it.
                 if self.profileManager.isUser(
-                    inProfileWhitelist: address,
+                    inProfileWhitelist: SignalServiceAddress(sourceAci),
                     transaction: transaction
                 ) {
                     return true
@@ -524,7 +516,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 // be sending UD messages. Send them it in case they somehow lost it.
                 var needsReactiveProfileKeyMessage = false
                 TSGroupThread.enumerateGroupThreads(
-                    with: address,
+                    with: SignalServiceAddress(sourceAci),
                     transaction: transaction
                 ) { thread, stop in
                     guard thread.isGroupV2Thread else { return }
@@ -537,10 +529,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
             if needsReactiveProfileKeyMessage {
                 self.databaseStorage.write { transaction in
-                    self.trySendReactiveProfileKey(
-                        to: address,
-                        transaction: transaction
-                    )
+                    self.trySendReactiveProfileKey(to: sourceAci, tx: transaction)
                 }
             }
         }

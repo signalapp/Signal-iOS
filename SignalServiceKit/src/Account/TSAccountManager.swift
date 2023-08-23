@@ -95,6 +95,24 @@ public extension TSAccountManager {
     }
 
     @objc
+    class var localAddress: SignalServiceAddress? {
+        return shared.localAddress
+    }
+
+    @objc
+    var localAddress: SignalServiceAddress? {
+        return localIdentifiers?.aciAddress
+    }
+
+    class func localAddress(with tx: SDSAnyReadTransaction) -> SignalServiceAddress? {
+        return shared.localAddress(with: tx)
+    }
+
+    func localAddress(with tx: SDSAnyReadTransaction) -> SignalServiceAddress? {
+        return localIdentifiers(transaction: tx)?.aciAddress
+    }
+
+    @objc
     var isRegistered: Bool {
         getOrLoadAccountStateWithSneakyTransaction().isRegistered
     }
@@ -131,11 +149,10 @@ public extension TSAccountManager {
 
     @objc
     var storedServerUsername: String? {
-        guard let serviceId = self.localAddress?.uuidString else {
+        guard let aciString = self.localIdentifiers?.aci.serviceIdString else {
             return nil
         }
-
-        return isRegisteredPrimaryDevice ? serviceId : "\(serviceId).\(storedDeviceId)"
+        return isRegisteredPrimaryDevice ? aciString : "\(aciString).\(storedDeviceId)"
     }
 
     @objc

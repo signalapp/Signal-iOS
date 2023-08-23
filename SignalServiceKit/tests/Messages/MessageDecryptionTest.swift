@@ -95,9 +95,11 @@ class MessageDecryptionTest: SSKBaseTestSwift {
             if type == .unidentifiedSender {
                 let senderCert = SMKSecretSessionCipherTest.createCertificateFor(
                     trustRoot: sealedSenderTrustRoot.identityKeyPair,
-                    senderAddress: try! SealedSenderAddress(e164: remoteClient.e164Identifier,
-                                                            uuidString: remoteClient.uuidIdentifier,
-                                                            deviceId: remoteClient.deviceId),
+                    senderAddress: try! SealedSenderAddress(
+                        e164: remoteClient.e164Identifier,
+                        aci: remoteClient.serviceId as! Aci,
+                        deviceId: remoteClient.deviceId
+                    ),
                     identityKey: remoteClient.identityKeyPair.identityKeyPair.publicKey,
                     expirationTimestamp: 13337)
                 let usmc = try! UnidentifiedSenderMessageContent(ciphertext,
@@ -110,7 +112,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
                                                                          context: transaction)))
                 envelopeBuilder.setServerTimestamp(13336)
             } else {
-                envelopeBuilder.setSourceServiceID(remoteClient.uuidIdentifier)
+                envelopeBuilder.setSourceServiceID(remoteClient.serviceId.serviceIdString)
                 envelopeBuilder.setSourceDevice(remoteClient.deviceId)
                 envelopeBuilder.setContent(Data(ciphertext.serialize()))
             }
@@ -202,7 +204,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
     func testDecryptPreKeyPniWithAciDestinationUuid() {
         expectDecryptionFailure(type: .prekeyBundle,
                                 destinationIdentity: .pni,
-                                destinationServiceId: Aci(fromUUID: localClient.uuid)) { error in
+                                destinationServiceId: localClient.serviceId) { error in
             if let error = error as? OWSError {
                 let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
                 if case SSKSignedPreKeyStore.Error.noPreKeyWithId(_)? = underlyingError {

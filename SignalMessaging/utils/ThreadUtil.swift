@@ -432,7 +432,7 @@ extension TSThread {
             handle = INPersonHandle(value: phoneNumber, type: .phoneNumber, label: nil)
             suggestionType = .none
         } else {
-            handle = INPersonHandle(value: recipient.uuidString, type: .unknown, label: nil)
+            handle = INPersonHandle(value: recipient.serviceIdUppercaseString, type: .unknown, label: nil)
             suggestionType = .instantMessageAddress
         }
 

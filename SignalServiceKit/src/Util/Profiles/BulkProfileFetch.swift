@@ -169,8 +169,6 @@ public class BulkProfileFetch: NSObject {
             return
         }
 
-        Logger.verbose("Updating: \(SignalServiceAddress(uuid: uuid))")
-
         // Perform update.
         isUpdateInFlight = true
 

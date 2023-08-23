@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 #if TESTABLE_BUILD
@@ -736,8 +737,11 @@ public class CommonGenerator: NSObject {
     }
 
     @objc
-    static public func address(hasUUID: Bool = true, hasPhoneNumber: Bool = true) -> SignalServiceAddress {
-        return SignalServiceAddress(uuid: hasUUID ? UUID() : nil, phoneNumber: hasPhoneNumber ? e164() : nil)
+    static public func address(hasAci: Bool = true, hasPhoneNumber: Bool = true) -> SignalServiceAddress {
+        return SignalServiceAddress(
+            serviceId: hasAci ? Aci.randomForTesting() : nil,
+            phoneNumber: hasPhoneNumber ? e164() : nil
+        )
     }
 
     @objc

@@ -274,7 +274,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
 - (SignalServiceAddress *)authorAddress
 {
-    return [[SignalServiceAddress alloc] initWithUuidString:self.authorUUID phoneNumber:self.authorPhoneNumber];
+    return [[SignalServiceAddress alloc] initWithAciString:self.authorUUID phoneNumber:self.authorPhoneNumber];
 }
 
 @end

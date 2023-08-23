@@ -659,7 +659,7 @@ public class InteractionFinder: NSObject {
             ORDER BY \(interactionColumn: .id) DESC
             LIMIT 1
         """
-        let arguments: StatementArguments = [threadUniqueId, address.uuidString, address.phoneNumber]
+        let arguments: StatementArguments = [threadUniqueId, address.serviceIdUppercaseString, address.phoneNumber]
         return TSInteraction.grdbFetchOne(
             sql: sql,
             arguments: arguments,

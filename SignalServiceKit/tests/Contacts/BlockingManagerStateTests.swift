@@ -23,9 +23,9 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
         // Setup
         let originalChangeToken = dut.changeToken
         let blockedGroup = generateRandomGroupModel()
-        let blockedAci = CommonGenerator.address(hasUUID: true, hasPhoneNumber: false)
-        let blockedPhoneNumber = CommonGenerator.address(hasUUID: false, hasPhoneNumber: true)
-        let blockedBoth = CommonGenerator.address(hasUUID: true, hasPhoneNumber: true)
+        let blockedAci = CommonGenerator.address(hasAci: true, hasPhoneNumber: false)
+        let blockedPhoneNumber = CommonGenerator.address(hasAci: false, hasPhoneNumber: true)
+        let blockedBoth = CommonGenerator.address(hasAci: true, hasPhoneNumber: true)
 
         // Test
         // We add everthing twice, only the first pass should return true (i.e. didChange)
@@ -60,9 +60,9 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
 
         for _ in 0..<100 {
             dut.addBlockedGroup(generateRandomGroupModel())
-            dut.addBlockedAddress(CommonGenerator.address(hasUUID: true, hasPhoneNumber: false))
-            dut.addBlockedAddress(CommonGenerator.address(hasUUID: false, hasPhoneNumber: true))
-            dut.addBlockedAddress(CommonGenerator.address(hasUUID: true, hasPhoneNumber: true))
+            dut.addBlockedAddress(CommonGenerator.address(hasAci: true, hasPhoneNumber: false))
+            dut.addBlockedAddress(CommonGenerator.address(hasAci: false, hasPhoneNumber: true))
+            dut.addBlockedAddress(CommonGenerator.address(hasAci: true, hasPhoneNumber: true))
         }
 
         let initialBlockedGroupCount = dut.blockedGroupMap.count
@@ -357,8 +357,8 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
     func generateAddresses(count: UInt) -> Set<SignalServiceAddress> {
         Set((0..<count).map { _ in
             let hasPhoneNumber = Int.random(in: 0...2) == 0
-            let hasUUID = !hasPhoneNumber || Bool.random()
-            return CommonGenerator.address(hasUUID: hasUUID, hasPhoneNumber: hasPhoneNumber)
+            let hasAci = !hasPhoneNumber || Bool.random()
+            return CommonGenerator.address(hasAci: hasAci, hasPhoneNumber: hasPhoneNumber)
         })
     }
 

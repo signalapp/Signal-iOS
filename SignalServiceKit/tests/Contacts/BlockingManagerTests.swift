@@ -51,8 +51,8 @@ class BlockingManagerTests: SSKBaseTestSwift {
                 Set(allExpectedBlockedAddresses.compactMap { $0.phoneNumber })
             )
             XCTAssertEqual(
-                Set(allFetchedBlockedAddresses.compactMap { $0.serviceId }),
-                Set(allExpectedBlockedAddresses.compactMap { $0.serviceId })
+                Set(allFetchedBlockedAddresses.compactMap { $0.aci }),
+                Set(allExpectedBlockedAddresses.compactMap { $0.aci })
             )
             // Next, ensure that querying an individual address or thread works properly
             generatedAddresses.forEach {
@@ -220,7 +220,7 @@ class BlockingManagerTests: SSKBaseTestSwift {
         Set((0..<count).map { _ in
             let hasPhoneNumber = Int.random(in: 0...2) == 0
             let hasAci = !hasPhoneNumber || Bool.random()
-            return CommonGenerator.address(hasUUID: hasAci, hasPhoneNumber: hasPhoneNumber)
+            return CommonGenerator.address(hasAci: hasAci, hasPhoneNumber: hasPhoneNumber)
         })
     }
 }

@@ -661,13 +661,15 @@ public class AvatarBuilder: NSObject {
         }
 
         func saveCacheKeyForNSE() {
-            if case .contactAddress(address: let address, localUserDisplayMode: _) = avatarContent.request.requestType,
-               let uuidString = address.uuidString,
-               let transaction = transaction {
+            if
+                case .contactAddress(address: let address, localUserDisplayMode: _) = avatarContent.request.requestType,
+                let serviceIdString = address.serviceIdUppercaseString,
+                let transaction = transaction
+            {
                 let contentCacheKey = avatarContent.contentType.cacheKey
-                if contentCacheKey != Self.contactCacheKeys.getString(uuidString, transaction: transaction) {
+                if contentCacheKey != Self.contactCacheKeys.getString(serviceIdString, transaction: transaction) {
                     self.databaseStorage.asyncWrite { writeTransaction in
-                        Self.contactCacheKeys.setString(contentCacheKey, key: uuidString, transaction: writeTransaction)
+                        Self.contactCacheKeys.setString(contentCacheKey, key: serviceIdString, transaction: writeTransaction)
                     }
                 }
             }
@@ -747,10 +749,14 @@ public class AvatarBuilder: NSObject {
                 if CurrentAppContext().isNSE {
                     // We don't jump to using cached data outside the NSE because we don't want to use an *old* avatar
                     // for someone who's updated theirs. (This is the code path where we discover it's been updated!)
-                    if let uuidString = address.uuidString,
-                       let cacheKey = Self.contactCacheKeys.getString(uuidString, transaction: transaction) {
-                        return AvatarContentTypes(contentType: .cachedContact(address: address, cacheKey: cacheKey),
-                                                  failoverContentType: .contactDefaultIcon(theme: theme))
+                    if
+                        let serviceIdString = address.serviceIdUppercaseString,
+                        let cacheKey = Self.contactCacheKeys.getString(serviceIdString, transaction: transaction)
+                    {
+                        return AvatarContentTypes(
+                            contentType: .cachedContact(address: address, cacheKey: cacheKey),
+                            failoverContentType: .contactDefaultIcon(theme: theme)
+                        )
                     }
                 } else {
                     if let imageData = Self.contactsManagerImpl.avatarImageData(forAddress: address,

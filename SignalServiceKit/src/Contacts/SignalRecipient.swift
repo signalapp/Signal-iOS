@@ -323,7 +323,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
     public static let phoneNumberDidChange = Notification.Name("phoneNumberDidChange")
     public static let notificationKeyPhoneNumber = "phoneNumber"
-    public static let notificationKeyUUID = "UUID"
+    public static let notificationKeyAciString = "aciString"
 
     fileprivate static func didUpdatePhoneNumber(
         aciString: String,
@@ -354,7 +354,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             let phoneNumbers: [String] = [oldPhoneNumber, newPhoneNumber].compactMap { $0 }
             for phoneNumber in phoneNumbers {
                 let userInfo: [AnyHashable: Any] = [
-                    Self.notificationKeyUUID: aciString,
+                    Self.notificationKeyAciString: aciString,
                     Self.notificationKeyPhoneNumber: phoneNumber
                 ]
                 NotificationCenter.default.postNotificationNameAsync(Self.phoneNumberDidChange,

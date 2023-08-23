@@ -210,18 +210,16 @@ class DebugUIStress: DebugUIPage, Dependencies {
 
     private static func makeUnregisteredGroup() {
         var recipientAddresses: [SignalServiceAddress] = (0...2).map { _ in
-            var phoneNumber = "+1999"
-            for _ in 0...2 {
-                phoneNumber.append(String(format: "%d", UInt8.random(in: 0...9)))
-            }
-            return SignalServiceAddress(uuid: UUID(), phoneNumber: phoneNumber)
+            var phoneNumber = "+1651555"
+            phoneNumber.append(String(format: "%04d", Int.random(in: 0...9999)))
+            return SignalServiceAddress(serviceId: Aci(fromUUID: UUID()), phoneNumber: phoneNumber)
         }
 
         if let localAddress = tsAccountManager.localAddress {
             recipientAddresses.append(localAddress)
         }
 
-        recipientAddresses.append(contentsOf: (0...2).map { _ in SignalServiceAddress(uuid: UUID(), phoneNumber: nil) })
+        recipientAddresses.append(contentsOf: (0...2).map { _ in SignalServiceAddress(Aci(fromUUID: UUID())) })
 
         GroupManager.localCreateNewGroup(
             members: recipientAddresses,

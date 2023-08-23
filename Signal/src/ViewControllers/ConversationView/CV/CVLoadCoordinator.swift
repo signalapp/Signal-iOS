@@ -243,14 +243,14 @@ public class CVLoadCoordinator: NSObject {
         if let phoneNumber = notification.userInfo?[SignalRecipient.notificationKeyPhoneNumber] as? String {
             notificationAddressKeys.insert(phoneNumber)
         }
-        if let uuid = notification.userInfo?[SignalRecipient.notificationKeyUUID] as? String {
-            notificationAddressKeys.insert(uuid)
+        if let aciString = notification.userInfo?[SignalRecipient.notificationKeyAciString] as? String {
+            notificationAddressKeys.insert(aciString)
         }
 
         var threadAddressKeys = Set<String>()
         for address in thread.recipientAddressesWithSneakyTransaction {
-            if let uuidString = address.uuidString {
-                threadAddressKeys.insert(uuidString)
+            if let serviceIdString = address.serviceIdUppercaseString {
+                threadAddressKeys.insert(serviceIdString)
             }
             if let phoneNumber = address.phoneNumber {
                 threadAddressKeys.insert(phoneNumber)

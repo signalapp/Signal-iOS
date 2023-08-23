@@ -24,11 +24,11 @@ class GRDBFinderTest: SignalBaseTest {
 
         // Contact Threads
         let address1 = SignalServiceAddress(phoneNumber: "+13213334444")
-        let address2 = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+13213334445")
-        let address3 = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+13213334446")
+        let address2 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+13213334445")
+        let address3 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+13213334446")
         let address4 = SignalServiceAddress.randomForTesting()
         let address5 = SignalServiceAddress(phoneNumber: "+13213334447")
-        let address6 = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+13213334448")
+        let address6 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+13213334448")
         let address7 = SignalServiceAddress.randomForTesting()
         let contactThread1 = TSContactThread(contactAddress: address1)
         let contactThread2 = TSContactThread(contactAddress: address2)
@@ -82,12 +82,12 @@ class GRDBFinderTest: SignalBaseTest {
 
         // We'll create SignalAccount for these...
         let address1 = SignalServiceAddress(phoneNumber: "+13213334444")
-        let address2 = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+13213334445")
-        let address3 = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+13213334446")
+        let address2 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+13213334445")
+        let address3 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+13213334446")
         let address4 = SignalServiceAddress.randomForTesting()
         // ...but not these.
         let address5 = SignalServiceAddress(phoneNumber: "+13213334447")
-        let address6 = SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: "+13213334448")
+        let address6 = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+13213334448")
         let address7 = SignalServiceAddress.randomForTesting()
 
         self.write { transaction in
@@ -102,7 +102,7 @@ class GRDBFinderTest: SignalBaseTest {
             XCTAssertNotNil(SignalAccountFinder().signalAccount(for: address1, tx: tx))
             // If we save a SignalAccount with just a phone number,
             // we should later be able to look it up using a UUID & phone number,
-            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: address1.phoneNumber!), tx: tx))
+            XCTAssertNotNil(SignalAccountFinder().signalAccount(for: SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: address1.phoneNumber!), tx: tx))
             XCTAssertNotNil(SignalAccountFinder().signalAccount(for: address2, tx: tx))
             // If we save a SignalAccount with just a phone number and UUID,
             // we should later be able to look it up using just a UUID.
@@ -151,7 +151,7 @@ class GRDBFinderTest: SignalBaseTest {
             XCTAssertNotNil(SignalRecipientFinder().signalRecipient(for: address1, tx: tx))
             // If we save a SignalRecipient with just a phone number,
             // we should later be able to look it up using a UUID & phone number,
-            XCTAssertNotNil(SignalRecipientFinder().signalRecipient(for: SignalServiceAddress(serviceId: FutureAci.randomForTesting(), phoneNumber: address1.phoneNumber!), tx: tx))
+            XCTAssertNotNil(SignalRecipientFinder().signalRecipient(for: SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: address1.phoneNumber!), tx: tx))
             XCTAssertNotNil(SignalRecipientFinder().signalRecipient(for: address2, tx: tx))
             // If we save a SignalRecipient with just a phone number and UUID,
             // we should later be able to look it up using just a UUID.

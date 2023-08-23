@@ -338,39 +338,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     return accountState.localPni;
 }
 
-+ (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self.shared localAddressWithTransaction:transaction];
-}
-
-- (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    TSAccountState *accountState = [self getOrLoadAccountStateWithTransaction:transaction];
-    return [self localAddressWithAccountState:accountState];
-}
-
-+ (nullable SignalServiceAddress *)localAddress
-{
-    return [[self shared] localAddress];
-}
-
-- (nullable SignalServiceAddress *)localAddress
-{
-    TSAccountState *accountState = [self getOrLoadAccountStateWithSneakyTransaction];
-    return [self localAddressWithAccountState:accountState];
-}
-
-- (nullable SignalServiceAddress *)localAddressWithAccountState:(TSAccountState *)accountState
-{
-    // We extract uuid and local number from a single instance of accountState to avoid races.
-    NSUUID *_Nullable localUuid = [self localUuidWithAccountState:accountState];
-    NSString *_Nullable localNumber = [self localNumberWithAccountState:accountState];
-    if (localUuid == nil && localNumber == nil) {
-        return nil;
-    }
-    return [[SignalServiceAddress alloc] initWithUuid:localUuid phoneNumber:localNumber];
-}
-
 - (void)setIsOnboarded:(BOOL)isOnboarded transaction:(SDSAnyWriteTransaction *)transaction
 {
     @synchronized(self) {

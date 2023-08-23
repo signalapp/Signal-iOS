@@ -127,7 +127,6 @@ public struct TestProtocolRunner {
 }
 
 public typealias SignalE164Identifier = String
-public typealias SignalUUIDIdentifier = String
 public typealias SignalAccountIdentifier = String
 
 /// Represents a Signal installation, it can represent the local client or
@@ -136,8 +135,7 @@ public protocol TestSignalClient {
     var identityKeyPair: ECKeyPair { get }
     var identityKey: IdentityKey { get }
     var e164Identifier: SignalE164Identifier? { get }
-    var uuidIdentifier: SignalUUIDIdentifier { get }
-    var uuid: UUID { get }
+    var serviceId: ServiceId { get }
     var deviceId: UInt32 { get }
     var address: SignalServiceAddress { get }
     var protocolAddress: ProtocolAddress { get }
@@ -154,16 +152,12 @@ public extension TestSignalClient {
         return identityKeyPair.publicKey
     }
 
-    var uuidIdentifier: SignalUUIDIdentifier {
-        return uuid.uuidString
-    }
-
     var address: SignalServiceAddress {
-        return SignalServiceAddress(uuid: uuid, phoneNumber: e164Identifier)
+        return SignalServiceAddress(serviceId: serviceId, phoneNumber: e164Identifier)
     }
 
     var protocolAddress: ProtocolAddress {
-        return try! ProtocolAddress(name: uuidIdentifier, deviceId: deviceId)
+        return ProtocolAddress(serviceId, deviceId: deviceId)
     }
 
     func accountId(transaction: SDSAnyWriteTransaction) -> String {
@@ -182,7 +176,7 @@ public struct FakeSignalClient: TestSignalClient {
     public var kyberPreKeyStore: KyberPreKeyStore { return protocolStore }
 
     public let e164Identifier: SignalE164Identifier?
-    public let uuid: UUID
+    public let serviceId: ServiceId
     public let protocolStore: InMemorySignalProtocolStore
 
     public var deviceId = UInt32(1)
@@ -191,18 +185,23 @@ public struct FakeSignalClient: TestSignalClient {
     }
 
     public static func generate() -> FakeSignalClient {
-
-        return FakeSignalClient(e164Identifier: CommonGenerator.e164(),
-                                uuid: UUID(),
-                                protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1))
+        return FakeSignalClient(
+            e164Identifier: CommonGenerator.e164(),
+            serviceId: Aci.randomForTesting(),
+            protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1)
+        )
     }
 
-    public static func generate(e164Identifier: SignalE164Identifier? = nil,
-                                uuid: UUID? = nil,
-                                deviceID: UInt32? = nil) -> FakeSignalClient {
-        var result = FakeSignalClient(e164Identifier: e164Identifier,
-                                      uuid: uuid ?? UUID(),
-                                      protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1))
+    public static func generate(
+        e164Identifier: SignalE164Identifier? = nil,
+        aci: Aci? = nil,
+        deviceID: UInt32? = nil
+    ) -> FakeSignalClient {
+        var result = FakeSignalClient(
+            e164Identifier: e164Identifier,
+            serviceId: aci ?? Aci.randomForTesting(),
+            protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1)
+        )
         if let deviceID = deviceID {
             result.deviceId = deviceID
         }
@@ -232,10 +231,11 @@ public struct LocalSignalClient: TestSignalClient {
         return TSAccountManager.localNumber
     }
 
-    public var uuid: UUID {
+    public var serviceId: ServiceId {
+        let localIdentifiers = TSAccountManager.shared.localIdentifiers!
         switch identity {
-        case .aci: return TSAccountManager.shared.localUuid!
-        case .pni: return TSAccountManager.shared.localPni!
+        case .aci: return localIdentifiers.aci
+        case .pni: return localIdentifiers.pni!
         }
     }
 
@@ -264,11 +264,12 @@ public struct LocalSignalClient: TestSignalClient {
     }
 
     public func linkedDevice(deviceID: UInt32) -> FakeSignalClient {
-        return FakeSignalClient(e164Identifier: e164Identifier,
-                                uuid: uuid,
-                                protocolStore: InMemorySignalProtocolStore(identity: identityKeyPair.identityKeyPair,
-                                                                           registrationId: 1),
-                                deviceId: deviceID)
+        return FakeSignalClient(
+            e164Identifier: e164Identifier,
+            serviceId: serviceId,
+            protocolStore: InMemorySignalProtocolStore(identity: identityKeyPair.identityKeyPair, registrationId: 1),
+            deviceId: deviceID
+        )
     }
 }
 

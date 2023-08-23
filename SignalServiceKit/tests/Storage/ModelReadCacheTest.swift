@@ -31,14 +31,12 @@ private class FakeAdapter: ModelCacheAdapter<SignalServiceAddress, OWSUserProfil
 }
 
 class ModelReadCacheTest: SSKBaseTestSwift {
-    private lazy var localAddress = CommonGenerator.address()
     private lazy var adapter = { FakeAdapter(cacheName: "fake", cacheCountLimit: 1024, cacheCountLimitNSE: 1024) }()
 
     override func setUp() {
         super.setUp()
         // Create local account.
-        tsAccountManager.registerForTests(withLocalNumber: localAddress.phoneNumber!,
-                                          uuid: localAddress.uuid!)
+        tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
     }
 
     // MARK: - Test ModelReadCache.readValues(for:, transaction:)
