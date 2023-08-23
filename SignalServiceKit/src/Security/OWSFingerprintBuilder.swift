@@ -50,7 +50,8 @@ public class OWSFingerprintBuilder {
         let theirAciIdentityKey = theirRecipientIdentity.identityKey
         let theirE164 = theirAddress.e164
         let theirName = contactsManager.displayName(
-            for: SignalServiceAddress(serviceId: theirAci, e164: theirE164)
+            for: SignalServiceAddress(serviceId: theirAci, e164: theirE164),
+            transaction: tx
         )
 
         let aciFingerprint = OWSFingerprint(
