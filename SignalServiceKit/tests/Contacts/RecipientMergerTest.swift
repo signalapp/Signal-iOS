@@ -13,8 +13,9 @@ private class MockRecipientDataStore: RecipientDataStore {
     var nextRowId = 1
     var recipientTable: [Int: SignalRecipient] = [:]
 
-    func fetchRecipient(serviceId: UntypedServiceId, transaction: DBReadTransaction) -> SignalRecipient? {
-        copyRecipient(recipientTable.values.first(where: { $0.serviceId == serviceId }) ?? nil)
+    func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient? {
+        // PNI TODO: Check the PNI once it exists.
+        copyRecipient(recipientTable.values.first(where: { $0.aci == serviceId }) ?? nil)
     }
 
     func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient? {

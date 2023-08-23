@@ -237,7 +237,7 @@ class RecipientMergerImpl: RecipientMerger {
         isLocalRecipient: Bool,
         tx transaction: DBWriteTransaction
     ) -> SignalRecipient {
-        let aciRecipient = dataStore.fetchRecipient(serviceId: aci.untypedServiceId, transaction: transaction)
+        let aciRecipient = dataStore.fetchRecipient(serviceId: aci, transaction: transaction)
 
         // If these values have already been merged, we can return the result
         // without any modifications. This will be the path taken in 99% of cases

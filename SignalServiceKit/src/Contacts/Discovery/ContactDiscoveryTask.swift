@@ -113,7 +113,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
                 tx: SDSDB.shimOnlyBridge(tx)
             )
             // PNI TODO: Also check for PNIs here.
-            guard let recipient, recipient.serviceId == nil else {
+            guard let recipient, recipient.aci == nil else {
                 return
             }
             recipient.markAsUnregisteredAndSave(tx: SDSDB.shimOnlyBridge(tx))

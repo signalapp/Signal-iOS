@@ -44,11 +44,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         set { aciString = newValue?.serviceIdUppercaseString }
     }
 
-    public var serviceId: UntypedServiceId? {
-        get { UntypedServiceId(uuidString: aciString) }
-        set { aciString = newValue?.uuidValue.uuidString }
-    }
-
     public var address: SignalServiceAddress {
         SignalServiceAddress(aciString: aciString, phoneNumber: phoneNumber)
     }

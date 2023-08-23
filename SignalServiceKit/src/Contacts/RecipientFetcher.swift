@@ -19,10 +19,10 @@ class RecipientFetcherImpl: RecipientFetcher {
     }
 
     func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient {
-        if let serviceIdRecipient = recipientStore.fetchRecipient(serviceId: serviceId.untypedServiceId, transaction: tx) {
+        if let serviceIdRecipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx) {
             return serviceIdRecipient
         }
-        // PNI TODO: Put the PNI in the PNI column once it exists.
+        // PNI TODO: Put the PNI in the PNI column.
         let newInstance = SignalRecipient(aci: Aci(fromUUID: serviceId.temporary_rawUUID), phoneNumber: nil)
         recipientStore.insertRecipient(newInstance, transaction: tx)
         return newInstance

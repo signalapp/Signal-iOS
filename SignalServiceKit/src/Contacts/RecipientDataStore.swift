@@ -4,9 +4,10 @@
 //
 
 import Foundation
+import LibSignalClient
 
 protocol RecipientDataStore {
-    func fetchRecipient(serviceId: UntypedServiceId, transaction: DBReadTransaction) -> SignalRecipient?
+    func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient?
     func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient?
 
     func insertRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction)
@@ -15,14 +16,12 @@ protocol RecipientDataStore {
 }
 
 class RecipientDataStoreImpl: RecipientDataStore {
-    func fetchRecipient(serviceId: UntypedServiceId, transaction tx: DBReadTransaction) -> SignalRecipient? {
-        SignalRecipientFinder()
-            .signalRecipientForUUID(serviceId.uuidValue, tx: SDSDB.shimOnlyBridge(tx))
+    func fetchRecipient(serviceId: ServiceId, transaction tx: DBReadTransaction) -> SignalRecipient? {
+        SignalRecipientFinder().signalRecipientForServiceId(serviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     func fetchRecipient(phoneNumber: String, transaction tx: DBReadTransaction) -> SignalRecipient? {
-        SignalRecipientFinder()
-            .signalRecipientForPhoneNumber(phoneNumber, tx: SDSDB.shimOnlyBridge(tx))
+        SignalRecipientFinder().signalRecipientForPhoneNumber(phoneNumber, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     func insertRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {

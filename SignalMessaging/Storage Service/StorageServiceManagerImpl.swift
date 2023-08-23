@@ -851,7 +851,7 @@ class StorageServiceOperation: OWSOperation {
                 // and we'll fail because it's our own identifier. If we fed *every* match
                 // for a local identifier into the account updater, we might create
                 // multiple account records.
-                if self.localIdentifiers.aci.untypedServiceId == recipient.serviceId {
+                if self.localIdentifiers.aci == recipient.aci {
                     createRecord(localId: (), stateUpdater: accountUpdater)
                 } else {
                     createRecord(localId: recipient.accountId, stateUpdater: contactUpdater)

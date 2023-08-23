@@ -147,7 +147,7 @@ struct StorageServiceContact {
             )
         }
         self.init(
-            aci: signalRecipient.serviceId.map { Aci(fromUUID: $0.uuidValue) },
+            aci: signalRecipient.aci,
             serviceE164: E164.expectNilOrValid(stringValue: signalRecipient.phoneNumber),
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )
