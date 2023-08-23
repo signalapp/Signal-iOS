@@ -1,1 +1,1 @@
-• Every search result should feel like a highlight, but a bug was preventing the yellow highlight markers from being displayed for matches in individual chats unless the search result appeared in a message that also included a spoiler effect. Spoiler: That bug dies at the end of this update.
+• The Signal iOS dev team may not be able to help you emotionally deal with the overwhelming weight of your own popularity, but we can fix a few more bugs that only affected people with extremely large contact lists.
