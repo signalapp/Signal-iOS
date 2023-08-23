@@ -5,6 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AciObjC;
 @class DisappearingMessageToken;
 @class MessageBodyRanges;
 @class MessageSticker;
@@ -59,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSNumber *requiredProtocolVersion;
 @property (nonatomic, readonly) DisappearingMessageToken *disappearingMessageToken;
 @property (nonatomic, readonly, nullable) NSNumber *storyTimestamp;
-@property (nonatomic, readonly, nullable) SignalServiceAddress *storyAuthorAddress;
+@property (nonatomic, readonly, nullable) AciObjC *storyAuthorAci;
 
 // If either nonUdRecipients or udRecipients is nil, this is either a
 // legacy transcript or it reflects a legacy sync message.

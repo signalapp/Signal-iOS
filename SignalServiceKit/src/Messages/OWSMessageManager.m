@@ -1060,7 +1060,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  transaction:transaction];
 
     NSNumber *_Nullable storyTimestamp;
-    SignalServiceAddress *_Nullable storyAuthorAddress;
+    AciObjC *_Nullable storyAuthorAci;
     if (dataMessage.storyContext != nil && dataMessage.storyContext.hasSentTimestamp
         && dataMessage.storyContext.hasAuthorAci) {
         OWSLogInfo(
@@ -1070,10 +1070,10 @@ NS_ASSUME_NONNULL_BEGIN
             dataMessage.storyContext.authorAci);
 
         storyTimestamp = @(dataMessage.storyContext.sentTimestamp);
-        storyAuthorAddress = [[SignalServiceAddress alloc] initWithAciString:dataMessage.storyContext.authorAci];
+        storyAuthorAci = [[AciObjC alloc] initWithAciString:dataMessage.storyContext.authorAci];
 
-        if (!storyAuthorAddress.isValid) {
-            OWSFailDebug(@"Discarding story reply with invalid address %@", storyAuthorAddress);
+        if (!storyAuthorAci) {
+            OWSFailDebug(@"Discarding story reply with invalid aci");
             return nil;
         }
     }
@@ -1101,7 +1101,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          serverGuid:serverGuid
                                     wasReceivedByUD:wasReceivedByUD
                                   isViewOnceMessage:isViewOnceMessage
-                                 storyAuthorAddress:storyAuthorAddress
+                                     storyAuthorAci:storyAuthorAci
                                      storyTimestamp:storyTimestamp
                                  storyReactionEmoji:nil
                                           giftBadge:giftBadge];

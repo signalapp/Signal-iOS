@@ -120,7 +120,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             serverGuid: message.serverGuid,
             wasReceivedByUD: message.wasReceivedByUD,
             isViewOnceMessage: message.isViewOnceMessage,
-            storyAuthorAddress: message.storyAuthorAddress,
+            storyAuthorAci: message.storyAuthorAci?.wrappedAciValue,
             storyTimestamp: message.storyTimestamp?.uint64Value,
             storyReactionEmoji: message.storyReactionEmoji,
             giftBadge: message.giftBadge
@@ -166,7 +166,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             messageSticker: message.messageSticker,
             isViewOnceMessage: message.isViewOnceMessage,
             changeActionsProtoData: message.changeActionsProtoData,
-            storyAuthorAddress: message.storyAuthorAddress,
+            storyAuthorAci: message.storyAuthorAci?.wrappedAciValue,
             storyTimestamp: message.storyTimestamp?.uint64Value,
             storyReactionEmoji: message.storyReactionEmoji,
             giftBadge: message.giftBadge

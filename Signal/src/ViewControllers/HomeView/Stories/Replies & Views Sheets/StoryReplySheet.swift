@@ -94,7 +94,7 @@ extension StoryReplySheet {
         let builder = TSOutgoingMessageBuilder(thread: thread)
         builder.storyReactionEmoji = reaction
         builder.storyTimestamp = NSNumber(value: storyMessage.timestamp)
-        builder.storyAuthorAddress = storyMessage.authorAddress
+        builder.storyAuthorAci = AciObjC(storyMessage.authorAci)
 
         tryToSendMessage(builder)
 
@@ -144,7 +144,7 @@ extension StoryReplySheet {
         builder.messageBody = messageBody.text
         builder.bodyRanges = messageBody.ranges
         builder.storyTimestamp = NSNumber(value: storyMessage.timestamp)
-        builder.storyAuthorAddress = storyMessage.authorAddress
+        builder.storyAuthorAci = AciObjC(storyMessage.authorAci)
 
         tryToSendMessage(builder)
     }

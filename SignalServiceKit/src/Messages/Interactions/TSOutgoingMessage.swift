@@ -42,7 +42,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                          changeActionsProtoData: Data? = nil,
                          additionalRecipients: [SignalServiceAddress]? = nil,
                          skippedRecipients: Set<SignalServiceAddress>? = nil,
-                         storyAuthorAddress: SignalServiceAddress? = nil,
+                         storyAuthorAci: Aci? = nil,
                          storyTimestamp: UInt64? = nil,
                          storyReactionEmoji: String? = nil,
                          giftBadge: OWSGiftBadge? = nil
@@ -61,7 +61,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                    linkPreview: linkPreview,
                    messageSticker: messageSticker,
                    isViewOnceMessage: isViewOnceMessage,
-                   storyAuthorAddress: storyAuthorAddress,
+                   storyAuthorAci: storyAuthorAci.map { AciObjC($0) },
                    storyTimestamp: storyTimestamp,
                    storyReactionEmoji: storyReactionEmoji,
                    giftBadge: giftBadge)
@@ -106,7 +106,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                               changeActionsProtoData: Data?,
                               additionalRecipients: [SignalServiceAddress]?,
                               skippedRecipients: Set<SignalServiceAddress>?,
-                              storyAuthorAddress: SignalServiceAddress?,
+                              storyAuthorAci: AciObjC?,
                               storyTimestamp: NSNumber?,
                               storyReactionEmoji: String?,
                               giftBadge: OWSGiftBadge?) -> TSOutgoingMessageBuilder {
@@ -127,7 +127,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                                         changeActionsProtoData: changeActionsProtoData,
                                         additionalRecipients: additionalRecipients,
                                         skippedRecipients: skippedRecipients,
-                                        storyAuthorAddress: storyAuthorAddress,
+                                        storyAuthorAci: storyAuthorAci?.wrappedAciValue,
                                         storyTimestamp: storyTimestamp?.uint64Value,
                                         storyReactionEmoji: storyReactionEmoji,
                                         giftBadge: giftBadge)

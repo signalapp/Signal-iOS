@@ -211,7 +211,7 @@ public class ReactionManager: NSObject {
                     owsFailDebug("Should not be possible to show a reaction message for system story")
                 }
 
-                builder.storyAuthorAddress = storyMessage.authorAddress
+                builder.storyAuthorAci = AciObjC(storyMessage.authorAci)
 
                 // Group story replies do not follow the thread DM timer, instead they
                 // disappear automatically when their parent story disappears.

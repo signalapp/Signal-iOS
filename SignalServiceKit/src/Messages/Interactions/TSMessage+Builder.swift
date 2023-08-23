@@ -41,14 +41,14 @@ public class TSMessageBuilder: NSObject {
     @objc
     public var read = false
     @objc
-    public var storyAuthorAddress: SignalServiceAddress?
+    public var storyAuthorAci: AciObjC?
     @objc
     public var storyTimestamp: NSNumber?
     @objc
     public var storyReactionEmoji: String?
     @objc
     public var isGroupStoryReply: Bool {
-        storyAuthorAddress != nil && storyTimestamp != nil && thread.isGroupThread
+        storyAuthorAci != nil && storyTimestamp != nil && thread.isGroupThread
     }
     @objc
     public var giftBadge: OWSGiftBadge?
@@ -67,7 +67,7 @@ public class TSMessageBuilder: NSObject {
          messageSticker: MessageSticker? = nil,
          isViewOnceMessage: Bool = false,
          read: Bool = false,
-         storyAuthorAddress: SignalServiceAddress? = nil,
+         storyAuthorAci: AciObjC? = nil,
          storyTimestamp: UInt64? = nil,
          storyReactionEmoji: String? = nil,
          giftBadge: OWSGiftBadge? = nil) {
@@ -90,7 +90,7 @@ public class TSMessageBuilder: NSObject {
         self.messageSticker = messageSticker
         self.isViewOnceMessage = isViewOnceMessage
         self.read = read
-        self.storyAuthorAddress = storyAuthorAddress
+        self.storyAuthorAci = storyAuthorAci
         self.storyTimestamp = storyTimestamp.map { NSNumber(value: $0) }
         self.storyReactionEmoji = storyReactionEmoji
         self.giftBadge = giftBadge

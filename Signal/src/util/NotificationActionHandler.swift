@@ -144,11 +144,13 @@ public class NotificationActionHandler: Dependencies {
                     builder.messageBody = replyText
 
                     // If we're replying to a group story reply, keep the reply within that context.
-                    if notificationMessage.isGroupStoryReply,
-                       let storyTimestamp = incomingMessage.storyTimestamp,
-                       let storyAuthorAddress = incomingMessage.storyAuthorAddress {
+                    if
+                        notificationMessage.isGroupStoryReply,
+                        let storyTimestamp = incomingMessage.storyTimestamp,
+                        let storyAuthorAci = incomingMessage.storyAuthorAci
+                    {
                         builder.storyTimestamp = storyTimestamp
-                        builder.storyAuthorAddress = storyAuthorAddress
+                        builder.storyAuthorAci = storyAuthorAci
                     } else {
                         // We only use the thread's DM timer for normal messages & 1:1 story
                         // replies -- group story replies last for the lifetime of the story.

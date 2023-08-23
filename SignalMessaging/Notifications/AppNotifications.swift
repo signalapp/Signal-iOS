@@ -496,25 +496,28 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
             guard
                 let storyTimestamp = incomingMessage.storyTimestamp?.uint64Value,
-                let storyAuthorAddress = incomingMessage.storyAuthorAddress,
-                let storyAuthorUuidString = storyAuthorAddress.uuidString
-            else { return false }
+                let storyAuthorAci = incomingMessage.storyAuthorAci?.wrappedAciValue
+            else {
+                return false
+            }
+
+            let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
 
             // Always notify for replies to group stories you sent
-            if storyAuthorAddress.isLocalAddress { return true }
+            if storyAuthorAci == localAci { return true }
 
             // Always notify if you have been @mentioned
             if
                 let mentionedAcis = incomingMessage.bodyRanges?.mentions.values,
-                let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci,
-                mentionedAcis.contains(where: { $0 == localAci }) {
+                mentionedAcis.contains(where: { $0 == localAci })
+            {
                 return true
             }
 
             // Notify people who did not author the story if they've previously replied to it
             return InteractionFinder.hasLocalUserReplied(
                 storyTimestamp: storyTimestamp,
-                storyAuthorUuidString: storyAuthorUuidString,
+                storyAuthorAci: storyAuthorAci,
                 transaction: transaction
             )
         }

@@ -143,7 +143,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                                 changeActionsProtoData: changeActionsProtoDataBuilder(),
                                                 additionalRecipients: additionalRecipientsBuilder(),
                                                 skippedRecipients: skippedRecipientsBuilder(),
-                                                storyAuthorAddress: storyAuthorAddressBuilder(),
+                                                storyAuthorAci: storyAuthorAciBuilder(),
                                                 storyTimestamp: storyTimestampBuilder(),
                                                 storyReactionEmoji: storyReactionEmojiBuilder(),
                                                 giftBadge: giftBadgeBuilder()).build(transaction: transaction)
@@ -247,7 +247,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var storyAuthorAddressBuilder: () -> SignalServiceAddress? = {
+    public var storyAuthorAciBuilder: () -> AciObjC? = {
         return nil
     }
 
@@ -323,7 +323,7 @@ public class IncomingMessageFactory: NSObject, Factory {
             serverGuid: serverGuidBuilder(),
             wasReceivedByUD: wasReceivedByUDBuilder(),
             isViewOnceMessage: isViewOnceMessageBuilder(),
-            storyAuthorAddress: storyAuthorAddressBuilder(),
+            storyAuthorAci: storyAuthorAciBuilder(),
             storyTimestamp: storyTimestampBuilder(),
             storyReactionEmoji: storyReactionEmojiBuilder(),
             giftBadge: giftBadgeBuilder()
@@ -439,7 +439,7 @@ public class IncomingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var storyAuthorAddressBuilder: () -> SignalServiceAddress? = {
+    public var storyAuthorAciBuilder: () -> AciObjC? = {
         nil
     }
 

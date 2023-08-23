@@ -444,7 +444,7 @@ public class InteractionFinder: NSObject {
 
     public static func hasLocalUserReplied(
         storyTimestamp: UInt64,
-        storyAuthorUuidString: String,
+        storyAuthorAci: Aci,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
         let sql = """
@@ -464,7 +464,7 @@ public class InteractionFinder: NSObject {
                 sql: sql,
                 arguments: [
                     storyTimestamp,
-                    storyAuthorUuidString
+                    storyAuthorAci.serviceIdUppercaseString
                 ]
             ) ?? false
         } catch {

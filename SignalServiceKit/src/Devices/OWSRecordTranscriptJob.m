@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
                               changeActionsProtoData:nil
                                 additionalRecipients:nil
                                    skippedRecipients:nil
-                                  storyAuthorAddress:transcript.storyAuthorAddress
+                                      storyAuthorAci:transcript.storyAuthorAci
                                       storyTimestamp:transcript.storyTimestamp
                                   storyReactionEmoji:nil
                                            giftBadge:transcript.giftBadge] buildWithTransaction:transaction];

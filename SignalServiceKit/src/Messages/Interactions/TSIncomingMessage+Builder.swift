@@ -46,7 +46,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                          serverGuid: String? = nil,
                          wasReceivedByUD: Bool = false,
                          isViewOnceMessage: Bool = false,
-                         storyAuthorAddress: SignalServiceAddress? = nil,
+                         storyAuthorAci: Aci? = nil,
                          storyTimestamp: UInt64? = nil,
                          storyReactionEmoji: String? = nil,
                          giftBadge: OWSGiftBadge? = nil) {
@@ -65,7 +65,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                    messageSticker: messageSticker,
                    isViewOnceMessage: isViewOnceMessage,
                    read: read,
-                   storyAuthorAddress: storyAuthorAddress,
+                   storyAuthorAci: storyAuthorAci.map { AciObjC($0) },
                    storyTimestamp: storyTimestamp,
                    storyReactionEmoji: storyReactionEmoji,
                    giftBadge: giftBadge)
@@ -112,7 +112,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                               serverGuid: String?,
                               wasReceivedByUD: Bool,
                               isViewOnceMessage: Bool,
-                              storyAuthorAddress: SignalServiceAddress?,
+                              storyAuthorAci: AciObjC?,
                               storyTimestamp: NSNumber?,
                               storyReactionEmoji: String?,
                               giftBadge: OWSGiftBadge?) -> TSIncomingMessageBuilder {
@@ -134,7 +134,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                                         serverGuid: serverGuid,
                                         wasReceivedByUD: wasReceivedByUD,
                                         isViewOnceMessage: isViewOnceMessage,
-                                        storyAuthorAddress: storyAuthorAddress,
+                                        storyAuthorAci: storyAuthorAci?.wrappedAciValue,
                                         storyTimestamp: storyTimestamp?.uint64Value,
                                         storyReactionEmoji: storyReactionEmoji,
                                         giftBadge: giftBadge)
