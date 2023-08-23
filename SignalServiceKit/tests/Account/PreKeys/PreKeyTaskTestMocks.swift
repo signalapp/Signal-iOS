@@ -69,8 +69,8 @@ class _PreKey_DateProviderMock {
 }
 
 class _PreKey_AccountServiceClientMock: FakeAccountServiceClient {
-    var currentPreKeyCount: Int = 0
-    var currentPqPreKeyCount: Int = 0
+    var currentPreKeyCount: Int?
+    var currentPqPreKeyCount: Int?
 
     var identity: OWSIdentity?
     var identityKey: IdentityKey?
@@ -81,7 +81,7 @@ class _PreKey_AccountServiceClientMock: FakeAccountServiceClient {
     var auth: ChatServiceAuth?
 
     override func getPreKeysCount(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
-        return Promise.value((currentPreKeyCount, currentPqPreKeyCount))
+        return Promise.value((currentPreKeyCount!, currentPqPreKeyCount!))
     }
 
     override func setPreKeys(
