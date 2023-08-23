@@ -227,7 +227,23 @@ public class DependenciesBridge {
             )
         )
 
+        self.pniHelloWorldManager = PniHelloWorldManagerImpl(
+            database: db,
+            identityManager: PniHelloWorldManagerImpl.Wrappers.IdentityManager(identityManager),
+            keyValueStoreFactory: keyValueStoreFactory,
+            networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
+            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
+            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
+            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
+            profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
+            schedulers: schedulers,
+            signalRecipientStore: PniHelloWorldManagerImpl.Wrappers.SignalRecipientStore(),
+            tsAccountManager: PniHelloWorldManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
+        )
+
         self.preKeyManager = PreKeyManagerImpl(
+            db: db,
+            identityManager: PreKey.Manager.Wrappers.IdentityManager(identityManager),
             messageProcessor: PreKey.Manager.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
             preKeyOperationFactory: preKeyOperationFactory,
             protocolStoreManager: signalProtocolStoreManager
@@ -261,20 +277,6 @@ public class DependenciesBridge {
             profileFetcher: LearnMyOwnPniManagerImpl.Wrappers.ProfileFetcher(schedulers: schedulers),
             schedulers: schedulers,
             tsAccountManager: LearnMyOwnPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
-        )
-
-        self.pniHelloWorldManager = PniHelloWorldManagerImpl(
-            database: db,
-            identityManager: PniHelloWorldManagerImpl.Wrappers.IdentityManager(identityManager),
-            keyValueStoreFactory: keyValueStoreFactory,
-            networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
-            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
-            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
-            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
-            profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
-            schedulers: schedulers,
-            signalRecipientStore: PniHelloWorldManagerImpl.Wrappers.SignalRecipientStore(),
-            tsAccountManager: PniHelloWorldManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
         )
 
         self.registrationSessionManager = RegistrationSessionManagerImpl(

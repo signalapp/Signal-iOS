@@ -37,15 +37,21 @@ public class PreKeyManagerImpl: PreKeyManager {
         return queue
     }()
 
+    private let db: DB
+    private let identityManager: PreKey.Manager.Shims.IdentityManager
     private let messageProcessor: PreKey.Manager.Shims.MessageProcessor
     private let preKeyOperationFactory: PreKeyOperationFactory
     private let protocolStoreManager: SignalProtocolStoreManager
 
     init(
+        db: DB,
+        identityManager: PreKey.Manager.Shims.IdentityManager,
         messageProcessor: PreKey.Manager.Shims.MessageProcessor,
         preKeyOperationFactory: PreKeyOperationFactory,
         protocolStoreManager: SignalProtocolStoreManager
     ) {
+        self.db = db
+        self.identityManager = identityManager
         self.messageProcessor = messageProcessor
         self.preKeyOperationFactory = preKeyOperationFactory
         self.protocolStoreManager = protocolStoreManager
@@ -91,13 +97,20 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func isAppLockedDueToPreKeyUpdateFailures(tx: DBReadTransaction) -> Bool {
+        let shouldCheckPniState = hasPniIdentityKey(tx: tx)
         let needPreKeyRotation =
             needsSignedPreKeyRotation(identity: .aci, tx: tx)
-            || needsSignedPreKeyRotation(identity: .pni, tx: tx)
+            || (
+                shouldCheckPniState
+                && needsSignedPreKeyRotation(identity: .pni, tx: tx)
+            )
 
         let needLastResortKeyRotation =
             needsLastResortPreKeyRotation(identity: .aci, tx: tx)
-            || needsLastResortPreKeyRotation(identity: .pni, tx: tx)
+            || (
+                shouldCheckPniState
+                && needsLastResortPreKeyRotation(identity: .pni, tx: tx)
+            )
 
         return needPreKeyRotation || needLastResortKeyRotation
     }
@@ -147,7 +160,9 @@ public class PreKeyManagerImpl: PreKeyManager {
         }
 
         addOperation(for: .aci)
-        addOperation(for: .pni)
+        if hasPniIdentityKey(tx: tx) {
+            addOperation(for: .pni)
+        }
 
         Self.operationQueue.addOperations(operations, waitUntilFinished: false)
     }
@@ -236,11 +251,16 @@ public class PreKeyManagerImpl: PreKeyManager {
             for: .aci,
             didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
         )
-        let pniOp = preKeyOperationFactory.rotateSignedPreKeyOperation(
-            for: .pni,
-            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
-        )
-        return runPreKeyOperations([aciOp, pniOp])
+        let shouldPerformPniOp = db.read(block: hasPniIdentityKey(tx:))
+        if shouldPerformPniOp {
+            let pniOp = preKeyOperationFactory.rotateSignedPreKeyOperation(
+                for: .pni,
+                didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+            )
+            return runPreKeyOperations([aciOp, pniOp])
+        } else {
+            return runPreKeyOperations([aciOp])
+        }
     }
 
     /// Refresh one-time pre-keys for the given identity, and optionally refresh
@@ -281,6 +301,12 @@ public class PreKeyManagerImpl: PreKeyManager {
         }
 
         return promise
+    }
+
+    /// If we don't have a PNI identity key, we should not run PNI operations.
+    /// If we try, they will fail, and we will count the joint pni+aci operation as failed.
+    private func hasPniIdentityKey(tx: DBReadTransaction) -> Bool {
+        return self.identityManager.identityKeyPair(for: .pni, tx: tx) != nil
     }
 
     private class MessageProcessingOperation: OWSOperation {

@@ -66,6 +66,10 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         self.tsAccountManager = tsAccountManager
     }
 
+    func hasSaidHelloWorld(tx: DBReadTransaction) -> Bool {
+        return keyValueStore.getBool(StoreConstants.hasSaidHelloWorldKey, defaultValue: false, transaction: tx)
+    }
+
     func sayHelloWorldIfNecessary(tx syncTx: DBWriteTransaction) {
         let logger = PrefixedLogger(prefix: "PHWM")
 
@@ -74,11 +78,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
             return
         }
 
-        guard !keyValueStore.getBool(
-            StoreConstants.hasSaidHelloWorldKey,
-            defaultValue: false,
-            transaction: syncTx
-        ) else {
+        guard !hasSaidHelloWorld(tx: syncTx) else {
             logger.info("Skipping PNI Hello World, already completed.")
             return
         }
