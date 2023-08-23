@@ -254,26 +254,6 @@ public extension ConversationViewController {
 
 extension ConversationViewController: ConversationSettingsViewDelegate {
 
-    public func conversationColorWasUpdated() {
-        AssertIsOnMainThread()
-
-        updateConversationStyle()
-        headerView.updateAvatar()
-    }
-
-    public func conversationSettingsDidUpdate() {
-        AssertIsOnMainThread()
-
-        Self.databaseStorage.write { transaction in
-            // We updated the group, so if there was a pending message request we should accept it.
-            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
-                thread,
-                setDefaultTimerIfNecessary: true,
-                tx: transaction
-            )
-        }
-    }
-
     public func conversationSettingsDidRequestConversationSearch() {
         AssertIsOnMainThread()
 
@@ -299,7 +279,7 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
         }
     }
 
-    public func popAllConversationSettingsViews(completion: (() -> Void)?) {
+    private func popAllConversationSettingsViews(completion: (() -> Void)?) {
         AssertIsOnMainThread()
 
         guard let presentedViewController = presentedViewController else {

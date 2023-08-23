@@ -18,14 +18,7 @@ public enum ConversationSettingsPresentationMode: UInt {
 // MARK: -
 
 public protocol ConversationSettingsViewDelegate: AnyObject {
-
-    func conversationColorWasUpdated()
-
-    func conversationSettingsDidUpdate()
-
     func conversationSettingsDidRequestConversationSearch()
-
-    func popAllConversationSettingsViews(completion: (() -> Void)?)
 }
 
 // MARK: -
