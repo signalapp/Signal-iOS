@@ -45,9 +45,6 @@ class DecryptedIncomingEnvelope: NSObject {
     let content: SSKProtoContent?
 
     @objc
-    var sourceServiceIdObjC: UntypedServiceIdObjC { UntypedServiceIdObjC(sourceAci.untypedServiceId) }
-
-    @objc
     var sourceAciObjC: AciObjC { AciObjC(sourceAci) }
 
     init(

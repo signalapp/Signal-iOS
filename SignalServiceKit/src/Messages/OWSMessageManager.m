@@ -258,16 +258,14 @@ NS_ASSUME_NONNULL_BEGIN
         [self ensureGroupIdMapping:groupId transaction:transaction];
 
         if ([self.blockingManager isGroupIdBlocked:groupId transaction:transaction]) {
-            OWSLogError(
-                @"Ignoring blocked message from %@ in group %@", decryptedEnvelope.sourceServiceIdObjC, groupId);
+            OWSLogError(@"Ignoring blocked message from %@ in group %@", decryptedEnvelope.sourceAciObjC, groupId);
             return;
         }
     }
 
     if (dataMessage.hasTimestamp) {
         if (dataMessage.timestamp <= 0) {
-            OWSFailDebug(
-                @"Ignoring message with invalid data message timestamp: %@", decryptedEnvelope.sourceServiceIdObjC);
+            OWSFailDebug(@"Ignoring message with invalid data message timestamp: %@", decryptedEnvelope.sourceAciObjC);
             return;
         }
         if (![SDS fitsInInt64:dataMessage.timestamp]) {
@@ -276,8 +274,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
         // This prevents replay attacks by the service.
         if (dataMessage.timestamp != decryptedEnvelope.timestamp) {
-            OWSFailDebug(@"Ignoring message with non-matching data message timestamp: %@",
-                decryptedEnvelope.sourceServiceIdObjC);
+            OWSFailDebug(
+                @"Ignoring message with non-matching data message timestamp: %@", decryptedEnvelope.sourceAciObjC);
             return;
         }
     }
@@ -301,7 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!RemoteConfig.stories && dataMessage.storyContext != nil) {
         OWSLogInfo(@"Ignoring message (author: %@, timestamp: %llu) related to story (author: %@, timestamp: %llu)",
-            decryptedEnvelope.sourceServiceIdObjC,
+            decryptedEnvelope.sourceAciObjC,
             dataMessage.timestamp,
             dataMessage.storyContext.authorAci,
             dataMessage.storyContext.sentTimestamp);
@@ -731,8 +729,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *_Nullable thread;
     if (groupId != nil) {
         if ([self.blockingManager isGroupIdBlocked:groupId transaction:transaction]) {
-            OWSLogError(
-                @"Ignoring blocked message from %@ in group %@", decryptedEnvelope.sourceServiceIdObjC, groupId);
+            OWSLogError(@"Ignoring blocked message from %@ in group %@", decryptedEnvelope.sourceAciObjC, groupId);
             return;
         }
         TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
