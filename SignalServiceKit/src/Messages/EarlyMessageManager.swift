@@ -9,15 +9,12 @@ import SignalCoreKit
 
 @objc
 public class EarlyMessageManager: NSObject {
-    private struct MessageIdentifier: Hashable, Codable {
+    private struct MessageIdentifier: Hashable {
         let timestamp: UInt64
-        let author: SignalServiceAddress
+        let author: Aci
 
         var key: String {
-            guard let authorUuid = author.uuidString else {
-                owsFail("Unexpectedly missing author uuid \(author)")
-            }
-            return "\(authorUuid).\(timestamp)"
+            return "\(author.serviceIdUppercaseString).\(timestamp)"
         }
     }
 
@@ -202,7 +199,7 @@ public class EarlyMessageManager: NSObject {
 
         let identifier = MessageIdentifier(
             timestamp: associatedMessageTimestamp,
-            author: SignalServiceAddress(associatedMessageAuthor.wrappedValue)
+            author: associatedMessageAuthor.wrappedAciValue
         )
 
         Logger.info("Recording early envelope \(OWSMessageManager.description(for: envelope)) for message \(identifier)")
@@ -243,11 +240,11 @@ public class EarlyMessageManager: NSObject {
         associatedMessageTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {
-        guard let localAddress = TSAccountManager.localAddress else {
+        guard let localAci = tsAccountManager.localIdentifiers(transaction: tx)?.aci else {
             return owsFailDebug("missing local address")
         }
 
-        let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: localAddress)
+        let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: localAci)
 
         Logger.info("Recording early \(type) receipt for outgoing message \(identifier)")
 
@@ -275,7 +272,7 @@ public class EarlyMessageManager: NSObject {
 
         let identifier = MessageIdentifier(
             timestamp: associatedMessageTimestamp,
-            author: SignalServiceAddress(associatedMessageAuthor.wrappedValue)
+            author: associatedMessageAuthor.wrappedAciValue
         )
 
         Logger.info("Recording early read receipt from linked device for message \(identifier)")
@@ -299,7 +296,7 @@ public class EarlyMessageManager: NSObject {
 
         let identifier = MessageIdentifier(
             timestamp: associatedMessageTimestamp,
-            author: SignalServiceAddress(associatedMessageAuthor.wrappedAciValue)
+            author: associatedMessageAuthor.wrappedAciValue
         )
 
         Logger.info("Recording early viewed receipt from linked device for message \(identifier)")
@@ -351,13 +348,12 @@ public class EarlyMessageManager: NSObject {
         }
         let identifier: MessageIdentifier
         if let message = message as? TSOutgoingMessage {
-            identifier = MessageIdentifier(timestamp: message.timestamp, author: localIdentifiers.aciAddress)
+            identifier = MessageIdentifier(timestamp: message.timestamp, author: localIdentifiers.aci)
         } else if let message = message as? TSIncomingMessage {
-            guard message.authorUUID != nil else {
-                return owsFailDebug("Attempted to apply pending messages for message missing sender uuid with type \(message.interactionType) from \(message.authorAddress)")
+            guard let authorAci = Aci.parseFrom(aciString: message.authorUUID) else {
+                return owsFailDebug("Attempted to apply pending messages for message missing sender aci with type \(message.interactionType) from \(message.authorAddress)")
             }
-
-            identifier = MessageIdentifier(timestamp: message.timestamp, author: message.authorAddress)
+            identifier = MessageIdentifier(timestamp: message.timestamp, author: authorAci)
         } else {
             // We only support early envelopes for incoming + outgoing message types, for now.
             return owsFailDebug("attempted to apply pending messages for unsupported message type \(message.interactionType)")
@@ -435,7 +431,7 @@ public class EarlyMessageManager: NSObject {
             owsFailDebug("Can't process messages when not registered.")
             return
         }
-        let identifier = MessageIdentifier(timestamp: storyMessage.timestamp, author: storyMessage.authorAddress)
+        let identifier = MessageIdentifier(timestamp: storyMessage.timestamp, author: storyMessage.authorAci)
         applyPendingMessages(for: identifier, localIdentifiers: localIdentifiers, tx: transaction) { earlyReceipt in
             switch earlyReceipt {
             case .outgoingMessageRead(let sender, let deviceId, _):
