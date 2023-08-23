@@ -1,1 +1,1 @@
-• Every search result should feel like a highlight, but a bug was preventing the yellow highlight markers from being displayed for matches in individual chats unless the search result appeared in a message that also included a spoiler effect. Spoiler: That bug dies at the end of this update.
+• Elk zoekresultaat zou moeten voelen als een highlight, maar door een bug zag je geen gele markeringen in individuele chats, tenzij het bericht waarin het zoekresultaat verscheen ook een spoilereffect bevatte. Spoiler: deze update rekent af met die bug.

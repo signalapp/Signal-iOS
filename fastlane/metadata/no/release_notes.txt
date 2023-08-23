@@ -1,1 +1,1 @@
-• Every search result should feel like a highlight, but a bug was preventing the yellow highlight markers from being displayed for matches in individual chats unless the search result appeared in a message that also included a spoiler effect. Spoiler: That bug dies at the end of this update.
+• Hvis du søker etter noe inne i en samtale, vil resultatene markeres med gul bakgrunn.
