@@ -93,7 +93,7 @@ extension DonateViewController {
             canCancel: false
         ) { modal in
             firstly { () -> Promise<Void> in
-                if let existingSubscriberId = monthly.subscriberID, monthly.currentSubscription != nil {
+                if let existingSubscriberId = monthly.subscriberID {
                     Logger.info("[Donations] Cancelling existing subscription")
 
                     return SubscriptionManagerImpl.cancelSubscription(for: existingSubscriberId)

@@ -23,7 +23,7 @@ extension CreditOrDebitCardDonationViewController {
         DonationViewsUtil.wrapPromiseInProgressView(
             from: self,
             promise: firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Void> in
-                if let existingSubscriberId, priorSubscriptionLevel != nil {
+                if let existingSubscriberId {
                     Logger.info("[Donations] Cancelling existing subscription")
 
                     return SubscriptionManagerImpl.cancelSubscription(for: existingSubscriberId)

@@ -405,21 +405,23 @@ public class SubscriptionManagerImpl: NSObject {
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
-            let statusCode = response.responseStatusCode
-            if statusCode != 200 {
-                throw OWSAssertionError("Got bad response code \(statusCode).")
-            } else {
-                databaseStorage.write { transaction in
-                    self.setSubscriberID(nil, transaction: transaction)
-                    self.setSubscriberCurrencyCode(nil, transaction: transaction)
-                    self.setLastSubscriptionExpirationDate(nil, transaction: transaction)
-                    self.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
-                    self.setMostRecentSubscriptionPaymentMethod(paymentMethod: nil, transaction: transaction)
-                    self.setUserManuallyCancelledSubscription(true, transaction: transaction)
-                }
-
-                self.storageServiceManager.recordPendingLocalAccountUpdates()
+            switch response.responseStatusCode {
+            case 200, 404:
+                break
+            default:
+                throw OWSAssertionError("Got bad response code \(response.responseStatusCode).")
             }
+
+            databaseStorage.write { transaction in
+                self.setSubscriberID(nil, transaction: transaction)
+                self.setSubscriberCurrencyCode(nil, transaction: transaction)
+                self.setLastSubscriptionExpirationDate(nil, transaction: transaction)
+                self.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
+                self.setMostRecentSubscriptionPaymentMethod(paymentMethod: nil, transaction: transaction)
+                self.setUserManuallyCancelledSubscription(true, transaction: transaction)
+            }
+
+            self.storageServiceManager.recordPendingLocalAccountUpdates()
         }
     }
 

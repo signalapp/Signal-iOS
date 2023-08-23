@@ -31,7 +31,7 @@ extension DonateViewController {
 
         // See also: code for other payment methods, such as credit/debit card.
         firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Void> in
-            if let existingSubscriberId = monthly.subscriberID, monthly.currentSubscription != nil {
+            if let existingSubscriberId = monthly.subscriberID {
                 Logger.info("[Donations] Cancelling existing subscription")
 
                 return SubscriptionManagerImpl.cancelSubscription(for: existingSubscriberId)
