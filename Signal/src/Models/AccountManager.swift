@@ -79,13 +79,21 @@ public class AccountManager: NSObject, Dependencies {
             }
         }
 
-        guard let phoneNumber = E164(provisionMessage.phoneNumber) else {
+        guard let phoneNumber = E164(provisionMessage.phoneNumber).map({ E164ObjC($0) }) else {
             return Promise(error: OWSAssertionError("Primary E164 isn't valid"))
         }
 
-        tsAccountManager.phoneNumberAwaitingVerification = E164ObjC(phoneNumber)
-        tsAccountManager.aciAwaitingVerification = provisionMessage.aci.map { AciObjC($0) }
-        tsAccountManager.pniAwaitingVerification = provisionMessage.pni.map { PniObjC($0) }
+        guard let aci = provisionMessage.aci.map({ AciObjC($0) }) else {
+            return Promise(error: OWSAssertionError("Missing ACI in provisioning message!"))
+        }
+
+        guard let pni = provisionMessage.pni.map({ PniObjC($0) }) else {
+            return Promise(error: OWSAssertionError("Missing PNI in provisioning message!"))
+        }
+
+        tsAccountManager.phoneNumberAwaitingVerification = phoneNumber
+        tsAccountManager.aciAwaitingVerification = aci
+        tsAccountManager.pniAwaitingVerification = pni
 
         let serverAuthToken = generateServerAuthToken()
 
@@ -132,36 +140,49 @@ public class AccountManager: NSObject, Dependencies {
                 prekeyBundles: prekeyBundles
             )
         }.done { (response: VerifySecondaryDeviceResponse) in
-            if let pniFromPrimary = self.tsAccountManager.pniAwaitingVerification {
-                if pniFromPrimary.wrappedPniValue != response.pni {
-                    throw OWSAssertionError("primary PNI is out of sync with the server")
-                }
-            } else {
-                self.tsAccountManager.pniAwaitingVerification = PniObjC(response.pni)
+            if pni.wrappedPniValue != response.pni {
+                throw OWSAssertionError("PNI from primary is out of sync with the server!")
             }
 
             self.databaseStorage.write { transaction in
-                self.identityManager.storeIdentityKeyPair(provisionMessage.aciIdentityKeyPair,
-                                                          for: .aci,
-                                                          transaction: transaction)
+                self.identityManager.storeIdentityKeyPair(
+                    provisionMessage.aciIdentityKeyPair,
+                    for: .aci,
+                    transaction: transaction
+                )
 
-                self.identityManager.storeIdentityKeyPair(provisionMessage.pniIdentityKeyPair,
-                                                          for: .pni,
-                                                          transaction: transaction)
+                self.identityManager.storeIdentityKeyPair(
+                    provisionMessage.pniIdentityKeyPair,
+                    for: .pni,
+                    transaction: transaction
+                )
 
-                self.profileManagerImpl.setLocalProfileKey(provisionMessage.profileKey,
-                                                           userProfileWriter: .linking,
-                                                           authedAccount: .implicit(),
-                                                           transaction: transaction)
+                self.profileManagerImpl.setLocalProfileKey(
+                    provisionMessage.profileKey,
+                    userProfileWriter: .linking,
+                    authedAccount: .implicit(),
+                    transaction: transaction
+                )
 
                 if let areReadReceiptsEnabled = provisionMessage.areReadReceiptsEnabled {
-                    self.receiptManager.setAreReadReceiptsEnabled(areReadReceiptsEnabled,
-                                                                  transaction: transaction)
+                    self.receiptManager.setAreReadReceiptsEnabled(
+                        areReadReceiptsEnabled,
+                        transaction: transaction
+                    )
                 }
 
-                self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
-                                                               deviceId: response.deviceId,
-                                                               transaction: transaction)
+                self.tsAccountManager.storeLocalNumber(
+                    phoneNumber,
+                    aci: aci,
+                    pni: pni,
+                    transaction: transaction
+                )
+
+                self.tsAccountManager.setStoredServerAuthToken(
+                    serverAuthToken,
+                    deviceId: response.deviceId,
+                    transaction: transaction
+                )
             }
         }.then { _ -> Promise<Void> in
             if let prekeyBundlesCreated {
@@ -185,7 +206,7 @@ public class AccountManager: NSObject, Dependencies {
             }
             return self.serviceClient.updateSecondaryDeviceCapabilities(hasBackedUpMasterKey: hasBackedUpMasterKey)
         }.done {
-            self.completeDeviceLinking()
+            self.tsAccountManager.postRegistrationStateDidChangeNotification()
         }.then { _ -> Promise<Void> in
             BenchEventStart(title: "waiting for initial storage service restore", eventId: "initial-storage-service-restore")
 
@@ -238,11 +259,6 @@ public class AccountManager: NSObject, Dependencies {
         Logger.info("")
         let job = SyncPushTokensJob(mode: .forceUpload)
         return job.run()
-    }
-
-    private func completeDeviceLinking() {
-        Logger.info("")
-        tsAccountManager.didRegister()
     }
 
     // MARK: Message Delivery

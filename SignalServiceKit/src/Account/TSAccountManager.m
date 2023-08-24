@@ -224,37 +224,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     }
 }
 
-- (void)didRegister
-{
-    OWSLogInfo(@"");
-    E164ObjC *phoneNumber;
-    AciObjC *aci;
-    PniObjC *pni;
-    @synchronized(self) {
-        phoneNumber = self.phoneNumberAwaitingVerification;
-        aci = self.aciAwaitingVerification;
-        pni = self.pniAwaitingVerification;
-    }
-
-    if (!phoneNumber) {
-        OWSFail(@"phoneNumber was unexpectedly nil");
-    }
-
-    if (!aci) {
-        OWSFail(@"uuid was unexpectedly nil");
-    }
-
-    if (!pni) {
-        OWSFail(@"pni was unexpectedly nil");
-    }
-
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self storeLocalNumber:phoneNumber aci:aci pni:pni transaction:transaction];
-    });
-
-    [self postRegistrationStateDidChangeNotification];
-}
-
 - (void)didRegisterPrimaryWithE164:(E164ObjC *)e164
                                aci:(AciObjC *)aci
                                pni:(PniObjC *)pni

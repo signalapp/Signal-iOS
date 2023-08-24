@@ -109,7 +109,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 // - obtained signal server credentials
 // - uploaded pre-keys
 // - uploaded push tokens
-- (void)didRegister;
 - (void)didRegisterPrimaryWithE164:(E164ObjC *)e164
                                aci:(AciObjC *)aci
                                pni:(PniObjC *)pni
