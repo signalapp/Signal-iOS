@@ -14,9 +14,7 @@ class PaymentsSendRecipientViewController: RecipientPickerContainerViewControlle
         self.isOutgoingTransfer = isOutgoingTransfer
     }
 
-    public static func presentAsFormSheet(fromViewController: UIViewController,
-                                          isOutgoingTransfer: Bool,
-                                          paymentRequestModel: TSPaymentRequestModel?) {
+    public static func presentAsFormSheet(fromViewController: UIViewController, isOutgoingTransfer: Bool) {
         let view = PaymentsSendRecipientViewController(isOutgoingTransfer: isOutgoingTransfer)
         let navigationController = OWSNavigationController(rootViewController: view)
         fromViewController.presentFormSheet(navigationController, animated: true)
@@ -57,7 +55,6 @@ class PaymentsSendRecipientViewController: RecipientPickerContainerViewControlle
         SendPaymentViewController.present(inNavigationController: navigationController,
                                           delegate: self,
                                           recipientAddress: address,
-                                          paymentRequestModel: nil,
                                           isOutgoingTransfer: isOutgoingTransfer,
                                           mode: .fromPaymentSettings)
     }

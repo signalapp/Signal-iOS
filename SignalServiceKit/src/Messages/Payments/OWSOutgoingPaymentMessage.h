@@ -8,26 +8,22 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSPaymentCancellation;
 @class TSPaymentNotification;
-@class TSPaymentRequest;
 
 @interface OWSOutgoingPaymentMessage : TSOutgoingMessage <OWSPaymentMessage>
 
-@property (nonatomic, readonly, nullable) TSPaymentRequest *paymentRequest;
+@property (nonatomic, readonly, nullable) NSData *paymentRequest; // deprecated
 @property (nonatomic, readonly, nullable) TSPaymentNotification *paymentNotification;
-@property (nonatomic, readonly, nullable) TSPaymentCancellation *paymentCancellation;
+@property (nonatomic, readonly, nullable) NSData *paymentCancellation; // deprecated
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
                                    transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
                    messageBody:(nullable NSString *)messageBody
-           paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
-           paymentNotification:(nullable TSPaymentNotification *)paymentNotification
-                paymentRequest:(nullable TSPaymentRequest *)paymentRequest
+           paymentNotification:(TSPaymentNotification *)paymentNotification
               expiresInSeconds:(uint32_t)expiresInSeconds
-                   transaction:(SDSAnyReadTransaction *)transaction;
+                   transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -72,9 +68,9 @@ NS_ASSUME_NONNULL_BEGIN
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
               storedMessageState:(TSOutgoingMessageState)storedMessageState
-             paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
+             paymentCancellation:(nullable NSData *)paymentCancellation
              paymentNotification:(nullable TSPaymentNotification *)paymentNotification
-                  paymentRequest:(nullable TSPaymentRequest *)paymentRequest
+                  paymentRequest:(nullable NSData *)paymentRequest
 NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientAddressStates:storedMessageState:paymentCancellation:paymentNotification:paymentRequest:));
 
 // clang-format on

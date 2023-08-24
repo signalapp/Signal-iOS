@@ -41,10 +41,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         case progressPay(paymentInfo: PaymentInfo)
         case successPay(paymentInfo: PaymentInfo)
         case failurePay(paymentInfo: PaymentInfo, error: Error)
-        // TODO: Add support for requests.
-        //        case confirmRequest(paymentAmount: TSPaymentAmount,
-        //                            currencyConversion: CurrencyConversionInfo?)
-        //        case failureRequest
     }
 
     private var currentStep: Step {
@@ -164,12 +160,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             updateContentsForSuccessPay(paymentInfo: paymentInfo)
         case .failurePay(let paymentInfo, let error):
             updateContentsForFailurePay(paymentInfo: paymentInfo, error: error)
-        // TODO: Add support for requests.
-        //        case .confirmRequest:
-        //            // TODO: Payment requests
-        //            owsFailDebug("Requests not yet supported.")
-        //        case .failureRequest:
-        //            owsFailDebug("Requests not yet supported.")
         }
     }
 
@@ -202,7 +192,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         cancelLabel.setContentHuggingHigh()
 
         let titleLabel = UILabel()
-        // TODO: Add support for requests.
         titleLabel.text = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE",
                                             comment: "Title for the 'confirm payment' ui in the 'send payment' UI.")
         titleLabel.font = UIFont.dynamicTypeBodyClamped.semibold()
@@ -584,12 +573,13 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         let promise: Promise<PreparedPayment> = firstly(on: DispatchQueue.global()) { () -> Promise<PreparedPayment> in
             // NOTE: We should not pre-prepare a payment if defragmentation
             // is required.
-            Self.paymentsSwift.prepareOutgoingPayment(recipient: paymentInfo.recipient,
-                                                      paymentAmount: paymentInfo.paymentAmount,
-                                                      memoMessage: paymentInfo.memoMessage,
-                                                      paymentRequestModel: paymentInfo.paymentRequestModel,
-                                                      isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
-                                                      canDefragment: false)
+            Self.paymentsSwift.prepareOutgoingPayment(
+                recipient: paymentInfo.recipient,
+                paymentAmount: paymentInfo.paymentAmount,
+                memoMessage: paymentInfo.memoMessage,
+                isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
+                canDefragment: false
+            )
         }
 
         preparedPaymentPromise.set(promise)
@@ -638,12 +628,13 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                         // NOTE: We will always follow this code path if defragmentation
                         // is required.
                         Logger.info("Defragmentation required.")
-                        return Self.paymentsSwift.prepareOutgoingPayment(recipient: paymentInfo.recipient,
-                                                                         paymentAmount: paymentInfo.paymentAmount,
-                                                                         memoMessage: paymentInfo.memoMessage,
-                                                                         paymentRequestModel: paymentInfo.paymentRequestModel,
-                                                                         isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
-                                                                         canDefragment: true)
+                        return Self.paymentsSwift.prepareOutgoingPayment(
+                            recipient: paymentInfo.recipient,
+                            paymentAmount: paymentInfo.paymentAmount,
+                            memoMessage: paymentInfo.memoMessage,
+                            isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
+                            canDefragment: true
+                        )
 
                     } else {
                         throw error
@@ -711,34 +702,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         }
     }
 
-    // TODO: Add support for requests.
-    private func tryToSendPaymentRequest(requestInfo: RequestInfo) {
-
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modalActivityIndicator in
-            guard let self = self else { return }
-
-            firstly {
-                PaymentsImpl.sendPaymentRequestMessagePromise(address: requestInfo.recipientAddress,
-                                                              paymentAmount: requestInfo.paymentAmount,
-                                                              memoMessage: requestInfo.memoMessage)
-            }.done { _ in
-                AssertIsOnMainThread()
-
-                modalActivityIndicator.dismiss {
-                    self.dismiss(animated: true)
-                }
-            }.catch { error in
-                AssertIsOnMainThread()
-                owsFailDebug("Error: \(error)")
-
-                // TODO: Add support for requests.
-                // self.currentStep = .failureRequest
-
-                modalActivityIndicator.dismiss()
-            }
-        }
-    }
-
     // MARK: - Events
 
     @objc
@@ -751,9 +714,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         switch currentStep {
         case .confirmPay(let paymentInfo):
             tryToSendPayment(paymentInfo: paymentInfo)
-        // TODO: Add support for requests.
-        //        case .confirmRequest(let paymentAmount, _):
-        //            tryToSendPaymentRequest(paymentAmount)
         default:
             owsFailDebug("Invalid step.")
         }

@@ -316,15 +316,6 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
 
     // MARK: - Incoming Messages
 
-    public func processIncomingPaymentRequest(
-        thread: TSThread,
-        paymentRequest: TSPaymentRequest,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        // TODO: Handle requests.
-        owsFailDebug("Not yet implemented.")
-    }
-
     public func processIncomingPaymentNotification(
         thread: TSThread,
         paymentNotification: TSPaymentNotification,
@@ -340,28 +331,6 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                                                          thread: thread,
                                                          senderAci: senderAci.wrappedAciValue,
                                                          transaction: transaction)
-    }
-
-    public func processIncomingPaymentCancellation(
-        thread: TSThread,
-        paymentCancellation: TSPaymentCancellation,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        Logger.info("")
-        guard paymentCancellation.isValid else {
-            owsFailDebug("Invalid paymentNotification.")
-            return
-        }
-        let requestUuidString = paymentCancellation.requestUuidString
-        guard let paymentRequestModel = Self.findPaymentRequestModel(forRequestUuidString: requestUuidString,
-                                                                     expectedIsIncomingRequest: nil,
-                                                                     transaction: transaction) else {
-            // This isn't necessarily an error; we might receive multiple
-            // cancellation messages for a given request.
-            owsFailDebug("Missing paymentRequestModel.")
-            return
-        }
-        paymentRequestModel.anyRemove(transaction: transaction)
     }
 
     public func processIncomingPaymentsActivationRequest(
@@ -425,36 +394,6 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
         )
     }
 
-    public func processReceivedTranscriptPaymentRequest(
-        thread: TSThread,
-        paymentRequest: TSPaymentRequest,
-        messageTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        Logger.info("")
-        do {
-            guard let contactThread = thread as? TSContactThread else {
-                throw OWSAssertionError("Invalid thread.")
-            }
-            guard let contactUuid = contactThread.contactAddress.uuid else {
-                throw OWSAssertionError("Missing contactUuid.")
-            }
-            let paymentRequestModel = TSPaymentRequestModel(requestUuidString: paymentRequest.requestUuidString,
-                                                            addressUuidString: contactUuid.uuidString,
-                                                            isIncomingRequest: false,
-                                                            paymentAmount: paymentRequest.paymentAmount,
-                                                            memoMessage: paymentRequest.memoMessage,
-                                                            createdDate: NSDate.ows_date(withMillisecondsSince1970: messageTimestamp))
-            guard paymentRequestModel.isValid else {
-                throw OWSAssertionError("Invalid paymentRequestModel.")
-            }
-            paymentRequestModel.anyInsert(transaction: transaction)
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return
-        }
-    }
-
     public func processReceivedTranscriptPaymentNotification(
         thread: TSThread,
         paymentNotification: TSPaymentNotification,
@@ -462,21 +401,6 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("Ignoring payment notification from sync transcript.")
-    }
-
-    public func processReceivedTranscriptPaymentCancellation(
-        thread: TSThread,
-        paymentCancellation: TSPaymentCancellation,
-        messageTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        Logger.info("")
-        let requestUuidString = paymentCancellation.requestUuidString
-        if let paymentRequestModel = Self.findPaymentRequestModel(forRequestUuidString: requestUuidString,
-                                                                  expectedIsIncomingRequest: nil,
-                                                                  transaction: transaction) {
-            paymentRequestModel.anyRemove(transaction: transaction)
-        }
     }
 
     public func processIncomingPaymentSyncMessage(
@@ -526,8 +450,6 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                 throw OWSAssertionError("Invalid payment sync message: Invalid ledgerBlockIndex.")
             }
             let ledgerBlockTimestamp = mobileCoinProto.ledgerBlockTimestamp
-            // TODO: Support requests.
-            let requestUuidString: String? = nil
             // We use .outgoingComplete. We can safely assume that the device which
             // sent the payment has verified and notified.
             let paymentState: TSPaymentState = .outgoingComplete
@@ -575,7 +497,6 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                                               createdDate: NSDate.ows_date(withMillisecondsSince1970: messageTimestamp),
                                               senderOrRecipientAci: recipientAci.map { AciObjC($0) },
                                               memoMessage: memoMessage,
-                                              requestUuidString: requestUuidString,
                                               isUnread: false,
                                               interactionUniqueId: nil,
                                               mobileCoin: mobileCoin)
@@ -595,7 +516,6 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                 )
                 let paymentNotification = TSPaymentNotification(
                     memoMessage: memoMessage,
-                    requestUuidString: requestUuidString,
                     mcReceiptData: mcReceiptData
                 )
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
@@ -603,9 +523,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                 let message = OWSOutgoingPaymentMessage(
                     thread: thread,
                     messageBody: memoMessage,
-                    paymentCancellation: nil,
                     paymentNotification: paymentNotification,
-                    paymentRequest: nil,
                     expiresInSeconds: expiresInSeconds,
                     transaction: transaction
                 )
@@ -637,40 +555,6 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
         }
 
         paymentModel.anyInsert(transaction: transaction)
-
-        if paymentModel.isOutgoing,
-           paymentModel.isIdentifiedPayment,
-           let requestUuidString = paymentModel.requestUuidString,
-           let paymentRequestModel = Self.findPaymentRequestModel(forRequestUuidString: requestUuidString,
-                                                                  expectedIsIncomingRequest: true,
-                                                                  transaction: transaction) {
-            paymentRequestModel.anyRemove(transaction: transaction)
-        }
-    }
-
-    // Incoming requests are for outgoing payments and vice versa.
-    private class func findPaymentRequestModel(
-        forRequestUuidString requestUuidString: String,
-        expectedIsIncomingRequest: Bool?,
-        transaction: SDSAnyReadTransaction
-    ) -> TSPaymentRequestModel? {
-
-        guard let paymentRequestModel = PaymentFinder.paymentRequestModel(forRequestUuidString: requestUuidString,
-                                                                          transaction: transaction) else {
-            return nil
-        }
-        // Incoming requests are for outgoing payments and vice versa.
-        if let expectedIsIncomingRequest = expectedIsIncomingRequest {
-            guard expectedIsIncomingRequest == paymentRequestModel.isIncomingRequest else {
-                owsFailDebug("Unexpected isIncomingRequest: \(paymentRequestModel.isIncomingRequest).")
-                return nil
-            }
-        }
-        guard paymentRequestModel.isValid else {
-            owsFailDebug("Invalid paymentRequestModel.")
-            return nil
-        }
-        return paymentRequestModel
     }
 
     // This method enforces invariants around TSPaymentModel.
@@ -790,7 +674,6 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                                               createdDate: Date(),
                                               senderOrRecipientAci: AciObjC(senderAci),
                                               memoMessage: paymentNotification.memoMessage?.nilIfEmpty,
-                                              requestUuidString: nil,
                                               isUnread: true,
                                               interactionUniqueId: nil,
                                               mobileCoin: mobileCoin)

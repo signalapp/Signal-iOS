@@ -11,8 +11,6 @@ public struct SendPaymentInfo {
     let paymentAmount: TSPaymentAmount
     let estimatedFeeAmount: TSPaymentAmount
     let currencyConversion: CurrencyConversionInfo?
-    // TODO: Add support for requests.
-    let paymentRequestModel: TSPaymentRequestModel?
     let memoMessage: String?
     let isOutgoingTransfer: Bool
 }

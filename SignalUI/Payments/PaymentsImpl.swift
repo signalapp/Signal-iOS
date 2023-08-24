@@ -348,15 +348,16 @@ public extension PaymentsImpl {
         }
     }
 
-    private func upsertNewOutgoingPaymentModel(recipientAci: Aci?,
-                                               recipientPublicAddress: MobileCoin.PublicAddress,
-                                               paymentAmount: TSPaymentAmount,
-                                               feeAmount: TSPaymentAmount,
-                                               memoMessage: String?,
-                                               transaction: MobileCoin.Transaction,
-                                               receipt: MobileCoin.Receipt,
-                                               paymentRequestModel: TSPaymentRequestModel?,
-                                               isOutgoingTransfer: Bool) -> Promise<TSPaymentModel> {
+    private func upsertNewOutgoingPaymentModel(
+        recipientAci: Aci?,
+        recipientPublicAddress: MobileCoin.PublicAddress,
+        paymentAmount: TSPaymentAmount,
+        feeAmount: TSPaymentAmount,
+        memoMessage: String?,
+        transaction: MobileCoin.Transaction,
+        receipt: MobileCoin.Receipt,
+        isOutgoingTransfer: Bool
+    ) -> Promise<TSPaymentModel> {
         guard !isKillSwitchActive else {
             return Promise(error: PaymentsError.killSwitch)
         }
@@ -389,16 +390,17 @@ public extension PaymentsImpl {
                                                ledgerBlockIndex: 0,
                                                feeAmount: feeAmount)
 
-            let paymentModel = TSPaymentModel(paymentType: paymentType,
-                                              paymentState: .outgoingUnsubmitted,
-                                              paymentAmount: paymentAmount,
-                                              createdDate: Date(),
-                                              senderOrRecipientAci: recipientAci.map { AciObjC($0) },
-                                              memoMessage: memoMessage?.nilIfEmpty,
-                                              requestUuidString: paymentRequestModel?.requestUuidString,
-                                              isUnread: false,
-                                              interactionUniqueId: nil,
-                                              mobileCoin: mobileCoin)
+            let paymentModel = TSPaymentModel(
+                paymentType: paymentType,
+                paymentState: .outgoingUnsubmitted,
+                paymentAmount: paymentAmount,
+                createdDate: Date(),
+                senderOrRecipientAci: recipientAci.map { AciObjC($0) },
+                memoMessage: memoMessage?.nilIfEmpty,
+                isUnread: false,
+                interactionUniqueId: nil,
+                mobileCoin: mobileCoin
+            )
 
             guard paymentModel.isValid else {
                 throw OWSAssertionError("Invalid paymentModel.")
@@ -558,12 +560,13 @@ public extension PaymentsImpl {
         }
     }
 
-    func prepareOutgoingPayment(recipient: SendPaymentRecipient,
-                                paymentAmount: TSPaymentAmount,
-                                memoMessage: String?,
-                                paymentRequestModel: TSPaymentRequestModel?,
-                                isOutgoingTransfer: Bool,
-                                canDefragment: Bool) -> Promise<PreparedPayment> {
+    func prepareOutgoingPayment(
+        recipient: SendPaymentRecipient,
+        paymentAmount: TSPaymentAmount,
+        memoMessage: String?,
+        isOutgoingTransfer: Bool,
+        canDefragment: Bool
+    ) -> Promise<PreparedPayment> {
 
         guard !isKillSwitchActive else {
             return Promise(error: PaymentsError.killSwitch)
@@ -591,7 +594,6 @@ public extension PaymentsImpl {
                     recipientPublicAddress: recipientPublicAddress,
                     paymentAmount: paymentAmount,
                     memoMessage: memoMessage,
-                    paymentRequestModel: paymentRequestModel,
                     isOutgoingTransfer: isOutgoingTransfer,
                     canDefragment: canDefragment
                 )
@@ -602,7 +604,6 @@ public extension PaymentsImpl {
                 recipientPublicAddress: recipientPublicAddress,
                 paymentAmount: paymentAmount,
                 memoMessage: memoMessage,
-                paymentRequestModel: paymentRequestModel,
                 isOutgoingTransfer: isOutgoingTransfer,
                 canDefragment: canDefragment
             )
@@ -614,7 +615,6 @@ public extension PaymentsImpl {
         recipientPublicAddress: MobileCoin.PublicAddress,
         paymentAmount: TSPaymentAmount,
         memoMessage: String?,
-        paymentRequestModel: TSPaymentRequestModel?,
         isOutgoingTransfer: Bool,
         canDefragment: Bool
     ) -> Promise<PreparedPayment> {
@@ -652,7 +652,6 @@ public extension PaymentsImpl {
                     recipientPublicAddress: recipientPublicAddress,
                     paymentAmount: paymentAmount,
                     memoMessage: memoMessage,
-                    paymentRequestModel: paymentRequestModel,
                     isOutgoingTransfer: isOutgoingTransfer,
                     preparedTransaction: preparedTransaction
                 )
@@ -722,7 +721,6 @@ public extension PaymentsImpl {
                                                       createdDate: Date(),
                                                       senderOrRecipientAci: nil,
                                                       memoMessage: nil,
-                                                      requestUuidString: nil,
                                                       isUnread: false,
                                                       interactionUniqueId: nil,
                                                       mobileCoin: mobileCoin)
@@ -755,17 +753,16 @@ public extension PaymentsImpl {
             // the TSPaymentModel to the database. The PaymentsProcessor
             // will observe this and take responsibility for the submission,
             // verification and notification of the payment.
-            //
-            // TODO: Handle requests.
-            return self.upsertNewOutgoingPaymentModel(recipientAci: preparedPayment.recipientAci,
-                                                      recipientPublicAddress: preparedPayment.recipientPublicAddress,
-                                                      paymentAmount: preparedPayment.paymentAmount,
-                                                      feeAmount: preparedTransaction.feeAmount,
-                                                      memoMessage: preparedPayment.memoMessage,
-                                                      transaction: preparedTransaction.transaction,
-                                                      receipt: preparedTransaction.receipt,
-                                                      paymentRequestModel: preparedPayment.paymentRequestModel,
-                                                      isOutgoingTransfer: preparedPayment.isOutgoingTransfer)
+            return self.upsertNewOutgoingPaymentModel(
+                recipientAci: preparedPayment.recipientAci,
+                recipientPublicAddress: preparedPayment.recipientPublicAddress,
+                paymentAmount: preparedPayment.paymentAmount,
+                feeAmount: preparedTransaction.feeAmount,
+                memoMessage: preparedPayment.memoMessage,
+                transaction: preparedTransaction.transaction,
+                receipt: preparedTransaction.receipt,
+                isOutgoingTransfer: preparedPayment.isOutgoingTransfer
+            )
         }
     }
 
@@ -905,8 +902,6 @@ public extension PaymentsImpl {
 
     class func sendPaymentNotificationMessage(paymentModel: TSPaymentModel,
                                               transaction: SDSAnyWriteTransaction) throws -> OWSOutgoingPaymentMessage {
-
-        Logger.verbose("")
         guard paymentModel.paymentType == .outgoingPayment else {
             owsFailDebug("Invalid paymentType.")
             throw PaymentsError.invalidModel
@@ -946,16 +941,12 @@ public extension PaymentsImpl {
             }
             throw PaymentsError.invalidModel
         }
-        let requestUuidString = paymentModel.requestUuidString
-
-        Logger.verbose("paymentState: \(paymentModel.paymentState.formatted).")
 
         let message = self.sendPaymentNotificationMessage(
             paymentModel: paymentModel,
             recipientAci: recipientAci,
             memoMessage: paymentModel.memoMessage,
             mcReceiptData: mcReceiptData,
-            requestUuidString: requestUuidString,
             transaction: transaction
         )
         return message
@@ -1046,47 +1037,11 @@ public extension PaymentsImpl {
 // MARK: - Messages
 
 public extension PaymentsImpl {
-    class func sendPaymentRequestMessagePromise(address: SignalServiceAddress,
-                                                paymentAmount: TSPaymentAmount,
-                                                memoMessage: String?) -> Promise<OWSOutgoingPaymentMessage> {
-        databaseStorage.write(.promise) { transaction in
-            guard let addressUuid = address.uuid else {
-                throw OWSAssertionError("Missing address.uuid.")
-            }
-            let requestUuidString = UUID().uuidString
-            let paymentRequestModel = TSPaymentRequestModel(requestUuidString: requestUuidString,
-                                                            addressUuidString: addressUuid.uuidString,
-                                                            isIncomingRequest: false,
-                                                            paymentAmount: paymentAmount,
-                                                            memoMessage: memoMessage,
-                                                            createdDate: Date())
-            paymentRequestModel.anyInsert(transaction: transaction)
-
-            let thread = TSContactThread.getOrCreateThread(withContactAddress: address,
-                                                           transaction: transaction)
-            let paymentRequest = TSPaymentRequest(requestUuidString: requestUuidString,
-                                                  paymentAmount: paymentAmount,
-                                                  memoMessage: memoMessage)
-            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
-            let message = OWSOutgoingPaymentMessage(thread: thread,
-                                                    messageBody: nil,
-                                                    paymentCancellation: nil,
-                                                    paymentNotification: nil,
-                                                    paymentRequest: paymentRequest,
-                                                    expiresInSeconds: expiresInSeconds,
-                                                    transaction: transaction)
-            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
-            return message
-        }
-    }
-
     private class func sendPaymentNotificationMessage(
         paymentModel: TSPaymentModel,
         recipientAci: Aci,
         memoMessage: String?,
         mcReceiptData: Data,
-        requestUuidString: String?,
         transaction: SDSAnyWriteTransaction
     ) -> OWSOutgoingPaymentMessage {
 
@@ -1111,7 +1066,6 @@ public extension PaymentsImpl {
         )
         let paymentNotification = TSPaymentNotification(
             memoMessage: memoMessage,
-            requestUuidString: requestUuidString,
             mcReceiptData: mcReceiptData
         )
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
@@ -1132,9 +1086,7 @@ public extension PaymentsImpl {
         let message = OWSOutgoingPaymentMessage(
             thread: thread,
             messageBody: messageBody,
-            paymentCancellation: nil,
             paymentNotification: paymentNotification,
-            paymentRequest: nil,
             expiresInSeconds: expiresInSeconds,
             transaction: transaction
         )
@@ -1152,35 +1104,6 @@ public extension PaymentsImpl {
         )
 
         return message
-    }
-
-    class func sendPaymentCancellationMessagePromise(address: SignalServiceAddress,
-                                                     requestUuidString: String) -> Promise<OWSOutgoingPaymentMessage> {
-        return databaseStorage.write(.promise) { transaction in
-            Self.sendPaymentCancellationMessage(address: address,
-                                                requestUuidString: requestUuidString,
-                                                transaction: transaction)
-        }
-    }
-
-    class func sendPaymentCancellationMessage(address: SignalServiceAddress,
-                                              requestUuidString: String,
-                                              transaction: SDSAnyWriteTransaction) -> OWSOutgoingPaymentMessage {
-        let thread = TSContactThread.getOrCreateThread(withContactAddress: address,
-                                                       transaction: transaction)
-        let paymentCancellation = TSPaymentCancellation(requestUuidString: requestUuidString)
-        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
-        let message = OWSOutgoingPaymentMessage(thread: thread,
-                                                messageBody: nil,
-                                                paymentCancellation: paymentCancellation,
-                                                paymentNotification: nil,
-                                                paymentRequest: nil,
-                                                expiresInSeconds: expiresInSeconds,
-                                                transaction: transaction)
-        Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
-        return message
-
     }
 
     class func sendOutgoingPaymentSyncMessage(recipientAci: Aci?,
@@ -1311,7 +1234,6 @@ public struct PreparedPaymentImpl: PreparedPayment {
     fileprivate let recipientPublicAddress: MobileCoin.PublicAddress
     fileprivate let paymentAmount: TSPaymentAmount
     fileprivate let memoMessage: String?
-    fileprivate let paymentRequestModel: TSPaymentRequestModel?
     fileprivate let isOutgoingTransfer: Bool
     fileprivate let preparedTransaction: MobileCoinAPI.PreparedTransaction
 

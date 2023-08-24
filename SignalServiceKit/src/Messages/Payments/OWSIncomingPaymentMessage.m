@@ -18,20 +18,16 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSIncomingPaymentMessage
 
 - (instancetype)initIncomingMessageWithBuilder:(TSIncomingMessageBuilder *)messageBuilder
-                           paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
-                           paymentNotification:(nullable TSPaymentNotification *)paymentNotification
-                                paymentRequest:(nullable TSPaymentRequest *)paymentRequest
+                           paymentNotification:(TSPaymentNotification *)paymentNotification
 {
-    OWSAssertDebug(paymentCancellation != nil || paymentNotification != nil || paymentRequest != nil);
+    OWSAssertDebug(paymentNotification != nil);
 
     self = [super initIncomingMessageWithBuilder:messageBuilder];
     if (!self) {
         return self;
     }
 
-    _paymentCancellation = paymentCancellation;
     _paymentNotification = paymentNotification;
-    _paymentRequest = paymentRequest;
 
     return self;
 }
@@ -78,9 +74,9 @@ NS_ASSUME_NONNULL_BEGIN
                   sourceDeviceId:(unsigned int)sourceDeviceId
                           viewed:(BOOL)viewed
                  wasReceivedByUD:(BOOL)wasReceivedByUD
-             paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
+             paymentCancellation:(nullable NSData *)paymentCancellation
              paymentNotification:(nullable TSPaymentNotification *)paymentNotification
-                  paymentRequest:(nullable TSPaymentRequest *)paymentRequest
+                  paymentRequest:(nullable NSData *)paymentRequest
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId

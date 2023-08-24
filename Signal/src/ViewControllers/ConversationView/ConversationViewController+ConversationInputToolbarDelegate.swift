@@ -487,12 +487,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
     public func paymentButtonPressed() {
         AssertIsOnMainThread()
 
-        showSendPaymentUI(paymentRequestModel: nil)
-    }
-
-    public func showSendPaymentUI(paymentRequestModel: TSPaymentRequestModel?) {
-        AssertIsOnMainThread()
-
         guard let contactThread = thread as? TSContactThread else {
             owsFailDebug("Not a contact thread.")
             return
@@ -511,12 +505,13 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
 
-        SendPaymentViewController.presentFromConversationView(self,
-                                                              delegate: self,
-                                                              recipientAddress: contactThread.contactAddress,
-                                                              paymentRequestModel: paymentRequestModel,
-                                                              initialPaymentAmount: nil,
-                                                              isOutgoingTransfer: false)
+        SendPaymentViewController.presentFromConversationView(
+            self,
+            delegate: self,
+            recipientAddress: contactThread.contactAddress,
+            initialPaymentAmount: nil,
+            isOutgoingTransfer: false
+        )
     }
 
     public func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment) {

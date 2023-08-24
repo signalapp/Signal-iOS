@@ -40,7 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-// TODO: Support requests.
 @interface OutgoingPaymentSyncMessage : OWSOutgoingSyncMessage
 
 + (instancetype)new NS_UNAVAILABLE;

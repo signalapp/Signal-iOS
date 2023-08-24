@@ -146,36 +146,9 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value)
 
 #pragma mark -
 
-@implementation TSPaymentRequest
-
-- (instancetype)initWithRequestUuidString:(NSString *)requestUuidString
-                            paymentAmount:(TSPaymentAmount *)paymentAmount
-                              memoMessage:(nullable NSString *)memoMessage
-{
-    self = [super init];
-
-    if (!self) {
-        return self;
-    }
-
-    _requestUuidString = requestUuidString;
-    _paymentAmount = paymentAmount;
-    _memoMessage = memoMessage;
-
-    OWSAssertDebug(self.isValid);
-
-    return self;
-}
-
-@end
-
-#pragma mark -
-
 @implementation TSPaymentNotification
 
-- (instancetype)initWithMemoMessage:(nullable NSString *)memoMessage
-                  requestUuidString:(nullable NSString *)requestUuidString
-                      mcReceiptData:(NSData *)mcReceiptData
+- (instancetype)initWithMemoMessage:(nullable NSString *)memoMessage mcReceiptData:(NSData *)mcReceiptData
 {
     self = [super init];
 
@@ -185,28 +158,6 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value)
 
     _memoMessage = memoMessage;
     _mcReceiptData = mcReceiptData;
-    _requestUuidString = requestUuidString;
-
-    OWSAssertDebug(self.isValid);
-
-    return self;
-}
-
-@end
-
-#pragma mark -
-
-@implementation TSPaymentCancellation
-
-- (instancetype)initWithRequestUuidString:(NSString *)requestUuidString
-{
-    self = [super init];
-
-    if (!self) {
-        return self;
-    }
-
-    _requestUuidString = requestUuidString;
 
     OWSAssertDebug(self.isValid);
 

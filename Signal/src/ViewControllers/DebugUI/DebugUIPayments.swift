@@ -17,15 +17,6 @@ class DebugUIPayments: DebugUIPage, Dependencies {
         var sectionItems = [OWSTableItem]()
 
         if let contactThread = thread as? TSContactThread {
-            sectionItems.append(OWSTableItem(title: "Send payment request") { [weak self] in
-                self?.sendPaymentRequestMessage(contactThread: contactThread)
-            })
-            sectionItems.append(OWSTableItem(title: "Send payment cancellation") { [weak self] in
-                self?.sendPaymentCancellationMessage(contactThread: contactThread)
-            })
-            sectionItems.append(OWSTableItem(title: "Send payment request + cancellation") { [weak self] in
-                self?.sendPaymentRequestAndCancellation(contactThread: contactThread)
-            })
             sectionItems.append(OWSTableItem(title: "Create all possible payment models") { [weak self] in
                 self?.insertAllPaymentModelVariations(contactThread: contactThread)
             })
@@ -62,59 +53,6 @@ class DebugUIPayments: DebugUIPage, Dependencies {
     }
 
     // MARK: -
-
-    private func sendPaymentRequestMessage(contactThread: TSContactThread) {
-        let address = contactThread.contactAddress
-        let picoMob = UInt64.random(in: 1..<256)
-        let paymentAmount = TSPaymentAmount(currency: .mobileCoin,
-                                            picoMob: picoMob)
-        let memoMessage = "Please pay me because: \(UUID().uuidString)."
-        firstly {
-            PaymentsImpl.sendPaymentRequestMessagePromise(address: address,
-                                                          paymentAmount: paymentAmount,
-                                                          memoMessage: memoMessage)
-        }.done { (_) -> Void in
-            Logger.info("Success.")
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    private func sendPaymentCancellationMessage(contactThread: TSContactThread) {
-        let address = contactThread.contactAddress
-        firstly { () -> Promise<OWSOutgoingPaymentMessage> in
-            let requestUuidString = UUID().uuidString
-            return PaymentsImpl.sendPaymentCancellationMessagePromise(address: address,
-                                                                      requestUuidString: requestUuidString)
-        }.done { (_) -> Void in
-            Logger.info("Success.")
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    private func sendPaymentRequestAndCancellation(contactThread: TSContactThread) {
-        let address = contactThread.contactAddress
-        let picoMob = UInt64.random(in: 1..<256)
-        let paymentAmount = TSPaymentAmount(currency: .mobileCoin,
-                                            picoMob: picoMob)
-        let memoMessage = "Please pay me because: \(UUID().uuidString)."
-        firstly { () -> Promise<OWSOutgoingPaymentMessage> in
-            PaymentsImpl.sendPaymentRequestMessagePromise(address: address,
-                                                          paymentAmount: paymentAmount,
-                                                          memoMessage: memoMessage)
-        }.then { (requestMessage: OWSOutgoingPaymentMessage) -> Promise<OWSOutgoingPaymentMessage> in
-            guard let requestUuidString = requestMessage.paymentRequest?.requestUuidString else {
-                throw OWSAssertionError("Missing requestUuidString.")
-            }
-            return PaymentsImpl.sendPaymentCancellationMessagePromise(address: address,
-                                                                      requestUuidString: requestUuidString)
-        }.done { (_) -> Void in
-            Logger.info("Success.")
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
-    }
 
     private func insertAllPaymentModelVariations(contactThread: TSContactThread) {
         let address = contactThread.contactAddress
@@ -164,7 +102,6 @@ class DebugUIPayments: DebugUIPage, Dependencies {
                                                   createdDate: Date(),
                                                   senderOrRecipientAci: paymentType.isUnidentified ? nil : AciObjC(aci),
                                                   memoMessage: memoMessage,
-                                                  requestUuidString: nil,
                                                   isUnread: false,
                                                   interactionUniqueId: nil,
                                                   mobileCoin: mobileCoin)
@@ -258,12 +195,13 @@ class DebugUIPayments: DebugUIPage, Dependencies {
         let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
         let recipient = SendPaymentRecipientImpl.address(address: contactThread .contactAddress)
         firstly(on: DispatchQueue.global()) { () -> Promise<PreparedPayment> in
-            Self.paymentsImpl.prepareOutgoingPayment(recipient: recipient,
-                                                     paymentAmount: paymentAmount,
-                                                     memoMessage: "Tiny: \(count)",
-                                                     paymentRequestModel: nil,
-                                                     isOutgoingTransfer: false,
-                                                     canDefragment: false)
+            Self.paymentsImpl.prepareOutgoingPayment(
+                recipient: recipient,
+                paymentAmount: paymentAmount,
+                memoMessage: "Tiny: \(count)",
+                isOutgoingTransfer: false,
+                canDefragment: false
+            )
         }.then(on: DispatchQueue.global()) { (preparedPayment: PreparedPayment) in
             Self.paymentsImpl.initiateOutgoingPayment(preparedPayment: preparedPayment)
         }.then(on: DispatchQueue.global()) { (paymentModel: TSPaymentModel) in

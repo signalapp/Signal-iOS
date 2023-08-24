@@ -19,13 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
                    messageBody:(nullable NSString *)messageBody
-           paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
-           paymentNotification:(nullable TSPaymentNotification *)paymentNotification
-                paymentRequest:(nullable TSPaymentRequest *)paymentRequest
+           paymentNotification:(TSPaymentNotification *)paymentNotification
               expiresInSeconds:(uint32_t)expiresInSeconds
                    transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(paymentCancellation != nil || paymentNotification != nil || paymentRequest != nil);
+    OWSAssertDebug(paymentNotification != nil);
 
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     // Body ranges unsupported.
@@ -37,9 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _paymentCancellation = paymentCancellation;
     _paymentNotification = paymentNotification;
-    _paymentRequest = paymentRequest;
 
     return self;
 }
@@ -87,9 +83,9 @@ NS_ASSUME_NONNULL_BEGIN
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
               storedMessageState:(TSOutgoingMessageState)storedMessageState
-             paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
+             paymentCancellation:(nullable NSData *)paymentCancellation
              paymentNotification:(nullable TSPaymentNotification *)paymentNotification
-                  paymentRequest:(nullable TSPaymentRequest *)paymentRequest
+                  paymentRequest:(nullable NSData *)paymentRequest
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
@@ -161,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
                                                           transaction:(SDSAnyReadTransaction *)transaction
 {
-    if (self.paymentCancellation == nil && self.paymentNotification == nil && self.paymentRequest == nil) {
+    if (self.paymentNotification == nil) {
         OWSFailDebug(@"Missing payload.");
         return nil;
     }
@@ -169,24 +165,10 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoDataMessageBuilder *builder = [super dataMessageBuilderWithThread:thread transaction:transaction];
     [builder setTimestamp:self.timestamp];
 
-    if (self.paymentRequest != nil) {
-        NSError *error;
-        BOOL success = [self.paymentRequest addToDataBuilder:builder error:&error];
-        if (error || !success) {
-            OWSFailDebug(@"Could not build paymentRequest proto: %@.", error);
-        }
-    } else if (self.paymentNotification != nil) {
-        NSError *error;
-        BOOL success = [self.paymentNotification addToDataBuilder:builder error:&error];
-        if (error || !success) {
-            OWSFailDebug(@"Could not build paymentNotification proto: %@.", error);
-        }
-    } else if (self.paymentCancellation != nil) {
-        NSError *error;
-        BOOL success = [self.paymentCancellation addToDataBuilder:builder error:&error];
-        if (error || !success) {
-            OWSFailDebug(@"Could not build paymentCancellation proto: %@.", error);
-        }
+    NSError *error;
+    BOOL success = [self.paymentNotification addToDataBuilder:builder error:&error];
+    if (error || !success) {
+        OWSFailDebug(@"Could not build paymentNotification proto: %@.", error);
     }
 
     [builder setExpireTimer:self.expiresInSeconds];

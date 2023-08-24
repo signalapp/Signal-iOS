@@ -8,21 +8,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSPaymentCancellation;
 @class TSPaymentNotification;
-@class TSPaymentRequest;
 
 @interface OWSIncomingPaymentMessage : TSIncomingMessage <OWSPaymentMessage>
 
-@property (nonatomic, readonly, nullable) TSPaymentRequest *paymentRequest;
+@property (nonatomic, readonly, nullable) NSData *paymentRequest; // deprecated
 @property (nonatomic, readonly, nullable) TSPaymentNotification *paymentNotification;
-@property (nonatomic, readonly, nullable) TSPaymentCancellation *paymentCancellation;
+@property (nonatomic, readonly, nullable) NSData *paymentCancellation; // deprecated
 
 - (instancetype)initIncomingMessageWithBuilder:(TSIncomingMessageBuilder *)messageBuilder
-                           paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
-                           paymentNotification:(nullable TSPaymentNotification *)paymentNotification
-                                paymentRequest:(nullable TSPaymentRequest *)paymentRequest NS_DESIGNATED_INITIALIZER
-    NS_SWIFT_NAME(init(initIncomingMessageWithBuilder:paymentCancellation:paymentNotification:paymentRequest:));
+                           paymentNotification:(TSPaymentNotification *)paymentNotification NS_DESIGNATED_INITIALIZER
+    NS_SWIFT_NAME(init(initIncomingMessageWithBuilder:paymentNotification:));
 
 // --- CODE GENERATION MARKER
 
@@ -66,9 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
                   sourceDeviceId:(unsigned int)sourceDeviceId
                           viewed:(BOOL)viewed
                  wasReceivedByUD:(BOOL)wasReceivedByUD
-             paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
+             paymentCancellation:(nullable NSData *)paymentCancellation
              paymentNotification:(nullable TSPaymentNotification *)paymentNotification
-                  paymentRequest:(nullable TSPaymentRequest *)paymentRequest
+                  paymentRequest:(nullable NSData *)paymentRequest
 NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:authorPhoneNumber:authorUUID:read:serverDeliveryTimestamp:serverGuid:serverTimestamp:sourceDeviceId:viewed:wasReceivedByUD:paymentCancellation:paymentNotification:paymentRequest:));
 
 // clang-format on

@@ -115,45 +115,12 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value);
 
 #pragma mark -
 
-// TSPaymentRequest is a sub-model of TSMessages used
-// for the messaging of requests. It is only persisted
-// in the database in the durable queue of outgoing messages.
-//
-// TSPaymentRequestModel is used for request bookkeeping
-// and is stored in the database.
-@interface TSPaymentRequest : MTLModel
-
-@property (nonatomic, readonly) NSString *requestUuidString;
-@property (nonatomic, readonly) TSPaymentAmount *paymentAmount;
-@property (nonatomic, readonly, nullable) NSString *memoMessage;
-
-- (instancetype)initWithRequestUuidString:(NSString *)requestUuidString
-                            paymentAmount:(TSPaymentAmount *)paymentAmount
-                              memoMessage:(nullable NSString *)memoMessage;
-
-@end
-
-#pragma mark -
-
 @interface TSPaymentNotification : MTLModel
 
 @property (nonatomic, readonly, nullable) NSString *memoMessage;
-@property (nonatomic, readonly, nullable) NSString *requestUuidString;
 @property (nonatomic, readonly) NSData *mcReceiptData;
 
-- (instancetype)initWithMemoMessage:(nullable NSString *)memoMessage
-                  requestUuidString:(nullable NSString *)requestUuidString
-                      mcReceiptData:(NSData *)mcReceiptData;
-
-@end
-
-#pragma mark -
-
-@interface TSPaymentCancellation : MTLModel
-
-@property (nonatomic, readonly) NSString *requestUuidString;
-
-- (instancetype)initWithRequestUuidString:(NSString *)requestUuidString;
+- (instancetype)initWithMemoMessage:(nullable NSString *)memoMessage mcReceiptData:(NSData *)mcReceiptData;
 
 @end
 

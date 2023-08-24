@@ -18,9 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoSyncMessageSent;
 @class ServiceIdObjC;
 @class SignalServiceAddress;
-@class TSPaymentCancellation;
 @class TSPaymentNotification;
-@class TSPaymentRequest;
 @class TSQuotedMessage;
 @class TSThread;
 
@@ -54,9 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 @property (nonatomic, readonly) BOOL isRecipientUpdate;
 @property (nonatomic, readonly) BOOL isViewOnceMessage;
-@property (nonatomic, readonly, nullable) TSPaymentRequest *paymentRequest;
 @property (nonatomic, readonly, nullable) TSPaymentNotification *paymentNotification;
-@property (nonatomic, readonly, nullable) TSPaymentCancellation *paymentCancellation;
 @property (nonatomic, readonly, nullable) NSNumber *requiredProtocolVersion;
 @property (nonatomic, readonly) DisappearingMessageToken *disappearingMessageToken;
 @property (nonatomic, readonly, nullable) NSNumber *storyTimestamp;

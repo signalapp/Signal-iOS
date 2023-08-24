@@ -162,8 +162,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             OWSUserProfile.table,
             TestModel.table,
             IncomingGroupsV2MessageJob.table,
-            TSPaymentModel.table,
-            TSPaymentRequestModel.table
+            TSPaymentModel.table
         ]
     }
 

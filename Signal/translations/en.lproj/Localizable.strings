@@ -4402,29 +4402,14 @@
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "Outgoing video call";
 
-/* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
-
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
-/* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ will be notified that you declined.";
-
-/* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
-
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
-
-/* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
-
-/* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Request could not be declined.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "Failed";
@@ -4578,9 +4563,6 @@
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
 "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
-
-/* Label for the 'new payment request' button. */
-"PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Request";
 
 /* Label for the payments notification banner for a single payment notification. */
 "PAYMENTS_NOTIFICATION_BANNER_1" = "1 new payment notification";

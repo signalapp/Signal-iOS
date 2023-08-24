@@ -61,7 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
                         createdDate:(NSDate *)createdDate
                senderOrRecipientAci:(nullable AciObjC *)senderOrRecipientAci
                         memoMessage:(nullable NSString *)memoMessage
-                  requestUuidString:(nullable NSString *)requestUuidString
                            isUnread:(BOOL)isUnread
                 interactionUniqueId:(nullable NSString *)interactionUniqueId
                          mobileCoin:(MobileCoinPayment *)mobileCoin
@@ -78,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
     _createdTimestamp = createdDate.ows_millisecondsSince1970;
     _addressUuidString = senderOrRecipientAci.serviceIdUppercaseString;
     _memoMessage = memoMessage;
-    _requestUuidString = requestUuidString;
+    _requestUuidString = nil;
     _isUnread = isUnread;
     _interactionUniqueId = interactionUniqueId;
     _mobileCoin = mobileCoin;

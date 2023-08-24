@@ -341,19 +341,6 @@ message DataMessage {
       // }
     }
 
-    message RequestId {
-      // @required
-      optional string uuid = 1;
-    }
-
-    message Request {
-      // @required
-      optional RequestId requestId = 1;
-      // @required
-      optional Amount    amount    = 2;
-      optional string    note      = 3;
-    }
-
     message Notification {
       message MobileCoin {
         // @required
@@ -365,14 +352,8 @@ message DataMessage {
         optional MobileCoin mobileCoin = 1;
       // }
 
-      // Optional, Refers to the PaymentRequest message, if any.
-      optional string    note          = 2;
-      optional RequestId requestId     = 1003;
-    }
-
-    message Cancellation {
-      // @required
-      optional RequestId requestId = 1;
+      optional string note = 2;
+      reserved /*requestId*/ 1003;
     }
 
     message Activation {
@@ -388,8 +369,8 @@ message DataMessage {
     // oneof Item {
       optional Notification notification = 1;
       optional Activation   activation = 2;
-      optional Request      request      = 1002;
-      optional Cancellation cancellation = 1003;
+      reserved /*request*/ 1002;
+      reserved /*cancellation*/ 1003;
     // }
   }
 

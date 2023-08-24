@@ -95,7 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
                         createdDate:(NSDate *)createdDate
                senderOrRecipientAci:(nullable AciObjC *)senderOrRecipientAci
                         memoMessage:(nullable NSString *)memoMessage
-                  requestUuidString:(nullable NSString *)requestUuidString
                            isUnread:(BOOL)isUnread
                 interactionUniqueId:(nullable NSString *)interactionUniqueId
                          mobileCoin:(MobileCoinPayment *)mobileCoin NS_DESIGNATED_INITIALIZER;

@@ -11,8 +11,6 @@ public extension OutgoingPaymentSyncMessage {
     @objc(syncMessageBuilderWithMobileCoin:transaction:)
     func syncMessageBuilder(mobileCoin: OutgoingPaymentMobileCoin,
                             transaction: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilder? {
-        // TODO: Support requests.
-
         do {
             var amountPicoMob = mobileCoin.amountPicoMob
             var feePicoMob = mobileCoin.feePicoMob

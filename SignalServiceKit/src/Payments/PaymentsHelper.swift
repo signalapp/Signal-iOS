@@ -36,17 +36,9 @@ public protocol PaymentsHelper: AnyObject {
                                            messageTimestamp: UInt64,
                                            transaction: SDSAnyWriteTransaction)
 
-    func processIncomingPaymentRequest(thread: TSThread,
-                                       paymentRequest: TSPaymentRequest,
-                                       transaction: SDSAnyWriteTransaction)
-
     func processIncomingPaymentNotification(thread: TSThread,
                                             paymentNotification: TSPaymentNotification,
                                             senderAci: AciObjC,
-                                            transaction: SDSAnyWriteTransaction)
-
-    func processIncomingPaymentCancellation(thread: TSThread,
-                                            paymentCancellation: TSPaymentCancellation,
                                             transaction: SDSAnyWriteTransaction)
 
     func processIncomingPaymentsActivationRequest(
@@ -61,18 +53,8 @@ public protocol PaymentsHelper: AnyObject {
         transaction: SDSAnyWriteTransaction
     )
 
-    func processReceivedTranscriptPaymentRequest(thread: TSThread,
-                                                 paymentRequest: TSPaymentRequest,
-                                                 messageTimestamp: UInt64,
-                                                 transaction: SDSAnyWriteTransaction)
-
     func processReceivedTranscriptPaymentNotification(thread: TSThread,
                                                       paymentNotification: TSPaymentNotification,
-                                                      messageTimestamp: UInt64,
-                                                      transaction: SDSAnyWriteTransaction)
-
-    func processReceivedTranscriptPaymentCancellation(thread: TSThread,
-                                                      paymentCancellation: TSPaymentCancellation,
                                                       messageTimestamp: UInt64,
                                                       transaction: SDSAnyWriteTransaction)
 
@@ -222,21 +204,9 @@ extension MockPaymentsHelper: PaymentsHelperSwift, PaymentsHelper {
         owsFail("Not implemented.")
     }
 
-    public func processIncomingPaymentRequest(thread: TSThread,
-                                              paymentRequest: TSPaymentRequest,
-                                              transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
     public func processIncomingPaymentNotification(thread: TSThread,
                                                    paymentNotification: TSPaymentNotification,
                                                    senderAci: AciObjC,
-                                                   transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
-    public func processIncomingPaymentCancellation(thread: TSThread,
-                                                   paymentCancellation: TSPaymentCancellation,
                                                    transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
@@ -257,22 +227,8 @@ extension MockPaymentsHelper: PaymentsHelperSwift, PaymentsHelper {
         owsFail("Not implemented.")
     }
 
-    public func processReceivedTranscriptPaymentRequest(thread: TSThread,
-                                                        paymentRequest: TSPaymentRequest,
-                                                        messageTimestamp: UInt64,
-                                                        transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
     public func processReceivedTranscriptPaymentNotification(thread: TSThread,
                                                              paymentNotification: TSPaymentNotification,
-                                                             messageTimestamp: UInt64,
-                                                             transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
-    public func processReceivedTranscriptPaymentCancellation(thread: TSThread,
-                                                             paymentCancellation: TSPaymentCancellation,
                                                              messageTimestamp: UInt64,
                                                              transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")

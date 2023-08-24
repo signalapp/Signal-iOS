@@ -162,7 +162,6 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
 
         let recipient: SendPaymentRecipientImpl = .publicAddress(publicAddress: publicAddress)
         let view = SendPaymentViewController(recipient: recipient,
-                                             paymentRequestModel: nil,
                                              initialPaymentAmount: transferAmount,
                                              isOutgoingTransfer: true,
                                              mode: .fromTransferOutFlow)

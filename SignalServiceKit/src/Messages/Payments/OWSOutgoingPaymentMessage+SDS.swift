@@ -123,9 +123,9 @@ class OWSOutgoingPaymentMessageSerializer: SDSSerializer {
         let creatorUuid: String? = nil
         let joinedMemberUuids: Data? = nil
         let wasIdentityVerified: Bool? = nil
-        let paymentCancellation: Data? = optionalArchive(model.paymentCancellation)
+        let paymentCancellation: Data? = model.paymentCancellation
         let paymentNotification: Data? = optionalArchive(model.paymentNotification)
-        let paymentRequest: Data? = optionalArchive(model.paymentRequest)
+        let paymentRequest: Data? = model.paymentRequest
         let viewed: Bool? = nil
         let serverGuid: String? = nil
         let storyAuthorUuidString: String? = model.storyAuthorUuidString

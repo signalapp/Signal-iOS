@@ -155,62 +155,6 @@ extension TSPaymentAddress: Dependencies, TSPaymentBaseModel {
 // MARK: -
 
 @objc
-extension TSPaymentRequest: TSPaymentBaseModel {
-    public var isValid: Bool {
-        paymentAmount.isValid && paymentAmount.picoMob > 0
-    }
-
-    public func buildProto() throws -> SSKProtoDataMessagePaymentRequest {
-        guard isValid else {
-            throw PaymentsError.invalidModel
-        }
-
-        let requestIdBuilder = SSKProtoDataMessagePaymentRequestId.builder(uuid: requestUuidString)
-        let builder = SSKProtoDataMessagePaymentRequest.builder(requestID: try requestIdBuilder.build(),
-                                                                amount: try paymentAmount.buildProto())
-        if let memoMessage = memoMessage {
-            builder.setNote(memoMessage)
-        }
-        return try builder.build()
-    }
-
-    @objc(addToDataBuilder:error:)
-    public func add(toDataBuilder dataBuilder: SSKProtoDataMessageBuilder) throws {
-        let paymentBuilder = SSKProtoDataMessagePayment.builder()
-        paymentBuilder.setRequest(try buildProto())
-        dataBuilder.setPayment(try paymentBuilder.build())
-    }
-
-    public class func fromProto(_ proto: SSKProtoDataMessagePaymentRequest,
-                                dataMessage: SSKProtoDataMessage) throws -> TSPaymentRequest {
-        guard let requestUuidString = TSPaymentRequest.parseRequestUuidString(proto.requestID.uuid) else {
-            throw PaymentsError.invalidModel
-        }
-        let paymentAmount = try TSPaymentAmount.fromProto(proto.amount)
-        let instance = TSPaymentRequest(requestUuidString: requestUuidString,
-                                        paymentAmount: paymentAmount,
-                                        memoMessage: proto.note)
-        guard instance.isValid else {
-            throw PaymentsError.invalidModel
-        }
-        return instance
-    }
-
-    fileprivate static func parseRequestUuidString(_ requestIdString: String?) -> String? {
-        guard let requestIdString = requestIdString else {
-            return nil
-        }
-        guard nil != UUID(uuidString: requestIdString) else {
-            owsFailDebug("Invalid requestUuidString: \(requestIdString)")
-            return nil
-        }
-        return requestIdString
-    }
-}
-
-// MARK: -
-
-@objc
 extension TSPaymentNotification: TSPaymentBaseModel {
     public var isValid: Bool {
         guard mcReceiptData.count > 0 else {
@@ -231,10 +175,6 @@ extension TSPaymentNotification: TSPaymentBaseModel {
         let mobileCoinBuilder = SSKProtoDataMessagePaymentNotificationMobileCoin.builder(receipt: mcReceiptData)
         let builder = SSKProtoDataMessagePaymentNotification.builder()
         builder.setMobileCoin(try mobileCoinBuilder.build())
-        if let requestUuidString = requestUuidString {
-            let requestIdBuilder = SSKProtoDataMessagePaymentRequestId.builder(uuid: requestUuidString)
-            builder.setRequestID(try requestIdBuilder.build())
-        }
         if let memoMessage = memoMessage {
             builder.setNote(memoMessage)
         }
@@ -248,54 +188,16 @@ extension TSPaymentNotification: TSPaymentBaseModel {
         dataBuilder.setPayment(try paymentBuilder.build())
     }
 
-    public class func fromProto(_ proto: SSKProtoDataMessagePaymentNotification,
-                                dataMessage: SSKProtoDataMessage) throws -> TSPaymentNotification {
-        let requestUuidString = TSPaymentRequest.parseRequestUuidString(proto.requestID?.uuid)
+    public class func fromProto(
+        _ proto: SSKProtoDataMessagePaymentNotification,
+        dataMessage: SSKProtoDataMessage
+    ) throws -> TSPaymentNotification {
         guard let mobileCoin = proto.mobileCoin else {
             owsFailDebug("Missing mobileCoin.")
             throw PaymentsError.invalidModel
         }
         let mcReceiptData = mobileCoin.receipt
-        let instance = TSPaymentNotification(memoMessage: proto.note,
-                                             requestUuidString: requestUuidString,
-                                             mcReceiptData: mcReceiptData)
-        guard instance.isValid else {
-            throw PaymentsError.invalidModel
-        }
-        return instance
-    }
-}
-
-// MARK: -
-
-@objc
-extension TSPaymentCancellation: TSPaymentBaseModel {
-    public var isValid: Bool {
-        true
-    }
-
-    public func buildProto() throws -> SSKProtoDataMessagePaymentCancellation {
-        guard isValid else {
-            throw PaymentsError.invalidModel
-        }
-
-        let requestIdBuilder = SSKProtoDataMessagePaymentRequestId.builder(uuid: requestUuidString)
-        let builder = SSKProtoDataMessagePaymentCancellation.builder(requestID: try requestIdBuilder.build())
-        return try builder.build()
-    }
-
-    @objc(addToDataBuilder:error:)
-    public func add(toDataBuilder dataBuilder: SSKProtoDataMessageBuilder) throws {
-        let paymentBuilder = SSKProtoDataMessagePayment.builder()
-        paymentBuilder.setCancellation(try buildProto())
-        dataBuilder.setPayment(try paymentBuilder.build())
-    }
-
-    public class func fromProto(_ proto: SSKProtoDataMessagePaymentCancellation) throws -> TSPaymentCancellation {
-        guard let requestUuidString = TSPaymentRequest.parseRequestUuidString(proto.requestID.uuid) else {
-            throw PaymentsError.invalidModel
-        }
-        let instance = TSPaymentCancellation(requestUuidString: requestUuidString)
+        let instance = TSPaymentNotification(memoMessage: proto.note, mcReceiptData: mcReceiptData)
         guard instance.isValid else {
             throw PaymentsError.invalidModel
         }
@@ -307,29 +209,15 @@ extension TSPaymentCancellation: TSPaymentBaseModel {
 
 @objc
 public class TSPaymentModels: NSObject {
-
     @objc
-    public var request: TSPaymentRequest?
+    public var notification: TSPaymentNotification
 
-    @objc
-    public var notification: TSPaymentNotification?
-
-    @objc
-    public var cancellation: TSPaymentCancellation?
-
-    private init(request: TSPaymentRequest? = nil,
-                 notification: TSPaymentNotification? = nil,
-                 cancellation: TSPaymentCancellation? = nil) {
-        assert(request != nil || notification != nil || cancellation != nil)
-
-        self.request = request
+    private init(notification: TSPaymentNotification) {
         self.notification = notification
-        self.cancellation = cancellation
     }
 
     @objc(parsePaymentProtosInDataMessage:thread:)
-    public class func parsePaymentProtos(dataMessage: SSKProtoDataMessage,
-                                         thread: TSThread) -> TSPaymentModels? {
+    public class func parsePaymentProtos(dataMessage: SSKProtoDataMessage, thread: TSThread) -> TSPaymentModels? {
         guard !CurrentAppContext().isRunningTests else {
             return nil
         }
@@ -345,32 +233,12 @@ public class TSPaymentModels: NSObject {
             return nil
         }
         do {
-            if FeatureFlags.paymentsRequests,
-               let requestProto = paymentProto.request {
-                let request = try TSPaymentRequest.fromProto(requestProto,
-                                                             dataMessage: dataMessage)
-                if request.isValid {
-                    return TSPaymentModels(request: request)
-                } else {
-                    owsFailDebug("Invalid payment request proto.")
-                }
-            }
             if let notificationProto = paymentProto.notification {
-                let notification = try TSPaymentNotification.fromProto(notificationProto,
-                                                                       dataMessage: dataMessage)
+                let notification = try TSPaymentNotification.fromProto(notificationProto, dataMessage: dataMessage)
                 if notification.isValid {
                     return TSPaymentModels(notification: notification)
                 } else {
                     owsFailDebug("Invalid payment notification proto.")
-                }
-            }
-            if FeatureFlags.paymentsRequests,
-               let cancellationProto = paymentProto.cancellation {
-                let cancellation = try TSPaymentCancellation.fromProto(cancellationProto)
-                if cancellation.isValid {
-                    return TSPaymentModels(cancellation: cancellation)
-                } else {
-                    owsFailDebug("Invalid payment cancellation proto.")
                 }
             }
             if paymentProto.activation != nil {
@@ -723,15 +591,6 @@ extension TSPaymentModel: TSPaymentBaseModel {
         return result.joined(separator: "\n")
     }
     #endif
-}
-
-// MARK: -
-
-@objc
-extension TSPaymentRequestModel: TSPaymentBaseModel {
-    public var isValid: Bool {
-        paymentAmount.isValid && paymentAmount.picoMob > 0
-    }
 }
 
 // MARK: - DeepCopyable

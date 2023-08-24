@@ -84,9 +84,6 @@ public class FeatureFlags: BaseFlags {
     public static let supportAnimatedStickers_Lottie = false
 
     @objc
-    public static let paymentsRequests = false
-
-    @objc
     public static let paymentsScrubDetails = false
 
     @objc

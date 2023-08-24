@@ -414,7 +414,6 @@ public class PaymentsReconciliation: Dependencies {
                                               createdDate: createdDate,
                                               senderOrRecipientAci: nil,
                                               memoMessage: nil,
-                                              requestUuidString: nil,
                                               isUnread: true,
                                               interactionUniqueId: nil,
                                               mobileCoin: mobileCoin)
@@ -646,7 +645,6 @@ public class PaymentsReconciliation: Dependencies {
                                              createdDate: oldPaymentModel.createdDate,
                                              senderOrRecipientAci: nil,
                                              memoMessage: nil,
-                                             requestUuidString: nil,
                                              isUnread: false,
                                              interactionUniqueId: nil,
                                              mobileCoin: mobileCoin)

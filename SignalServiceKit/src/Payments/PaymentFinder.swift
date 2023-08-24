@@ -86,23 +86,6 @@ public class PaymentFinder: NSObject {
 
     // MARK: -
 
-    public class func paymentRequestModel(forRequestUuidString requestUuidString: String,
-                                          transaction: SDSAnyReadTransaction) -> TSPaymentRequestModel? {
-        guard !requestUuidString.isEmpty else {
-            owsFailDebug("Invalid requestUuidString.")
-            return nil
-        }
-        let sql = """
-        SELECT * FROM \(PaymentRequestModelRecord.databaseTableName)
-        WHERE \(paymentRequestModelColumn: .requestUuidString) = ?
-        LIMIT 1
-        """
-        let arguments: StatementArguments = [requestUuidString]
-        return TSPaymentRequestModel.grdbFetchOne(sql: sql,
-                                                  arguments: arguments,
-                                                  transaction: transaction.unwrapGrdbRead)
-    }
-
     @objc
     public class func paymentModels(forMcLedgerBlockIndex mcLedgerBlockIndex: UInt64,
                                     transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {

@@ -612,12 +612,10 @@ extension TSInteraction {
             let sourceDeviceId: UInt32 = try SDSDeserialization.required(record.sourceDeviceId, name: "sourceDeviceId")
             let viewed: Bool = try SDSDeserialization.required(record.viewed, name: "viewed")
             let wasReceivedByUD: Bool = try SDSDeserialization.required(record.wasReceivedByUD, name: "wasReceivedByUD")
-            let paymentCancellationSerialized: Data? = record.paymentCancellation
-            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentCancellation: Data? = SDSDeserialization.optionalData(record.paymentCancellation, name: "paymentCancellation")
             let paymentNotificationSerialized: Data? = record.paymentNotification
             let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
-            let paymentRequestSerialized: Data? = record.paymentRequest
-            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
+            let paymentRequest: Data? = SDSDeserialization.optionalData(record.paymentRequest, name: "paymentRequest")
 
             return OWSIncomingPaymentMessage(grdbId: recordId,
                                              uniqueId: uniqueId,
@@ -712,12 +710,10 @@ extension TSInteraction {
             guard let storedMessageState: TSOutgoingMessageState = record.storedMessageState else {
                throw SDSError.missingRequiredField
             }
-            let paymentCancellationSerialized: Data? = record.paymentCancellation
-            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentCancellation: Data? = SDSDeserialization.optionalData(record.paymentCancellation, name: "paymentCancellation")
             let paymentNotificationSerialized: Data? = record.paymentNotification
             let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
-            let paymentRequestSerialized: Data? = record.paymentRequest
-            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
+            let paymentRequest: Data? = SDSDeserialization.optionalData(record.paymentRequest, name: "paymentRequest")
 
             return OWSOutgoingPaymentMessage(grdbId: recordId,
                                              uniqueId: uniqueId,
@@ -2553,19 +2549,7 @@ extension TSInteraction: DeepCopyable {
                recipientAddressStates = nil
             }
             let storedMessageState: TSOutgoingMessageState = modelToCopy.storedMessageState
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
-            let paymentCancellation: TSPaymentCancellation?
-            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
-               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
-            } else {
-               paymentCancellation = nil
-            }
+            let paymentCancellation: Data? = modelToCopy.paymentCancellation
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
             //
@@ -2579,19 +2563,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                paymentNotification = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
-            let paymentRequest: TSPaymentRequest?
-            if let paymentRequestForCopy = modelToCopy.paymentRequest {
-               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
-            } else {
-               paymentRequest = nil
-            }
+            let paymentRequest: Data? = modelToCopy.paymentRequest
 
             return OWSOutgoingPaymentMessage(grdbId: id,
                                              uniqueId: uniqueId,
@@ -3925,19 +3897,7 @@ extension TSInteraction: DeepCopyable {
             let sourceDeviceId: UInt32 = modelToCopy.sourceDeviceId
             let viewed: Bool = modelToCopy.wasViewed
             let wasReceivedByUD: Bool = modelToCopy.wasReceivedByUD
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
-            let paymentCancellation: TSPaymentCancellation?
-            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
-               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
-            } else {
-               paymentCancellation = nil
-            }
+            let paymentCancellation: Data? = modelToCopy.paymentCancellation
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
             //
@@ -3951,19 +3911,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                paymentNotification = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
-            let paymentRequest: TSPaymentRequest?
-            if let paymentRequestForCopy = modelToCopy.paymentRequest {
-               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
-            } else {
-               paymentRequest = nil
-            }
+            let paymentRequest: Data? = modelToCopy.paymentRequest
 
             return OWSIncomingPaymentMessage(grdbId: id,
                                              uniqueId: uniqueId,

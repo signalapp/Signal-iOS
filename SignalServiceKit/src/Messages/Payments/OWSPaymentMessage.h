@@ -9,8 +9,6 @@
 @required
 
 // Properties
-@property (nonatomic, readonly, nullable) TSPaymentRequest *paymentRequest;
 @property (nonatomic, readonly, nullable) TSPaymentNotification *paymentNotification;
-@property (nonatomic, readonly, nullable) TSPaymentCancellation *paymentCancellation;
 
 @end

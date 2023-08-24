@@ -193,9 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         TSPaymentModels *_Nullable paymentModels = [TSPaymentModels parsePaymentProtosInDataMessage:_dataMessage
                                                                                              thread:_thread];
-        _paymentRequest = paymentModels.request;
         _paymentNotification = paymentModels.notification;
-        _paymentCancellation = paymentModels.cancellation;
 
         if (_dataMessage.storyContext != nil && _dataMessage.storyContext.hasSentTimestamp
             && _dataMessage.storyContext.hasAuthorAci) {

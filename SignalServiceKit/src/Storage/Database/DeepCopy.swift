@@ -319,27 +319,7 @@ extension MessageBodyRanges: DeepCopyable {
 // MARK: -
 
 @objc
-extension TSPaymentCancellation: DeepCopyable {
-    public func deepCopy() throws -> AnyObject {
-        // This class can use shallow copies.
-        return try DeepCopies.shallowCopy(self)
-    }
-}
-
-// MARK: -
-
-@objc
 extension TSPaymentNotification: DeepCopyable {
-    public func deepCopy() throws -> AnyObject {
-        // This class can use shallow copies.
-        return try DeepCopies.shallowCopy(self)
-    }
-}
-
-// MARK: -
-
-@objc
-extension TSPaymentRequest: DeepCopyable {
     public func deepCopy() throws -> AnyObject {
         // This class can use shallow copies.
         return try DeepCopies.shallowCopy(self)
