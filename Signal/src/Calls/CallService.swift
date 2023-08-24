@@ -4,6 +4,7 @@
 //
 
 import AVFoundation
+import LibSignalClient
 import SignalMessaging
 import SignalRingRTC
 import SignalUI
@@ -994,18 +995,18 @@ extension CallService: CallManagerDelegate {
         AssertIsOnMainThread()
         Logger.info("shouldSendCallMessage")
 
+        let recipientAci = Aci(fromUUID: recipientUuid)
+
         // It's unlikely that this would ever have more than one call. But technically
         // we don't know which call this message is on behalf of. So we assume it's every
         // call with a participant with recipientUuid
         let relevantCalls = calls.filter { (call: SignalCall) -> Bool in
-            call.participantAddresses
-                .compactMap { $0.uuid }
-                .contains(recipientUuid)
+            call.participantAddresses.contains(where: { $0.serviceId == recipientAci })
         }
 
         databaseStorage.write(.promise) { transaction in
             TSContactThread.getOrCreateThread(
-                withContactAddress: SignalServiceAddress(uuid: recipientUuid),
+                withContactAddress: SignalServiceAddress(recipientAci),
                 transaction: transaction
             )
         }.then(on: DispatchQueue.global()) { thread throws -> Promise<Void> in
@@ -1323,6 +1324,8 @@ extension CallService: CallManagerDelegate {
             return
         }
 
+        let senderAci = Aci(fromUUID: sender)
+
         guard update == .requested else {
             if let currentCall = self.currentCall,
                currentCall.isGroupCall,
@@ -1363,7 +1366,7 @@ extension CallService: CallManagerDelegate {
             return
         }
 
-        let caller = SignalServiceAddress(uuid: sender)
+        let caller = SignalServiceAddress(senderAci)
 
         enum RingAction {
             case cancel
@@ -1372,19 +1375,19 @@ extension CallService: CallManagerDelegate {
 
         let action: RingAction = databaseStorage.read { transaction in
             guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                owsFailDebug("discarding group ring \(ringId) from \(sender) for unknown group")
+                owsFailDebug("discarding group ring \(ringId) from \(senderAci) for unknown group")
                 return .cancel
             }
 
             guard GroupsV2MessageProcessor.discardMode(forMessageFrom: caller,
                                                        groupId: groupId,
                                                        transaction: transaction) == .doNotDiscard else {
-                Logger.warn("discarding group ring \(ringId) from \(sender)")
+                Logger.warn("discarding group ring \(ringId) from \(senderAci)")
                 return .cancel
             }
 
             guard thread.groupMembership.fullMembers.count <= RemoteConfig.maxGroupCallRingSize else {
-                Logger.warn("discarding group ring \(ringId) from \(sender) for too-large group")
+                Logger.warn("discarding group ring \(ringId) from \(senderAci) for too-large group")
                 return .cancel
             }
 

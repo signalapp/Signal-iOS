@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalRingRTC
 import SignalMessaging
 import SignalUI
@@ -113,8 +114,8 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
             } else {
                 // If we're not yet in the call, `remoteDeviceStates` will not exist.
                 // We can get the list of joined members still, provided we are connected.
-                members += self.call.groupCall.peekInfo?.joinedMembers.map { uuid in
-                    let address = SignalServiceAddress(uuid: uuid)
+                members += self.call.groupCall.peekInfo?.joinedMembers.map { aciUuid in
+                    let address = SignalServiceAddress(Aci(fromUUID: aciUuid))
                     let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
                     let comparableName = self.contactsManager.comparableName(for: address, transaction: transaction)
 

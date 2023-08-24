@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerCallKitIdToPhoneNumberCollection"];
 }
 
-+ (SDSKeyValueStore *)uuidStore
++ (SDSKeyValueStore *)serviceIdStore
 {
     return [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerCallKitIdToUUIDCollection"];
 }
@@ -37,19 +37,19 @@ NS_ASSUME_NONNULL_BEGIN
             [self.groupIdStore setData:groupModel.groupId key:callKitId transaction:transaction];
             // This is probably overkill since we currently generate these IDs randomly,
             // but better futureproof than sorry.
-            [self.uuidStore removeValueForKey:callKitId transaction:transaction];
+            [self.serviceIdStore removeValueForKey:callKitId transaction:transaction];
             [self.phoneNumberStore removeValueForKey:callKitId transaction:transaction];
         } else {
             OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
             SignalServiceAddress *address = [(TSContactThread *)thread contactAddress];
-            NSString *uuidString = address.uuidString;
-            if (uuidString) {
-                [self.uuidStore setString:uuidString key:callKitId transaction:transaction];
+            NSString *serviceIdString = address.serviceIdUppercaseString;
+            if (serviceIdString) {
+                [self.serviceIdStore setString:serviceIdString key:callKitId transaction:transaction];
                 [self.phoneNumberStore removeValueForKey:callKitId transaction:transaction];
             } else {
                 OWSFailDebug(@"making a call to an address with no UUID: %@", address.phoneNumber);
                 [self.phoneNumberStore setString:address.phoneNumber key:callKitId transaction:transaction];
-                [self.uuidStore removeValueForKey:callKitId transaction:transaction];
+                [self.serviceIdStore removeValueForKey:callKitId transaction:transaction];
             }
 
             [self.groupIdStore removeValueForKey:callKitId transaction:transaction];
@@ -64,9 +64,9 @@ NS_ASSUME_NONNULL_BEGIN
     __block TSThread *_Nullable result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         // Most likely: modern 1:1 calls
-        NSString *_Nullable uuidString = [self.uuidStore getString:callKitId transaction:transaction];
-        if (uuidString) {
-            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuidString:uuidString];
+        NSString *_Nullable serviceIdString = [self.serviceIdStore getString:callKitId transaction:transaction];
+        if (serviceIdString) {
+            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithServiceIdString:serviceIdString];
             result = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
             return;
         }

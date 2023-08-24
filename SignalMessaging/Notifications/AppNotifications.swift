@@ -55,7 +55,7 @@ public struct AppNotificationUserInfoKey {
     public static let messageId = "Signal.AppNotificationsUserInfoKey.messageId"
     public static let reactionId = "Signal.AppNotificationsUserInfoKey.reactionId"
     public static let storyTimestamp = "Signal.AppNotificationsUserInfoKey.storyTimestamp"
-    public static let callBackUuid = "Signal.AppNotificationsUserInfoKey.callBackUuid"
+    public static let callBackAciString = "Signal.AppNotificationsUserInfoKey.callBackUuid"
     public static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
     public static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
     public static let isMissedCall = "Signal.AppNotificationsUserInfoKey.isMissedCall"
@@ -470,8 +470,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         var userInfo: [String: Any] = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
-        if let uuid = remoteAddress.uuid {
-            userInfo[AppNotificationUserInfoKey.callBackUuid] = uuid.uuidString
+        if let aci = remoteAddress.aci {
+            userInfo[AppNotificationUserInfoKey.callBackAciString] = aci.serviceIdUppercaseString
         }
         if let phoneNumber = remoteAddress.phoneNumber {
             userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] = phoneNumber

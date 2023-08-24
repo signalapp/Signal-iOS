@@ -36,7 +36,7 @@ public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
         owsFailDebug("")
     }
 
-    public func receivedOpaque(_ opaque: SSKProtoCallMessageOpaque, from caller: SignalServiceAddress, sourceDevice device: UInt32, serverReceivedTimestamp: UInt64, serverDeliveryTimestamp: UInt64, transaction: SDSAnyReadTransaction) {
+    public func receivedOpaque(_ opaque: SSKProtoCallMessageOpaque, from caller: AciObjC, sourceDevice device: UInt32, serverReceivedTimestamp: UInt64, serverDeliveryTimestamp: UInt64, transaction: SDSAnyReadTransaction) {
         owsFailDebug("")
     }
 

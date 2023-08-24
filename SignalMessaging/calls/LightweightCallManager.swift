@@ -94,9 +94,10 @@ open class LightweightCallManager: NSObject, Dependencies {
                 let wasOldMessageEmpty = currentMessage.joinedMemberUuids?.count == 0 && !currentMessage.hasEnded
 
                 currentMessage.update(
-                    withJoinedMemberUuids: info.joinedMembers,
-                    creatorUuid: creatorUuid,
-                    transaction: writeTx)
+                    withJoinedMemberAcis: info.joinedMembers.map { AciObjC(uuidValue: $0) },
+                    creatorAci: AciObjC(uuidValue: creatorUuid),
+                    tx: writeTx
+                )
 
                 // Only notify if the message we updated had no participants
                 if wasOldMessageEmpty {
@@ -106,8 +107,8 @@ open class LightweightCallManager: NSObject, Dependencies {
             } else if !info.joinedMembers.isEmpty {
                 let newMessage = OWSGroupCallMessage(
                     eraId: currentEraId,
-                    joinedMemberUuids: info.joinedMembers,
-                    creatorUuid: creatorUuid,
+                    joinedMemberAcis: info.joinedMembers.map { AciObjC(uuidValue: $0) },
+                    creatorAci: AciObjC(uuidValue: creatorUuid),
                     thread: thread,
                     sentAtTimestamp: timestamp)
                 newMessage.anyInsert(transaction: writeTx)
@@ -125,7 +126,7 @@ open class LightweightCallManager: NSObject, Dependencies {
             guard !InteractionFinder.existsGroupCallMessageForEraId(eraId, thread: thread, transaction: writeTx) else { return }
 
             Logger.info("Inserting placeholder group call message with eraId: \(eraId)")
-            let message = OWSGroupCallMessage(eraId: eraId, joinedMemberUuids: [], creatorUuid: nil, thread: thread, sentAtTimestamp: timestamp)
+            let message = OWSGroupCallMessage(eraId: eraId, joinedMemberAcis: [], creatorAci: nil, thread: thread, sentAtTimestamp: timestamp)
             message.anyInsert(transaction: writeTx)
         }
     }
@@ -157,7 +158,7 @@ open class LightweightCallManager: NSObject, Dependencies {
         guard (groupCallMessage.joinedMemberUuids?.count ?? 0) > 0 else { return }
 
         // The creator of the call must be known, and it can't be the local user
-        guard let creator = groupCallMessage.creatorUuid, !SignalServiceAddress(uuidString: creator).isLocalAddress else { return }
+        guard let creator = groupCallMessage.creatorAddress, !creator.isLocalAddress else { return }
 
         guard let thread = TSGroupThread.anyFetch(uniqueId: groupCallMessage.uniqueThreadId, transaction: transaction) else {
             owsFailDebug("Unknown thread")

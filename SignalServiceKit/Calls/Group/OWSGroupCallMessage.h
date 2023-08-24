@@ -8,6 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AciObjC;
 @class TSGroupThread;
 
 /// Represents a group call-related update that lives in chat history.
@@ -38,8 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithEraId:(NSString *)eraId
-            joinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
-                  creatorUuid:(nullable NSUUID *)creatorUuid
+             joinedMemberAcis:(NSArray<AciObjC *> *)joinedMemberAcis
+                   creatorAci:(nullable AciObjC *)creatorAci
                        thread:(TSGroupThread *)thread
               sentAtTimestamp:(uint64_t)sentAtTimestamp NS_DESIGNATED_INITIALIZER;
 
@@ -70,9 +71,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)updateWithHasEnded:(BOOL)hasEnded transaction:(SDSAnyWriteTransaction *)transaction;
-- (void)updateWithJoinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
-                        creatorUuid:(NSUUID *)uuid
-                        transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithJoinedMemberAcis:(NSArray<AciObjC *> *)joinedMemberAcis
+                        creatorAci:(AciObjC *)creatorAci
+                                tx:(SDSAnyWriteTransaction *)tx;
 
 @end
 

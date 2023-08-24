@@ -634,9 +634,9 @@ NS_ASSUME_NONNULL_BEGIN
         && callMessage.opaque.unwrappedUrgency == SSKProtoCallMessageOpaqueUrgencyHandleImmediately) {
         OWSLogInfo(@"Handling 'urgent opaque' call message offer sync.");
         [self.callMessageHandler receivedOpaque:callMessage.opaque
-                                     fromCaller:envelope.sourceAddress
-                                   sourceDevice:envelope.sourceDevice
-                        serverReceivedTimestamp:envelope.serverTimestamp
+                                     fromCaller:decryptedEnvelope.sourceAciObjC
+                                   sourceDevice:decryptedEnvelope.sourceDeviceId
+                        serverReceivedTimestamp:decryptedEnvelope.serverTimestamp
                         serverDeliveryTimestamp:serverDeliveryTimestamp
                                     transaction:transaction];
         return;
@@ -683,9 +683,9 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (callMessage.opaque) {
             [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *sdsWriteBlockTransaction) {
                 [self.callMessageHandler receivedOpaque:callMessage.opaque
-                                             fromCaller:envelope.sourceAddress
-                                           sourceDevice:envelope.sourceDevice
-                                serverReceivedTimestamp:envelope.serverTimestamp
+                                             fromCaller:decryptedEnvelope.sourceAciObjC
+                                           sourceDevice:decryptedEnvelope.sourceDeviceId
+                                serverReceivedTimestamp:decryptedEnvelope.serverTimestamp
                                 serverDeliveryTimestamp:serverDeliveryTimestamp
                                             transaction:sdsWriteBlockTransaction];
             }];

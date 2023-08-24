@@ -5,6 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AciObjC;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SSKProtoCallMessage;
@@ -63,7 +64,7 @@ typedef NS_ENUM(NSUInteger, OWSCallMessageAction) {
         sourceDevice:(uint32_t)device NS_SWIFT_NAME(receivedBusy(_:from:sourceDevice:));
 
 - (void)receivedOpaque:(SSKProtoCallMessageOpaque *)opaque
-                 fromCaller:(SignalServiceAddress *)caller
+                 fromCaller:(AciObjC *)callerAci
                sourceDevice:(uint32_t)device
     serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
     serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp

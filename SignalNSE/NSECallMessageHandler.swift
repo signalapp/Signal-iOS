@@ -168,7 +168,7 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
 
     public func receivedOpaque(
         _ opaque: SSKProtoCallMessageOpaque,
-        from caller: SignalServiceAddress,
+        from caller: AciObjC,
         sourceDevice: UInt32,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,

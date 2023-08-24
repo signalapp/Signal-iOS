@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
 
@@ -11,8 +12,8 @@ class GroupCallNotificationView: UIView {
 
     private struct ActiveMember: Hashable {
         let demuxId: UInt32
-        let uuid: UUID
-        var address: SignalServiceAddress { return SignalServiceAddress(uuid: uuid) }
+        let aci: Aci
+        var address: SignalServiceAddress { return SignalServiceAddress(aci) }
     }
     private var activeMembers = Set<ActiveMember>()
     private var membersPendingJoinNotification = Set<ActiveMember>()
@@ -36,7 +37,7 @@ class GroupCallNotificationView: UIView {
     private var hasJoined = false
     private func updateActiveMembers() {
         let newActiveMembers = Set(call.groupCall.remoteDeviceStates.values.map {
-            ActiveMember(demuxId: $0.demuxId, uuid: $0.userId)
+            ActiveMember(demuxId: $0.demuxId, aci: Aci(fromUUID: $0.userId))
         })
 
         if hasJoined {

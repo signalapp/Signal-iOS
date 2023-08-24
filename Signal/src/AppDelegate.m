@@ -275,11 +275,16 @@ static void uncaughtExceptionHandler(NSException *exception)
         INInteraction *interaction = [userActivity interaction];
         INIntent *intent = interaction.intent;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        // Even though this type is deprecated, Apple still provides it as of iOS 16.
         if (![intent isKindOfClass:[INStartVideoCallIntent class]]) {
             OWSLogError(@"unexpected class for start call video: %@", intent);
             return NO;
         }
         INStartVideoCallIntent *startCallIntent = (INStartVideoCallIntent *)intent;
+#pragma clang diagnostic pop
+
         NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
         if (!handle) {
             OWSLogWarn(@"unable to find handle in startCallIntent: %@", startCallIntent);
@@ -292,7 +297,7 @@ static void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
-            TSThread *_Nullable thread = [self threadForIntentHandle:handle];
+            TSThread *_Nullable thread = [CallKitCallManager threadForHandleWithSneakyTransaction:handle];
             if (!thread) {
                 OWSLogWarn(@"ignoring attempt to initiate video call to unknown user.");
                 return;
@@ -327,11 +332,16 @@ static void uncaughtExceptionHandler(NSException *exception)
         INInteraction *interaction = [userActivity interaction];
         INIntent *intent = interaction.intent;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        // Even though this type is deprecated, Apple still provides it as of iOS 16.
         if (![intent isKindOfClass:[INStartAudioCallIntent class]]) {
             OWSLogError(@"unexpected class for start call audio: %@", intent);
             return NO;
         }
         INStartAudioCallIntent *startCallIntent = (INStartAudioCallIntent *)intent;
+#pragma clang diagnostic pop
+
         NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
         if (!handle) {
             OWSLogWarn(@"unable to find handle in startCallIntent: %@", startCallIntent);
@@ -344,7 +354,7 @@ static void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
-            TSThread *_Nullable thread = [self threadForIntentHandle:handle];
+            TSThread *_Nullable thread = [CallKitCallManager threadForHandleWithSneakyTransaction:handle];
             if (!thread) {
                 OWSLogWarn(@"ignoring attempt to initiate audio call to unknown user.");
                 return;
@@ -385,7 +395,7 @@ static void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
-            TSThread *_Nullable thread = [self threadForIntentHandle:handle];
+            TSThread *_Nullable thread = [CallKitCallManager threadForHandleWithSneakyTransaction:handle];
             if (!thread) {
                 OWSLogWarn(@"ignoring attempt to initiate call to unknown user.");
                 return;
@@ -410,33 +420,6 @@ static void uncaughtExceptionHandler(NSException *exception)
     }
 
     return NO;
-}
-
-- (nullable TSThread *)threadForIntentHandle:(NSString *)handle
-{
-    OWSAssertDebug(handle.length > 0);
-
-    if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-        return [CallKitIdStore threadForCallKitId:handle];
-    }
-
-    NSData *_Nullable groupId = [CallKitCallManager decodeGroupIdFromIntentHandle:handle];
-    if (groupId) {
-        __block TSGroupThread *thread = nil;
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-        }];
-        return thread;
-    }
-
-    for (PhoneNumber *phoneNumber in
-        [PhoneNumber tryParsePhoneNumbersFromUserSpecifiedText:handle
-                                              clientPhoneNumber:[TSAccountManager localNumber]]) {
-        SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber.toE164];
-        return [TSContactThread getOrCreateThreadWithContactAddress:address];
-    }
-
-    return nil;
 }
 
 #pragma mark Push Notifications Delegate Methods

@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import CallKit
+import LibSignalClient
 import SignalServiceKit
+import UIKit
 
 /**
  * Requests actions from CallKit
@@ -24,8 +25,7 @@ final class CallKitCallManager: NSObject {
     static let kAnonymousCallHandlePrefix = "Signal:"
     static let kGroupCallHandlePrefix = "SignalGroup:"
 
-    @objc
-    static func decodeGroupId(fromIntentHandle handle: String) -> Data? {
+    private static func decodeGroupId(fromIntentHandle handle: String) -> Data? {
         let prefix = handle.prefix(kGroupCallHandlePrefix.count)
         guard prefix == kGroupCallHandlePrefix else {
             return nil
@@ -59,7 +59,7 @@ final class CallKitCallManager: NSObject {
                 value = phoneNumber
             } else {
                 type = .generic
-                value = call.individualCall.remoteAddress.uuidString!
+                value = call.individualCall.remoteAddress.serviceIdUppercaseString!
             }
             return CXHandle(type: type, value: value)
         } else {
@@ -67,6 +67,38 @@ final class CallKitCallManager: NSObject {
             CallKitIdStore.setThread(call.thread, forCallKitId: callKitId)
             return CXHandle(type: .generic, value: callKitId)
         }
+    }
+
+    @objc
+    static func threadForHandleWithSneakyTransaction(_ handle: String) -> TSThread? {
+        owsAssertDebug(!handle.isEmpty)
+
+        if handle.hasPrefix(kAnonymousCallHandlePrefix) {
+            return CallKitIdStore.thread(forCallKitId: handle)
+        }
+
+        if let groupId = decodeGroupId(fromIntentHandle: handle) {
+            return databaseStorage.read { tx in TSGroupThread.fetch(groupId: groupId, transaction: tx) }
+        }
+
+        if let serviceId = try? ServiceId.parseFrom(serviceIdString: handle) {
+            return TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(serviceId))
+        }
+
+        let phoneNumber: String? = {
+            guard let localNumber = tsAccountManager.localNumber else {
+                return nil
+            }
+            let phoneNumbers = PhoneNumber.tryParsePhoneNumbers(
+                fromUserSpecifiedText: handle, clientPhoneNumber: localNumber
+            )
+            return phoneNumbers.first?.toE164()
+        }()
+        if let phoneNumber {
+            return TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(phoneNumber: phoneNumber))
+        }
+
+        return nil
     }
 
     // MARK: Actions

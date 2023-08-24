@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalMessaging
 import SignalRingRTC
 import SignalUI
@@ -429,6 +430,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
 extension RemoteDeviceState {
     var address: SignalServiceAddress {
-        return SignalServiceAddress(uuid: userId)
+        return SignalServiceAddress(Aci(fromUUID: userId))
     }
 }
