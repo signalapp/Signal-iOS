@@ -949,11 +949,41 @@ extension MessageSender {
         return .value(())
     }
 
+    /// Sending a reply to a hidden recipient unhides them. But how we
+    /// define "reply" is not inclusive of all outgoing messages. We unhide
+    /// when the message indicates the user's intent to resume association
+    /// with the hidden recipient.
+    ///
+    /// It is important to be conservative about which messages unhide a
+    /// recipient. It is far better to not unhide when should than to
+    /// unhide when we should not.
+    private func shouldMessageSendUnhideRecipient(_ message: TSOutgoingMessage) -> Bool {
+        if message.hasRenderableContent() {
+            return true
+        }
+        if message is OWSOutgoingReactionMessage {
+            return true
+        }
+        if
+            let message = message as? OWSOutgoingCallMessage,
+            /// OWSOutgoingCallMessages include not only calling
+            /// someone (ie, an "offer message"), but also sending
+            /// hangup messages, busy messages, and other kinds of
+            /// call-related "messages" that do not indicate the
+            /// sender's intent to resume association with a recipient.
+            message.offerMessage != nil
+        {
+            return true
+        }
+        return false
+    }
+
     private func handleMessageSentLocally(_ message: TSOutgoingMessage) -> Promise<Void> {
         databaseStorage.write { tx in
             if
                 FeatureFlags.recipientHiding,
                 let thread = message.thread(tx: tx) as? TSContactThread,
+                self.shouldMessageSendUnhideRecipient(message),
                 let localAddress = tsAccountManager.localAddress(with: tx),
                 !localAddress.isEqualToAddress(thread.contactAddress)
             {
