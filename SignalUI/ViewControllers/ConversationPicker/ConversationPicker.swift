@@ -502,6 +502,14 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                         return nil
                     }
 
+                    let isRecipientHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
+                        account.recipientAddress,
+                        tx: transaction.asV2Read
+                    )
+                    if isRecipientHidden {
+                        return nil
+                    }
+
                     return self.buildContactItem(
                         account.recipientAddress,
                         isBlocked: isAddressBlocked,
