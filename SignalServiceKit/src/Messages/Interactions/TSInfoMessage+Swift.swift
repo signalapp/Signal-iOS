@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public extension TSInfoMessage {
 
@@ -167,6 +168,113 @@ extension TSInfoMessage {
     }
 }
 
+// MARK: Payments
+
+extension TSInfoMessage {
+
+    private enum PaymentsInfoMessageType {
+        case incoming(Aci)
+        case outgoing(Aci)
+    }
+
+    private func paymentsActivationRequestType(transaction: SDSAnyReadTransaction) -> PaymentsInfoMessageType? {
+        guard
+            let paymentActivationRequestSenderAci,
+            let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+        else {
+            return nil
+        }
+        if paymentActivationRequestSenderAci == localAci {
+            return .outgoing(paymentActivationRequestSenderAci)
+        } else {
+            return .incoming(paymentActivationRequestSenderAci)
+        }
+    }
+
+    private func paymentsActivatedType(transaction: SDSAnyReadTransaction) -> PaymentsInfoMessageType? {
+        guard
+            let paymentActivatedAci,
+            let localAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+        else {
+            return nil
+        }
+        if paymentActivatedAci == localAci {
+            return .outgoing(paymentActivatedAci)
+        } else {
+            return .incoming(paymentActivatedAci)
+        }
+    }
+
+    public func isIncomingPaymentsActivationRequest(_ tx: SDSAnyReadTransaction) -> Bool {
+        switch paymentsActivationRequestType(transaction: tx) {
+        case .none, .outgoing:
+            return false
+        case .incoming:
+            return true
+        }
+    }
+
+    public func isIncomingPaymentsActivated(_ tx: SDSAnyReadTransaction) -> Bool {
+        switch paymentsActivatedType(transaction: tx) {
+        case .none, .outgoing:
+            return false
+        case .incoming:
+            return true
+        }
+    }
+
+    @objc
+    func paymentsActivationRequestDescription(transaction: SDSAnyReadTransaction) -> String? {
+        let aci: Aci
+        let formatString: String
+        switch paymentsActivationRequestType(transaction: transaction) {
+        case .none:
+            return nil
+        case .incoming(let _aci):
+            aci = _aci
+            formatString = OWSLocalizedString(
+                "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED",
+                comment: "Shown when a user receives a payment activation request. Embeds: {{ the user's name}}"
+            )
+        case .outgoing(let _aci):
+            aci = _aci
+            formatString = OWSLocalizedString(
+                "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT",
+                comment: "Shown when requesting a user activates payments. Embeds: {{ the user's name}}"
+            )
+        }
+
+        let name = contactsManager.displayName(
+            for: SignalServiceAddress(aci),
+            transaction: transaction
+        )
+        return String(format: formatString, name)
+    }
+
+    @objc
+    func paymentsActivatedDescription(transaction: SDSAnyReadTransaction) -> String? {
+        switch paymentsActivatedType(transaction: transaction) {
+        case .none:
+            return nil
+        case .outgoing:
+            return OWSLocalizedString(
+                "INFO_MESSAGE_PAYMENTS_ACTIVATED",
+                comment: "Shown when a user activates payments from a chat"
+            )
+        case .incoming(let aci):
+            let name = contactsManager.displayName(
+                for: SignalServiceAddress(aci),
+                transaction: transaction
+            )
+            let format = OWSLocalizedString(
+                "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED",
+                comment: "Shown when a user activates payments from a chat. Embeds: {{ the user's name}}"
+            )
+            return String(format: format, name)
+        }
+    }
+}
+
 // MARK: - InfoMessageUserInfo
 
 extension TSInfoMessage {
@@ -221,6 +329,20 @@ extension TSInfoMessage {
 
     fileprivate var profileChanges: ProfileChanges? {
         return infoMessageValue(forKey: .profileChanges)
+    }
+
+    fileprivate var paymentActivationRequestSenderAci: Aci? {
+        guard let raw: String = infoMessageValue(forKey: .paymentActivationRequestSenderAci) else {
+            return nil
+        }
+        return try? Aci.parseFrom(serviceIdString: raw)
+    }
+
+    fileprivate var paymentActivatedAci: Aci? {
+        guard let raw: String = infoMessageValue(forKey: .paymentActivatedAci) else {
+            return nil
+        }
+        return try? Aci.parseFrom(serviceIdString: raw)
     }
 }
 

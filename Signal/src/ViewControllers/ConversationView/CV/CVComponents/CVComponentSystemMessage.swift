@@ -199,6 +199,13 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                     } else {
                         button.backgroundColor = Theme.conversationButtonBackgroundColor
                     }
+
+                    switch action.action {
+                    case .didTapActivatePayments, .didTapSendPayment:
+                        button.layer.borderColor = Theme.outlineColor.cgColor
+                        button.layer.borderWidth = 1.5
+                    default: break
+                    }
                 }
                 button.contentEdgeInsets = buttonContentEdgeInsets
                 button.layer.cornerRadius = actionButtonSize.height / 2
@@ -780,6 +787,8 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.phone16)
             case .contactHidden:
                 return Theme.iconImage(.info16)
+            case .paymentsActivationRequest, .paymentsActivated:
+                return Theme.iconImage(.settingsPayments)
             }
         } else if let call = interaction as? TSCall {
             switch call.offerType {
@@ -1328,6 +1337,35 @@ extension CVComponentSystemMessage {
                 accessibilityIdentifier: "update_contact",
                 action: .didTapPhoneNumberChange(aci: aci, phoneNumberOld: phoneNumberOld, phoneNumberNew: phoneNumberNew)
             )
+        case .paymentsActivationRequest:
+            if
+                infoMessage.isIncomingPaymentsActivationRequest(transaction),
+                !paymentsHelperSwift.arePaymentsEnabled(tx: transaction)
+            {
+                return CVMessageAction(
+                    title: OWSLocalizedString(
+                        "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON",
+                        comment: "Label for 'activate' button in the 'payments opt-in' view in the app settings."
+                    ),
+                    accessibilityIdentifier: "activate_payments",
+                    action: .didTapActivatePayments
+                )
+            } else {
+                return nil
+            }
+        case .paymentsActivated:
+            if infoMessage.isIncomingPaymentsActivated(transaction) {
+                return CVMessageAction(
+                    title: OWSLocalizedString(
+                        "SETTINGS_PAYMENTS_SEND_PAYMENT",
+                        comment: "Label for 'send payment' button in the payment settings."
+                    ),
+                    accessibilityIdentifier: "send_payment",
+                    action: .didTapSendPayment
+                )
+            } else {
+                return nil
+            }
         }
     }
 

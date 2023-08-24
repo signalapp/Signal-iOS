@@ -442,4 +442,7 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
     func didTapUnknownThreadWarningGroup() {}
     func didTapUnknownThreadWarningContact() {}
     func didTapDeliveryIssueWarning(_ message: TSErrorMessage) {}
+
+    func didTapActivatePayments() {}
+    func didTapSendPayment() {}
 }

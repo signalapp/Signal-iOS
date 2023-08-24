@@ -1237,6 +1237,9 @@ extension MessageDetailViewController: CVComponentDelegate {
     // TODO:
     func didTapUnknownThreadWarningContact() {}
     func didTapDeliveryIssueWarning(_ message: TSErrorMessage) {}
+
+    func didTapActivatePayments() {}
+    func didTapSendPayment() {}
 }
 
 extension MessageDetailViewController: UINavigationControllerDelegate {

@@ -23,6 +23,7 @@ public protocol PaymentsHelper: AnyObject {
     func arePaymentsEnabled(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool
 
     var arePaymentsEnabled: Bool { get }
+    func arePaymentsEnabled(tx: SDSAnyReadTransaction) -> Bool
     var paymentsEntropy: Data? { get }
     func enablePayments(transaction: SDSAnyWriteTransaction)
     func enablePayments(withPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool
@@ -47,6 +48,18 @@ public protocol PaymentsHelper: AnyObject {
     func processIncomingPaymentCancellation(thread: TSThread,
                                             paymentCancellation: TSPaymentCancellation,
                                             transaction: SDSAnyWriteTransaction)
+
+    func processIncomingPaymentsActivationRequest(
+        thread: TSThread,
+        senderAci: AciObjC,
+        transaction: SDSAnyWriteTransaction
+    )
+
+    func processIncomingPaymentsActivatedMessage(
+        thread: TSThread,
+        senderAci: AciObjC,
+        transaction: SDSAnyWriteTransaction
+    )
 
     func processReceivedTranscriptPaymentRequest(thread: TSThread,
                                                  paymentRequest: TSPaymentRequest,
@@ -169,6 +182,10 @@ extension MockPaymentsHelper: PaymentsHelperSwift, PaymentsHelper {
         owsFail("Not implemented.")
     }
 
+    public func arePaymentsEnabled(tx: SDSAnyReadTransaction) -> Bool {
+        owsFail("Not implemented.")
+    }
+
     public var paymentsEntropy: Data? {
         owsFail("Not implemented.")
     }
@@ -221,6 +238,22 @@ extension MockPaymentsHelper: PaymentsHelperSwift, PaymentsHelper {
     public func processIncomingPaymentCancellation(thread: TSThread,
                                                    paymentCancellation: TSPaymentCancellation,
                                                    transaction: SDSAnyWriteTransaction) {
+        owsFail("Not implemented.")
+    }
+
+    public func processIncomingPaymentsActivationRequest(
+        thread: TSThread,
+        senderAci: AciObjC,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        owsFail("Not implemented.")
+    }
+
+    public func processIncomingPaymentsActivatedMessage(
+        thread: TSThread,
+        senderAci: AciObjC,
+        transaction: SDSAnyWriteTransaction
+    ) {
         owsFail("Not implemented.")
     }
 

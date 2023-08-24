@@ -194,7 +194,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             SignalAccount.self,
             EditRecord.self,
             SignalRecipient.self,
-            HiddenRecipient.self
+            HiddenRecipient.self,
+            TSPaymentsActivationRequestModel.self
         ]
     }
 

@@ -26,6 +26,9 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyChangePhoneNumberAciString
     = @"InfoMessageUserInfoKeyChangePhoneNumberUuid";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyChangePhoneNumberOld = @"InfoMessageUserInfoKeyChangePhoneNumberOld";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyChangePhoneNumberNew = @"InfoMessageUserInfoKeyChangePhoneNumberNew";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyPaymentActivationRequestSenderAci
+    = @"InfoMessageUserInfoKeyPaymentActivationRequestSenderAci";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyPaymentActivatedAci = @"InfoMessageUserInfoKeyPaymentActivatedAci";
 
 NSUInteger TSInfoMessageSchemaVersion = 2;
 
@@ -310,6 +313,10 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
             return OWSLocalizedString(@"INFO_MESSAGE_CONTACT_REMOVED",
                 @"Indicates that the recipient has been removed from the current user's contacts and that messaging "
                 @"them will re-add them.");
+        case TSInfoMessagePaymentsActivationRequest:
+            return [self paymentsActivationRequestDescriptionWithTransaction:transaction];
+        case TSInfoMessagePaymentsActivated:
+            return [self paymentsActivatedDescriptionWithTransaction:transaction];
     }
 
     OWSFailDebug(@"Unknown info message type");
@@ -336,6 +343,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageProfileUpdate:
         case TSInfoMessagePhoneNumberChange:
         case TSInfoMessageContactHidden:
+        case TSInfoMessagePaymentsActivationRequest:
+        case TSInfoMessagePaymentsActivated:
             return NO;
         case TSInfoMessageUserJoinedSignal:
             // In the conversation list, we want conversations with an unread "new user" notification to

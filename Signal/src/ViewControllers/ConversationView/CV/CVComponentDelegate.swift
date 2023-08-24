@@ -210,6 +210,9 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
     func didTapUnknownThreadWarningGroup()
     func didTapUnknownThreadWarningContact()
     func didTapDeliveryIssueWarning(_ message: TSErrorMessage)
+
+    func didTapActivatePayments()
+    func didTapSendPayment()
 }
 
 // MARK: -
@@ -247,6 +250,8 @@ struct CVMessageAction: Equatable {
         case didTapUnknownThreadWarningGroup
         case didTapUnknownThreadWarningContact
         case didTapDeliveryIssueWarning(errorMessage: TSErrorMessage)
+        case didTapActivatePayments
+        case didTapSendPayment
 
         func perform(delegate: CVComponentDelegate) {
             switch self {
@@ -296,6 +301,10 @@ struct CVMessageAction: Equatable {
                 delegate.didTapUnknownThreadWarningContact()
             case .didTapDeliveryIssueWarning(let errorMessage):
                 delegate.didTapDeliveryIssueWarning(errorMessage)
+            case .didTapActivatePayments:
+                delegate.didTapActivatePayments()
+            case .didTapSendPayment:
+                delegate.didTapSendPayment()
             }
         }
     }

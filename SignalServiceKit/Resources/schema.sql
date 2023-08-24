@@ -1467,3 +1467,18 @@ CREATE
                     CASCADE
         )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "TSPaymentsActivationRequestModel" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"threadUniqueId" TEXT NOT NULL
+            ,"senderAci" BLOB NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_TSPaymentsActivationRequestModel_on_threadUniqueId"
+        ON "TSPaymentsActivationRequestModel"("threadUniqueId"
+)
+;

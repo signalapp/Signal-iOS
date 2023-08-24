@@ -266,7 +266,8 @@ public extension DatabaseRecovery {
             UsernameLookupRecord.databaseTableName,
             // This table should be recovered with the same effort as the
             // TSInteraction table. It doesn't hold any value without that data.
-            EditRecord.databaseTableName
+            EditRecord.databaseTableName,
+            TSPaymentsActivationRequestModel.databaseTableName
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

@@ -288,7 +288,7 @@ public class SendPaymentViewController: OWSViewController {
                     modalActivityIndicator.dismiss {
                         AssertIsOnMainThread()
 
-                        Self.showRecipientNotEnabledAlert()
+                        Self.showRecipientNotEnabledAlert(recipientAddress: recipientAddress)
                     }
                 }
             }
@@ -307,7 +307,7 @@ public class SendPaymentViewController: OWSViewController {
             Self.paymentsHelper.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
         }
         guard recipientHasPaymentsEnabled else {
-            showRecipientNotEnabledAlert()
+            showRecipientNotEnabledAlert(recipientAddress: recipientAddress)
             return
         }
 
@@ -327,11 +327,63 @@ public class SendPaymentViewController: OWSViewController {
         }
     }
 
-    private static func showRecipientNotEnabledAlert() {
-        OWSActionSheets.showActionSheet(title: OWSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE",
-                                                                 comment: "Title for error alert indicating that a given user cannot receive payments because they have not enabled payments."),
-                                        message: OWSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE",
-                                                                   comment: "Message for error alert indicating that a given user cannot receive payments because they have not enabled payments."))
+    private static func showRecipientNotEnabledAlert(recipientAddress: SignalServiceAddress) {
+        let titleFormat = OWSLocalizedString(
+            "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE",
+            comment: "Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }}"
+        )
+        let recipientName: String = self.databaseStorage.read { tx in
+            self.contactsManager.displayName(for: recipientAddress, transaction: tx)
+        }
+        let title = String(format: titleFormat, recipientName)
+        let actionSheet = ActionSheetController(
+            title: title,
+            message: OWSLocalizedString(
+                "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE",
+                comment: "Message for error alert indicating that a given user cannot receive payments because they have not enabled payments."
+            )
+        )
+
+        let sendAction = ActionSheetAction(
+            title: OWSLocalizedString(
+                "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON",
+                comment: "The label for the 'send request' button in alerts and action sheets."
+            ),
+            accessibilityIdentifier: "OWSActionSheets.sendPaymentAuthorizationRequest",
+            style: .default
+        ) { _ in
+            sendActivationRequest(recipientAddress: recipientAddress)
+        }
+        actionSheet.addAction(sendAction)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        OWSActionSheets.showActionSheet(actionSheet)
+    }
+
+    private static func sendActivationRequest(recipientAddress: SignalServiceAddress) {
+        self.databaseStorage.asyncWrite { transaction in
+            guard let thread = TSContactThread.getWithContactAddress(
+                recipientAddress,
+                transaction: transaction
+            ) else {
+                return
+            }
+            let interaction = OWSPaymentActivationRequestMessage(thread: thread, transaction: transaction)
+            Self.sskJobQueues.messageSenderJobQueue.add(
+                message: interaction.asPreparer,
+                transaction: transaction
+            )
+            if let localAci = self.tsAccountManager.localIdentifiers(transaction: transaction)?.aci {
+                let infoMessage = TSInfoMessage(
+                    thread: thread,
+                    messageType: .paymentsActivationRequest,
+                    infoMessageUserInfo: [
+                        .paymentActivationRequestSenderAci: localAci.serviceIdString
+                    ]
+                )
+                infoMessage.anyInsert(transaction: transaction)
+            }
+        }
     }
 
     public static func presentFromConversationView(_ fromViewController: UIViewController,

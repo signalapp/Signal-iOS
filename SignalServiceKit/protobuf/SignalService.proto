@@ -375,9 +375,19 @@ message DataMessage {
       optional RequestId requestId = 1;
     }
 
+    message Activation {
+      enum Type {
+        REQUEST = 0;
+        ACTIVATED = 1;
+      }
+
+      optional Type type = 1;
+    }
+
     // oneof commented out
     // oneof Item {
       optional Notification notification = 1;
+      optional Activation   activation = 2;
       optional Request      request      = 1002;
       optional Cancellation cancellation = 1003;
     // }

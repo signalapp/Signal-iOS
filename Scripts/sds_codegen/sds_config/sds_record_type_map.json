@@ -32,6 +32,8 @@
     "OWSLocalUserLeaveGroupJobRecord": 74,
     "OWSMessageContentJob": 15,
     "OWSOutgoingPaymentMessage": 68,
+    "OWSPaymentActivationRequestFinishedMessage": 77,
+    "OWSPaymentActivationRequestMessage": 76,
     "OWSReaction": 62,
     "OWSReceiptCredentialRedemptionJobRecord": 71,
     "OWSRecipientIdentity": 38,

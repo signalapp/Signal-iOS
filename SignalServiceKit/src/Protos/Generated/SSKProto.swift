@@ -7838,6 +7838,189 @@ extension SSKProtoDataMessagePaymentCancellationBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessagePaymentActivationType
+
+@objc
+public enum SSKProtoDataMessagePaymentActivationType: Int32 {
+    case request = 0
+    case activated = 1
+}
+
+private func SSKProtoDataMessagePaymentActivationTypeWrap(_ value: SignalServiceProtos_DataMessage.Payment.Activation.TypeEnum) -> SSKProtoDataMessagePaymentActivationType {
+    switch value {
+    case .request: return .request
+    case .activated: return .activated
+    }
+}
+
+private func SSKProtoDataMessagePaymentActivationTypeUnwrap(_ value: SSKProtoDataMessagePaymentActivationType) -> SignalServiceProtos_DataMessage.Payment.Activation.TypeEnum {
+    switch value {
+    case .request: return .request
+    case .activated: return .activated
+    }
+}
+
+// MARK: - SSKProtoDataMessagePaymentActivation
+
+@objc
+public class SSKProtoDataMessagePaymentActivation: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Payment.Activation
+
+    public var type: SSKProtoDataMessagePaymentActivationType? {
+        guard hasType else {
+            return nil
+        }
+        return SSKProtoDataMessagePaymentActivationTypeWrap(proto.type)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedType: SSKProtoDataMessagePaymentActivationType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: Activation.type.")
+        }
+        return SSKProtoDataMessagePaymentActivationTypeWrap(proto.type)
+    }
+    @objc
+    public var hasType: Bool {
+        return proto.hasType
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Payment.Activation) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.Payment.Activation(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Payment.Activation) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoDataMessagePaymentActivation {
+    @objc
+    public static func builder() -> SSKProtoDataMessagePaymentActivationBuilder {
+        return SSKProtoDataMessagePaymentActivationBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePaymentActivationBuilder {
+        let builder = SSKProtoDataMessagePaymentActivationBuilder()
+        if let _value = type {
+            builder.setType(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoDataMessagePaymentActivationBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_DataMessage.Payment.Activation()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    public func setType(_ valueParam: SSKProtoDataMessagePaymentActivationType) {
+        proto.type = SSKProtoDataMessagePaymentActivationTypeUnwrap(valueParam)
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> SSKProtoDataMessagePaymentActivation {
+        return SSKProtoDataMessagePaymentActivation(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessagePaymentActivation {
+        return SSKProtoDataMessagePaymentActivation(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoDataMessagePaymentActivation(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoDataMessagePaymentActivation {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePaymentActivationBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePaymentActivation? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessagePayment
 
 @objc
@@ -7847,6 +8030,9 @@ public class SSKProtoDataMessagePayment: NSObject, Codable, NSSecureCoding {
 
     @objc
     public let notification: SSKProtoDataMessagePaymentNotification?
+
+    @objc
+    public let activation: SSKProtoDataMessagePaymentActivation?
 
     @objc
     public let request: SSKProtoDataMessagePaymentRequest?
@@ -7864,10 +8050,12 @@ public class SSKProtoDataMessagePayment: NSObject, Codable, NSSecureCoding {
 
     private init(proto: SignalServiceProtos_DataMessage.Payment,
                  notification: SSKProtoDataMessagePaymentNotification?,
+                 activation: SSKProtoDataMessagePaymentActivation?,
                  request: SSKProtoDataMessagePaymentRequest?,
                  cancellation: SSKProtoDataMessagePaymentCancellation?) {
         self.proto = proto
         self.notification = notification
+        self.activation = activation
         self.request = request
         self.cancellation = cancellation
     }
@@ -7889,6 +8077,11 @@ public class SSKProtoDataMessagePayment: NSObject, Codable, NSSecureCoding {
             notification = try SSKProtoDataMessagePaymentNotification(proto.notification)
         }
 
+        var activation: SSKProtoDataMessagePaymentActivation?
+        if proto.hasActivation {
+            activation = SSKProtoDataMessagePaymentActivation(proto.activation)
+        }
+
         var request: SSKProtoDataMessagePaymentRequest?
         if proto.hasRequest {
             request = try SSKProtoDataMessagePaymentRequest(proto.request)
@@ -7901,6 +8094,7 @@ public class SSKProtoDataMessagePayment: NSObject, Codable, NSSecureCoding {
 
         self.init(proto: proto,
                   notification: notification,
+                  activation: activation,
                   request: request,
                   cancellation: cancellation)
     }
@@ -7954,6 +8148,9 @@ extension SSKProtoDataMessagePayment {
         if let _value = notification {
             builder.setNotification(_value)
         }
+        if let _value = activation {
+            builder.setActivation(_value)
+        }
         if let _value = request {
             builder.setRequest(_value)
         }
@@ -7984,6 +8181,17 @@ public class SSKProtoDataMessagePaymentBuilder: NSObject {
 
     public func setNotification(_ valueParam: SSKProtoDataMessagePaymentNotification) {
         proto.notification = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setActivation(_ valueParam: SSKProtoDataMessagePaymentActivation?) {
+        guard let valueParam = valueParam else { return }
+        proto.activation = valueParam.proto
+    }
+
+    public func setActivation(_ valueParam: SSKProtoDataMessagePaymentActivation) {
+        proto.activation = valueParam.proto
     }
 
     @objc

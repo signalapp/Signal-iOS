@@ -923,4 +923,15 @@ extension ConversationViewController: CVComponentDelegate {
         // the originating thread.
         showDeliveryIssueWarningAlert(from: senderAddress, isKnownThread: thread.isGroupThread)
     }
+
+    public func didTapActivatePayments() {
+        AssertIsOnMainThread()
+        SignalApp.shared.showAppSettings(mode: .payments)
+    }
+
+    public func didTapSendPayment() {
+        AssertIsOnMainThread()
+        // Same action as tapping on the attachment toolbar.
+        paymentButtonPressed()
+    }
 }

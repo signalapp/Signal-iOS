@@ -373,6 +373,10 @@ public class TSPaymentModels: NSObject {
                     owsFailDebug("Invalid payment cancellation proto.")
                 }
             }
+            if paymentProto.activation != nil {
+                // Handled seprarately.
+                return nil
+            }
             owsFailDebug("Empty payment proto.")
         } catch {
             owsFailDebug("Error: \(error)")

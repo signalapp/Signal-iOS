@@ -793,6 +793,13 @@
 		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
 		6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */; };
 		664160D029A6D60A00F5BA85 /* ChatServiceAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */; };
+		6642A8702A8D7B4B00E591C2 /* OWSPaymentActivationRequestFinishedMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6642A86F2A8D7B3400E591C2 /* OWSPaymentActivationRequestFinishedMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6642A8722A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6642A8712A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m */; };
+		6642A8742A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6642A8732A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6642A8762A8D80F400E591C2 /* OWSPaymentActivationRequestMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6642A8752A8D80F400E591C2 /* OWSPaymentActivationRequestMessage.m */; };
+		6642A8792A8D85F500E591C2 /* OWSPaymentActivationRequestMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6642A8772A8D85F500E591C2 /* OWSPaymentActivationRequestMessage+SDS.swift */; };
+		6642A87A2A8D85F500E591C2 /* OWSPaymentActivationRequestFinishedMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6642A8782A8D85F500E591C2 /* OWSPaymentActivationRequestFinishedMessage+SDS.swift */; };
+		6642A87C2A8EB0D800E591C2 /* TSPaymentsActivationRequestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6642A87B2A8EB0D800E591C2 /* TSPaymentsActivationRequestModel.swift */; };
 		6645F30829BF8D2000B58EBD /* AccountAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30729BF8D2000B58EBD /* AccountAttributes.swift */; };
 		6645F30A29BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30929BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift */; };
 		6645F30C29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30B29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift */; };
@@ -3320,6 +3327,13 @@
 		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
 		6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessage.swift; sourceTree = "<group>"; };
 		664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceAuth.swift; sourceTree = "<group>"; };
+		6642A86F2A8D7B3400E591C2 /* OWSPaymentActivationRequestFinishedMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSPaymentActivationRequestFinishedMessage.h; sourceTree = "<group>"; };
+		6642A8712A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSPaymentActivationRequestFinishedMessage.m; sourceTree = "<group>"; };
+		6642A8732A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSPaymentActivationRequestMessage.h; sourceTree = "<group>"; };
+		6642A8752A8D80F400E591C2 /* OWSPaymentActivationRequestMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSPaymentActivationRequestMessage.m; sourceTree = "<group>"; };
+		6642A8772A8D85F500E591C2 /* OWSPaymentActivationRequestMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSPaymentActivationRequestMessage+SDS.swift"; sourceTree = "<group>"; };
+		6642A8782A8D85F500E591C2 /* OWSPaymentActivationRequestFinishedMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSPaymentActivationRequestFinishedMessage+SDS.swift"; sourceTree = "<group>"; };
+		6642A87B2A8EB0D800E591C2 /* TSPaymentsActivationRequestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSPaymentsActivationRequestModel.swift; sourceTree = "<group>"; };
 		6645F30729BF8D2000B58EBD /* AccountAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributes.swift; sourceTree = "<group>"; };
 		6645F30929BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesRequestFactory.swift; sourceTree = "<group>"; };
 		6645F30B29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountAttributes+Dependencies.swift"; sourceTree = "<group>"; };
@@ -8897,6 +8911,12 @@
 				F9C5C913289453B100548EEE /* OWSOutgoingPaymentMessage+SDS.swift */,
 				F9C5C912289453B100548EEE /* OWSOutgoingPaymentMessage.h */,
 				F9C5C914289453B100548EEE /* OWSOutgoingPaymentMessage.m */,
+				6642A8782A8D85F500E591C2 /* OWSPaymentActivationRequestFinishedMessage+SDS.swift */,
+				6642A86F2A8D7B3400E591C2 /* OWSPaymentActivationRequestFinishedMessage.h */,
+				6642A8712A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m */,
+				6642A8772A8D85F500E591C2 /* OWSPaymentActivationRequestMessage+SDS.swift */,
+				6642A8732A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h */,
+				6642A8752A8D80F400E591C2 /* OWSPaymentActivationRequestMessage.m */,
 				6605D4F92A85AA51004DC345 /* OWSPaymentMessage.h */,
 			);
 			path = Payments;
@@ -9395,6 +9415,7 @@
 				F9C5CAA6289453B200548EEE /* TSPaymentRequestModel+SDS.swift */,
 				F9C5CAA4289453B200548EEE /* TSPaymentRequestModel.h */,
 				F9C5CAAE289453B200548EEE /* TSPaymentRequestModel.m */,
+				6642A87B2A8EB0D800E591C2 /* TSPaymentsActivationRequestModel.swift */,
 			);
 			name = Payments;
 			path = src/Payments;
@@ -9890,6 +9911,8 @@
 				F9C5CC43289453B300548EEE /* OWSOutgoingSenderKeyDistributionMessage.h in Headers */,
 				F9C5CBB5289453B300548EEE /* OWSOutgoingSentMessageTranscript.h in Headers */,
 				F9C5CBC7289453B300548EEE /* OWSOutgoingSyncMessage.h in Headers */,
+				6642A8702A8D7B4B00E591C2 /* OWSPaymentActivationRequestFinishedMessage.h in Headers */,
+				6642A8742A8D80CB00E591C2 /* OWSPaymentActivationRequestMessage.h in Headers */,
 				6605D4FD2A85AD17004DC345 /* OWSPaymentMessage.h in Headers */,
 				F9C5CC6F289453B300548EEE /* OWSProfileKeyMessage.h in Headers */,
 				F9C5CDCB289453B400548EEE /* OWSQueues.h in Headers */,
@@ -12438,6 +12461,10 @@
 				F9C5CC89289453B300548EEE /* OWSOutgoingSenderKeyDistributionMessage.m in Sources */,
 				F9C5CBC2289453B300548EEE /* OWSOutgoingSentMessageTranscript.m in Sources */,
 				F9C5CBB7289453B300548EEE /* OWSOutgoingSyncMessage.m in Sources */,
+				6642A87A2A8D85F500E591C2 /* OWSPaymentActivationRequestFinishedMessage+SDS.swift in Sources */,
+				6642A8722A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m in Sources */,
+				6642A8792A8D85F500E591C2 /* OWSPaymentActivationRequestMessage+SDS.swift in Sources */,
+				6642A8762A8D80F400E591C2 /* OWSPaymentActivationRequestMessage.m in Sources */,
 				F9C5CC32289453B300548EEE /* OWSProfileKeyMessage.m in Sources */,
 				F9C5CCF1289453B300548EEE /* OWSProvisioningCipher.swift in Sources */,
 				F9C5CC3A289453B300548EEE /* OWSReaction.swift in Sources */,
@@ -12770,6 +12797,7 @@
 				F9C5CD83289453B300548EEE /* TSPaymentModels.swift in Sources */,
 				F9C5CD80289453B300548EEE /* TSPaymentRequestModel+SDS.swift in Sources */,
 				F9C5CD88289453B300548EEE /* TSPaymentRequestModel.m in Sources */,
+				6642A87C2A8EB0D800E591C2 /* TSPaymentsActivationRequestModel.swift in Sources */,
 				F9C5CCCA289453B300548EEE /* TSPrivateStoryThread+SDS.swift in Sources */,
 				F9C5CCD3289453B300548EEE /* TSPrivateStoryThread.m in Sources */,
 				F9C5CCCB289453B300548EEE /* TSPrivateStoryThread.swift in Sources */,

@@ -1046,6 +1046,21 @@ NS_ASSUME_NONNULL_BEGIN
                                                               transaction:transaction];
     } else if (paymentModels != nil) {
         OWSFailDebug(@"Unexpected payment model.");
+    } else if (dataMessage.payment != nil && dataMessage.payment.activation != nil) {
+        switch (dataMessage.payment.activation.unwrappedType) {
+            case SSKProtoDataMessagePaymentActivationTypeRequest:
+                OWSLogInfo(@"Processing payments activation request.");
+                [self.paymentsHelper processIncomingPaymentsActivationRequestWithThread:thread
+                                                                              senderAci:decryptedEnvelope.sourceAciObjC
+                                                                            transaction:transaction];
+                return nil;
+            case SSKProtoDataMessagePaymentActivationTypeActivated:
+                OWSLogInfo(@"Processing payments activated response.");
+                [self.paymentsHelper processIncomingPaymentsActivatedMessageWithThread:thread
+                                                                             senderAci:decryptedEnvelope.sourceAciObjC
+                                                                           transaction:transaction];
+                return nil;
+        }
     }
 
     [self updateDisappearingMessageConfigurationWithEnvelope:decryptedEnvelope

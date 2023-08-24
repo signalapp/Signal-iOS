@@ -2143,6 +2143,15 @@ struct SignalServiceProtos_DataMessage {
     /// Clears the value of `notification`. Subsequent reads from it will return its default value.
     mutating func clearNotification() {self._notification = nil}
 
+    var activation: SignalServiceProtos_DataMessage.Payment.Activation {
+      get {return _activation ?? SignalServiceProtos_DataMessage.Payment.Activation()}
+      set {_activation = newValue}
+    }
+    /// Returns true if `activation` has been explicitly set.
+    var hasActivation: Bool {return self._activation != nil}
+    /// Clears the value of `activation`. Subsequent reads from it will return its default value.
+    mutating func clearActivation() {self._activation = nil}
+
     var request: SignalServiceProtos_DataMessage.Payment.Request {
       get {return _request ?? SignalServiceProtos_DataMessage.Payment.Request()}
       set {_request = newValue}
@@ -2362,9 +2371,57 @@ struct SignalServiceProtos_DataMessage {
       fileprivate var _requestID: SignalServiceProtos_DataMessage.Payment.RequestId? = nil
     }
 
+    struct Activation {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var type: SignalServiceProtos_DataMessage.Payment.Activation.TypeEnum {
+        get {return _type ?? .request}
+        set {_type = newValue}
+      }
+      /// Returns true if `type` has been explicitly set.
+      var hasType: Bool {return self._type != nil}
+      /// Clears the value of `type`. Subsequent reads from it will return its default value.
+      mutating func clearType() {self._type = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      enum TypeEnum: SwiftProtobuf.Enum {
+        typealias RawValue = Int
+        case request // = 0
+        case activated // = 1
+
+        init() {
+          self = .request
+        }
+
+        init?(rawValue: Int) {
+          switch rawValue {
+          case 0: self = .request
+          case 1: self = .activated
+          default: return nil
+          }
+        }
+
+        var rawValue: Int {
+          switch self {
+          case .request: return 0
+          case .activated: return 1
+          }
+        }
+
+      }
+
+      init() {}
+
+      fileprivate var _type: SignalServiceProtos_DataMessage.Payment.Activation.TypeEnum? = nil
+    }
+
     init() {}
 
     fileprivate var _notification: SignalServiceProtos_DataMessage.Payment.Notification? = nil
+    fileprivate var _activation: SignalServiceProtos_DataMessage.Payment.Activation? = nil
     fileprivate var _request: SignalServiceProtos_DataMessage.Payment.Request? = nil
     fileprivate var _cancellation: SignalServiceProtos_DataMessage.Payment.Cancellation? = nil
   }
@@ -2449,6 +2506,10 @@ extension SignalServiceProtos_DataMessage.Contact.Email.TypeEnum: CaseIterable {
 }
 
 extension SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_DataMessage.Payment.Activation.TypeEnum: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -4584,6 +4645,8 @@ extension SignalServiceProtos_DataMessage.Payment.Request: @unchecked Sendable {
 extension SignalServiceProtos_DataMessage.Payment.Notification: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Payment.Cancellation: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Payment.Activation: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Payment.Activation.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.StoryContext: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.GiftBadge: @unchecked Sendable {}
 extension SignalServiceProtos_NullMessage: @unchecked Sendable {}
@@ -6750,6 +6813,7 @@ extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftP
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Payment"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "notification"),
+    2: .same(proto: "activation"),
     1002: .same(proto: "request"),
     1003: .same(proto: "cancellation"),
   ]
@@ -6761,6 +6825,7 @@ extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftP
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._notification) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._activation) }()
       case 1002: try { try decoder.decodeSingularMessageField(value: &self._request) }()
       case 1003: try { try decoder.decodeSingularMessageField(value: &self._cancellation) }()
       default: break
@@ -6776,6 +6841,9 @@ extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftP
     try { if let v = self._notification {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     } }()
+    try { if let v = self._activation {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
     try { if let v = self._request {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1002)
     } }()
@@ -6787,6 +6855,7 @@ extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftP
 
   static func ==(lhs: SignalServiceProtos_DataMessage.Payment, rhs: SignalServiceProtos_DataMessage.Payment) -> Bool {
     if lhs._notification != rhs._notification {return false}
+    if lhs._activation != rhs._activation {return false}
     if lhs._request != rhs._request {return false}
     if lhs._cancellation != rhs._cancellation {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -7068,6 +7137,49 @@ extension SignalServiceProtos_DataMessage.Payment.Cancellation: SwiftProtobuf.Me
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_DataMessage.Payment.Activation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.protoMessageName + ".Activation"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "type"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DataMessage.Payment.Activation, rhs: SignalServiceProtos_DataMessage.Payment.Activation) -> Bool {
+    if lhs._type != rhs._type {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_DataMessage.Payment.Activation.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "REQUEST"),
+    1: .same(proto: "ACTIVATED"),
+  ]
 }
 
 extension SignalServiceProtos_DataMessage.StoryContext: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

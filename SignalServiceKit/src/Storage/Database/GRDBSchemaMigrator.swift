@@ -232,6 +232,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addHiddenRecipientsTable
         case editRecordReadState
         case addPaymentModelInteractionUniqueId
+        case addPaymentsActivationRequestModel
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -290,7 +291,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 58
+    public static let grdbSchemaVersionLatest: UInt = 59
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2311,6 +2312,23 @@ public class GRDBSchemaMigrator: NSObject {
             try tx.database.alter(table: "model_TSPaymentModel") { table in
                 table.add(column: "interactionUniqueId", .text)
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addPaymentsActivationRequestModel) { tx in
+            try tx.database.create(table: "TSPaymentsActivationRequestModel") { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("threadUniqueId", .text)
+                    .notNull()
+                table.column("senderAci", .blob)
+                    .notNull()
+            }
+            try tx.database.create(
+                index: "index_TSPaymentsActivationRequestModel_on_threadUniqueId",
+                on: "TSPaymentsActivationRequestModel",
+                columns: ["threadUniqueId"]
+            )
             return .success(())
         }
 

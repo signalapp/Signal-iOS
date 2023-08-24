@@ -291,6 +291,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     capabilities[@"announcementGroup"] = @(YES);
     capabilities[@"senderKey"] = @(YES);
     capabilities[@"giftBadges"] = @(YES);
+    capabilities[@"paymentActivation"] = @(YES);
 
     if (RemoteConfig.stories || isSecondaryDevice) {
         capabilities[@"stories"] = @(YES);

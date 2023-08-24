@@ -451,4 +451,7 @@ extension MockConversationView: CVComponentDelegate {
     ) { }
 
     func didTapPayment(_ paymentModel: TSPaymentModel, displayName: String) { }
+
+    func didTapActivatePayments() {}
+    func didTapSendPayment() {}
 }

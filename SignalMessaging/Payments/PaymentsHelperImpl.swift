@@ -114,6 +114,10 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
         paymentsState.isEnabled
     }
 
+    public func arePaymentsEnabled(tx: SDSAnyReadTransaction) -> Bool {
+        Self.loadPaymentsState(transaction: tx).isEnabled
+    }
+
     public var paymentsEntropy: Data? {
         paymentsState.paymentsEntropy
     }
@@ -198,6 +202,34 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
         self.paymentStateCache.set(newPaymentsState)
 
         paymentsEvents.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
+
+        let localAci = self.tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+        TSPaymentsActivationRequestModel
+            .allThreadsWithPaymentActivationRequests(transaction: transaction)
+            .forEach { thread in
+                // Only send out payments activated messages from the originating device.
+                if originatedLocally {
+                    let message = OWSPaymentActivationRequestFinishedMessage(thread: thread, transaction: transaction)
+                    Self.sskJobQueues.messageSenderJobQueue.add(
+                        message: message.asPreparer,
+                        transaction: transaction
+                    )
+                }
+                // But always insert an info message wherever we were requested.
+                if let localAci {
+                    let infoMessage = TSInfoMessage(
+                        thread: thread,
+                        messageType: .paymentsActivated,
+                        infoMessageUserInfo: [
+                            .paymentActivatedAci: localAci.serviceIdString
+                        ]
+                    )
+                    infoMessage.anyInsert(transaction: transaction)
+                }
+            }
+        // Regardless of where it was originated, wipe the pending activation request state.
+        // Now that we have activated, they're useless.
+        _ = try? TSPaymentsActivationRequestModel.deleteAll(transaction.unwrapGrdbWrite.database)
 
         transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(PaymentsConstants.arePaymentsEnabledDidChange, object: nil)
@@ -334,6 +366,67 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             return
         }
         paymentRequestModel.anyRemove(transaction: transaction)
+    }
+
+    public func processIncomingPaymentsActivationRequest(
+        thread: TSThread,
+        senderAci: AciObjC,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        Logger.info("")
+
+        // If we are activated already, immediately reply and finish.
+        // Only do this on the primary so we don't end up replying
+        // multiple times across every device that is requested.
+        if
+            Self.loadPaymentsState(transaction: transaction).isEnabled
+        {
+            if self.tsAccountManager.isPrimaryDevice(transaction: transaction) {
+                let message = OWSPaymentActivationRequestFinishedMessage(thread: thread, transaction: transaction)
+                Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            }
+            return
+        }
+
+        // Create a model; we use this after we activate payments to
+        // know who requested we activate, so we can send them
+        // a message telling them we activated.
+        TSPaymentsActivationRequestModel.createIfNotExists(
+            threadUniqueId: thread.uniqueId,
+            senderAci: senderAci.wrappedAciValue,
+            transaction: transaction
+        )
+        // Insert the info message to display in chat.
+        let infoMessage = TSInfoMessage(
+            thread: thread,
+            messageType: .paymentsActivationRequest,
+            infoMessageUserInfo: [
+                .paymentActivationRequestSenderAci: senderAci.serviceIdString
+            ]
+        )
+        infoMessage.anyInsert(transaction: transaction)
+    }
+
+    public func processIncomingPaymentsActivatedMessage(
+        thread: TSThread,
+        senderAci: AciObjC,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        Logger.info("")
+        let infoMessage = TSInfoMessage(
+            thread: thread,
+            messageType: .paymentsActivated,
+            infoMessageUserInfo: [
+                .paymentActivatedAci: senderAci.wrappedAciValue.serviceIdString
+            ]
+        )
+        infoMessage.anyInsert(transaction: transaction)
+
+        setArePaymentsEnabled(
+            for: SignalServiceAddress(serviceIdObjC: senderAci),
+            hasPaymentsEnabled: true,
+            transaction: transaction
+        )
     }
 
     public func processReceivedTranscriptPaymentRequest(
