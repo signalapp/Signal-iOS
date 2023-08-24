@@ -57,7 +57,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         self.protocolStoreManager = protocolStoreManager
     }
 
-    private var lastPreKeyCheckTimestamp: Date?
+    @Atomic private var lastPreKeyCheckTimestamp: Date?
 
     private func legacy_needsSignedPreKeyRotation(identity: OWSIdentity, tx: DBReadTransaction) -> Bool {
         let store = protocolStoreManager.signalProtocolStore(for: identity).signedPreKeyStore
@@ -148,12 +148,22 @@ public class PreKeyManagerImpl: PreKeyManager {
             return true
         }()
 
+        var operationCount = 0
+        let didSucceed = { [weak self] in
+            operationCount -= 1
+            guard operationCount == 0 else {
+                return
+            }
+            self?.refreshPreKeysDidSucceed()
+        }
+
         func addOperation(for identity: OWSIdentity) {
+            operationCount += 1
             let refreshOp = preKeyOperationFactory.refreshPreKeysOperation(
                 for: identity,
                 shouldRefreshOneTimePreKeys: shouldRefreshOneTimePrekeys,
                 shouldRefreshSignedPreKeys: true,
-                didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+                didSucceed: didSucceed
             )
             refreshOp.addDependency(messageProcessingOperation)
             operations.append(refreshOp)
@@ -208,33 +218,51 @@ public class PreKeyManagerImpl: PreKeyManager {
 
     public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) -> Promise<Void> {
         let (aciPromise, aciFuture) = Promise<Void>.pending()
+
+        var operationCount = 2
+        let didSucceed = { [weak self] in
+            operationCount -= 1
+            guard operationCount == 0 else {
+                return
+            }
+            self?.refreshPreKeysDidSucceed()
+        }
+
         let aciOperation = preKeyOperationFactory.rotateOneTimePreKeysForRegistration(
             identity: .aci,
             auth: auth,
             future: aciFuture,
-            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+            didSucceed: didSucceed
         )
         let (pniPromise, pniFuture) = Promise<Void>.pending()
         let pniOperation = preKeyOperationFactory.rotateOneTimePreKeysForRegistration(
             identity: .pni,
             auth: auth,
             future: pniFuture,
-            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+            didSucceed: didSucceed
         )
         Self.operationQueue.addOperations([aciOperation, pniOperation], waitUntilFinished: false)
         return Promise.when(fulfilled: [aciPromise, pniPromise])
     }
 
     public func legacy_createPreKeys(auth: ChatServiceAuth) -> Promise<Void> {
+        var operationCount = 2
+        let didSucceed = { [weak self] in
+            operationCount -= 1
+            guard operationCount == 0 else {
+                return
+            }
+            self?.refreshPreKeysDidSucceed()
+        }
         let aciOp = preKeyOperationFactory.legacy_createPreKeysOperation(
             for: .aci,
             auth: auth,
-            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+            didSucceed: didSucceed
         )
         let pniOp = preKeyOperationFactory.legacy_createPreKeysOperation(
             for: .pni,
             auth: auth,
-            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+            didSucceed: didSucceed
         )
         return runPreKeyOperations([aciOp, pniOp])
     }
@@ -247,15 +275,26 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func rotateSignedPreKeys() -> Promise<Void> {
+        var operationCount = 0
+        let didSucceed = { [weak self] in
+            operationCount -= 1
+            guard operationCount == 0 else {
+                return
+            }
+            self?.refreshPreKeysDidSucceed()
+        }
+
+        operationCount += 1
         let aciOp = preKeyOperationFactory.rotateSignedPreKeyOperation(
             for: .aci,
-            didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+            didSucceed: didSucceed
         )
         let shouldPerformPniOp = db.read(block: hasPniIdentityKey(tx:))
         if shouldPerformPniOp {
+            operationCount += 1
             let pniOp = preKeyOperationFactory.rotateSignedPreKeyOperation(
                 for: .pni,
-                didSucceed: { [weak self] in self?.refreshPreKeysDidSucceed() }
+                didSucceed: didSucceed
             )
             return runPreKeyOperations([aciOp, pniOp])
         } else {
