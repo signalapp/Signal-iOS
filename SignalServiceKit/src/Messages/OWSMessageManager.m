@@ -1037,7 +1037,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"Processing payment notification.");
         [self.paymentsHelper processIncomingPaymentNotificationWithThread:thread
                                                       paymentNotification:paymentModels.notification
-                                                            senderAddress:envelope.sourceAddress
+                                                                senderAci:decryptedEnvelope.sourceAciObjC
                                                               transaction:transaction];
     } else if (paymentModels.cancellation != nil) {
         OWSLogInfo(@"Processing payment cancellation.");

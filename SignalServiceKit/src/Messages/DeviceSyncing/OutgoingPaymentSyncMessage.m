@@ -8,26 +8,30 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OutgoingPaymentMobileCoin ()
+@property (nonatomic, readonly, nullable) NSString *recipientUuidString;
+@end
+
 @implementation OutgoingPaymentMobileCoin
 
-- (instancetype)initWithRecipientUuidString:(nullable NSString *)recipientUuidString
-                           recipientAddress:(nullable NSData *)recipientAddress
-                              amountPicoMob:(uint64_t)amountPicoMob
-                                 feePicoMob:(uint64_t)feePicoMob
-                                 blockIndex:(uint64_t)blockIndex
-                             blockTimestamp:(uint64_t)blockTimestamp
-                                memoMessage:(nullable NSString *)memoMessage
-                             spentKeyImages:(NSArray<NSData *> *)spentKeyImages
-                           outputPublicKeys:(NSArray<NSData *> *)outputPublicKeys
-                                receiptData:(NSData *)receiptData
-                          isDefragmentation:(BOOL)isDefragmentation
+- (instancetype)initWithRecipientAci:(nullable AciObjC *)recipientAci
+                    recipientAddress:(nullable NSData *)recipientAddress
+                       amountPicoMob:(uint64_t)amountPicoMob
+                          feePicoMob:(uint64_t)feePicoMob
+                          blockIndex:(uint64_t)blockIndex
+                      blockTimestamp:(uint64_t)blockTimestamp
+                         memoMessage:(nullable NSString *)memoMessage
+                      spentKeyImages:(NSArray<NSData *> *)spentKeyImages
+                    outputPublicKeys:(NSArray<NSData *> *)outputPublicKeys
+                         receiptData:(NSData *)receiptData
+                   isDefragmentation:(BOOL)isDefragmentation
 {
     self = [super init];
     if (!self) {
         return nil;
     }
 
-    _recipientUuidString = recipientUuidString;
+    _recipientUuidString = recipientAci.serviceIdUppercaseString;
     _recipientAddress = recipientAddress;
     _amountPicoMob = amountPicoMob;
     _feePicoMob = feePicoMob;
@@ -40,6 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
     _isDefragmentation = isDefragmentation;
 
     return self;
+}
+
+- (nullable AciObjC *)recipientAci
+{
+    return [[AciObjC alloc] initWithAciString:self.recipientUuidString];
 }
 
 @end

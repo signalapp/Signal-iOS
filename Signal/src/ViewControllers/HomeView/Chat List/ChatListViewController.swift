@@ -801,12 +801,13 @@ public class ChatListViewController: OWSViewController {
 
         guard paymentModel.isIncoming,
               !paymentModel.isUnidentified,
-              let address = paymentModel.address,
+              let senderAci = paymentModel.senderOrRecipientAci?.wrappedAciValue,
               let paymentAmount = paymentModel.paymentAmount,
               paymentAmount.isValid else {
             configureUnreadPaymentsBannerMultiple(paymentsReminderView, unreadCount: 1)
             return
         }
+        let address = SignalServiceAddress(senderAci)
         guard nil != TSContactThread.getWithContactAddress(address, transaction: transaction) else {
             configureUnreadPaymentsBannerMultiple(paymentsReminderView, unreadCount: 1)
             return

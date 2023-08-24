@@ -118,7 +118,7 @@ class DebugUIPayments: DebugUIPage, Dependencies {
 
     private func insertAllPaymentModelVariations(contactThread: TSContactThread) {
         let address = contactThread.contactAddress
-        let uuid = address.uuid!
+        let aci = address.aci!
 
         databaseStorage.write { transaction in
             let paymentAmounts = [
@@ -142,10 +142,6 @@ class DebugUIPayments: DebugUIPage, Dependencies {
                 if Bool.random() {
                     memoMessage = "Pizza Party 🍕"
                 }
-                var addressUuidString: String?
-                if !paymentType.isUnidentified {
-                    addressUuidString = uuid.uuidString
-                }
                 // TODO: requestUuidString
                 // TODO: isUnread
                 // TODO: mcRecipientPublicAddressData
@@ -166,7 +162,7 @@ class DebugUIPayments: DebugUIPage, Dependencies {
                                                   paymentState: paymentState,
                                                   paymentAmount: paymentAmounts.randomElement()!,
                                                   createdDate: Date(),
-                                                  addressUuidString: addressUuidString,
+                                                  senderOrRecipientAci: paymentType.isUnidentified ? nil : AciObjC(aci),
                                                   memoMessage: memoMessage,
                                                   requestUuidString: nil,
                                                   isUnread: false,

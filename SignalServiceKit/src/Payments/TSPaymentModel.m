@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
                        paymentState:(TSPaymentState)paymentState
                       paymentAmount:(nullable TSPaymentAmount *)paymentAmount
                         createdDate:(NSDate *)createdDate
-                  addressUuidString:(nullable NSString *)addressUuidString
+               senderOrRecipientAci:(nullable AciObjC *)senderOrRecipientAci
                         memoMessage:(nullable NSString *)memoMessage
                   requestUuidString:(nullable NSString *)requestUuidString
                            isUnread:(BOOL)isUnread
@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     _paymentState = paymentState;
     _paymentAmount = paymentAmount;
     _createdTimestamp = createdDate.ows_millisecondsSince1970;
-    _addressUuidString = addressUuidString;
+    _addressUuidString = senderOrRecipientAci.serviceIdUppercaseString;
     _memoMessage = memoMessage;
     _requestUuidString = requestUuidString;
     _isUnread = isUnread;
@@ -156,20 +156,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSDate ows_dateWithMillisecondsSince1970:self.createdTimestamp];
 }
 
-- (nullable NSUUID *)addressUuid
+- (nullable AciObjC *)senderOrRecipientAci
 {
-    if (self.addressUuidString == nil) {
-        return nil;
-    }
-    return [[NSUUID alloc] initWithUUIDString:self.addressUuidString];
-}
-
-- (nullable SignalServiceAddress *)address
-{
-    if (self.addressUuid == nil) {
-        return nil;
-    }
-    return [[SignalServiceAddress alloc] initWithUuid:self.addressUuid];
+    return [[AciObjC alloc] initWithAciString:self.addressUuidString];
 }
 
 - (NSDate *)sortDate

@@ -7,9 +7,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AciObjC;
+
 @interface OutgoingPaymentMobileCoin : MTLModel
 
-@property (nonatomic, readonly, nullable) NSString *recipientUuidString;
+@property (nonatomic, readonly, nullable) AciObjC *recipientAci;
 @property (nonatomic, readonly, nullable) NSData *recipientAddress;
 @property (nonatomic, readonly) uint64_t amountPicoMob;
 @property (nonatomic, readonly) uint64_t feePicoMob;
@@ -22,17 +24,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *receiptData;
 @property (nonatomic, readonly) BOOL isDefragmentation;
 
-- (instancetype)initWithRecipientUuidString:(nullable NSString *)recipientUuidString
-                           recipientAddress:(nullable NSData *)recipientAddress
-                              amountPicoMob:(uint64_t)amountPicoMob
-                                 feePicoMob:(uint64_t)feePicoMob
-                                 blockIndex:(uint64_t)blockIndex
-                             blockTimestamp:(uint64_t)blockTimestamp
-                                memoMessage:(nullable NSString *)memoMessage
-                             spentKeyImages:(NSArray<NSData *> *)spentKeyImages
-                           outputPublicKeys:(NSArray<NSData *> *)outputPublicKeys
-                                receiptData:(NSData *)receiptData
-                          isDefragmentation:(BOOL)isDefragmentation;
+- (instancetype)initWithRecipientAci:(nullable AciObjC *)recipientAci
+                    recipientAddress:(nullable NSData *)recipientAddress
+                       amountPicoMob:(uint64_t)amountPicoMob
+                          feePicoMob:(uint64_t)feePicoMob
+                          blockIndex:(uint64_t)blockIndex
+                      blockTimestamp:(uint64_t)blockTimestamp
+                         memoMessage:(nullable NSString *)memoMessage
+                      spentKeyImages:(NSArray<NSData *> *)spentKeyImages
+                    outputPublicKeys:(NSArray<NSData *> *)outputPublicKeys
+                         receiptData:(NSData *)receiptData
+                   isDefragmentation:(BOOL)isDefragmentation;
 
 @end
 

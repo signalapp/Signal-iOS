@@ -10,7 +10,7 @@ public struct PaymentsHistoryItem {
     let displayName: String
 
     var address: SignalServiceAddress? {
-        paymentModel.address
+        paymentModel.senderOrRecipientAci.map { SignalServiceAddress($0.wrappedAciValue) }
     }
 
     var isIncoming: Bool {
@@ -146,8 +146,8 @@ class PaymentsHistoryDataSource: Dependencies {
                 var displayName: String
                 if paymentModel.isUnidentified {
                     displayName = PaymentsViewUtils.buildUnidentifiedTransactionString(paymentModel: paymentModel)
-                } else if let address = paymentModel.address {
-                    displayName = Self.contactsManager.displayName(for: address, transaction: transaction)
+                } else if let senderOrRecipientAci = paymentModel.senderOrRecipientAci?.wrappedAciValue {
+                    displayName = Self.contactsManager.displayName(for: SignalServiceAddress(senderOrRecipientAci), transaction: transaction)
                 } else if paymentModel.isOutgoingTransfer {
                     displayName = OWSLocalizedString("PAYMENTS_TRANSFER_OUT_PAYMENT",
                                                     comment: "Label for 'transfer out' payments.")

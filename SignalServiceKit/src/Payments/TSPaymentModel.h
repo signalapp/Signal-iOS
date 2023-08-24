@@ -8,6 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AciObjC;
 @class MobileCoinPayment;
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
@@ -44,8 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // We should not treat this value as valid for unverified incoming payments.
 @property (nonatomic, readonly, nullable) NSString *addressUuidString;
-@property (nonatomic, readonly, nullable) NSUUID *addressUuid;
-@property (nonatomic, readonly, nullable) SignalServiceAddress *address;
+@property (nonatomic, readonly, nullable) AciObjC *senderOrRecipientAci;
 
 // Optional. Used to construct outgoing notifications.
 //           This should only be set for outgoing payments from the device that
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
                        paymentState:(TSPaymentState)paymentState
                       paymentAmount:(nullable TSPaymentAmount *)paymentAmount
                         createdDate:(NSDate *)createdDate
-                  addressUuidString:(nullable NSString *)addressUuidString
+               senderOrRecipientAci:(nullable AciObjC *)senderOrRecipientAci
                         memoMessage:(nullable NSString *)memoMessage
                   requestUuidString:(nullable NSString *)requestUuidString
                            isUnread:(BOOL)isUnread

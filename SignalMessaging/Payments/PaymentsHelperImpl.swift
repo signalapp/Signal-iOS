@@ -328,7 +328,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
     public func processIncomingPaymentNotification(
         thread: TSThread,
         paymentNotification: TSPaymentNotification,
-        senderAddress: SignalServiceAddress,
+        senderAci: AciObjC,
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("")
@@ -336,13 +336,9 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             owsFailDebug("Invalid paymentNotification.")
             return
         }
-        guard senderAddress.isValid else {
-            owsFailDebug("Invalid senderAddress.")
-            return
-        }
         upsertPaymentModelForIncomingPaymentNotification(paymentNotification,
                                                          thread: thread,
-                                                         senderAddress: senderAddress,
+                                                         senderAci: senderAci.wrappedAciValue,
                                                          transaction: transaction)
     }
 
@@ -493,15 +489,12 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             guard let mobileCoinProto = paymentProto.mobileCoin else {
                 throw OWSAssertionError("Invalid payment sync message: Missing mobileCoinProto.")
             }
-            var recipientServiceId: ServiceId?
-            if let recipientServiceIdString = paymentProto.recipientServiceID {
-                guard let serviceId = try? ServiceId.parseFrom(serviceIdString: recipientServiceIdString) else {
-                    throw OWSAssertionError("Invalid payment sync message: Missing recipientServiceId.")
+            var recipientAci: Aci?
+            if let recipientAciString = paymentProto.recipientServiceID {
+                guard let aci = Aci.parseFrom(aciString: recipientAciString) else {
+                    throw OWSAssertionError("Invalid payment sync message: Missing recipientServiceID.")
                 }
-                if !FeatureFlags.phoneNumberIdentifiers, serviceId is Pni {
-                    throw OWSAssertionError("Invalid payment sync message: Unexpected Pni.")
-                }
-                recipientServiceId = serviceId
+                recipientAci = aci
             }
             let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: mobileCoinProto.amountPicoMob)
             guard paymentAmount.isValidAmount(canBeEmpty: true) else {
@@ -542,7 +535,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             let paymentType: TSPaymentType
             if recipientPublicAddressData == nil {
                 // Possible defragmentation.
-                guard recipientServiceId == nil else {
+                guard recipientAci == nil else {
                     throw OWSAssertionError("Invalid payment sync message: unexpected recipientUuid.")
                 }
                 guard recipientPublicAddressData == nil else {
@@ -558,7 +551,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                 paymentType = .outgoingDefragmentationFromLinkedDevice
             } else {
                 // Possible outgoing payment.
-                guard recipientServiceId != nil else {
+                guard recipientAci != nil else {
                     throw OWSAssertionError("Invalid payment sync message: missing recipientUuid.")
                 }
                 guard paymentAmount.isValidAmount(canBeEmpty: false) else {
@@ -580,7 +573,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                                               paymentState: paymentState,
                                               paymentAmount: paymentAmount,
                                               createdDate: NSDate.ows_date(withMillisecondsSince1970: messageTimestamp),
-                                              addressUuidString: recipientServiceId?.serviceIdUppercaseString,
+                                              senderOrRecipientAci: recipientAci.map { AciObjC($0) },
                                               memoMessage: memoMessage,
                                               requestUuidString: requestUuidString,
                                               isUnread: false,
@@ -593,11 +586,11 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             // insert the outgoing message in chat.
             if
                 paymentType == .outgoingPaymentFromLinkedDevice,
-                let recipientServiceId,
-                recipientServiceId != tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+                let recipientAci,
+                recipientAci != tsAccountManager.localIdentifiers(transaction: transaction)?.aci
             {
                 let thread = TSContactThread.getOrCreateThread(
-                    withContactAddress: SignalServiceAddress(recipientServiceId),
+                    withContactAddress: SignalServiceAddress(recipientAci),
                     transaction: transaction
                 )
                 let paymentNotification = TSPaymentNotification(
@@ -776,7 +769,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
 
     private func upsertPaymentModelForIncomingPaymentNotification(_ paymentNotification: TSPaymentNotification,
                                                                   thread: TSThread,
-                                                                  senderAddress: SignalServiceAddress,
+                                                                  senderAci: Aci,
                                                                   transaction: SDSAnyWriteTransaction) {
         do {
             let mcReceiptData = paymentNotification.mcReceiptData
@@ -795,7 +788,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                                               paymentState: .incomingUnverified,
                                               paymentAmount: nil,
                                               createdDate: Date(),
-                                              addressUuidString: senderAddress.uuidString,
+                                              senderOrRecipientAci: AciObjC(senderAci),
                                               memoMessage: paymentNotification.memoMessage?.nilIfEmpty,
                                               requestUuidString: nil,
                                               isUnread: true,

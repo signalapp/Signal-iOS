@@ -42,7 +42,7 @@ public protocol PaymentsHelper: AnyObject {
 
     func processIncomingPaymentNotification(thread: TSThread,
                                             paymentNotification: TSPaymentNotification,
-                                            senderAddress: SignalServiceAddress,
+                                            senderAci: AciObjC,
                                             transaction: SDSAnyWriteTransaction)
 
     func processIncomingPaymentCancellation(thread: TSThread,
@@ -230,7 +230,7 @@ extension MockPaymentsHelper: PaymentsHelperSwift, PaymentsHelper {
 
     public func processIncomingPaymentNotification(thread: TSThread,
                                                    paymentNotification: TSPaymentNotification,
-                                                   senderAddress: SignalServiceAddress,
+                                                   senderAci: AciObjC,
                                                    transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }

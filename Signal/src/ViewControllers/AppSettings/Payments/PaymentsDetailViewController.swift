@@ -212,8 +212,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
            !paymentAmount.isZero,
            !paymentItem.isFailed {
             let title: String
-            if let address = paymentModel.address {
-                let username = Self.contactsManager.displayName(for: address)
+            if let senderOrRecipientAci = paymentModel.senderOrRecipientAci?.wrappedAciValue {
+                let username = Self.contactsManager.displayName(for: SignalServiceAddress(senderOrRecipientAci))
                 let titleFormat: String = {
                     switch paymentItem {
                     case let item where item.isIncoming:
@@ -283,8 +283,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                 if paymentItem.isOutgoing {
                     return CommonStrings.you
                 }
-                if let address = paymentModel.address {
-                    return Self.contactsManager.displayName(for: address)
+                if let senderAci = paymentModel.senderOrRecipientAci?.wrappedAciValue {
+                    return Self.contactsManager.displayName(for: SignalServiceAddress(senderAci))
                 }
                 return Self.contactsManager.unknownUserLabel
             }()
@@ -372,8 +372,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
     }
 
     private func configureHeader(cell: UITableViewCell) {
-        if let address = paymentItem.paymentModel.address {
-            configureHeaderContact(cell: cell, address: address)
+        if let senderOrRecipientAci = paymentItem.paymentModel.senderOrRecipientAci?.wrappedAciValue {
+            configureHeaderContact(cell: cell, address: SignalServiceAddress(senderOrRecipientAci))
         } else {
             configureHeaderUnidentified(cell: cell)
         }

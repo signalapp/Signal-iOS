@@ -702,8 +702,8 @@ extension TSPaymentModel: TSPaymentBaseModel {
                 components.append("feeAmount: \(feeAmount.formatted)")
             }
 
-            if let address = address {
-                components.append("address: \(address)")
+            if let senderOrRecipientAci = senderOrRecipientAci {
+                components.append("senderOrRecipient: \(senderOrRecipientAci)")
             }
             if let memoMessage = memoMessage {
                 components.append("memoMessage: '\(memoMessage)'")
