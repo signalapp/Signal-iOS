@@ -20,9 +20,6 @@ class DebugUIPayments: DebugUIPage, Dependencies {
             sectionItems.append(OWSTableItem(title: "Send payment request") { [weak self] in
                 self?.sendPaymentRequestMessage(contactThread: contactThread)
             })
-            sectionItems.append(OWSTableItem(title: "Send payment notification") { [weak self] in
-                self?.sendPaymentNotificationMessage(contactThread: contactThread)
-            })
             sectionItems.append(OWSTableItem(title: "Send payment cancellation") { [weak self] in
                 self?.sendPaymentCancellationMessage(contactThread: contactThread)
             })
@@ -76,23 +73,6 @@ class DebugUIPayments: DebugUIPage, Dependencies {
             PaymentsImpl.sendPaymentRequestMessagePromise(address: address,
                                                           paymentAmount: paymentAmount,
                                                           memoMessage: memoMessage)
-        }.done { (_) -> Void in
-            Logger.info("Success.")
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    private func sendPaymentNotificationMessage(contactThread: TSContactThread) {
-        let address = contactThread.contactAddress
-        // PAYMENTS TODO: Can we make this the right length?
-        let mcReceiptData = Randomness.generateRandomBytes(1)
-        let memoMessage = "I'm sending payment for: \(UUID().uuidString)."
-        firstly {
-            PaymentsImpl.sendPaymentNotificationMessagePromise(address: address,
-                                                               memoMessage: memoMessage,
-                                                               mcReceiptData: mcReceiptData,
-                                                               requestUuidString: nil)
         }.done { (_) -> Void in
             Logger.info("Success.")
         }.catch { error in
@@ -190,6 +170,7 @@ class DebugUIPayments: DebugUIPage, Dependencies {
                                                   memoMessage: memoMessage,
                                                   requestUuidString: nil,
                                                   isUnread: false,
+                                                  interactionUniqueId: nil,
                                                   mobileCoin: mobileCoin)
                 do {
                     try Self.paymentsHelper.tryToInsertPaymentModel(paymentModel, transaction: transaction)

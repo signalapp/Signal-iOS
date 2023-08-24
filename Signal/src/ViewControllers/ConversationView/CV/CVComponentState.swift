@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import MobileCoin
 import SignalMessaging
 import SignalServiceKit
 import SignalUI
@@ -83,6 +84,15 @@ public class CVComponentState: Equatable, Dependencies {
         }
     }
     let genericAttachment: GenericAttachment?
+
+    public struct PaymentAttachment: Equatable, Dependencies {
+        let notification: TSPaymentNotification
+        let model: TSPaymentModel?
+        let otherUserShortName: String
+
+        var status: TSPaymentState? { model?.paymentState }
+    }
+    var paymentAttachment: PaymentAttachment?
 
     // It's not practical to reload the audio cell every time
     // playback state or progress changes.  Therefore we only
@@ -279,6 +289,7 @@ public class CVComponentState: Equatable, Dependencies {
                      bodyText: BodyText?,
                      bodyMedia: BodyMedia?,
                      genericAttachment: GenericAttachment?,
+                     paymentAttachment: PaymentAttachment?,
                      audioAttachment: AudioAttachment?,
                      viewOnce: ViewOnce?,
                      quotedReply: QuotedReply?,
@@ -304,6 +315,7 @@ public class CVComponentState: Equatable, Dependencies {
         self.bodyText = bodyText
         self.bodyMedia = bodyMedia
         self.genericAttachment = genericAttachment
+        self.paymentAttachment = paymentAttachment
         self.audioAttachment = audioAttachment
         self.viewOnce = viewOnce
         self.quotedReply = quotedReply
@@ -333,6 +345,7 @@ public class CVComponentState: Equatable, Dependencies {
                     lhs.bodyText == rhs.bodyText &&
                     lhs.bodyMedia == rhs.bodyMedia &&
                     lhs.genericAttachment == rhs.genericAttachment &&
+                    lhs.paymentAttachment == rhs.paymentAttachment &&
                     lhs.audioAttachment == rhs.audioAttachment &&
                     lhs.viewOnce == rhs.viewOnce &&
                     lhs.quotedReply == rhs.quotedReply &&
@@ -361,6 +374,7 @@ public class CVComponentState: Equatable, Dependencies {
         typealias BodyText = CVComponentState.BodyText
         typealias BodyMedia = CVComponentState.BodyMedia
         typealias GenericAttachment = CVComponentState.GenericAttachment
+        typealias PaymentAttachment = CVComponentState.PaymentAttachment
         typealias ViewOnce = CVComponentState.ViewOnce
         typealias QuotedReply = CVComponentState.QuotedReply
         typealias Sticker = CVComponentState.Sticker
@@ -391,6 +405,7 @@ public class CVComponentState: Equatable, Dependencies {
         var bodyText: BodyText?
         var bodyMedia: BodyMedia?
         var genericAttachment: GenericAttachment?
+        var paymentAttachment: PaymentAttachment?
         var audioAttachment: AudioAttachment?
         var viewOnce: ViewOnce?
         var quotedReply: QuotedReply?
@@ -428,6 +443,7 @@ public class CVComponentState: Equatable, Dependencies {
                                     bodyText: bodyText,
                                     bodyMedia: bodyMedia,
                                     genericAttachment: genericAttachment,
+                                    paymentAttachment: paymentAttachment,
                                     audioAttachment: audioAttachment,
                                     viewOnce: viewOnce,
                                     quotedReply: quotedReply,
@@ -495,6 +511,9 @@ public class CVComponentState: Equatable, Dependencies {
             if genericAttachment != nil {
                 return .genericAttachment
             }
+            if paymentAttachment != nil {
+                return .paymentAttachment
+            }
             if giftBadge != nil {
                 return .giftBadge
             }
@@ -538,6 +557,9 @@ public class CVComponentState: Equatable, Dependencies {
         }
         if genericAttachment != nil {
             result.insert(.genericAttachment)
+        }
+        if paymentAttachment != nil {
+            result.insert(.paymentAttachment)
         }
         if audioAttachment != nil {
             result.insert(.audioAttachment)
@@ -802,7 +824,26 @@ fileprivate extension CVComponentState.Builder {
         try buildBodyText(message: message)
 
         if let outgoingMessage = message as? TSOutgoingMessage {
-            switch outgoingMessage.messageState {
+            let messageStatus: MessageReceiptStatus
+            if
+                let paymentMessage = message as? OWSPaymentMessage,
+                let receipt = paymentMessage.paymentNotification?.mcReceiptData,
+                let model = PaymentFinder.paymentModels(
+                    forMcReceiptData: receipt,
+                    transaction: transaction
+                ).first
+            {
+                messageStatus = MessageRecipientStatusUtils.recipientStatus(
+                    outgoingMessage: outgoingMessage,
+                    paymentModel: model
+                )
+            } else {
+                messageStatus = MessageRecipientStatusUtils.recipientStatus(
+                    outgoingMessage: outgoingMessage
+                )
+            }
+
+            switch messageStatus {
             case .failed:
                 sendFailureBadge = SendFailureBadge(color: .ows_accentRed)
             case .pending:
@@ -810,6 +851,12 @@ fileprivate extension CVComponentState.Builder {
             default:
                 break
             }
+        }
+
+        // Could be incoming or outgoing; protocol covers both
+        if let paymentMessage = message as? OWSPaymentMessage,
+           let paymentNotification = paymentMessage.paymentNotification {
+            return buildPaymentAttachment(paymentNotification: paymentNotification)
         }
 
         if let giftBadge = message.giftBadge {
@@ -1132,6 +1179,27 @@ fileprivate extension CVComponentState.Builder {
         self.genericAttachment = GenericAttachment(attachment: attachment)
     }
 
+    mutating func buildPaymentAttachment(
+        paymentNotification: TSPaymentNotification
+    ) -> CVComponentState {
+
+        // Note: there should only ever be one payment model per receipt,
+        // but this is unenforced.
+        let paymentModel: TSPaymentModel? = PaymentFinder.paymentModels(
+            forMcReceiptData: paymentNotification.mcReceiptData,
+            transaction: itemBuildingContext.transaction
+        ).first
+
+        self.paymentAttachment = PaymentAttachment(
+            notification: paymentNotification,
+            model: paymentModel,
+            // Only used for 1:1 threads, but not enforced.
+            otherUserShortName: threadViewModel.shortName ?? threadViewModel.name
+        )
+
+        return build()
+    }
+
     mutating func buildLinkPreview(message: TSMessage, linkPreview: OWSLinkPreview) throws {
         guard bodyText != nil else {
             owsFailDebug("Missing body text.")
@@ -1306,6 +1374,9 @@ public extension CVComponentState {
                 break
             case .quotedReply:
                 // Quoted replies are never forwarded.
+                break
+            case .paymentAttachment:
+                // Payments can't be forwarded.
                 break
             }
         }

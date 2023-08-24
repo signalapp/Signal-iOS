@@ -120,6 +120,7 @@
     "MessageContentJobRecord.wasReceivedByUD": 4,
     "PaymentModelRecord.addressUuidString": 1,
     "PaymentModelRecord.createdTimestamp": 2,
+    "PaymentModelRecord.interactionUniqueId": 14,
     "PaymentModelRecord.isUnread": 3,
     "PaymentModelRecord.mcLedgerBlockIndex": 4,
     "PaymentModelRecord.mcReceiptData": 5,

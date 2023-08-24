@@ -192,4 +192,23 @@ extension ConversationViewController: MessageActionsDelegate {
     func messageActionsStopSpeakingItem(_ itemViewModel: CVItemViewModelImpl) {
         self.speechManager.stop()
     }
+
+    func messageActionsShowPaymentDetails(_ itemViewModel: CVItemViewModelImpl) {
+        guard let model = itemViewModel.paymentAttachment?.model else {
+            owsFailDebug("We should have a matching TSPaymentModel at this point")
+            return
+        }
+
+        guard let contactAddress = (thread as? TSContactThread)?.contactAddress else {
+            owsFailDebug("Should be contact thread")
+            return
+        }
+        let contactName = self.contactsManager.displayName(for: contactAddress)
+
+        let paymentHistoryItem = PaymentsHistoryItem(paymentModel: model, displayName: contactName)
+        let paymentsDetailViewController = PaymentsDetailViewController(
+            paymentItem: paymentHistoryItem
+        )
+        navigationController?.pushViewController(paymentsDetailViewController, animated: true)
+    }
 }

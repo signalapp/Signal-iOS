@@ -443,4 +443,12 @@ extension MockConversationView: CVComponentDelegate {
     func didTapUnknownThreadWarningGroup() {}
     func didTapUnknownThreadWarningContact() {}
     func didTapDeliveryIssueWarning(_ message: TSErrorMessage) {}
+
+    func didLongPressPaymentMessage(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool
+    ) { }
+
+    func didTapPayment(_ paymentModel: TSPaymentModel, displayName: String) { }
 }

@@ -645,6 +645,9 @@ extension MobileCoinAPI {
     struct MobileCoinAccount {
         let environment: Environment
         let accountKey: MobileCoin.AccountKey
+        var publicAddress: MobileCoin.PublicAddress {
+            accountKey.publicAddress
+        }
 
         fileprivate func authorization(signalAuthorization: OWSAuthorization) -> OWSAuthorization {
             switch environment {

@@ -565,7 +565,9 @@ public class ChatListCell: UITableViewCell {
         let shouldHideStatusIndicator = configuration.hasOverrideSnippet
         let thread = configuration.thread
         guard !shouldHideStatusIndicator,
-              let outgoingMessage = thread.lastMessageForInbox as? TSOutgoingMessage else {
+            let outgoingMessage = thread.lastMessageForInbox as? TSOutgoingMessage,
+            let messageStatus = configuration.thread.chatListInfo?.lastMessageOutgoingStatus
+        else {
             return nil
         }
 
@@ -573,8 +575,6 @@ public class ChatListCell: UITableViewCell {
         var messageStatusViewTintColor = snippetColor.color(isDarkThemeEnabled: Theme.isDarkThemeEnabled)
         var shouldAnimateStatusIcon = false
 
-        let messageStatus =
-            MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
         switch messageStatus {
         case .uploading, .sending:
             statusIndicatorImage = UIImage(named: "message_status_sending")

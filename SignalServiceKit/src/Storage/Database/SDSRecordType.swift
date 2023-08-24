@@ -85,4 +85,5 @@ public enum SDSRecordType: UInt, CaseIterable {
     case privateStoryThread = 72
     case sendGiftBadgeJobRecord = 73
     case localUserLeaveGroupJobRecord = 74
+    case incomingPaymentMessage = 75
 }

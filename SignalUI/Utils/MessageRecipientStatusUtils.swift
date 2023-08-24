@@ -53,7 +53,7 @@ public class MessageRecipientStatusUtils {
     }
 
     // This method is per-recipient.
-    class func recipientStatusAndStatusMessage(
+    public class func recipientStatusAndStatusMessage(
         outgoingMessage: TSOutgoingMessage,
         recipientState: TSOutgoingMessageRecipientState
     ) -> (status: MessageReceiptStatus, shortStatusMessage: String, longStatusMessage: String) {
@@ -163,6 +163,67 @@ public class MessageRecipientStatusUtils {
         return status
     }
 
+    public class func recipientStatus(
+        outgoingMessage: TSOutgoingMessage,
+        paymentModel: TSPaymentModel
+    ) -> MessageReceiptStatus {
+        return paymentModel.paymentState.combinedMessageReceiptStatus(with: outgoingMessage)
+    }
+
+    @objc
+    public class func receiptMessage(
+        outgoingMessage: TSOutgoingMessage,
+        paymentModel: TSPaymentModel
+    ) -> String {
+        let status = paymentModel.paymentState.combinedMessageReceiptStatus(with: outgoingMessage)
+        switch status {
+        case .failed:
+            // Use the "long" version of this message here.
+            return OWSLocalizedString(
+                "MESSAGE_STATUS_FAILED",
+                comment: "status message for failed messages"
+            )
+        case .pending:
+            return OWSLocalizedString(
+                "MESSAGE_STATUS_PENDING",
+                comment: "Label indicating that a message send was paused."
+            )
+        case .sending:
+            return OWSLocalizedString(
+                "MESSAGE_STATUS_SENDING",
+                comment: "message status while message is sending."
+            )
+        case .sent:
+            return OWSLocalizedString(
+                "MESSAGE_STATUS_SENT",
+                comment: "status message for sent messages"
+            )
+        case .delivered:
+            return OWSLocalizedString(
+                "MESSAGE_STATUS_DELIVERED",
+                comment: "message status for message delivered to their recipient."
+            )
+        case .read:
+            return OWSLocalizedString(
+                "MESSAGE_STATUS_READ",
+                comment: "status message for read messages"
+            )
+        case .viewed:
+            return OWSLocalizedString(
+                "MESSAGE_STATUS_VIEWED",
+                comment: "status message for viewed messages"
+            )
+        case .uploading, .skipped:
+            fallthrough
+        @unknown default:
+            owsFailDebug("Message has unexpected status")
+            return OWSLocalizedString(
+                "MESSAGE_STATUS_SENT",
+                comment: "status message for sent messages"
+            )
+        }
+    }
+
     public class func description(forMessageReceiptStatus value: MessageReceiptStatus) -> String {
         switch value {
         case .read:
@@ -183,6 +244,74 @@ public class MessageRecipientStatusUtils {
             return "skipped"
         case .pending:
             return "pending"
+        }
+    }
+}
+
+extension TSPaymentState {
+    public var messageReceiptStatus: MessageReceiptStatus {
+        switch self {
+        case .outgoingUnsubmitted, .outgoingUnverified, .outgoingSending, .incomingUnverified:
+            return .sending
+        case .outgoingSent:
+            return .sent
+        case .outgoingVerified, .incomingVerified:
+            return .delivered
+        case .outgoingComplete, .incomingComplete:
+            return .read
+        case .outgoingFailed, .incomingFailed:
+            return .failed
+        @unknown default:
+            Logger.error("Unknown Payment State")
+            return .failed
+        }
+    }
+
+    fileprivate func combinedMessageReceiptStatus(
+        with message: TSOutgoingMessage
+    ) -> MessageReceiptStatus {
+
+        // Computed with `TSPaymentModel` && `TSOutgoingMessage.messageState`.
+        let status: MessageReceiptStatus = {
+            switch (self, message.messageState) {
+            case (.incomingFailed, _), (.outgoingFailed, _), (_, .failed):
+                return .failed
+            case (.incomingVerified, _), (.incomingComplete, _):
+                return .delivered
+            case (.outgoingVerified, _), (.outgoingComplete, _):
+                return .delivered
+            case (.outgoingSent, _), (_, .sent):
+                return .sent
+            case (_, .pending):
+                return .pending
+            case
+                (.outgoingUnsubmitted, _),
+                (.outgoingUnverified, _),
+                (.outgoingSending, _),
+                (.incomingUnverified, _),
+                (_, .sending):
+                return .sending
+            @unknown default:
+                Logger.error("Unknown Payment State")
+                return .failed
+            }
+        }()
+
+        switch status {
+        case .sent, .delivered:
+            // Compute "read"/"viewed" status if available.
+            switch message {
+            case _ where message.viewedRecipientAddresses().count > 0:
+                return .viewed
+            case _ where message.readRecipientAddresses().count > 0:
+                return .read
+            case _ where message.wasDeliveredToAnyRecipient:
+                return .delivered
+            default:
+                return status
+            }
+        default:
+            return status
         }
     }
 }

@@ -491,9 +491,41 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                                               memoMessage: memoMessage,
                                               requestUuidString: requestUuidString,
                                               isUnread: false,
+                                              interactionUniqueId: nil,
                                               mobileCoin: mobileCoin)
 
             try tryToInsertPaymentModel(paymentModel, transaction: transaction)
+
+            // If we inserted without error, its new (no duplicates) so we should
+            // insert the outgoing message in chat.
+            if
+                paymentType == .outgoingPaymentFromLinkedDevice,
+                let recipientServiceId,
+                recipientServiceId != tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+            {
+                let thread = TSContactThread.getOrCreateThread(
+                    withContactAddress: SignalServiceAddress(recipientServiceId),
+                    transaction: transaction
+                )
+                let paymentNotification = TSPaymentNotification(
+                    memoMessage: memoMessage,
+                    requestUuidString: requestUuidString,
+                    mcReceiptData: mcReceiptData
+                )
+                let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
+                let message = OWSOutgoingPaymentMessage(
+                    thread: thread,
+                    messageBody: memoMessage,
+                    paymentCancellation: nil,
+                    paymentNotification: paymentNotification,
+                    paymentRequest: nil,
+                    expiresInSeconds: expiresInSeconds,
+                    transaction: transaction
+                )
+                message.anyInsert(transaction: transaction)
+                paymentModel.update(withInteractionUniqueId: message.uniqueId, transaction: transaction)
+            }
         } catch {
             owsFailDebug("Error: \(error)")
             return
@@ -674,6 +706,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
                                               memoMessage: paymentNotification.memoMessage?.nilIfEmpty,
                                               requestUuidString: nil,
                                               isUnread: true,
+                                              interactionUniqueId: nil,
                                               mobileCoin: mobileCoin)
             guard paymentModel.isValid else {
                 throw OWSAssertionError("Invalid paymentModel.")

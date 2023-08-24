@@ -27,6 +27,7 @@
     "OWSGroupCallMessage": 65,
     "OWSIncomingContactSyncJobRecord": 61,
     "OWSIncomingGroupSyncJobRecord": 60,
+    "OWSIncomingPaymentMessage": 75,
     "OWSLinkedDeviceReadReceipt": 36,
     "OWSLocalUserLeaveGroupJobRecord": 74,
     "OWSMessageContentJob": 15,

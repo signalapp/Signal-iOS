@@ -4,6 +4,7 @@
 //
 
 import SignalMessaging
+import SignalServiceKit
 import SignalUI
 
 public class CVComponentFooter: CVComponentBase, CVComponent {
@@ -214,6 +215,137 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         } else {
             return DateUtil.formatMessageTimestampForCVC(interaction.timestamp,
                                                          shouldUseLongFormat: shouldUseLongFormat)
+        }
+    }
+
+    static func buildPaymentState(
+        interaction: TSInteraction,
+        paymentNotification: TSPaymentNotification?,
+        hasTapForMore: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> State {
+
+        guard
+            let receiptData = paymentNotification?.mcReceiptData,
+            let paymentModel = PaymentFinder.paymentModels(
+                forMcReceiptData: receiptData,
+                transaction: transaction).first
+        else {
+            let timestampText = Self.timestampText(
+                forInteraction: interaction,
+                shouldUseLongFormat: false
+            )
+            return State(
+                timestampText: timestampText,
+                statusIndicator: nil,
+                accessibilityLabel: nil,
+                hasTapForMore: hasTapForMore,
+                displayEditedLabel: false,
+                expiration: nil
+            )
+        }
+
+        let timestampText = Self.paymentMessageTimestampText(
+            forInteraction: interaction,
+            paymentState: paymentModel.paymentState,
+            shouldUseLongFormat: false
+        )
+
+        var statusIndicator: StatusIndicator?
+        var accessibilityLabel: String?
+        if let outgoingMessage = interaction as? TSOutgoingMessage {
+
+            let messageStatus = MessageRecipientStatusUtils.recipientStatus(
+                outgoingMessage: outgoingMessage,
+                paymentModel: paymentModel
+            )
+            accessibilityLabel = MessageRecipientStatusUtils.receiptMessage(
+                outgoingMessage: outgoingMessage,
+                paymentModel: paymentModel
+            )
+
+            switch messageStatus {
+            case .uploading, .sending:
+                statusIndicator = StatusIndicator(
+                    imageName: "message_status_sending",
+                    imageSize: .square(12),
+                    isAnimated: true
+                )
+            case .pending:
+                statusIndicator = StatusIndicator(
+                    imageName: "message_status_sending",
+                    imageSize: .square(12),
+                    isAnimated: false
+                )
+            case .sent, .skipped:
+                statusIndicator = StatusIndicator(
+                    imageName: "message_status_sent",
+                    imageSize: .square(12),
+                    isAnimated: false
+                )
+            case .delivered:
+                statusIndicator = StatusIndicator(
+                    imageName: "message_status_delivered",
+                    imageSize: .init(width: 18, height: 12),
+                    isAnimated: false
+                )
+            case .read, .viewed:
+                statusIndicator = StatusIndicator(
+                    imageName: "message_status_read",
+                    imageSize: .init(width: 18, height: 12),
+                    isAnimated: false
+                )
+            case .failed:
+                // No status indicator icon.
+                break
+            }
+
+            if outgoingMessage.wasRemotelyDeleted {
+                statusIndicator = nil
+            }
+        }
+
+        var expiration: State.Expiration?
+        if let message = interaction as? TSMessage,
+           message.hasPerConversationExpiration {
+            expiration = State.Expiration(
+                expirationTimestamp: message.expiresAt,
+                expiresInSeconds: message.expiresInSeconds
+            )
+        }
+
+        return State(
+            timestampText: timestampText,
+            statusIndicator: statusIndicator,
+            accessibilityLabel: accessibilityLabel,
+            hasTapForMore: hasTapForMore,
+            displayEditedLabel: false,
+            expiration: expiration
+        )
+    }
+
+    public static func paymentMessageTimestampText(
+        forInteraction interaction: TSInteraction,
+        paymentState: TSPaymentState,
+        shouldUseLongFormat: Bool
+    ) -> String {
+
+        switch paymentState.messageReceiptStatus {
+        case .pending:
+            return OWSLocalizedString(
+                "MESSAGE_STATUS_PENDING",
+                comment: "Label indicating that a message send was paused."
+            )
+        case .failed:
+            return OWSLocalizedString(
+                "MESSAGE_STATUS_SEND_FAILED",
+                comment: "Label indicating that a message failed to send."
+            )
+        default:
+            return DateUtil.formatMessageTimestampForCVC(
+                interaction.timestamp,
+                shouldUseLongFormat: shouldUseLongFormat
+            )
         }
     }
 

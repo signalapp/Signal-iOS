@@ -298,6 +298,17 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
         itemViewModel: CVItemViewModelImpl,
         shouldAllowReply: Bool) {}
 
+    func didLongPressPaymentMessage(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool
+    ) {}
+
+    func didTapPayment(
+        _ paymentModel: TSPaymentModel,
+        displayName: String
+    ) {}
+
     func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl) {}
 
     func didEndLongPress(_ itemViewModel: CVItemViewModelImpl) {}

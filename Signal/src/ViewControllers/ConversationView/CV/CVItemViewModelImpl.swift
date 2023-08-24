@@ -85,6 +85,12 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
         return componentState.messageCellType
     }
 
+    public var paymentAttachment: CVComponentState.PaymentAttachment? {
+        AssertIsOnMainThread()
+
+        return componentState.paymentAttachment
+    }
+
     public var reactionState: InteractionReactionState? {
         AssertIsOnMainThread()
 
@@ -243,6 +249,8 @@ extension CVItemViewModelImpl {
             return false
         case .textOnlyMessage, .audio, .genericAttachment, .contactShare, .bodyMedia, .viewOnce, .stickerMessage, .quoteOnlyMessage:
             return !hasUnloadedAttachments
+        case .paymentAttachment:
+            return false
         }
     }
 }

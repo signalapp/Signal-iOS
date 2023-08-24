@@ -25,6 +25,13 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     @objc
     public var wasReceivedByUD = false
 
+    @objc
+    public var paymentCancellation: TSPaymentCancellation?
+    @objc
+    public var paymentNotification: TSPaymentNotification?
+    @objc
+    public var paymentRequest: TSPaymentRequest?
+
     public required init(thread: TSThread,
                          timestamp: UInt64? = nil,
                          authorAci: Aci? = nil,
@@ -49,7 +56,10 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                          storyAuthorAci: Aci? = nil,
                          storyTimestamp: UInt64? = nil,
                          storyReactionEmoji: String? = nil,
-                         giftBadge: OWSGiftBadge? = nil) {
+                         giftBadge: OWSGiftBadge? = nil,
+                         paymentCancellation: TSPaymentCancellation? = nil,
+                         paymentNotification: TSPaymentNotification? = nil,
+                         paymentRequest: TSPaymentRequest? = nil) {
 
         super.init(thread: thread,
                    timestamp: timestamp,
@@ -76,6 +86,9 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         self.serverDeliveryTimestamp = serverDeliveryTimestamp
         self.serverGuid = serverGuid
         self.wasReceivedByUD = wasReceivedByUD
+        self.paymentCancellation = paymentCancellation
+        self.paymentNotification = paymentNotification
+        self.paymentRequest = paymentRequest
     }
 
     @objc
@@ -115,7 +128,10 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                               storyAuthorAci: AciObjC?,
                               storyTimestamp: NSNumber?,
                               storyReactionEmoji: String?,
-                              giftBadge: OWSGiftBadge?) -> TSIncomingMessageBuilder {
+                              giftBadge: OWSGiftBadge?,
+                              paymentCancellation: TSPaymentCancellation?,
+                              paymentNotification: TSPaymentNotification?,
+                              paymentRequest: TSPaymentRequest?) -> TSIncomingMessageBuilder {
         return TSIncomingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
                                         authorAci: authorAci?.wrappedAciValue,
@@ -137,7 +153,10 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                                         storyAuthorAci: storyAuthorAci?.wrappedAciValue,
                                         storyTimestamp: storyTimestamp?.uint64Value,
                                         storyReactionEmoji: storyReactionEmoji,
-                                        giftBadge: giftBadge)
+                                        giftBadge: giftBadge,
+                                        paymentCancellation: paymentCancellation,
+                                        paymentNotification: paymentNotification,
+                                        paymentRequest: paymentRequest)
     }
 
     private var hasBuilt = false
@@ -148,6 +167,15 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
             owsFailDebug("Don't build more than once.")
         }
         hasBuilt = true
+
+        if paymentRequest != nil || paymentNotification != nil || paymentCancellation != nil {
+            return OWSIncomingPaymentMessage(
+                initIncomingMessageWithBuilder: self,
+                paymentCancellation: paymentCancellation,
+                paymentNotification: paymentNotification,
+                paymentRequest: paymentRequest
+            )
+        }
 
         return TSIncomingMessage(incomingMessageWithBuilder: self)
     }

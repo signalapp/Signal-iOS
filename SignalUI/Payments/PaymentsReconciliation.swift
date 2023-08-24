@@ -416,6 +416,7 @@ public class PaymentsReconciliation: Dependencies {
                                               memoMessage: nil,
                                               requestUuidString: nil,
                                               isUnread: true,
+                                              interactionUniqueId: nil,
                                               mobileCoin: mobileCoin)
 
             if let transaction = transaction as? SDSAnyWriteTransaction {
@@ -647,6 +648,7 @@ public class PaymentsReconciliation: Dependencies {
                                              memoMessage: nil,
                                              requestUuidString: nil,
                                              isUnread: false,
+                                             interactionUniqueId: nil,
                                              mobileCoin: mobileCoin)
         do {
             try Self.paymentsHelper.tryToInsertPaymentModel(newPaymentModel, transaction: transaction)

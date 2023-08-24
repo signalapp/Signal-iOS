@@ -1392,6 +1392,7 @@ private extension InteractionFinder {
             .errorMessage,
             .recoverableDecryptionPlaceholder,
             .incomingMessage,
+            .incomingPaymentMessage,
             .infoMessage,
             .invalidIdentityKeyErrorMessage,
             .invalidIdentityKeyReceivingErrorMessage,

@@ -251,7 +251,7 @@ public class MobileCoinAPI: Dependencies {
         }
     }
 
-    struct PreparedTransaction {
+    struct PreparedTransaction: PreparedPayment {
         let transaction: MobileCoin.Transaction
         let receipt: MobileCoin.Receipt
         let feeAmount: TSPaymentAmount

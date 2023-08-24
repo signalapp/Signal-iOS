@@ -33,6 +33,29 @@ public extension ThreadUtil {
 
         let message: TSOutgoingMessage = outgoingMessagePreparer.unpreparedMessage
 
+        return enqueueMessage(
+            message,
+            thread: thread,
+            insertMessage: {
+                outgoingMessagePreparer.insertMessage(
+                    linkPreviewDraft: linkPreviewDraft,
+                    transaction: $0
+                )
+                return outgoingMessagePreparer
+            },
+            persistenceCompletionHandler: persistenceCompletion,
+            transaction: readTransaction
+        )
+    }
+
+    @discardableResult
+    class func enqueueMessage(
+        _ message: TSOutgoingMessage,
+        thread: TSThread,
+        insertMessage: @escaping (SDSAnyWriteTransaction) -> OutgoingMessagePreparer,
+        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
+        transaction readTransaction: SDSAnyReadTransaction
+    ) -> TSOutgoingMessage {
         BenchManager.startEvent(
             title: "Send Message Milestone: Sending (\(message.timestamp))",
             eventId: "sendMessageSending-\(message.timestamp)",
@@ -50,8 +73,7 @@ public extension ThreadUtil {
         )
         BenchManager.benchAsync(title: "Send Message Milestone: Enqueue \(message.timestamp)") { benchmarkCompletion in
             enqueueSendAsyncWrite { writeTransaction in
-                outgoingMessagePreparer.insertMessage(linkPreviewDraft: linkPreviewDraft,
-                                                      transaction: writeTransaction)
+                let outgoingMessagePreparer = insertMessage(writeTransaction)
                 Self.sskJobQueues.messageSenderJobQueue.add(
                     message: outgoingMessagePreparer,
                     transaction: writeTransaction

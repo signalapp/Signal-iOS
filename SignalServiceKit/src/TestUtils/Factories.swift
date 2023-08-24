@@ -327,7 +327,10 @@ public class IncomingMessageFactory: NSObject, Factory {
             storyAuthorAci: storyAuthorAciBuilder(),
             storyTimestamp: storyTimestampBuilder(),
             storyReactionEmoji: storyReactionEmojiBuilder(),
-            giftBadge: giftBadgeBuilder()
+            giftBadge: giftBadgeBuilder(),
+            paymentCancellation: paymentCancellationBuilder(),
+            paymentNotification: paymentNotificationBuilder(),
+            paymentRequest: paymentRequestBuilder()
         )
         let item = builder.build()
         item.anyInsert(transaction: transaction)
@@ -456,6 +459,21 @@ public class IncomingMessageFactory: NSObject, Factory {
 
     @objc
     public var giftBadgeBuilder: () -> OWSGiftBadge? = {
+        return nil
+    }
+
+    @objc
+    public var paymentCancellationBuilder: () -> TSPaymentCancellation? = {
+        return nil
+    }
+
+    @objc
+    public var paymentNotificationBuilder: () -> TSPaymentNotification? = {
+        return nil
+    }
+
+    @objc
+    public var paymentRequestBuilder: () -> TSPaymentRequest? = {
         return nil
     }
 }

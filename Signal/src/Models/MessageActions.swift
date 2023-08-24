@@ -14,6 +14,7 @@ protocol MessageActionsDelegate: AnyObject {
     func messageActionsSpeakItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsStopSpeakingItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsEditItem(_ itemViewModel: CVItemViewModelImpl)
+    func messageActionsShowPaymentDetails(_ itemViewModel: CVItemViewModelImpl)
 }
 
 // MARK: -
@@ -107,6 +108,22 @@ struct MessageActionBuilder {
             block: { [weak delegate] (_) in
                 delegate?.messageActionsEditItem(itemViewModel)
             })
+    }
+
+    static func showPaymentDetails(
+        itemViewModel: CVItemViewModelImpl,
+        delegate: MessageActionsDelegate
+    ) -> MessageAction {
+        return MessageAction(
+            .showPaymentDetails,
+            accessibilityLabel: OWSLocalizedString("MESSAGE_ACTION_PAYMENT_DETAILS", comment: "Action sheet button title"),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "payment_details"),
+            contextMenuTitle: OWSLocalizedString("CONTEXT_MENU_PAYMENT_DETAILS", comment: "Context menu button title"),
+            contextMenuAttributes: [],
+            block: { [weak delegate] (_) in
+                delegate?.messageActionsShowPaymentDetails(itemViewModel)
+            }
+        )
     }
 
     static func speakMessage(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
@@ -242,6 +259,48 @@ class MessageActions: NSObject {
         }
 
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)
+        actions.append(selectAction)
+
+        return actions
+    }
+
+    class func paymentActions(
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool,
+        delegate: MessageActionsDelegate
+    ) -> [MessageAction] {
+        var actions: [MessageAction] = []
+
+        let showDetailsAction = MessageActionBuilder.showDetails(
+            itemViewModel: itemViewModel,
+            delegate: delegate
+        )
+        actions.append(showDetailsAction)
+
+        let deleteAction = MessageActionBuilder.deleteMessage(
+            itemViewModel: itemViewModel,
+            delegate: delegate
+        )
+        actions.append(deleteAction)
+
+        let showPaymentDetailsAction = MessageActionBuilder.showPaymentDetails(
+            itemViewModel: itemViewModel,
+            delegate: delegate
+        )
+        actions.append(showPaymentDetailsAction)
+
+        if shouldAllowReply {
+            let replyAction = MessageActionBuilder.reply(
+                itemViewModel: itemViewModel,
+                delegate: delegate
+            )
+            actions.append(replyAction)
+        }
+
+        let selectAction = MessageActionBuilder.selectMessage(
+            itemViewModel: itemViewModel,
+            delegate: delegate
+        )
         actions.append(selectAction)
 
         return actions

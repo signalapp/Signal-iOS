@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import MobileCoin
 import SignalMessaging
 
 @objc
@@ -103,6 +104,9 @@ public protocol SendPaymentRecipient {
 // MARK: -
 
 public protocol PreparedPayment {
+    var transaction: MobileCoin.Transaction { get }
+    var receipt: MobileCoin.Receipt { get }
+    var feeAmount: TSPaymentAmount { get }
 }
 
 // MARK: -

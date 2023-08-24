@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSOutgoingPaymentMessage
 
 - (instancetype)initWithThread:(TSThread *)thread
+                   messageBody:(nullable NSString *)messageBody
            paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
            paymentNotification:(nullable TSPaymentNotification *)paymentNotification
                 paymentRequest:(nullable TSPaymentRequest *)paymentRequest
@@ -27,6 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(paymentCancellation != nil || paymentNotification != nil || paymentRequest != nil);
 
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
+    // Body ranges unsupported.
+    messageBuilder.messageBody = messageBody;
+    messageBuilder.isViewOnceMessage = false;
     messageBuilder.expiresInSeconds = expiresInSeconds;
     self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
     if (!self) {
@@ -140,9 +144,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
+// These are the things driving messages in chat; unlike for
+// a normal text message's TSOutgoingMessage which is transient
+// only needed for sending, and has a corresponding TSMessage
+// that drives UI.
 - (BOOL)shouldBeSaved
 {
-    return NO;
+    return YES;
+}
+
+- (BOOL)hasRenderableContent
+{
+    return YES;
 }
 
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread

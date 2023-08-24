@@ -13,6 +13,7 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
     case textOnlyMessage
     case audio
     case genericAttachment
+    case paymentAttachment
     case contactShare
     case bodyMedia
     case viewOnce
@@ -38,6 +39,7 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
         case .quoteOnlyMessage: return "quoteOnlyMessage"
         case .audio: return "audio"
         case .genericAttachment: return "genericAttachment"
+        case .paymentAttachment: return "paymentAttachment"
         case .contactShare: return "contactShare"
         case .bodyMedia: return "bodyMedia"
         case .viewOnce: return "viewOnce"

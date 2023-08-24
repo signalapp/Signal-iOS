@@ -4,6 +4,7 @@
 //
 
 #import "TSQuotedMessage.h"
+#import "OWSPaymentMessage.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
@@ -327,6 +328,12 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                          quotedMessage.storyReactionEmoji];
     } else if (quotedMessage.giftBadge != nil) {
         isGiftBadge = YES;
+    }
+
+    if ([quotedMessage conformsToProtocol:@protocol(OWSPaymentMessage)]) {
+        // This really should recalculate the string from payment metadata.
+        // But it does not.
+        body = proto.text;
     }
 
     SSKProtoDataMessageQuoteQuotedAttachment *_Nullable firstAttachmentProto = proto.attachments.firstObject;

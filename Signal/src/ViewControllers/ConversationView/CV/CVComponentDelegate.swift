@@ -54,6 +54,12 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
                              itemViewModel: CVItemViewModelImpl,
                              shouldAllowReply: Bool)
 
+    func didLongPressPaymentMessage(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool
+    )
+
     func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl)
 
     func didEndLongPress(_ itemViewModel: CVItemViewModelImpl)
@@ -100,6 +106,8 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
     func didTapAddToContacts(contactShare: ContactShareViewModel)
 
     func didTapStickerPack(_ stickerPackInfo: StickerPackInfo)
+
+    func didTapPayment(_ paymentModel: TSPaymentModel, displayName: String)
 
     func didTapGroupInviteLink(url: URL)
 

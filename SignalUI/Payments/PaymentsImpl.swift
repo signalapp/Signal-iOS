@@ -409,6 +409,7 @@ public extension PaymentsImpl {
                                               memoMessage: memoMessage?.nilIfEmpty,
                                               requestUuidString: paymentRequestModel?.requestUuidString,
                                               isUnread: false,
+                                              interactionUniqueId: nil,
                                               mobileCoin: mobileCoin)
 
             guard paymentModel.isValid else {
@@ -446,6 +447,25 @@ public extension PaymentsImpl {
 
     private func localMobileCoinAccount() -> MobileCoinAPI.MobileCoinAccount? {
         localMobileCoinAccount(paymentsState: self.paymentsState)
+    }
+
+    // Only valid for the recipient
+    func unmaskReceiptAmount(data: Data?) -> Amount? {
+        guard let data = data else { return nil }
+        let account = localMobileCoinAccount()
+        guard let accountKey = account?.accountKey else { return nil }
+        guard let receipt = Receipt(serializedData: data) else { return nil }
+        guard let amount = receipt.validateAndUnmaskAmount(accountKey: accountKey) else { return nil }
+        return amount
+    }
+
+    // Only valid for the recipient
+    func decryptReceipt(data: Data) -> (Amount?, Receipt?) {
+        let account = localMobileCoinAccount()
+        guard let accountKey = account?.accountKey else { return (nil, nil) }
+        guard let receipt = Receipt(serializedData: data) else { return (nil, nil) }
+        guard let amount = receipt.validateAndUnmaskAmount(accountKey: accountKey) else { return (nil, nil) }
+        return (amount, receipt)
     }
 
     func buildLocalPaymentAddress(paymentsState: PaymentsState) -> TSPaymentAddress? {
@@ -708,6 +728,7 @@ public extension PaymentsImpl {
                                                       memoMessage: nil,
                                                       requestUuidString: nil,
                                                       isUnread: false,
+                                                      interactionUniqueId: nil,
                                                       mobileCoin: mobileCoin)
 
                     guard paymentModel.isValid else {
@@ -934,11 +955,14 @@ public extension PaymentsImpl {
 
         Logger.verbose("paymentState: \(paymentModel.paymentState.formatted).")
 
-        let message = self.sendPaymentNotificationMessage(address: address,
-                                                          memoMessage: paymentModel.memoMessage,
-                                                          mcReceiptData: mcReceiptData,
-                                                          requestUuidString: requestUuidString,
-                                                          transaction: transaction)
+        let message = self.sendPaymentNotificationMessage(
+            paymentModel: paymentModel,
+            address: address,
+            memoMessage: paymentModel.memoMessage,
+            mcReceiptData: mcReceiptData,
+            requestUuidString: requestUuidString,
+            transaction: transaction
+        )
         return message
     }
 
@@ -1052,6 +1076,7 @@ public extension PaymentsImpl {
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
             let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
             let message = OWSOutgoingPaymentMessage(thread: thread,
+                                                    messageBody: nil,
                                                     paymentCancellation: nil,
                                                     paymentNotification: nil,
                                                     paymentRequest: paymentRequest,
@@ -1062,40 +1087,77 @@ public extension PaymentsImpl {
         }
     }
 
-    class func sendPaymentNotificationMessagePromise(address: SignalServiceAddress,
-                                                     memoMessage: String?,
-                                                     mcReceiptData: Data,
-                                                     requestUuidString: String?) -> Promise<OWSOutgoingPaymentMessage> {
-        databaseStorage.write(.promise) { transaction in
-            self.sendPaymentNotificationMessage(address: address,
-                                                memoMessage: memoMessage,
-                                                mcReceiptData: mcReceiptData,
-                                                requestUuidString: requestUuidString,
-                                                transaction: transaction)
-        }
-    }
+    class func sendPaymentNotificationMessage(
+        paymentModel: TSPaymentModel,
+        address: SignalServiceAddress,
+        memoMessage: String?,
+        mcReceiptData: Data,
+        requestUuidString: String?,
+        transaction: SDSAnyWriteTransaction
+    ) -> OWSOutgoingPaymentMessage {
 
-    class func sendPaymentNotificationMessage(address: SignalServiceAddress,
-                                              memoMessage: String?,
-                                              mcReceiptData: Data,
-                                              requestUuidString: String?,
-                                              transaction: SDSAnyWriteTransaction) -> OWSOutgoingPaymentMessage {
-        let thread = TSContactThread.getOrCreateThread(withContactAddress: address,
-                                                       transaction: transaction)
-        let paymentNotification = TSPaymentNotification(memoMessage: memoMessage,
-                                                        requestUuidString: requestUuidString,
-                                                        mcReceiptData: mcReceiptData)
+        if
+            let paymentModel = TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId, transaction: transaction),
+            let interactionUniqueId = paymentModel.interactionUniqueId
+        {
+            if
+                let existingInteraction = TSInteraction.anyFetch(uniqueId: interactionUniqueId, transaction: transaction),
+                let message = existingInteraction as? OWSOutgoingPaymentMessage
+            {
+                // We already have a message, no need to send anything.
+                return message
+            } else {
+                owsFailBeta("Missing or incorrect interaction type")
+            }
+        }
+
+        let thread = TSContactThread.getOrCreateThread(
+            withContactAddress: address,
+            transaction: transaction
+        )
+        let paymentNotification = TSPaymentNotification(
+            memoMessage: memoMessage,
+            requestUuidString: requestUuidString,
+            mcReceiptData: mcReceiptData
+        )
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
-        let message = OWSOutgoingPaymentMessage(thread: thread,
-                                                paymentCancellation: nil,
-                                                paymentNotification: paymentNotification,
-                                                paymentRequest: nil,
-                                                expiresInSeconds: expiresInSeconds,
-                                                transaction: transaction)
-        Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
-        return message
 
+        let messageBody: String? = {
+            guard let picoMob = paymentModel.paymentAmount?.picoMob else {
+                return nil
+            }
+            // Reverse type direction, so it reads correctly incoming to the recipient.
+            return PaymentsFormat.paymentPreviewText(
+                amount: picoMob,
+                transaction: transaction,
+                type: .incomingMessage
+            )
+        }()
+
+        let message = OWSOutgoingPaymentMessage(
+            thread: thread,
+            messageBody: messageBody,
+            paymentCancellation: nil,
+            paymentNotification: paymentNotification,
+            paymentRequest: nil,
+            expiresInSeconds: expiresInSeconds,
+            transaction: transaction
+        )
+
+        paymentModel.update(withInteractionUniqueId: message.uniqueId, transaction: transaction)
+
+        ThreadUtil.enqueueMessage(
+            message,
+            thread: thread,
+            insertMessage: { innerTx in
+                message.anyInsert(transaction: innerTx)
+                return message.asPreparer
+            },
+            transaction: transaction
+        )
+
+        return message
     }
 
     class func sendPaymentCancellationMessagePromise(address: SignalServiceAddress,
@@ -1116,6 +1178,7 @@ public extension PaymentsImpl {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
         let message = OWSOutgoingPaymentMessage(thread: thread,
+                                                messageBody: nil,
                                                 paymentCancellation: paymentCancellation,
                                                 paymentNotification: nil,
                                                 paymentRequest: nil,
@@ -1257,4 +1320,17 @@ public struct PreparedPaymentImpl: PreparedPayment {
     fileprivate let paymentRequestModel: TSPaymentRequestModel?
     fileprivate let isOutgoingTransfer: Bool
     fileprivate let preparedTransaction: MobileCoinAPI.PreparedTransaction
+
+    public var transaction: Transaction { preparedTransaction.transaction }
+    public var receipt: Receipt { preparedTransaction.receipt }
+    public var feeAmount: TSPaymentAmount { preparedTransaction.feeAmount }
+}
+
+extension Amount {
+    public var tsPaymentAmount: TSPaymentAmount? {
+        TSPaymentAmount(
+            currency: self.tokenId == .MOB ? .mobileCoin : .unknown,
+            picoMob: self.value
+        )
+    }
 }

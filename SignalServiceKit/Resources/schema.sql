@@ -997,6 +997,7 @@ CREATE
             ,"paymentState" INTEGER NOT NULL
             ,"paymentType" INTEGER NOT NULL
             ,"requestUuidString" TEXT
+            ,"interactionUniqueId" TEXT
         )
 ;
 

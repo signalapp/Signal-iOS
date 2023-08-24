@@ -354,7 +354,8 @@ public extension TSMessage {
             let .contactShare(text),
             let .stickerDescription(text),
             let .giftBadge(text),
-            let .infoMessage(text):
+            let .infoMessage(text),
+            let .paymentMessage(text):
             return text
         case .empty:
             return ""
@@ -376,7 +377,8 @@ public extension TSMessage {
             let .contactShare(text),
             let .stickerDescription(text),
             let .giftBadge(text),
-            let .infoMessage(text):
+            let .infoMessage(text),
+            let .paymentMessage(text):
             return HydratedMessageBody.fromPlaintextWithoutRanges(text)
         case .empty:
             return HydratedMessageBody.fromPlaintextWithoutRanges("")
@@ -395,6 +397,7 @@ public extension TSMessage {
             .stickerDescription,
             .giftBadge,
             .infoMessage,
+            .paymentMessage,
             .empty:
             return nil
         }
@@ -409,12 +412,20 @@ public extension TSMessage {
         case stickerDescription(String)
         case giftBadge(String)
         case infoMessage(String)
+        case paymentMessage(String)
         case empty
     }
 
     private func previewText(_ tx: SDSAnyReadTransaction) -> PreviewText {
         if let infoMessage = self as? TSInfoMessage {
             return .infoMessage(infoMessage.infoMessagePreviewText(with: tx))
+        }
+
+        if let message = self as? OWSPaymentMessage {
+            return .paymentMessage(OWSLocalizedString(
+                "PAYMENTS_THREAD_PREVIEW_TEXT",
+                comment: "Payments Preview Text shown in chat list for payments."
+            ))
         }
 
         if self.wasRemotelyDeleted {

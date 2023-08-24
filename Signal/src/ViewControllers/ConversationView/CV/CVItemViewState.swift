@@ -257,8 +257,20 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             let isTruncatedTextVisible = viewStateSnapshot.textExpansion.isTextExpanded(interactionId: interactionId)
             return !isTruncatedTextVisible
         }()
-        itemViewState.footerState = CVComponentFooter.buildState(interaction: interaction,
-                                                                 hasTapForMore: hasTapForMore)
+
+        if let paymentMessage = interaction as? OWSPaymentMessage {
+            itemViewState.footerState = CVComponentFooter.buildPaymentState(
+                interaction: interaction,
+                paymentNotification: paymentMessage.paymentNotification,
+                hasTapForMore: hasTapForMore,
+                transaction: transaction
+            )
+        } else {
+            itemViewState.footerState = CVComponentFooter.buildState(
+                interaction: interaction,
+                hasTapForMore: hasTapForMore
+            )
+        }
 
         if let giftBadge = item.componentState.giftBadge {
             itemViewState.giftBadgeState = CVComponentGiftBadge.buildViewState(giftBadge)

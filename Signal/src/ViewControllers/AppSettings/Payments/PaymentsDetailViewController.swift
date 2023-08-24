@@ -209,18 +209,30 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         // Type/Amount
         if let paymentAmount = paymentItem.paymentAmount,
-           !paymentAmount.isZero {
+           !paymentAmount.isZero,
+           !paymentItem.isFailed {
             let title: String
             if let address = paymentModel.address {
                 let username = Self.contactsManager.displayName(for: address)
-                let titleFormat: String
-                if paymentItem.isIncoming {
-                    titleFormat = OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT",
-                                                    comment: "Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}.")
-                } else {
-                    titleFormat = OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT",
-                                                    comment: "Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}.")
-                }
+                let titleFormat: String = {
+                    switch paymentItem {
+                    case let item where item.isIncoming:
+                        return OWSLocalizedString(
+                            "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT",
+                            comment: "Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}."
+                        )
+                    case let item where item.paymentState.messageReceiptStatus == .sending:
+                        return OWSLocalizedString(
+                            "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT",
+                            comment: "Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}."
+                        )
+                    default:
+                        return OWSLocalizedString(
+                            "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT",
+                            comment: "Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}."
+                        )
+                    }
+                }()
                 title = String(format: titleFormat, username)
             } else {
                 if paymentItem.isIncoming {
@@ -243,7 +255,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         // Fee
         if paymentModel.isOutgoing,
-           let feeAmount = paymentItem.paymentModel.mobileCoin?.feeAmount {
+           let feeAmount = paymentItem.paymentModel.mobileCoin?.feeAmount, !paymentItem.isFailed {
             let value = PaymentsFormat.format(paymentAmount: feeAmount,
                                                    isShortForm: false,
                                                    withCurrencyCode: true,
@@ -256,9 +268,14 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         // TODO: We might not want to include dates if an incoming
         //       transaction has not yet been verified.
 
-        section.add(buildStatusItem(topText: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS",
-                                                               comment: "Label for the transaction status in the payment details view in the app settings."),
-                                    bottomText: paymentModel.statusDescription(isLongForm: true)))
+        section.add(buildStatusItem(
+            topText: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS",
+                comment: "Label for the transaction status in the payment details view in the app settings."
+            ),
+            bottomText: paymentModel.statusDescription(isLongForm: true),
+            useFailedColor: paymentItem.isFailed
+        ))
 
         // Sender
         do {
@@ -281,9 +298,26 @@ class PaymentsDetailViewController: OWSTableViewController2 {
             } else {
                 value = sender
             }
-            section.add(buildStatusItem(topText: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER",
-                                                                   comment: "Label for the sender in the payment details view in the app settings."),
-                                        bottomText: value))
+            let topTextLocalization: String = {
+                switch paymentItem {
+                case let item where item.isFailed:
+                    return OWSLocalizedString(
+                        "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED",
+                        comment: "Label for the sender in the payment details view in the app settings. Followed by sender name."
+                    )
+                default:
+                    return OWSLocalizedString(
+                        "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER",
+                        comment: "Label for the sender in the payment details view in the app settings."
+                    )
+                }
+            }()
+            section.add(
+                buildStatusItem(
+                    topText: topTextLocalization,
+                    bottomText: value
+                )
+            )
         }
 
         let footerText = (paymentModel.isDefragmentation
@@ -305,13 +339,17 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         return section
     }
 
-    private func buildStatusItem(topText: String, bottomText: String) -> OWSTableItem {
+    private func buildStatusItem(
+        topText: String,
+        bottomText: String,
+        useFailedColor: Bool = false
+    ) -> OWSTableItem {
         OWSTableItem(customCellBlock: {
             let cell = OWSTableItem.newCell()
 
             let topLabel = UILabel()
             topLabel.text = topText
-            topLabel.textColor = Theme.primaryTextColor
+            topLabel.textColor = useFailedColor ? .ows_accentRed : Theme.primaryTextColor
             topLabel.font = UIFont.dynamicTypeBodyClamped
 
             let bottomLabel = UILabel()
@@ -439,8 +477,21 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         amountLabel.autoPinEdgesToSuperviewEdges()
 
         if paymentItem.isFailed {
-            amountLabel.text = nil
-        } else if let paymentAmount = paymentItem.paymentAmount {
+            amountLabel.alpha = 0.3
+        } else if !paymentItem.paymentState.isVerified {
+            amountLabel.alpha = 0.5
+        }
+
+        let paymentAmount: TSPaymentAmount? = {
+            guard let amount = paymentItem.paymentAmount else {
+                return self.paymentsImpl.unmaskReceiptAmount(
+                    data: paymentItem.receiptData
+                )?.tsPaymentAmount
+            }
+            return amount
+        }()
+
+        if let paymentAmount = paymentAmount {
             amountLabel.attributedText = PaymentsFormat.attributedFormat(paymentAmount: paymentAmount,
                                                                          isShortForm: false,
                                                                          paymentType: paymentItem.paymentType)

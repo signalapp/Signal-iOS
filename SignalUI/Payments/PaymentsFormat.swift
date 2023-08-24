@@ -1,15 +1,16 @@
 //
-// Copyright 2021 Signal Messenger, LLC
+// Copyright 2023 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import MobileCoin
 import SignalServiceKit
 
-public class PaymentsFormat {
+@objc
+public class PaymentsFormat: NSObject {
 
     @available(*, unavailable, message: "Do not instantiate this class.")
-    private init() {}
+    private override init() {}
 }
 
 // MARK: -
@@ -68,6 +69,93 @@ public extension PaymentsFormat {
 
         return numberFormatter
     }()
+
+    static func formatInChat(
+        paymentAmount: TSPaymentAmount,
+        amountBuilder: (String) -> NSAttributedString
+    ) -> NSAttributedString {
+        let mob = PaymentsConstants.convertPicoMobToMob(paymentAmount.picoMob)
+        let mobFormat = buildMobFormatter(isShortForm: true)
+        guard let amount = mobFormat.string(from: NSNumber(value: mob)) else {
+            owsFailDebug("Couldn't format currency.")
+            return NSAttributedString(
+                string: OWSLocalizedString(
+                    "PAYMENTS_CURRENCY_UNKNOWN",
+                    comment: "Indicator for unknown currency."
+                )
+            )
+        }
+
+        return amountBuilder(amount)
+    }
+
+    static func formatInChatSuccess(
+        paymentAmount: TSPaymentAmount
+    ) -> NSAttributedString {
+        formatInChat(
+            paymentAmount: paymentAmount,
+            amountBuilder: inChatSuccessAmountBuilder(_:)
+        )
+    }
+
+    static func formatInChatFailure(
+        paymentAmount: TSPaymentAmount
+    ) -> NSAttributedString {
+        formatInChat(
+            paymentAmount: paymentAmount,
+            amountBuilder: inChatFailureAmountBuilder(_:)
+        )
+    }
+
+    private static func inChatSuccessAmountBuilder(_ amount: String) -> NSAttributedString {
+        let firstAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.dynamicTypeLargeTitle1Clamped.withSize(32)]
+
+        let startingFont = UIFont.dynamicTypeLargeTitle1Clamped.withSize(32)
+        let traits = [UIFontDescriptor.TraitKey.weight: UIFont.Weight.thin]
+        let thinFontDescriptor = startingFont.fontDescriptor.addingAttributes(
+            [UIFontDescriptor.AttributeName.traits: traits]
+        )
+
+        let newThinFont = UIFont(descriptor: thinFontDescriptor, size: startingFont.pointSize)
+        let secondAttributes: [NSAttributedString.Key: Any] = [.font: newThinFont]
+
+        let firstString = NSMutableAttributedString(string: amount, attributes: firstAttributes)
+        let secondString = NSMutableAttributedString(string: " MOB", attributes: secondAttributes)
+
+        // NOTE: not RTL-friendly. Maybe fix this if it comes up.
+        firstString.append(secondString)
+        return firstString
+    }
+
+    private static func inChatFailureAmountBuilder(_ amount: String) -> NSAttributedString {
+        let firstAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.dynamicTypeLargeTitle1Clamped.withSize(17)]
+
+        let startingFont = UIFont.dynamicTypeLargeTitle1Clamped.withSize(15)
+        let traits = [UIFontDescriptor.TraitKey.weight: UIFont.Weight.light]
+        let lightFontDescriptor = startingFont.fontDescriptor.addingAttributes([UIFontDescriptor.AttributeName.traits: traits])
+
+        let newLightFont = UIFont(descriptor: lightFontDescriptor, size: startingFont.pointSize)
+        let secondAttributes: [NSAttributedString.Key: Any] = [.font: newLightFont]
+
+        let template = OWSLocalizedString(
+            "PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP",
+            comment: "Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }}"
+        )
+        let topPart = String(format: template, amount)
+
+        let bottomPart = OWSLocalizedString(
+            "PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM",
+            comment: "Payments in-chat message shown if a payment fails to send, bottom half.")
+
+        // NOTE: not RTL-friendly. Maybe fix this if it comes up.
+        let firstString = NSMutableAttributedString(string: topPart, attributes: firstAttributes)
+        let secondString = NSAttributedString(string: bottomPart, attributes: secondAttributes)
+
+        firstString.append("\n")
+        firstString.append(secondString)
+
+        return firstString
+    }
 
     static func format(paymentAmount: TSPaymentAmount,
                        isShortForm: Bool,
@@ -220,5 +308,80 @@ public extension PaymentsFormat {
         numberFormatter.minimumFractionDigits = minimumFractionDigits
         numberFormatter.maximumFractionDigits = maximumFractionDigits
         return numberFormatter.string(from: NSNumber(value: fiatCurrencyAmount))
+    }
+
+    @objc
+    static func paymentThreadPreviewText() -> String {
+        return OWSLocalizedString(
+            "PAYMENTS_THREAD_PREVIEW_TEXT",
+            comment: "Payments Preview Text shown in chat list for payments.")
+    }
+
+    @objc
+    static func paymentPreviewText(
+        paymentMessage: OWSPaymentMessage,
+        type: OWSInteractionType,
+        transaction: SDSAnyReadTransaction
+    ) -> String? {
+        // Shared
+        guard
+            let receipt = paymentMessage.paymentNotification?.mcReceiptData
+        else {
+            return nil
+        }
+
+        return paymentPreviewText(
+            receipt: receipt,
+            transaction: transaction,
+            type: type)
+    }
+
+    static func paymentPreviewText(
+        receipt: Data,
+        transaction: SDSAnyReadTransaction,
+        type: OWSInteractionType
+    ) -> String? {
+        // Payment Amount
+        guard let amount: UInt64 = {
+            switch type {
+            case .incomingMessage:
+                return Self.paymentsImpl.unmaskReceiptAmount(data: receipt)?.value
+            case .outgoingMessage:
+                guard let paymentModel = PaymentFinder.paymentModels(
+                    forMcReceiptData: receipt,
+                    transaction: transaction
+                ).first else {
+                    return nil
+                }
+
+                return paymentModel.paymentAmount?.picoMob
+            default:
+                return nil
+            }
+        }() else {
+            return nil
+        }
+
+        return paymentPreviewText(amount: amount, transaction: transaction, type: type)
+    }
+
+    static func paymentPreviewText(
+        amount: UInt64,
+        transaction: SDSAnyReadTransaction,
+        type: OWSInteractionType
+    ) -> String? {
+        // Formatted Payment Amount
+        guard let formattedAmount = PaymentsFormat.format(picoMob: amount, isShortForm: true) else {
+            return OWSLocalizedString(
+                "PAYMENTS_PREVIEW_TEXT_UNKNOWN",
+                comment: "Payments Preview Text shown in quoted replies, for unknown payments.")
+        }
+
+        // Preview Text
+        let template = OWSLocalizedString(
+            "PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY",
+            comment: "Payments Preview Text shown in quoted replies, for payments. Embeds {{ Amount sent (number), Currency (e.g. 'MOB') }}")
+        let currencyName = TokenId.MOB.name
+        return String(format: template, formattedAmount, currencyName)
     }
 }

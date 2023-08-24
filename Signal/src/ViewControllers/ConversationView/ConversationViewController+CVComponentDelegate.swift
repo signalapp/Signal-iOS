@@ -83,6 +83,19 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
     }
 
+    public func didLongPressPaymentMessage(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool
+    ) {
+        let messageActions = MessageActions.paymentActions(
+            itemViewModel: itemViewModel,
+            shouldAllowReply: shouldAllowReply,
+            delegate: self
+        )
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
+    }
+
     public func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
@@ -366,6 +379,19 @@ extension ConversationViewController: CVComponentDelegate {
 
         let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
         packView.present(from: self, animated: true)
+    }
+
+    public func didTapPayment(_ paymentModel: TSPaymentModel, displayName: String) {
+        AssertIsOnMainThread()
+
+        let paymentHistoryItem = PaymentsHistoryItem(
+            paymentModel: paymentModel,
+            displayName: displayName
+        )
+        let paymentsDetailViewController = PaymentsDetailViewController(
+            paymentItem: paymentHistoryItem
+        )
+        navigationController?.pushViewController(paymentsDetailViewController, animated: true)
     }
 
     public func didTapGroupInviteLink(url: URL) {

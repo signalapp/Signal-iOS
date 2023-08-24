@@ -27,6 +27,8 @@ public class QuotedReplyModel: NSObject {
 
     public let isGiftBadge: Bool
 
+    public let isPayment: Bool
+
     // MARK: Attachments
 
     // This is a MIME type.
@@ -145,17 +147,35 @@ public class QuotedReplyModel: NSObject {
             thumbnailImage = nil
             failedAttachmentPointer = nil
         }
+
+        var body: String? = quotedMessage.body
+        var bodyRanges: MessageBodyRanges? = quotedMessage.bodyRanges
+
+        let isPayment: Bool
+        if let paymentMessage = message as? OWSPaymentMessage {
+            isPayment = true
+            body = PaymentsFormat.paymentPreviewText(
+                paymentMessage: paymentMessage,
+                type: message.interactionType,
+                transaction: transaction
+            )
+            bodyRanges = nil
+        } else {
+            isPayment = false
+        }
+
         self.init(
             timestamp: quotedMessage.timestamp,
             authorAddress: quotedMessage.authorAddress,
             bodySource: quotedMessage.bodySource,
-            body: quotedMessage.body,
-            bodyRanges: quotedMessage.bodyRanges,
+            body: body,
+            bodyRanges: bodyRanges,
             thumbnailImage: thumbnailImage,
             contentType: quotedMessage.contentType,
             sourceFilename: quotedMessage.sourceFilename,
             failedThumbnailAttachmentPointer: failedAttachmentPointer,
-            isGiftBadge: quotedMessage.isGiftBadge
+            isGiftBadge: quotedMessage.isGiftBadge,
+            isPayment: isPayment
         )
     }
 
@@ -421,7 +441,8 @@ public class QuotedReplyModel: NSObject {
         attachmentStream: TSAttachmentStream? = nil,
         failedThumbnailAttachmentPointer: TSAttachmentPointer? = nil,
         reactionEmoji: String? = nil,
-        isGiftBadge: Bool = false
+        isGiftBadge: Bool = false,
+        isPayment: Bool = false
     ) {
         self.timestamp = timestamp
         self.authorAddress = authorAddress
@@ -436,6 +457,7 @@ public class QuotedReplyModel: NSObject {
         self.failedThumbnailAttachmentPointer = failedThumbnailAttachmentPointer
         self.reactionEmoji = reactionEmoji
         self.isGiftBadge = isGiftBadge
+        self.isPayment = isPayment
         super.init()
     }
 }

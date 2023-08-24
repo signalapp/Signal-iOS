@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL isUnread;
 
+@property (nonatomic, nullable) NSString *interactionUniqueId;
+
 @property (nonatomic, nullable) MobileCoinPayment *mobileCoin;
 @property (nonatomic) uint64_t mcLedgerBlockIndex;
 @property (nonatomic, nullable) NSData *mcTransactionData;
@@ -61,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
                         memoMessage:(nullable NSString *)memoMessage
                   requestUuidString:(nullable NSString *)requestUuidString
                            isUnread:(BOOL)isUnread
+                interactionUniqueId:(nullable NSString *)interactionUniqueId
                          mobileCoin:(MobileCoinPayment *)mobileCoin
 {
     self = [super init];
@@ -77,6 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
     _memoMessage = memoMessage;
     _requestUuidString = requestUuidString;
     _isUnread = isUnread;
+    _interactionUniqueId = interactionUniqueId;
     _mobileCoin = mobileCoin;
 
     _mcLedgerBlockIndex = mobileCoin.ledgerBlockIndex;
@@ -105,6 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
                addressUuidString:(nullable NSString *)addressUuidString
                 createdTimestamp:(uint64_t)createdTimestamp
+             interactionUniqueId:(nullable NSString *)interactionUniqueId
                         isUnread:(BOOL)isUnread
               mcLedgerBlockIndex:(uint64_t)mcLedgerBlockIndex
                    mcReceiptData:(nullable NSData *)mcReceiptData
@@ -126,6 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _addressUuidString = addressUuidString;
     _createdTimestamp = createdTimestamp;
+    _interactionUniqueId = interactionUniqueId;
     _isUnread = isUnread;
     _mcLedgerBlockIndex = mcLedgerBlockIndex;
     _mcReceiptData = mcReceiptData;
@@ -266,6 +272,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSPaymentModel *paymentModel) { paymentModel.isUnread = isUnread; }];
+}
+
+- (void)updateWithInteractionUniqueId:(NSString *)interactionUniqueId transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSPaymentModel *paymentModel) {
+                                 paymentModel.interactionUniqueId = interactionUniqueId;
+                             }];
 }
 
 #pragma mark -

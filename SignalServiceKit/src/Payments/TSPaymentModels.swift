@@ -595,50 +595,11 @@ extension TSPaymentModel: TSPaymentBaseModel {
         shouldHaveMCSpentKeyImages || isUnidentified
     }
 
-    public var isComplete: Bool {
-        switch paymentState {
-        case .outgoingComplete,
-             .incomingComplete:
-            return true
-        default:
-            return false
-        }
-    }
+    public var isComplete: Bool { paymentState.isComplete }
 
-    public var isFailed: Bool {
-        switch paymentState {
-        case .outgoingFailed,
-             .incomingFailed:
-            return true
-        default:
-            return false
-        }
-    }
+    public var isFailed: Bool { paymentState.isFailed }
 
-    public var isVerified: Bool {
-        switch paymentState {
-        case .outgoingUnsubmitted,
-             .outgoingUnverified:
-            return false
-        case .outgoingVerified,
-             .outgoingSending,
-             .outgoingSent,
-             .outgoingComplete:
-            return true
-        case .outgoingFailed:
-            return false
-        case .incomingUnverified:
-            return false
-        case .incomingVerified,
-             .incomingComplete:
-            return true
-        case .incomingFailed:
-            return false
-        @unknown default:
-            owsFailDebug("Unknown payment state.")
-            return false
-        }
-    }
+    public var isVerified: Bool { paymentState.isVerified }
 
     public var isIncoming: Bool {
         paymentType.isIncoming
@@ -952,4 +913,53 @@ public class PaymentUtils: NSObject {
     public static func isIncomingPaymentType(_ value: TSPaymentType) -> Bool {
         value.isIncoming
     }
+}
+
+extension TSPaymentState {
+
+    public var isComplete: Bool {
+        switch self {
+        case .outgoingComplete,
+             .incomingComplete:
+            return true
+        default:
+            return false
+        }
+    }
+
+    public var isFailed: Bool {
+        switch self {
+        case .outgoingFailed,
+             .incomingFailed:
+            return true
+        default:
+            return false
+        }
+    }
+
+    public var isVerified: Bool {
+        switch self {
+        case .outgoingUnsubmitted,
+             .outgoingUnverified:
+            return false
+        case .outgoingVerified,
+             .outgoingSending,
+             .outgoingSent,
+             .outgoingComplete:
+            return true
+        case .outgoingFailed:
+            return false
+        case .incomingUnverified:
+            return false
+        case .incomingVerified,
+             .incomingComplete:
+            return true
+        case .incomingFailed:
+            return false
+        @unknown default:
+            owsFailDebug("Unknown payment state.")
+            return false
+        }
+    }
+
 }

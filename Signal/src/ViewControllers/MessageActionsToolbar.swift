@@ -24,6 +24,7 @@ public class MessageAction: NSObject {
         case speak
         case stopSpeaking
         case edit
+        case showPaymentDetails
     }
 
     let actionType: MessageActionType
@@ -66,6 +67,8 @@ public class MessageAction: NSObject {
                 return .contextMenuStopSpeaking
             case .edit:
                 return .contextMenuEdit
+            case .showPaymentDetails:
+                return .settingsPayments
             }
         }()
         return Theme.iconImage(icon)

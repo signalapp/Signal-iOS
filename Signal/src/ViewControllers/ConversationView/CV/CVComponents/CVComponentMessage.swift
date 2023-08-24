@@ -57,6 +57,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var genericAttachment: CVComponent?
 
+    private var paymentAttachment: CVComponent?
+
     private var contactShare: CVComponent?
 
     private var bottomButtons: CVComponent?
@@ -119,6 +121,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return self.audioAttachment
         case .genericAttachment:
             return self.genericAttachment
+        case .paymentAttachment:
+            return self.paymentAttachment
         case .quotedReply:
             return self.quotedReply
         case .linkPreview:
@@ -208,7 +212,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             self.genericAttachment = CVComponentGenericAttachment(itemModel: itemModel,
                                                                   genericAttachment: genericAttachmentState)
         }
-        if let bodyTextState = itemViewState.bodyTextState {
+        // Payments can have body text too; only render a vanilla body text if a payment
+        // isn't present.
+        if let bodyTextState = itemViewState.bodyTextState, componentState.paymentAttachment == nil {
             bodyText = CVComponentBodyText(itemModel: itemModel, bodyTextState: bodyTextState)
         }
         if let contactShareState = componentState.contactShare {
@@ -221,6 +227,51 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         var footerOverlay: CVComponentFooter?
+
+        if let paymentAttachment = componentState.paymentAttachment {
+            let paymentAmount: UInt64? = {
+                let receipt = paymentAttachment.notification.mcReceiptData
+                guard let decryptedAmount = paymentsImpl.unmaskReceiptAmount(data: receipt) else {
+                    // Valid path for sender
+                    return paymentAttachment.model?.paymentAmount?.picoMob
+                }
+
+                // Valid path for recipient
+                return decryptedAmount.value
+            }()
+
+            let messageStatus: MessageReceiptStatus? = {
+                guard
+                    let outgoingMessage = itemModel.interaction as? OWSOutgoingPaymentMessage,
+                    let model = paymentAttachment.model
+                else {
+                    return nil
+                }
+                return MessageRecipientStatusUtils.recipientStatus(
+                    outgoingMessage: outgoingMessage,
+                    paymentModel: model
+                )
+            }()
+
+            if let footerState = itemViewState.footerState {
+                self.standaloneFooter = CVComponentFooter(
+                    itemModel: itemModel,
+                    footerState: footerState,
+                    isOverlayingMedia: false,
+                    isOutsideBubble: false
+                )
+            }
+
+            self.paymentAttachment = CVComponentPaymentAttachment(
+                itemModel: itemModel,
+                paymentAttachment: paymentAttachment,
+                paymentModel: paymentAttachment.model,
+                contactName: paymentAttachment.otherUserShortName,
+                paymentAmount: paymentAmount,
+                messageStatus: messageStatus
+            )
+
+        }
 
         if let audioAttachmentState = componentState.audioAttachment {
             let shouldFooterOverlayAudio = (bodyText == nil && !itemViewState.shouldHideFooter && !hasTapForMore)
@@ -822,7 +873,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private static var topFullWidthCVComponentKeys: [CVComponentKey] { [.linkPreview] }
     private static var topNestedCVComponentKeys: [CVComponentKey] { [.senderName] }
     private static var bottomFullWidthCVComponentKeys: [CVComponentKey] { [.quotedReply, .bodyMedia] }
-    private static var bottomNestedShareCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .contactShare, .giftBadge] }
+    private static var bottomNestedShareCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .paymentAttachment, .contactShare, .giftBadge] }
     private static var bottomNestedTextCVComponentKeys: [CVComponentKey] { [.bodyText, .footer] }
 
     // The "message" contents of this component for most messages are vertically
@@ -1077,7 +1128,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             switch componentKey {
             case .bodyText:
                 return false
-            case .bodyMedia, .sticker, .quotedReply, .linkPreview, .viewOnce, .audioAttachment, .genericAttachment, .contactShare:
+            case .bodyMedia, .sticker, .quotedReply, .linkPreview, .viewOnce, .audioAttachment, .genericAttachment, .paymentAttachment, .contactShare:
                 return true
             case .giftBadge:
                 // TODO: (GB) Confirm that Gift Badges should use large component spacing.
@@ -1177,8 +1228,19 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         }
 
-        let timestampText = CVComponentFooter.timestampText(forInteraction: interaction,
-                                                            shouldUseLongFormat: true)
+        let timestampText: String
+        if let paymentStatus = componentState.paymentAttachment?.status {
+            timestampText = CVComponentFooter.paymentMessageTimestampText(
+                forInteraction: interaction,
+                paymentState: paymentStatus,
+                shouldUseLongFormat: true
+            )
+        } else {
+            timestampText = CVComponentFooter.timestampText(
+                forInteraction: interaction,
+                shouldUseLongFormat: true
+            )
+        }
         contents.append(timestampText)
 
         elements.append(contents.joined(separator: ", "))
@@ -1583,7 +1645,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return true
         }
 
-        if let outgoingMessage = interaction as? TSOutgoingMessage {
+        if let outgoingMessage = interaction as? TSOutgoingMessage, !(outgoingMessage is OWSPaymentMessage) {
             switch outgoingMessage.messageState {
             case .failed:
                 // Tap to retry.
@@ -1652,7 +1714,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             .bodyMedia: .media,
             .audioAttachment: .media,
             .genericAttachment: .media,
-            .quotedReply: .quotedReply
+            .quotedReply: .quotedReply,
+            .paymentAttachment: .paymentMessage
             // TODO: linkPreview?
         ]
         // Recognize the correct message type when tapping next to the message itself
@@ -1842,6 +1905,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         var reactionsView: CVComponentView?
         var audioAttachmentView: CVComponentView?
         var genericAttachmentView: CVComponentView?
+        var paymentAttachmentView: CVComponentView?
         var contactShareView: CVComponentView?
         var bottomButtonsView: CVComponentView?
 
@@ -1859,6 +1923,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 reactionsView,
                 audioAttachmentView,
                 genericAttachmentView,
+                paymentAttachmentView,
                 contactShareView,
                 bottomButtonsView
             ].compactMap { $0 }
@@ -1890,6 +1955,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return audioAttachmentView
             case .genericAttachment:
                 return genericAttachmentView
+            case .paymentAttachment:
+                return paymentAttachmentView
             case .contactShare:
                 return contactShareView
             case .bottomButtons:
@@ -1931,6 +1998,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 audioAttachmentView = subcomponentView
             case .genericAttachment:
                 genericAttachmentView = subcomponentView
+            case .paymentAttachment:
+                paymentAttachmentView = subcomponentView
             case .contactShare:
                 contactShareView = subcomponentView
             case .bottomButtons:

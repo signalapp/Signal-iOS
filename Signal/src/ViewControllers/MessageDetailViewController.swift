@@ -1010,6 +1010,12 @@ extension MessageDetailViewController: CVComponentDelegate {
                              itemViewModel: CVItemViewModelImpl,
                              shouldAllowReply: Bool) {}
 
+    func didLongPressPaymentMessage(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool
+    ) { }
+
     // TODO:
     func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl) {}
 
@@ -1113,6 +1119,8 @@ extension MessageDetailViewController: CVComponentDelegate {
         let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
         packView.present(from: self, animated: true)
     }
+
+    func didTapPayment(_ paymentModel: TSPaymentModel, displayName: String) { }
 
     func didTapGroupInviteLink(url: URL) {
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)

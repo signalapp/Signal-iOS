@@ -231,6 +231,7 @@ public class GRDBSchemaMigrator: NSObject {
         case threadReplyEditTarget
         case addHiddenRecipientsTable
         case editRecordReadState
+        case addPaymentModelInteractionUniqueId
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -289,7 +290,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 57
+    public static let grdbSchemaVersionLatest: UInt = 58
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2284,9 +2285,31 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.addHiddenRecipientsTable) { transaction in
+            try transaction.database.create(table: HiddenRecipient.databaseTableName) { table in
+                table.column(HiddenRecipient.CodingKeys.recipientId.stringValue, .integer)
+                    .primaryKey()
+                    .notNull()
+                table.foreignKey(
+                    ["recipientId"],
+                    references: "model_SignalRecipient",
+                    columns: ["id"],
+                    onDelete: .cascade
+                )
+            }
+            return .success(())
+        }
+
         migrator.registerMigration(.editRecordReadState) { tx in
             try tx.database.alter(table: "EditRecord") { table in
                 table.add(column: "read", .boolean).notNull().defaults(to: false)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addPaymentModelInteractionUniqueId) { tx in
+            try tx.database.alter(table: "model_TSPaymentModel") { table in
+                table.add(column: "interactionUniqueId", .text)
             }
             return .success(())
         }
@@ -2761,21 +2784,6 @@ public class GRDBSchemaMigrator: NSObject {
                 } catch {
                     owsFail("Error: \(error)")
                 }
-            }
-            return .success(())
-        }
-
-        migrator.registerMigration(.addHiddenRecipientsTable) { transaction in
-            try transaction.database.create(table: HiddenRecipient.databaseTableName) { table in
-                table.column(HiddenRecipient.CodingKeys.recipientId.stringValue, .integer)
-                    .primaryKey()
-                    .notNull()
-                table.foreignKey(
-                    ["recipientId"],
-                    references: "model_SignalRecipient",
-                    columns: ["id"],
-                    onDelete: .cascade
-                )
             }
             return .success(())
         }

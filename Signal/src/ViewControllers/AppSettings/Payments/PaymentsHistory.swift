@@ -1,5 +1,5 @@
 //
-// Copyright 2021 Signal Messenger, LLC
+// Copyright 2023 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
@@ -35,6 +35,10 @@ public struct PaymentsHistoryItem {
 
     var isDefragmentation: Bool {
         paymentModel.isDefragmentation
+    }
+
+    var receiptData: Data? {
+        paymentModel.mobileCoin?.receiptData
     }
 
     var paymentAmount: TSPaymentAmount? {

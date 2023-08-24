@@ -57,6 +57,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL isUnread;
 
+// Optional. If set, the unique id of the interaction displayed in chat
+// for this payment. If nil, safe to assume no interaction exists and one
+// can be created.
+@property (nonatomic, readonly, nullable) NSString *interactionUniqueId;
+
 #pragma mark - MobileCoin
 
 // This only applies to mobilecoin.
@@ -92,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
                         memoMessage:(nullable NSString *)memoMessage
                   requestUuidString:(nullable NSString *)requestUuidString
                            isUnread:(BOOL)isUnread
+                interactionUniqueId:(nullable NSString *)interactionUniqueId
                          mobileCoin:(MobileCoinPayment *)mobileCoin NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
@@ -104,6 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
                addressUuidString:(nullable NSString *)addressUuidString
                 createdTimestamp:(uint64_t)createdTimestamp
+             interactionUniqueId:(nullable NSString *)interactionUniqueId
                         isUnread:(BOOL)isUnread
               mcLedgerBlockIndex:(uint64_t)mcLedgerBlockIndex
                    mcReceiptData:(nullable NSData *)mcReceiptData
@@ -115,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
                     paymentState:(TSPaymentState)paymentState
                      paymentType:(TSPaymentType)paymentType
                requestUuidString:(nullable NSString *)requestUuidString
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:addressUuidString:createdTimestamp:isUnread:mcLedgerBlockIndex:mcReceiptData:mcTransactionData:memoMessage:mobileCoin:paymentAmount:paymentFailure:paymentState:paymentType:requestUuidString:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:addressUuidString:createdTimestamp:interactionUniqueId:isUnread:mcLedgerBlockIndex:mcReceiptData:mcTransactionData:memoMessage:mobileCoin:paymentAmount:paymentFailure:paymentState:paymentType:requestUuidString:));
 
 // clang-format on
 
@@ -142,6 +149,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:addressUuidString:c
     NS_SWIFT_NAME(update(withPaymentAmount:transaction:));
 
 - (void)updateWithIsUnread:(BOOL)isUnread transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)updateWithInteractionUniqueId:(NSString *)interactionUniqueId transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

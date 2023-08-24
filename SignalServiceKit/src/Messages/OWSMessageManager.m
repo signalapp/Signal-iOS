@@ -1033,20 +1033,17 @@ NS_ASSUME_NONNULL_BEGIN
         [self.paymentsHelper processIncomingPaymentRequestWithThread:thread
                                                       paymentRequest:paymentModels.request
                                                          transaction:transaction];
-        return nil;
     } else if (paymentModels.notification != nil) {
         OWSLogInfo(@"Processing payment notification.");
         [self.paymentsHelper processIncomingPaymentNotificationWithThread:thread
                                                       paymentNotification:paymentModels.notification
                                                             senderAddress:envelope.sourceAddress
                                                               transaction:transaction];
-        return nil;
     } else if (paymentModels.cancellation != nil) {
         OWSLogInfo(@"Processing payment cancellation.");
         [self.paymentsHelper processIncomingPaymentCancellationWithThread:thread
                                                       paymentCancellation:paymentModels.cancellation
                                                               transaction:transaction];
-        return nil;
     } else if (paymentModels != nil) {
         OWSFailDebug(@"Unexpected payment model.");
     }
@@ -1101,7 +1098,10 @@ NS_ASSUME_NONNULL_BEGIN
                                      storyAuthorAci:storyAuthorAci
                                      storyTimestamp:storyTimestamp
                                  storyReactionEmoji:nil
-                                          giftBadge:giftBadge];
+                                          giftBadge:giftBadge
+                                paymentCancellation:paymentModels.cancellation
+                                paymentNotification:paymentModels.notification
+                                     paymentRequest:paymentModels.request];
     TSIncomingMessage *message = [incomingMessageBuilder build];
     if (!message) {
         OWSFailDebug(@"Missing incomingMessage.");

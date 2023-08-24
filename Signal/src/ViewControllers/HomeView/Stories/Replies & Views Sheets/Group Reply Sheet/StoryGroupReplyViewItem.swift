@@ -6,6 +6,7 @@
 import Foundation
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 import UIKit
 
 class StoryGroupReplyViewItem: Dependencies {
