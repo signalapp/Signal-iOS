@@ -122,7 +122,8 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
         // Ensure you can scroll to the last emoji without
         // them being stuck behind the toolbar.
-        let contentInset = UIEdgeInsets(top: 0, leading: 0, bottom: sectionToolbar.height, trailing: 0)
+        let bottomInset = sectionToolbar.height - sectionToolbar.safeAreaInsets.bottom
+        let contentInset = UIEdgeInsets(top: 0, leading: 0, bottom: bottomInset, trailing: 0)
         collectionView.contentInset = contentInset
         collectionView.scrollIndicatorInsets = contentInset
 

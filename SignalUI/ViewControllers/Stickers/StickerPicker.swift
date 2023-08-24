@@ -5,19 +5,84 @@
 
 import SignalServiceKit
 
-public protocol StickerKeyboardDelegate: AnyObject {
+// MARK: - Delegate Protocols
+
+public protocol StickerPickerDelegate: AnyObject {
     func didSelectSticker(stickerInfo: StickerInfo)
     func presentManageStickersView()
 }
 
-// MARK: -
+public protocol StickerPickerPageViewDelegate: StickerPickerDelegate {
+    func setItems(_ items: [StickerHorizontalListViewItem])
+    func updateSelections(scrollToSelectedItem: Bool)
+}
 
-public class StickerKeyboard: CustomKeyboard {
+// MARK: - StickerPacksToolbar
 
-    public weak var delegate: StickerKeyboardDelegate?
+class StickerPacksToolbar: UIStackView {
+    private static let packCoverSize: CGFloat = 32
+    private static let packCoverInset: CGFloat = 4
+    private static let packCoverSpacing: CGFloat = 4
+    private let forceDarkTheme: Bool
+    lazy var packsCollectionView: StickerHorizontalListView = {
+        let view = StickerHorizontalListView(
+            cellSize: StickerPacksToolbar.packCoverSize,
+            cellInset: StickerPacksToolbar.packCoverInset,
+            spacing: StickerPacksToolbar.packCoverSpacing,
+            forceDarkTheme: forceDarkTheme
+        )
 
-    private let mainStackView = UIStackView()
-    private let headerView = UIStackView()
+        view.contentInset = .zero
+        view.autoSetDimension(.height, toSize: StickerPacksToolbar.packCoverSize + view.contentInset.top + view.contentInset.bottom)
+
+        return view
+    }()
+
+    public var manageButtonWasTapped: (() -> Void)?
+
+    init(forceDarkTheme: Bool = false) {
+        self.forceDarkTheme = forceDarkTheme
+        super.init(frame: .zero)
+        populate()
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func populate() {
+        spacing = Self.packCoverSpacing
+        axis = .horizontal
+        alignment = .center
+        layoutMargins = UIEdgeInsets(top: 6, leading: 6, bottom: 6, trailing: 6)
+        isLayoutMarginsRelativeArrangement = true
+
+        packsCollectionView.backgroundColor = .clear
+        addArrangedSubview(packsCollectionView)
+
+        let manageButton = buildHeaderButton("plus") { [weak self] in
+            self?.manageButtonWasTapped?()
+        }
+        addArrangedSubview(manageButton)
+        manageButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "manageButton")
+    }
+
+    private func buildHeaderButton(_ imageName: String, block: @escaping () -> Void) -> UIView {
+        let tintColor = forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
+        let button = OWSButton(imageName: imageName, tintColor: tintColor, block: block)
+        button.setContentHuggingHigh()
+        button.setCompressionResistanceHigh()
+        return button
+    }
+}
+
+// MARK: - StickerPickerPageView
+
+public class StickerPickerPageView: UIView {
+
+    public weak var delegate: StickerPickerPageViewDelegate?
+
+    private let forceDarkTheme: Bool
 
     private var stickerPacks = [StickerPack]()
 
@@ -27,10 +92,13 @@ public class StickerKeyboard: CustomKeyboard {
         }
     }
 
-    public override init() {
-        super.init()
+    public init(delegate: StickerPickerPageViewDelegate, forceDarkTheme: Bool = false) {
+        self.delegate = delegate
+        self.forceDarkTheme = forceDarkTheme
 
-        createSubviews()
+        super.init(frame: .zero)
+
+        setupPaging()
 
         reloadStickers()
 
@@ -52,24 +120,7 @@ public class StickerKeyboard: CustomKeyboard {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func createSubviews() {
-        contentView.addSubview(mainStackView)
-        mainStackView.axis = .vertical
-        mainStackView.alignment = .fill
-        mainStackView.autoPinEdgesToSuperviewEdges()
-
-        mainStackView.addBackgroundView(withBackgroundColor: Theme.keyboardBackgroundColor)
-
-        mainStackView.addArrangedSubview(headerView)
-
-        populateHeaderView()
-
-        setupPaging()
-    }
-
-    public override func wasPresented() {
-        super.wasPresented()
-
+    public func wasPresented() {
         // If there are no recents, default to showing the first sticker pack.
         if currentPageCollectionView.stickerCount < 1 {
             updateSelectedStickerPack(stickerPacks.first)
@@ -95,7 +146,8 @@ public class StickerKeyboard: CustomKeyboard {
             },
             isSelectedBlock: { [weak self] in
                 self?.selectedStickerPack == nil
-            }
+            },
+            forceDarkTheme: forceDarkTheme
         ))
         items += stickerPacks.map { (stickerPack) in
             StickerHorizontalListViewItemSticker(
@@ -109,7 +161,7 @@ public class StickerKeyboard: CustomKeyboard {
                 cache: reusableStickerViewCache
             )
         }
-        packsCollectionView.items = items
+        delegate?.setItems(items)
 
         guard stickerPacks.count > 0 else {
             _ = resignFirstResponder()
@@ -126,50 +178,6 @@ public class StickerKeyboard: CustomKeyboard {
         resetStickerPages()
     }
 
-    private static let packCoverSize: CGFloat = 32
-    private static let packCoverInset: CGFloat = 4
-    private static let packCoverSpacing: CGFloat = 4
-    private let packsCollectionView: StickerHorizontalListView = {
-        let view = StickerHorizontalListView(cellSize: StickerKeyboard.packCoverSize,
-                                             cellInset: StickerKeyboard.packCoverInset,
-                                             spacing: StickerKeyboard.packCoverSpacing)
-
-        view.contentInset = .zero
-        view.autoSetDimension(.height, toSize: StickerKeyboard.packCoverSize + view.contentInset.top + view.contentInset.bottom)
-
-        return view
-    }()
-
-    private func populateHeaderView() {
-        headerView.spacing = StickerKeyboard.packCoverSpacing
-        headerView.axis = .horizontal
-        headerView.alignment = .center
-        headerView.backgroundColor = Theme.keyboardBackgroundColor
-        headerView.layoutMargins = UIEdgeInsets(top: 6, leading: 6, bottom: 6, trailing: 6)
-        headerView.isLayoutMarginsRelativeArrangement = true
-
-        packsCollectionView.backgroundColor = Theme.keyboardBackgroundColor
-        headerView.addArrangedSubview(packsCollectionView)
-
-        let manageButton = buildHeaderButton("plus") { [weak self] in
-            self?.manageButtonWasTapped()
-        }
-        headerView.addArrangedSubview(manageButton)
-        manageButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "manageButton")
-
-        updateHeaderView()
-    }
-
-    private func buildHeaderButton(_ imageName: String, block: @escaping () -> Void) -> UIView {
-        let button = OWSButton(imageName: imageName, tintColor: Theme.secondaryTextAndIconColor, block: block)
-        button.setContentHuggingHigh()
-        button.setCompressionResistanceHigh()
-        return button
-    }
-
-    private func updateHeaderView() {
-    }
-
     // MARK: Events
 
     @objc
@@ -179,7 +187,6 @@ public class StickerKeyboard: CustomKeyboard {
         Logger.verbose("")
 
         reloadStickers()
-        updateHeaderView()
     }
 
     @objc
@@ -200,24 +207,16 @@ public class StickerKeyboard: CustomKeyboard {
 
     private func updateSelectedStickerPack(_ stickerPack: StickerPack?, scrollToSelected: Bool = false) {
         selectedStickerPack = stickerPack
-        packsCollectionView.updateSelections(scrollToSelectedItem: scrollToSelected)
+        delegate?.updateSelections(scrollToSelectedItem: scrollToSelected)
     }
 
-    private func manageButtonWasTapped() {
-        AssertIsOnMainThread()
-
-        Logger.verbose("")
-
-        delegate?.presentManageStickersView()
-    }
-
-    // MARK: - Paging
+    // MARK: Paging
 
     /// This array always includes three collection views, where the indices represent:
     /// 0 - Previous Page
     /// 1 - Current Page
     /// 2 - Next Page
-    private var stickerPackCollectionViews = [
+    var stickerPackCollectionViews = [
         StickerPackCollectionView(),
         StickerPackCollectionView(),
         StickerPackCollectionView()
@@ -274,9 +273,8 @@ public class StickerKeyboard: CustomKeyboard {
         stickerPagingScrollView.showsHorizontalScrollIndicator = false
         stickerPagingScrollView.isDirectionalLockEnabled = true
         stickerPagingScrollView.delegate = self
-        mainStackView.addArrangedSubview(stickerPagingScrollView)
-        stickerPagingScrollView.autoPinEdge(toSuperviewSafeArea: .left)
-        stickerPagingScrollView.autoPinEdge(toSuperviewSafeArea: .right)
+        addSubview(stickerPagingScrollView)
+        stickerPagingScrollView.autoPinEdgesToSuperviewEdges()
 
         let stickerPagesContainer = UIView()
         stickerPagingScrollView.addSubview(stickerPagesContainer)
@@ -285,7 +283,7 @@ public class StickerKeyboard: CustomKeyboard {
         stickerPagesContainer.autoMatch(.width, to: .width, of: stickerPagingScrollView, withMultiplier: numberOfPages)
 
         for (index, collectionView) in stickerPackCollectionViews.enumerated() {
-            collectionView.backgroundColor = Theme.keyboardBackgroundColor
+            collectionView.backgroundColor = .clear
             collectionView.isDirectionalLockEnabled = true
             collectionView.stickerDelegate = self
 
@@ -367,7 +365,7 @@ public class StickerKeyboard: CustomKeyboard {
 
         updatePageConstraints()
 
-        packsCollectionView.updateSelections()
+        delegate?.updateSelections(scrollToSelectedItem: false)
     }
 
     private func updatePageConstraints(ignoreScrollingState: Bool = false) {
@@ -447,9 +445,9 @@ public class StickerKeyboard: CustomKeyboard {
     }
 }
 
-// MARK: -
+// MARK: UIScrollViewDelegate
 
-extension StickerKeyboard: UIScrollViewDelegate {
+extension StickerPickerPageView: UIScrollViewDelegate {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         checkForPageChange()
     }
@@ -467,7 +465,7 @@ extension StickerKeyboard: UIScrollViewDelegate {
     }
 }
 
-extension StickerKeyboard: StickerPackCollectionViewDelegate {
+extension StickerPickerPageView: StickerPackCollectionViewDelegate {
     public func didTapSticker(stickerInfo: StickerInfo) {
         AssertIsOnMainThread()
 
@@ -487,7 +485,7 @@ extension StickerKeyboard: StickerPackCollectionViewDelegate {
     }
 }
 
-// MARK: -
+// MARK: - StickerViewCache
 
 public class StickerViewCache {
 
@@ -517,7 +515,7 @@ public class StickerViewCache {
         self.backingCache.clear()
     }
 
-    // MARK: - NSCache Compatibility
+    // MARK: NSCache Compatibility
 
     public func setObject(_ value: StickerReusableView, forKey key: StickerInfo) {
         set(key: key, value: value)

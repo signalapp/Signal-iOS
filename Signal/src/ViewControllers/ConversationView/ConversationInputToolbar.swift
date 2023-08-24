@@ -2151,7 +2151,7 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
     }
 }
 
-extension ConversationInputToolbar: StickerKeyboardDelegate {
+extension ConversationInputToolbar: StickerPickerDelegate {
 
     public func didSelectSticker(stickerInfo: StickerInfo) {
         AssertIsOnMainThread()

@@ -76,15 +76,22 @@ public class StickerHorizontalListViewItemRecents: StickerHorizontalListViewItem
 
     public let didSelectBlock: () -> Void
     public let isSelectedBlock: () -> Bool
+    private let forceDarkTheme: Bool
 
-    public init(didSelectBlock: @escaping () -> Void, isSelectedBlock: @escaping () -> Bool) {
+    public init(
+        didSelectBlock: @escaping () -> Void,
+        isSelectedBlock: @escaping () -> Bool,
+        forceDarkTheme: Bool = false
+    ) {
         self.didSelectBlock = didSelectBlock
         self.isSelectedBlock = isSelectedBlock
+        self.forceDarkTheme = forceDarkTheme
     }
 
     public var view: UIView {
         let imageView = UIImageView()
-        imageView.setTemplateImageName("recent", tintColor: Theme.secondaryTextAndIconColor)
+        let tintColor = forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
+        imageView.setTemplateImageName("recent", tintColor: tintColor)
         return imageView
     }
 
@@ -103,6 +110,7 @@ public class StickerHorizontalListView: UICollectionView {
 
     private let cellSize: CGFloat
     private let cellInset: CGFloat
+    private let forceDarkTheme: Bool
 
     public typealias Item = StickerHorizontalListViewItem
 
@@ -117,10 +125,12 @@ public class StickerHorizontalListView: UICollectionView {
 
     private let cellReuseIdentifier = "cellReuseIdentifier"
 
-    public required init(cellSize: CGFloat, cellInset: CGFloat, spacing: CGFloat) {
+    public required init(cellSize: CGFloat, cellInset: CGFloat, spacing: CGFloat, forceDarkTheme: Bool = false) {
         self.cellSize = cellSize
         self.cellInset = cellInset
         let layout = LinearHorizontalLayout(itemSize: CGSize(square: cellSize), spacing: spacing)
+
+        self.forceDarkTheme = forceDarkTheme
 
         super.init(frame: .zero, collectionViewLayout: layout)
 
@@ -193,7 +203,7 @@ extension StickerHorizontalListView: UICollectionViewDataSource {
 
         if item.isSelected {
             let selectionView = UIView()
-            selectionView.backgroundColor = (Theme.isDarkThemeEnabled
+            selectionView.backgroundColor = (Theme.isDarkThemeEnabled || forceDarkTheme
                 ? UIColor.ows_gray75
                 : UIColor.ows_gray15)
             selectionView.layer.cornerRadius = 8
