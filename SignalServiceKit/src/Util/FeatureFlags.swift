@@ -127,7 +127,7 @@ public class FeatureFlags: BaseFlags {
 
     /// If true, we will enable recipient hiding, which is like a lighter form of blocking.
     @objc
-    public static let recipientHiding = build.includes(.internal)
+    public static let recipientHiding = false
 }
 
 // MARK: -
