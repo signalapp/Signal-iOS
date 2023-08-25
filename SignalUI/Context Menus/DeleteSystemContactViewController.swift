@@ -3,8 +3,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Contacts
+import LibSignalClient
 import SignalMessaging
 
+/// If we try and hide a recipient but fail because they correspond to
+/// a system contact, we show this controller which provides a hook
+/// to delete the system contact (which, if successful, then triggers a hide).
+///
+/// SHOULD ONLY BE DISPLAYED ON THE PRIMARY DEVICE
 class DeleteSystemContactViewController: OWSTableViewController2 {
     /// Dependencies needed by this view controller.
     /// Note that these dependencies can be accessed
@@ -14,10 +21,13 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
     private struct Dependencies {
         let contactsManager: ContactsManagerProtocol
         let databaseStorage: SDSDatabaseStorage
+        let recipientHidingManager: RecipientHidingManager
+        let tsAccountManager: TSAccountManager
     }
 
-    /// The address of the contact represented by this contact card.
-    private let address: SignalServiceAddress
+    /// The e164 of the contact represented by this contact card.
+    private let e164: E164
+    private let serviceId: ServiceId?
 
     /// The view controller that should present the toast
     /// confirming successful contact deletion. Note that
@@ -26,22 +36,46 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
     private let viewControllerPresentingToast: UIViewController
 
     init(
-        address: SignalServiceAddress,
+        e164: E164,
+        serviceId: ServiceId?,
         viewControllerPresentingToast: UIViewController,
         contactsManager: ContactsManagerProtocol,
-        databaseStorage: SDSDatabaseStorage
+        databaseStorage: SDSDatabaseStorage,
+        recipientHidingManager: RecipientHidingManager,
+        tsAccountManager: TSAccountManager
     ) {
-        self.address = address
+        self.e164 = e164
+        self.serviceId = serviceId
         self.viewControllerPresentingToast = viewControllerPresentingToast
         self.dependencies = Dependencies(
             contactsManager: contactsManager,
-            databaseStorage: databaseStorage
+            databaseStorage: databaseStorage,
+            recipientHidingManager: recipientHidingManager,
+            tsAccountManager: tsAccountManager
         )
         super.init()
     }
 
+    private lazy var spinnerContainer: UIView = {
+        let view = UIView()
+        self.view.addSubview(view)
+        view.autoPinEdgesToSuperviewEdges()
+        view.backgroundColor = .black.withAlphaComponent(0.15)
+        view.addSubview(spinnerView)
+        spinnerView.autoCenterInSuperview()
+        view.isHidden = true
+        return view
+    }()
+
+    private lazy var spinnerView = UIActivityIndicatorView()
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        // This screen is for primary devices only. If a non primary
+        // manages to get here bad things could happen.
+        owsAssert(tsAccountManager.isPrimaryDevice)
+
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .cancel,
             target: self,
@@ -115,24 +149,38 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
     private func updateTableContents() {
         let contents = OWSTableContents()
 
-        let (image, nameComponents, phoneNumber) = dependencies.databaseStorage.read { tx in
+        let addressForProfileLookup = SignalServiceAddress(serviceId: serviceId, e164: e164)
+        let (
+            image,
+            nameComponents,
+            displayNameForToast,
+            phoneNumber
+        ) = dependencies.databaseStorage.read { tx in
             let image = avatarBuilder.avatarImage(
-                forAddress: address,
+                forAddress: addressForProfileLookup,
                 diameterPixels: Constants.avatarDiameter,
                 localUserDisplayMode: .asUser,
                 transaction: tx
             )
             let nameComponents = dependencies.contactsManager.nameComponents(
-                for: address,
+                for: addressForProfileLookup,
                 transaction: tx
             )
-
+            let displayNameForToast = dependencies.contactsManager.displayName(
+                for: addressForProfileLookup,
+                transaction: tx
+            ).formattedForActionSheetTitle()
             let phoneNumber = SignalRecipient.fetchRecipient(
-                for: address,
+                for: addressForProfileLookup,
                 onlyIfRegistered: false,
                 tx: tx
             )?.phoneNumber
-            return (image, nameComponents, phoneNumber)
+            return (
+                image,
+                nameComponents,
+                displayNameForToast,
+                phoneNumber
+            )
         }
 
         // Avatar
@@ -194,7 +242,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     guard let self else { return }
-                    self.displayDeleteContactActionSheet()
+                    self.displayDeleteContactActionSheet(phoneNumber: phoneNumber, displayNameForToast: displayNameForToast)
                 }
             )
         )
@@ -205,7 +253,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
 
     /// Displays the action sheet confirming that the user really
     /// wants to delete this contact from their system contacts.
-    private func displayDeleteContactActionSheet() {
+    private func displayDeleteContactActionSheet(phoneNumber: String?, displayNameForToast: String) {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "DELETE_CONTACT_ACTION_SHEET_TITLE",
@@ -224,10 +272,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
             ),
             style: .destructive,
             handler: { [weak self] _ in
-                guard let self else { return }
-                // TODO: Delete contact and hide recipient. Ensure cell disappears when we return to the recipient picker list.
-                self.dismiss(animated: true)
-                self.displayDeletedContactToast()
+                self?.handleContactDelete(displayNameForToast: displayNameForToast)
             }
         ))
         actionSheet.addAction(ActionSheetAction(
@@ -237,21 +282,126 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         self.presentActionSheet(actionSheet)
     }
 
+    private func handleContactDelete(displayNameForToast: String) {
+        switch CNContactStore.authorizationStatus(for: .contacts) {
+        case .authorized:
+            break
+        case .notDetermined, .denied, .restricted:
+            fallthrough
+        @unknown default:
+            Logger.info("No contact permissions")
+            showGenericErrorToastAndDismiss()
+        }
+
+        let signalAccount = self.dependencies.databaseStorage.read { tx in
+            return SignalAccountFinder().signalAccount(
+                for: self.e164,
+                tx: tx
+            )
+        }
+        // In the case where we have more than one contact with the e164,
+        // prefer the one with this id. Otherwise, choice is arbitrary.
+        let preferredContactIdForDeletion = signalAccount?.contact?.cnContactId
+
+        // Go to CNContacts as the source of truth for contacts.
+        let contactStore = CNContactStore()
+        let phoneNumPredicate = CNContact.predicateForContacts(matching: CNPhoneNumber(stringValue: e164.stringValue))
+        guard
+            let contacts = try? contactStore.unifiedContacts(
+                    matching: phoneNumPredicate,
+                    keysToFetch: [CNContactIdentifierKey as CNKeyDescriptor]
+                )
+        else {
+            Logger.error("Failed to fetch CNContacts!")
+            showGenericErrorToastAndDismiss()
+            return
+        }
+        var contactToDelete: CNContact?
+        if let preferredContactIdForDeletion {
+            contactToDelete = contacts.first(where: { $0.identifier == preferredContactIdForDeletion })
+        }
+        if contactToDelete == nil {
+            contactToDelete = contacts.first
+        }
+
+        guard let contactToDelete = contactToDelete?.mutableCopy() as? CNMutableContact else {
+            // No contact to delete! Done.
+            Logger.warn("No contact to delete, exiting early.")
+            showGenericErrorToastAndDismiss()
+            return
+        }
+
+        var didFail = false
+        // Set up the observer _before_ deleting, so its around
+        // when the deletion happens.
+        NotificationCenter.default.observe(once: .OWSContactsManagerSignalAccountsDidChange)
+            .asVoid()
+            .timeout(on: DispatchQueue.main, seconds: 5, substituteValue: ())
+            .observe(on: DispatchQueue.main) { [weak self] _ in
+                guard let self, !didFail else { return }
+
+                defer {
+                    self.dismiss(animated: true)
+                    self.displayDeletedContactToast(displayNameForToast: displayNameForToast)
+                }
+
+                // Check that the contact got deleted from our db.
+                let isStillSystemContact = self.dependencies.databaseStorage.read { tx in
+                    return self.contactsManager.isSystemContact(phoneNumber: self.e164.stringValue, transaction: tx)
+                }
+                guard !isStillSystemContact else {
+                    // Can't hide; likely there was another contact with the same number.
+                    // Just exit.
+                    Logger.warn("Address still a system contact after deletion; possibly duplicate system contact")
+                    return
+                }
+                self.dependencies.databaseStorage.write { tx in
+                    do {
+                        try self.dependencies.recipientHidingManager.addHiddenRecipient(
+                            SignalServiceAddress(serviceId: self.serviceId, e164: self.e164),
+                            wasLocallyInitiated: true,
+                            tx: tx.asV2Write
+                        )
+                    } catch {
+                        owsFailDebug("Failed to hide recipient")
+                    }
+                }
+            }
+
+        // Delete
+        let saveRequest = CNSaveRequest()
+        saveRequest.delete(contactToDelete)
+        do {
+            try contactStore.execute(saveRequest)
+        } catch {
+            didFail = true
+            Logger.error("Failed to delete CNContact!")
+            showGenericErrorToastAndDismiss()
+        }
+
+        spinnerContainer.isHidden = false
+        spinnerView.startAnimating()
+        self.view.isUserInteractionEnabled = false
+    }
+
+    private func showGenericErrorToastAndDismiss() {
+        ToastController(text: CommonStrings.somethingWentWrongError).presentToastView(
+            from: .bottom,
+            of: self.viewControllerPresentingToast.view,
+            inset: self.view.safeAreaInsets.bottom + Constants.toastInset
+        )
+        self.dismiss(animated: true)
+    }
+
     /// Displays a toast confirming that a contact was
     /// successfully deleted.
-    private func displayDeletedContactToast() {
-        let displayName = dependencies.databaseStorage.read { tx in
-            return self.dependencies.contactsManager.displayName(
-                for: self.address,
-                transaction: tx
-            ).formattedForActionSheetTitle()
-        }
+    private func displayDeletedContactToast(displayNameForToast: String) {
         let toastMessage = String(
             format: OWSLocalizedString(
                 "DELETE_CONTACT_CONFIRMATION_TOAST",
                 comment: "Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}."
             ),
-            displayName
+            displayNameForToast
         )
         ToastController(text: toastMessage).presentToastView(
             from: .bottom,

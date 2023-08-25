@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalMessaging
 import SignalServiceKit
 
@@ -86,9 +87,10 @@ class RecipientContextMenuHelper {
             image: UIImage(named: "minus-circle")
         ) { [weak self] _ in
             guard let self else { return }
-            if self.isSystemContact(address: address) {
+            if let e164 = address.e164, self.isSystemContact(e164: e164) {
                 self.displayViewContactActionSheet(
                     address: address,
+                    e164: e164,
                     fromViewController: fromViewController
                 )
             } else {
@@ -100,10 +102,10 @@ class RecipientContextMenuHelper {
         }
     }
 
-    /// Whether the given `address` corresponds with a system contact.
-    private func isSystemContact(address: SignalServiceAddress) -> Bool {
+    /// Whether the given `e164` corresponds with a system contact.
+    private func isSystemContact(e164: E164) -> Bool {
         return databaseStorage.read { tx in
-            contactsManager.isSystemContact(address: address, transaction: tx)
+            contactsManager.isSystemContact(phoneNumber: e164.stringValue, transaction: tx)
         }
     }
 
@@ -232,22 +234,28 @@ class RecipientContextMenuHelper {
     /// first removing them from their system contacts.
     ///
     /// - Parameter address: Address of the recipient to hide.
+    /// - Parameter e164: Phone number of the recipient to hide.
     /// - Parameter fromViewController: The view controller from which to present the action sheet.
     private func displayViewContactActionSheet(
         address: SignalServiceAddress,
+        e164: E164,
         fromViewController: UIViewController
     ) {
-        guard address.isValid else {
-            owsFailDebug("Invalid address: \(address).")
-            return
-        }
-        let (localAddress, recipientDisplayName) = databaseStorage.read { tx in
+        let (
+            isPrimaryDevice,
+            localAddress,
+            recipientDisplayName
+        ) = databaseStorage.read { tx in
             let localAddress = accountManager.localAddress(with: tx)
             let recipientDisplayName = contactsManager.displayName(
                 for: address,
                 transaction: tx
             ).formattedForActionSheetTitle()
-            return (localAddress, recipientDisplayName)
+            return (
+                accountManager.isPrimaryDevice(transaction: tx),
+                localAddress,
+                recipientDisplayName
+            )
         }
         guard
             let localAddress,
@@ -264,21 +272,40 @@ class RecipientContextMenuHelper {
             recipientDisplayName
         )
 
-        let actionSheet = ActionSheetController(
-            title: actionSheetTitle,
-            message: OWSLocalizedString(
+        let actionSheetMessage: String
+        let removeAction: ActionSheetAction?
+        if isPrimaryDevice {
+            actionSheetMessage = OWSLocalizedString(
                 "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION",
                 comment: "An explanation of why the user cannot be removed."
             )
+            removeAction = ActionSheetAction(
+                title: OWSLocalizedString("VIEW_CONTACT_BUTTON", comment: "Button label for the 'View Contact' button"),
+                handler: { [weak self] _ in
+                    guard let self else { return }
+                    self.displayDeleteContactViewController(
+                        e164: e164,
+                        serviceId: address.serviceId,
+                        fromViewController: fromViewController
+                    )
+                }
+            )
+        } else {
+            actionSheetMessage = OWSLocalizedString(
+                "HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION",
+                comment: "An explanation of why the user cannot be removed on a linked device."
+            )
+            removeAction = nil
+        }
+
+        let actionSheet = ActionSheetController(
+            title: actionSheetTitle,
+            message: actionSheetMessage
         )
 
-        actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString("VIEW_CONTACT_BUTTON", comment: "Button label for the 'View Contact' button"),
-            handler: { [weak self] _ in
-                guard let self else { return }
-                self.displayDeleteContactViewController(address: address, fromViewController: fromViewController)
-            }
-        ))
+        if let removeAction {
+            actionSheet.addAction(removeAction)
+        }
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.okayButton,
             style: .cancel
@@ -289,20 +316,24 @@ class RecipientContextMenuHelper {
     /// Displays a view controller with a simplified contact
     /// view and the option to delete this contact.
     ///
-    /// - Parameter address: The address of the contact to
+    /// - Parameter e164: The phone number of the contact to
     ///   potentially be deleted.
     /// - Parameter fromViewController: The view controller
     ///   from which to present this contact deletion view
     ///   controller.
     private func displayDeleteContactViewController(
-        address: SignalServiceAddress,
+        e164: E164,
+        serviceId: ServiceId?,
         fromViewController: UIViewController
     ) {
         let deleteContactViewController = DeleteSystemContactViewController(
-            address: address,
+            e164: e164,
+            serviceId: serviceId,
             viewControllerPresentingToast: fromViewController,
             contactsManager: contactsManager,
-            databaseStorage: databaseStorage
+            databaseStorage: databaseStorage,
+            recipientHidingManager: recipientHidingManager,
+            tsAccountManager: accountManager
         )
         let navigationController = OWSNavigationController()
         navigationController.setViewControllers([deleteContactViewController], animated: false)

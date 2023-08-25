@@ -11,7 +11,37 @@ public class SignalAccountFinder: NSObject {
         for address: SignalServiceAddress,
         tx: SDSAnyReadTransaction
     ) -> SignalAccount? {
-        return signalAccounts(for: [address], tx: tx)[0]
+        if
+            let serviceId = address.serviceId,
+            let uuidMatch = signalAccountWhere(
+                column: SignalAccount.columnName(.recipientServiceId),
+                matches: serviceId.serviceIdUppercaseString,
+                tx: tx
+            )
+        {
+            return uuidMatch
+        } else if
+            let phoneNumber = address.phoneNumber,
+            let phoneNumberMatch = signalAccountWhere(
+                column: SignalAccount.columnName(.recipientPhoneNumber),
+                matches: phoneNumber,
+                tx: tx
+            )
+        {
+            return phoneNumberMatch
+        }
+        return nil
+    }
+
+    public func signalAccount(
+        for e164: E164,
+        tx: SDSAnyReadTransaction
+    ) -> SignalAccount? {
+        return signalAccountWhere(
+            column: SignalAccount.columnName(.recipientPhoneNumber),
+            matches: e164.stringValue,
+            tx: tx
+        )
     }
 
     func signalAccounts(
@@ -99,6 +129,24 @@ public class SignalAccountFinder: NSObject {
             sql: sql,
             arguments: StatementArguments(values)
         )
+    }
+
+    private func signalAccountWhere(
+        column: String,
+        matches matchString: String,
+        tx: SDSAnyReadTransaction
+    ) -> SignalAccount? {
+        let sql = "SELECT * FROM \(SignalAccount.databaseTableName) WHERE \(column) = ? LIMIT 1"
+
+        /// Why did we use `allSignalAccounts` instead of `SignalAccount.anyFetchAll`?
+        /// The reason is that the `SignalAccountReadCache` needs to have
+        /// `didReadSignalAccount` called on it for each record we enumerate, and
+        /// `SignalAccount.anyEnumerate` has this built in.
+        return allSignalAccounts(
+            tx: tx,
+            sql: sql,
+            arguments: [matchString]
+        ).first
     }
 
     private func allSignalAccounts(

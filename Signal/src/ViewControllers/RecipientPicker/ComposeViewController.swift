@@ -125,19 +125,7 @@ extension ComposeViewController: RecipientPickerDelegate {
         transaction: SDSAnyReadTransaction
     ) -> String? {
         switch recipient.identifier {
-        case .address(let address):
-            #if DEBUG
-            let isBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
-            owsAssert(!isBlocked, "It should be impossible to see a blocked connection in this view")
-
-            if FeatureFlags.recipientHiding {
-                let isHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
-                    address,
-                    tx: transaction.asV2Read
-                )
-                owsAssert(!isHidden, "It should be impossible to see a hidden recipient in this view")
-            }
-            #endif
+        case .address:
             return nil
         case .group(let thread):
             guard blockingManager.isThreadBlocked(thread, transaction: transaction) else { return nil }
