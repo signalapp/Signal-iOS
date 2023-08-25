@@ -104,7 +104,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let content = try! SSKProtoContent(serializedData: messageData)
 
             let messagePni = content.pniSignatureMessage!.pni
-            XCTAssertEqual(messagePni, tsAccountManager.localPni!.data)
+            XCTAssertEqual(messagePni, tsAccountManager.localPni!.rawUUID.data)
 
             let aciKeyPair = identityManager.identityKeyPair(for: .aci, transaction: transaction)!.identityKeyPair
             let pniKeyPair = identityManager.identityKeyPair(for: .pni, transaction: transaction)!.identityKeyPair
@@ -311,7 +311,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
         // Change our PNI, using registerForTests(...) instead of updateLocalPhoneNumber(...) because the latter kicks
         // off a request to check with the server.
         tsAccountManager.registerForTests(withLocalNumber: "+17775550199",
-                                          uuid: tsAccountManager.localUuid!,
+                                          uuid: tsAccountManager.localAci!.rawUUID,
                                           pni: UUID())
 
         write { transaction in

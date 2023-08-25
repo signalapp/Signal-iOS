@@ -550,8 +550,8 @@ private class MessageAckOperation: OWSOperation {
 
         if let serverGuid = envelopeInfo.serverGuid?.nilIfEmpty {
             return serverGuid
-        } else if let sourceUuid = envelopeInfo.sourceAddress?.uuid {
-            return "\(sourceUuid.uuidString)_\(envelopeInfo.timestamp)"
+        } else if let sourceServiceId = envelopeInfo.sourceAddress?.serviceId {
+            return "\(sourceServiceId.serviceIdUppercaseString)_\(envelopeInfo.timestamp)"
         } else {
             // This *could* collide, but we don't have enough info to ack the message anyway. So it should be fine.
             return "\(envelopeInfo.serviceTimestamp)"

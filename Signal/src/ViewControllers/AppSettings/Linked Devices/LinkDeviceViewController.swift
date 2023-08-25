@@ -166,9 +166,9 @@ class LinkDeviceViewController: OWSViewController {
             myPniIdentityKeyPair: pniIdentityKeyPair.identityKeyPair,
             theirPublicKey: deviceProvisioningUrl.publicKey,
             theirEphemeralDeviceId: deviceProvisioningUrl.ephemeralDeviceId,
-            myAci: myAci.rawUUID,
+            myAci: myAci,
             myPhoneNumber: myPhoneNumber,
-            myPni: myPni.rawUUID,
+            myPni: myPni,
             profileKey: myProfileKeyData,
             readReceiptsEnabled: areReadReceiptsEnabled,
             provisioningService: DeviceProvisioningServiceImpl(

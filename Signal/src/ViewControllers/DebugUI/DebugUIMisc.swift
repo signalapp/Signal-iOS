@@ -393,8 +393,8 @@ class DebugUIMisc: DebugUIPage, Dependencies {
             owsFailDebug("Missing localAddress.")
             return
         }
-        if let uuid = localAddress.uuid {
-            Logger.verbose("localAddress uuid: \(uuid)")
+        if let serviceId = localAddress.serviceId {
+            Logger.verbose("localAddress serviceId: \(serviceId)")
         }
         if let phoneNumber = localAddress.phoneNumber {
             Logger.verbose("localAddress phoneNumber: \(phoneNumber)")

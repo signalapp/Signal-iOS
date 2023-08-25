@@ -106,9 +106,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         infoSection.add(.copyableItem(label: "Local Phone Number", value: tsAccountManager.localNumber))
 
-        infoSection.add(.copyableItem(label: "Local ACI", value: tsAccountManager.localUuid?.uuidString))
+        infoSection.add(.copyableItem(label: "Local ACI", value: tsAccountManager.localAci?.serviceIdString))
 
-        infoSection.add(.copyableItem(label: "Local PNI", value: tsAccountManager.localPni?.uuidString))
+        infoSection.add(.copyableItem(label: "Local PNI", value: tsAccountManager.localPni?.serviceIdString))
 
         infoSection.add(.copyableItem(label: "Device ID", value: "\(tsAccountManager.storedDeviceId)"))
 

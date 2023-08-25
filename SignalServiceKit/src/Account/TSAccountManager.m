@@ -263,44 +263,44 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     return accountState.localNumber;
 }
 
-- (nullable NSUUID *)localUuid
+- (nullable AciObjC *)localAci
 {
-    return [self localUuidWithAccountState:[self getOrLoadAccountStateWithSneakyTransaction]];
+    return [self localAciWithAccountState:[self getOrLoadAccountStateWithSneakyTransaction]];
 }
 
-- (nullable NSUUID *)localUuidWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable AciObjC *)localAciWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return [self localUuidWithAccountState:[self getOrLoadAccountStateWithTransaction:transaction]];
+    return [self localAciWithAccountState:[self getOrLoadAccountStateWithTransaction:transaction]];
 }
 
-- (nullable NSUUID *)localUuidWithAccountState:(TSAccountState *)accountState
+- (nullable AciObjC *)localAciWithAccountState:(TSAccountState *)accountState
 {
     @synchronized(self) {
         AciObjC *awaitingVerif = self.aciAwaitingVerification;
         if (awaitingVerif) {
-            return awaitingVerif.rawUUID;
+            return awaitingVerif;
         }
     }
 
-    return accountState.localUuid;
+    return accountState.localAci;
 }
 
-- (nullable NSUUID *)localPni
+- (nullable PniObjC *)localPni
 {
     return [self localPniWithAccountState:[self getOrLoadAccountStateWithSneakyTransaction]];
 }
 
-- (nullable NSUUID *)localPniWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable PniObjC *)localPniWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self localPniWithAccountState:[self getOrLoadAccountStateWithTransaction:transaction]];
 }
 
-- (nullable NSUUID *)localPniWithAccountState:(TSAccountState *)accountState
+- (nullable PniObjC *)localPniWithAccountState:(TSAccountState *)accountState
 {
     @synchronized(self) {
         PniObjC *awaitingVerif = self.pniAwaitingVerification;
         if (awaitingVerif) {
-            return awaitingVerif.rawUUID;
+            return awaitingVerif;
         }
     }
 
@@ -343,9 +343,9 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         OWSFailDebug(@"can't re-register without valid local number.");
         return NO;
     }
-    NSUUID *_Nullable localUUID = oldAccountState.localUuid;
-    if (!localUUID) {
-        OWSFailDebug(@"can't re-register without valid uuid.");
+    AciObjC *_Nullable localAci = oldAccountState.localAci;
+    if (!localAci) {
+        OWSFailDebug(@"can't re-register without valid aci.");
         return NO;
     }
 
@@ -354,7 +354,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self resetForReregistrationWithLocalPhoneNumber:localE164
-                                                localAci:[[AciObjC alloc] initWithUuidValue:localUUID]
+                                                localAci:localAci
                                         wasPrimaryDevice:wasPrimaryDevice
                                              transaction:transaction];
     });

@@ -32,10 +32,12 @@ extension OWSRecipientIdentity {
                             transaction: transaction)
     }
 
-    private class func sqlQueryToFetchVerifiedAddresses(groupUniqueID: String,
-                                                        withVerificationState state: OWSVerificationState,
-                                                        negated: Bool,
-                                                        limit: Int) -> String {
+    private class func sqlQueryToFetchVerifiedAddresses(
+        groupUniqueID: String,
+        withVerificationState state: OWSVerificationState,
+        negated: Bool,
+        limit: Int
+    ) -> String {
         let limitClause: String
         if limit < Int.max {
             limitClause = "LIMIT \(limit)"
@@ -47,24 +49,25 @@ extension OWSRecipientIdentity {
 
         let groupMember_phoneNumber = TSGroupMember.columnName(.phoneNumber, fullyQualified: true)
         let groupMember_groupThreadID = TSGroupMember.columnName(.groupThreadId, fullyQualified: true)
-        let groupMember_uuidString = TSGroupMember.columnName(.serviceId, fullyQualified: true)
+        let groupMember_serviceIdString = TSGroupMember.columnName(.serviceId, fullyQualified: true)
 
         let recipient_id = "\(signalRecipientColumnFullyQualified: .id)"
         let recipient_recipientPhoneNumber = "\(signalRecipientColumnFullyQualified: .phoneNumber)"
-        let recipient_recipientUUID = "\(signalRecipientColumnFullyQualified: .aciString)"
+        let recipient_recipientAciString = "\(signalRecipientColumnFullyQualified: .aciString)"
+        // PNI TODO: Also check against the PNI column here.
         let recipient_uniqueID = "\(signalRecipientColumnFullyQualified: .uniqueId)"
 
         let recipientIdentity_uniqueID = "\(recipientIdentityColumnFullyQualified: .uniqueId)"
-        let exceptClause = "\(recipient_recipientUUID) != ?"
+        let exceptClause = "\(recipient_recipientAciString) != ?"
         let sql =
         """
-        SELECT \(recipient_recipientUUID), \(recipient_recipientPhoneNumber)
+        SELECT \(recipient_recipientAciString), \(recipient_recipientPhoneNumber)
         FROM \(SignalRecipient.databaseTableName),
              \(RecipientIdentityRecord.databaseTableName),
              \(TSGroupMember.databaseTableName)
         WHERE  \(recipient_uniqueID) = \(recipientIdentity_uniqueID) AND
                \(groupMember_groupThreadID) = ? AND
-               (\(groupMember_uuidString) = \(recipient_recipientUUID) OR
+               (\(groupMember_serviceIdString) = \(recipient_recipientAciString) OR
                 \(groupMember_phoneNumber) = \(recipient_recipientPhoneNumber)) AND
                \(exceptClause) AND
                \(stateClause)
@@ -85,18 +88,18 @@ extension OWSRecipientIdentity {
         case .grdbRead(let grdbTransaction):
             // There should always be a recipient UUID, but just in case there isn't provide a fake value that won't
             // affect the results of the query.
-            let localRecipientUUID = tsAccountManager.localAddress?.uuidString ?? "fake"
-            let sql = sqlQueryToFetchVerifiedAddresses(groupUniqueID: groupUniqueID,
-                                                       withVerificationState: state,
-                                                       negated: negated,
-                                                       limit: limit)
+            let localRecipientAci = tsAccountManager.localIdentifiers(transaction: transaction)?.aci
+            let sql = sqlQueryToFetchVerifiedAddresses(
+                groupUniqueID: groupUniqueID,
+                withVerificationState: state,
+                negated: negated,
+                limit: limit
+            )
             do {
-                let args = [groupUniqueID, localRecipientUUID]
-                let cursor = try Row.fetchCursor(grdbTransaction.database,
-                                                 sql: sql,
-                                                 arguments: StatementArguments(args))
+                let args = [groupUniqueID, localRecipientAci?.serviceIdUppercaseString ?? "fake"]
+                let cursor = try Row.fetchCursor(grdbTransaction.database, sql: sql, arguments: StatementArguments(args))
                 let mapped = cursor.map { row in
-                    return SignalServiceAddress(uuid: row[0], phoneNumber: row[1])
+                    return SignalServiceAddress(aciString: row[0], phoneNumber: row[1])
                 }
                 return try Array(mapped)
             } catch {

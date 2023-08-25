@@ -559,7 +559,7 @@ public class ProfileFetcherJob: NSObject {
             )
 
             self.paymentsHelper.setArePaymentsEnabled(
-                for: SignalServiceAddress(serviceId),
+                for: ServiceIdObjC.wrapValue(serviceId),
                 hasPaymentsEnabled: paymentAddress != nil,
                 transaction: transaction
             )

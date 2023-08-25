@@ -43,9 +43,9 @@ public class ConversationInternalViewController: OWSTableViewController2 {
             if let contactThread = thread as? TSContactThread {
                 let address = contactThread.contactAddress
 
-                section.add(.copyableItem(label: "UUID",
-                                          value: address.uuid?.uuidString,
-                                          accessibilityIdentifier: "uuid"))
+                section.add(.copyableItem(label: "ServiceId",
+                                          value: address.serviceIdString,
+                                          accessibilityIdentifier: "serviceId"))
 
                 section.add(.copyableItem(label: "Phone Number",
                                           value: address.phoneNumber,

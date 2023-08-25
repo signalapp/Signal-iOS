@@ -9,13 +9,10 @@ import XCTest
 @testable import SignalServiceKit
 
 class UserProfileTest: SignalBaseTest {
-    private lazy var localAddress = CommonGenerator.address()
-
     override func setUp() {
         super.setUp()
         // Create local account.
-        tsAccountManager.registerForTests(withLocalNumber: localAddress.phoneNumber!,
-                                          uuid: localAddress.uuid!)
+        tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
     }
 
     func testUserProfileForAci() {

@@ -11,8 +11,6 @@ import XCTest
 @testable import SignalServiceKit
 
 class OWSContactsManagerTest: SignalBaseTest {
-    private lazy var localAddress = CommonGenerator.address()
-
     private let dbV2: MockDB = .init()
 
     private let mockUsernameLookupMananger: MockUsernameLookupManager = .init()
@@ -21,7 +19,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         super.setUp()
 
         // Create local account.
-        tsAccountManager.registerForTests(withLocalNumber: localAddress.phoneNumber!, uuid: localAddress.uuid!)
+        tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
 
         // Replace the fake contacts manager with the real one just for this test.
         SSKEnvironment.shared.setContactsManagerForUnitTests(makeContactsManager())
@@ -62,8 +60,8 @@ class OWSContactsManagerTest: SignalBaseTest {
     private func createContacts(_ contacts: [Contact]) {
         write { transaction in
             (self.contactsManager as! OWSContactsManager).setContactsMaps(
-                .build(contacts: contacts, localNumber: self.localAddress.phoneNumber),
-                localNumber: self.localAddress.phoneNumber,
+                .build(contacts: contacts, localNumber: LocalIdentifiers.forUnitTests.phoneNumber),
+                localNumber: LocalIdentifiers.forUnitTests.phoneNumber,
                 transaction: transaction
             )
         }

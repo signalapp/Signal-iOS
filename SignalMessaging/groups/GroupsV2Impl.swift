@@ -642,21 +642,17 @@ public class GroupsV2Impl: GroupsV2Swift, GroupsV2, Dependencies {
 
     private func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data,
                                              justUploadedAvatars: GroupV2DownloadedAvatars?) -> Promise<GroupV2Snapshot> {
-        guard let localUuid = tsAccountManager.localUuid else {
-            return Promise<GroupV2Snapshot>(error: OWSAssertionError("Missing localUuid."))
-        }
         return firstly(on: DispatchQueue.global()) { () -> GroupV2Params in
             return try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
         }.then(on: DispatchQueue.global()) { (groupV2Params: GroupV2Params) -> Promise<GroupV2Snapshot> in
-            return self.fetchCurrentGroupV2Snapshot(groupV2Params: groupV2Params,
-                                                    localUuid: localUuid,
-                                                    justUploadedAvatars: justUploadedAvatars)
+            return self.fetchCurrentGroupV2Snapshot(groupV2Params: groupV2Params, justUploadedAvatars: justUploadedAvatars)
         }
     }
 
-    private func fetchCurrentGroupV2Snapshot(groupV2Params: GroupV2Params,
-                                             localUuid: UUID,
-                                             justUploadedAvatars: GroupV2DownloadedAvatars?) -> Promise<GroupV2Snapshot> {
+    private func fetchCurrentGroupV2Snapshot(
+        groupV2Params: GroupV2Params,
+        justUploadedAvatars: GroupV2DownloadedAvatars?
+    ) -> Promise<GroupV2Snapshot> {
         let requestBuilder: RequestBuilder = { (authCredential) in
             firstly(on: DispatchQueue.global()) { () -> GroupsV2Request in
                 try StorageService.buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: groupV2Params,

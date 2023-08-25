@@ -19,7 +19,7 @@ public protocol PaymentsHelper: AnyObject {
     var isPaymentsVersionOutdated: Bool { get }
     func setPaymentsVersionOutdated(_ value: Bool)
 
-    func setArePaymentsEnabled(for address: SignalServiceAddress, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction)
+    func setArePaymentsEnabled(for serviceId: ServiceIdObjC, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction)
     func arePaymentsEnabled(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool
 
     var arePaymentsEnabled: Bool { get }
@@ -152,7 +152,7 @@ extension MockPaymentsHelper: PaymentsHelperSwift, PaymentsHelper {
 
     public func warmCaches() {}
 
-    public func setArePaymentsEnabled(for address: SignalServiceAddress, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction) {
+    public func setArePaymentsEnabled(for serviceId: ServiceIdObjC, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction) {
         // Do nothing.
     }
 

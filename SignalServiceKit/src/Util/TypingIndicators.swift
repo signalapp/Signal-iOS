@@ -4,6 +4,8 @@
 //
 
 import Foundation
+import LibSignalClient
+import SignalCoreKit
 
 @objc(OWSTypingIndicators)
 public protocol TypingIndicators: AnyObject {
@@ -23,13 +25,13 @@ public protocol TypingIndicators: AnyObject {
     func didSendOutgoingMessage(inThread thread: TSThread)
 
     @objc
-    func didReceiveTypingStartedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt)
+    func didReceiveTypingStartedMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32)
 
     @objc
-    func didReceiveTypingStoppedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt)
+    func didReceiveTypingStoppedMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32)
 
     @objc
-    func didReceiveIncomingMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt)
+    func didReceiveIncomingMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32)
 
     // Returns the address of the user who should currently be shown typing for a given thread.
     //
@@ -148,33 +150,27 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     }
 
     @objc
-    public func didReceiveTypingStartedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) {
+    public func didReceiveTypingStartedMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32) {
         AssertIsOnMainThread()
         Logger.info("")
-        guard let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId) else {
-            return
-        }
-        incomingIndicators.didReceiveTypingStartedMessage()
+        ensureIncomingIndicators(forThread: thread, senderAci: senderAci.wrappedAciValue, deviceId: deviceId)
+            .didReceiveTypingStartedMessage()
     }
 
     @objc
-    public func didReceiveTypingStoppedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) {
+    public func didReceiveTypingStoppedMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32) {
         AssertIsOnMainThread()
         Logger.info("")
-        guard let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId) else {
-            return
-        }
-        incomingIndicators.didReceiveTypingStoppedMessage()
+        ensureIncomingIndicators(forThread: thread, senderAci: senderAci.wrappedAciValue, deviceId: deviceId)
+            .didReceiveTypingStoppedMessage()
     }
 
     @objc
-    public func didReceiveIncomingMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) {
+    public func didReceiveIncomingMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32) {
         AssertIsOnMainThread()
         Logger.info("")
-        guard let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId) else {
-            return
-        }
-        incomingIndicators.didReceiveIncomingMessage()
+        ensureIncomingIndicators(forThread: thread, senderAci: senderAci.wrappedAciValue, deviceId: deviceId)
+            .didReceiveIncomingMessage()
     }
 
     @objc
@@ -207,7 +203,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 // prefer the one that started typing first.
                 continue
             }
-            firstAddress = incomingIndicators.address
+            firstAddress = SignalServiceAddress(incomingIndicators.senderAci)
             firstTimestamp = startedTypingTimestamp
         }
         return firstAddress
@@ -353,34 +349,30 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     // Map of (thread id)-to-(recipient id and device id)-to-IncomingIndicators.
     private var incomingIndicatorsMap = [String: [AddressWithDeviceId: IncomingIndicators]]()
     private struct AddressWithDeviceId: Hashable {
-        let uuid: UUID
-        let deviceId: UInt
+        let aci: Aci
+        let deviceId: UInt32
     }
 
     private func incomingIndicatorsKey(forThread thread: TSThread) -> String {
         return String(describing: thread.uniqueId)
     }
 
-    private func incomingIndicatorsKey(uuid: UUID, deviceId: UInt) -> AddressWithDeviceId {
-        return AddressWithDeviceId(uuid: uuid, deviceId: deviceId)
+    private func incomingIndicatorsKey(aci: Aci, deviceId: UInt32) -> AddressWithDeviceId {
+        return AddressWithDeviceId(aci: aci, deviceId: deviceId)
     }
 
-    private func ensureIncomingIndicators(forThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) -> IncomingIndicators? {
+    private func ensureIncomingIndicators(forThread thread: TSThread, senderAci: Aci, deviceId: UInt32) -> IncomingIndicators {
         AssertIsOnMainThread()
 
-        guard let uuid = address.uuid else {
-            owsFailDebug("Missing uuid.")
-            return nil
-        }
         let threadKey = incomingIndicatorsKey(forThread: thread)
-        let deviceKey = incomingIndicatorsKey(uuid: uuid, deviceId: deviceId)
+        let deviceKey = incomingIndicatorsKey(aci: senderAci, deviceId: deviceId)
         guard let deviceMap = incomingIndicatorsMap[threadKey] else {
-            let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, address: address, deviceId: deviceId)
+            let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, senderAci: senderAci, deviceId: deviceId)
             incomingIndicatorsMap[threadKey] = [deviceKey: incomingIndicators]
             return incomingIndicators
         }
         guard let incomingIndicators = deviceMap[deviceKey] else {
-            let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, address: address, deviceId: deviceId)
+            let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, senderAci: senderAci, deviceId: deviceId)
             var deviceMapCopy = deviceMap
             deviceMapCopy[deviceKey] = incomingIndicators
             incomingIndicatorsMap[threadKey] = deviceMapCopy
@@ -393,8 +385,8 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     private class IncomingIndicators {
         private weak var delegate: TypingIndicators?
         private let thread: TSThread
-        fileprivate let address: SignalServiceAddress
-        private let deviceId: UInt
+        fileprivate let senderAci: Aci
+        private let deviceId: UInt32
         private var displayTypingTimer: Timer?
         fileprivate var startedTypingTimestamp: UInt64?
 
@@ -411,11 +403,10 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             }
         }
 
-        init(delegate: TypingIndicators, thread: TSThread,
-             address: SignalServiceAddress, deviceId: UInt) {
+        init(delegate: TypingIndicators, thread: TSThread, senderAci: Aci, deviceId: UInt32) {
             self.delegate = delegate
             self.thread = thread
-            self.address = address
+            self.senderAci = senderAci
             self.deviceId = deviceId
         }
 
@@ -423,11 +414,13 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             AssertIsOnMainThread()
 
             displayTypingTimer?.invalidate()
-            displayTypingTimer = Timer.weakScheduledTimer(withTimeInterval: 15,
-                                                          target: self,
-                                                          selector: #selector(IncomingIndicators.displayTypingTimerDidFire),
-                                                          userInfo: nil,
-                                                          repeats: false)
+            displayTypingTimer = Timer.weakScheduledTimer(
+                withTimeInterval: 15,
+                target: self,
+                selector: #selector(IncomingIndicators.displayTypingTimerDidFire),
+                userInfo: nil,
+                repeats: false
+            )
             if !isTyping {
                 startedTypingTimestamp = NSDate.ows_millisecondTimeStamp()
             }

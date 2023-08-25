@@ -282,22 +282,20 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
 
     private static let arePaymentsEnabledForUserStore = SDSKeyValueStore(collection: "arePaymentsEnabledForUserStore")
 
-    public func setArePaymentsEnabled(for address: SignalServiceAddress, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction) {
-        guard let uuid = address.uuid else {
-            Logger.warn("User is missing uuid.")
-            return
-        }
-        Self.arePaymentsEnabledForUserStore.setBool(hasPaymentsEnabled, key: uuid.uuidString, transaction: transaction)
+    public func setArePaymentsEnabled(for serviceId: ServiceIdObjC, hasPaymentsEnabled: Bool, transaction tx: SDSAnyWriteTransaction) {
+        Self.arePaymentsEnabledForUserStore.setBool(hasPaymentsEnabled, key: serviceId.serviceIdUppercaseString, transaction: tx)
     }
 
-    public func arePaymentsEnabled(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        guard let uuid = address.uuid else {
-            Logger.warn("User is missing uuid.")
+    public func arePaymentsEnabled(for address: SignalServiceAddress, transaction tx: SDSAnyReadTransaction) -> Bool {
+        guard let serviceId = address.serviceId else {
+            Logger.warn("User is missing serviceId.")
             return false
         }
-        return Self.arePaymentsEnabledForUserStore.getBool(uuid.uuidString,
-                                                           defaultValue: false,
-                                                           transaction: transaction)
+        return Self.arePaymentsEnabledForUserStore.getBool(
+            serviceId.serviceIdUppercaseString,
+            defaultValue: false,
+            transaction: tx
+        )
     }
 
     // MARK: - Version Compatibility
@@ -388,7 +386,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
         infoMessage.anyInsert(transaction: transaction)
 
         setArePaymentsEnabled(
-            for: SignalServiceAddress(serviceIdObjC: senderAci),
+            for: senderAci,
             hasPaymentsEnabled: true,
             transaction: transaction
         )

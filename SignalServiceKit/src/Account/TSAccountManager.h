@@ -88,13 +88,13 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 - (nullable NSString *)localNumberWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(localNumber(with:));
 
-@property (readonly, nullable) NSUUID *localUuid;
+@property (readonly, nullable) AciObjC *localAci;
 
-- (nullable NSUUID *)localUuidWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(localUuid(with:));
+- (nullable AciObjC *)localAciWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(localAci(tx:));
 
-@property (readonly, nullable) NSUUID *localPni;
+@property (readonly, nullable) PniObjC *localPni;
 
-- (nullable NSUUID *)localPniWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(localPni(with:));
+- (nullable PniObjC *)localPniWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(localPni(tx:));
 
 - (void)setStoredServerAuthToken:(NSString *)authToken
                         deviceId:(UInt32)deviceId

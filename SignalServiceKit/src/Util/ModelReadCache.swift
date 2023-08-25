@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 #if TESTABLE_BUILD
 protocol ModelCache {
@@ -437,11 +438,11 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
         guard let address = cacheKey.key as? SignalServiceAddress else {
             return true
         }
-        if address.uuid != nil {
+        if address.serviceId != nil {
             return true
         }
         if address.phoneNumber == kLocalProfileInvariantPhoneNumber {
-            owsAssertDebug(address.uuid == nil)
+            owsAssertDebug(address.serviceId == nil)
             return true
         }
         return false

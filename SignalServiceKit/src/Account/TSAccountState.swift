@@ -23,10 +23,20 @@ class TSAccountState: NSObject {
     var localNumber: String? { localIdentifiers?.phoneNumber }
 
     @objc
-    var localUuid: UUID? { localIdentifiers?.aci.temporary_rawUUID }
+    var localAci: AciObjC? {
+        guard let localIdentifiers else {
+            return nil
+        }
+        return AciObjC(localIdentifiers.aci)
+    }
 
     @objc
-    var localPni: UUID? { localIdentifiers?.pni?.temporary_rawUUID }
+    var localPni: PniObjC? {
+        guard let localIdentifiers, let localPni = localIdentifiers.pni else {
+            return nil
+        }
+        return PniObjC(localPni)
+    }
 
     @objc
     let deviceId: UInt32

@@ -198,8 +198,8 @@ public final class CallService: LightweightCallManager {
         }
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
-            if let localUuid = self.tsAccountManager.localUuid {
-                self.callManager.setSelfUuid(localUuid)
+            if let localAci = self.tsAccountManager.localAci {
+                self.callManager.setSelfUuid(localAci.rawUUID)
             }
         }
 
@@ -726,8 +726,8 @@ public final class CallService: LightweightCallManager {
     @objc
     private func registrationChanged() {
         AssertIsOnMainThread()
-        if let localUuid = tsAccountManager.localUuid {
-            callManager.setSelfUuid(localUuid)
+        if let localAci = tsAccountManager.localAci {
+            callManager.setSelfUuid(localAci.rawUUID)
         }
     }
 

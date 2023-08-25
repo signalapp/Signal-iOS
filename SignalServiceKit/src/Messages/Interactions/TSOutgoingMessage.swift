@@ -206,7 +206,7 @@ public extension TSOutgoingMessage {
             aciIdentityKeyPair.identityKeyPair.identityKey)
 
         let builder = SSKProtoPniSignatureMessage.builder()
-        builder.setPni(pni.data)
+        builder.setPni(pni.rawUUID.data)
         builder.setSignature(Data(signature))
 
         do {
@@ -272,7 +272,7 @@ public extension TSOutgoingMessage {
             return
         }
 
-        if messagePniData == currentPni.data {
+        if messagePniData == currentPni.rawUUID.data {
             identityManager.clearShouldSharePhoneNumber(with: recipientAddress, transaction: transaction)
         }
     }

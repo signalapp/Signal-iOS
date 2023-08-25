@@ -838,8 +838,8 @@ extension OWSMessageManager {
         DispatchQueue.main.async {
             self.typingIndicatorsImpl.didReceiveIncomingMessage(
                 inThread: thread,
-                address: SignalServiceAddress(envelope.sourceAci),
-                deviceId: UInt(envelope.sourceDeviceId)
+                senderAci: AciObjC(envelope.sourceAci),
+                deviceId: envelope.sourceDeviceId
             )
         }
 

@@ -9,12 +9,10 @@ import XCTest
 @testable import SignalServiceKit
 
 class SignalAccountFinderTest: SSKBaseTestSwift {
-    private lazy var localAddress = CommonGenerator.address()
-
     override func setUp() {
         super.setUp()
         // Create local account.
-        tsAccountManager.registerForTests(withLocalNumber: localAddress.phoneNumber!, uuid: localAddress.uuid!)
+        tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
     }
 
     private func createAccount(serviceId: ServiceId, phoneNumber: E164?) -> SignalAccount {

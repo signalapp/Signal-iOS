@@ -773,16 +773,14 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
         switch (typingMessage.unwrappedAction) {
             case SSKProtoTypingMessageActionStarted:
-                [self.typingIndicatorsImpl
-                    didReceiveTypingStartedMessageInThread:thread
-                                                   address:decryptedEnvelope.envelope.sourceAddress
-                                                  deviceId:decryptedEnvelope.sourceDeviceId];
+                [self.typingIndicatorsImpl didReceiveTypingStartedMessageInThread:thread
+                                                                        senderAci:decryptedEnvelope.sourceAciObjC
+                                                                         deviceId:decryptedEnvelope.sourceDeviceId];
                 break;
             case SSKProtoTypingMessageActionStopped:
-                [self.typingIndicatorsImpl
-                    didReceiveTypingStoppedMessageInThread:thread
-                                                   address:decryptedEnvelope.envelope.sourceAddress
-                                                  deviceId:decryptedEnvelope.sourceDeviceId];
+                [self.typingIndicatorsImpl didReceiveTypingStoppedMessageInThread:thread
+                                                                        senderAci:decryptedEnvelope.sourceAciObjC
+                                                                         deviceId:decryptedEnvelope.sourceDeviceId];
                 break;
             default:
                 OWSFailDebug(@"Typing message has unexpected action.");
@@ -1183,8 +1181,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (CurrentAppContext().isMainApp) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.typingIndicatorsImpl didReceiveIncomingMessageInThread:thread
-                                                                 address:envelope.sourceAddress
-                                                                deviceId:envelope.sourceDevice];
+                                                               senderAci:decryptedEnvelope.sourceAciObjC
+                                                                deviceId:decryptedEnvelope.sourceDeviceId];
         });
     }
 
