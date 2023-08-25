@@ -157,7 +157,7 @@ class SignalAccountTest: XCTestCase {
     func testNicknamePreferred() {
         let contact = Contact(
             address: SignalServiceAddress(
-                serviceId: FutureAci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
+                serviceId: Aci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
                 phoneNumber: "myPhoneNumber",
                 cache: SignalServiceAddressCache(),
                 cachePolicy: .ignoreCache
@@ -188,7 +188,7 @@ class SignalAccountTest: XCTestCase {
     func testEmptyNickname() {
         let contact = Contact(
             address: SignalServiceAddress(
-                serviceId: FutureAci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
+                serviceId: Aci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
                 phoneNumber: "myPhoneNumber",
                 cache: SignalServiceAddressCache(),
                 cachePolicy: .ignoreCache
@@ -219,7 +219,7 @@ class SignalAccountTest: XCTestCase {
     func testNilNickname() {
         let contact = Contact(
             address: SignalServiceAddress(
-                serviceId: FutureAci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
+                serviceId: Aci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
                 phoneNumber: "myPhoneNumber",
                 cache: SignalServiceAddressCache(),
                 cachePolicy: .ignoreCache
@@ -246,7 +246,7 @@ class SignalAccountTest: XCTestCase {
     func testFullNameOnly() {
         let contact = Contact(
             address: SignalServiceAddress(
-                serviceId: FutureAci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
+                serviceId: Aci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
                 phoneNumber: "myPhoneNumber",
                 cache: SignalServiceAddressCache(),
                 cachePolicy: .ignoreCache
@@ -272,7 +272,7 @@ class SignalAccountTest: XCTestCase {
     func testNoNames() {
         let contact = Contact(
             address: SignalServiceAddress(
-                serviceId: FutureAci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
+                serviceId: Aci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
                 phoneNumber: "myPhoneNumber",
                 cache: SignalServiceAddressCache(),
                 cachePolicy: .ignoreCache
@@ -355,7 +355,7 @@ extension SignalAccount: ValidatableModel {
 
     private enum ContactFixtures {
         private static let address = SignalServiceAddress(
-            serviceId: FutureAci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
+            serviceId: Aci.constantForTesting("ec43071b-2dc0-4d82-82b2-0266968a4c2b"),
             phoneNumber: "myPhoneNumber",
             cache: SignalServiceAddressCache(),
             cachePolicy: .ignoreCache

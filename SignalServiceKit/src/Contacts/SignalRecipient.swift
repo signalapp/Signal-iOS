@@ -341,7 +341,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
         // The "obsolete" address is the address with *only* the just-removed phone
         // number. (We *just* removed it, so we don't know its serviceId.)
-        let obsoleteAddress = oldPhoneNumber.map { SignalServiceAddress(uuid: nil, phoneNumber: $0, ignoreCache: true) }
+        let obsoleteAddress = oldPhoneNumber.map { SignalServiceAddress(serviceId: nil, phoneNumber: $0, ignoreCache: true) }
 
         let isWhitelisted = profileManager.isUser(inProfileWhitelist: oldAddress, transaction: transaction)
 

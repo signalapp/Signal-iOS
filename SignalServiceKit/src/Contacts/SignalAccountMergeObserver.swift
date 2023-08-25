@@ -76,7 +76,7 @@ class SignalAccountMergeObserver: RecipientMergeObserver {
     }
 
     private func fetch(for phoneNumber: String, tx: SDSAnyReadTransaction) -> SignalAccount? {
-        let phoneNumberOnlyAddress = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber, ignoreCache: true)
+        let phoneNumberOnlyAddress = SignalServiceAddress(serviceId: nil, phoneNumber: phoneNumber, ignoreCache: true)
         return SignalAccountFinder().signalAccount(for: phoneNumberOnlyAddress, tx: tx)
     }
 }

@@ -640,7 +640,6 @@
 		5003BB3F299DA0F10037159B /* LinkPreviewFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB3E299DA0F10037159B /* LinkPreviewFetcher.swift */; };
 		5003BB41299E1FD10037159B /* LinkPreviewFetcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB40299E1FD10037159B /* LinkPreviewFetcherTest.swift */; };
 		5003BB43299F034D0037159B /* E164.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB42299F034D0037159B /* E164.swift */; };
-		5003BB45299F650E0037159B /* ServiceIdTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB44299F650E0037159B /* ServiceIdTest.swift */; };
 		500824CE292737FC005A5DC0 /* WebSocketPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500824CD292737FC005A5DC0 /* WebSocketPromise.swift */; };
 		500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */; };
 		50086B9E29DF606E00F9C072 /* TSGroupThread+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */; };
@@ -3166,7 +3165,6 @@
 		5003BB3E299DA0F10037159B /* LinkPreviewFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewFetcher.swift; sourceTree = "<group>"; };
 		5003BB40299E1FD10037159B /* LinkPreviewFetcherTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewFetcherTest.swift; sourceTree = "<group>"; };
 		5003BB42299F034D0037159B /* E164.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = E164.swift; sourceTree = "<group>"; };
-		5003BB44299F650E0037159B /* ServiceIdTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceIdTest.swift; sourceTree = "<group>"; };
 		500824CD292737FC005A5DC0 /* WebSocketPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketPromise.swift; sourceTree = "<group>"; };
 		500824CF292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2OperationTest.swift; sourceTree = "<group>"; };
 		50086B9B29DF5CB100F9C072 /* NameResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameResolver.swift; sourceTree = "<group>"; };
@@ -8415,7 +8413,6 @@
 				D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */,
 				D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */,
 				D9CAF74C2A09D2AB0049193A /* PniHelloWorldManagerTest.swift */,
-				5003BB44299F650E0037159B /* ServiceIdTest.swift */,
 				F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */,
 				E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */,
 				F903C29A28EC7AE60035B42B /* TSAccountManagerTest.swift */,
@@ -12938,7 +12935,6 @@
 				F942624B289B1B5500460798 /* SDSDatabaseStorageTest.swift in Sources */,
 				F942624A289B1B5500460798 /* SDSKeyValueStoreTest.swift in Sources */,
 				662C44172A1D21D7001F83E2 /* SecureValueRecovery2Tests.swift in Sources */,
-				5003BB45299F650E0037159B /* ServiceIdTest.swift in Sources */,
 				F942626C289B1B5500460798 /* SignalAccountFinderTest.swift in Sources */,
 				E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */,
 				F9B93CDC28E1FE3500B3F8A0 /* SignalProxyTest.swift in Sources */,

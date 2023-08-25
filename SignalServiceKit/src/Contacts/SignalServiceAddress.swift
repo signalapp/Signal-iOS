@@ -39,19 +39,6 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     @objc
     public var serviceIdObjC: ServiceIdObjC? { serviceId.map { ServiceIdObjC.wrapValue($0) } }
 
-    public var untypedServiceId: UntypedServiceId? {
-        serviceId.map { UntypedServiceId($0.rawUUID) }
-    }
-
-    @objc
-    public var untypedServiceIdObjC: UntypedServiceIdObjC? { untypedServiceId.map { UntypedServiceIdObjC($0) } }
-
-    @objc
-    public var uuid: UUID? { untypedServiceId?.uuidValue }
-
-    @objc
-    public var uuidString: String? { uuid?.uuidString }
-
     /// Returns the `serviceId` if it's an ACI.
     ///
     /// - Note: Call this only if you **expect** an `Aci` (or nil). If the
@@ -89,7 +76,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     public convenience init(phoneNumber: String) {
-        self.init(serviceId: nil as ServiceId?, phoneNumber: phoneNumber)
+        self.init(serviceId: nil, phoneNumber: phoneNumber)
     }
 
     /// Initializes an address that should refer to an Aci.
@@ -158,50 +145,12 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     @objc
-    public convenience init(uuidString: String) {
-        self.init(uuidString: uuidString, phoneNumber: nil)
-    }
-
-    @objc
     public convenience init(serviceIdObjC: ServiceIdObjC) {
         self.init(serviceIdObjC.wrappedValue)
     }
 
-    @objc
-    public convenience init(untypedServiceIdObjC: UntypedServiceIdObjC) {
-        self.init(untypedServiceIdObjC.wrappedValue)
-    }
-
     public convenience init(_ serviceId: ServiceId) {
         self.init(serviceId: serviceId, phoneNumber: nil)
-    }
-
-    public convenience init(_ serviceId: UntypedServiceId) {
-        self.init(uuid: serviceId.uuidValue)
-    }
-
-    @objc
-    public convenience init(uuid: UUID) {
-        self.init(uuid: uuid, phoneNumber: nil)
-    }
-
-    @objc
-    public convenience init(uuidString: String?, phoneNumber: String?) {
-        let uuid: UUID?
-
-        if let uuidString {
-            uuid = UUID(uuidString: uuidString)
-            owsAssertDebug(uuid != nil, "Unexpectedly initialized signal service address with invalid uuid")
-        } else {
-            uuid = nil
-        }
-
-        self.init(uuid: uuid, phoneNumber: phoneNumber)
-    }
-
-    @objc
-    public convenience init(uuid: UUID?, phoneNumber: String?) {
-        self.init(uuid: uuid, phoneNumber: phoneNumber, ignoreCache: false)
     }
 
     public convenience init(serviceId: ServiceId?, e164: E164?) {
@@ -212,16 +161,8 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(serviceId: serviceId, phoneNumber: phoneNumber, ignoreCache: false)
     }
 
-    public convenience init(serviceId: UntypedServiceId?, phoneNumber: String?) {
-        self.init(uuid: serviceId?.uuidValue, phoneNumber: phoneNumber)
-    }
-
-    public convenience init(uuid: UUID?, e164: E164?) {
-        self.init(uuid: uuid, phoneNumber: e164?.stringValue)
-    }
-
     internal convenience init(from address: ProtocolAddress) {
-        self.init(uuidString: address.name)
+        self.init(address.serviceId)
     }
 
     private convenience init(decodedServiceId: ServiceId?, decodedPhoneNumber: String?) {
@@ -235,58 +176,12 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         )
     }
 
-    @objc
-    public convenience init(uuid: UUID?, phoneNumber: String?, ignoreCache: Bool) {
-        self.init(
-            serviceId: uuid.map { UntypedServiceId($0) },
-            phoneNumber: phoneNumber,
-            ignoreCache: ignoreCache
-        )
-    }
-
     public convenience init(serviceId: ServiceId?, phoneNumber: String?, ignoreCache: Bool) {
         self.init(
             serviceId: serviceId,
             phoneNumber: phoneNumber,
             cache: Self.signalServiceAddressCache,
             cachePolicy: ignoreCache ? .ignoreCache : .preferInitialPhoneNumberAndListenForUpdates
-        )
-    }
-
-    public convenience init(serviceId: UntypedServiceId?, phoneNumber: String?, ignoreCache: Bool) {
-        self.init(
-            serviceId: serviceId,
-            phoneNumber: phoneNumber,
-            cache: Self.signalServiceAddressCache,
-            cachePolicy: ignoreCache ? .ignoreCache : .preferInitialPhoneNumberAndListenForUpdates
-        )
-    }
-
-    public convenience init(
-        uuid: UUID?,
-        phoneNumber: String?,
-        cache: SignalServiceAddressCache,
-        cachePolicy: SignalServiceAddressCache.CachePolicy
-    ) {
-        self.init(
-            serviceId: uuid.map { UntypedServiceId($0) },
-            phoneNumber: phoneNumber,
-            cache: cache,
-            cachePolicy: cachePolicy
-        )
-    }
-
-    public convenience init(
-        serviceId: UntypedServiceId?,
-        phoneNumber: String?,
-        cache: SignalServiceAddressCache,
-        cachePolicy: SignalServiceAddressCache.CachePolicy
-    ) {
-        self.init(
-            serviceId: serviceId.map { Aci(fromUUID: $0.uuidValue) },
-            phoneNumber: phoneNumber,
-            cache: cache,
-            cachePolicy: cachePolicy
         )
     }
 
