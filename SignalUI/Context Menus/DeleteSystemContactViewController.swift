@@ -158,7 +158,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         ) = dependencies.databaseStorage.read { tx in
             let image = avatarBuilder.avatarImage(
                 forAddress: addressForProfileLookup,
-                diameterPixels: Constants.avatarDiameter,
+                diameterPixels: Constants.avatarDiameter * UIScreen.main.scale,
                 localUserDisplayMode: .asUser,
                 transaction: tx
             )
