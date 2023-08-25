@@ -258,8 +258,8 @@ public class MockDB: DB {
         block: (DBReadTransaction) throws -> T
     ) rethrows -> T {
         return try queue.sync {
+            defer { self.closeTransaction() }
             let t = try block(self.makeRead())
-            self.closeTransaction()
             return t
         }
     }
@@ -271,8 +271,8 @@ public class MockDB: DB {
         block: (DBWriteTransaction) throws -> T
     ) rethrows -> T {
         return try queue.sync {
+            defer { self.closeTransaction() }
             let t = try block(self.makeWrite())
-            self.closeTransaction()
             return t
         }
     }

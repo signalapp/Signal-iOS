@@ -59,10 +59,10 @@ public class DependenciesBridge {
     public let svr: SecureValueRecovery
 
     public let learnMyOwnPniManager: LearnMyOwnPniManager
+    public let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
+    public let pniHelloWorldManager: PniHelloWorldManager
 
     public let preKeyManager: PreKeyManager
-
-    public let pniHelloWorldManager: PniHelloWorldManager
 
     public let recipientFetcher: RecipientFetcher
     public let recipientMerger: RecipientMerger
@@ -227,20 +227,6 @@ public class DependenciesBridge {
             )
         )
 
-        self.pniHelloWorldManager = PniHelloWorldManagerImpl(
-            database: db,
-            identityManager: PniHelloWorldManagerImpl.Wrappers.IdentityManager(identityManager),
-            keyValueStoreFactory: keyValueStoreFactory,
-            networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
-            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
-            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
-            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
-            profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
-            schedulers: schedulers,
-            signalRecipientStore: PniHelloWorldManagerImpl.Wrappers.SignalRecipientStore(),
-            tsAccountManager: PniHelloWorldManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
-        )
-
         self.preKeyManager = PreKeyManagerImpl(
             db: db,
             identityManager: PreKey.Manager.Wrappers.IdentityManager(identityManager),
@@ -268,15 +254,41 @@ public class DependenciesBridge {
             twoFAManager: SVR.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
+        let pniIdentityKeyChecker = PniIdentityKeyCheckerImpl(
+            db: db,
+            identityManager: PniIdentityKeyCheckerImpl.Wrappers.IdentityManager(identityManager),
+            profileFetcher: PniIdentityKeyCheckerImpl.Wrappers.ProfileFetcher(schedulers: schedulers),
+            schedulers: schedulers
+        )
         self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
             accountServiceClient: LearnMyOwnPniManagerImpl.Wrappers.AccountServiceClient(accountServiceClient),
             db: db,
-            identityManager: LearnMyOwnPniManagerImpl.Wrappers.IdentityManager(identityManager),
             keyValueStoreFactory: keyValueStoreFactory,
+            pniIdentityKeyChecker: pniIdentityKeyChecker,
             preKeyManager: preKeyManager,
-            profileFetcher: LearnMyOwnPniManagerImpl.Wrappers.ProfileFetcher(schedulers: schedulers),
             schedulers: schedulers,
             tsAccountManager: LearnMyOwnPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
+        )
+        self.linkedDevicePniKeyManager = LinkedDevicePniKeyManagerImpl(
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            messageProcessor: LinkedDevicePniKeyManagerImpl.Wrappers.MessageProcessor(messageProcessor),
+            pniIdentityKeyChecker: pniIdentityKeyChecker,
+            schedulers: schedulers,
+            tsAccountManager: LinkedDevicePniKeyManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
+        )
+        self.pniHelloWorldManager = PniHelloWorldManagerImpl(
+            database: db,
+            identityManager: PniHelloWorldManagerImpl.Wrappers.IdentityManager(identityManager),
+            keyValueStoreFactory: keyValueStoreFactory,
+            networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
+            pniDistributionParameterBuilder: pniDistributionParameterBuilder,
+            pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
+            pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
+            profileManager: PniHelloWorldManagerImpl.Wrappers.ProfileManager(profileManager),
+            schedulers: schedulers,
+            signalRecipientStore: PniHelloWorldManagerImpl.Wrappers.SignalRecipientStore(),
+            tsAccountManager: PniHelloWorldManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
         )
 
         self.registrationSessionManager = RegistrationSessionManagerImpl(

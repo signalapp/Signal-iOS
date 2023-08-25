@@ -210,69 +210,77 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let errorMessage: TSErrorMessage?
 
-        let modernResendErrorMessageBytes = buildResendRequestDecryptionError(
-            validatedEnvelope: validatedEnvelope,
-            unsealedEnvelope: unsealedEnvelope
-        )
-
-        if let modernResendErrorMessageBytes, !RemoteConfig.messageResendKillSwitch {
-            Logger.info("Performing modern resend of \(unsealedEnvelope.contentHint) content with timestamp \(validatedEnvelope.timestamp)")
-
-            switch unsealedEnvelope.contentHint {
-            case .default:
-                // If default, insert an error message right away
-                errorMessage = TSErrorMessage.failedDecryption(
-                    forSender: sourceAddress,
-                    untrustedGroupId: unsealedEnvelope.untrustedGroupId,
-                    timestamp: validatedEnvelope.timestamp,
-                    transaction: transaction
+        switch validatedEnvelope.localIdentity {
+        case .aci:
+            if
+                !RemoteConfig.messageResendKillSwitch,
+                let modernResendErrorMessageBytes = buildResendRequestDecryptionError(
+                    validatedEnvelope: validatedEnvelope,
+                    unsealedEnvelope: unsealedEnvelope
                 )
-            case .resendable:
-                // If resendable, insert a placeholder
-                let recoverableErrorMessage = OWSRecoverableDecryptionPlaceholder(
-                    failedEnvelopeTimestamp: validatedEnvelope.timestamp,
-                    sourceAci: AciObjC(sourceAci),
-                    untrustedGroupId: unsealedEnvelope.untrustedGroupId,
-                    transaction: transaction
-                )
-                if let recoverableErrorMessage {
-                    schedulePlaceholderCleanupIfNecessary(for: recoverableErrorMessage)
+            {
+                Logger.info("Performing modern resend of \(unsealedEnvelope.contentHint) content with timestamp \(validatedEnvelope.timestamp)")
+
+                switch unsealedEnvelope.contentHint {
+                case .default:
+                    // If default, insert an error message right away
+                    errorMessage = TSErrorMessage.failedDecryption(
+                        forSender: sourceAddress,
+                        untrustedGroupId: unsealedEnvelope.untrustedGroupId,
+                        timestamp: validatedEnvelope.timestamp,
+                        transaction: transaction
+                    )
+                case .resendable:
+                    // If resendable, insert a placeholder
+                    let recoverableErrorMessage = OWSRecoverableDecryptionPlaceholder(
+                        failedEnvelopeTimestamp: validatedEnvelope.timestamp,
+                        sourceAci: AciObjC(sourceAci),
+                        untrustedGroupId: unsealedEnvelope.untrustedGroupId,
+                        transaction: transaction
+                    )
+                    if let recoverableErrorMessage {
+                        schedulePlaceholderCleanupIfNecessary(for: recoverableErrorMessage)
+                    }
+                    errorMessage = recoverableErrorMessage
+                case .implicit:
+                    errorMessage = nil
+                default:
+                    owsFailDebug("Unexpected content hint")
+                    errorMessage = nil
                 }
-                errorMessage = recoverableErrorMessage
-            case .implicit:
-                errorMessage = nil
-            default:
-                owsFailDebug("Unexpected content hint")
-                errorMessage = nil
-            }
 
-            // We always send a resend request, even if the contentHint indicates the sender
-            // won't be able to fulfill the request. This will notify the sender to reset
-            // the session.
-            sendResendRequest(
-                errorMessageBytes: modernResendErrorMessageBytes,
-                sourceAci: sourceAci,
-                failedEnvelopeGroupId: unsealedEnvelope.untrustedGroupId,
-                transaction: transaction
-            )
-        } else if validatedEnvelope.localIdentity == .aci {
-            Logger.info("Performing legacy session reset of \(unsealedEnvelope.contentHint) content with timestamp \(validatedEnvelope.timestamp)")
-
-            let didReset = resetSessionIfNecessary(
-                for: sourceAci,
-                sourceDeviceId: unsealedEnvelope.sourceDeviceId,
-                contactThread: contactThread,
-                transaction: transaction
-            )
-
-            if didReset {
-                // Always notify the user that we have performed an automatic archive.
-                errorMessage = TSErrorMessage.sessionRefresh(withSourceAci: AciObjC(sourceAci), with: transaction)
+                // We always send a resend request, even if the contentHint indicates the sender
+                // won't be able to fulfill the request. This will notify the sender to reset
+                // the session.
+                sendResendRequest(
+                    errorMessageBytes: modernResendErrorMessageBytes,
+                    sourceAci: sourceAci,
+                    failedEnvelopeGroupId: unsealedEnvelope.untrustedGroupId,
+                    transaction: transaction
+                )
             } else {
-                errorMessage = nil
+                Logger.info("Performing legacy session reset of \(unsealedEnvelope.contentHint) content with timestamp \(validatedEnvelope.timestamp)")
+
+                let didReset = resetSessionIfNecessary(
+                    for: sourceAci,
+                    sourceDeviceId: unsealedEnvelope.sourceDeviceId,
+                    contactThread: contactThread,
+                    transaction: transaction
+                )
+
+                if didReset {
+                    // Always notify the user that we have performed an automatic archive.
+                    errorMessage = TSErrorMessage.sessionRefresh(withSourceAci: AciObjC(sourceAci), with: transaction)
+                } else {
+                    errorMessage = nil
+                }
             }
-        } else {
-            Logger.info("Not resetting or requesting resend of message sent to \(validatedEnvelope.localIdentity)")
+        case .pni:
+            Logger.info("Not resetting or requesting resend of message sent to PNI.")
+
+            DependenciesBridge.shared.linkedDevicePniKeyManager
+                .recordPniMessageDecryptionError(tx: transaction.asV2Write)
+
             errorMessage = TSErrorMessage.failedDecryption(
                 forSender: sourceAddress,
                 untrustedGroupId: unsealedEnvelope.untrustedGroupId,

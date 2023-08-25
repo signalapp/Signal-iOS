@@ -1423,6 +1423,10 @@
 		D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */; };
 		D9EB22212A4B636C00C73E1D /* CGContext+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221C2A4B636B00C73E1D /* CGContext+LineDrawing.swift */; };
 		D9EB22222A4B636C00C73E1D /* Bitmaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */; };
+		D9F399AD2A95798A001599EC /* PniIdentityKeyChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AC2A95798A001599EC /* PniIdentityKeyChecker.swift */; };
+		D9F399B02A967664001599EC /* PniIdentityKeyCheckerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AE2A96764A001599EC /* PniIdentityKeyCheckerTest.swift */; };
+		D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399B12A96D65D001599EC /* LinkedDevicePniKeyManager.swift */; };
+		D9F399B42A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399B32A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift */; };
 		D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */; };
 		D9F6553B29D6547F002A330A /* SDSCodableModelDatabaseInterface+Remove.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */; };
 		D9F6553C29D6547F002A330A /* SDSCodableModelDatabaseInterface+Save.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553629D6547E002A330A /* SDSCodableModelDatabaseInterface+Save.swift */; };
@@ -4044,6 +4048,10 @@
 		D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Image.swift"; sourceTree = "<group>"; };
 		D9EB221C2A4B636B00C73E1D /* CGContext+LineDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGContext+LineDrawing.swift"; sourceTree = "<group>"; };
 		D9EB221D2A4B636C00C73E1D /* Bitmaps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bitmaps.swift; sourceTree = "<group>"; };
+		D9F399AC2A95798A001599EC /* PniIdentityKeyChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniIdentityKeyChecker.swift; sourceTree = "<group>"; };
+		D9F399AE2A96764A001599EC /* PniIdentityKeyCheckerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniIdentityKeyCheckerTest.swift; sourceTree = "<group>"; };
+		D9F399B12A96D65D001599EC /* LinkedDevicePniKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedDevicePniKeyManager.swift; sourceTree = "<group>"; };
+		D9F399B32A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedDevicePniKeyManagerTest.swift; sourceTree = "<group>"; };
 		D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+ColumnName.swift"; sourceTree = "<group>"; };
 		D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Remove.swift"; sourceTree = "<group>"; };
 		D9F6553629D6547E002A330A /* SDSCodableModelDatabaseInterface+Save.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Save.swift"; sourceTree = "<group>"; };
@@ -8411,8 +8419,10 @@
 			children = (
 				6659A02D2A7C171900066AB7 /* PreKeys */,
 				D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */,
+				D9F399B32A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift */,
 				D9CAF7522A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift */,
 				D9CAF74C2A09D2AB0049193A /* PniHelloWorldManagerTest.swift */,
+				D9F399AE2A96764A001599EC /* PniIdentityKeyCheckerTest.swift */,
 				F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */,
 				E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */,
 				F903C29A28EC7AE60035B42B /* TSAccountManagerTest.swift */,
@@ -9065,10 +9075,12 @@
 				6659A0242A7C112700066AB7 /* PreKeys */,
 				F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */,
 				D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */,
+				D9F399B12A96D65D001599EC /* LinkedDevicePniKeyManager.swift */,
 				5033D46629D76BD0007FEADA /* LocalIdentifiers.swift */,
 				D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */,
 				D9C2D78629A80C9C00D79715 /* PniDistributionSyncMessage.swift */,
 				D9CAF7482A09CCE50049193A /* PniHelloWorldManager.swift */,
+				D9F399AC2A95798A001599EC /* PniIdentityKeyChecker.swift */,
 				507CD5E429660D5100E47DAC /* ServiceId.swift */,
 				F9C5C9BB289453B100548EEE /* TSAccountManager.h */,
 				F9C5C9C0289453B100548EEE /* TSAccountManager.m */,
@@ -12295,6 +12307,7 @@
 				F9C5CD49289453B300548EEE /* LegacySendingChain.m in Sources */,
 				F9C5CD4C289453B300548EEE /* LegacySessionRecord.m in Sources */,
 				F9C5CD4E289453B300548EEE /* LegacySessionState.m in Sources */,
+				D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */,
 				50D5E2412980AD6F00899660 /* LinkValidator.swift in Sources */,
 				F9C5CE33289453B400548EEE /* LocalDevice.swift in Sources */,
 				F9C5CDE7289453B400548EEE /* Locale+SSK.swift in Sources */,
@@ -12526,6 +12539,7 @@
 				D9C2D78729A80C9C00D79715 /* PniDistributionSyncMessage.swift in Sources */,
 				D9C2D78729A80C9C00D79715 /* PniDistributionSyncMessage.swift in Sources */,
 				D9CAF7492A09CCE50049193A /* PniHelloWorldManager.swift in Sources */,
+				D9F399AD2A95798A001599EC /* PniIdentityKeyChecker.swift in Sources */,
 				D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */,
 				F9C5CBCB289453B300548EEE /* PreKeyBundle+jsonDict.m in Sources */,
 				F9C5CD50289453B300548EEE /* PreKeyBundle.m in Sources */,
@@ -12874,6 +12888,7 @@
 				F9426257289B1B5500460798 /* KeyBackupServiceTests.swift in Sources */,
 				66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */,
 				D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */,
+				D9F399B42A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift in Sources */,
 				50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */,
 				D938307C2A704338006CDCDE /* LocalUsernameManagerTests.swift in Sources */,
 				F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */,
@@ -12922,6 +12937,7 @@
 				F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */,
 				D9CAF7532A0ADA4B0049193A /* PniDistributionParameterBuilderTest.swift in Sources */,
 				D9CAF74E2A09D2BD0049193A /* PniHelloWorldManagerTest.swift in Sources */,
+				D9F399B02A967664001599EC /* PniIdentityKeyCheckerTest.swift in Sources */,
 				C1E5891D2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift in Sources */,
 				C1E5891B2A66D67C00ECAF66 /* PreKeyTaskTests.swift in Sources */,
 				F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */,

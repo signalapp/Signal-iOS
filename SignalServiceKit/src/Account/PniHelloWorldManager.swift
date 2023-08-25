@@ -28,6 +28,8 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         static let hasSaidHelloWorldKey = "hasSaidHelloWorld"
     }
 
+    private let logger = PrefixedLogger(prefix: "PHWM")
+
     private let database: DB
     private let identityManager: Shims.IdentityManager
     private let keyValueStore: KeyValueStore
@@ -66,19 +68,19 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    func hasSaidHelloWorld(tx: DBReadTransaction) -> Bool {
-        return keyValueStore.getBool(StoreConstants.hasSaidHelloWorldKey, defaultValue: false, transaction: tx)
-    }
-
     func sayHelloWorldIfNecessary(tx syncTx: DBWriteTransaction) {
-        let logger = PrefixedLogger(prefix: "PHWM")
+        let logger = logger
 
         guard tsAccountManager.isPrimaryDevice(tx: syncTx) else {
             logger.info("Skipping PNI Hello World, am a linked device.")
             return
         }
 
-        guard !hasSaidHelloWorld(tx: syncTx) else {
+        guard !keyValueStore.getBool(
+            StoreConstants.hasSaidHelloWorldKey,
+            defaultValue: false,
+            transaction: syncTx
+        ) else {
             logger.info("Skipping PNI Hello World, already completed.")
             return
         }

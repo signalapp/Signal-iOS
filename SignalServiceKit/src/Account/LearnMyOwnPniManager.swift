@@ -25,9 +25,8 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
     private var logger: PrefixedLogger { Self.logger }
 
     private let accountServiceClient: Shims.AccountServiceClient
-    private let identityManager: Shims.IdentityManager
+    private let pniIdentityKeyChecker: PniIdentityKeyChecker
     private let preKeyManager: PreKeyManager
-    private let profileFetcher: Shims.ProfileFetcher
     private let tsAccountManager: Shims.TSAccountManager
 
     private let db: DB
@@ -37,17 +36,15 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
     init(
         accountServiceClient: Shims.AccountServiceClient,
         db: DB,
-        identityManager: Shims.IdentityManager,
         keyValueStoreFactory: KeyValueStoreFactory,
+        pniIdentityKeyChecker: PniIdentityKeyChecker,
         preKeyManager: PreKeyManager,
-        profileFetcher: Shims.ProfileFetcher,
         schedulers: Schedulers,
         tsAccountManager: Shims.TSAccountManager
     ) {
         self.accountServiceClient = accountServiceClient
-        self.identityManager = identityManager
+        self.pniIdentityKeyChecker = pniIdentityKeyChecker
         self.preKeyManager = preKeyManager
-        self.profileFetcher = profileFetcher
         self.tsAccountManager = tsAccountManager
 
         self.db = db
@@ -104,14 +101,12 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
         return firstly(on: schedulers.sync) { () -> Promise<Pni> in
             return self.fetchMyPniIfNecessary(localIdentifiers: localIdentifiers)
         }.then(on: schedulers.global()) { localPni -> Promise<Void> in
-            let localPniIdentityPublicKeyData: Data? = self.db.read { tx in
-                self.identityManager.pniIdentityPublicKeyData(tx: tx)
+            return self.db.read { tx in
+                return self.createPniKeysIfNecessary(
+                    localPni: localPni,
+                    tx: tx
+                )
             }
-
-            return self.createPniKeysIfNecessary(
-                localPni: localPni,
-                localPniIdentityPublicKeyData: localPniIdentityPublicKeyData
-            )
         }.recover(on: schedulers.sync) { error in
             self.logger.error("Error learning local PNI! \(error)")
             throw error
@@ -161,47 +156,24 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
     /// service.
     private func createPniKeysIfNecessary(
         localPni: Pni,
-        localPniIdentityPublicKeyData: Data?
+        tx syncTx: DBReadTransaction
     ) -> Promise<Void> {
-        return firstly(on: schedulers.sync) { () -> Guarantee<Bool> in
-            // First, check if we need to update our PNI keys on the service. We
-            // should do so if we are missing our local PNI identity key, if the
-            // service is missing our PNI identity key, or if the key on the
-            // service does not match our local key.
-
-            guard let localPniIdentityPublicKeyData else {
-                self.logger.info("No local PNI identity key.")
-                return .value(true)
-            }
-
-            return firstly(on: self.schedulers.sync) { () -> Promise<Data?> in
-                return self.profileFetcher.fetchPniIdentityPublicKey(localPni: localPni)
-            }.map(on: self.schedulers.global()) { remotePniIdentityPublicKeyData -> Bool in
-                if
-                    let remotePniIdentityPublicKeyData,
-                    remotePniIdentityPublicKeyData == localPniIdentityPublicKeyData
-                {
-                    self.logger.info("Local PNI identity key matches server.")
-
-                    self.db.write { tx in
-                        self.keyValueStore.setBool(
-                            true,
-                            key: StoreConstants.hasCompletedPniLearning,
-                            transaction: tx
-                        )
-                    }
-
-                    return false
+        return self.pniIdentityKeyChecker.serverHasSameKeyAsLocal(
+            localPni: localPni,
+            tx: syncTx
+        )
+        .then(on: schedulers.global()) { matched -> Promise<Void> in
+            if matched {
+                self.db.write { tx in
+                    self.keyValueStore.setBool(
+                        true,
+                        key: StoreConstants.hasCompletedPniLearning,
+                        transaction: tx
+                    )
                 }
 
-                self.logger.warn("Local PNI identity key does not match server!")
-                return true
-            }.recover(on: self.schedulers.sync) { error -> Guarantee<Bool> in
-                self.logger.error("Error checking remote identity key: \(error)!")
-                return .value(false)
+                return .value(())
             }
-        }.then(on: schedulers.sync) { (needsUpdate: Bool) -> Promise<Void> in
-            guard needsUpdate else { return .value(()) }
 
             return firstly(on: self.schedulers.sync) { () -> Promise<Void> in
                 return self.preKeyManager.createOrRotatePNIPreKeys(auth: .implicit())
@@ -227,15 +199,11 @@ final class LearnMyOwnPniManagerImpl: LearnMyOwnPniManager {
 extension LearnMyOwnPniManagerImpl {
     enum Shims {
         typealias AccountServiceClient = _LearnMyOwnPniManagerImpl_AccountServiceClient_Shim
-        typealias IdentityManager = _LearnMyOwnPniManagerImpl_IdentityManager_Shim
-        typealias ProfileFetcher = _LearnMyOwnPniManagerImpl_ProfileFetcher_Shim
         typealias TSAccountManager = _LearnMyOwnPniManagerImpl_TSAccountManager_Shim
     }
 
     enum Wrappers {
         typealias AccountServiceClient = _LearnMyOwnPniManagerImpl_AccountServiceClient_Wrapper
-        typealias IdentityManager = _LearnMyOwnPniManagerImpl_IdentityManager_Wrapper
-        typealias ProfileFetcher = _LearnMyOwnPniManagerImpl_ProfileFetcher_Wrapper
         typealias TSAccountManager = _LearnMyOwnPniManagerImpl_TSAccountManager_Wrapper
     }
 }
@@ -255,64 +223,6 @@ class _LearnMyOwnPniManagerImpl_AccountServiceClient_Wrapper: _LearnMyOwnPniMana
 
     public func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
         accountServiceClient.getAccountWhoAmI()
-    }
-}
-
-// MARK: IdentityManager
-
-protocol _LearnMyOwnPniManagerImpl_IdentityManager_Shim {
-    func pniIdentityPublicKeyData(tx: DBReadTransaction) -> Data?
-}
-
-class _LearnMyOwnPniManagerImpl_IdentityManager_Wrapper: _LearnMyOwnPniManagerImpl_IdentityManager_Shim {
-    private let identityManager: OWSIdentityManager
-
-    init(_ identityManager: OWSIdentityManager) {
-        self.identityManager = identityManager
-    }
-
-    func pniIdentityPublicKeyData(tx: DBReadTransaction) -> Data? {
-        return identityManager.identityKeyPair(
-            for: .pni,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )?.publicKey
-    }
-}
-
-// MARK: ProfileFetcher
-
-protocol _LearnMyOwnPniManagerImpl_ProfileFetcher_Shim {
-    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<Data?>
-}
-
-class _LearnMyOwnPniManagerImpl_ProfileFetcher_Wrapper: _LearnMyOwnPniManagerImpl_ProfileFetcher_Shim {
-    private let schedulers: Schedulers
-
-    init(schedulers: Schedulers) {
-        self.schedulers = schedulers
-    }
-
-    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<Data?> {
-        let logger = LearnMyOwnPniManagerImpl.logger
-
-        return ProfileFetcherJob.fetchProfilePromise(
-            serviceId: localPni,
-            mainAppOnly: true,
-            ignoreThrottling: true,
-            shouldUpdateStore: false
-        ).map(on: schedulers.sync) { fetchedProfile -> Data in
-            return fetchedProfile.profile.identityKey
-        }.recover(on: schedulers.sync) { error throws -> Promise<Data?> in
-            switch error {
-            case ParamParser.ParseError.missingField("identityKey"):
-                logger.info("Server does not have a PNI identity key.")
-                return .value(nil)
-            case ProfileFetchError.notMainApp:
-                throw OWSGenericError("Could not check remote identity key outside main app.")
-            default:
-                throw error
-            }
-        }
     }
 }
 

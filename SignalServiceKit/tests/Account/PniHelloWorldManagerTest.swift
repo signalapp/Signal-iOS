@@ -36,8 +36,9 @@ class PniHelloWorldManagerTest: XCTestCase {
     private var signalRecipientStoreMock: SignalRecipientStoreMock!
     private var tsAccountManagerMock: TSAccountManagerMock!
 
-    private var kvStore: TestKeyValueStore!
     private let db = MockDB()
+    private var kvStore: TestKeyValueStore!
+    private var testScheduler: TestScheduler!
 
     private var pniHelloWorldManager: PniHelloWorldManager!
 
@@ -54,8 +55,8 @@ class PniHelloWorldManagerTest: XCTestCase {
         let kvStoreFactory = InMemoryKeyValueStoreFactory()
         kvStore = TestKeyValueStore(keyValueStoreFactory: kvStoreFactory)
 
-        let schedulers = TestSchedulers(scheduler: TestScheduler())
-        schedulers.scheduler.start()
+        testScheduler = TestScheduler()
+        let schedulers = TestSchedulers(scheduler: testScheduler)
 
         pniHelloWorldManager = PniHelloWorldManagerImpl(
             database: db,
@@ -72,7 +73,21 @@ class PniHelloWorldManagerTest: XCTestCase {
         )
     }
 
-    private func setMocksForHappyPath() {
+    override func tearDown() {
+        networkManagerMock.requestResult.ensureUnset()
+    }
+
+    private func runRunRun() {
+        db.write { tx in
+            pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
+        }
+
+        testScheduler.runUntilIdle()
+    }
+
+    private func setMocksForHappyPath(
+        includingNetworkRequest mockNetworkRequest: Bool = false
+    ) {
         tsAccountManagerMock.isPrimaryDevice = true
         tsAccountManagerMock.localIdentifiers = .mock
         signalRecipientStoreMock.localAccountId = "foobar"
@@ -92,18 +107,18 @@ class PniHelloWorldManagerTest: XCTestCase {
         }
 
         pniDistributionParameterBuilderMock.buildOutcomes = [.success]
-        networkManagerMock.requestShouldSucceed = true
+
+        if mockNetworkRequest {
+            networkManagerMock.requestResult = .value(())
+        }
     }
 
     func testHappyPath() {
-        setMocksForHappyPath()
+        setMocksForHappyPath(includingNetworkRequest: true)
 
-        db.write { tx in
-            pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
-        }
+        runRunRun()
 
         XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3]])
-        XCTAssertTrue(networkManagerMock.completeRequest())
         XCTAssertTrue(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -111,12 +126,9 @@ class PniHelloWorldManagerTest: XCTestCase {
         setMocksForHappyPath()
         tsAccountManagerMock.isPrimaryDevice = false
 
-        db.write { tx in
-            pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
-        }
+        runRunRun()
 
         XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [])
-        XCTAssertFalse(networkManagerMock.completeRequest())
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -124,12 +136,9 @@ class PniHelloWorldManagerTest: XCTestCase {
         setMocksForHappyPath()
         db.write { kvStore.setHasSaidHelloWorld(tx: $0) }
 
-        db.write { tx in
-            pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
-        }
+        runRunRun()
 
         XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [])
-        XCTAssertFalse(networkManagerMock.completeRequest())
         XCTAssertTrue(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -137,12 +146,9 @@ class PniHelloWorldManagerTest: XCTestCase {
         setMocksForHappyPath()
         tsAccountManagerMock.localIdentifiers = nil
 
-        db.write { tx in
-            pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
-        }
+        runRunRun()
 
         XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [])
-        XCTAssertFalse(networkManagerMock.completeRequest())
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -150,12 +156,9 @@ class PniHelloWorldManagerTest: XCTestCase {
         setMocksForHappyPath()
         tsAccountManagerMock.localIdentifiers = .missingPni
 
-        db.write { tx in
-            pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
-        }
+        runRunRun()
 
         XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [])
-        XCTAssertFalse(networkManagerMock.completeRequest())
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -164,12 +167,9 @@ class PniHelloWorldManagerTest: XCTestCase {
         signalRecipientStoreMock.localAccountId = nil
         signalRecipientStoreMock.deviceIds = nil
 
-        db.write { tx in
-            pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
-        }
+        runRunRun()
 
         XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [])
-        XCTAssertFalse(networkManagerMock.completeRequest())
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -177,12 +177,9 @@ class PniHelloWorldManagerTest: XCTestCase {
         setMocksForHappyPath()
         profileManagerMock.isPniCapable = false
 
-        db.write { tx in
-            pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
-        }
+        runRunRun()
 
         XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [])
-        XCTAssertFalse(networkManagerMock.completeRequest())
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -191,12 +188,9 @@ class PniHelloWorldManagerTest: XCTestCase {
         identityManagerMock.identityKeyPair = nil
         pniSignedPreKeyStoreMock.setCurrentSignedPreKey(nil)
 
-        db.write { tx in
-            pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
-        }
+        runRunRun()
 
         XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [])
-        XCTAssertFalse(networkManagerMock.completeRequest())
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -204,28 +198,26 @@ class PniHelloWorldManagerTest: XCTestCase {
         setMocksForHappyPath()
         pniDistributionParameterBuilderMock.buildOutcomes = [.failure]
 
-        db.write { tx in
-            pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
-        }
+        runRunRun()
 
         XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3]])
-        XCTAssertFalse(networkManagerMock.completeRequest())
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
     func testDoesNotSaveIfRequestFailed() {
         setMocksForHappyPath()
-        networkManagerMock.requestShouldSucceed = false
+        networkManagerMock.requestResult = .error()
 
-        db.write { tx in
-            pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
-        }
+        runRunRun()
 
         XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3]])
-        XCTAssertTrue(networkManagerMock.completeRequest())
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 }
+
+// MARK: - Mocks
+
+// MARK: LocalIdentifiers
 
 private extension LocalIdentifiers {
     static var mock: LocalIdentifiers {
@@ -241,8 +233,6 @@ private extension LocalIdentifiers {
     }
 }
 
-// MARK: - Mocks
-
 // MARK: IdentityManager
 
 private class IdentityManagerMock: _PniHelloWorldManagerImpl_IdentityManager_Shim {
@@ -256,41 +246,10 @@ private class IdentityManagerMock: _PniHelloWorldManagerImpl_IdentityManager_Shi
 // MARK: NetworkManager
 
 private class NetworkManagerMock: _PniHelloWorldManagerImpl_NetworkManager_Shim {
-    var requestShouldSucceed: Bool?
-    private var requestFuture: Future<Void>?
-
-    /// Completes a mocked operation that is async in the real app. Otherwise,
-    /// since tests complete promises synchronously we may get database
-    /// re-entrance.
-    /// - Returns whether or not a mocked operation was completed.
-    func completeRequest() -> Bool {
-        guard let requestFuture else {
-            return false
-        }
-
-        guard let requestShouldSucceed else {
-            XCTFail("Missing mock outcome!")
-            return false
-        }
-
-        if requestShouldSucceed {
-            requestFuture.resolve()
-        } else {
-            requestFuture.reject(OWSGenericError("Request failed!"))
-        }
-
-        return true
-    }
+    var requestResult: ConsumableMockPromise<Void> = .unset
 
     func makeHelloWorldRequest(pniDistributionParameters _: PniDistribution.Parameters) -> Promise<Void> {
-        guard requestFuture == nil else {
-            XCTFail("Request already in flight!")
-            return Promise(error: OWSGenericError("Request already in flight!"))
-        }
-
-        let (promise, future) = Promise<Void>.pending()
-        requestFuture = future
-        return promise
+        return requestResult.consumeIntoPromise()
     }
 }
 
