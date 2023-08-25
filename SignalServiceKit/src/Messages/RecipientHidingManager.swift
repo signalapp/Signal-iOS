@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Intents
 import GRDB
 import SignalCoreKit
 
@@ -197,6 +198,9 @@ private extension RecipientHidingManagerImpl {
         ) {
             let message = TSInfoMessage(thread: thread, messageType: .contactHidden)
             message.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+
+            // Delete any send message intents.
+            INInteraction.delete(with: thread.uniqueId, completion: nil)
         }
 
         /// TODO recipientHiding:
