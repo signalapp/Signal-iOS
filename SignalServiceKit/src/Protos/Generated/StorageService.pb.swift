@@ -431,6 +431,11 @@ struct StorageServiceProtos_ContactRecord {
     get {return _storage._systemNickname}
     set {_uniqueStorage()._systemNickname = newValue}
   }
+    
+  var hidden: Bool {
+    get {return _storage._hidden}
+    set {_uniqueStorage()._hidden = newValue}
+  }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1476,6 +1481,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     17: .same(proto: "systemGivenName"),
     18: .same(proto: "systemFamilyName"),
     19: .same(proto: "systemNickname"),
+    20: .same(proto: "hidden"),
   ]
 
   fileprivate class _StorageClass {
@@ -1497,6 +1503,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     var _systemGivenName: String = String()
     var _systemFamilyName: String = String()
     var _systemNickname: String = String()
+    var _hidden: Bool = false
 
     static let defaultInstance = _StorageClass()
 
@@ -1521,6 +1528,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       _systemGivenName = source._systemGivenName
       _systemFamilyName = source._systemFamilyName
       _systemNickname = source._systemNickname
+      _hidden = source._hidden
     }
   }
 
@@ -1557,6 +1565,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         case 17: try { try decoder.decodeSingularStringField(value: &_storage._systemGivenName) }()
         case 18: try { try decoder.decodeSingularStringField(value: &_storage._systemFamilyName) }()
         case 19: try { try decoder.decodeSingularStringField(value: &_storage._systemNickname) }()
+        case 20: try { try decoder.decodeSingularBoolField(value: &_storage._hidden) }()
         default: break
         }
       }
@@ -1619,6 +1628,9 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       if !_storage._systemNickname.isEmpty {
         try visitor.visitSingularStringField(value: _storage._systemNickname, fieldNumber: 19)
       }
+      if _storage._hidden != false {
+        try visitor.visitSingularBoolField(value: _storage._hidden, fieldNumber: 20)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1646,6 +1658,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._systemGivenName != rhs_storage._systemGivenName {return false}
         if _storage._systemFamilyName != rhs_storage._systemFamilyName {return false}
         if _storage._systemNickname != rhs_storage._systemNickname {return false}
+        if _storage._hidden != rhs_storage._hidden {return false}
         return true
       }
       if !storagesAreEqual {return false}

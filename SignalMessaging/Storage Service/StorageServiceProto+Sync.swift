@@ -248,6 +248,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         builder.setWhitelisted(isInWhitelist)
 
         builder.setBlocked(blockingManager.isAddressBlocked(address, transaction: transaction))
+        builder.setHidden(recipientHidingManager.isHiddenAddress(address, tx: transaction.asV2Read))
 
         // Identity
 
@@ -399,6 +400,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         let localIdentityKey = identityManager.identityKey(for: address, transaction: transaction)
         let localIdentityState = identityManager.verificationState(for: address, transaction: transaction)
         let localIsBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
+        let localIsHidden = recipientHidingManager.isHiddenAddress(address, tx: transaction.asV2Read)
         let localIsWhitelisted = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
 
         // If our local profile key record differs from what's on the service, use the service's value.
@@ -467,6 +469,19 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 blockingManager.addBlockedAddress(address, blockMode: .remote, transaction: transaction)
             } else {
                 blockingManager.removeBlockedAddress(address, wasLocallyInitiated: false, transaction: transaction)
+            }
+        }
+
+        // If our local hidden state differs from the service state, use the service's value.
+        if FeatureFlags.recipientHiding && record.hidden != localIsHidden {
+            if record.hidden {
+                do {
+                    try recipientHidingManager.addHiddenRecipient(address, wasLocallyInitiated: false, tx: transaction.asV2Write)
+                } catch {
+                    Logger.warn("Recipient hidden remotely could not be hidden locally.")
+                }
+            } else {
+                recipientHidingManager.removeHiddenRecipient(address, wasLocallyInitiated: false, tx: transaction.asV2Write)
             }
         }
 

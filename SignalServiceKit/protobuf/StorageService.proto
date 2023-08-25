@@ -102,6 +102,7 @@ message ContactRecord {
   string        systemGivenName         = 17;
   string        systemFamilyName        = 18;
   string        systemNickname          = 19;
+  bool          hidden                  = 20;
 }
 
 message GroupV1Record {

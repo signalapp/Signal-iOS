@@ -1464,6 +1464,13 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         return !proto.systemNickname.isEmpty
     }
 
+    public var hidden: Bool {
+        return proto.hidden
+    }
+    public var hasHidden: Bool {
+        return true
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1565,6 +1572,9 @@ extension StorageServiceProtoContactRecord {
         }
         if let _value = systemNickname {
             builder.setSystemNickname(_value)
+        }
+        if hasHidden {
+            builder.setHidden(hidden)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -1717,6 +1727,10 @@ public struct StorageServiceProtoContactRecordBuilder {
 
     public mutating func setSystemNickname(_ valueParam: String) {
         proto.systemNickname = valueParam
+    }
+
+    public mutating func setHidden(_ valueParam: Bool) {
+        proto.hidden = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
