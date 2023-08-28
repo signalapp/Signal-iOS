@@ -1691,7 +1691,7 @@
 "DELETE_CONTACT_BUTTON" = "Delete Contact";
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
-"DELETE_CONTACT_CONFIRMATION_TOAST" = "%@ deleted from your contacts and removed.";
+"DELETE_CONTACT_CONFIRMATION_TOAST" = "%@ was deleted from your contacts and removed.";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "You have been logged out of Signal on this device.";
