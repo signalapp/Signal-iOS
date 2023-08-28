@@ -249,32 +249,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     return [self.userProfileFinder userProfileForAddress:address transaction:transaction];
 }
 
-+ (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)addressParam
-                                      authedAccount:(AuthedAccount *)authedAccount
-                                        transaction:(SDSAnyWriteTransaction *)transaction
-{
-    SignalServiceAddress *address = [self resolveUserProfileAddress:addressParam];
-    OWSAssertDebug(address.isValid);
-    OWSUserProfile *_Nullable userProfile = [self.userProfileFinder userProfileForAddress:address
-                                                                              transaction:transaction];
-
-    if (!userProfile) {
-        userProfile = [[OWSUserProfile alloc] initWithAddress:address];
-
-        if ([address.phoneNumber isEqualToString:kLocalProfileInvariantPhoneNumber]) {
-            [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
-                            userProfileWriter:UserProfileWriter_LocalUser
-                                authedAccount:authedAccount
-                                  transaction:transaction
-                                   completion:nil];
-        }
-    }
-
-    OWSAssertDebug(userProfile);
-
-    return userProfile;
-}
-
 + (BOOL)localUserProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.userProfileFinder userProfileForAddress:self.localProfileAddress transaction:transaction] != nil;

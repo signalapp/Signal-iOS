@@ -283,6 +283,104 @@ public extension OWSUserProfile {
             FullTextSearchFinder.modelWasUpdated(model: groupMember, transaction: tx)
         }
     }
+
+    // MARK: - Fetching & Creating
+
+    @objc(getOrBuildUserProfileForAddress:authedAccount:transaction:)
+    class func getOrBuildUserProfile(
+        for address: SignalServiceAddress,
+        authedAccount: AuthedAccount,
+        transaction tx: SDSAnyWriteTransaction
+    ) -> OWSUserProfile {
+        let address = resolve(address.normalized())
+        owsAssertDebug(address.isValid)
+
+        // If we already have a profile for this address, return it.
+        if let userProfile = fetchNormalizeAndPruneUserProfiles(normalizedAddress: address, tx: tx) {
+            return userProfile
+        }
+
+        // Otherwise, create & return a new profile for this address.
+        let userProfile = OWSUserProfile(address: address)
+        if address.phoneNumber == kLocalProfileInvariantPhoneNumber {
+            userProfile.update(
+                profileKey: OWSAES256Key.generateRandom(),
+                userProfileWriter: .localUser,
+                authedAccount: authedAccount,
+                transaction: tx,
+                completion: nil
+            )
+        }
+        return userProfile
+    }
+
+    /// Ensures there's a single profile for a given recipient.
+    ///
+    /// We should only have one UserProfile for each SignalRecipient. However,
+    /// it's possible that duplicates may exist. This method will find and
+    /// remove duplicates.
+    private class func fetchNormalizeAndPruneUserProfiles(
+        normalizedAddress: SignalServiceAddress,
+        tx: SDSAnyWriteTransaction
+    ) -> OWSUserProfile? {
+        let userProfiles = userProfileFinder.fetchUserProfiles(matchingAnyComponentOf: normalizedAddress, tx: tx)
+
+        var matchingProfiles = [OWSUserProfile]()
+        for userProfile in userProfiles {
+            let matchesAddress: Bool = {
+                if let userProfileServiceIdString = userProfile.recipientUUID {
+                    // If the UserProfile has a ServiceId, then so must normalizedAddress.
+                    return userProfileServiceIdString == normalizedAddress.serviceIdUppercaseString
+                } else if let userProfilePhoneNumber = userProfile.recipientPhoneNumber {
+                    // If the UserProfile doesn't have a ServiceId, then it can match just the phone number.
+                    return userProfilePhoneNumber == normalizedAddress.phoneNumber
+                }
+                return false
+            }()
+
+            if matchesAddress {
+                matchingProfiles.append(userProfile)
+            } else {
+                // Non-matching profiles must have some other `ServiceId` and a matching
+                // phone number. This is outdated information that we should update.
+                owsAssertDebug(userProfile.recipientUUID != nil)
+                owsAssertDebug(userProfile.recipientPhoneNumber != nil)
+                owsAssertDebug(userProfile.recipientPhoneNumber == normalizedAddress.phoneNumber)
+                userProfile.recipientPhoneNumber = nil
+                userProfile.anyOverwritingUpdate(transaction: tx)
+            }
+        }
+        // Get rid of any duplicates -- these shouldn't exist.
+        for redundantProfile in matchingProfiles.dropFirst() {
+            redundantProfile.anyRemove(transaction: tx)
+        }
+        if let chosenProfile = matchingProfiles.first {
+            updateAddressIfNeeded(userProfile: chosenProfile, newAddress: normalizedAddress, tx: tx)
+            return chosenProfile
+        }
+        return nil
+    }
+
+    private class func updateAddressIfNeeded(
+        userProfile: OWSUserProfile,
+        newAddress: SignalServiceAddress,
+        tx: SDSAnyWriteTransaction
+    ) {
+        var didUpdate = false
+        let newServiceIdString = newAddress.serviceIdUppercaseString
+        if userProfile.recipientUUID != newServiceIdString {
+            userProfile.recipientUUID = newServiceIdString
+            didUpdate = true
+        }
+        let newPhoneNumber = newAddress.phoneNumber
+        if userProfile.recipientPhoneNumber != newPhoneNumber {
+            userProfile.recipientPhoneNumber = newPhoneNumber
+            didUpdate = true
+        }
+        if didUpdate {
+            userProfile.anyOverwritingUpdate(transaction: tx)
+        }
+    }
 }
 
 // MARK: -

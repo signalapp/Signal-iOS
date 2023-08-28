@@ -188,7 +188,7 @@ class GRDBFinderTest: SignalBaseTest {
         self.write { transaction in
             let buildUserProfile = { () -> OWSUserProfile in
                 let address = CommonGenerator.address(hasPhoneNumber: true)
-                return OWSUserProfile.getOrBuild(for: address, authedAccount: .implicit(), transaction: transaction)
+                return OWSUserProfile.getOrBuildUserProfile(for: address, authedAccount: .implicit(), transaction: transaction)
             }
 
             do {

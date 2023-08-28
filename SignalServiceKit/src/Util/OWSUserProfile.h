@@ -126,10 +126,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 + (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;
 
-+ (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)recipientId
-                                      authedAccount:(AuthedAccount *)authedAccount
-                                        transaction:(SDSAnyWriteTransaction *)transaction;
-
 + (BOOL)localUserProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)loadBadgeContentWithTransaction:(SDSAnyReadTransaction *)transaction;
 

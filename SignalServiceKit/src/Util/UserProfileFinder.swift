@@ -5,12 +5,50 @@
 
 import GRDB
 import LibSignalClient
+import SignalCoreKit
 
 @objc
 public class UserProfileFinder: NSObject {
     @objc(userProfileForAddress:transaction:)
     public func userProfile(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
         return userProfiles(for: [address], tx: transaction)[0]
+    }
+
+    /// Fetches user profiles for the provided `address`.
+    ///
+    /// If a profile on disk matches either the `serviceId` or `phoneNumber` of
+    /// `address`, it'll be returned. It's the caller's responsibility to pick
+    /// the correct candidate from the provided values.
+    ///
+    /// Unlike `userProfiles(for:tx:)`, this method will return duplicate
+    /// profiles if they exist.
+    func fetchUserProfiles(matchingAnyComponentOf address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> [OWSUserProfile] {
+        var userProfiles = [OWSUserProfile]()
+        if let serviceId = address.serviceId {
+            userProfiles.append(contentsOf: userProfilesWhere(
+                column: "\(userProfileColumn: .recipientUUID)",
+                anyValueIn: [serviceId.serviceIdUppercaseString],
+                tx: tx
+            ))
+        }
+        if let phoneNumber = address.phoneNumber {
+            userProfiles.append(contentsOf: userProfilesWhere(
+                column: "\(userProfileColumn: .recipientPhoneNumber)",
+                anyValueIn: [phoneNumber],
+                tx: tx
+            ))
+        }
+        var result = [OWSUserProfile]()
+        var uniqueIds = Set<String>()
+        for userProfile in userProfiles {
+            // We might get back the exact same profile instance twice.
+            guard uniqueIds.insert(userProfile.uniqueId).inserted else {
+                continue
+            }
+            userProfile.loadBadgeContent(with: tx)
+            result.append(userProfile)
+        }
+        return result
     }
 
     func userProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {

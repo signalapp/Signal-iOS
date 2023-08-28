@@ -535,14 +535,6 @@ extension OWSProfileManager {
         }
     }
 
-    @objc(userProfilesForAddresses:transaction:)
-    func getUserProfilesObjC(for addresses: [SignalServiceAddress],
-                             transaction: SDSAnyReadTransaction) -> [OWSMaybeUserProfile] {
-        return getUserProfiles(for: addresses, transaction: transaction).map { maybeProfile -> OWSMaybeUserProfile in
-            maybeProfile ?? NSNull()
-        }
-    }
-
     // This is the batch version of -[OWSProfileManager getUserProfileForAddress:transaction:]
     func getUserProfiles(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [OWSUserProfile?] {
         userProfilesRefinery(for: addresses, transaction: transaction).values

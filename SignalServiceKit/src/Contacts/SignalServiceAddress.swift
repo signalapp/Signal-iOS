@@ -63,6 +63,19 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     @objc
     public var serviceIdUppercaseString: String? { serviceId?.serviceIdUppercaseString }
 
+    /// Returns a canonical address from the cache.
+    ///
+    /// If you initialize an address with the wrong phone number, that address
+    /// will keep that phone number. This method will update that phone number
+    /// to match what's currently in the cache (ie what's on SignalRecipient).
+    public func normalized() -> SignalServiceAddress {
+        if let serviceId {
+            return SignalServiceAddress(serviceId)
+        }
+        // If there's no ServiceId, then we just have a phone number & can use that address.
+        return self
+    }
+
     // MARK: - Initializers
 
     @objc

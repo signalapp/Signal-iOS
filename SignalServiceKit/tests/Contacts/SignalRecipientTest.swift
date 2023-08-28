@@ -135,13 +135,13 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let oldMessage = messageBuilder.build()
             oldMessage.anyInsert(transaction: transaction)
 
-            let oldPhoneNumberProfile = OWSUserProfile.getOrBuild(
+            let oldPhoneNumberProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: oldAddress,
                 authedAccount: .implicit(),
                 transaction: transaction
             )
             oldPhoneNumberProfile.anyInsert(transaction: transaction)
-            let newPhoneNumberProfile = OWSUserProfile.getOrBuild(
+            let newPhoneNumberProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: SignalServiceAddress(phoneNumber: newPhoneNumber.stringValue),
                 authedAccount: .implicit(),
                 transaction: transaction
@@ -164,7 +164,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 uniqueId: oldMessage.uniqueId,
                 transaction: transaction
             )!
-            let newProfile = OWSUserProfile.getOrBuild(
+            let newProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: newAddress,
                 authedAccount: .implicit(),
                 transaction: transaction
@@ -218,7 +218,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let oldMessage = messageBuilder.build()
             oldMessage.anyInsert(transaction: transaction)
 
-            let oldProfile = OWSUserProfile.getOrBuild(
+            let oldProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: oldAddress,
                 authedAccount: .implicit(),
                 transaction: transaction
@@ -241,7 +241,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 uniqueId: oldMessage.uniqueId,
                 transaction: transaction
             )!
-            let newProfile = OWSUserProfile.getOrBuild(
+            let newProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: newAddress,
                 authedAccount: .implicit(),
                 transaction: transaction
