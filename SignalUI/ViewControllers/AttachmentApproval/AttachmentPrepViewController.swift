@@ -31,9 +31,15 @@ public class AttachmentPrepViewController: OWSViewController {
 
     // MARK: - Initializers
 
-    class func viewController(for attachmentApprovalItem: AttachmentApprovalItem) -> AttachmentPrepViewController? {
+    class func viewController(
+        for attachmentApprovalItem: AttachmentApprovalItem,
+        stickerSheetDelegate: StickerPickerSheetDelegate?
+    ) -> AttachmentPrepViewController? {
         switch attachmentApprovalItem.type {
-        case .image: return ImageAttachmentPrepViewController(attachmentApprovalItem: attachmentApprovalItem)
+        case .image:
+            let viewController = ImageAttachmentPrepViewController(attachmentApprovalItem: attachmentApprovalItem)
+            viewController?.stickerSheetDelegate = stickerSheetDelegate
+            return viewController
         case .video: return VideoAttachmentPrepViewController(attachmentApprovalItem: attachmentApprovalItem)
         case .generic: return AttachmentPrepViewController(attachmentApprovalItem: attachmentApprovalItem)
         }

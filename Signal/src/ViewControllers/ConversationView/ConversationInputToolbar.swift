@@ -2152,13 +2152,14 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
 }
 
 extension ConversationInputToolbar: StickerPickerDelegate {
-
     public func didSelectSticker(stickerInfo: StickerInfo) {
         AssertIsOnMainThread()
         Logger.verbose("")
         inputToolbarDelegate?.sendSticker(stickerInfo)
     }
+}
 
+extension ConversationInputToolbar: StickerPacksToolbarDelegate {
     public func presentManageStickersView() {
         AssertIsOnMainThread()
         Logger.verbose("")

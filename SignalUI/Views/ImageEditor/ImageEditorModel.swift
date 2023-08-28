@@ -51,6 +51,9 @@ class ImageEditorModel: NSObject {
     private var undoStack = [ImageEditorOperation]()
     private var redoStack = [ImageEditorOperation]()
 
+    typealias StickerImageCache = LRUCache<String, ThreadSafeCacheHandle<UIImage>>
+    var stickerViewCache = StickerImageCache(maxSize: 16, shouldEvacuateInBackground: true)
+
     var blurredSourceImage: CGImage?
 
     var color = ColorPickerBarColor.defaultColor()

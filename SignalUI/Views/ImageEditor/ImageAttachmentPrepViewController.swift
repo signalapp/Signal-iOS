@@ -8,6 +8,7 @@ import SignalCoreKit
 class ImageAttachmentPrepViewController: AttachmentPrepViewController {
 
     private let model: ImageEditorModel
+    weak var stickerSheetDelegate: StickerPickerSheetDelegate?
 
     private lazy var editorView = ImageEditorView(model: model, delegate: self)
 
@@ -63,7 +64,7 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController {
     override func activatePenTool() {
         Logger.verbose("")
 
-        let viewController = ImageEditorViewController(model: model)
+        let viewController = ImageEditorViewController(model: model, stickerSheetDelegate: stickerSheetDelegate)
         presentMediaTool(viewController: viewController)
     }
 
@@ -94,7 +95,7 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController {
 extension ImageAttachmentPrepViewController: ImageEditorViewDelegate {
 
     private func openTextTool(with textItem: ImageEditorTextItem, isNewItem: Bool, editText: Bool) {
-        let textEditor = ImageEditorViewController(model: model)
+        let textEditor = ImageEditorViewController(model: model, stickerSheetDelegate: stickerSheetDelegate)
         textEditor.selectTextItem(textItem, isNewItem: isNewItem, startEditing: editText)
         presentMediaTool(viewController: textEditor)
     }

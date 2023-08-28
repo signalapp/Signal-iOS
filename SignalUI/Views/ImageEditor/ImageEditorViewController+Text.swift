@@ -5,6 +5,16 @@
 
 import SignalCoreKit
 
+// MARK: - Sticker
+
+extension ImageEditorViewController {
+    func selectStickerItem(_ stickerItem: ImageEditorStickerItem) {
+        mode = .sticker
+        imageEditorView.selectedTransformableItemID = stickerItem.itemId
+        model.append(item: stickerItem)
+    }
+}
+
 // MARK: - Text
 
 extension ImageEditorViewController {
@@ -12,7 +22,7 @@ extension ImageEditorViewController {
     func selectTextItem(_ textItem: ImageEditorTextItem, isNewItem: Bool, startEditing: Bool) {
         mode = .text
         currentTextItem = (textItem, isNewItem)
-        imageEditorView.selectedTextItemId = textItem.itemId
+        imageEditorView.selectedTransformableItemID = textItem.itemId
         if startEditing && isViewLoaded && view.window != nil {
             beginTextEditing()
         } else {
@@ -29,8 +39,6 @@ extension ImageEditorViewController {
 
     private func initializeTextUIIfNecessary() {
         guard !textUIInitialized else { return }
-
-        imageEditorView.delegate = self
 
         let toolbarSize = textViewAccessoryToolbar.systemLayoutSizeFitting(CGSize(width: view.width, height: .greatestFiniteMagnitude),
                                                                            withHorizontalFittingPriority: .required,
@@ -118,15 +126,15 @@ extension ImageEditorViewController {
     }
 
     func updateTextUIVisibility() {
-        let isInTextMode = mode == .text
-        if isInTextMode {
+        switch mode {
+        case .text:
             initializeTextUIIfNecessary()
-        } else {
-            guard textUIInitialized else { return }
-        }
-
-        if !isInTextMode {
-            imageEditorView.selectedTextItemId = nil
+            fallthrough
+        case .sticker:
+            imageEditorView.delegate = self
+        case .draw, .blur:
+            guard textUIInitialized else { break }
+            imageEditorView.selectedTransformableItemID = nil
         }
     }
 
@@ -219,7 +227,7 @@ extension ImageEditorViewController {
             model.append(item: textItem)
         }
 
-        imageEditorView.selectedTextItemId = textItem.itemId
+        imageEditorView.selectedTransformableItemID = textItem.itemId
     }
 
     @objc
@@ -319,7 +327,7 @@ extension ImageEditorViewController: ImageEditorViewDelegate {
     }
 
     func imageEditorView(_ imageEditorView: ImageEditorView, didTapTextItem textItem: ImageEditorTextItem) {
-        owsAssertDebug(imageEditorView.selectedTextItemId == textItem.itemId)
+        owsAssertDebug(imageEditorView.selectedTransformableItemID == textItem.itemId)
         currentTextItem = (textItem, false)
         beginTextEditing()
     }
@@ -329,13 +337,20 @@ extension ImageEditorViewController: ImageEditorViewDelegate {
     }
 
     func imageEditorViewDidUpdateSelection(_ imageEditorView: ImageEditorView) {
-        if let selectedTextItemId = imageEditorView.selectedTextItemId,
-           let textItem = model.item(forId: selectedTextItemId) as? ImageEditorTextItem {
-            mode = .text
-            textViewAccessoryToolbar.currentColorPickerValue = textItem.color
-            textViewAccessoryToolbar.textStyle = textItem.textStyle
-            textViewAccessoryToolbar.decorationStyle = textItem.decorationStyle
-        } else {
+        switch imageEditorView.selectedTransformableItemID {
+        case .some(let selectedTransformableItemID):
+            let selectedItem = model.item(forId: selectedTransformableItemID)
+            if let textItem = selectedItem as? ImageEditorTextItem {
+                mode = .text
+                textViewAccessoryToolbar.currentColorPickerValue = textItem.color
+                textViewAccessoryToolbar.textStyle = textItem.textStyle
+                textViewAccessoryToolbar.decorationStyle = textItem.decorationStyle
+            } else if selectedItem is ImageEditorStickerItem {
+                mode = .sticker
+            } else {
+                fallthrough
+            }
+        case .none:
             mode = .draw
         }
 

@@ -21,6 +21,7 @@ class EditorTextLayer: CATextLayer {
     init(itemId: String) {
         self.itemId = itemId
         super.init()
+        self.name = itemId
     }
 
     @available(*, unavailable, message: "use other init() instead.")
@@ -151,35 +152,37 @@ class ImageEditorCanvasView: UIView {
             if let itemId = oldValue, let layer = contentLayerMap[itemId] {
                 layer.isHidden = false
                 // Show text object's frame if current text object is selected.
-                if itemId == selectedTextItemId {
+                if itemId == selectedTransformableItemID {
                     selectedTextFrameLayer?.isHidden = false
                 }
             }
             if let hiddenItemId = hiddenItemId, let layer = contentLayerMap[hiddenItemId] {
                 layer.isHidden = true
                 // Hide text object's frame when hiding selected text object.
-                if hiddenItemId == selectedTextItemId {
+                if hiddenItemId == selectedTransformableItemID {
                     selectedTextFrameLayer?.isHidden = true
                 }
             }
         }
     }
 
-    var selectedTextItemId: String? {
+    var selectedTransformableItemID: String? {
         didSet {
-            updateSelectedTextFrame()
+            updateSelectedTransformableItemFrame()
         }
     }
 
-    // We want blurs to be rendered above the image and behind strokes and text.
+    /// We want blurs to be rendered above the image and behind strokes and text.
     private static let blurLayerZ: CGFloat = +1
-    // We want strokes to be rendered above the image and blurs and behind text.
+    /// We want strokes to be rendered above the image and blurs and behind text.
     private static let brushLayerZ: CGFloat = +2
-    // We want text to be rendered above the image, blurs, and strokes.
+    /// We want text to be rendered above the image, blurs, and strokes.
     private static let textLayerZ: CGFloat = +3
-    // Selection frame is rendered above all content.
+    /// Selection frame is rendered above all content.
     private static let selectionFrameLayerZ: CGFloat = +4
-    // We leave space for 10k items/layers of each type.
+    /// Trash is rendered above all content.
+    static let trashLazerZ: CGFloat = +5
+    /// We leave space for 10k items/layers of each type.
     private static let zPositionSpacing: CGFloat = 0.0001
 
     required init(model: ImageEditorModel, hiddenItemId: String? = nil) {
@@ -338,9 +341,9 @@ class ImageEditorCanvasView: UIView {
     // Negative insets because text object frame is larger than object itself.
     private static let textFrameInsets = UIEdgeInsets(hMargin: -16, vMargin: -4)
 
-    private func updateSelectedTextFrame() {
-        guard let selectedTextItemId = selectedTextItemId,
-              let textLayer = contentLayerMap[selectedTextItemId] as? EditorTextLayer else {
+    private func updateSelectedTransformableItemFrame() {
+        guard let selectedItemID = selectedTransformableItemID,
+              let textLayer = contentLayerMap[selectedItemID] else {
             selectedTextFrameLayer?.removeFromSuperlayer()
             selectedTextFrameLayer = nil
             return
@@ -369,12 +372,19 @@ class ImageEditorCanvasView: UIView {
         selectedTextFrameLayer.setAffineTransform(CGAffineTransform(rotationAngle: rotationAngle))
         selectedTextFrameLayer.layoutSublayers()
 
+        selectedTextFrameLayer.opacity = shouldFadeTransformableItem ? 0.5 : 1
+
         CATransaction.commit()
     }
 
     // MARK: - Content
 
     private var contentLayerMap = [String: CALayer]()
+
+    var shouldFadeTransformableItem = false
+    private var fadedItemID: String? {
+        shouldFadeTransformableItem ? selectedTransformableItemID : nil
+    }
 
     private func updateAllContent() {
         AssertIsOnMainThread()
@@ -398,11 +408,14 @@ class ImageEditorCanvasView: UIView {
             updateImageLayer()
 
             for item in model.items() {
-                guard let layer = ImageEditorCanvasView.layerForItem(item: item,
-                                                                     model: model,
-                                                                     transform: transform,
-                                                                     viewSize: viewSize) else {
-                                                                        continue
+                guard let layer = ImageEditorCanvasView.layerForItem(
+                    item: item,
+                    model: model,
+                    shouldFadeTransformableItemWithID: fadedItemID,
+                    transform: transform,
+                    viewSize: viewSize
+                ) else {
+                    continue
                 }
 
                 if item.itemId == hiddenItemId {
@@ -414,7 +427,7 @@ class ImageEditorCanvasView: UIView {
         }
 
         updateLayout()
-        updateSelectedTextFrame()
+        updateSelectedTransformableItemFrame()
 
         // Force layout now.
         setNeedsLayout()
@@ -455,11 +468,14 @@ class ImageEditorCanvasView: UIView {
                 }
 
                 // Item was inserted or updated.
-                guard let layer = ImageEditorCanvasView.layerForItem(item: item,
-                                                                     model: model,
-                                                                     transform: transform,
-                                                                     viewSize: viewSize) else {
-                                                                        continue
+                guard let layer = ImageEditorCanvasView.layerForItem(
+                    item: item,
+                    model: model,
+                    shouldFadeTransformableItemWithID: fadedItemID,
+                    transform: transform,
+                    viewSize: viewSize
+                ) else {
+                    continue
                 }
 
                 if item.itemId == hiddenItemId {
@@ -470,7 +486,7 @@ class ImageEditorCanvasView: UIView {
             }
         }
 
-        updateSelectedTextFrame()
+        updateSelectedTransformableItemFrame()
 
         CATransaction.commit()
     }
@@ -556,10 +572,13 @@ class ImageEditorCanvasView: UIView {
         return imageLayer
     }
 
-    private class func layerForItem(item: ImageEditorItem,
-                                    model: ImageEditorModel,
-                                    transform: ImageEditorTransform,
-                                    viewSize: CGSize) -> CALayer? {
+    private class func layerForItem(
+        item: ImageEditorItem,
+        model: ImageEditorModel,
+        shouldFadeTransformableItemWithID fadedItemID: String?,
+        transform: ImageEditorTransform,
+        viewSize: CGSize
+    ) -> CALayer? {
         AssertIsOnMainThread()
 
         switch item.itemType {
@@ -580,10 +599,27 @@ class ImageEditorCanvasView: UIView {
                 owsFailDebug("Item has unexpected type: \(type(of: item)).")
                 return nil
             }
-            return textLayerForItem(item: textItem,
-                                    model: model,
-                                    transform: transform,
-                                    viewSize: viewSize)
+            let isFaded = item.itemId == fadedItemID
+            return textLayerForItem(
+                item: textItem,
+                model: model,
+                isFaded: isFaded,
+                transform: transform,
+                viewSize: viewSize
+            )
+        case .sticker:
+            guard let stickerItem = item as? ImageEditorStickerItem else {
+                owsFailDebug("Item has unexpected type: \(type(of: item)).")
+                return nil
+            }
+            let isFaded = item.itemId == fadedItemID
+            return stickerLayerForItem(
+                item: stickerItem,
+                model: model,
+                isFaded: isFaded,
+                transform: transform,
+                viewSize: viewSize
+            )
         case .blurRegions:
             guard let blurRegionsItem = item as? ImageEditorBlurRegionsItem else {
                 owsFailDebug("Item has unexpected type: \(type(of: item)).")
@@ -783,10 +819,13 @@ class ImageEditorCanvasView: UIView {
         return zPositionBase + CGFloat(itemIndex) * zPositionSpacing
     }
 
-    private class func textLayerForItem(item: ImageEditorTextItem,
-                                        model: ImageEditorModel,
-                                        transform: ImageEditorTransform,
-                                        viewSize: CGSize) -> CALayer? {
+    private class func textLayerForItem(
+        item: ImageEditorTextItem,
+        model: ImageEditorModel,
+        isFaded: Bool,
+        transform: ImageEditorTransform,
+        viewSize: CGSize
+    ) -> CALayer? {
         AssertIsOnMainThread()
 
         let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: model.srcImageSizePixels, transform: transform)
@@ -858,7 +897,67 @@ class ImageEditorCanvasView: UIView {
         layer.setAffineTransform(transform)
         layer.zPosition = zPositionForItem(item: item, model: model, zPositionBase: textLayerZ)
 
+        layer.opacity = isFaded ? 0.5 : 1
+
         return layer
+    }
+
+    private class func stickerLayerForItem(
+        item: ImageEditorStickerItem,
+        model: ImageEditorModel,
+        isFaded: Bool,
+        transform: ImageEditorTransform,
+        viewSize: CGSize
+    ) -> CALayer? {
+        AssertIsOnMainThread()
+
+        let image: UIImage? = {
+            if let image = model.stickerViewCache.object(forKey: item.itemId)?.value {
+                return image
+            }
+
+            guard let metadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: item.stickerInfo),
+                  let image = UIImage(contentsOfFile: metadata.stickerDataUrl.path)
+            else { return nil }
+            model.stickerViewCache.setObject(ThreadSafeCacheHandle(image), forKey: item.itemId)
+            return image
+        }()
+
+        guard let image else {
+            owsFailDebug("Failed to retrieve sticker image")
+            return nil
+        }
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFit
+        let imageLayer = imageView.layer
+
+        imageLayer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
+
+        let imageFrame = ImageEditorCanvasView.imageFrame(
+            forViewSize: viewSize,
+            imageSize: model.srcImageSizePixels,
+            transform: transform
+        )
+        let stickerSize = CGSize(square: 175 * imageFrame.size.width / item.referenceImageWidth)
+        let centerInCanvas = item.unitCenter.fromUnitCoordinates(viewBounds: imageFrame)
+        imageLayer.frame = imageFrame
+
+        imageLayer.frame = CGRect(
+            origin: CGPoint(
+                x: centerInCanvas.x - stickerSize.width * 0.5,
+                y: centerInCanvas.y - stickerSize.height * 0.5
+            ),
+            size: stickerSize
+        )
+
+        let transform = CGAffineTransform.scale(item.scaling).rotated(by: item.rotationRadians)
+        imageLayer.setAffineTransform(transform)
+        imageLayer.zPosition = zPositionForItem(item: item, model: model, zPositionBase: textLayerZ)
+        imageLayer.name = item.itemId
+
+        imageLayer.opacity = isFaded ? 0.5 : 1
+
+        return imageLayer
     }
 
     // We apply more than one kind of smoothing.
@@ -995,12 +1094,15 @@ class ImageEditorCanvasView: UIView {
 
         var layers = [CALayer]()
         for item in model.items() {
-            guard let layer = layerForItem(item: item,
-                                           model: model,
-                                           transform: transform,
-                                           viewSize: viewSize) else {
-                                            owsFailDebug("Couldn't create layer for item.")
-                                            continue
+            guard let layer = layerForItem(
+                item: item,
+                model: model,
+                shouldFadeTransformableItemWithID: nil,
+                transform: transform,
+                viewSize: viewSize
+            ) else {
+                owsFailDebug("Couldn't create layer for item.")
+                continue
             }
             layer.contentsScale = dstScale * transform.scaling * item.outputScale()
             if let editorTextLayer = layer as? EditorTextLayer {
@@ -1026,7 +1128,7 @@ class ImageEditorCanvasView: UIView {
 
     // MARK: -
 
-    func textLayer(forLocation point: CGPoint) -> EditorTextLayer? {
+    func transformableLayer(forLocation point: CGPoint) -> CALayer? {
         guard let sublayers = contentView.layer.sublayers else {
             return nil
         }
@@ -1034,34 +1136,27 @@ class ImageEditorCanvasView: UIView {
         // Allow to interact with selected text layer when user taps within
         // selection frame (which is larger than text itself).
         if let selectedTextFrameLayer = selectedTextFrameLayer,
-           let selectedTextItemId = selectedTextItemId,
+           let selectedTextItemId = selectedTransformableItemID,
            let selectedTextLayer = contentLayerMap[selectedTextItemId] as? EditorTextLayer,
            selectedTextFrameLayer.hitTest(point) != nil {
             return selectedTextLayer
         }
 
-        // First we build a map of all text layers.
-        var layerMap = [String: EditorTextLayer]()
-        for layer in sublayers {
-            guard let textLayer = layer as? EditorTextLayer else {
-                continue
-            }
-            layerMap[textLayer.itemId] = textLayer
+        // First we build a map of all named layers.
+        let layerMap = sublayers.reduce(into: [String: CALayer]()) { partialResult, layer in
+            guard let layerName = layer.name else { return }
+            partialResult[layerName] = layer
         }
 
         // The layer ordering in the model is authoritative.
         // Iterate over the layers in _reverse_ order of which they appear
         // in the model, so that layers "on top" are hit first.
-        for item in model.items().reversed() {
-            guard let textLayer = layerMap[item.itemId] else {
-                // Not a text layer.
-                continue
-            }
-            if textLayer.hitTest(point) != nil {
-                return textLayer
-            }
-        }
-        return nil
+        return model.items()
+            .lazy
+            .reversed()
+            .filter { $0 is ImageEditorTransformable }
+            .compactMap { item in layerMap[item.itemId] }
+            .first { layer in layer.hitTest(point) != nil }
     }
 
     // MARK: - Coordinates

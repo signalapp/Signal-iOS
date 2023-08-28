@@ -7,9 +7,12 @@ import SignalServiceKit
 
 // MARK: - Delegate Protocols
 
+public protocol StickerPacksToolbarDelegate: AnyObject {
+    func presentManageStickersView()
+}
+
 public protocol StickerPickerDelegate: AnyObject {
     func didSelectSticker(stickerInfo: StickerInfo)
-    func presentManageStickersView()
 }
 
 public protocol StickerPickerPageViewDelegate: StickerPickerDelegate {
@@ -38,7 +41,22 @@ class StickerPacksToolbar: UIStackView {
         return view
     }()
 
-    public var manageButtonWasTapped: (() -> Void)?
+    private lazy var manageButton: OWSButton = {
+        let tintColor = forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
+        let button = OWSButton(imageName: "plus", tintColor: tintColor) { [weak self] in
+            self?.delegate?.presentManageStickersView()
+        }
+        button.setContentHuggingHigh()
+        button.setCompressionResistanceHigh()
+        button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "manageButton")
+        return button
+    }()
+
+    public weak var delegate: StickerPacksToolbarDelegate? {
+        didSet {
+            configureManageButton()
+        }
+    }
 
     init(forceDarkTheme: Bool = false) {
         self.forceDarkTheme = forceDarkTheme
@@ -59,20 +77,16 @@ class StickerPacksToolbar: UIStackView {
 
         packsCollectionView.backgroundColor = .clear
         addArrangedSubview(packsCollectionView)
-
-        let manageButton = buildHeaderButton("plus") { [weak self] in
-            self?.manageButtonWasTapped?()
-        }
-        addArrangedSubview(manageButton)
-        manageButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "manageButton")
     }
 
-    private func buildHeaderButton(_ imageName: String, block: @escaping () -> Void) -> UIView {
-        let tintColor = forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
-        let button = OWSButton(imageName: imageName, tintColor: tintColor, block: block)
-        button.setContentHuggingHigh()
-        button.setCompressionResistanceHigh()
-        return button
+    private func configureManageButton() {
+        if delegate != nil {
+            // Show manage button
+            addArrangedSubview(manageButton)
+        } else {
+            // Hide manage button
+            removeArrangedSubview(manageButton)
+        }
     }
 }
 

@@ -12,6 +12,7 @@ import UIKit
 class ImageEditorViewController: OWSViewController {
 
     let model: ImageEditorModel
+    private weak var stickerSheetDelegate: StickerPickerSheetDelegate?
 
     // We only want to let users undo changes made in this view.
     // So we snapshot any older "operation id" and prevent
@@ -28,6 +29,7 @@ class ImageEditorViewController: OWSViewController {
         case draw = 1
         case blur
         case text
+        case sticker
     }
 
     var mode: Mode = .draw {
@@ -213,8 +215,9 @@ class ImageEditorViewController: OWSViewController {
         return toolbar
     }()
 
-    init(model: ImageEditorModel) {
+    init(model: ImageEditorModel, stickerSheetDelegate: StickerPickerSheetDelegate?) {
         self.model = model
+        self.stickerSheetDelegate = stickerSheetDelegate
         self.imageEditorView = ImageEditorView(model: model, delegate: nil)
         self.firstUndoOperationId = model.currentUndoOperationId()
 
@@ -300,17 +303,11 @@ class ImageEditorViewController: OWSViewController {
         case .draw, .blur:
             strokeWidthSliderContainer.isHidden = false
             finishTextEditing()
-
-        case .text:
+            imageEditorView.textInteractionModes = .select
+        case .text, .sticker:
             strokeWidthSliderContainer.isHidden = true
+            imageEditorView.textInteractionModes = .all
         }
-
-        imageEditorView.textInteractionModes = {
-            switch mode {
-            case .draw, .blur: return [ .select ]
-            case .text: return .all
-            }
-        }()
 
         updateDrawToolUIVisibility()
         updateBlurToolUIVisibility()
@@ -332,7 +329,7 @@ class ImageEditorViewController: OWSViewController {
         case .draw, .blur:
             return currentStroke != nil
 
-        case .text:
+        case .text, .sticker:
             return imageEditorView.shouldHideControls
         }
     }
@@ -379,7 +376,7 @@ class ImageEditorViewController: OWSViewController {
         case .blur:
             updateBlurToolControlsVisibility()
 
-        case .text:
+        case .text, .sticker:
             updateTextControlsVisibility()
         }
     }
@@ -535,7 +532,17 @@ extension ImageEditorViewController {
     private func didTapAddSticker(sender: UIButton) {
         Logger.verbose("")
 
-        mode = .text
+        let stickerPicker: StickerPickerSheet
+        if UIAccessibility.isReduceTransparencyEnabled {
+            stickerPicker = StickerPickerSheet(backgroundColor: Theme.darkThemeBackgroundColor)
+        } else {
+            stickerPicker = StickerPickerSheet(blurEffect: .init(style: .dark))
+        }
+
+        stickerPicker.pickerDelegate = self
+        stickerPicker.sheetDelegate = stickerSheetDelegate
+
+        present(stickerPicker, animated: true)
     }
 
     @objc
@@ -574,11 +581,11 @@ extension ImageEditorViewController: ImageEditorBottomBarButtonProvider {
         )
         textButton.addTarget(self, action: #selector(didTapAddText(sender:)), for: .touchUpInside)
 
-//        let stickerButton = RoundMediaButton(
-//            image: UIImage(imageLiteralResourceName: "sticker-smiley-28"),
-//            backgroundStyle: .solid(.clear)
-//        )
-//        stickerButton.addTarget(self, action: #selector(didTapAddSticker(sender:)), for: .touchUpInside)
+        let stickerButton = RoundMediaButton(
+            image: UIImage(imageLiteralResourceName: "sticker-smiley-28"),
+            backgroundStyle: .solid(.clear)
+        )
+        stickerButton.addTarget(self, action: #selector(didTapAddSticker(sender:)), for: .touchUpInside)
 
         let blurButton = RoundMediaButton(
             image: UIImage(imageLiteralResourceName: "blur-28"),
@@ -587,7 +594,7 @@ extension ImageEditorViewController: ImageEditorBottomBarButtonProvider {
         blurButton.tag = Mode.blur.rawValue
         blurButton.addTarget(self, action: #selector(didTapBlur(sender:)), for: .touchUpInside)
 
-        let buttons = [ penButton, textButton, blurButton ]
+        let buttons = [ penButton, textButton, stickerButton, blurButton ]
         for button in buttons {
             button.setBackgroundColor(.ows_white, for: .highlighted)
             button.setBackgroundColor(.ows_white, for: .selected)
@@ -653,5 +660,15 @@ extension ImageEditorViewController: ColorPickerBarViewDelegate {
         default:
             owsAssertDebug(false, "Invalid mode [\(mode)]")
         }
+    }
+}
+
+// MARK: - StickerPickerDelegate
+
+extension ImageEditorViewController: StickerPickerDelegate {
+    func didSelectSticker(stickerInfo: StickerInfo) {
+        let stickerItem = imageEditorView.createNewStickerItem(with: stickerInfo)
+        selectStickerItem(stickerItem)
+        dismiss(animated: true)
     }
 }

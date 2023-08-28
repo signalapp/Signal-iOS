@@ -568,10 +568,13 @@ public extension ConversationViewController {
             return
         }
 
-        let modal = AttachmentApprovalViewController.wrappedInNavController(attachments: attachments,
-                                                                            initialMessageBody: inputToolbar.messageBodyForSending,
-                                                                            approvalDelegate: self,
-                                                                            approvalDataSource: self)
+        let modal = AttachmentApprovalViewController.wrappedInNavController(
+            attachments: attachments,
+            initialMessageBody: inputToolbar.messageBodyForSending,
+            approvalDelegate: self,
+            approvalDataSource: self,
+            stickerSheetDelegate: self
+        )
         presentFullScreen(modal, animated: true)
     }
 }
@@ -944,5 +947,15 @@ extension ConversationViewController: SendMediaNavDataSource {
 
     func sendMediaNavMentionCacheInvalidationKey() -> String {
         return thread.uniqueId
+    }
+}
+
+// MARK: - StickerPickerSheetDelegate
+
+extension ConversationViewController: StickerPickerSheetDelegate {
+    public func makeManageStickersViewController() -> UIViewController {
+        let manageStickersView = ManageStickersViewController()
+        let navigationController = OWSNavigationController(rootViewController: manageStickersView)
+        return navigationController
     }
 }

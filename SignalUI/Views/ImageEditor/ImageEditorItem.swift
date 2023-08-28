@@ -14,6 +14,7 @@ enum ImageEditorItemType: Int {
     case test
     case stroke
     case text
+    case sticker
     case blurRegions
 }
 

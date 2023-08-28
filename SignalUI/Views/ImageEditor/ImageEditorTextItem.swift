@@ -5,7 +5,7 @@
 
 import UIKit
 
-class ImageEditorTextItem: ImageEditorItem {
+final class ImageEditorTextItem: ImageEditorItem, ImageEditorTransformable {
 
     let text: String
 

@@ -9,7 +9,8 @@ import SignalServiceKit
 
 public class StickerKeyboard: CustomKeyboard {
 
-    public weak var delegate: StickerPickerDelegate?
+    public typealias StickerKeyboardDelegate = StickerPickerDelegate & StickerPacksToolbarDelegate
+    public weak var delegate: StickerKeyboardDelegate?
 
     private let headerView = StickerPacksToolbar()
     private lazy var stickerPickerPageView = StickerPickerPageView(delegate: self)
@@ -28,9 +29,7 @@ public class StickerKeyboard: CustomKeyboard {
         stickerPickerPageView.autoPinEdge(toSuperviewSafeArea: .left)
         stickerPickerPageView.autoPinEdge(toSuperviewSafeArea: .right)
 
-        headerView.manageButtonWasTapped = { [weak self] in
-            self?.manageButtonWasTapped()
-        }
+        headerView.delegate = self
     }
 
     required public init(coder: NSCoder) {
@@ -42,14 +41,20 @@ public class StickerKeyboard: CustomKeyboard {
         stickerPickerPageView.wasPresented()
     }
 
-    private func manageButtonWasTapped() {
+}
+
+// MARK: StickerPacksToolbarDelegate
+
+extension StickerKeyboard: StickerPacksToolbarDelegate {
+    public var shouldShowManageButton: Bool { true }
+
+    public func manageButtonWasPressed() {
         AssertIsOnMainThread()
 
         Logger.verbose("")
 
         delegate?.presentManageStickersView()
     }
-
 }
 
 // MARK: StickerPickerPageViewDelegate

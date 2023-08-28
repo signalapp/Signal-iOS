@@ -293,6 +293,7 @@ extension SendMessageFlow {
             let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
             approvalViewController.approvalDelegate = self
             approvalViewController.approvalDataSource = self
+            approvalViewController.stickerSheetDelegate = self
             approvalViewController.setMessageBody(messageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
 
             pushViewController(approvalViewController, animated: true)
@@ -602,6 +603,16 @@ extension SendMessageFlow: AttachmentApprovalViewControllerDataSource {
 
     func attachmentApprovalMentionCacheInvalidationKey() -> String {
         return "\(mentionCandidates.hashValue)"
+    }
+}
+
+// MARK: - StickerPickerSheetDelegate
+
+extension SendMessageFlow: StickerPickerSheetDelegate {
+    func makeManageStickersViewController() -> UIViewController {
+        let manageStickersView = ManageStickersViewController()
+        let navigationController = OWSNavigationController(rootViewController: manageStickersView)
+        return navigationController
     }
 }
 

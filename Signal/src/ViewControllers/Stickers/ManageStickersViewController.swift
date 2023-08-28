@@ -5,6 +5,7 @@
 
 import SignalServiceKit
 import SignalUI
+import SignalMessaging
 
 private class StickerPackActionButton: UIView {
 

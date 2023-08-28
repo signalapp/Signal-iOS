@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import SignalMessaging
 
 protocol ImageEditorViewDelegate: AnyObject {
 
@@ -29,6 +30,36 @@ class ImageEditorView: UIView {
     let model: ImageEditorModel
 
     let canvasView: ImageEditorCanvasView
+
+    private let trashViewSize: CGFloat = 42
+    private let trashViewHoverSize: CGFloat = 56
+    private var trashSizeContstraints = [NSLayoutConstraint]()
+    private lazy var trashView: UIView = {
+        let image = UIImage(named: "trash-circle")
+        let imageView = UIImageView(image: image)
+        imageView.tintColor = .white
+        imageView.contentMode = .scaleAspectFill
+
+        imageView.layer.cornerRadius = trashViewSize / 2
+        imageView.backgroundColor = .ows_blackAlpha40
+        imageView.isUserInteractionEnabled = false
+
+        return imageView
+    }()
+    private var isTrashShowing: Bool {
+        get {
+            trashView.alpha > 0
+        }
+        set {
+            trashView.alpha = newValue ? 1 : 0
+        }
+    }
+    private var isHoveringOverTrash = false {
+        didSet {
+            guard isHoveringOverTrash != oldValue else { return }
+            updateTrash(isHoveringOverTrash: isHoveringOverTrash)
+        }
+    }
 
     required init(model: ImageEditorModel, delegate: ImageEditorViewDelegate?) {
         self.model = model
@@ -66,6 +97,23 @@ class ImageEditorView: UIView {
         addSubview(canvasView)
         canvasView.autoPinEdgesToSuperviewEdges()
 
+        canvasView.contentView.addSubview(trashView)
+
+        // Center trash view instead of aligning the bottom so that it
+        // resizes from the center when hovering over it.
+        // 20 spacing to bottom + half the height for the center point.
+        let distanceFromCenterToBottom = 20 + trashViewSize / 2
+        trashView.centerYAnchor.constraint(
+            equalTo: canvasView.contentView.bottomAnchor,
+            constant: -distanceFromCenterToBottom
+        )
+        .isActive = true
+
+        trashView.autoHCenterInSuperview()
+        trashSizeContstraints = trashView.autoSetDimensions(to: .square(trashViewSize))
+        trashView.layer.zPosition = ImageEditorCanvasView.trashLazerZ
+        isTrashShowing = false
+
         addGestureRecognizer(moveTextGestureRecognizer)
         addGestureRecognizer(tapGestureRecognizer)
         addGestureRecognizer(pinchGestureRecognizer)
@@ -94,11 +142,40 @@ class ImageEditorView: UIView {
 
     private func updateControls() {
         delegate?.imageEditorDidRequestToolbarVisibilityUpdate(self)
+
+        let shouldShowTrash: Bool
+        switch movingItem {
+        case is ImageEditorStickerItem, is ImageEditorTextItem:
+            shouldShowTrash = true
+        default:
+            shouldShowTrash = false
+        }
+
+        guard shouldShowTrash != isTrashShowing else { return }
+        UIView.animate(withDuration: 0.15) {
+            self.isTrashShowing = shouldShowTrash
+        }
+    }
+
+    private func updateTrash(isHoveringOverTrash: Bool) {
+        canvasView.shouldFadeTransformableItem = isHoveringOverTrash
+
+        let size = isHoveringOverTrash ? self.trashViewHoverSize : self.trashViewSize
+        self.trashSizeContstraints.forEach { $0.constant = size }
+
+        UIView.animate(withDuration: 0.15) {
+            self.trashView.layer.cornerRadius = size / 2
+            self.layoutIfNeeded()
+        }
+
+        if isHoveringOverTrash {
+            ImpactHapticFeedback.impactOccurred(style: .light)
+        }
     }
 
     var shouldHideControls: Bool {
         // Hide controls during "text item move".
-        return movingTextItem != nil
+        return movingItem != nil
     }
 
     struct TextInteractionModes: OptionSet {
@@ -120,17 +197,17 @@ class ImageEditorView: UIView {
 
     // MARK: - Tap Gesture
 
-    var selectedTextItemId: String? {
+    var selectedTransformableItemID: String? {
         get {
-            canvasView.selectedTextItemId
+            canvasView.selectedTransformableItemID
         }
         set {
-            canvasView.selectedTextItemId = newValue
+            canvasView.selectedTransformableItemID = newValue
         }
     }
 
     func updateSelectedTextItem(withColor color: ColorPickerBarColor) {
-        if let selectedTextItemId = selectedTextItemId,
+        if let selectedTextItemId = selectedTransformableItemID,
            let textItem = model.item(forId: selectedTextItemId) as? ImageEditorTextItem {
             let newTextItem = textItem.copy(color: color)
             model.replace(item: newTextItem)
@@ -166,6 +243,26 @@ class ImageEditorView: UIView {
         return textItem
     }
 
+    func createNewStickerItem(with stickerInfo: StickerInfo) -> ImageEditorStickerItem {
+        let viewSize = canvasView.gestureReferenceView.bounds.size
+        let imageSize = model.srcImageSizePixels
+        let imageFrame = ImageEditorCanvasView.imageFrame(
+            forViewSize: viewSize,
+            imageSize: imageSize,
+            transform: model.currentTransform()
+        )
+
+        let rotationRadians = -model.currentTransform().rotationRadians
+        let scaling = 1 / model.currentTransform().scaling
+
+        return ImageEditorStickerItem(
+            stickerInfo: stickerInfo,
+            referenceImageWidth: imageFrame.size.width,
+            rotationRadians: rotationRadians,
+            scaling: scaling
+        )
+    }
+
     @objc
     private func handleTapGesture(_ gestureRecognizer: UIGestureRecognizer) {
         AssertIsOnMainThread()
@@ -181,13 +278,13 @@ class ImageEditorView: UIView {
         }
 
         let location = gestureRecognizer.location(in: canvasView.gestureReferenceView)
-        guard let textLayer = textLayer(forLocation: location) else {
+        guard let textLayer = transformableLayer(forLocation: location) else {
             // Different behavior when user taps on an empty area.
 
             // 1. Text objects are selectable: deselect anything previously selected.
             if textInteractionModes.contains(.select) {
-                if selectedTextItemId != nil {
-                    selectedTextItemId = nil
+                if selectedTransformableItemID != nil {
+                    selectedTransformableItemID = nil
                     delegate?.imageEditorViewDidUpdateSelection(self)
                 }
                 return
@@ -199,18 +296,19 @@ class ImageEditorView: UIView {
             return
         }
 
-        guard let textItem = model.item(forId: textLayer.itemId) as? ImageEditorTextItem else {
+        guard let itemID = textLayer.name,
+              let item = model.item(forId: itemID) as? ImageEditorTransformable else {
             owsFailDebug("Missing or invalid text item.")
             return
         }
 
         // Text objects are selectable: select object if not selected yet...
-        if textInteractionModes.contains(.select) && textItem.itemId != selectedTextItemId {
-            selectedTextItemId = textItem.itemId
+        if textInteractionModes.contains(.select) && item.itemId != selectedTransformableItemID {
+            selectedTransformableItemID = item.itemId
             delegate?.imageEditorViewDidUpdateSelection(self)
         }
         // ..otherwise report tap to delegate (this includes taps on selected text objects).
-        else {
+        else if let textItem = item as? ImageEditorTextItem {
             delegate?.imageEditorView(self, didTapTextItem: textItem)
         }
     }
@@ -218,7 +316,7 @@ class ImageEditorView: UIView {
     // MARK: - Pinch Gesture
 
     // These properties are valid while moving a text item.
-    private var pinchingTextItem: ImageEditorTextItem?
+    private var pinchingItem: (any ImageEditorTransformable)?
     private var pinchHasChanged = false
 
     @objc
@@ -230,20 +328,21 @@ class ImageEditorView: UIView {
         switch gestureRecognizer.state {
         case .began:
             let pinchState = gestureRecognizer.pinchStateStart
-            guard let textLayer = textLayer(forLocation: pinchState.centroid),
-                  textLayer.itemId == selectedTextItemId else {
+            guard let textLayer = transformableLayer(forLocation: pinchState.centroid),
+                  let itemID = textLayer.name,
+                  itemID == selectedTransformableItemID else {
                 // The pinch needs to start centered on selected text item.
                 return
             }
-            guard let textItem = model.item(forId: textLayer.itemId) as? ImageEditorTextItem else {
+            guard let item = model.item(forId: itemID) as? ImageEditorTransformable else {
                 owsFailDebug("Missing or invalid text item.")
                 return
             }
-            pinchingTextItem = textItem
+            pinchingItem = item
             pinchHasChanged = false
 
         case .changed, .ended:
-            guard let textItem = pinchingTextItem else {
+            guard let item = pinchingItem else {
                 return
             }
 
@@ -260,16 +359,16 @@ class ImageEditorView: UIView {
                                                                               model: model,
                                                                               transform: model.currentTransform())
             let gestureDeltaImageUnit = gestureNowImageUnit.minus(gestureStartImageUnit)
-            let unitCenter = CGPointClamp01(textItem.unitCenter.plus(gestureDeltaImageUnit))
+            let unitCenter = CGPointClamp01(item.unitCenter.plus(gestureDeltaImageUnit))
 
             // NOTE: We use max(1, ...) to avoid divide-by-zero.
-            let newScaling = CGFloatClamp(textItem.scaling * gestureRecognizer.pinchStateLast.distance / max(1.0, gestureRecognizer.pinchStateStart.distance),
+            let newScaling = CGFloatClamp(item.scaling * gestureRecognizer.pinchStateLast.distance / max(1.0, gestureRecognizer.pinchStateStart.distance),
                                           ImageEditorTextItem.kMinScaling,
                                           ImageEditorTextItem.kMaxScaling)
 
-            let newRotationRadians = textItem.rotationRadians + gestureRecognizer.pinchStateLast.angleRadians - gestureRecognizer.pinchStateStart.angleRadians
+            let newRotationRadians = item.rotationRadians + gestureRecognizer.pinchStateLast.angleRadians - gestureRecognizer.pinchStateStart.angleRadians
 
-            let newItem = textItem.copy(unitCenter: unitCenter).copy(scaling: newScaling,
+            let newItem = item.copy(unitCenter: unitCenter).copy(scaling: newScaling,
                                                                      rotationRadians: newRotationRadians)
 
             if pinchHasChanged {
@@ -280,18 +379,18 @@ class ImageEditorView: UIView {
             }
 
             if gestureRecognizer.state == .ended {
-                pinchingTextItem = nil
+                pinchingItem = nil
             }
 
         default:
-            pinchingTextItem = nil
+            pinchingItem = nil
         }
     }
 
-    // MARK: - Editor Gesture
+    // MARK: - Pan Gesture
 
     // These properties are valid while moving a text item.
-    private var movingTextItem: ImageEditorTextItem? {
+    private var movingItem: (any ImageEditorTransformable)? {
         didSet {
             updateControls()
         }
@@ -299,11 +398,11 @@ class ImageEditorView: UIView {
     private var movingTextStartUnitCenter: CGPoint?
     private var movingTextHasMoved = false
 
-    private func textLayer(forLocation locationInView: CGPoint) -> EditorTextLayer? {
+    private func transformableLayer(forLocation locationInView: CGPoint) -> CALayer? {
         let viewBounds = self.canvasView.gestureReferenceView.bounds
         let affineTransform = self.model.currentTransform().affineTransform(viewSize: viewBounds.size)
         let locationInCanvas = locationInView.minus(viewBounds.center).applyingInverse(affineTransform).plus(viewBounds.center)
-        return canvasView.textLayer(forLocation: locationInCanvas)
+        return canvasView.transformableLayer(forLocation: locationInCanvas)
     }
 
     @objc
@@ -323,26 +422,27 @@ class ImageEditorView: UIView {
                 owsFailDebug("Missing locationStart.")
                 return
             }
-            guard let textLayer = textLayer(forLocation: locationStart) else {
+            guard let textLayer = transformableLayer(forLocation: locationStart) else {
                 owsFailDebug("No text layer")
                 return
             }
-            guard let textItem = model.item(forId: textLayer.itemId) as? ImageEditorTextItem else {
+            guard let itemID = textLayer.name,
+                  let item = model.item(forId: itemID) as? ImageEditorTransformable else {
                 owsFailDebug("Missing or invalid text item.")
                 return
             }
 
             // Automatically make item selected if selections are allowed.
             if textInteractionModes.contains(.select) {
-                selectedTextItemId = textItem.itemId
+                selectedTransformableItemID = item.itemId
             }
 
-            movingTextItem = textItem
-            movingTextStartUnitCenter = textItem.unitCenter
+            movingItem = item
+            movingTextStartUnitCenter = item.unitCenter
             movingTextHasMoved = false
 
         case .changed, .ended:
-            guard let textItem = movingTextItem else {
+            guard let item = movingItem else {
                 return
             }
             guard let locationStart = gestureRecognizer.locationFirst else {
@@ -367,7 +467,7 @@ class ImageEditorView: UIView {
                                                                         transform: model.currentTransform())
             let gestureDeltaImageUnit = gestureNowImageUnit.minus(gestureStartImageUnit)
             let unitCenter = CGPointClamp01(movingTextStartUnitCenter.plus(gestureDeltaImageUnit))
-            let newItem = textItem.copy(unitCenter: unitCenter)
+            let newItem = item.copy(unitCenter: unitCenter)
 
             if movingTextHasMoved {
                 model.replace(item: newItem, suppressUndo: true)
@@ -376,16 +476,29 @@ class ImageEditorView: UIView {
                 movingTextHasMoved = true
             }
 
+            isHoveringOverTrash = trashView.containsGestureLocation(gestureRecognizer)
+
             if gestureRecognizer.state == .ended {
                 // Report that text object was moved.
-                if let movingTextItem = movingTextItem {
+                if let movingTextItem = movingItem as? ImageEditorTextItem {
                     delegate?.imageEditorView(self, didMoveTextItem: movingTextItem)
                 }
 
-                movingTextItem = nil
+                if isHoveringOverTrash, isTrashShowing {
+                    // The last operation was moving the image over the trash.
+                    // Pop that off the stack, so when the user presses undo
+                    // after trashing an item, it goes to the position before
+                    // the trash, instead of appearing over the trash.
+                    model.undo()
+
+                    model.remove(item: newItem)
+                }
+
+                movingItem = nil
+                isHoveringOverTrash = false
             }
         default:
-            movingTextItem = nil
+            movingItem = nil
         }
     }
 }
@@ -413,7 +526,7 @@ extension ImageEditorView: UIGestureRecognizerDelegate {
         }
 
         let location = touch.location(in: canvasView.gestureReferenceView)
-        let isInTextArea = self.textLayer(forLocation: location) != nil
+        let isInTextArea = self.transformableLayer(forLocation: location) != nil
         return isInTextArea
     }
 }

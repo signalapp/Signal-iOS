@@ -104,6 +104,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
     public weak var approvalDataSource: AttachmentApprovalViewControllerDataSource?
 
+    public weak var stickerSheetDelegate: StickerPickerSheetDelegate?
+
     // MARK: - Initializers
 
     @available(*, unavailable, message: "use attachment: constructor instead.")
@@ -155,7 +157,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         attachments: [SignalAttachment],
         initialMessageBody: MessageBody?,
         approvalDelegate: AttachmentApprovalViewControllerDelegate,
-        approvalDataSource: AttachmentApprovalViewControllerDataSource
+        approvalDataSource: AttachmentApprovalViewControllerDataSource,
+        stickerSheetDelegate: StickerPickerSheetDelegate?
     ) -> OWSNavigationController {
 
         let attachmentApprovalItems = attachments.map { AttachmentApprovalItem(attachment: $0, canSave: false) }
@@ -163,6 +166,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         vc.setMessageBody(initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
         vc.approvalDelegate = approvalDelegate
         vc.approvalDataSource = approvalDataSource
+        vc.stickerSheetDelegate = stickerSheetDelegate
         let navController = OWSNavigationController(rootViewController: vc)
         navController.setNavigationBarHidden(true, animated: false)
         return navController
@@ -545,7 +549,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         Logger.debug("cache miss.")
-        guard let viewController = AttachmentPrepViewController.viewController(for: item) else {
+        guard let viewController = AttachmentPrepViewController.viewController(
+            for: item,
+            stickerSheetDelegate: stickerSheetDelegate
+        ) else {
             owsFailDebug("Failed to create AttachmentPrepViewController.")
             return nil
         }
