@@ -26,8 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
                        forKey:(NSString *)key
                   transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (NSInteger)incrementIntForKey:(NSString *)key transaction:(SDSAnyWriteTransaction *)transaction;
-
 @end
 
 @implementation SDSKeyValueStore (SSKSignedPreKeyStore)
@@ -48,20 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
                transaction:transaction];
 }
 
-- (NSInteger)incrementIntForKey:(NSString *)key transaction:(SDSAnyWriteTransaction *)transaction
-{
-    NSInteger value = [self getInt:key defaultValue:0 transaction:transaction];
-    value++;
-    [self setInt:value key:key transaction:transaction];
-    return value;
-}
-
 @end
 
 #pragma mark - SSKSignedPreKeyStore
 
-NSString *const kPrekeyUpdateFailureCountKey = @"prekeyUpdateFailureCount";
-NSString *const kFirstPrekeyUpdateFailureDateKey = @"firstPrekeyUpdateFailureDate";
 NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 
@@ -281,49 +269,6 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 
 #pragma mark - Prekey update failures
 
-- (int)prekeyUpdateFailureCountWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    NSNumber *_Nullable value = [self.metadataStore getObjectForKey:kPrekeyUpdateFailureCountKey
-                                                        transaction:transaction];
-    // Will default to zero.
-    return [value intValue];
-}
-
-- (void)clearPrekeyUpdateFailureCountWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self.metadataStore removeValueForKey:kPrekeyUpdateFailureCountKey transaction:transaction];
-    [self.metadataStore removeValueForKey:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
-}
-
-- (NSInteger)incrementPrekeyUpdateFailureCountWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    NSInteger failureCount = [self.metadataStore incrementIntForKey:kPrekeyUpdateFailureCountKey
-                                                        transaction:transaction];
-
-    OWSLogInfo(@"new failureCount: %ld", (long)failureCount);
-
-    if (failureCount == 1 || ![self firstPrekeyUpdateFailureDateWithTransaction:transaction]) {
-        // If this is the "first" failure, record the timestamp of that failure.
-        [self.metadataStore setDate:[NSDate new] key:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
-    }
-
-    return failureCount;
-}
-
-- (void)setPrekeyUpdateFailureCount:(NSInteger)count
-                   firstFailureDate:(NSDate *)firstFailureDate
-                        transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self.metadataStore setInt:count key:kPrekeyUpdateFailureCountKey transaction:transaction];
-    [self.metadataStore setDate:firstFailureDate key:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
-}
-
-- (nullable NSDate *)firstPrekeyUpdateFailureDateWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self.metadataStore getDate:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
-}
-
-
 - (void)setLastSuccessfulPreKeyRotationDate:(NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self.metadataStore setDate:date key:kLastPreKeyRotationDate transaction:transaction];
@@ -357,13 +302,8 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         __block int i = 0;
 
-        NSDate *firstPrekeyUpdateFailureDate = [self firstPrekeyUpdateFailureDateWithTransaction:transaction];
-        NSInteger prekeyUpdateFailureCount = [self prekeyUpdateFailureCountWithTransaction:transaction];
-
         OWSLogInfo(@"%@ SignedPreKeys Report:", tag);
         OWSLogInfo(@"%@   currentId: %@", tag, currentId);
-        OWSLogInfo(@"%@   firstPrekeyUpdateFailureDate: %@", tag, firstPrekeyUpdateFailureDate);
-        OWSLogInfo(@"%@   prekeyUpdateFailureCount: %lu", tag, (unsigned long)prekeyUpdateFailureCount);
 
         NSUInteger count = [self.keyStore numberOfKeysWithTransaction:transaction];
         OWSLogInfo(@"%@   All Keys (count: %lu):", tag, (unsigned long)count);

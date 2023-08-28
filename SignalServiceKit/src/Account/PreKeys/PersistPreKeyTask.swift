@@ -44,7 +44,6 @@ extension PreKeyTasks {
                     self.signedPreKeyStore.setLastSuccessfulPreKeyRotationDate(self.dateProvider(), tx: tx)
 
                     self.signedPreKeyStore.cullSignedPreKeyRecords(tx: tx)
-                    self.signedPreKeyStore.clearPreKeyUpdateFailureCount(tx: tx)
                 }
 
                 if let lastResortPreKey = bundle.getLastResortPreKey() {
@@ -134,44 +133,6 @@ extension PreKeyTasks {
             bundle: PreKeyUploadBundle
         ) throws {
             try persistForSuccessulUpload(bundle: bundle)
-        }
-    }
-
-    internal class IncrementFailureCount {
-
-        private let db: DB
-        private let signedPreKeyStore: SignalSignedPreKeyStore
-
-        internal init(
-            db: DB,
-            signedPreKeyStore: SignalSignedPreKeyStore
-        ) {
-            self.db = db
-            self.signedPreKeyStore = signedPreKeyStore
-        }
-
-        func runTask(
-            bundle: PreKeyUploadBundle,
-            error: Swift.Error
-        ) {
-            guard !error.isNetworkFailureOrTimeout else {
-                Logger.debug("don't report PK rotation failure w/ network error")
-                return
-            }
-            guard let statusCode = error.httpStatusCode else {
-                Logger.debug("don't report PK rotation failure w/ non NetworkManager error: \(error)")
-                return
-            }
-            guard statusCode >= 400 && statusCode <= 599 else {
-                Logger.debug("don't report PK rotation failure w/ non application error")
-                return
-            }
-
-            self.db.write { tx in
-                if bundle.getSignedPreKey() != nil {
-                    signedPreKeyStore.incrementPreKeyUpdateFailureCount(tx: tx)
-                }
-            }
         }
     }
 }

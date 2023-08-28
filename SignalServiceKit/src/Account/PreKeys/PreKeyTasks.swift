@@ -158,13 +158,6 @@ extension PreKeyTasks {
                             kyberPreKeyStore: self.kyberPreKeyStore
                         ).runTask(bundle: bundle)
                     }
-                    .recover(on: globalQueue()) { error in
-                        IncrementFailureCount(
-                            db: self.context.db,
-                            signedPreKeyStore: self.signedPreKeyStore
-                        ).runTask(bundle: bundle, error: error)
-                        return Promise<Void>(error: error)
-                    }
                 }
         }
     }

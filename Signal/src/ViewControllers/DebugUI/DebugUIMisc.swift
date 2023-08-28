@@ -120,14 +120,6 @@ class DebugUIMisc: DebugUIPage, Dependencies {
             OWSTableItem(title: "Remove All Sessions", actionBlock: {
                 DebugUIMisc.removeAllSessions()
             }),
-            OWSTableItem(title: "Fake PNI pre-key upload failures", actionBlock: {
-                guard let preKeyManagerImpl = DependenciesBridge.shared.preKeyManager as? PreKeyManagerImpl else {
-                    return
-                }
-                self.databaseStorage.asyncWrite { tx in
-                    preKeyManagerImpl.storeFakePreKeyUploadFailures(for: .pni, tx: tx.asV2Write)
-                }
-            }),
             OWSTableItem(title: "Remove local PNI identity key", actionBlock: {
                 DebugUIMisc.removeLocalPniIdentityKey()
             }),

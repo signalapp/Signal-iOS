@@ -166,11 +166,6 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
         tx: SignalServiceKit.DBWriteTransaction
     ) {}
 
-    func incrementPreKeyUpdateFailureCount(tx: DBWriteTransaction) { }
-    internal func getPreKeyUpdateFailureCount(tx: DBReadTransaction) -> Int32 { 0 }
-    internal func getFirstPreKeyUpdateFailureDate(tx: DBReadTransaction) -> Date? { nil }
-    internal func clearPreKeyUpdateFailureCount(tx: DBWriteTransaction) { }
-
     // MARK: - Testing
 
     func removeAll(tx: DBWriteTransaction) {

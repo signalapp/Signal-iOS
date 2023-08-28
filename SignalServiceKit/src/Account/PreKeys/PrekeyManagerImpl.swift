@@ -12,14 +12,6 @@ public class PreKeyManagerImpl: PreKeyManager {
         // How often we check prekey state on app activation.
         static let PreKeyCheckFrequencySeconds = (12 * kHourInterval)
 
-        // Maximum number of failures while updating signed prekeys
-        // before the message sending is disabled.
-        static let MaxPrekeyUpdateFailureCount = 5
-
-        // Maximum amount of time that can elapse without updating signed prekeys
-        // before the message sending is disabled.
-        static let SignedPreKeyUpdateFailureMaxFailureDuration = (10 * kDayInterval)
-
         // Maximum amount of time that can elapse without rotating signed prekeys
         // before the message sending is disabled.
         static let SignedPreKeyMaxRotationDuration = (14 * kDayInterval)
@@ -58,22 +50,6 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     @Atomic private var lastPreKeyCheckTimestamp: Date?
-
-    private func legacy_needsSignedPreKeyRotation(identity: OWSIdentity, tx: DBReadTransaction) -> Bool {
-        let store = protocolStoreManager.signalProtocolStore(for: identity).signedPreKeyStore
-
-        // Only disable message sending if we have failed more than N times...
-        if store.getPreKeyUpdateFailureCount(tx: tx) < Constants.MaxPrekeyUpdateFailureCount {
-            return false
-        }
-
-        // ...over a period of at least M days.
-        guard let firstFailureDate = store.getFirstPreKeyUpdateFailureDate(tx: tx) else {
-            return false
-        }
-
-        return fabs(firstFailureDate.timeIntervalSinceNow) >= Constants.SignedPreKeyUpdateFailureMaxFailureDuration
-    }
 
     private func needsSignedPreKeyRotation(identity: OWSIdentity, tx: DBReadTransaction) -> Bool {
         let store = protocolStoreManager.signalProtocolStore(for: identity).signedPreKeyStore
@@ -375,17 +351,6 @@ public class PreKeyManagerImpl: PreKeyManager {
 #if TESTABLE_BUILD
 
 public extension PreKeyManagerImpl {
-
-    func storeFakePreKeyUploadFailures(for identity: OWSIdentity, tx: DBWriteTransaction) {
-        let store = protocolStoreManager.signalProtocolStore(for: identity).signedPreKeyStore
-        let firstFailureDate = Date(timeIntervalSinceNow: -Constants.SignedPreKeyUpdateFailureMaxFailureDuration)
-        store.setPrekeyUpdateFailureCount(
-            Constants.MaxPrekeyUpdateFailureCount,
-            firstFailureDate: firstFailureDate,
-            tx: tx
-        )
-    }
-
     func checkPreKeysImmediately(tx: DBReadTransaction) {
         checkPreKeys(shouldThrottle: false, tx: tx)
     }
