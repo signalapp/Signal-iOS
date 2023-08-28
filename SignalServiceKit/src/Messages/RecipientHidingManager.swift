@@ -107,6 +107,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
                     AS hiddenRecipient
                     ON hiddenRecipient.recipientId = \(signalRecipientColumn: .id)
             """
+            Logger.info("[Recipient hiding] Fetching all hidden recipients.")
             return Set(
                 try SignalRecipient.fetchAll(SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database, sql: sql)
             )
@@ -122,6 +123,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         }
 
         do {
+            Logger.info("[Recipient hiding] Checking whether a particular recipient his hidden.")
             let sql = """
             SELECT EXISTS(
                 SELECT 1
@@ -143,6 +145,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction
     ) throws {
+        Logger.info("[Recipient hiding] Initiating recipient hide.")
         guard !isHiddenRecipient(recipient, tx: tx) else {
             // This is a perhaps extraneous safeguard against
             // hiding an already-hidden address. I say extraneous
@@ -150,6 +153,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
             // hide an already-hidden recipient. However, we return here,
             // just in case, in order to avoid the side-effects of
             // `didSetAsHidden`.
+            Logger.warn("[Recipient hiding] Cannot hide already-hidden recipient.")
             throw RecipientHidingError.recipientAlreadyHidden
         }
         if let id = recipient.id {
@@ -166,6 +170,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction
     ) {
+        Logger.info("[Recipient hiding] Initiating recipient unhide.")
         if let id = recipient.id, isHiddenRecipient(recipient, tx: tx) {
             let sql = """
                 DELETE FROM \(HiddenRecipient.databaseTableName)
@@ -192,41 +197,50 @@ private extension RecipientHidingManagerImpl {
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction
     ) {
+        Logger.info("[Recipient hiding][side effects] Beginning side effects of setting as hidden.")
         if let thread = TSContactThread.getWithContactAddress(
             recipient.address,
             transaction: SDSDB.shimOnlyBridge(tx)
         ) {
             let message = TSInfoMessage(thread: thread, messageType: .contactHidden)
+            Logger.info("[Recipient hiding][side effects] Posting TSInfoMessage.")
             message.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
 
             // Delete any send message intents.
+            Logger.info("[Recipient hiding][side effects] Deleting INIntents.")
             INInteraction.delete(with: thread.uniqueId, completion: nil)
         }
 
         /// TODO recipientHiding:
         /// - Throw out other user's profile key if not in group with user.
         if wasLocallyInitiated {
+            Logger.info("[Recipient hiding][side effects] Remove from whitelist.")
             profileManager.removeUser(
                 fromProfileWhitelist: recipient.address,
                 userProfileWriter: .storageService,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
+            Logger.info("[Recipient hiding][side effects] Remove from story distribution lists.")
             StoryManager.removeAddressFromAllPrivateStoryThreads(recipient.address, tx: SDSDB.shimOnlyBridge(tx))
+            Logger.info("[Recipient hiding][side effects] Sync with storage service.")
             storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
         }
 
         // Stories are always sent from an ACI. We will start dropping new stories
         // from the recipient; delete any existing ones we already have.
         if let aci = recipient.aci {
+            Logger.info("[Recipient hiding][side effects] Delete stories from removed user.")
             StoryManager.deleteAllStories(forSender: aci, tx: SDSDB.shimOnlyBridge(tx))
         }
 
         if tsAccountManager.isPrimaryDevice(transaction: SDSDB.shimOnlyBridge(tx)) {
             // Profile key rotations should only be initiated by the primary device.
+            Logger.info("[Recipient hiding][side effects] Rotate profile key.")
             self.profileManager.rotateProfileKeyUponRecipientHide(
                 withTx: SDSDB.shimOnlyBridge(tx)
             )
         }
+        Logger.info("[Recipient hiding][side effects] Ending side effects of setting as hidden.")
     }
 
     /// Callback performing side effects of removing a hide
@@ -242,12 +256,15 @@ private extension RecipientHidingManagerImpl {
     /// `HiddenRecipient` entry. This method does not get hit in
     /// that case.
     func didSetAsUnhidden(recipient: SignalRecipient, wasLocallyInitiated: Bool, tx: DBWriteTransaction) {
+        Logger.info("[Recipient hiding][side effects] Beginning side effects of setting as unhidden.")
         if wasLocallyInitiated {
+            Logger.info("[Recipient hiding][side effects] Add to whitelist.")
             profileManager.addUser(
                 toProfileWhitelist: recipient.address,
                 userProfileWriter: .storageService,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
+            Logger.info("[Recipient hiding][side effects] Sync with storage service.")
             storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
         }
 
@@ -261,11 +278,13 @@ private extension RecipientHidingManagerImpl {
                 thread: thread,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
+            Logger.info("[Recipient hiding][side effects] Share profile key.")
             self.jobQueues.messageSenderJobQueue.add(
                 message: profileKeyMessage.asPreparer,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         }
+        Logger.info("[Recipient hiding][side effects] Ending side effects of setting as unhidden.")
     }
 }
 
