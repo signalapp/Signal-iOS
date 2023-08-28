@@ -450,6 +450,23 @@ extension TSThread {
     // the appropriate pixel size for our avatars.
     private static let intentAvatarDiameterPixels: CGFloat = 56 * preferences.cachedDeviceScale
 
+    public func intentStoryAvatarImage(tx: SDSAnyReadTransaction) -> INImage? {
+        if let storyThread = self as? TSPrivateStoryThread {
+            if storyThread.isMyStory {
+                guard let localAddress = tsAccountManager.localAddress(with: tx) else {
+                    Logger.warn("Missing local address")
+                    return nil
+                }
+                return intentRecipientAvatarImage(recipient: localAddress, transaction: tx)
+            } else {
+                let rawImage = UIImage(named: "custom-story-light-36")
+                return rawImage?.pngData().map(INImage.init(imageData:))
+            }
+        } else {
+            return intentThreadAvatarImage(transaction: tx)
+        }
+    }
+
     private func intentRecipientAvatarImage(recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> INImage? {
         // Generate avatar
         let image: INImage

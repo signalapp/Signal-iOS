@@ -6967,6 +6967,9 @@
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Send failed";
 
+/* Body for notification shown when a story fails to send. */
+"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Story failed to send";
+
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "Tap to retry";
 

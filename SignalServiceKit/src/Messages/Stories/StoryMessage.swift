@@ -579,41 +579,85 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         transaction: SDSAnyWriteTransaction
     ) {
         guard let outgoingMessageStates = outgoingMessageStates else { return }
-        anyUpdate(transaction: transaction) { message in
-            guard case .outgoing(var recipientStates) = message.manifest else {
-                return owsFailDebug("Unexpectedly tried to update recipient states on message of wrong type.")
-            }
 
-            for (address, outgoingMessageState) in outgoingMessageStates {
-                guard let serviceId = address.serviceId else { continue }
-                guard var recipientState = recipientStates[serviceId] else { continue }
-
-                // Only take the sending state from the message if we're in a transient state
-                if recipientState.sendingState != .sent {
-                    recipientState.sendingState = outgoingMessageState.state
+        notifyingOfFailureIfNeeded(transaction: transaction) { firstFailedThread in
+            anyUpdate(transaction: transaction) { message in
+                guard case .outgoing(var recipientStates) = message.manifest else {
+                    return owsFailDebug("Unexpectedly tried to update recipient states on message of wrong type.")
                 }
 
-                recipientState.sendingErrorCode = outgoingMessageState.errorCode?.intValue
-                recipientStates[serviceId] = recipientState
-            }
+                for (address, outgoingMessageState) in outgoingMessageStates {
+                    guard let serviceId = address.serviceId else { continue }
+                    guard var recipientState = recipientStates[serviceId] else { continue }
 
-            message.manifest = .outgoing(recipientStates: recipientStates)
+                    // Only take the sending state from the message if we're in a transient state
+                    if recipientState.sendingState != .sent {
+                        recipientState.sendingState = outgoingMessageState.state
+                    }
+                    if outgoingMessageState.state == .failed, firstFailedThread == nil {
+                        if let context = recipientState.firstValidContext() {
+                            firstFailedThread = context.thread(transaction: transaction)
+                        } else if let groupId {
+                            // Group recipient.
+                            firstFailedThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+                        }
+                    }
+
+                    recipientState.sendingErrorCode = outgoingMessageState.errorCode?.intValue
+                    recipientStates[serviceId] = recipientState
+                }
+
+                message.manifest = .outgoing(recipientStates: recipientStates)
+            }
         }
     }
 
     public func updateWithAllSendingRecipientsMarkedAsFailed(transaction: SDSAnyWriteTransaction) {
-        anyUpdate(transaction: transaction) { message in
-            guard case .outgoing(var recipientStates) = message.manifest else {
-                return owsFailDebug("Unexpectedly tried to recipient states as failed on message of wrong type.")
-            }
+        notifyingOfFailureIfNeeded(transaction: transaction) { firstFailedThread in
+            anyUpdate(transaction: transaction) { message in
+                guard case .outgoing(var recipientStates) = message.manifest else {
+                    return owsFailDebug("Unexpectedly tried to recipient states as failed on message of wrong type.")
+                }
 
-            for (uuid, var recipientState) in recipientStates {
-                guard recipientState.sendingState == .sending else { continue }
-                recipientState.sendingState = .failed
-                recipientStates[uuid] = recipientState
-            }
+                for (uuid, var recipientState) in recipientStates {
+                    guard recipientState.sendingState == .sending else { continue }
 
-            message.manifest = .outgoing(recipientStates: recipientStates)
+                    if firstFailedThread == nil {
+                        if let context = recipientState.firstValidContext() {
+                            firstFailedThread = context.thread(transaction: transaction)
+                        } else if let groupId {
+                            // Group recipient.
+                            firstFailedThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+                        }
+                    }
+
+                    recipientState.sendingState = .failed
+                    recipientStates[uuid] = recipientState
+                }
+
+                message.manifest = .outgoing(recipientStates: recipientStates)
+            }
+        }
+    }
+
+    private func notifyingOfFailureIfNeeded(
+        transaction: SDSAnyWriteTransaction,
+        _ block: (_ firstFailedThread: inout TSThread?) -> Void
+    ) {
+        let wasFailedSendBeforeUpdate = sendingState == .failed
+        var firstFailedThread: TSThread?
+
+        block(&firstFailedThread)
+
+        if !wasFailedSendBeforeUpdate, sendingState == .failed, let firstFailedThread {
+            // If we are newly failing, fire a notification.
+            notificationPresenter.notifyUser(
+                forFailedStorySend: self,
+                to: firstFailedThread,
+                transaction: transaction
+            )
+        } else if wasFailedSendBeforeUpdate, sendingState != .failed {
+            notificationPresenter.cancelNotifications(for: self)
         }
     }
 
@@ -808,6 +852,8 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         // Reload latest unexpired timestamp for the context.
         self.context.associatedData(transaction: transaction)?.recomputeLatestUnexpiredTimestamp(transaction: transaction)
+
+        notificationPresenter.cancelNotifications(for: self)
     }
 
     @objc

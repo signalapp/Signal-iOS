@@ -34,6 +34,7 @@ public enum AppNotificationCategory: CaseIterable {
     case internalError
     case incomingMessageGeneric
     case incomingGroupStoryReply
+    case failedStorySend
     case deregistration
 }
 
@@ -44,6 +45,7 @@ public enum AppNotificationAction: String, CaseIterable {
     case markAsRead
     case reply
     case showThread
+    case showMyStories
     case reactWithThumbsUp
     case showCallLobby
     case submitDebugLogs
@@ -54,6 +56,7 @@ public struct AppNotificationUserInfoKey {
     public static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
     public static let messageId = "Signal.AppNotificationsUserInfoKey.messageId"
     public static let reactionId = "Signal.AppNotificationsUserInfoKey.reactionId"
+    public static let storyMessageId = "Signal.AppNotificationsUserInfoKey.storyMessageId"
     public static let storyTimestamp = "Signal.AppNotificationsUserInfoKey.storyTimestamp"
     public static let callBackAciString = "Signal.AppNotificationsUserInfoKey.callBackUuid"
     public static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
@@ -95,6 +98,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.incomingMessageGeneric"
         case .incomingGroupStoryReply:
             return "Signal.AppNotificationCategory.incomingGroupStoryReply"
+        case .failedStorySend:
+            return "Signal.AppNotificationCategory.failedStorySend"
         case .deregistration:
             return "Signal.AppNotificationCategory.authErrorLogout"
         }
@@ -135,6 +140,8 @@ extension AppNotificationCategory {
             return []
         case .incomingGroupStoryReply:
             return [.reply]
+        case .failedStorySend:
+            return []
         case .deregistration:
             return []
         }
@@ -156,6 +163,8 @@ extension AppNotificationAction {
             return "Signal.AppNotifications.Action.reply"
         case .showThread:
             return "Signal.AppNotifications.Action.showThread"
+        case .showMyStories:
+            return "Signal.AppNotifications.Action.showMyStories"
         case .reactWithThumbsUp:
             return "Signal.AppNotifications.Action.reactWithThumbsUp"
         case .showCallLobby:
@@ -509,8 +518,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             // Always notify if you have been @mentioned
             if
                 let mentionedAcis = incomingMessage.bodyRanges?.mentions.values,
-                mentionedAcis.contains(where: { $0 == localAci })
-            {
+                mentionedAcis.contains(where: { $0 == localAci }) {
                 return true
             }
 
@@ -1065,6 +1073,89 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
+    public func notifyUser(
+        forFailedStorySend storyMessage: StoryMessage,
+        to thread: TSThread,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        let storyName = StoryManager.storyName(for: thread)
+        let conversationIdentifier = thread.uniqueId + "_failedStorySend"
+
+        let handle = INPersonHandle(value: nil, type: .unknown)
+        let image = thread.intentStoryAvatarImage(tx: transaction)
+        let person: INPerson = {
+            if #available(iOS 15, *) {
+                return INPerson(
+                    personHandle: handle,
+                    nameComponents: nil,
+                    displayName: storyName,
+                    image: image,
+                    contactIdentifier: nil,
+                    customIdentifier: nil,
+                    isMe: false,
+                    suggestionType: .none
+                )
+            } else {
+                return INPerson(
+                    personHandle: handle,
+                    nameComponents: nil,
+                    displayName: storyName,
+                    image: image,
+                    contactIdentifier: nil,
+                    customIdentifier: nil,
+                    isMe: false
+                )
+            }
+        }()
+
+        let sendMessageIntent: INSendMessageIntent
+        if #available(iOS 14, *) {
+            sendMessageIntent = INSendMessageIntent(
+                recipients: nil,
+                outgoingMessageType: .outgoingMessageText,
+                content: nil,
+                speakableGroupName: INSpeakableString(spokenPhrase: storyName),
+                conversationIdentifier: conversationIdentifier,
+                serviceName: nil,
+                sender: person
+            )
+        } else {
+            sendMessageIntent = INSendMessageIntent(
+                recipients: nil,
+                content: nil,
+                speakableGroupName: INSpeakableString(spokenPhrase: storyName),
+                conversationIdentifier: conversationIdentifier,
+                serviceName: nil,
+                sender: person
+            )
+        }
+        let interaction = INInteraction(intent: sendMessageIntent, response: nil)
+        interaction.direction = .outgoing
+        let notificationTitle = storyName
+        let notificationBody = OWSLocalizedString(
+            "STORY_SEND_FAILED_NOTIFICATION_BODY",
+            comment: "Body for notification shown when a story fails to send."
+        )
+        let threadIdentifier = thread.uniqueId
+        let storyMessageId = storyMessage.uniqueId
+
+        performNotificationActionInAsyncCompletion(transaction: transaction) { completion in
+            self.presenter.notify(
+                category: .failedStorySend,
+                title: notificationTitle,
+                body: notificationBody,
+                threadIdentifier: threadIdentifier,
+                userInfo: [
+                    AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showMyStories.rawValue,
+                    AppNotificationUserInfoKey.storyMessageId: storyMessageId
+                ],
+                interaction: interaction,
+                sound: self.requestGlobalSound(),
+                completion: completion
+            )
+        }
+    }
+
     public func notifyUserOfDeregistration(transaction: SDSAnyWriteTransaction) {
         let notificationBody = OWSLocalizedString(
             "DEREGISTRATION_NOTIFICATION",
@@ -1115,6 +1206,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func cancelNotificationsForMissedCalls(threadUniqueId: String) {
         performNotificationActionAsync { completion in
             self.presenter.cancelNotificationsForMissedCalls(withThreadUniqueId: threadUniqueId, completion: completion)
+        }
+    }
+
+    public func cancelNotifications(for storyMessage: StoryMessage) {
+        let storyMessageId = storyMessage.uniqueId
+        performNotificationActionAsync { completion in
+            self.presenter.cancelNotificationsForStoryMessage(withUniqueId: storyMessageId, completion: completion)
         }
     }
 

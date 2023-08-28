@@ -10,7 +10,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class MyStoriesViewController: OWSViewController {
+class MyStoriesViewController: OWSViewController, FailedStorySendDisplayController {
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private var items = OrderedDictionary<String, [OutgoingStoryItem]>() {
         didSet { emptyStateLabel.isHidden = items.orderedKeys.count > 0 }
@@ -103,22 +103,13 @@ class MyStoriesViewController: OWSViewController {
             if (lhs as? TSPrivateStoryThread)?.isMyStory == true { return true }
             if (rhs as? TSPrivateStoryThread)?.isMyStory == true { return false }
             if lhs.lastSentStoryTimestamp == rhs.lastSentStoryTimestamp {
-                return storyName(for: lhs).localizedCaseInsensitiveCompare(storyName(for: rhs)) == .orderedAscending
+                return StoryManager.storyName(for: lhs).localizedCaseInsensitiveCompare(
+                    StoryManager.storyName(for: rhs)
+                ) == .orderedAscending
             }
             return (lhs.lastSentStoryTimestamp?.uint64Value ?? 0) > (rhs.lastSentStoryTimestamp?.uint64Value ?? 0)
         })
         tableView.reloadData()
-    }
-
-    private func storyName(for thread: TSThread) -> String {
-        if let groupThread = thread as? TSGroupThread {
-            return groupThread.groupNameOrDefault
-        } else if let story = thread as? TSPrivateStoryThread {
-            return story.name
-        } else {
-            owsFailDebug("Unexpected thread type \(type(of: thread))")
-            return ""
-        }
     }
 
     private func item(for indexPath: IndexPath) -> OutgoingStoryItem? {
@@ -242,7 +233,7 @@ extension MyStoriesViewController: UITableViewDataSource {
         let textView = LinkingTextView()
         textView.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
         textView.font = UIFont.dynamicTypeBodyClamped.semibold()
-        textView.text = storyName(for: thread)
+        textView.text = StoryManager.storyName(for: thread)
 
         var textContainerInset = OWSTableViewController2.cellOuterInsets(in: tableView)
         textContainerInset.top = 32

@@ -68,6 +68,8 @@ public class NotificationActionHandler: Dependencies {
             return try reply(userInfo: userInfo, replyText: textInputResponse.userText)
         case .showThread:
             return try showThread(userInfo: userInfo)
+        case .showMyStories:
+            return showMyStories()
         case .reactWithThumbsUp:
             return try reactWithThumbsUp(userInfo: userInfo)
         case .showCallLobby:
@@ -181,6 +183,15 @@ public class NotificationActionHandler: Dependencies {
                 self.showGroupStoryReplyThread(notificationMessage: notificationMessage)
             } else {
                 self.showThread(notificationMessage: notificationMessage)
+            }
+        }
+    }
+
+    private class func showMyStories() -> Promise<Void> {
+        return Promise { future in
+            AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+                SignalApp.shared.showMyStories(animated: UIApplication.shared.applicationState == .active)
+                future.resolve()
             }
         }
     }

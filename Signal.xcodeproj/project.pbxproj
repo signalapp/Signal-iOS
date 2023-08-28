@@ -894,6 +894,7 @@
 		66C2B1502A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B14F2A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift */; };
 		66C2B1542A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1532A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift */; };
 		66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */; };
+		66C336D12A994B97000F4F50 /* FailedStorySendDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */; };
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
 		66CDE5C42A58928000B7C607 /* SpoilerableTextViewAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CDE5C32A58928000B7C607 /* SpoilerableTextViewAnimator.swift */; };
 		66CE755F28C332AF00D5FA79 /* PaymentOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */; };
@@ -3433,6 +3434,7 @@
 		66C2B14F2A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSgxWebsocketConnectionFactory.swift; sourceTree = "<group>"; };
 		66C2B1532A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2WebsocketConfigurator.swift; sourceTree = "<group>"; };
 		66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2WebsocketConfigurator.swift; sourceTree = "<group>"; };
+		66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailedStorySendDisplayController.swift; sourceTree = "<group>"; };
 		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
 		66CDE5C32A58928000B7C607 /* SpoilerableTextViewAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerableTextViewAnimator.swift; sourceTree = "<group>"; };
 		66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentOnboarding.swift; sourceTree = "<group>"; };
@@ -6308,6 +6310,7 @@
 				3474C56526111605006723D2 /* Payments */,
 				346129B01FD1F7E800532771 /* profiles */,
 				88E34F2522F269B600966CC2 /* Storage Service */,
+				66C336CF2A994B61000F4F50 /* Stories */,
 				F00385FB273F6388000B5ABD /* Subscriptions */,
 				F9C612B5284E46A300B2199A /* test */,
 				D9C2D779299B0B8700D79715 /* Usernames */,
@@ -6926,6 +6929,14 @@
 				66C2B14F2A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift */,
 			);
 			path = Mocks;
+			sourceTree = "<group>";
+		};
+		66C336CF2A994B61000F4F50 /* Stories */ = {
+			isa = PBXGroup;
+			children = (
+				66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */,
+			);
+			path = Stories;
 			sourceTree = "<group>";
 		};
 		66FC636C29DF78FE00F00DAC /* BodyRanges */ = {
@@ -11327,6 +11338,7 @@
 				D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */,
 				F98ED2D829255F4D008483DC /* DonationPaymentMethod.swift in Sources */,
 				F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */,
+				66C336D12A994B97000F4F50 /* FailedStorySendDisplayController.swift in Sources */,
 				347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */,
 				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
 				34BB3C6123C6644B001651FC /* GroupsV2Impl.swift in Sources */,

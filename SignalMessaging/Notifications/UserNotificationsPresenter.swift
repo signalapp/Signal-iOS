@@ -60,6 +60,10 @@ public class UserNotificationConfig {
                                                     title: CallStrings.showThreadButtonTitle,
                                                     options: [],
                                                     systemImage: "bubble.left.and.bubble.right")
+        case .showMyStories:
+            // Currently, .showMyStories is only used as a default action.
+            owsFailDebug("Show my stories not supported as a UNNotificationAction")
+            return nil
         case .reactWithThumbsUp:
             return notificationActionWithIdentifier(action.identifier,
                                                     title: MessageStrings.reactWithThumbsUpNotificationAction,
@@ -356,6 +360,13 @@ class UserNotificationPresenter: Dependencies {
             // Show notifications any time we're not currently showing the group reply sheet for that story
             return notificationStoryTimestamp != storyGroupReply.storyMessage.timestamp
                 || notificationThreadId != storyGroupReply.threadUniqueId
+        case .failedStorySend:
+            guard StoryManager.areStoriesEnabled else { return false }
+
+            guard CurrentAppContext().isMainAppAndActive else { return true }
+
+            // Show notifications any time we're not currently showing the my stories screen.
+            return !(CurrentAppContext().frontmostViewController() is FailedStorySendDisplayController)
         case .incomingMessageGeneric:
             owsFailDebug(".incomingMessageGeneric should never check shouldPresentNotification().")
             return true
@@ -393,6 +404,10 @@ class UserNotificationPresenter: Dependencies {
         cancel(cancellation: .missedCalls(inThreadWithUniqueId: threadId), completion: completion)
     }
 
+    func cancelNotificationsForStoryMessage(withUniqueId storyMessageUniqueId: String, completion: @escaping NotificationActionCompletion) {
+        cancel(cancellation: .storyMessage(storyMessageUniqueId), completion: completion)
+    }
+
     func clearAllNotifications() {
         Logger.warn("Clearing all notifications")
 
@@ -405,6 +420,7 @@ class UserNotificationPresenter: Dependencies {
         case messageIds(Set<String>)
         case reactionId(String)
         case missedCalls(inThreadWithUniqueId: String)
+        case storyMessage(String)
     }
 
     private func getNotificationsRequests(completion: @escaping ([UNNotificationRequest]) -> Void) {
@@ -458,6 +474,13 @@ class UserNotificationPresenter: Dependencies {
                     (request.content.userInfo[AppNotificationUserInfoKey.isMissedCall] as? Bool) == true,
                     let requestThreadId = request.content.userInfo[AppNotificationUserInfoKey.threadId] as? String,
                     threadUniqueId == requestThreadId
+                {
+                    return true
+                }
+            case .storyMessage(let storyMessageUniqueId):
+                if
+                    let requestStoryMessageId = request.content.userInfo[AppNotificationUserInfoKey.storyMessageId] as? String,
+                    requestStoryMessageId == storyMessageUniqueId
                 {
                     return true
                 }

@@ -59,6 +59,10 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
         Logger.warn("Skipping internal error notification: \(errorString)")
     }
 
+    public func notifyUser(forFailedStorySend storyMessage: StoryMessage, to thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        Logger.warn("skipping failed story send notification")
+    }
+
     public func notifyUserOfDeregistration(transaction: SDSAnyWriteTransaction) {
         Logger.warn("skipping deregistration notification")
     }
@@ -81,5 +85,9 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
 
     public func cancelNotificationsForMissedCalls(threadUniqueId: String) {
         Logger.warn("cancelNotificationsForMissedCalls for threadId: \(threadUniqueId)")
+    }
+
+    public func cancelNotifications(for storyMessage: StoryMessage) {
+        Logger.warn("cancelNotifications(for storyMessage:) \(storyMessage.uniqueId)")
     }
 }

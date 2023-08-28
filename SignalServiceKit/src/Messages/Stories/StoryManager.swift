@@ -376,6 +376,19 @@ extension StoryManager {
     public static func buildStoryHeaders() -> [String: String] {
         ["X-Signal-Receive-Stories": areStoriesEnabled ? "true" : "false"]
     }
+
+    // MARK: - Story Thread Name
+
+    public static func storyName(for thread: TSThread) -> String {
+        if let groupThread = thread as? TSGroupThread {
+            return groupThread.groupNameOrDefault
+        } else if let story = thread as? TSPrivateStoryThread {
+            return story.name
+        } else {
+            owsFailDebug("Unexpected thread type \(type(of: thread))")
+            return ""
+        }
+    }
 }
 
 // MARK: -

@@ -181,6 +181,37 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         showDetailViewController(viewController: detailVC, animated: animated)
     }
 
+    func showMyStoriesController(animated: Bool) {
+        AssertIsOnMainThread()
+
+        // On iOS 13, there is a bug with UISplitViewController that causes the `isCollapsed` state to
+        // get out of sync while the app isn't active and the orientation has changed while backgrounded.
+        // This results in conversations opening up in the wrong pane when you were in portrait and then
+        // try and open the app in landscape. We work around this by dispatching to the next runloop
+        // at which point things have stabilized.
+        if UIApplication.shared.applicationState != .active, lastActiveInterfaceOrientation != CurrentAppContext().interfaceOrientation {
+            if #available(iOS 14, *) { owsFailDebug("check if this still happens") }
+            // Reset this to avoid getting stuck in a loop. We're becoming active.
+            lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
+            DispatchQueue.main.async { self.showMyStoriesController(animated: animated) }
+            return
+        }
+
+        if homeVC.selectedTab != .stories {
+            guard homeVC.presentedViewController == nil else {
+                homeVC.dismiss(animated: true) {
+                    self.showMyStoriesController(animated: animated)
+                }
+                return
+            }
+
+            // Ensure the tab bar is on the stories tab.
+            homeVC.selectedTab = .stories
+        }
+
+        homeVC.storiesViewController.showMyStories(animated: animated)
+    }
+
     override var shouldAutorotate: Bool {
         if let presentedViewController = presentedViewController {
             return presentedViewController.shouldAutorotate

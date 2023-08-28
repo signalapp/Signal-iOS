@@ -213,6 +213,20 @@ extension SignalApp {
         }
     }
 
+    @objc
+    func showMyStories(animated: Bool) {
+        AssertIsOnMainThread()
+
+        guard let conversationSplitViewController else {
+            owsFailDebug("No conversationSplitViewController")
+            return
+        }
+
+        Logger.info("")
+
+        conversationSplitViewController.showMyStoriesController(animated: animated)
+    }
+
     func snapshotSplitViewController(afterScreenUpdates: Bool) -> UIView? {
         return conversationSplitViewController?.view?.snapshotView(afterScreenUpdates: afterScreenUpdates)
     }

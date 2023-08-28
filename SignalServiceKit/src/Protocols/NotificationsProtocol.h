@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSReaction;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
+@class StoryMessage;
 @class TSErrorMessage;
 @class TSIncomingMessage;
 @class TSInteraction;
@@ -61,6 +62,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)notifyTestPopulationOfErrorMessage:(NSString *)errorString;
 
+- (void)notifyUserForFailedStorySend:(StoryMessage *)storyMessage
+                            toThread:(TSThread *)thread
+                         transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(notifyUser(forFailedStorySend:to:transaction:));
+
 /// Notify user of an auth error that has caused their device to be logged out (e.g. a 403 from the chat server).
 - (void)notifyUserOfDeregistration:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(notifyUserOfDeregistration(transaction:));
@@ -73,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)cancelNotificationsForReactionId:(NSString *)uniqueReactionId NS_SWIFT_NAME(cancelNotifications(reactionId:));
 - (void)cancelNotificationsForMissedCallsInThreadWithUniqueId:(NSString *)threadUniqueId
     NS_SWIFT_NAME(cancelNotificationsForMissedCalls(threadUniqueId:));
+- (void)cancelNotificationsForStoryMessage:(StoryMessage *)storyMessage;
 
 @end
 

@@ -349,6 +349,10 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         }
     }
 
+    public func showMyStories(animated: Bool) {
+        navigationController?.pushViewController(MyStoriesViewController(spoilerState: spoilerState), animated: animated)
+    }
+
     func showAppSettings() {
         AssertIsOnMainThread()
 
@@ -441,7 +445,7 @@ extension StoriesViewController: UITableViewDelegate {
             if dataSource.myStory?.messages.isEmpty == true {
                 showCameraView()
             } else {
-                navigationController?.pushViewController(MyStoriesViewController(spoilerState: spoilerState), animated: true)
+                showMyStories(animated: true)
             }
         case .hiddenStories:
             if indexPath.row == 0, dataSource.shouldDisplayHiddenStoriesHeader {
