@@ -107,7 +107,7 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
                 guard self.kvStore.getBool(
                     Constants.hasRecordedPniMessageDecryptionErrorKey,
                     defaultValue: false,
-                    transaction: syncTx
+                    transaction: tx
                 ) else {
                     logger.info("Skipping validation - no reason to suspect an issue.")
                     throw Interrupts.noPniDecryptionError
