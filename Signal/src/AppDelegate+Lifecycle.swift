@@ -131,6 +131,8 @@ extension AppDelegate {
             }
         }
 
+        // We want to defer this so that we never call this method until
+        // [UIApplicationDelegate applicationDidBecomeActive:] is complete.
         let identityManager = DependenciesBridge.shared.identityManager
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { identityManager.tryToSyncQueuedVerificationStates() }
 

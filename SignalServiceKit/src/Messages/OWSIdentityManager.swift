@@ -514,7 +514,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private func enqueueSyncMessage(for address: SignalServiceAddress, tx: DBWriteTransaction) {
         let accountId = ensureAccountId(for: address, tx: tx)
         queuedVerificationStateSyncMessagesKeyValueStore.setObject(address, key: accountId, transaction: tx)
-        DispatchQueue.main.async { self.tryToSyncQueuedVerificationStates() }
+        schedulers.main.async { self.tryToSyncQueuedVerificationStates() }
     }
 
     private func clearSyncMessage(for address: SignalServiceAddress, tx: DBWriteTransaction) {
@@ -530,7 +530,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     public func tryToSyncQueuedVerificationStates() {
         AssertIsOnMainThread()
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            DispatchQueue.global().async { self.syncQueuedVerificationStates() }
+            self.schedulers.global().async { self.syncQueuedVerificationStates() }
         }
     }
 
@@ -622,7 +622,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             )
         }
 
-        nullMessagePromise.done(on: DispatchQueue.global()) {
+        nullMessagePromise.done(on: schedulers.global()) {
             Logger.info("Successfully sent verification state NullMessage")
             let syncMessagePromise = self.db.write { tx in
                 self.messageSenderJobQueue.add(
@@ -632,13 +632,13 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                     transaction: SDSDB.shimOnlyBridge(tx)
                 )
             }
-            syncMessagePromise.done(on: DispatchQueue.global()) {
+            syncMessagePromise.done(on: self.schedulers.global()) {
                 Logger.info("Successfully sent verification state sync message")
                 self.db.write { tx in self.clearSyncMessage(for: address, tx: tx) }
-            }.catch(on: DispatchQueue.global()) { error in
+            }.catch(on: self.schedulers.global()) { error in
                 Logger.error("Failed to send verification state sync message: \(error)")
             }
-        }.catch(on: DispatchQueue.global()) { error in
+        }.catch(on: schedulers.global()) { error in
             Logger.error("Failed to send verification state NullMessage: \(error)")
             if error is MessageSenderNoSuchSignalRecipientError {
                 Logger.info("Removing retries for syncing verification for unregistered user: \(address)")
@@ -976,7 +976,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         let batchServiceIds = serviceIds.prefix(OWSRequestFactory.batchIdentityCheckElementsLimit)
         let remainingServiceIds = Array(serviceIds.subtracting(batchServiceIds))
 
-        return firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
+        return firstly(on: schedulers.global()) { () -> Promise<HTTPResponse> in
             Logger.info("Performing batch identity key lookup for \(batchServiceIds.count) addresses. \(remainingServiceIds.count) remaining.")
 
             let elements = self.db.read { tx in
@@ -996,7 +996,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             let request = OWSRequestFactory.batchIdentityCheckRequest(elements: elements)
 
             return self.networkManager.makePromise(request: request)
-        }.done(on: DispatchQueue.global()) { response in
+        }.done(on: schedulers.global()) { response in
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError("Unexpected response from batch identity request \(response.responseStatusCode)")
             }
