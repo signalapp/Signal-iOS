@@ -1676,19 +1676,19 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Scrios Gach Teachtaireacht";
 
 /* 'Delete' button label on the delete contact confirmation action sheet */
-"DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Delete";
+"DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Scrios";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "This person will be deleted from your system contacts. You won't see this person when searching. You'll get a message request if they message you in the future.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Bainfear an duine seo de theagmhálaithe do chórais. Ní fheicfidh tú an duine agus cuardach á dhéanamh agat. Gheobhaidh tú iarratas teachtaireachta má sheolfaidh an duine teachtaireacht chugat amach anseo.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_TITLE" = "Delete Contact and remove from your list?";
+"DELETE_CONTACT_ACTION_SHEET_TITLE" = "Scrios Teagmhálaí agus bain de do liosta é/í?";
 
 /* Title of button for deleting system contact. */
-"DELETE_CONTACT_BUTTON" = "Delete Contact";
+"DELETE_CONTACT_BUTTON" = "Scrios Teagmhálaí";
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
-"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ deleted from your contacts and removed.";
+"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ scriosta ó do theagmhálaithe agus bainte.";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Logáladh amach as Signal thú ar an ngléas seo.";
@@ -3242,10 +3242,10 @@
 "HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "Ní féidir %1$@ a bhaint";
 
 /* An explanation of why the user cannot be removed. */
-"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "This person is saved to your device's Contacts. Delete them from your Contacts to remove them from this list.";
+"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Tá an duine seo sábháilte i dTeagmhálaithe ar do ghléas. Scrios an duine ó do Theagmhálaithe chun é nó í a bhaint den liosta seo.";
 
 /* A format for the 'unable to remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
-"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Unable to remove %1$@";
+"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Ní féidir %1$@ a bhaint";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Comhráite sa Chartlann";
@@ -7160,7 +7160,7 @@
 "TEXT_MENU_STRIKETHROUGH" = "Líne tríd";
 
 /* Option in selected text edit menu to translate the word */
-"TEXT_MENU_TRANSLATE" = "Translate";
+"TEXT_MENU_TRANSLATE" = "Cuir aistriúchán air";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Scriosadh an teachtaireacht seo.";
@@ -7472,7 +7472,7 @@
 "VIDEO_CALL_LABEL" = "Físghlao";
 
 /* Button label for the 'View Contact' button */
-"VIEW_CONTACT_BUTTON" = "View Contact";
+"VIEW_CONTACT_BUTTON" = "Féach ar an teagmhálaí";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Bhreathnaigh tú ar an teachtaireacht seo cheana.";

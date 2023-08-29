@@ -1,1 +1,1 @@
-• The Signal iOS dev team may not be able to help you emotionally deal with the overwhelming weight of your own popularity, but we can fix a few more bugs that only affected people with extremely large contact lists.
+• 연락처가 많이 포함된 목록이 있는 사용자와 관련한 몇 가지 버그를 수정했습니다.

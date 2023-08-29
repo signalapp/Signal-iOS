@@ -1,1 +1,1 @@
-• The Signal iOS dev team may not be able to help you emotionally deal with the overwhelming weight of your own popularity, but we can fix a few more bugs that only affected people with extremely large contact lists.
+• 我们针对拥有众多联系人的用户修复了一些漏洞。

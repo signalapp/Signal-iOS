@@ -1,1 +1,1 @@
-• The Signal iOS dev team may not be able to help you emotionally deal with the overwhelming weight of your own popularity, but we can fix a few more bugs that only affected people with extremely large contact lists.
+• Signal iOS डेव टीम आपकी लोकप्रियता के भारी बोझ से निपटने में भावनात्मक रूप से आपकी मदद करने में शायद सक्षम न हो, लेकिन हम कुछ ऐसे और बग ठीक कर सकते हैं जो केवल बहुत बड़ी संपर्क सूची वाले लोगों को प्रभावित करते हैं।

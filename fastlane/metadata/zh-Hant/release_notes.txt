@@ -1,1 +1,1 @@
-• The Signal iOS dev team may not be able to help you emotionally deal with the overwhelming weight of your own popularity, but we can fix a few more bugs that only affected people with extremely large contact lists.
+• 太過受歡迎也可能會帶來煩惱，雖然 Signal iOS 開發團隊無法在情感上幫助你，但是我們可以為擁有大量聯絡人清單的用戶修復一些程式錯誤。

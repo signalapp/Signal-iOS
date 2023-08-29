@@ -1,1 +1,1 @@
-• The Signal iOS dev team may not be able to help you emotionally deal with the overwhelming weight of your own popularity, but we can fix a few more bugs that only affected people with extremely large contact lists.
+• Η ομάδα προγραμματιστών του Signal iOS μπορεί να μην είναι σε θέση να σε βοηθήσει να αντιμετωπίσεις το τεράστιο βάρος της δημοτικότητάς σου, αλλά μπορούμε να διορθώσουμε μερικά ακόμη σφάλματα που επηρεάζουν μόνο τα άτομα με πολύ μεγάλες λίστες επαφών.
