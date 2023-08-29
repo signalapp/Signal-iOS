@@ -1211,18 +1211,11 @@ public class GroupManager: NSObject {
                         // they are a full member, although that may not be all
                         // the groups in which they can see your profile key.
                         // Best effort.
-                        let mutualGroupThreads = DependenciesBridge.shared.groupMemberStore
-                            .groupThreadIds(
-                                withFullMember: member,
-                                tx: transaction.asV2Read
-                            )
-                            .lazy
-                            .compactMap { groupThreadId in
-                                return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
-                            }
-                            .filter { groupThread in
-                                return groupThread.groupMembership.hasProfileKeyInGroup(serviceId: localAci)
-                            }
+                        let mutualGroupThreads = Self.mutualGroupThreads(
+                            with: member,
+                            localAci: localAci,
+                            tx: transaction
+                        )
 
                         // If there is exactly one group, it's the one we are leaving!
                         // We should rotate, as it's the last group we have in common.
@@ -1320,6 +1313,38 @@ public class GroupManager: NSObject {
         }
 
         return UpsertGroupResult(action: .updatedWithUserFacingChanges, groupThread: groupThread)
+    }
+
+    private static func mutualGroupThreads(
+        with member: ServiceId,
+        localAci: Aci,
+        tx: SDSAnyReadTransaction
+    ) -> [TSGroupThread] {
+        return DependenciesBridge.shared.groupMemberStore
+            .groupThreadIds(
+                withFullMember: member,
+                tx: tx.asV2Read
+            )
+            .lazy
+            .compactMap { groupThreadId in
+                return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: tx)
+            }
+            .filter { groupThread in
+                return groupThread.groupMembership.hasProfileKeyInGroup(serviceId: localAci)
+            }
+    }
+
+    public static func hasMutualGroupThread(
+        with member: ServiceId,
+        localAci: Aci,
+        tx: SDSAnyReadTransaction
+    ) -> Bool {
+        let mutualGroupThreads = Self.mutualGroupThreads(
+            with: member,
+            localAci: localAci,
+            tx: tx
+        )
+        return !mutualGroupThreads.isEmpty
     }
 
     // MARK: - Storage Service

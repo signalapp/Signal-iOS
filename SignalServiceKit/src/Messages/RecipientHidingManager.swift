@@ -233,8 +233,19 @@ private extension RecipientHidingManagerImpl {
             StoryManager.deleteAllStories(forSender: aci, tx: SDSDB.shimOnlyBridge(tx))
         }
 
-        if tsAccountManager.isPrimaryDevice(transaction: SDSDB.shimOnlyBridge(tx)) {
-            // Profile key rotations should only be initiated by the primary device.
+        if
+            tsAccountManager.isPrimaryDevice(transaction: SDSDB.shimOnlyBridge(tx)),
+            let recipientServiceId = recipient.address.serviceId,
+            let localAci = self.tsAccountManager.localAddress(with: SDSDB.shimOnlyBridge(tx))?.aci,
+            !GroupManager.hasMutualGroupThread(
+                with: recipientServiceId,
+                localAci: localAci,
+                tx: SDSDB.shimOnlyBridge(tx)
+            )
+        {
+            // Profile key rotations should only be initiated by the primary device
+            // when we have no common groups with the hidee (because mutual group
+            // members are authorized to have profile keys of all group members).
             Logger.info("[Recipient hiding][side effects] Rotate profile key.")
             self.profileManager.rotateProfileKeyUponRecipientHide(
                 withTx: SDSDB.shimOnlyBridge(tx)
