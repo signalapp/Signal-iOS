@@ -231,27 +231,6 @@ public class DependenciesBridge {
             notificationsManager: notificationsManager
         )
 
-        let preKeyOperationFactory: PreKeyOperationFactory = PreKeyOperationFactoryImpl(
-            context: .init(
-                accountManager: PreKey.Operation.Wrappers.AccountManager(accountManager: tsAccountManager),
-                dateProvider: dateProvider,
-                db: db,
-                identityManager: PreKey.Operation.Wrappers.IdentityManager(identityManager: identityManager),
-                messageProcessor: PreKey.Operation.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
-                protocolStoreManager: signalProtocolStoreManager,
-                schedulers: schedulers,
-                serviceClient: accountServiceClient
-            )
-        )
-
-        self.preKeyManager = PreKeyManagerImpl(
-            db: db,
-            identityManager: PreKey.Manager.Wrappers.IdentityManager(identityManager),
-            messageProcessor: PreKey.Manager.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
-            preKeyOperationFactory: preKeyOperationFactory,
-            protocolStoreManager: signalProtocolStoreManager
-        )
-
         self.svrCredentialStorage = SVRAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
         self.svr = OrchestratingSVRImpl(
             accountManager: SVR.Wrappers.TSAccountManager(tsAccountManager),
@@ -277,15 +256,6 @@ public class DependenciesBridge {
             profileFetcher: PniIdentityKeyCheckerImpl.Wrappers.ProfileFetcher(schedulers: schedulers),
             schedulers: schedulers
         )
-        self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
-            accountServiceClient: LearnMyOwnPniManagerImpl.Wrappers.AccountServiceClient(accountServiceClient),
-            db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
-            pniIdentityKeyChecker: pniIdentityKeyChecker,
-            preKeyManager: preKeyManager,
-            schedulers: schedulers,
-            tsAccountManager: LearnMyOwnPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
-        )
         self.linkedDevicePniKeyManager = LinkedDevicePniKeyManagerImpl(
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
@@ -306,6 +276,37 @@ public class DependenciesBridge {
             schedulers: schedulers,
             signalRecipientStore: PniHelloWorldManagerImpl.Wrappers.SignalRecipientStore(),
             tsAccountManager: PniHelloWorldManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
+        )
+
+        let preKeyOperationFactory: PreKeyOperationFactory = PreKeyOperationFactoryImpl(
+            context: .init(
+                accountManager: PreKey.Operation.Wrappers.AccountManager(accountManager: tsAccountManager),
+                dateProvider: dateProvider,
+                db: db,
+                identityManager: PreKey.Operation.Wrappers.IdentityManager(identityManager: identityManager),
+                linkedDevicePniKeyManager: linkedDevicePniKeyManager,
+                messageProcessor: PreKey.Operation.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
+                protocolStoreManager: signalProtocolStoreManager,
+                schedulers: schedulers,
+                serviceClient: accountServiceClient
+            )
+        )
+        self.preKeyManager = PreKeyManagerImpl(
+            db: db,
+            identityManager: PreKey.Manager.Wrappers.IdentityManager(identityManager),
+            messageProcessor: PreKey.Manager.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
+            preKeyOperationFactory: preKeyOperationFactory,
+            protocolStoreManager: signalProtocolStoreManager
+        )
+
+        self.learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
+            accountServiceClient: LearnMyOwnPniManagerImpl.Wrappers.AccountServiceClient(accountServiceClient),
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            pniIdentityKeyChecker: pniIdentityKeyChecker,
+            preKeyManager: preKeyManager,
+            schedulers: schedulers,
+            tsAccountManager: LearnMyOwnPniManagerImpl.Wrappers.TSAccountManager(tsAccountManager)
         )
 
         self.registrationSessionManager = RegistrationSessionManagerImpl(

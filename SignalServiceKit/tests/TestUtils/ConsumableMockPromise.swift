@@ -19,8 +19,8 @@ enum ConsumableMockPromise<V> {
         switch self {
         case .value(let v):
             return .value(v)
-        case .error:
-            return Promise(error: OWSGenericError("Intentional error"))
+        case let .error(error):
+            return Promise(error: error)
         case .unset:
             XCTFail("Mock not set!")
             return Promise(error: OWSGenericError("Mock not set!"))

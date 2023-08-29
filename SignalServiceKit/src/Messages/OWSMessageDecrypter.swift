@@ -279,7 +279,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             Logger.info("Not resetting or requesting resend of message sent to PNI.")
 
             DependenciesBridge.shared.linkedDevicePniKeyManager
-                .recordPniMessageDecryptionError(tx: transaction.asV2Write)
+                .recordSuspectedIssueWithPniIdentityKey(tx: transaction.asV2Write)
 
             errorMessage = TSErrorMessage.failedDecryption(
                 forSender: sourceAddress,

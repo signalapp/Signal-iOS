@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
 
 // MARK: - Public Structs
 
@@ -14,6 +14,7 @@ public enum PreKeyTasks {
         let dateProvider: DateProvider
         let db: DB
         let identityManager: PreKey.Operation.Shims.IdentityManager
+        let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
         let messageProcessor: PreKey.Operation.Shims.MessageProcessor
         let protocolStoreManager: SignalProtocolStoreManager
         let schedulers: Schedulers
@@ -147,9 +148,14 @@ extension PreKeyTasks {
             }
 
             return bundlePromise.then(on: globalQueue()) { (bundle: PreKeyUploadBundle) -> Promise<Void> in
-                return Upload(serviceClient: self.context.serviceClient)
-                    .runTask(bundle: bundle, auth: self.auth)
-                    .map(on: globalQueue()) {
+                return Upload(
+                    schedulers: self.context.schedulers,
+                    serviceClient: self.context.serviceClient
+                )
+                .runTask(bundle: bundle, auth: self.auth)
+                .map(on: globalQueue()) { uploadResult throws in
+                    switch uploadResult {
+                    case .success:
                         try PersistSuccesfulUpload(
                             dateProvider: self.context.dateProvider,
                             db: self.context.db,
@@ -157,8 +163,25 @@ extension PreKeyTasks {
                             signedPreKeyStore: self.signedPreKeyStore,
                             kyberPreKeyStore: self.kyberPreKeyStore
                         ).runTask(bundle: bundle)
+                    case .incorrectIdentityKeyOnLinkedDevice:
+                        guard
+                            self.action.identity == .pni,
+                            bundle.identity == .pni
+                        else {
+                            throw OWSAssertionError("Expected to be a PNI operation!")
+                        }
+
+                        // We think we have an incorrect PNI identity key, which
+                        // we should record so we can handle it later.
+                        self.context.db.write { tx in
+                            self.context.linkedDevicePniKeyManager
+                                .recordSuspectedIssueWithPniIdentityKey(tx: tx)
+                        }
+                    case let .failure(error):
+                        throw error
                     }
                 }
+            }
         }
     }
 }

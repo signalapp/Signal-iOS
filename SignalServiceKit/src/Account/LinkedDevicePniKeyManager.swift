@@ -6,8 +6,9 @@
 import SignalCoreKit
 
 public protocol LinkedDevicePniKeyManager {
-    /// Notes that we received an error while decrypting a message to our PNI.
-    func recordPniMessageDecryptionError(tx: DBWriteTransaction)
+    /// Records that we encountered an issue we suspect is due to a problem with
+    /// our PNI identity key.
+    func recordSuspectedIssueWithPniIdentityKey(tx: DBWriteTransaction)
 
     /// Validates this device's PNI identity key against the one on the server,
     /// if necessary.
@@ -21,24 +22,27 @@ public protocol LinkedDevicePniKeyManager {
     /// will successfully receive the PNI Hello World. For example, its primary
     /// may never come online to fire it, or the associated message may age out
     /// of the queue. While these are edge cases, they will result in a linked
-    /// device that cannot decrypt messages to the account's PNI.
+    /// device that cannot perform actions related to our PNI identity key, such
+    /// as decrypting messages to our PNI or prekey API calls.
     ///
-    /// This operation checks for decryption errors from messages to our PNI and
+    /// Newly-linked devices will receive the PNI identity key as part of
+    /// provisioning. Consequently, if we find ourselves with a missing or
+    /// incorrect PNI identity key we will correct that state by unlinking the
+    /// linked device. On re-link, it'll get the correct state.
+    ///
+    /// This operation checks for suspected issues with our PNI identity key and
     /// subsequently compares our local PNI identity key with the service. If
-    /// our local key does not match we unlink this device, such that when it is
-    /// relinked it will learn about the correct PNI identity key.
+    /// our local key does not match we unlink this device.
     ///
-    /// We do not expect to receive PNI messages until long after PNI Hello
-    /// World has completed; moreover, PNI Hello World is only relevant for
-    /// devices that had previously ended up in a bad state. Consequently, we
-    /// hope that this unlinking will be rare, and a truly last resort.
+    /// We do not expect many devices to have ended up in a bad state, and so we
+    /// hope that this unlinking will be a rare last resort.
     func validateLocalPniIdentityKeyIfNecessary(tx: DBReadTransaction)
 }
 
 class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
     private enum Constants {
         static let collection = "LinkedDevicePniKeyManagerImpl"
-        static let hasRecordedPniMessageDecryptionErrorKey = "hasRecordedPniDecryptionError"
+        static let hasRecordedSuspectedIssueKey = "hasSuspectedIssue"
     }
 
     /// Scenarios that should interrupt regular processing.
@@ -67,6 +71,8 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
     private let schedulers: Schedulers
     private let tsAccountManager: Shims.TSAccountManager
 
+    private let isValidating = AtomicBool(false, lock: .init())
+
     init(
         db: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
@@ -83,16 +89,28 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    func recordPniMessageDecryptionError(tx: DBWriteTransaction) {
+    func recordSuspectedIssueWithPniIdentityKey(tx: DBWriteTransaction) {
+        guard !tsAccountManager.isPrimaryDevice(tx: tx) else {
+            logger.warn("Not recording suspected PNI identity key issue - not a linked device!")
+            return
+        }
+
         kvStore.setBool(
             true,
-            key: Constants.hasRecordedPniMessageDecryptionErrorKey,
+            key: Constants.hasRecordedSuspectedIssueKey,
             transaction: tx
         )
+
+        validateLocalPniIdentityKeyIfNecessary(tx: tx)
     }
 
     func validateLocalPniIdentityKeyIfNecessary(tx syncTx: DBReadTransaction) {
         let logger = logger
+
+        guard isValidating.tryToSetFlag() else {
+            logger.warn("Skipping validation - already in flight!")
+            return
+        }
 
         guard !tsAccountManager.isPrimaryDevice(tx: syncTx) else {
             logger.info("Skipping validation - not a linked device!")
@@ -105,7 +123,7 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
         .then(on: schedulers.global()) { () throws -> Promise<Bool> in
             return try self.db.read { tx throws in
                 guard self.kvStore.getBool(
-                    Constants.hasRecordedPniMessageDecryptionErrorKey,
+                    Constants.hasRecordedSuspectedIssueKey,
                     defaultValue: false,
                     transaction: tx
                 ) else {
@@ -153,11 +171,15 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
                 self.clearPniMessageDecryptionError(tx: tx)
             }
         }
+        .ensure(on: schedulers.sync) {
+            self.isValidating.set(false)
+        }
+        .cauterize()
     }
 
     private func clearPniMessageDecryptionError(tx: DBWriteTransaction) {
         kvStore.removeValue(
-            forKey: Constants.hasRecordedPniMessageDecryptionErrorKey,
+            forKey: Constants.hasRecordedSuspectedIssueKey,
             transaction: tx
         )
     }
