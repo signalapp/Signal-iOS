@@ -40,7 +40,6 @@ public class SSKEnvironment: NSObject {
     public let profileManagerRef: ProfileManagerProtocol
     public let messageManagerRef: OWSMessageManager
     public let blockingManagerRef: BlockingManager
-    public let identityManagerRef: OWSIdentityManager
     public let remoteConfigManagerRef: RemoteConfigManager
     public let udManagerRef: OWSUDManager
     public let messageDecrypterRef: OWSMessageDecrypter
@@ -100,7 +99,6 @@ public class SSKEnvironment: NSObject {
         networkManager: NetworkManager,
         messageManager: OWSMessageManager,
         blockingManager: BlockingManager,
-        identityManager: OWSIdentityManager,
         remoteConfigManager: RemoteConfigManager,
         aciSignalProtocolStore: SignalProtocolStore,
         pniSignalProtocolStore: SignalProtocolStore,
@@ -161,7 +159,6 @@ public class SSKEnvironment: NSObject {
         self.networkManagerRef = networkManager
         self.messageManagerRef = messageManager
         self.blockingManagerRef = blockingManager
-        self.identityManagerRef = identityManager
         self.remoteConfigManagerRef = remoteConfigManager
         self.aciSignalProtocolStoreRef = aciSignalProtocolStore
         self.pniSignalProtocolStoreRef = pniSignalProtocolStore

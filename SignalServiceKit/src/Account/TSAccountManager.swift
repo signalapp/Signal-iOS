@@ -276,7 +276,8 @@ public extension TSAccountManager {
 
             // Discard sender certificates whenever local phone number changes.
             udManager.removeSenderCertificates(transaction: transaction)
-            identityManager.clearShouldSharePhoneNumberForEveryone(transaction: transaction)
+            let identityManager = DependenciesBridge.shared.identityManager
+            identityManager.clearShouldSharePhoneNumberForEveryone(tx: transaction.asV2Write)
             versionedProfiles.clearProfileKeyCredentials(transaction: transaction)
             groupsV2.clearTemporalCredentials(transaction: transaction)
 

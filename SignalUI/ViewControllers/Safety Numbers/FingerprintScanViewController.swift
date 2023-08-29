@@ -167,12 +167,15 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
             ),
             style: .default,
             handler: { _ in
-                OWSIdentityManager.shared.setVerificationState(
-                    .verified,
-                    identityKey: identityKey,
-                    address: recipientAddress,
-                    isUserInitiatedChange: true
-                )
+                DependenciesBridge.shared.db.write { tx in
+                    DependenciesBridge.shared.identityManager.setVerificationState(
+                        .verified,
+                        identityKey: identityKey,
+                        address: recipientAddress,
+                        isUserInitiatedChange: true,
+                        tx: tx
+                    )
+                }
                 if let navigationController = viewController.navigationController {
                     navigationController.popViewController(animated: true, completion: nil)
                 } else {

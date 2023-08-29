@@ -224,7 +224,9 @@ public struct LocalSignalClient: TestSignalClient {
     }
 
     public var identityKeyPair: ECKeyPair {
-        return SSKEnvironment.shared.identityManager.identityKeyPair(for: identity)!
+        return SSKEnvironment.shared.databaseStorage.read { tx in
+            return DependenciesBridge.shared.identityManager.identityKeyPair(for: identity, tx: tx.asV2Read)!
+        }
     }
 
     public var e164Identifier: SignalE164Identifier? {
@@ -259,7 +261,7 @@ public struct LocalSignalClient: TestSignalClient {
 
     public var identityKeyStore: IdentityKeyStore {
         return SSKEnvironment.shared.databaseStorage.read { transaction in
-            return try! SSKEnvironment.shared.identityManager.store(for: identity, transaction: transaction)
+            return try! DependenciesBridge.shared.identityManager.libSignalStore(for: identity, tx: transaction.asV2Read)
         }
     }
 

@@ -54,7 +54,8 @@ extension OWSSyncContactsMessage {
         // We use batching to place an upper bound on memory usage.
         for signalAccount in signalAccounts {
             autoreleasepool {
-                let recipientIdentity: OWSRecipientIdentity? = Self.identityManager.recipientIdentity(for: signalAccount.recipientAddress, transaction: tx)
+                let identityManager = DependenciesBridge.shared.identityManager
+                let recipientIdentity = identityManager.recipientIdentity(for: signalAccount.recipientAddress, tx: tx.asV2Read)
                 let profileKeyData: Data? = Self.profileManager.profileKeyData(for: signalAccount.recipientAddress, transaction: tx)
                 let contactThread = TSContactThread.getWithContactAddress(signalAccount.recipientAddress, transaction: tx)
                 var isArchived: NSNumber?

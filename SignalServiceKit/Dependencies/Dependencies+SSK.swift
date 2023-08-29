@@ -55,14 +55,6 @@ public extension NSObject {
         SSKEnvironment.shared.disappearingMessagesJobRef
     }
 
-    final var identityManager: OWSIdentityManager {
-        SSKEnvironment.shared.identityManagerRef
-    }
-
-    static var identityManager: OWSIdentityManager {
-        SSKEnvironment.shared.identityManagerRef
-    }
-
     final var groupV2UpdatesObjc: GroupV2Updates {
         SSKEnvironment.shared.groupV2UpdatesRef
     }
@@ -517,14 +509,6 @@ public extension Dependencies {
 
     static var disappearingMessagesJob: OWSDisappearingMessagesJob {
         SSKEnvironment.shared.disappearingMessagesJobRef
-    }
-
-    var identityManager: OWSIdentityManager {
-        SSKEnvironment.shared.identityManagerRef
-    }
-
-    static var identityManager: OWSIdentityManager {
-        SSKEnvironment.shared.identityManagerRef
     }
 
     var groupV2UpdatesObjc: GroupV2Updates {
@@ -1143,15 +1127,6 @@ public extension NetworkManager {
 public extension OWSOutgoingReceiptManager {
     static var shared: OWSOutgoingReceiptManager {
         SSKEnvironment.shared.outgoingReceiptManagerRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension OWSIdentityManager {
-    static var shared: OWSIdentityManager {
-        SSKEnvironment.shared.identityManagerRef
     }
 }
 

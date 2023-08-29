@@ -13,7 +13,6 @@
 #import "OWSContact.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"
-#import "OWSIdentityManager.h"
 #import "OWSOperation.h"
 #import "OWSOutgoingCallMessage.h"
 #import "OWSOutgoingReactionMessage.h"

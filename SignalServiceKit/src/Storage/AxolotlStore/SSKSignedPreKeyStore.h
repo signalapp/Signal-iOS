@@ -4,6 +4,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <SignalServiceKit/OWSIdentity.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,8 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SignedPreKeyRecord;
-
-typedef NS_ENUM(uint8_t, OWSIdentity);
 
 @interface SSKSignedPreKeyStore : NSObject
 

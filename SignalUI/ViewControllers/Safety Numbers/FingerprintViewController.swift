@@ -20,7 +20,10 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     ) {
         owsAssertBeta(theirAddress.isValid)
 
-        guard let theirRecipientIdentity = OWSIdentityManager.shared.recipientIdentity(for: theirAddress) else {
+        let identityManager = DependenciesBridge.shared.identityManager
+        guard let theirRecipientIdentity = databaseStorage.read(block: { tx in
+            identityManager.recipientIdentity(for: theirAddress, tx: tx.asV2Read)
+        }) else {
             OWSActionSheets.showActionSheet(
                 title: OWSLocalizedString(
                     "CANT_VERIFY_IDENTITY_ALERT_TITLE",
@@ -375,7 +378,10 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     private func updateVerificationStateLabel() {
         owsAssertBeta(recipientAddress.isValid)
 
-        let isVerified = OWSIdentityManager.shared.verificationState(for: recipientAddress) == .verified
+        let identityManager = DependenciesBridge.shared.identityManager
+        let isVerified = databaseStorage.read { tx in
+            return identityManager.verificationState(for: recipientAddress, tx: tx.asV2Read) == .verified
+        }
 
         if isVerified {
             verifyUnverifyButtonLabel.text = NSLocalizedString(
@@ -742,15 +748,16 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     private func didTapVerifyUnverify(_ gestureRecognizer: UITapGestureRecognizer) {
         guard gestureRecognizer.state == .recognized else { return }
 
-        databaseStorage.write { transaction in
-            let isVerified = OWSIdentityManager.shared.verificationState(for: recipientAddress, transaction: transaction) == .verified
+        databaseStorage.write { tx in
+            let identityManager = DependenciesBridge.shared.identityManager
+            let isVerified = identityManager.verificationState(for: recipientAddress, tx: tx.asV2Read) == .verified
             let newVerificationState: OWSVerificationState = isVerified ? .default : .verified
-            OWSIdentityManager.shared.setVerificationState(
+            identityManager.setVerificationState(
                 newVerificationState,
                 identityKey: identityKey,
                 address: recipientAddress,
                 isUserInitiatedChange: true,
-                transaction: transaction
+                tx: tx.asV2Write
             )
         }
 

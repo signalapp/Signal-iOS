@@ -445,8 +445,9 @@ extension OWSMessageManager {
             }
         } else if let verified = syncMessage.verified {
             do {
-                try identityManager.processIncomingVerifiedProto(verified, transaction: tx)
-                identityManager.fireIdentityStateChangeNotification(after: tx)
+                let identityManager = DependenciesBridge.shared.identityManager
+                try identityManager.processIncomingVerifiedProto(verified, tx: tx.asV2Write)
+                identityManager.fireIdentityStateChangeNotification(after: tx.asV2Write)
             } catch {
                 Logger.warn("Couldn't process verification state \(error)")
             }
@@ -493,8 +494,12 @@ extension OWSMessageManager {
                 callEvent, messageTimestamp: decryptedEnvelope.timestamp, transaction: tx
             )
         } else if let pniChangeNumber = syncMessage.pniChangeNumber {
+            let identityManager = DependenciesBridge.shared.identityManager
             identityManager.processIncomingPniChangePhoneNumber(
-                proto: pniChangeNumber, updatedPni: envelope.updatedPni, transaction: tx
+                proto: pniChangeNumber,
+                updatedPni: envelope.updatedPni,
+                preKeyManager: DependenciesBridge.shared.preKeyManager,
+                tx: tx.asV2Write
             )
         } else {
             Logger.warn("Ignoring unsupported sync message.")

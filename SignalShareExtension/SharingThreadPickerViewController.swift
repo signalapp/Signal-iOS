@@ -477,9 +477,10 @@ extension SharingThreadPickerViewController {
 
                 // Confirm Identity
                 self.databaseStorage.write { transaction in
-                    let verificationState = self.identityManager.verificationState(
+                    let identityManager = DependenciesBridge.shared.identityManager
+                    let verificationState = identityManager.verificationState(
                         for: untrustedAddress,
-                        transaction: transaction
+                        tx: transaction.asV2Write
                     )
                     switch verificationState {
                     case .default:
@@ -491,17 +492,17 @@ extension SharingThreadPickerViewController {
                         Logger.info("recipient has acceptable verification status. Next send will succeed.")
                     case .noLongerVerified:
                         Logger.info("marked recipient: \(untrustedAddress) as default verification status.")
-                        guard let indentityKey = self.identityManager.identityKey(
+                        guard let indentityKey = identityManager.identityKey(
                             for: untrustedAddress,
-                            transaction: transaction
+                            tx: transaction.asV2Write
                         ) else { return owsFailDebug("missing identity key") }
 
-                        self.identityManager.setVerificationState(
+                        identityManager.setVerificationState(
                             .default,
                             identityKey: indentityKey,
                             address: untrustedAddress,
                             isUserInitiatedChange: true,
-                            transaction: transaction
+                            tx: transaction.asV2Write
                         )
                     case .verified:
                         owsFailDebug("Unexpected state")

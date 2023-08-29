@@ -17,7 +17,6 @@
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSIdentityManager.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSOutgoingReceiptManager.h"
 #import "OWSReceiptManager.h"

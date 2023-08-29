@@ -20,9 +20,7 @@ class DebugUISyncMessages: DebugUIPage, Dependencies {
             OWSTableItem(title: "Send Blocklist Sync Message",
                          actionBlock: { DebugUISyncMessages.sendBlockListSyncMessage() }),
             OWSTableItem(title: "Send Configuration Sync Message",
-                         actionBlock: { DebugUISyncMessages.sendConfigurationSyncMessage() }),
-            OWSTableItem(title: "Send Verification Sync Message",
-                         actionBlock: { DebugUISyncMessages.sendVerificationSyncMessage() })
+                         actionBlock: { DebugUISyncMessages.sendConfigurationSyncMessage() })
         ])
     }
 
@@ -41,10 +39,6 @@ class DebugUISyncMessages: DebugUIPage, Dependencies {
 
     private static func sendConfigurationSyncMessage() {
         SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
-    }
-
-    private static func sendVerificationSyncMessage() {
-        OWSIdentityManager.shared.tryToSyncQueuedVerificationStates()
     }
 }
 

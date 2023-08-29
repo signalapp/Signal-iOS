@@ -537,13 +537,14 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         udAccess: OWSUDAccess,
         senderCertificates: SenderCertificates
     ) -> OWSUDSendingAccess {
-        databaseStorage.read { transaction in
+        let identityManager = DependenciesBridge.shared.identityManager
+        return databaseStorage.read { tx in
             let shouldSharePhoneNumber: Bool
             switch phoneNumberSharingMode {
             case .everybody:
                 shouldSharePhoneNumber = true
             case .nobody:
-                shouldSharePhoneNumber = identityManager.shouldSharePhoneNumber(with: serviceId, transaction: transaction)
+                shouldSharePhoneNumber = identityManager.shouldSharePhoneNumber(with: serviceId, tx: tx.asV2Read)
             }
             return OWSUDSendingAccess(
                 udAccess: udAccess,

@@ -73,6 +73,8 @@ class SSKSignedPreKeyStoreTest: SSKBaseTestSwift {
     }
 
     func testGenerateWithCorrectSignature() {
+        let identityManager = DependenciesBridge.shared.identityManager
+
         let aciStore = SSKSignedPreKeyStore(for: .aci)
         let pniStore = SSKSignedPreKeyStore(for: .pni)
 

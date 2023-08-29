@@ -183,7 +183,8 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                     // Always fire just one identity change notification, rather than potentially
                     // once per contact. It's possible that *no* identities actually changed,
                     // but we have no convenient way to track that.
-                    self.identityManager.fireIdentityStateChangeNotification(after: transaction)
+                    let identityManager = DependenciesBridge.shared.identityManager
+                    identityManager.fireIdentityStateChangeNotification(after: transaction.asV2Write)
                 }
             }
         }
@@ -280,7 +281,8 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         )
 
         if let verifiedProto = contactDetails.verifiedProto {
-            try self.identityManager.processIncomingVerifiedProto(verifiedProto, transaction: transaction)
+            let identityManager = DependenciesBridge.shared.identityManager
+            try identityManager.processIncomingVerifiedProto(verifiedProto, tx: transaction.asV2Write)
         }
 
         if let profileKey = contactDetails.profileKey {

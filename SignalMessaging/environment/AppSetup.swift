@@ -52,7 +52,6 @@ public class AppSetup {
         let aciSignalProtocolStore = SignalProtocolStoreImpl(for: .aci, keyValueStoreFactory: keyValueStoreFactory)
         let dateProvider = Date.provider
         let groupsV2 = GroupsV2Impl()
-        let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
         let messageProcessor = MessageProcessor()
         let messageSender = MessageSender()
         let modelReadCaches = ModelReadCaches(factory: ModelReadCacheFactory())
@@ -72,13 +71,12 @@ public class AppSetup {
         let tsAccountManager = TSAccountManager()
         let sskJobQueues = SSKJobQueues()
 
-        let dependenciesBridge = DependenciesBridge.setupSingleton(
+        let dependenciesBridge = DependenciesBridge.setUpSingleton(
             accountServiceClient: accountServiceClient,
             appVersion: appVersion,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
-            identityManager: identityManager,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
             modelReadCaches: modelReadCaches,
@@ -175,7 +173,6 @@ public class AppSetup {
             networkManager: networkManager,
             messageManager: messageManager,
             blockingManager: blockingManager,
-            identityManager: identityManager,
             remoteConfigManager: remoteConfigManager,
             aciSignalProtocolStore: aciSignalProtocolStore,
             pniSignalProtocolStore: pniSignalProtocolStore,

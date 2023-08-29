@@ -421,6 +421,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                isRetryable: false)
             }
 
+            let identityManager = DependenciesBridge.shared.identityManager
             let protocolAddress = ProtocolAddress(sourceAci, deviceId: sourceDeviceId)
             let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: validatedEnvelope.localIdentity)
 
@@ -432,7 +433,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     message: message,
                     from: protocolAddress,
                     sessionStore: signalProtocolStore.sessionStore,
-                    identityStore: identityManager.store(for: localIdentity, transaction: transaction),
+                    identityStore: identityManager.libSignalStore(for: localIdentity, tx: transaction.asV2Write),
                     context: transaction
                 )
                 sendReactiveProfileKeyIfNecessary(to: sourceAci, tx: transaction)
@@ -445,7 +446,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     message: message,
                     from: protocolAddress,
                     sessionStore: signalProtocolStore.sessionStore,
-                    identityStore: identityManager.store(for: localIdentity, transaction: transaction),
+                    identityStore: identityManager.libSignalStore(for: localIdentity, tx: transaction.asV2Write),
                     preKeyStore: signalProtocolStore.preKeyStore,
                     signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
                     kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
@@ -553,6 +554,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         guard let encryptedData = validatedEnvelope.envelope.content else {
             throw OWSAssertionError("UD Envelope is missing content.")
         }
+        let identityManager = DependenciesBridge.shared.identityManager
         let signalProtocolStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: localIdentity)
 
         let cipher = try SMKSecretSessionCipher(
@@ -560,7 +562,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             preKeyStore: signalProtocolStore.preKeyStore,
             signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
             kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
-            identityStore: identityManager.store(for: localIdentity, transaction: transaction),
+            identityStore: identityManager.libSignalStore(for: localIdentity, tx: transaction.asV2Write),
             senderKeyStore: Self.senderKeyStore
         )
 

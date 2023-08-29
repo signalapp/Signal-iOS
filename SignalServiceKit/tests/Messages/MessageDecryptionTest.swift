@@ -31,6 +31,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
         super.setUp()
 
         // ensure local client has necessary "registered" state
+        let identityManager = DependenciesBridge.shared.identityManager
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
         identityManager.generateAndPersistNewIdentityKey(for: .pni)
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localAci, pni: localPni)

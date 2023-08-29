@@ -6,7 +6,6 @@
 #import "SSKSignedPreKeyStore.h"
 #import "AxolotlExceptions.h"
 #import "NSData+keyVersionByte.h"
-#import "OWSIdentityManager.h"
 #import "SDSKeyValueStore+ObjC.h"
 #import "SSKPreKeyStore.h"
 #import "SignedPrekeyRecord.h"
@@ -116,7 +115,7 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 
 - (SignedPreKeyRecord *)generateRandomSignedRecord
 {
-    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPairForIdentity:_identity];
+    ECKeyPair *_Nullable identityKeyPair = [OWSIdentityManagerObjCBridge identityKeyPairForIdentity:_identity];
     OWSAssert(identityKeyPair);
 
     return [SSKSignedPreKeyStore generateSignedPreKeySignedWithIdentityKey:identityKeyPair];

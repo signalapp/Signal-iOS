@@ -5,7 +5,8 @@
 
 import XCTest
 import LibSignalClient
-import SignalServiceKit
+
+@testable import SignalServiceKit
 
 class TestProtocolRunnerTest: SSKBaseTestSwift {
 
@@ -115,9 +116,9 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
     }
 
     func test_localClient_receives() {
-        Self.identityManager.generateAndPersistNewIdentityKey(for: .aci)
-        Self.tsAccountManager.registerForTests(withLocalNumber: "+13235551234",
-                                                                uuid: UUID())
+        let identityManager = DependenciesBridge.shared.identityManager
+        identityManager.generateAndPersistNewIdentityKey(for: .aci)
+        Self.tsAccountManager.registerForTests(withLocalNumber: "+13235551234", uuid: UUID())
         let localClient = LocalSignalClient()
 
         write { transaction in
@@ -142,9 +143,9 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
     }
 
     func test_localClient_sends() {
-        Self.identityManager.generateAndPersistNewIdentityKey(for: .aci)
-        Self.tsAccountManager.registerForTests(withLocalNumber: "+13235551234",
-                                                                uuid: UUID())
+        let identityManager = DependenciesBridge.shared.identityManager
+        identityManager.generateAndPersistNewIdentityKey(for: .aci)
+        Self.tsAccountManager.registerForTests(withLocalNumber: "+13235551234", uuid: UUID())
         let localClient = LocalSignalClient()
 
         write { transaction in

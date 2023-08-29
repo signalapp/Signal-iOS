@@ -185,10 +185,10 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
         // Store pending state in the right places
 
-        identityManager.storeIdentityKeyPair(
+        identityManager.setIdentityKeyPair(
             pendingState.pniIdentityKeyPair,
             for: .pni,
-            transaction: transaction
+            tx: transaction
         )
 
         if let newPqLastResortPreKeyRecord = pendingState.localDevicePniPqLastResortPreKeyRecord {

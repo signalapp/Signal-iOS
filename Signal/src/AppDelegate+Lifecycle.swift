@@ -131,6 +131,9 @@ extension AppDelegate {
             }
         }
 
+        let identityManager = DependenciesBridge.shared.identityManager
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { identityManager.tryToSyncQueuedVerificationStates() }
+
         Logger.info("handleActivation completed.")
     }
 

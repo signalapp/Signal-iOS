@@ -281,10 +281,13 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         }
         XCTAssert(localAddress.isValid)
 
+        let identityManager = DependenciesBridge.shared.identityManager
+
         // Ensure UD is enabled by setting our own access level to enabled.
         udManagerImpl.setUnidentifiedAccessMode(.enabled, address: localAddress)
 
-        let bobRecipientAddress = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+13213214322")
+        let bobAci = Aci.randomForTesting()
+        let bobRecipientAddress = SignalServiceAddress(serviceId: bobAci, phoneNumber: "+13213214322")
         XCTAssertFalse(bobRecipientAddress.isLocalAddress)
         write { transaction in
             self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
@@ -292,14 +295,14 @@ class OWSUDManagerTest: SSKBaseTestSwift {
                                                   userProfileWriter: .tests,
                                                   authedAccount: .implicit(),
                                                   transaction: transaction)
-            identityManager.setShouldSharePhoneNumber(with: bobRecipientAddress, transaction: transaction)
+            identityManager.setShouldSharePhoneNumber(with: bobAci, tx: transaction.asV2Write)
         }
 
         firstly {
             udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
         }.done { senderCertificates in
             let sendingAccess = self.udManagerImpl.udSendingAccess(
-                for: bobRecipientAddress.serviceIdObjC!,
+                for: AciObjC(bobAci),
                 requireSyncAccess: false,
                 senderCertificates: senderCertificates
             )!
@@ -318,7 +321,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
         }.done { senderCertificates in
             let sendingAccess = self.udManagerImpl.udSendingAccess(
-                for: bobRecipientAddress.serviceIdObjC!,
+                for: AciObjC(bobAci),
                 requireSyncAccess: false,
                 senderCertificates: senderCertificates
             )!
@@ -333,7 +336,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
                                                   userProfileWriter: .tests,
                                                   authedAccount: .implicit(),
                                                   transaction: transaction)
-            identityManager.clearShouldSharePhoneNumber(with: bobRecipientAddress, transaction: transaction)
+            identityManager.clearShouldSharePhoneNumber(with: bobAci, tx: transaction.asV2Write)
         }
 
         firstly {

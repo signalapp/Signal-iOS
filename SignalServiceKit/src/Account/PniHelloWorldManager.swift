@@ -208,7 +208,7 @@ class _PniHelloWorldManagerImpl_IdentityManager_Wrapper: _PniHelloWorldManagerIm
     }
 
     func pniIdentityKeyPair(tx: DBReadTransaction) -> ECKeyPair? {
-        return identityManager.identityKeyPair(for: .pni, transaction: SDSDB.shimOnlyBridge(tx))
+        return identityManager.identityKeyPair(for: .pni, tx: tx)
     }
 }
 

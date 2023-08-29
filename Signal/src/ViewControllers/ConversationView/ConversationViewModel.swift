@@ -53,16 +53,16 @@ class ConversationViewModel {
     }
 
     private static func shouldShowVerifiedBadge(for thread: TSThread, tx: SDSAnyReadTransaction) -> Bool {
-        let identityManager = NSObject.identityManager
+        let identityManager = DependenciesBridge.shared.identityManager
         switch thread {
         case let groupThread as TSGroupThread:
             if groupThread.groupModel.groupMembers.isEmpty {
                 return false
             }
-            return !identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, transaction: tx)
+            return !identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx.asV2Read)
 
         case let contactThread as TSContactThread:
-            return identityManager.verificationState(for: contactThread.contactAddress, transaction: tx) == .verified
+            return identityManager.verificationState(for: contactThread.contactAddress, tx: tx.asV2Read) == .verified
 
         default:
             owsFailDebug("Showing conversation for unexpected thread type.")

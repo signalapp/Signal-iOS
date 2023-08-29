@@ -6,7 +6,6 @@
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "AxolotlExceptions.h"
 #import "NSData+keyVersionByte.h"
-#import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
 #import "TSContactThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -199,7 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *tx) {
-        [self.identityManager saveRemoteIdentity:newKey address:self.envelope.sourceAddress transaction:tx];
+        [OWSIdentityManagerObjCBridge saveIdentityKey:newKey forAddress:self.envelope.sourceAddress transaction:tx];
     });
 
     __block NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *_Nullable messagesToDecrypt;

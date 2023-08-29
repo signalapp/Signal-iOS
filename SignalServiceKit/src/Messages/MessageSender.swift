@@ -264,12 +264,13 @@ private extension MessageSender {
         }
 
         do {
+            let identityManager = DependenciesBridge.shared.identityManager
             let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId)
             try processPreKeyBundle(
                 bundle,
                 for: protocolAddress,
                 sessionStore: DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore,
-                identityStore: identityManager.store(for: .aci, transaction: transaction),
+                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction.asV2Write),
                 context: transaction
             )
         } catch SignalError.untrustedIdentity(_) {
@@ -309,12 +310,9 @@ private extension MessageSender {
     ) {
         Logger.info("recipientAddress: \(recipientAddress)")
         do {
-            let newRecipientIdentityKey: Data = try (preKeyBundle.identityKey as NSData).removeKeyType() as Data
-            identityManager.saveRemoteIdentity(
-                newRecipientIdentityKey,
-                address: recipientAddress,
-                transaction: transaction
-            )
+            let identityManager = DependenciesBridge.shared.identityManager
+            let newRecipientIdentityKey = try preKeyBundle.identityKey.removeKeyType()
+            identityManager.saveIdentityKey(newRecipientIdentityKey, for: recipientAddress, tx: transaction.asV2Write)
         } catch {
             owsFailDebug("Error: \(error)")
         }
@@ -355,8 +353,7 @@ private extension MessageSender {
         }
     }
 
-    class func isPrekeyIdentityKeySafe(accountId: String,
-                                       recipientAddress: SignalServiceAddress) -> Bool {
+    class func isPrekeyIdentityKeySafe(accountId: String, recipientAddress: SignalServiceAddress) -> Bool {
         assert(!Thread.isMainThread)
 
         // Prekey rate limits are strict. Therefore,
@@ -398,10 +395,14 @@ private extension MessageSender {
             let newIdentityKey = staleIdentity.newIdentityKey
             // If the newIdentityKey is now trusted, try another prekey
             // fetch.
-            return self.identityManager.isTrustedIdentityKey(newIdentityKey,
-                                                             address: recipientAddress,
-                                                             direction: .outgoing,
-                                                             transaction: transaction)
+            let identityManager = DependenciesBridge.shared.identityManager
+            return identityManager.isTrustedIdentityKey(
+                newIdentityKey,
+                address: recipientAddress,
+                direction: .outgoing,
+                untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+                tx: transaction.asV2Read
+            )
         }
     }
 }
@@ -1743,6 +1744,7 @@ private extension MessageSender {
         let serializedMessage: Data
         let messageType: SSKProtoEnvelopeType
 
+        let identityManager = DependenciesBridge.shared.identityManager
         let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId)
 
         if let udSendingParamsProvider, let udSendingAccess = udSendingParamsProvider.udSendingAccess {
@@ -1751,7 +1753,7 @@ private extension MessageSender {
                 preKeyStore: signalProtocolStore.preKeyStore,
                 signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
                 kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
-                identityStore: identityManager.store(for: .aci, transaction: transaction),
+                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction.asV2Write),
                 senderKeyStore: Self.senderKeyStore
             )
 
@@ -1772,7 +1774,7 @@ private extension MessageSender {
                 message: paddedPlaintext,
                 for: protocolAddress,
                 sessionStore: signalProtocolStore.sessionStore,
-                identityStore: identityManager.store(for: .aci, transaction: transaction),
+                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction.asV2Write),
                 context: transaction
             )
 
@@ -1822,6 +1824,7 @@ private extension MessageSender {
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
+        let identityManager = DependenciesBridge.shared.identityManager
         let protocolAddress = ProtocolAddress(serviceId, deviceId: deviceId)
 
         // Only resend request messages are allowed to use this codepath.
@@ -1844,7 +1847,7 @@ private extension MessageSender {
             let outerBytes = try sealedSenderEncrypt(
                 usmc,
                 for: protocolAddress,
-                identityStore: identityManager.store(for: .aci, transaction: transaction),
+                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction.asV2Write),
                 context: transaction
             )
 

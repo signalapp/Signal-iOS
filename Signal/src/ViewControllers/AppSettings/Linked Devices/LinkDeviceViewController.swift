@@ -142,8 +142,9 @@ class LinkDeviceViewController: OWSViewController {
         var areReadReceiptsEnabled: Bool = true
         databaseStorage.read { tx in
             localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx)
-            aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, transaction: tx)
-            pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, transaction: tx)
+            let identityManager = DependenciesBridge.shared.identityManager
+            aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)
+            pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read)
             areReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled(transaction: tx)
         }
         let myProfileKeyData = profileManager.localProfileKey().keyData

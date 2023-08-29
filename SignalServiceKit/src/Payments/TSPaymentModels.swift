@@ -89,14 +89,13 @@ extension TSPaymentAddress: Dependencies, TSPaymentBaseModel {
         return mobileCoinHelper.isValidMobileCoinPublicAddress(mobileCoinPublicAddressData)
     }
 
-    public func buildProto() throws -> SSKProtoPaymentAddress {
-        guard isValid,
-              currency == .mobileCoin else {
+    public func buildProto(tx: SDSAnyReadTransaction) throws -> SSKProtoPaymentAddress {
+        guard isValid, currency == .mobileCoin else {
             throw PaymentsError.invalidModel
         }
-
         // Sign the MC public address.
-        guard let identityKeyPair: ECKeyPair = identityManager.identityKeyPair(for: .aci) else {
+        let identityManager = DependenciesBridge.shared.identityManager
+        guard let identityKeyPair: ECKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read) else {
             throw OWSAssertionError("Missing identityKeyPair")
         }
         let signatureData = try Self.sign(identityKeyPair: identityKeyPair,

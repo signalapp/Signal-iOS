@@ -34,6 +34,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
 
         // ensure local client has necessary "registered" state
+        let identityManager = DependenciesBridge.shared.identityManager
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
         identityManager.generateAndPersistNewIdentityKey(for: .pni)
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID, pni: UUID())
@@ -165,6 +166,8 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     }
 
     func testPniMessage() {
+        let identityManager = DependenciesBridge.shared.identityManager
+
         let localPniClient = LocalSignalClient(identity: .pni)
         write { transaction in
             try! self.runner.initializePreKeys(senderClient: self.bobClient,
@@ -179,8 +182,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         read { transaction in
             XCTAssertEqual(0, TSMessage.anyCount(transaction: transaction))
             XCTAssertEqual(0, TSThread.anyCount(transaction: transaction))
-            XCTAssertFalse(self.identityManager.shouldSharePhoneNumber(with: bobClient.address,
-                                                                       transaction: transaction))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobClient.serviceId, tx: transaction.asV2Read))
         }
 
         let content = try! fakeService.buildContentData(bodyText: "Those who stands for nothing will fall for anything")
@@ -212,8 +214,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                 break
             }
             self.read { transaction in
-                XCTAssert(self.identityManager.shouldSharePhoneNumber(with: self.bobClient.address,
-                                                                      transaction: transaction))
+                XCTAssert(identityManager.shouldSharePhoneNumber(with: self.bobClient.serviceId, tx: transaction.asV2Read))
             }
         }
         waitForExpectations(timeout: 1.0)

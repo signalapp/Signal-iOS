@@ -5,6 +5,7 @@
 
 import ContactsUI
 import LibSignalClient
+import SignalMessaging
 import SignalServiceKit
 import SignalUI
 
@@ -258,7 +259,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     private(set) var groupMemberStateMap = [SignalServiceAddress: OWSVerificationState]()
     private(set) var sortedGroupMembers = [SignalServiceAddress]()
-    func updateGroupMembers(transaction: SDSAnyReadTransaction) {
+    func updateGroupMembers(transaction tx: SDSAnyReadTransaction) {
         guard let groupModel = currentGroupModel, !groupModel.isPlaceholder, let localAddress = tsAccountManager.localAddress else {
             groupMemberStateMap = [:]
             sortedGroupMembers = []
@@ -270,12 +271,11 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         var allMembersSorted = [SignalServiceAddress]()
         var verificationStateMap = [SignalServiceAddress: OWSVerificationState]()
 
+        let identityManager = DependenciesBridge.shared.identityManager
         for memberAddress in allMembers {
-            verificationStateMap[memberAddress] = self.identityManager.verificationState(for: memberAddress,
-                                                                                         transaction: transaction)
+            verificationStateMap[memberAddress] = identityManager.verificationState(for: memberAddress, tx: tx.asV2Read)
         }
-        allMembersSorted = self.contactsManagerImpl.sortSignalServiceAddresses(Array(allMembers),
-                                                                               transaction: transaction)
+        allMembersSorted = self.contactsManagerImpl.sortSignalServiceAddresses(Array(allMembers), transaction: tx)
 
         var membersToRender = [SignalServiceAddress]()
         if groupMembership.isFullMember(localAddress) {

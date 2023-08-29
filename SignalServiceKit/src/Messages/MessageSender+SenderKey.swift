@@ -647,6 +647,7 @@ extension MessageSender {
             groupIdForSending = Data()
         }
 
+        let identityManager = DependenciesBridge.shared.identityManager
         let signalProtocolStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
         let protocolAddresses = recipients.flatMap { $0.protocolAddresses }
         let secretCipher = try SMKSecretSessionCipher(
@@ -654,7 +655,7 @@ extension MessageSender {
             preKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).preKeyStore,
             signedPreKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).signedPreKeyStore,
             kyberPreKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).kyberPreKeyStore,
-            identityStore: Self.identityManager.store(for: .aci, transaction: writeTx),
+            identityStore: identityManager.libSignalStore(for: .aci, tx: writeTx.asV2Write),
             senderKeyStore: Self.senderKeyStore)
 
         let distributionId = senderKeyStore.distributionIdForSendingToThread(thread, writeTx: writeTx)

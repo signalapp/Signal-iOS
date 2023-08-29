@@ -653,7 +653,8 @@ private struct ProcessingRequestBuilder {
         }
 
         if decryptedEnvelope.localIdentity == .pni {
-            NSObject.identityManager.setShouldSharePhoneNumber(with: sourceAddress, transaction: tx)
+            let identityManager = DependenciesBridge.shared.identityManager
+            identityManager.setShouldSharePhoneNumber(with: decryptedEnvelope.sourceAci, tx: tx.asV2Write)
         }
 
         switch processingStep(for: decryptedEnvelope, tx: tx) {

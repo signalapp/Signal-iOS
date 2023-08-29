@@ -5,7 +5,10 @@
 
 import AVKit
 import Foundation
+import LibSignalClient
+import SignalCoreKit
 import SignalMessaging
+import SignalServiceKit
 import UIKit
 
 public protocol ConversationPickerDelegate: AnyObject {
@@ -1256,7 +1259,7 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
             let didHaveSafetyNumberChanges = SafetyNumberConfirmationSheet.presentIfNecessary(
                 addresses: selectedRecipients,
                 confirmationText: SafetyNumberStrings.confirmSendButton,
-                untrustedThreshold: abs(presentationTime.timeIntervalSinceNow) + OWSIdentityManager.minimumUntrustedThreshold
+                untrustedThreshold: abs(presentationTime.timeIntervalSinceNow) + OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold
             ) { didConfirmSafetyNumberChange in
                 guard didConfirmSafetyNumberChange else { return }
                 pickerDelegate.conversationPickerDidCompleteSelection(self)
@@ -1471,13 +1474,14 @@ public class ConversationPickerSelection: Dependencies {
 
         guard delegate?.shouldBatchUpdateIdentityKeys == true else { return }
 
-        let recipients: [SignalServiceAddress] = databaseStorage.read { transaction in
+        let recipients: [ServiceId] = databaseStorage.read { transaction in
             guard let thread = conversation.getExistingThread(transaction: transaction) else { return [] }
-            return thread.recipientAddresses(with: transaction)
+            return thread.recipientAddresses(with: transaction).compactMap { $0.serviceId }
         }
 
         Logger.info("Batch updating identity keys for \(recipients.count) selected recipients.")
-        identityManager.batchUpdateIdentityKeys(addresses: recipients).done {
+        let identityManager = DependenciesBridge.shared.identityManager
+        identityManager.batchUpdateIdentityKeys(for: recipients).done {
             Logger.info("Successfully batch updated identity keys.")
         }.catch { error in
             owsFailDebug("Failed to batch update identity keys: \(error)")

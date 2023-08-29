@@ -41,7 +41,7 @@ public class SignalServiceProfile {
         self.serviceId = serviceId
 
         let identityKeyWithType = try params.requiredBase64EncodedData(key: "identityKey")
-        guard identityKeyWithType.count == kIdentityKeyLength else {
+        guard identityKeyWithType.count == OWSIdentityManagerImpl.Constants.identityKeyLength else {
             throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with decoded length: \(identityKeyWithType.count)")
         }
         do {

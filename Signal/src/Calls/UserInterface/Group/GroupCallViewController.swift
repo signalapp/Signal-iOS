@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 import SignalRingRTC
 import SignalUI
 
@@ -682,8 +683,13 @@ extension GroupCallViewController: CallViewControllerWindowReference {
                 addressesToCheck = groupCall.remoteDeviceStates.map { $0.value.address }
             }
 
+            let identityManager = DependenciesBridge.shared.identityManager
             return addressesToCheck.filter { memberAddress in
-                identityManager.untrustedIdentityForSending(to: memberAddress, transaction: transaction) != nil
+                identityManager.untrustedIdentityForSending(
+                    to: memberAddress,
+                    untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+                    tx: transaction.asV2Read
+                ) != nil
             }
         }
     }

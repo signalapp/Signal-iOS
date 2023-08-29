@@ -13,8 +13,6 @@ public protocol Payments: AnyObject {
 
     func walletAddressQRUrl() -> URL?
 
-    func localPaymentAddressProtoData() -> Data?
-
     var shouldShowPaymentsUI: Bool { get }
 
     var paymentsEntropy: Data? { get }
@@ -144,10 +142,6 @@ extension MockPayments: PaymentsSwift {
     }
 
     public func walletAddressQRUrl() -> URL? {
-        owsFail("Not implemented.")
-    }
-
-    public func localPaymentAddressProtoData() -> Data? {
         owsFail("Not implemented.")
     }
 

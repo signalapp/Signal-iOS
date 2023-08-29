@@ -646,9 +646,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
         var didIdentityChange = false
+        let identityManager = DependenciesBridge.shared.identityManager
         for address in thread.recipientAddresses(with: transaction) {
-            if self.identityManager.verificationState(for: address,
-                                                      transaction: transaction) == .noLongerVerified {
+            if identityManager.verificationState(for: address, tx: transaction.asV2Read) == .noLongerVerified {
                 didIdentityChange = true
                 break
             }
@@ -779,9 +779,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
         var didIdentityChange = false
+        let identityManager = DependenciesBridge.shared.identityManager
         for address in thread.recipientAddresses(with: transaction) {
-            if self.identityManager.verificationState(for: address,
-                                                      transaction: transaction) == .noLongerVerified {
+            if identityManager.verificationState(for: address, tx: transaction.asV2Read) == .noLongerVerified {
                 didIdentityChange = true
                 break
             }

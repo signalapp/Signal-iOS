@@ -56,7 +56,6 @@ public class MockSSKEnvironment: SSKEnvironment {
         let aciSignalProtocolStore = SignalProtocolStoreImpl(for: .aci, keyValueStoreFactory: keyValueStoreFactory)
         let dateProvider = Date.provider
         let groupsV2 = MockGroupsV2()
-        let identityManager = OWSIdentityManager(databaseStorage: databaseStorage)
         let messageProcessor = MessageProcessor()
         let messageSender = FakeMessageSender()
         let modelReadCaches = ModelReadCaches(factory: TestableModelReadCacheFactory())
@@ -78,13 +77,12 @@ public class MockSSKEnvironment: SSKEnvironment {
         let webSocketFactory = WebSocketFactoryMock()
         let sskJobQueues = SSKJobQueues()
 
-        let dependenciesBridge = DependenciesBridge.setupSingleton(
+        let dependenciesBridge = DependenciesBridge.setUpSingleton(
             accountServiceClient: accountServiceClient,
             appVersion: AppVersionImpl.shared,
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
-            identityManager: identityManager,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
             modelReadCaches: modelReadCaches,
@@ -159,7 +157,6 @@ public class MockSSKEnvironment: SSKEnvironment {
             networkManager: networkManager,
             messageManager: messageManager,
             blockingManager: blockingManager,
-            identityManager: identityManager,
             remoteConfigManager: remoteConfigManager,
             aciSignalProtocolStore: aciSignalProtocolStore,
             pniSignalProtocolStore: pniSignalProtocolStore,

@@ -4,7 +4,6 @@
 //
 
 #import "OWSRecipientIdentity.h"
-#import "OWSIdentityManager.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -39,7 +38,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
     OWSVerificationState verificationState,
     NSUInteger paddingBytesLength)
 {
-    OWSCAssertDebug(identityKey.length == kIdentityKeyLength);
+    OWSCAssertDebug(identityKey.length == OWSIdentityManagerObjCBridge.identityKeyLength);
     OWSCAssertDebug(address.isValid);
     // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
     // will figure that out on it's own.

@@ -486,25 +486,20 @@ public extension PaymentsImpl {
         return url
     }
 
-    func localPaymentAddressProtoData() -> Data? {
-        localPaymentAddressProtoData(paymentsState: self.paymentsState)
-    }
-
-    func localPaymentAddressProtoData(paymentsState: PaymentsState) -> Data? {
+    func localPaymentAddressProtoData(paymentsState: PaymentsState, tx: SDSAnyReadTransaction) -> Data? {
         owsAssertDebug(paymentsState.isEnabled)
 
         guard let localPaymentAddress = buildLocalPaymentAddress(paymentsState: paymentsState) else {
             owsFailDebug("Missing localPaymentAddress.")
             return nil
         }
-        guard localPaymentAddress.isValid,
-              localPaymentAddress.currency == .mobileCoin else {
+        guard localPaymentAddress.isValid, localPaymentAddress.currency == .mobileCoin else {
             owsFailDebug("Invalid localPaymentAddress.")
             return nil
         }
 
         do {
-            let proto = try localPaymentAddress.buildProto()
+            let proto = try localPaymentAddress.buildProto(tx: tx)
             return try proto.serializedData()
         } catch {
             owsFailDebug("Error: \(error)")
@@ -516,7 +511,7 @@ public extension PaymentsImpl {
         let data: Data?
         let paymentsState = self.paymentsState
         if paymentsState.isEnabled {
-            data = localPaymentAddressProtoData(paymentsState: paymentsState)
+            data = localPaymentAddressProtoData(paymentsState: paymentsState, tx: transaction)
         } else {
             data = nil
         }

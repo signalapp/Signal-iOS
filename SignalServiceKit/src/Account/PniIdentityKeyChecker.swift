@@ -98,10 +98,7 @@ class _PniIdentityKeyCheckerImpl_IdentityManager_Wrapper: _PniIdentityKeyChecker
     }
 
     func pniIdentityPublicKeyData(tx: DBReadTransaction) -> Data? {
-        return identityManager.identityKeyPair(
-            for: .pni,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )?.publicKey
+        return identityManager.identityKeyPair(for: .pni, tx: tx)?.publicKey
     }
 }
 

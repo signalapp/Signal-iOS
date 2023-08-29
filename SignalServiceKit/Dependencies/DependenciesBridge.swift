@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 /// Temporary bridge between [legacy code that uses global accessors for manager instances]
 /// and [new code that expects references to instances to be explicitly passed around].
@@ -80,17 +81,18 @@ public class DependenciesBridge {
     public let localUsernameManager: LocalUsernameManager
     public let usernameValidationManager: UsernameValidationManager
 
+    public let identityManager: OWSIdentityManager
+
     let groupMemberStore: GroupMemberStore
     let groupMemberUpdater: GroupMemberUpdater
 
     /// Initialize and configure the ``DependenciesBridge`` singleton.
-    public static func setupSingleton(
+    public static func setUpSingleton(
         accountServiceClient: AccountServiceClient,
         appVersion: AppVersion,
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         groupsV2: GroupsV2,
-        identityManager: OWSIdentityManager,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
         modelReadCaches: ModelReadCaches,
@@ -114,7 +116,6 @@ public class DependenciesBridge {
             databaseStorage: databaseStorage,
             dateProvider: dateProvider,
             groupsV2: groupsV2,
-            identityManager: identityManager,
             messageProcessor: messageProcessor,
             messageSender: messageSender,
             modelReadCaches: modelReadCaches,
@@ -143,7 +144,6 @@ public class DependenciesBridge {
         databaseStorage: SDSDatabaseStorage,
         dateProvider: @escaping DateProvider,
         groupsV2: GroupsV2,
-        identityManager: OWSIdentityManager,
         messageProcessor: MessageProcessor,
         messageSender: MessageSender,
         modelReadCaches: ModelReadCaches,
@@ -183,6 +183,23 @@ public class DependenciesBridge {
             dateProvider: dateProvider,
             appVersion: appVersion,
             schedulers: schedulers
+        )
+
+        let recipientStore = RecipientDataStoreImpl()
+        self.recipientFetcher = RecipientFetcherImpl(recipientStore: recipientStore)
+
+        self.identityManager = OWSIdentityManagerImpl(
+            aciProtocolStore: aciProtocolStore,
+            db: db,
+            keyValueStoreFactory: keyValueStoreFactory,
+            messageSenderJobQueue: jobQueues.messageSenderJobQueue,
+            networkManager: networkManager,
+            notificationsManager: notificationsManager,
+            pniProtocolStore: pniProtocolStore,
+            recipientFetcher: recipientFetcher,
+            schedulers: schedulers,
+            storageServiceManager: storageServiceManager,
+            tsAccountManager: tsAccountManager
         )
 
         self.changePhoneNumberPniManager = ChangePhoneNumberPniManagerImpl(
@@ -333,10 +350,7 @@ public class DependenciesBridge {
             wallpaperStore: self.wallpaperStore
         )
 
-        let recipientStore = RecipientDataStoreImpl()
         let userProfileStore = UserProfileStoreImpl()
-
-        self.recipientFetcher = RecipientFetcherImpl(recipientStore: recipientStore)
 
         self.recipientMerger = RecipientMergerImpl(
             temporaryShims: SignalRecipientMergerTemporaryShims(

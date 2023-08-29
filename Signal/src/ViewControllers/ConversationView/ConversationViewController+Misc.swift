@@ -4,6 +4,7 @@
 //
 
 import ContactsUI
+import SignalServiceKit
 import SignalMessaging
 import SignalUI
 
@@ -61,13 +62,11 @@ public extension ConversationViewController {
 
     func noLongerVerifiedAddresses(limit: Int, transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         if let groupThread = thread as? TSGroupThread {
-            return Self.identityManager.noLongerVerifiedAddresses(inGroup: groupThread.uniqueId,
-                                                                  limit: limit,
-                                                                  transaction: transaction)
+            return OWSRecipientIdentity.noLongerVerifiedAddresses(inGroup: groupThread.uniqueId, limit: limit, transaction: transaction)
         }
+        let identityManager = DependenciesBridge.shared.identityManager
         return thread.recipientAddresses(with: transaction).filter { address in
-            Self.identityManager.verificationState(for: address,
-                                                   transaction: transaction) == .noLongerVerified
+            identityManager.verificationState(for: address, tx: transaction.asV2Read) == .noLongerVerified
         }
     }
 
@@ -75,13 +74,12 @@ public extension ConversationViewController {
         AssertIsOnMainThread()
 
         databaseStorage.write { transaction in
-            let noLongerVerifiedAddresses = self.noLongerVerifiedAddresses(limit: Int.max,
-                                                                           transaction: transaction)
+            let noLongerVerifiedAddresses = self.noLongerVerifiedAddresses(limit: Int.max, transaction: transaction)
             for address in noLongerVerifiedAddresses {
                 owsAssertDebug(address.isValid)
 
-                guard let recipientIdentity = Self.identityManager.recipientIdentity(for: address,
-                                                                                     transaction: transaction) else {
+                let identityManager = DependenciesBridge.shared.identityManager
+                guard let recipientIdentity = identityManager.recipientIdentity(for: address, tx: transaction.asV2Read) else {
                     owsFailDebug("Missing recipientIdentity.")
                     continue
                 }
@@ -89,12 +87,12 @@ public extension ConversationViewController {
                     owsFailDebug("Invalid identityKey.")
                     continue
                 }
-                Self.identityManager.setVerificationState(
+                identityManager.setVerificationState(
                     .default,
                     identityKey: recipientIdentity.identityKey,
                     address: address,
                     isUserInitiatedChange: true,
-                    transaction: transaction
+                    tx: transaction.asV2Write
                 )
             }
         }

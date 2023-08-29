@@ -193,10 +193,10 @@ private class IdentityManagerMock: ChangePhoneNumberPniManagerImpl.Shims.Identit
         return keyPair
     }
 
-    func storeIdentityKeyPair(
+    func setIdentityKeyPair(
         _ keyPair: ECKeyPair?,
         for identity: OWSIdentity,
-        transaction _: DBWriteTransaction
+        tx _: DBWriteTransaction
     ) {
         storedKeyPairs[identity] = keyPair
     }

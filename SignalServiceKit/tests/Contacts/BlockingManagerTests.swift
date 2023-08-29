@@ -195,6 +195,7 @@ class BlockingManagerTests: SSKBaseTestSwift {
     func testSendSyncMessage() {
         // Setup
         // ensure local client has necessary "registered" state
+        let identityManager = DependenciesBridge.shared.identityManager
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
         tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
         BlockingManager.TestingFlags.optimisticallyCommitSyncToken = true

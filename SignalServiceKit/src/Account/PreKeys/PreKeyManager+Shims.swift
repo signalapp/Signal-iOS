@@ -33,7 +33,7 @@ public class _PreKeyManager_IdentityManagerWrapper: _PreKeyManager_IdentityManag
     }
 
     public func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair? {
-        identityManager.identityKeyPair(for: identity, transaction: SDSDB.shimOnlyBridge(tx))
+        identityManager.identityKeyPair(for: identity, tx: tx)
     }
 }
 

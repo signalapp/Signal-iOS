@@ -75,7 +75,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
     // we should recheck our pendingReceipts to re-attempt a send to formerly untrusted recipients.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(process)
-                                                 name:kNSNotificationNameIdentityStateDidChange
+                                                 name:OWSIdentityManagerObjCBridge.identityStateDidChangeNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(process)
@@ -223,7 +223,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
             continue;
         }
 
-        if ([self.identityManager untrustedIdentityForSendingToAddress:address]) {
+        if ([OWSIdentityManagerObjCBridge untrustedIdentityForSendingToAddress:address]) {
             OWSLogWarn(@"%@ is untrusted. Deferring sending of receipts.", address);
             continue;
         }

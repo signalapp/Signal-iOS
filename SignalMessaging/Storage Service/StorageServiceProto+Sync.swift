@@ -252,11 +252,11 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         // Identity
 
-        if let identityKey = identityManager.identityKey(for: address, transaction: transaction) {
+        if let identityKey = identityManager.identityKey(for: address, tx: transaction.asV2Read) {
             builder.setIdentityKey(identityKey.prependKeyType())
         }
 
-        let verificationState = identityManager.verificationState(for: address, transaction: transaction)
+        let verificationState = identityManager.verificationState(for: address, tx: transaction.asV2Read)
         builder.setIdentityState(.from(verificationState))
 
         // Profile
@@ -397,8 +397,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         let localProfileKey = profileManager.profileKey(for: address, transaction: transaction)
         let localGivenName = profileManager.unfilteredGivenName(for: address, transaction: transaction)
         let localFamilyName = profileManager.unfilteredFamilyName(for: address, transaction: transaction)
-        let localIdentityKey = identityManager.identityKey(for: address, transaction: transaction)
-        let localIdentityState = identityManager.verificationState(for: address, transaction: transaction)
+        let localIdentityKey = identityManager.identityKey(for: address, tx: transaction.asV2Read)
+        let localIdentityState = identityManager.verificationState(for: address, tx: transaction.asV2Read)
         let localIsBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
         let localIsHidden = recipientHidingManager.isHiddenAddress(address, tx: transaction.asV2Read)
         let localIsWhitelisted = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
@@ -455,7 +455,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 identityKey: identityKey,
                 address: address,
                 isUserInitiatedChange: false,
-                transaction: transaction
+                tx: transaction.asV2Write
             )
 
         // If we have a local identity for this user but the service doesn't mark it as needing update.

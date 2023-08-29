@@ -56,8 +56,8 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                                           value: profileKey?.hexadecimalString,
                                           accessibilityIdentifier: "profile_key"))
 
-                let identityKey = identityManager.recipientIdentity(for: address,
-                                                                    transaction: transaction)?.identityKey
+                let identityManager = DependenciesBridge.shared.identityManager
+                let identityKey = identityManager.recipientIdentity(for: address, tx: transaction.asV2Read)?.identityKey
                 section.add(.copyableItem(label: "Identity Key",
                                           value: identityKey?.hexadecimalString,
                                           accessibilityIdentifier: "identity_key"))

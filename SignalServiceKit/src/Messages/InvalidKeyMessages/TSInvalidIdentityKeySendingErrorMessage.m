@@ -5,7 +5,6 @@
 
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
 #import "NSData+keyVersionByte.h"
-#import "OWSIdentityManager.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "TSContactThread.h"
 #import "TSOutgoingMessage.h"
@@ -131,7 +130,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [[OWSIdentityManager shared] saveRemoteIdentity:newIdentityKey address:self.recipientAddress];
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *tx) {
+        [OWSIdentityManagerObjCBridge saveIdentityKey:newIdentityKey forAddress:self.recipientAddress transaction:tx];
+    });
 }
 
 - (nullable NSData *)throws_newIdentityKey

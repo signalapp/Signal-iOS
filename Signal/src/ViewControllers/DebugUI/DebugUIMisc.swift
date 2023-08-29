@@ -353,7 +353,8 @@ class DebugUIMisc: DebugUIPage, Dependencies {
 
     private static func removeLocalPniIdentityKey() {
         databaseStorage.write { transaction in
-            identityManager.storeIdentityKeyPair(nil, for: .pni, transaction: transaction)
+            let identityManager = DependenciesBridge.shared.identityManager
+            identityManager.setIdentityKeyPair(nil, for: .pni, tx: transaction.asV2Write)
         }
     }
 

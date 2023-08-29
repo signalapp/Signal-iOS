@@ -9,11 +9,13 @@ import XCTest
 @testable import SignalServiceKit
 
 class TSOutgoingMessageTest: SSKBaseTestSwift {
+    private var identityManager: OWSIdentityManager { DependenciesBridge.shared.identityManager }
+
     override func setUp() {
         super.setUp()
         tsAccountManager.registerForTests(localIdentifiers: .forUnitTests)
-        _ = identityManager.generateAndPersistNewIdentityKey(for: .aci)
-        _ = identityManager.generateAndPersistNewIdentityKey(for: .pni)
+        identityManager.generateAndPersistNewIdentityKey(for: .aci)
+        identityManager.generateAndPersistNewIdentityKey(for: .pni)
     }
 
     func testIsUrgent() {
@@ -93,8 +95,9 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
     func testPniSignatureWhenNeeded() {
         write { transaction in
-            let otherAddress = SignalServiceAddress(serviceId: Aci.randomForTesting(), phoneNumber: "+12223334444")
-            identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
+            let otherAci = Aci.randomForTesting()
+            let otherAddress = SignalServiceAddress(serviceId: otherAci, phoneNumber: "+12223334444")
+            identityManager.setShouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Write)
 
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
@@ -106,8 +109,8 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let messagePni = content.pniSignatureMessage!.pni
             XCTAssertEqual(messagePni, tsAccountManager.localPni!.rawUUID.data)
 
-            let aciKeyPair = identityManager.identityKeyPair(for: .aci, transaction: transaction)!.identityKeyPair
-            let pniKeyPair = identityManager.identityKeyPair(for: .pni, transaction: transaction)!.identityKeyPair
+            let aciKeyPair = identityManager.identityKeyPair(for: .aci, tx: transaction.asV2Read)!.identityKeyPair
+            let pniKeyPair = identityManager.identityKeyPair(for: .pni, tx: transaction.asV2Read)!.identityKeyPair
             XCTAssert(try! pniKeyPair.identityKey.verifyAlternateIdentity(
                 aciKeyPair.identityKey,
                 signature: content.pniSignatureMessage!.signature!))
@@ -118,7 +121,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
         write { transaction in
             let otherAci = Aci.randomForTesting()
             let otherAddress = SignalServiceAddress(serviceId: otherAci, phoneNumber: "+12223334444")
-            identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
+            identityManager.setShouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Write)
 
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
@@ -139,7 +142,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             )
 
             // Nothing changed yet...
-            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
+            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
 
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
@@ -147,7 +150,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
                            context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
         }
     }
 
@@ -155,7 +158,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
         write { transaction in
             let otherAci = Aci.randomForTesting()
             let otherAddress = SignalServiceAddress(serviceId: otherAci, phoneNumber: "+12223334444")
-            identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
+            identityManager.setShouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Write)
 
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
@@ -183,7 +186,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             )
 
             // Nothing changed yet...
-            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
+            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
 
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
@@ -192,7 +195,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
                            transaction: transaction)
 
             // Still waiting on device #2!
-            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
+            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
 
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 2,
@@ -201,7 +204,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
                            transaction: transaction)
 
             // There we go.
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
         }
     }
 
@@ -209,7 +212,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
         write { transaction in
             let otherAci = Aci.randomForTesting()
             let otherAddress = SignalServiceAddress(serviceId: otherAci, phoneNumber: "+12223334444")
-            identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
+            identityManager.setShouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Write)
 
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
@@ -230,7 +233,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             )
 
             // Nothing changed yet...
-            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
+            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
 
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
@@ -239,7 +242,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
                            transaction: transaction)
 
             // Still not changed!
-            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
+            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
         }
     }
 
@@ -267,8 +270,8 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             )
 
             // If we set it now...
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
-            identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
+            identityManager.setShouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Write)
 
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
@@ -277,7 +280,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
                            transaction: transaction)
 
             // ...it should stay active.
-            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
+            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
         }
     }
 
@@ -287,7 +290,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
         var message: TSOutgoingMessage!
 
         write { transaction in
-            identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
+            identityManager.setShouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Write)
 
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
@@ -316,8 +319,8 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
         write { transaction in
             // Changing your number resets this setting.
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
-            identityManager.setShouldSharePhoneNumber(with: otherAddress, transaction: transaction)
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
+            identityManager.setShouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Write)
 
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
@@ -326,7 +329,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
                            transaction: transaction)
 
             // Still on, because our PNI changed!
-            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
+            XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
         }
     }
 }

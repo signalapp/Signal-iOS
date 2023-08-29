@@ -7,7 +7,6 @@
 #import "SSKBaseTestObjC.h"
 #import "SSKSignedPreKeyStore.h"
 #import "SignedPrekeyRecord.h"
-#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface SignedPreKeyDeletionTests : SSKBaseTestObjC

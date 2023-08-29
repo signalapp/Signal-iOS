@@ -36,7 +36,7 @@ public class OWSFingerprintBuilder {
         guard
             let localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx),
             let myE164 = E164(localIdentifiers.phoneNumber),
-            let myAciIdentityKey = identityManager.identityKeyPair(for: .aci, transaction: tx)?.publicKey
+            let myAciIdentityKey = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)?.publicKey
         else {
             owsFailDebug("Missing local properties!")
             return nil

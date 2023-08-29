@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 @available(swift, obsoleted: 1.0)
 @objcMembers
@@ -87,10 +88,7 @@ public extension OWSDevice {
         transaction: SDSAnyReadTransaction
     ) -> String {
         if let encryptedName = self.encryptedName {
-            if let identityKeyPair = identityManager.identityKeyPair(
-                for: .aci,
-                transaction: transaction
-            ) {
+            if let identityKeyPair = identityManager.identityKeyPair(for: .aci, tx: transaction.asV2Read) {
                 do {
                     return try DeviceNames.decryptDeviceName(
                         base64String: encryptedName,

@@ -4,7 +4,6 @@
 //
 
 #import "OWSVerificationStateSyncMessage.h"
-#import "OWSIdentityManager.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -29,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
     verificationForRecipientAddress:(SignalServiceAddress *)address
                         transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(identityKey.length == kIdentityKeyLength);
+    OWSAssertDebug(identityKey.length == OWSIdentityManagerObjCBridge.identityKeyLength);
     OWSAssertDebug(address.isValid);
 
     // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
@@ -70,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(self.identityKey.length == kIdentityKeyLength);
+    OWSAssertDebug(self.identityKey.length == OWSIdentityManagerObjCBridge.identityKeyLength);
     OWSAssertDebug(self.verificationForRecipientAddress.isValid);
 
     // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
@@ -98,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (size_t)unpaddedVerifiedLength
 {
-    OWSAssertDebug(self.identityKey.length == kIdentityKeyLength);
+    OWSAssertDebug(self.identityKey.length == OWSIdentityManagerObjCBridge.identityKeyLength);
     OWSAssertDebug(self.verificationForRecipientAddress.isValid);
 
     // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device

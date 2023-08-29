@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+#import <SignalServiceKit/OWSIdentity.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class AciObjC;
@@ -22,8 +24,6 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
     TSVerificationTransportVoice = 1,
     TSVerificationTransportSMS
 };
-
-typedef NS_ENUM(uint8_t, OWSIdentity);
 
 @interface OWSRequestFactory : NSObject
 

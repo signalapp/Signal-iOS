@@ -179,13 +179,16 @@ public extension TSOutgoingMessage {
     }
 
     @objc(buildPniSignatureMessageIfNeededWithTransaction:)
-    func buildPniSignatureMessageIfNeeded(transaction: SDSAnyReadTransaction) -> SSKProtoPniSignatureMessage? {
+    func buildPniSignatureMessageIfNeeded(transaction tx: SDSAnyReadTransaction) -> SSKProtoPniSignatureMessage? {
         guard recipientAddressStates?.count == 1 else {
             // This is probably a group message, nothing to be alarmed about.
             return nil
         }
-        guard identityManager.shouldSharePhoneNumber(with: recipientAddressStates!.keys.first!,
-                                                     transaction: transaction) else {
+        guard let recipientServiceId = recipientAddressStates!.keys.first!.serviceId else {
+            return nil
+        }
+        let identityManager = DependenciesBridge.shared.identityManager
+        guard identityManager.shouldSharePhoneNumber(with: recipientServiceId, tx: tx.asV2Read) else {
             // No PNI signature needed.
             return nil
         }
@@ -193,11 +196,11 @@ public extension TSOutgoingMessage {
             owsFailDebug("missing PNI")
             return nil
         }
-        guard let pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, transaction: transaction) else {
+        guard let pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read) else {
             owsFailDebug("missing PNI identity key")
             return nil
         }
-        guard let aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, transaction: transaction) else {
+        guard let aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read) else {
             owsFailDebug("missing ACI identity key")
             return nil
         }
@@ -208,13 +211,7 @@ public extension TSOutgoingMessage {
         let builder = SSKProtoPniSignatureMessage.builder()
         builder.setPni(pni.rawUUID.data)
         builder.setSignature(Data(signature))
-
-        do {
-            return try builder.build()
-        } catch {
-            owsFailDebug("failed to build protobuf: \(error)")
-            return nil
-        }
+        return builder.buildInfallibly()
     }
 
     @objc(maybeClearShouldSharePhoneNumberForRecipient:recipientDeviceId:transaction:)
@@ -234,7 +231,8 @@ public extension TSOutgoingMessage {
             return
         }
 
-        guard identityManager.shouldSharePhoneNumber(with: recipientAddress, transaction: transaction) else {
+        let identityManager = DependenciesBridge.shared.identityManager
+        guard identityManager.shouldSharePhoneNumber(with: serviceId, tx: transaction.asV2Read) else {
             // Not currently sharing anyway!
             return
         }
@@ -273,7 +271,7 @@ public extension TSOutgoingMessage {
         }
 
         if messagePniData == currentPni.rawUUID.data {
-            identityManager.clearShouldSharePhoneNumber(with: recipientAddress, transaction: transaction)
+            identityManager.clearShouldSharePhoneNumber(with: serviceId, tx: transaction.asV2Write)
         }
     }
 }

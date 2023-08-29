@@ -26,10 +26,10 @@ extension ChangePhoneNumberPniManagerImpl {
 protocol _ChangePhoneNumberPniManager_IdentityManagerShim {
     func generateNewIdentityKeyPair() -> ECKeyPair
 
-    func storeIdentityKeyPair(
+    func setIdentityKeyPair(
         _ keyPair: ECKeyPair?,
         for identity: OWSIdentity,
-        transaction: DBWriteTransaction
+        tx: DBWriteTransaction
     )
 }
 
@@ -72,16 +72,12 @@ class _ChangePhoneNumberPniManager_IdentityManagerWrapper: _ChangePhoneNumberPni
         identityManager.generateNewIdentityKeyPair()
     }
 
-    func storeIdentityKeyPair(
+    func setIdentityKeyPair(
         _ keyPair: ECKeyPair?,
         for identity: OWSIdentity,
-        transaction: DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
-        identityManager.storeIdentityKeyPair(
-            keyPair,
-            for: identity,
-            transaction: SDSDB.shimOnlyBridge(transaction)
-        )
+        identityManager.setIdentityKeyPair(keyPair, for: identity, tx: tx)
     }
 }
 

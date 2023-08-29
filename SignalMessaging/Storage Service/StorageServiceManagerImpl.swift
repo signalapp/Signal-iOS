@@ -1488,7 +1488,7 @@ class StorageServiceOperation: OWSOperation {
                 blockingManager: blockingManager,
                 bulkProfileFetch: bulkProfileFetch,
                 contactsManager: contactsManagerImpl,
-                identityManager: identityManager,
+                identityManager: DependenciesBridge.shared.identityManager,
                 profileManager: profileManagerImpl,
                 tsAccountManager: tsAccountManager,
                 usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,

@@ -168,13 +168,13 @@ final public class IndividualCallService: NSObject {
         }
     }
 
-    private func getIdentityKeys(thread: TSContactThread, transaction: SDSAnyReadTransaction) -> CallIdentityKeys? {
-        guard let localIdentityKey = self.identityManager.identityKeyPair(for: .aci,
-                                                                          transaction: transaction)?.publicKey else {
+    private func getIdentityKeys(thread: TSContactThread, transaction tx: SDSAnyReadTransaction) -> CallIdentityKeys? {
+        let identityManager = DependenciesBridge.shared.identityManager
+        guard let localIdentityKey = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)?.publicKey else {
             owsFailDebug("missing localIdentityKey")
             return nil
         }
-        guard let contactIdentityKey = self.identityManager.identityKey(for: thread.contactAddress, transaction: transaction) else {
+        guard let contactIdentityKey = identityManager.identityKey(for: thread.contactAddress, tx: tx.asV2Read) else {
             owsFailDebug("missing contactIdentityKey")
             return nil
         }
@@ -226,8 +226,12 @@ final public class IndividualCallService: NSObject {
             return
         }
 
-        if let untrustedIdentity = self.identityManager.untrustedIdentityForSending(to: thread.contactAddress,
-                                                                                    transaction: transaction) {
+        let identityManager = DependenciesBridge.shared.identityManager
+        if let untrustedIdentity = identityManager.untrustedIdentityForSending(
+            to: thread.contactAddress,
+            untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
+            tx: transaction.asV2Read
+        ) {
             Logger.warn("missed a call due to untrusted identity: \(newCall)")
 
             switch untrustedIdentity.verificationState {

@@ -6,7 +6,6 @@
 #import "TSContactThread.h"
 #import "ContactsManagerProtocol.h"
 #import "NotificationsProtocol.h"
-#import "OWSIdentityManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -189,7 +188,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 - (BOOL)hasSafetyNumbers
 {
-    return !![[OWSIdentityManager shared] identityKeyForAddress:self.contactAddress];
+    return [OWSIdentityManagerObjCBridge identityKeyForAddress:self.contactAddress] != nil;
 }
 
 + (nullable SignalServiceAddress *)contactAddressFromThreadId:(NSString *)threadId

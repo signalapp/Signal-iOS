@@ -65,6 +65,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
                 !$0.isPrimaryDevice
             }
 
+            let identityManager = DependenciesBridge.shared.identityManager
             return justDevices.map { device -> DisplayableDevice in
                 return .init(
                     device: device,

@@ -614,13 +614,8 @@ public class ProfileFetcherJob: NSObject {
         latestIdentityKey: Data,
         transaction: SDSAnyWriteTransaction
     ) {
-        if self.identityManager.saveRemoteIdentity(
-            latestIdentityKey,
-            address: address,
-            transaction: transaction
-        ) {
-            Logger.info("updated identity key with fetched profile for recipient: \(address)")
-        }
+        let identityManager = DependenciesBridge.shared.identityManager
+        identityManager.saveIdentityKey(latestIdentityKey, for: address, tx: transaction.asV2Write)
     }
 
     private func lastFetchDate() -> Date? {

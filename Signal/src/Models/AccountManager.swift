@@ -145,16 +145,18 @@ public class AccountManager: NSObject, Dependencies {
             }
 
             self.databaseStorage.write { transaction in
-                self.identityManager.storeIdentityKeyPair(
+                let identityManager = DependenciesBridge.shared.identityManager
+
+                identityManager.setIdentityKeyPair(
                     provisionMessage.aciIdentityKeyPair,
                     for: .aci,
-                    transaction: transaction
+                    tx: transaction.asV2Write
                 )
 
-                self.identityManager.storeIdentityKeyPair(
+                identityManager.setIdentityKeyPair(
                     provisionMessage.pniIdentityKeyPair,
                     for: .pni,
-                    transaction: transaction
+                    tx: transaction.asV2Write
                 )
 
                 self.profileManagerImpl.setLocalProfileKey(

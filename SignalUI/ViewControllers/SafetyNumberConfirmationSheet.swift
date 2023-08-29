@@ -66,11 +66,12 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         addressesToConfirm: [SignalServiceAddress],
         transaction: SDSAnyReadTransaction
     ) -> [Item] {
-        addressesToConfirm.map { address in
+        let identityManager = DependenciesBridge.shared.identityManager
+        return addressesToConfirm.map { address in
             return Item(
                 address: address,
                 displayName: contactsManager.displayName(for: address, transaction: transaction),
-                verificationState: identityManager.verificationState(for: address, transaction: transaction)
+                verificationState: identityManager.verificationState(for: address, tx: transaction.asV2Read)
             )
         }
     }
@@ -118,13 +119,14 @@ public class SafetyNumberConfirmationSheet: UIViewController {
     public class func presentIfNecessary(
         addresses: [SignalServiceAddress],
         confirmationText: String,
-        untrustedThreshold: TimeInterval = OWSIdentityManager.minimumUntrustedThreshold,
+        untrustedThreshold: TimeInterval = OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
         completion: @escaping (Bool) -> Void
     ) -> Bool {
 
-        let untrustedAddresses = databaseStorage.read { transaction in
+        let identityManager = DependenciesBridge.shared.identityManager
+        let untrustedAddresses = databaseStorage.read { tx in
             addresses.filter { address in
-                identityManager.untrustedIdentityForSending(to: address, untrustedThreshold: untrustedThreshold, transaction: transaction) != nil
+                identityManager.untrustedIdentityForSending(to: address, untrustedThreshold: untrustedThreshold, tx: tx.asV2Read) != nil
             }
         }
 
@@ -224,13 +226,13 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         stackView.addHairline(with: theme.hairlineColor)
         confirmAction.button.releaseAction = { [weak self] in
             guard let self = self else { return }
-            let identityManager = self.identityManager
+            let identityManager = DependenciesBridge.shared.identityManager
             let unconfirmedAddresses = self.confirmationItems.map { $0.address }
 
             self.databaseStorage.asyncWrite(block: { writeTx in
                 for address in unconfirmedAddresses {
-                    guard let identityKey = identityManager.identityKey(for: address, transaction: writeTx) else { return }
-                    let currentState = identityManager.verificationState(for: address, transaction: writeTx)
+                    guard let identityKey = identityManager.identityKey(for: address, tx: writeTx.asV2Read) else { return }
+                    let currentState = identityManager.verificationState(for: address, tx: writeTx.asV2Read)
 
                     // Promote any unverified verification states to default, but otherwise leave
                     // the state intact. We don't want to overwrite any addresses that have
@@ -241,7 +243,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
                         identityKey: identityKey,
                         address: address,
                         isUserInitiatedChange: true,
-                        transaction: writeTx
+                        tx: writeTx.asV2Write
                     )
                 }
             }, completionQueue: .main) {

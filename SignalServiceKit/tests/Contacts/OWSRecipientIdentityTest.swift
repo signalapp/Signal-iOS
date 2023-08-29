@@ -25,7 +25,7 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
         if let value = identityKeys[serviceId] {
             return value
         }
-        let data = Randomness.generateRandomBytes(Int32(kStoredIdentityKeyLength))
+        let data = Curve25519.generateKeyPair().publicKey
         identityKeys[serviceId] = data
         return data
     }
@@ -33,19 +33,13 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
     private func createFakeGroup() throws {
         // Create local account.
         tsAccountManager.registerForTests(localIdentifiers: LocalIdentifiers(aci: localAci, pni: nil, phoneNumber: "+16505550100"))
-        // Create recipients.
+        // Create recipients & identities for them.
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-            for recipient in self.recipients {
+            for recipient in recipients {
                 recipientFetcher.fetchOrCreate(serviceId: recipient, tx: tx.asV2Write).markAsRegisteredAndSave(tx: tx)
+                identityManager.saveIdentityKey(identityKey(recipient), for: SignalServiceAddress(recipient), tx: tx.asV2Write)
             }
-        }
-        // Create identities for our recipients.
-        for recipient in recipients {
-            OWSIdentityManager.shared.saveRemoteIdentity(
-                identityKey(recipient),
-                address: SignalServiceAddress(recipient)
-            )
         }
 
         // Create a group with our recipients plus us.
@@ -55,6 +49,8 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
         )
     }
 
+    private var identityManager: OWSIdentityManager { DependenciesBridge.shared.identityManager }
+
     override func setUp() {
         super.setUp()
         try! createFakeGroup()
@@ -62,59 +58,71 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
 
     func testNoneVerified() throws {
         read { tx in
-            XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, transaction: tx))
+            XCTAssertTrue(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx.asV2Read))
         }
     }
 
     func testAllVerified() throws {
         for recipient in recipients {
-            OWSIdentityManager.shared.setVerificationState(
-                .verified,
-                identityKey: identityKey(recipient),
-                address: SignalServiceAddress(recipient),
-                isUserInitiatedChange: true
-            )
+            write { tx in
+                identityManager.setVerificationState(
+                    .verified,
+                    identityKey: identityKey(recipient),
+                    address: SignalServiceAddress(recipient),
+                    isUserInitiatedChange: true,
+                    tx: tx.asV2Write
+                )
+            }
         }
         read { tx in
-            XCTAssertFalse(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, transaction: tx))
+            XCTAssertFalse(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx.asV2Read))
         }
     }
 
     func testSomeVerified() throws {
         let recipient = recipients[0]
-        OWSIdentityManager.shared.setVerificationState(
-            .verified,
-            identityKey: identityKey(recipient),
-            address: SignalServiceAddress(recipient),
-            isUserInitiatedChange: true
-        )
+        write { tx in
+            identityManager.setVerificationState(
+                .verified,
+                identityKey: identityKey(recipient),
+                address: SignalServiceAddress(recipient),
+                isUserInitiatedChange: true,
+                tx: tx.asV2Write
+            )
+        }
         read { tx in
-            XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, transaction: tx))
+            XCTAssertTrue(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx.asV2Read))
         }
     }
 
     func testSomeNoLongerVerified() throws {
         // Verify everyone
         for recipient in recipients {
-            OWSIdentityManager.shared.setVerificationState(
-                .verified,
-                identityKey: identityKey(recipient),
-                address: SignalServiceAddress(recipient),
-                isUserInitiatedChange: true
-            )
+            write { tx in
+                identityManager.setVerificationState(
+                    .verified,
+                    identityKey: identityKey(recipient),
+                    address: SignalServiceAddress(recipient),
+                    isUserInitiatedChange: true,
+                    tx: tx.asV2Write
+                )
+            }
         }
         // Make Alice and Bob no-longer-verified.
         let deverifiedAcis = [aliceAci, bobAci]
         for recipient in deverifiedAcis {
-            OWSIdentityManager.shared.setVerificationState(
-                .noLongerVerified,
-                identityKey: identityKey(recipient),
-                address: SignalServiceAddress(recipient),
-                isUserInitiatedChange: false
-            )
+            write { tx in
+                identityManager.setVerificationState(
+                    .noLongerVerified,
+                    identityKey: identityKey(recipient),
+                    address: SignalServiceAddress(recipient),
+                    isUserInitiatedChange: false,
+                    tx: tx.asV2Write
+                )
+            }
         }
         read { tx in
-            XCTAssertTrue(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, transaction: tx))
+            XCTAssertTrue(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx.asV2Read))
         }
 
         // Check that the list of no-longer-verified addresses is just Alice and Bob.
@@ -130,20 +138,23 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
 
     func testNoLongerVerifiedLimit() throws {
         for recipient in recipients {
-            OWSIdentityManager.shared.setVerificationState(
-                .noLongerVerified,
-                identityKey: identityKey(recipient),
-                address: SignalServiceAddress(recipient),
-                isUserInitiatedChange: false
-            )
+            write { tx in
+                identityManager.setVerificationState(
+                    .noLongerVerified,
+                    identityKey: identityKey(recipient),
+                    address: SignalServiceAddress(recipient),
+                    isUserInitiatedChange: false,
+                    tx: tx.asV2Write
+                )
+            }
         }
         // All recipients are no longer verified. Check that the limit is respected.
         for limit in 1..<recipients.count {
-            read { transaction in
+            read { tx in
                 let noLongerVerifiedAddresses = OWSRecipientIdentity.noLongerVerifiedAddresses(
                     inGroup: self.groupThread.uniqueId,
                     limit: limit,
-                    transaction: transaction
+                    transaction: tx
                 )
                 XCTAssertEqual(noLongerVerifiedAddresses.count, limit)
             }
@@ -156,15 +167,18 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
             if recipient == localAci {
                 continue
             }
-            OWSIdentityManager.shared.setVerificationState(
-                .verified,
-                identityKey: identityKey(recipient),
-                address: SignalServiceAddress(recipient),
-                isUserInitiatedChange: true
-            )
+            write { tx in
+                identityManager.setVerificationState(
+                    .verified,
+                    identityKey: identityKey(recipient),
+                    address: SignalServiceAddress(recipient),
+                    isUserInitiatedChange: true,
+                    tx: tx.asV2Write
+                )
+            }
         }
         read { tx in
-            XCTAssertFalse(Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, transaction: tx))
+            XCTAssertFalse(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx.asV2Read))
         }
     }
 }
