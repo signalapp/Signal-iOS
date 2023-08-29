@@ -267,12 +267,6 @@ class AppSettingsViewController: OWSTableViewController2 {
                     nameLabel.setCompressionResistanceHigh()
                     subviews.append(nameLabel)
 
-                    let betaIcon = UIImage(named: Theme.isDarkThemeEnabled ? "beta-dark-24" : "beta-light-24")
-                    let betaIconView = UIImageView(image: betaIcon)
-                    betaIconView.setCompressionResistanceHorizontalHigh()
-                    subviews.append(UIView.spacer(withWidth: 8))
-                    subviews.append(betaIconView)
-
                     subviews.append(UIView.hStretchingSpacer())
 
                     let unreadPaymentsCount = Self.databaseStorage.read { transaction in
