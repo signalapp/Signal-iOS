@@ -1434,6 +1434,7 @@
 		D9F399B02A967664001599EC /* PniIdentityKeyCheckerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399AE2A96764A001599EC /* PniIdentityKeyCheckerTest.swift */; };
 		D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399B12A96D65D001599EC /* LinkedDevicePniKeyManager.swift */; };
 		D9F399B42A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399B32A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift */; };
+		D9F399B92A9EA1FA001599EC /* MockDBV2Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F399B82A9EA1FA001599EC /* MockDBV2Test.swift */; };
 		D9F6553229D6531D002A330A /* SDSCodableModel+ColumnName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */; };
 		D9F6553B29D6547F002A330A /* SDSCodableModelDatabaseInterface+Remove.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */; };
 		D9F6553C29D6547F002A330A /* SDSCodableModelDatabaseInterface+Save.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553629D6547E002A330A /* SDSCodableModelDatabaseInterface+Save.swift */; };
@@ -4064,6 +4065,7 @@
 		D9F399AE2A96764A001599EC /* PniIdentityKeyCheckerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniIdentityKeyCheckerTest.swift; sourceTree = "<group>"; };
 		D9F399B12A96D65D001599EC /* LinkedDevicePniKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedDevicePniKeyManager.swift; sourceTree = "<group>"; };
 		D9F399B32A96E54C001599EC /* LinkedDevicePniKeyManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedDevicePniKeyManagerTest.swift; sourceTree = "<group>"; };
+		D9F399B82A9EA1FA001599EC /* MockDBV2Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDBV2Test.swift; sourceTree = "<group>"; };
 		D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+ColumnName.swift"; sourceTree = "<group>"; };
 		D9F6553529D6547E002A330A /* SDSCodableModelDatabaseInterface+Remove.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Remove.swift"; sourceTree = "<group>"; };
 		D9F6553629D6547E002A330A /* SDSCodableModelDatabaseInterface+Save.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Save.swift"; sourceTree = "<group>"; };
@@ -8198,6 +8200,14 @@
 			path = Mocks;
 			sourceTree = "<group>";
 		};
+		D9F399B72A9EA1EB001599EC /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				D9F399B82A9EA1FA001599EC /* MockDBV2Test.swift */,
+			);
+			path = Mocks;
+			sourceTree = "<group>";
+		};
 		D9F6553029D6530B002A330A /* SDSCodableModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -8712,6 +8722,7 @@
 				5075C21529CA1ED500A260D2 /* GroupMembers */,
 				F94261E2289B1B5400460798 /* Groups */,
 				F942621C289B1B5500460798 /* Messages */,
+				D9F399B72A9EA1EB001599EC /* Mocks */,
 				F94261CF289B1B5400460798 /* Network */,
 				F97391A128EF0AFB002DDE5D /* Protos */,
 				6600F365298D9D0000B1EDB7 /* Registration */,
@@ -12930,6 +12941,7 @@
 				F9426241289B1B5500460798 /* MessageSenderJobRecordTest.swift in Sources */,
 				F9426246289B1B5500460798 /* MessageSendJobQueueTest.swift in Sources */,
 				F9426293289B1B5600460798 /* MessageSendLogTests.swift in Sources */,
+				D9F399B92A9EA1FA001599EC /* MockDBV2Test.swift in Sources */,
 				F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */,
 				F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */,
 				D9AA37A02A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift in Sources */,

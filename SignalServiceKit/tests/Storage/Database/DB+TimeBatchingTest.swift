@@ -18,21 +18,47 @@ class DBTimeBatchingTest: XCTestCase {
     }
 
     func testSeparateTransactions() {
-        var transactions = [DBWriteTransaction]()
-        MockDB().enumerateWithTimeBatchedWriteTx(1...100, yieldTxAfter: -1) { _, tx in
-            transactions.append(tx)
-        }
-        let uniqueTransactions = Set(transactions.map { ObjectIdentifier($0) })
-        XCTAssertEqual(uniqueTransactions.count, 100)
+        let uniqueTransactions = countUniqueTransactions(
+            enumerationCount: 100,
+            yieldTxAfter: -1
+        )
+
+        XCTAssertEqual(uniqueTransactions, 100)
     }
 
     func testSingleTransaction() {
-        var transactions = [DBWriteTransaction]()
-        MockDB().enumerateWithTimeBatchedWriteTx(1...100, yieldTxAfter: .infinity) { _, tx in
-            transactions.append(tx)
+        let uniqueTransactions = countUniqueTransactions(
+            enumerationCount: 1,
+            yieldTxAfter: .infinity
+        )
+
+        XCTAssertEqual(uniqueTransactions, 1)
+    }
+
+    private func countUniqueTransactions(
+        enumerationCount: Int,
+        yieldTxAfter: TimeInterval
+    ) -> Int {
+        var uniqueRetainedTransactions = 0
+        let db = MockDB(
+            retainedTransactionBlock: {
+                // This will be called each time the DB's write block closes,
+                // because we hang onto the transactions we're given.
+                uniqueRetainedTransactions += 1
+            }
+        )
+
+        var currentTransaction: DBWriteTransaction?
+        defer { _ = currentTransaction }
+
+        db.enumerateWithTimeBatchedWriteTx(
+            1...enumerationCount,
+            yieldTxAfter: yieldTxAfter
+        ) { _, tx in
+            currentTransaction = tx
         }
-        let uniqueTransactions = Set(transactions.map { ObjectIdentifier($0) })
-        XCTAssertEqual(uniqueTransactions.count, 1)
+
+        return uniqueRetainedTransactions
     }
 
     func testThrownError() {
