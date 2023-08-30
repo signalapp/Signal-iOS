@@ -9,10 +9,6 @@ import SignalUI
 class EmojiPickerSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [collectionView] }
 
-    override var dismissesWithHighVelocitySwipe: Bool { false }
-
-    override var shrinksWithHighVelocitySwipe: Bool { false }
-
     let completionHandler: (EmojiWithSkinTones?) -> Void
 
     let collectionView: EmojiPickerCollectionView
