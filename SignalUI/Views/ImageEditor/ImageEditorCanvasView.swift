@@ -988,7 +988,7 @@ class ImageEditorCanvasView: UIView {
             model.stickerViewCache.setObject(ThreadSafeCacheHandle(stickerImage), forKey: item.itemId)
             image = stickerImage
         case (.none, .story(let storySticker)):
-            // Special sticker. Return early with special rendering
+            // Story sticker. Return early with special rendering
             return storyStickerLayer(
                 for: storySticker,
                 imageFrame: imageFrame,
@@ -1002,8 +1002,27 @@ class ImageEditorCanvasView: UIView {
 
         let imageView = UIImageView(image: image)
         imageView.contentMode = .scaleAspectFit
-        let imageLayer = imageView.layer
 
+        return makeLayerTransformable(
+            imageView.layer,
+            imageFrame: imageFrame,
+            item: item,
+            model: model,
+            isFaded: isFaded,
+            transform: transform,
+            viewSize: viewSize
+        )
+    }
+
+    private class func makeLayerTransformable(
+        _ imageLayer: CALayer,
+        imageFrame: CGRect,
+        item: ImageEditorStickerItem,
+        model: ImageEditorModel,
+        isFaded: Bool,
+        transform: ImageEditorTransform,
+        viewSize: CGSize
+    ) -> CALayer {
         imageLayer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
         let stickerSize = CGSize(square: 175 * imageFrame.size.width / item.referenceImageWidth)
         let centerInCanvas = item.unitCenter.fromUnitCoordinates(viewBounds: imageFrame)
@@ -1053,6 +1072,18 @@ class ImageEditorCanvasView: UIView {
                 for: attributedString,
                 imageFrame: imageFrame,
                 background: background,
+                item: item,
+                model: model,
+                isFaded: isFaded,
+                transform: transform,
+                viewSize: viewSize
+            )
+        case .clockAnalog(let clockStyle):
+            let clockLayer = clockStyle.drawClock(date: item.date)
+
+            return makeLayerTransformable(
+                clockLayer,
+                imageFrame: imageFrame,
                 item: item,
                 model: model,
                 isFaded: isFaded,

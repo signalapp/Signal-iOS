@@ -321,6 +321,10 @@ class ImageEditorView: UIView {
                 let newSticker = clockStyle.stickerWithNextStyle()
                 let newStickerItem = stickerItem.copy(sticker: newSticker)
                 model.replace(item: newStickerItem)
+            case .clockAnalog(let clockStyle):
+                let newSticker = clockStyle.stickerWithNextStyle()
+                let newStickerItem = stickerItem.copy(sticker: newSticker)
+                model.replace(item: newStickerItem)
             }
         }
     }
