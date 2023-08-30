@@ -24,7 +24,7 @@ extension EditSendValidationError: LocalizedError {
         case .editWindowClosed:
             return OWSLocalizedString(
                 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR",
-                comment: "Error message to display to user when a messaeg is too old to edit"
+                comment: "Error message to display to user when a message is too old to edit"
             )
         case .tooManyEdits(let numEdits):
             return String.localizedStringWithFormat(
@@ -69,7 +69,7 @@ public class EditManager {
         // EDUCATION
 
         static let collectionName: String = "EditManager"
-        static let shouldShowEditSendBetaWarning: String = "shouldShowEditSendBetaWarning"
+        static let shouldShowEditSendWarning: String = "shouldShowEditSendWarning"
     }
 
     public struct Context {
@@ -241,18 +241,18 @@ public class EditManager {
         return nil
     }
 
-    public func shouldShowEditSendBetaConfirmation(tx: DBReadTransaction) -> Bool {
+    public func shouldShowEditSendConfirmation(tx: DBReadTransaction) -> Bool {
         return keyValueStore.getBool(
-            Constants.shouldShowEditSendBetaWarning,
+            Constants.shouldShowEditSendWarning,
             defaultValue: true,
             transaction: tx
         )
     }
 
-    public func setShouldShowEditSendBetaConfirmation(_ shouldShow: Bool, tx: DBWriteTransaction) {
+    public func setShouldShowEditSendConfirmation(_ shouldShow: Bool, tx: DBWriteTransaction) {
         keyValueStore.setBool(
             shouldShow,
-            key: Constants.shouldShowEditSendBetaWarning,
+            key: Constants.shouldShowEditSendWarning,
             transaction: tx
         )
     }

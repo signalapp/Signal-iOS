@@ -2156,15 +2156,15 @@
 "EDIT_ITEM_COPY_ACTION" = "Copy";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Editing messages is available to Signal beta users only. If you edit a message, it will only be visible to people who are on the latest version of Signal beta.";
+"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "If you edit a message, it will only be visible to people who are on the latest versions of Signal. They will be able to see you edited a message.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Send";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signal beta only";
+"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Edit Message";
 
-/* Error message to display to user when a messaeg is too old to edit */
+/* Error message to display to user when a message is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edits can only be applied within 3 hours from the time you sent this message.";
 
 /* Edit failed for an unexpected reason */

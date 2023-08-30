@@ -179,8 +179,8 @@ class DebugUIMisc: DebugUIPage, Dependencies {
                 DebugUIMisc.showSpoilerAnimationTestController()
             }),
 
-            OWSTableItem(title: "Enable edit send beta prompt", actionBlock: {
-                DebugUIMisc.enableEditBetaPromptMessage()
+            OWSTableItem(title: "Enable edit send education prompt", actionBlock: {
+                DebugUIMisc.enableEditMessagePromptMessage()
             })
         ]
         return OWSTableSection(title: name, items: items)
@@ -515,9 +515,9 @@ class DebugUIMisc: DebugUIPage, Dependencies {
         UIApplication.shared.frontmostViewController!.present(viewController, animated: true)
     }
 
-    private static func enableEditBetaPromptMessage() {
+    private static func enableEditMessagePromptMessage() {
         databaseStorage.write { tx in
-            DependenciesBridge.shared.editManager.setShouldShowEditSendBetaConfirmation(
+            DependenciesBridge.shared.editManager.setShouldShowEditSendConfirmation(
                 true,
                 tx: tx.asV2Write
             )

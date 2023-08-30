@@ -101,27 +101,27 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
 
         if inputToolbar.editTarget != nil {
-            let shouldShowBetaAlert = Self.databaseStorage.read { transaction in
-                context.editManager.shouldShowEditSendBetaConfirmation(tx: transaction.asV2Read)
+            let shouldShowEditMessageAlert = Self.databaseStorage.read { transaction in
+                context.editManager.shouldShowEditSendConfirmation(tx: transaction.asV2Read)
             }
 
-            if shouldShowBetaAlert {
+            if shouldShowEditMessageAlert {
                 OWSActionSheets.showConfirmationAlert(
                     title: OWSLocalizedString(
-                        "EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE",
+                        "EDIT_MESSAGE_SEND_MESSAGE_TITLE",
                         comment: "Edit Send Beta prompt title"
                     ),
                     message: OWSLocalizedString(
-                        "EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY",
+                        "EDIT_MESSAGE_SEND_MESSAGE_BODY",
                         comment: "Edit Send Beta prompt body"
                     ),
                     proceedTitle: OWSLocalizedString(
-                        "EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM",
+                        "EDIT_MESSAGE_SEND_MESSAGE_CONFIRM",
                         comment: "Label to confirm sending an edit"
                     )
                 ) { _ in
                     Self.databaseStorage.write { transaction in
-                        self.context.editManager.setShouldShowEditSendBetaConfirmation(false, tx: transaction.asV2Write)
+                        self.context.editManager.setShouldShowEditSendConfirmation(false, tx: transaction.asV2Write)
                     }
                     self.tryToSendTextMessage(messageBody, updateKeyboardState: false)
                 }

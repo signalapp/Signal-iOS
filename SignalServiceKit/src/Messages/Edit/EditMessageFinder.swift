@@ -135,7 +135,7 @@ public class EditMessageFinder {
 
     /// This method is similar to findEditHistory, but will find records and interactions where the
     /// passed in message is _either_ the latest edit, or a past revision.  This is useful when
-    /// deleting a messaeg, since the record needs to be removed regardles of the type of edit
+    /// deleting a message, since the record needs to be removed regardles of the type of edit
     public class func findEditDeleteRecords(
         for message: TSMessage,
         transaction: SDSAnyReadTransaction
