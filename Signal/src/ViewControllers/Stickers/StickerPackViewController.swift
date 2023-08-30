@@ -484,10 +484,14 @@ extension StickerPackViewController: StickerPackDataSourceDelegate {
 // MARK: -
 
 extension StickerPackViewController: StickerPackCollectionViewDelegate {
-    public func didTapSticker(stickerInfo: StickerInfo) {
+    public func didSelectSticker(stickerInfo: StickerInfo) {
         AssertIsOnMainThread()
 
         Logger.verbose("")
+    }
+
+    public var storyStickerConfiguration: StoryStickerConfiguration {
+        .hide
     }
 
     public func stickerPreviewHostView() -> UIView? {

@@ -2157,6 +2157,10 @@ extension ConversationInputToolbar: StickerPickerDelegate {
         Logger.verbose("")
         inputToolbarDelegate?.sendSticker(stickerInfo)
     }
+
+    public var storyStickerConfiguration: SignalUI.StoryStickerConfiguration {
+        .hide
+    }
 }
 
 extension ConversationInputToolbar: StickerPacksToolbarDelegate {

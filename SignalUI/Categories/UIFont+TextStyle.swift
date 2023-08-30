@@ -102,4 +102,14 @@ extension UIFont {
 
         return UIFont(descriptor: descriptor, size: pointSize)
     }
+
+    /// Creates a 7-segment display font used for displaying numbers in the style of a digital clock.
+    ///
+    /// Only supports numbers, `.`, and `:`. Does not support letters.
+    /// - Parameter pointSize: The size (in points) to which the font is scaled. This value must be greater than 0.0.
+    /// - Returns: A digital clock font object of the specified size.
+    class func digitalClockFont(withPointSize pointSize: CGFloat) -> UIFont {
+        let fontDescriptor = UIFontDescriptor(fontAttributes: [.name: "Hatsuishi-UPM800"])
+        return UIFont(descriptor: fontDescriptor, size: pointSize)
+    }
 }

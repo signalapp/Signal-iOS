@@ -64,6 +64,10 @@ extension StickerKeyboard: StickerPickerPageViewDelegate {
         self.delegate?.didSelectSticker(stickerInfo: stickerInfo)
     }
 
+    public var storyStickerConfiguration: StoryStickerConfiguration {
+        .hide
+    }
+
     public func presentManageStickersView() {
         self.delegate?.presentManageStickersView()
     }

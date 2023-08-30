@@ -666,8 +666,20 @@ extension ImageEditorViewController: ColorPickerBarViewDelegate {
 // MARK: - StickerPickerDelegate
 
 extension ImageEditorViewController: StickerPickerDelegate {
+    var storyStickerConfiguration: StoryStickerConfiguration {
+        .showWithDelegate(self)
+    }
+
     func didSelectSticker(stickerInfo: StickerInfo) {
-        let stickerItem = imageEditorView.createNewStickerItem(with: stickerInfo)
+        let stickerItem = imageEditorView.createNewStickerItem(with: .regular(stickerInfo))
+        selectStickerItem(stickerItem)
+        dismiss(animated: true)
+    }
+}
+
+extension ImageEditorViewController: StoryStickerPickerDelegate {
+    func didSelect(storySticker: EditorSticker.StorySticker) {
+        let stickerItem = imageEditorView.createNewStickerItem(with: .story(storySticker))
         selectStickerItem(stickerItem)
         dismiss(animated: true)
     }

@@ -5,14 +5,43 @@
 
 import SignalServiceKit
 
-class EditorTextLayer: CATextLayer {
+// MARK: - ImageEditorItemBackground
+
+struct ImageEditorItemBackground {
+    enum CornerRadius: CGFloat {
+        case small = 8
+        case large = 18
+    }
+
+    let color: CGColor
+    let corners: CornerRadius
+    let scaleFactor: CGFloat
+
+    init(color: CGColor, corners: CornerRadius, scaleFactor: CGFloat) {
+        self.color = color
+        self.corners = corners
+        self.scaleFactor = scaleFactor
+    }
+
+    init(color: UIColor, corners: CornerRadius, scaleFactor: CGFloat) {
+        self.init(color: color.cgColor, corners: corners, scaleFactor: scaleFactor)
+    }
 
     // Margins between text and edges of the colored background.
-    private enum Constants {
-        static let horizontalMargin: CGFloat = 6
-        static let verticalMargin: CGFloat = 2
-        static let cornerRadius: CGFloat = 8
+    var horizontalMargin: CGFloat {
+        6 * scaleFactor
     }
+    var verticalMargin: CGFloat {
+        2 * scaleFactor
+    }
+    var cornerRadius: CGFloat {
+        corners.rawValue * scaleFactor
+    }
+}
+
+// MARK: - EditorTextLayer
+
+class EditorTextLayer: CATextLayer {
 
     let itemId: String
 
@@ -32,14 +61,19 @@ class EditorTextLayer: CATextLayer {
     // Creates a new layer that is larger than `self` by amount specified in `Margins`.
     // The resulting layer has background color and rounded corners set.
     // `self` is added as a sublayer and is centered vertically and horizontally.
-    fileprivate func withRoundedRectBackground(_ backgroundColor: CGColor) -> EditorTextLayer {
-        guard backgroundColor.alpha > 0 else { return self }
+    fileprivate func withRoundedRectBackground(_ background: ImageEditorItemBackground) -> EditorTextLayer {
+        guard background.color.alpha > 0 else { return self }
 
         let rootLayer = EditorTextLayer(itemId: itemId)
-        rootLayer.frame = frame.inset(by: UIEdgeInsets(hMargin: -Constants.horizontalMargin,
-                                                       vMargin: -Constants.verticalMargin))
-        rootLayer.backgroundColor = backgroundColor
-        rootLayer.cornerRadius = Constants.cornerRadius
+        rootLayer.frame = frame.inset(
+            by: UIEdgeInsets(
+                hMargin: background.horizontalMargin,
+                vMargin: background.verticalMargin
+            )
+            .inverted()
+        )
+        rootLayer.backgroundColor = background.color
+        rootLayer.cornerRadius = background.cornerRadius
         rootLayer.addSublayer(self)
         rootLayer.contentLayer = self
         position = rootLayer.bounds.center
@@ -55,23 +89,9 @@ class EditorTextLayer: CATextLayer {
             }
         }
     }
-
-    fileprivate func prepareForRendering() {
-        guard let contentLayer, backgroundColor != nil, cornerRadius > 0 else { return }
-
-        let scale = UIScreen.main.scale
-
-        cornerRadius = Constants.cornerRadius * scale
-
-        let position = position
-        bounds.size = CGSize(
-            width: contentLayer.bounds.width + 2 * scale * Constants.horizontalMargin,
-            height: contentLayer.bounds.height + 2 * scale * Constants.verticalMargin
-        )
-        self.position = position
-        contentLayer.position = bounds.center
-    }
 }
+
+// MARK: - TextFrameLayer
 
 private class TextFrameLayer: CAShapeLayer {
 
@@ -140,7 +160,7 @@ private class TextFrameLayer: CAShapeLayer {
     }
 }
 
-// MARK: -
+// MARK: - ImageEditorCanvasView
 
 // A view for previewing an image editor model.
 class ImageEditorCanvasView: UIView {
@@ -830,9 +850,11 @@ class ImageEditorCanvasView: UIView {
 
         let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: model.srcImageSizePixels, transform: transform)
 
+        let scaleFactor = imageFrame.size.width / item.fontReferenceImageWidth
+
         // We need to adjust the font size to reflect the current output scale,
         // using the image width as reference.
-        let fontSize = item.fontSize * imageFrame.size.width / item.fontReferenceImageWidth
+        let fontSize = item.fontSize * scaleFactor
         let font = MediaTextView.font(for: item.textStyle, withPointSize: fontSize)
 
         let text = item.text.filterForDisplay
@@ -857,8 +879,36 @@ class ImageEditorCanvasView: UIView {
             }
         }
 
+        let background = item.textBackgroundColor.map { color in
+            ImageEditorItemBackground(color: color, corners: .small, scaleFactor: scaleFactor)
+        }
+
+        return textLayer(
+            for: textStorage.attributedString(),
+            imageFrame: imageFrame,
+            unitWidth: item.unitWidth,
+            background: background,
+            item: item,
+            model: model,
+            isFaded: isFaded,
+            transform: transform,
+            viewSize: viewSize
+        )
+    }
+
+    private class func textLayer(
+        for attributedString: NSAttributedString,
+        imageFrame: CGRect,
+        unitWidth: CGFloat = 1,
+        background: ImageEditorItemBackground?,
+        item: any ImageEditorTransformable,
+        model: ImageEditorModel,
+        isFaded: Bool,
+        transform: ImageEditorTransform,
+        viewSize: CGSize
+    ) -> CALayer? {
         let textLayer = EditorTextLayer(itemId: item.itemId)
-        textLayer.string = textStorage.attributedString()
+        textLayer.string = attributedString
         textLayer.isWrapped = true
         textLayer.alignmentMode = .center
         // I don't think we need to enable allowsFontSubpixelQuantization
@@ -871,10 +921,15 @@ class ImageEditorCanvasView: UIView {
         // * Model transform (so that text doesn't become blurry as you zoom the content).
         textLayer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
 
-        let maxWidth = imageFrame.size.width * item.unitWidth
-        let textSize = textStorage.boundingRect(with: CGSize(width: maxWidth, height: .greatestFiniteMagnitude),
-                                                options: [ .usesLineFragmentOrigin ],
-                                                context: nil).size.ceil
+        let maxWidth = imageFrame.size.width * unitWidth
+        let textSize = attributedString.boundingRect(
+            with: CGSize(
+                width: maxWidth,
+                height: .greatestFiniteMagnitude
+            ),
+            options: [ .usesLineFragmentOrigin ],
+            context: nil
+        ).size.ceil
 
         // The text item's center is specified in "image unit" coordinates, but
         // needs to be rendered in "canvas" coordinates.  The imageFrame
@@ -887,8 +942,8 @@ class ImageEditorCanvasView: UIView {
 
         // Enlarge the layer slightly when setting the background color to add some horizontal padding around the text.
         let layer: EditorTextLayer
-        if let textBackgroundColor = item.textBackgroundColor {
-            layer = textLayer.withRoundedRectBackground(textBackgroundColor.cgColor)
+        if let background {
+            layer = textLayer.withRoundedRectBackground(background)
         } else {
             layer = textLayer
         }
@@ -911,33 +966,45 @@ class ImageEditorCanvasView: UIView {
     ) -> CALayer? {
         AssertIsOnMainThread()
 
-        let image: UIImage? = {
-            if let image = model.stickerViewCache.object(forKey: item.itemId)?.value {
-                return image
-            }
-
-            guard let metadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: item.stickerInfo),
-                  let image = UIImage(contentsOfFile: metadata.stickerDataUrl.path)
-            else { return nil }
-            model.stickerViewCache.setObject(ThreadSafeCacheHandle(image), forKey: item.itemId)
-            return image
-        }()
-
-        guard let image else {
-            owsFailDebug("Failed to retrieve sticker image")
-            return nil
-        }
-        let imageView = UIImageView(image: image)
-        imageView.contentMode = .scaleAspectFit
-        let imageLayer = imageView.layer
-
-        imageLayer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
-
         let imageFrame = ImageEditorCanvasView.imageFrame(
             forViewSize: viewSize,
             imageSize: model.srcImageSizePixels,
             transform: transform
         )
+
+        let image: UIImage
+        switch (model.stickerViewCache.object(forKey: item.itemId)?.value, item.sticker) {
+        case (.some(let cachedImage), _):
+            // Cached image exists. Use that
+            image = cachedImage
+        case (.none, .regular(let stickerInfo)):
+            // Regular sticker. Fetch its image
+            guard let metadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo),
+                  let stickerImage = UIImage(contentsOfFile: metadata.stickerDataUrl.path)
+            else {
+                owsFailDebug("Failed to retrieve sticker image")
+                return nil
+            }
+            model.stickerViewCache.setObject(ThreadSafeCacheHandle(stickerImage), forKey: item.itemId)
+            image = stickerImage
+        case (.none, .story(let storySticker)):
+            // Special sticker. Return early with special rendering
+            return storyStickerLayer(
+                for: storySticker,
+                imageFrame: imageFrame,
+                item: item,
+                model: model,
+                isFaded: isFaded,
+                transform: transform,
+                viewSize: viewSize
+            )
+        }
+
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFit
+        let imageLayer = imageView.layer
+
+        imageLayer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
         let stickerSize = CGSize(square: 175 * imageFrame.size.width / item.referenceImageWidth)
         let centerInCanvas = item.unitCenter.fromUnitCoordinates(viewBounds: imageFrame)
         imageLayer.frame = imageFrame
@@ -958,6 +1025,41 @@ class ImageEditorCanvasView: UIView {
         imageLayer.opacity = isFaded ? 0.5 : 1
 
         return imageLayer
+    }
+
+    private class func storyStickerLayer(
+        for storySticker: EditorSticker.StorySticker,
+        imageFrame: CGRect,
+        item: ImageEditorStickerItem,
+        model: ImageEditorModel,
+        isFaded: Bool,
+        transform: ImageEditorTransform,
+        viewSize: CGSize
+    ) -> CALayer? {
+        switch storySticker {
+        case .clockDigital(let digitalClockStyle):
+            let scaleFactor = imageFrame.size.width / item.referenceImageWidth
+
+            let attributedString = digitalClockStyle.attributedString(
+                date: item.date,
+                scaleFactor: scaleFactor
+            )
+
+            let background = digitalClockStyle.backgroundColor.map { color in
+                ImageEditorItemBackground(color: color, corners: .large, scaleFactor: scaleFactor)
+            }
+
+            return textLayer(
+                for: attributedString,
+                imageFrame: imageFrame,
+                background: background,
+                item: item,
+                model: model,
+                isFaded: isFaded,
+                transform: transform,
+                viewSize: viewSize
+            )
+        }
     }
 
     // We apply more than one kind of smoothing.
@@ -1105,9 +1207,6 @@ class ImageEditorCanvasView: UIView {
                 continue
             }
             layer.contentsScale = dstScale * transform.scaling * item.outputScale()
-            if let editorTextLayer = layer as? EditorTextLayer {
-                editorTextLayer.prepareForRendering()
-            }
             layers.append(layer)
         }
         // UIView.renderAsImage() doesn't honor zPosition of layers,

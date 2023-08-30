@@ -243,7 +243,7 @@ class ImageEditorView: UIView {
         return textItem
     }
 
-    func createNewStickerItem(with stickerInfo: StickerInfo) -> ImageEditorStickerItem {
+    func createNewStickerItem(with sticker: EditorSticker) -> ImageEditorStickerItem {
         let viewSize = canvasView.gestureReferenceView.bounds.size
         let imageSize = model.srcImageSizePixels
         let imageFrame = ImageEditorCanvasView.imageFrame(
@@ -256,7 +256,7 @@ class ImageEditorView: UIView {
         let scaling = 1 / model.currentTransform().scaling
 
         return ImageEditorStickerItem(
-            stickerInfo: stickerInfo,
+            sticker: sticker,
             referenceImageWidth: imageFrame.size.width,
             rotationRadians: rotationRadians,
             scaling: scaling
@@ -310,6 +310,18 @@ class ImageEditorView: UIView {
         // ..otherwise report tap to delegate (this includes taps on selected text objects).
         else if let textItem = item as? ImageEditorTextItem {
             delegate?.imageEditorView(self, didTapTextItem: textItem)
+        }
+        // Change special sticker style
+        else if
+            let stickerItem = item as? ImageEditorStickerItem,
+            case .story(let storySticker) = stickerItem.sticker
+        {
+            switch storySticker {
+            case .clockDigital(let clockStyle):
+                let newSticker = clockStyle.stickerWithNextStyle()
+                let newStickerItem = stickerItem.copy(sticker: newSticker)
+                model.replace(item: newStickerItem)
+            }
         }
     }
 

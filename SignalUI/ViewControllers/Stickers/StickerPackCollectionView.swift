@@ -5,15 +5,32 @@
 
 import SignalMessaging
 
-public protocol StickerPackCollectionViewDelegate: AnyObject {
-    func didTapSticker(stickerInfo: StickerInfo)
+// MARK: - Delegate Protocols
+
+public enum StoryStickerConfiguration {
+    case hide
+    case showWithDelegate(StoryStickerPickerDelegate)
+}
+
+public protocol StickerPickerDelegate: AnyObject {
+    func didSelectSticker(stickerInfo: StickerInfo)
+    var storyStickerConfiguration: StoryStickerConfiguration { get }
+}
+
+public protocol StickerPackCollectionViewDelegate: StickerPickerDelegate {
     func stickerPreviewHostView() -> UIView?
     func stickerPreviewHasOverlay() -> Bool
 }
 
-// MARK: -
+public protocol StoryStickerPickerDelegate: AnyObject {
+    func didSelect(storySticker: EditorSticker.StorySticker)
+}
+
+// MARK: - StickerPackCollectionView
 
 public class StickerPackCollectionView: UICollectionView {
+
+    private typealias StorySticker = EditorSticker.StorySticker
 
     private var stickerPackDataSource: StickerPackDataSource? {
         didSet {
@@ -36,6 +53,16 @@ public class StickerPackCollectionView: UICollectionView {
 
     public weak var stickerDelegate: StickerPackCollectionViewDelegate?
 
+    private var shouldShowStoryStickers: Bool {
+        if case .showWithDelegate = stickerDelegate?.storyStickerConfiguration {
+            // Story sticker configuration must be `showWithDelegate`
+            // while also being a "Recents" page.
+            return stickerPackDataSource is RecentStickerPackDataSource
+        }
+
+        return false
+    }
+
     override public var frame: CGRect {
         didSet {
             updateLayout()
@@ -49,6 +76,7 @@ public class StickerPackCollectionView: UICollectionView {
     }
 
     private let cellReuseIdentifier = "cellReuseIdentifier"
+    private let headerReuseIdentifier = StickerPickerHeaderView.reuseIdentifier
     private let placeholderColor: UIColor
 
     public required init(placeholderColor: UIColor = .ows_gray45) {
@@ -59,6 +87,7 @@ public class StickerPackCollectionView: UICollectionView {
         delegate = self
         dataSource = self
         register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
+        register(StickerPickerHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerReuseIdentifier)
 
         isUserInteractionEnabled = true
         addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress)))
@@ -146,7 +175,8 @@ public class StickerPackCollectionView: UICollectionView {
         // Do nothing if we're not currently pressing on a pack, we'll hide it when we release
         // or update it when the user moves their touch over another pack. This prevents "flashing"
         // as the user moves their finger between packs.
-        guard let indexPath = self.indexPathForItem(at: sender.location(in: self)) else { return }
+        guard let indexPath = self.indexPathForItem(at: sender.location(in: self)),
+              !isStoryStickerSection(sectionIndex: indexPath.section) else { return }
         guard let stickerInfo = stickerInfos[safe: indexPath.row] else {
             owsFailDebug("Invalid index path: \(indexPath)")
             return
@@ -252,15 +282,37 @@ public class StickerPackCollectionView: UICollectionView {
 // MARK: - UICollectionViewDelegate
 
 extension StickerPackCollectionView: UICollectionViewDelegate {
-     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    private func isStoryStickerSection(sectionIndex: Int) -> Bool {
+        return shouldShowStoryStickers && sectionIndex == 0
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         Logger.debug("")
+
+        if isStoryStickerSection(sectionIndex: indexPath.section) {
+            guard let storySticker = StorySticker.pickerStickers[safe: indexPath.item] else {
+                owsFailDebug("Invalid index path: \(indexPath)")
+                return
+            }
+
+            switch stickerDelegate?.storyStickerConfiguration {
+            case .showWithDelegate(let storyStickerPickerDelegate):
+                storyStickerPickerDelegate.didSelect(storySticker: storySticker)
+            case .hide:
+                owsFailDebug("Unexpectedly found hidden story stickers.")
+            case .none:
+                owsFailDebug("Missing delegate.")
+            }
+
+            return
+        }
 
         guard let stickerInfo = stickerInfos[safe: indexPath.row] else {
             owsFailDebug("Invalid index path: \(indexPath)")
             return
         }
 
-        self.stickerDelegate?.didTapSticker(stickerInfo: stickerInfo)
+        self.stickerDelegate?.didSelectSticker(stickerInfo: stickerInfo)
     }
 }
 
@@ -269,16 +321,30 @@ extension StickerPackCollectionView: UICollectionViewDelegate {
 extension StickerPackCollectionView: UICollectionViewDataSource {
 
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        return shouldShowStoryStickers ? 2 : 1
     }
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
+        if isStoryStickerSection(sectionIndex: sectionIdx) {
+            return StorySticker.pickerStickers.count
+        }
         return stickerInfos.count
     }
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath)
         cell.contentView.removeAllSubviews()
+
+        if isStoryStickerSection(sectionIndex: indexPath.section) {
+            guard let storySticker = StorySticker.pickerStickers[safe: indexPath.row] else {
+                owsFailDebug("Invalid index path: \(indexPath)")
+                return cell
+            }
+            let stickerView = storySticker.previewView()
+            cell.contentView.addSubview(stickerView)
+            stickerView.autoPinEdgesToSuperviewEdges()
+            return cell
+        }
 
         guard let stickerInfo = stickerInfos[safe: indexPath.row] else {
             owsFailDebug("Invalid index path: \(indexPath)")
@@ -290,6 +356,76 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
         cellView.autoPinEdgesToSuperviewEdges()
 
         return cell
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerReuseIdentifier, for: indexPath)
+
+        guard
+            kind == UICollectionView.elementKindSectionHeader,
+            let headerLabel = headerView as? StickerPickerHeaderView
+        else {
+            return headerView
+        }
+
+        headerLabel.label.text = self.headerText(for: indexPath.section)
+
+        return headerLabel
+    }
+
+    private func headerText(for section: Int) -> String? {
+        guard shouldShowStoryStickers else { return nil }
+        if section == 0 {
+            return OWSLocalizedString(
+                "STICKER_CATEGORY_FEATURED_NAME",
+                comment: "The name for the sticker category 'Featured'"
+            )
+        } else {
+            return OWSLocalizedString(
+                "STICKER_CATEGORY_RECENTS_NAME",
+                comment: "The name for the sticker category 'Recents'"
+            )
+        }
+    }
+}
+
+extension StickerPackCollectionView: UICollectionViewDelegateFlowLayout {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        guard let headerText = self.headerText(for: section) else { return .zero }
+
+        let headerView = StickerPickerHeaderView()
+        headerView.label.text = headerText
+
+        return headerView.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
+    }
+}
+
+private class StickerPickerHeaderView: UICollectionReusableView {
+    static let reuseIdentifier = "StickerPickerHeaderView"
+
+    let label = UILabel()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 0)
+
+        label.font = UIFont.dynamicTypeFootnoteClamped.semibold()
+        label.textColor = Theme.darkThemeSecondaryTextAndIconColor
+        addSubview(label)
+        label.autoPinEdgesToSuperviewMargins()
+        label.setCompressionResistanceHigh()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        var labelSize = label.sizeThatFits(size)
+        labelSize.width += layoutMargins.left + layoutMargins.right
+        labelSize.height += layoutMargins.top + layoutMargins.bottom
+        return labelSize
     }
 }
 

@@ -112,17 +112,19 @@ final class ImageEditorTextItem: ImageEditorItem, ImageEditorTransformable {
         super.init(itemType: .text)
     }
 
-    private init(itemId: String,
-                 text: String,
-                 color: ColorPickerBarColor,
-                 fontSize: CGFloat,
-                 textStyle: MediaTextView.TextStyle,
-                 decorationStyle: MediaTextView.DecorationStyle,
-                 fontReferenceImageWidth: CGFloat,
-                 unitCenter: ImageEditorSample,
-                 unitWidth: CGFloat,
-                 rotationRadians: CGFloat,
-                 scaling: CGFloat) {
+    init(
+        itemId: String,
+        text: String,
+        color: ColorPickerBarColor,
+        fontSize: CGFloat,
+        textStyle: MediaTextView.TextStyle,
+        decorationStyle: MediaTextView.DecorationStyle,
+        fontReferenceImageWidth: CGFloat,
+        unitCenter: ImageEditorSample,
+        unitWidth: CGFloat,
+        rotationRadians: CGFloat,
+        scaling: CGFloat
+    ) {
         self.text = text
         self.color = color
         self.fontSize = fontSize

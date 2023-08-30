@@ -11,10 +11,6 @@ public protocol StickerPacksToolbarDelegate: AnyObject {
     func presentManageStickersView()
 }
 
-public protocol StickerPickerDelegate: AnyObject {
-    func didSelectSticker(stickerInfo: StickerInfo)
-}
-
 public protocol StickerPickerPageViewDelegate: StickerPickerDelegate {
     func setItems(_ items: [StickerHorizontalListViewItem])
     func updateSelections(scrollToSelectedItem: Bool)
@@ -94,7 +90,7 @@ class StickerPacksToolbar: UIStackView {
 
 public class StickerPickerPageView: UIView {
 
-    public weak var delegate: StickerPickerPageViewDelegate?
+    public private(set) weak var delegate: StickerPickerPageViewDelegate?
 
     private let forceDarkTheme: Bool
 
@@ -480,12 +476,16 @@ extension StickerPickerPageView: UIScrollViewDelegate {
 }
 
 extension StickerPickerPageView: StickerPackCollectionViewDelegate {
-    public func didTapSticker(stickerInfo: StickerInfo) {
+    public func didSelectSticker(stickerInfo: StickerInfo) {
         AssertIsOnMainThread()
 
         Logger.verbose("")
 
         delegate?.didSelectSticker(stickerInfo: stickerInfo)
+    }
+
+    public var storyStickerConfiguration: StoryStickerConfiguration {
+        delegate?.storyStickerConfiguration ?? .hide
     }
 
     public func stickerPreviewHostView() -> UIView? {

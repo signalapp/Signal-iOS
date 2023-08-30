@@ -1262,6 +1262,8 @@
 		B91ACD9E2A797698000CFBC7 /* StickerPickerKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91ACD9D2A797698000CFBC7 /* StickerPickerKeyboard.swift */; };
 		B9439F3DDBE241269273DD6F /* Pods_SignalServiceKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */; };
 		B99B155D2A71BA5200E26DAC /* StoryContextViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */; };
+		B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */; };
+		B9A87A382A9E34BD009FCA13 /* Hatsuishi-UPM800.otf in Resources */ = {isa = PBXBuildFile; fileRef = B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		B9F2155D2A93C9E8002DCAE0 /* StickerPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */; };
 		B9F2155F2A940596002DCAE0 /* ImageEditorStickerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */; };
@@ -3878,6 +3880,8 @@
 		B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		B91ACD9D2A797698000CFBC7 /* StickerPickerKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPickerKeyboard.swift; sourceTree = "<group>"; };
 		B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextViewState.swift; sourceTree = "<group>"; };
+		B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSticker.swift; sourceTree = "<group>"; };
+		B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hatsuishi-UPM800.otf"; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPickerSheet.swift; sourceTree = "<group>"; };
 		B9F2155E2A940596002DCAE0 /* ImageEditorStickerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorStickerItem.swift; sourceTree = "<group>"; };
@@ -5341,6 +5345,7 @@
 				8852759827E1BA7D003F2F9B /* BarlowCondensed-Medium.ttf */,
 				8852759427E1BA55003F2F9B /* EBGaramond-Regular.ttf */,
 				34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */,
+				B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */,
 				8852758B27E1B7F4003F2F9B /* Inter-Variable.ttf */,
 				8852758E27E1B9C5003F2F9B /* Parisienne-Regular.ttf */,
 			);
@@ -5985,6 +5990,7 @@
 		34A9556D271B510500B05242 /* Stickers */ = {
 			isa = PBXGroup;
 			children = (
+				B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */,
 				34A9556E271B510500B05242 /* LinearHorizontalLayout.swift */,
 				34A95572271B510500B05242 /* StickerHorizontalListView.swift */,
 				34A95570271B510500B05242 /* StickerPackCollectionView.swift */,
@@ -10438,6 +10444,7 @@
 				8852759927E1BA7D003F2F9B /* BarlowCondensed-Medium.ttf in Resources */,
 				8852759527E1BA55003F2F9B /* EBGaramond-Regular.ttf in Resources */,
 				8852759A27E1BA93003F2F9B /* fontawesome-webfont.ttf in Resources */,
+				B9A87A382A9E34BD009FCA13 /* Hatsuishi-UPM800.otf in Resources */,
 				8852759727E1BA64003F2F9B /* Inter-Variable.ttf in Resources */,
 				8852759627E1BA5B003F2F9B /* Parisienne-Regular.ttf in Resources */,
 			);
@@ -11107,6 +11114,7 @@
 				3402AAA3271D9E180084CBAE /* DirectionalPanGestureRecognizer.swift in Sources */,
 				3402AA82271D9E180084CBAE /* DisappearingTimerConfigurationView.swift in Sources */,
 				3402AA49271D9DCD0084CBAE /* EditContactShareNameViewController.swift in Sources */,
+				B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */,
 				7628DDC1280750BC009AA53D /* ExpandableContactListView.swift in Sources */,
 				3402AA56271D9DCD0084CBAE /* FindByPhoneNumberViewController.swift in Sources */,
 				7647A33C2A270348002EAC93 /* FingerprintScanViewController.swift in Sources */,

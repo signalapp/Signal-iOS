@@ -34,7 +34,6 @@ public class StickerPickerSheet: InteractiveSheetViewController {
     }
     /// Used for handling sticker selection.
     public weak var pickerDelegate: StickerPickerDelegate?
-
     private let stickerPacksToolbar = StickerPacksToolbar(forceDarkTheme: true)
     private lazy var stickerPicker = StickerPickerPageView(delegate: self, forceDarkTheme: true)
 
@@ -102,6 +101,10 @@ extension StickerPickerSheet: StickerPacksToolbarDelegate {
 extension StickerPickerSheet: StickerPickerPageViewDelegate {
     public func didSelectSticker(stickerInfo: StickerInfo) {
         self.pickerDelegate?.didSelectSticker(stickerInfo: stickerInfo)
+    }
+
+    public var storyStickerConfiguration: StoryStickerConfiguration {
+        self.pickerDelegate?.storyStickerConfiguration ?? .hide
     }
 
     public func setItems(_ items: [StickerHorizontalListViewItem]) {

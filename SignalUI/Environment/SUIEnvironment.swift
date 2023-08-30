@@ -43,10 +43,14 @@ public class SUIEnvironment: NSObject {
     }
 
     private func registerCustomFonts() {
-        guard let fontUrls = Bundle(for: type(of: self)).urls(forResourcesWithExtension: "ttf", subdirectory: nil) else {
+        let bundle = Bundle(for: type(of: self))
+        guard
+            let ttfFontURLs = bundle.urls(forResourcesWithExtension: "ttf", subdirectory: nil),
+            let otfFontURLs = bundle.urls(forResourcesWithExtension: "otf", subdirectory: nil)
+        else {
             return owsFailDebug("Failed to load fonts from bundle.")
         }
-        for url in fontUrls {
+        for url in ttfFontURLs + otfFontURLs {
             var error: Unmanaged<CFError>?
             guard CTFontManagerRegisterFontsForURL(url as CFURL, .process, &error) else {
                 let errorMessage = (error?.takeRetainedValue()).map { String(describing: $0) } ?? "(unknown error)"
