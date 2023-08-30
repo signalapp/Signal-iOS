@@ -31,10 +31,31 @@ public class MentionFinder: NSObject {
 
         var next = "WHERE"
 
-        if let thread = thread {
-            sql += " \(next) interaction.\(interactionColumn: .threadUniqueId) = ?"
-            arguments.append(thread.uniqueId)
-            next = "AND"
+        if let thread {
+            // The TSMention's uniqueThreadId should always match the TSInteraction's
+            // threadUniqueId. However, we pick one column or the other depending on
+            // whether or not we're filtering out read messages.
+            //
+            // If we're only considering unread messages, we'll use the "(read,
+            // uniqueThreadId)" TSInteraction index and bound performance by the number
+            // of unread messages in the thread.
+            //
+            // If we're considering all messages in the thread, we'll use the
+            // "(uuidString, uniqueThreadId)" TSMention index and bound performance by
+            // the number of mentions of `aci` in the chat. Because we check for
+            // mentions of people who are no longer in the group (or were never in the
+            // group), there's usually not any mentions, and the query is lightning
+            // fast. (The alternative index is one which scans all the messages in the
+            // conversation, and that's much slower.)
+            if includeReadMessages {
+                sql += " \(next) mention.\(TSMention.columnName(.uniqueThreadId)) = ?"
+                arguments.append(thread.uniqueId)
+                next = "AND"
+            } else {
+                sql += " \(next) interaction.\(interactionColumn: .threadUniqueId) = ?"
+                arguments.append(thread.uniqueId)
+                next = "AND"
+            }
         }
 
         if !includeReadMessages {
