@@ -1196,6 +1196,9 @@
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Переслати";
 
 /* Context menu button title */
+"CONTEXT_MENU_PAYMENT_DETAILS" = "Payment Details";
+
+/* Context menu button title */
 "CONTEXT_MENU_REPLY" = "Відповісти";
 
 /* Context menu button title */
@@ -1676,19 +1679,19 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Видалити усі повідомлення";
 
 /* 'Delete' button label on the delete contact confirmation action sheet */
-"DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Delete";
+"DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Видалити";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "This person will be deleted from your system contacts. You won't see this person when searching. You'll get a message request if they message you in the future.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Цю людину буде видалено з ваших системних контактів. Ви не бачитиме її під час пошуку. Якщо в майбутньому вона вам напише, ви отримаєте запит на повідомлення.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_TITLE" = "Delete Contact and remove from your list?";
+"DELETE_CONTACT_ACTION_SHEET_TITLE" = "Видалити контакт і вилучити його з вашого списку?";
 
 /* Title of button for deleting system contact. */
-"DELETE_CONTACT_BUTTON" = "Delete Contact";
+"DELETE_CONTACT_BUTTON" = "Видалити контакт";
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
-"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ deleted from your contacts and removed.";
+"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ was deleted from your contacts and removed.";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Ви вийшли з Signal на цьому пристрої.";
@@ -2153,15 +2156,15 @@
 "EDIT_ITEM_COPY_ACTION" = "Копіювати";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "Редагування повідомлень доступно тільки для користувачів бета-версії Signal. Якщо ви відредагуєте повідомлення, це побачать тільки користувачі останньої бета-версії Signal.";
+"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "If you edit a message, it will only be visible to people who are on the latest versions of Signal. They will be able to see you edited a message.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "Надіслати";
+"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Send";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Тільки в бета-версії Signal";
+"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Edit Message";
 
-/* Error message to display to user when a messaeg is too old to edit */
+/* Error message to display to user when a message is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Вносити зміни можна протягом 3 годин із моменту надсилання повідомлення.";
 
 /* Edit failed for an unexpected reason */
@@ -3242,10 +3245,13 @@
 "HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "Не вдалося вилучити: %1$@";
 
 /* An explanation of why the user cannot be removed. */
-"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "This person is saved to your device's Contacts. Delete them from your Contacts to remove them from this list.";
+"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Ця людина збережена в контактах вашого пристрою. Щоб вилучити її зі списку, видаліть її з контактів.";
 
 /* A format for the 'unable to remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
-"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Unable to remove %1$@";
+"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Не вдалося вилучити: %1$@";
+
+/* An explanation of why the user cannot be removed on a linked device. */
+"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "This person is saved to your phone’s Contacts. Delete them from your Contacts on your phone and try again.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Архівні чати";
@@ -3360,6 +3366,18 @@
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
 "INFO_MESSAGE_CONTACT_REMOVED" = "Ви вилучили цей контакт. Якщо надіслати повідомлення, контакт буде знову додано до списку.";
+
+/* Shown when a user activates payments from a chat */
+"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "You activated Payments.";
+
+/* Shown when a user activates payments from a chat. Embeds: {{ the user's name}} */
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ can now accept Payments.";
+
+/* Shown when a user receives a payment activation request. Embeds: {{ the user's name}} */
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ wants you to activate Payments. Only send payments to people you trust.";
+
+/* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "You sent %1$@ a request to activate Payments.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3690,6 +3708,9 @@
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Переглянути пакунок наліпок";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_PAYMENT_DETAILS" = "Payment Details";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Виклик";
@@ -4384,29 +4405,14 @@
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "Вихідний відеодзвінок";
 
-/* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Відхилити запит";
-
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ о %2$@";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
-/* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%1$@ отримає сповіщення, що ви відхилили запит.";
-
-/* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Відхилити цей запит?";
-
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Плата за очищення монет";
-
-/* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Запит не може бути відмінений.";
-
-/* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Запит не може бути відхилено.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "Не вдалося";
@@ -4428,6 +4434,15 @@
 
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Неправильний";
+
+/* Payments in-chat message shown if a payment fails to send, bottom half. */
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Tap for details";
+
+/* Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }} */
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB Not sent";
+
+/* Status indicator for invalid payments which could not be processed. */
+"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "UNAVAILABLE";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Немає доступу до автентифікації.";
@@ -4552,9 +4567,6 @@
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
 "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "До %1$@";
 
-/* Label for the 'new payment request' button. */
-"PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Запит";
-
 /* Label for the payments notification banner for a single payment notification. */
 "PAYMENTS_NOTIFICATION_BANNER_1" = "1 нове сповіщення про платіж";
 
@@ -4563,6 +4575,18 @@
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
 "PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "Нових сповіщень про платіж: %1$@";
+
+/* Payment status context with contact name, failed. Embeds {{ Name of receiving contact }} */
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Payment to %1$@";
+
+/* Payment status context while sending */
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Processing payment…";
+
+/* Payment status context with contact name, incoming. Embeds {{ Name of sending contact }} */
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ sent you";
+
+/* Payment status context with contact name, sent. Embeds {{ Name of receiving contact }} */
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "You sent %1$@";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Платіж завершено";
@@ -4624,6 +4648,12 @@
 /* Status indicator for payments which had an unknown failure. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Невідома помилка";
 
+/* Payments Preview Text shown in quoted replies, for payments. Embeds {{ Amount sent (number), Currency (e.g. 'MOB') }} */
+"PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "Payment: %1$@ %2$@";
+
+/* Payments Preview Text shown in quoted replies, for unknown payments. */
+"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Unknown Payment";
+
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Для відправки платежу цьому користувачу, йому потрібно схвалити ваш запит на відправку повідомлень.";
 
@@ -4633,11 +4663,17 @@
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Неможливо відправити платіж";
 
-/* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Ця особа не активувала платежі.";
+/* The label for the 'send request' button in alerts and action sheets. */
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Send Request";
 
-/* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Неправильний отримувач";
+/* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Do you want to send them a request to activate Payments?";
+
+/* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }} */
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ hasn't activated Payments";
+
+/* Payments Preview Text shown in chat list for payments. */
+"PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 Payment";
 
 /* Label for 'transfer out' payments. */
 "PAYMENTS_TRANSFER_OUT_PAYMENT" = "Переказ коштів";
@@ -5969,7 +6005,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Активувати";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Ви можете використовувати Signal щоб відправляти та отримувати MobileCoin. Усі платежі здійснюються відповідно до Умов користування MobileCoin та Гаманцем MobileCoin. Ця можливість перебуває у стадії бета, а тому можливі певні проблеми, зокрема платежі чи гроші на балансі можна втратити без можливості повернення.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Активувати";
@@ -6125,7 +6161,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Активувати платежі знов";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Представляємо Платежі (Бета)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments";
 
 /* Button when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Пропустити кодову фразу";
@@ -6163,8 +6199,14 @@
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Надіслано";
 
+/* Label for the sender in the payment details view in the app settings. Followed by sender name. */
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Attempted By";
+
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ о %2$@";
+
+/* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Sending to %1$@";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Надіслано";
@@ -6434,7 +6476,7 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Кодова фраза";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Платежі (Бета)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Адреса вашого гаманця";
@@ -6666,6 +6708,12 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Завершити підтвердження особи";
+
+/* The name for the sticker category 'Featured' */
+"STICKER_CATEGORY_FEATURED_NAME" = "Featured";
+
+/* The name for the sticker category 'Recents' */
+"STICKER_CATEGORY_RECENTS_NAME" = "Recents";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Повідомлення зі Cтікером";
@@ -6925,6 +6973,9 @@
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Не вдалося надіслати";
 
+/* Body for notification shown when a story fails to send. */
+"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Story failed to send";
+
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "Натисніть ще раз";
 
@@ -7160,7 +7211,7 @@
 "TEXT_MENU_STRIKETHROUGH" = "Закреслення";
 
 /* Option in selected text edit menu to translate the word */
-"TEXT_MENU_TRANSLATE" = "Translate";
+"TEXT_MENU_TRANSLATE" = "Перекласти";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Це повідомлення було видалено.";
@@ -7172,16 +7223,16 @@
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Ви можете додавати нотатки для себе у цьому чаті. Якщо у вас є прив'язані пристрої — нотатки будуть синхронізовані.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Полягає в %1$@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Є учасником «%1$@»";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Детальніше";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Полягає в %1$@,%2$@, і %3$@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Є учасником «%1$@», «%2$@» і «%3$@»";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Полягає в %1$@ і %2$@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Є учасником «%1$@» і «%2$@»";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%1$@ днів";
@@ -7472,7 +7523,7 @@
 "VIDEO_CALL_LABEL" = "Відеовиклик";
 
 /* Button label for the 'View Contact' button */
-"VIEW_CONTACT_BUTTON" = "View Contact";
+"VIEW_CONTACT_BUTTON" = "Переглянути контакт";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Ви вже переглянули це повідомлення.";

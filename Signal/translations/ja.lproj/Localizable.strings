@@ -1196,6 +1196,9 @@
 "CONTEXT_MENU_FORWARD_MESSAGE" = "転送";
 
 /* Context menu button title */
+"CONTEXT_MENU_PAYMENT_DETAILS" = "Payment Details";
+
+/* Context menu button title */
 "CONTEXT_MENU_REPLY" = "返信";
 
 /* Context menu button title */
@@ -1676,19 +1679,19 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "すべてのメッセージを消去する";
 
 /* 'Delete' button label on the delete contact confirmation action sheet */
-"DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Delete";
+"DELETE_CONTACT_ACTION_SHEET_BUTTON" = "消去する";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "This person will be deleted from your system contacts. You won't see this person when searching. You'll get a message request if they message you in the future.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "このユーザーはシステムの連絡先から消去されます。検索してもこのユーザーは見つかりません。以後、メッセージがあった場合は、メッセージリクエストが届きます。";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_TITLE" = "Delete Contact and remove from your list?";
+"DELETE_CONTACT_ACTION_SHEET_TITLE" = "連絡先を消去して、リストから削除しますか？";
 
 /* Title of button for deleting system contact. */
-"DELETE_CONTACT_BUTTON" = "Delete Contact";
+"DELETE_CONTACT_BUTTON" = "連絡先の消去";
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
-"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ deleted from your contacts and removed.";
+"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ was deleted from your contacts and removed.";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "この端末上のSignalからログアウトしました。";
@@ -2153,15 +2156,15 @@
 "EDIT_ITEM_COPY_ACTION" = "コピー";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_BODY" = "メッセージの編集はSignalのベータ版ユーザーのみ利用可能です。メッセージを編集した場合、Signalのベータ版の最新バージョンを利用している人にのみ反映されます。";
+"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "If you edit a message, it will only be visible to people who are on the latest versions of Signal. They will be able to see you edited a message.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_CONFIRM" = "送信";
+"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Send";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_BETA_MESSAGE_TITLE" = "Signalのベータ版にのみ対応";
+"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Edit Message";
 
-/* Error message to display to user when a messaeg is too old to edit */
+/* Error message to display to user when a message is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "編集は、このメッセージを送信後 3 時間以内のみ可能です。";
 
 /* Edit failed for an unexpected reason */
@@ -3242,10 +3245,13 @@
 "HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "%1$@ さんを削除できません";
 
 /* An explanation of why the user cannot be removed. */
-"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "This person is saved to your device's Contacts. Delete them from your Contacts to remove them from this list.";
+"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "このユーザーはデバイスの連絡先に保存されています。連絡先から消去すると、このリストから削除することができます。";
 
 /* A format for the 'unable to remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
-"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Unable to remove %1$@";
+"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "%1$@ さんを削除できません";
+
+/* An explanation of why the user cannot be removed on a linked device. */
+"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "This person is saved to your phone’s Contacts. Delete them from your Contacts on your phone and try again.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "アーカイブ済みのチャット";
@@ -3360,6 +3366,18 @@
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
 "INFO_MESSAGE_CONTACT_REMOVED" = "過去に削除したメンバーです。メッセージを送ると、このメンバーはリストに再度追加されます。";
+
+/* Shown when a user activates payments from a chat */
+"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "You activated Payments.";
+
+/* Shown when a user activates payments from a chat. Embeds: {{ the user's name}} */
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ can now accept Payments.";
+
+/* Shown when a user receives a payment activation request. Embeds: {{ the user's name}} */
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ wants you to activate Payments. Only send payments to people you trust.";
+
+/* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "You sent %1$@ a request to activate Payments.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3690,6 +3708,9 @@
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "ステッカーパックを表示";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_PAYMENT_DETAILS" = "Payment Details";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "発信";
@@ -4384,29 +4405,14 @@
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "ビデオ通話発信";
 
-/* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "申請を却下";
-
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ (%2$@)";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
-/* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%1$@ に却下したことが通知されます。";
-
-/* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "この申請を却下しますか？";
-
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "コインクリーンアップ手数料";
-
-/* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "申請をキャンセルできませんでした。";
-
-/* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "申請を却下できませんでした。";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "失敗";
@@ -4428,6 +4434,15 @@
 
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "無効";
+
+/* Payments in-chat message shown if a payment fails to send, bottom half. */
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Tap for details";
+
+/* Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }} */
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB Not sent";
+
+/* Status indicator for invalid payments which could not be processed. */
+"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "UNAVAILABLE";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "認証情報にアクセスできませんでした。";
@@ -4552,9 +4567,6 @@
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
 "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "送金先 %1$@";
 
-/* Label for the 'new payment request' button. */
-"PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "請求する";
-
 /* Label for the payments notification banner for a single payment notification. */
 "PAYMENTS_NOTIFICATION_BANNER_1" = "1件の決済通知";
 
@@ -4563,6 +4575,18 @@
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
 "PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%1$@件の新しい決済通知";
+
+/* Payment status context with contact name, failed. Embeds {{ Name of receiving contact }} */
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Payment to %1$@";
+
+/* Payment status context while sending */
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Processing payment…";
+
+/* Payment status context with contact name, incoming. Embeds {{ Name of sending contact }} */
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ sent you";
+
+/* Payment status context with contact name, sent. Embeds {{ Name of receiving contact }} */
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "You sent %1$@";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "決済完了";
@@ -4624,6 +4648,12 @@
 /* Status indicator for payments which had an unknown failure. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "不明なエラー";
 
+/* Payments Preview Text shown in quoted replies, for payments. Embeds {{ Amount sent (number), Currency (e.g. 'MOB') }} */
+"PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "Payment: %1$@ %2$@";
+
+/* Payments Preview Text shown in quoted replies, for unknown payments. */
+"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Unknown Payment";
+
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "このユーザに送金するには、相手があなたからのメッセージ申請を受け入れる必要があります。";
 
@@ -4633,11 +4663,17 @@
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "送金できません";
 
-/* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "この人は決済機能を有効にしていません。";
+/* The label for the 'send request' button in alerts and action sheets. */
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Send Request";
 
-/* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "無効な宛先です";
+/* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Do you want to send them a request to activate Payments?";
+
+/* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }} */
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ hasn't activated Payments";
+
+/* Payments Preview Text shown in chat list for payments. */
+"PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 Payment";
 
 /* Label for 'transfer out' payments. */
 "PAYMENTS_TRANSFER_OUT_PAYMENT" = "振替";
@@ -5969,7 +6005,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "有効にする";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "SignalでMobileCoinを利用できます。すべての決済は、MobileCoinsとMobileCoin Walletの利用規約に準じます。この機能はベータ版であり、問題が発生したり、決済や残高を失う恐れがあります。";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "決済確認の有効化";
@@ -6125,7 +6161,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "決済機能を再有効化";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "決済機能のご紹介 (ベータ)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments";
 
 /* Button when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "リカバリーフレーズをスキップする";
@@ -6163,8 +6199,14 @@
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "送金者";
 
+/* Label for the sender in the payment details view in the app settings. Followed by sender name. */
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Attempted By";
+
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ (%2$@)";
+
+/* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Sending to %1$@";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "送金";
@@ -6434,7 +6476,7 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "リカバリーフレーズ";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "決済機能 (ベータ)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "あなたのウォレットアドレス";
@@ -6666,6 +6708,12 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "認証を完了してください";
+
+/* The name for the sticker category 'Featured' */
+"STICKER_CATEGORY_FEATURED_NAME" = "Featured";
+
+/* The name for the sticker category 'Recents' */
+"STICKER_CATEGORY_RECENTS_NAME" = "Recents";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "ステッカーメッセージ";
@@ -6925,6 +6973,9 @@
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "送信に失敗しました";
 
+/* Body for notification shown when a story fails to send. */
+"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Story failed to send";
+
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "タップして再試行する";
 
@@ -7160,7 +7211,7 @@
 "TEXT_MENU_STRIKETHROUGH" = "取り消し線";
 
 /* Option in selected text edit menu to translate the word */
-"TEXT_MENU_TRANSLATE" = "Translate";
+"TEXT_MENU_TRANSLATE" = "翻訳";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "このメッセージは消去されました。";
@@ -7472,7 +7523,7 @@
 "VIDEO_CALL_LABEL" = "ビデオ通話";
 
 /* Button label for the 'View Contact' button */
-"VIEW_CONTACT_BUTTON" = "View Contact";
+"VIEW_CONTACT_BUTTON" = "連絡先を表示する";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "このメッセージは閲覧済みです。";
