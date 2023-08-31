@@ -100,17 +100,10 @@ private extension MessageSender {
             return Promise(error: MessageSenderError.missingDevice)
         }
 
-        // If we've never interacted with this account before, we won't have a
-        // recipientId. It's safe to skip the identity key check in that case,
-        // since we don't know anything about them yet.
-        if let recipientId {
-            let recipientAddress = SignalServiceAddress(serviceId)
-            guard isPrekeyIdentityKeySafe(accountId: recipientId, recipientAddress: recipientAddress) else {
-                // We don't want to make prekey requests if we can anticipate that
-                // we're going to get an untrusted identity error.
-                Logger.info("Skipping prekey request due to untrusted identity.")
-                return Promise(error: UntrustedIdentityError(address: recipientAddress))
-            }
+        // As an optimization, skip the request if an error is likely.
+        if let recipientId, willLikelyHaveUntrustedIdentityKeyError(for: recipientId) {
+            Logger.info("Skipping prekey request due to untrusted identity.")
+            return Promise(error: UntrustedIdentityError(serviceId: serviceId))
         }
 
         if isOnlineMessage || isTransientSenderKeyDistributionMessage {
@@ -275,44 +268,25 @@ private extension MessageSender {
             )
         } catch SignalError.untrustedIdentity(_) {
             handleUntrustedIdentityKeyError(
-                accountId: recipientId,
-                recipientAddress: SignalServiceAddress(serviceId),
+                recipientId: recipientId,
                 preKeyBundle: preKeyBundle,
                 transaction: transaction
             )
-            throw UntrustedIdentityError(address: SignalServiceAddress(serviceId))
+            throw UntrustedIdentityError(serviceId: serviceId)
         }
         owsAssertDebug(containsActiveSession(), "Session does not exist.")
     }
 
     private class func handleUntrustedIdentityKeyError(
-        accountId: String,
-        recipientAddress: SignalServiceAddress,
+        recipientId: AccountId,
         preKeyBundle: SignalServiceKit.PreKeyBundle,
-        transaction: SDSAnyWriteTransaction
+        transaction tx: SDSAnyWriteTransaction
     ) {
-        saveRemoteIdentity(recipientAddress: recipientAddress,
-                           preKeyBundle: preKeyBundle,
-                           transaction: transaction)
-
-        if let recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: accountId, transaction: transaction) {
-            let currentRecipientIdentityKey = recipientIdentity.identityKey
-            hadUntrustedIdentityKeyError(recipientAddress: recipientAddress,
-                                         currentIdentityKey: currentRecipientIdentityKey,
-                                         preKeyBundle: preKeyBundle)
-        }
-    }
-
-    private class func saveRemoteIdentity(
-        recipientAddress: SignalServiceAddress,
-        preKeyBundle: SignalServiceKit.PreKeyBundle,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        Logger.info("recipientAddress: \(recipientAddress)")
         do {
             let identityManager = DependenciesBridge.shared.identityManager
-            let newRecipientIdentityKey = try preKeyBundle.identityKey.removeKeyType()
-            identityManager.saveIdentityKey(newRecipientIdentityKey, for: recipientAddress, tx: transaction.asV2Write)
+            let newIdentityKey = try preKeyBundle.identityKey.removeKeyType()
+            identityManager.saveIdentityKey(newIdentityKey, for: recipientId, tx: tx.asV2Write)
+            hadUntrustedIdentityKeyError(for: recipientId)
         } catch {
             owsFailDebug("Error: \(error)")
         }
@@ -322,87 +296,46 @@ private extension MessageSender {
 // MARK: - Prekey Rate Limits & Untrusted Identities
 
 private extension MessageSender {
+    private static let staleIdentityCache = AtomicDictionary<AccountId, Date>(lock: AtomicLock())
 
-    static let cacheQueue = DispatchQueue(label: "org.signal.message-sender.cache")
-
-    private struct StaleIdentity {
-        let currentIdentityKey: Data
-        let newIdentityKey: Data
-        let date: Date
+    class func hadUntrustedIdentityKeyError(for recipientId: AccountId) {
+        staleIdentityCache[recipientId] = Date()
     }
 
-    // This property should only be accessed on cacheQueue.
-    private static var staleIdentityCache = [SignalServiceAddress: StaleIdentity]()
-
-    class func hadUntrustedIdentityKeyError(recipientAddress: SignalServiceAddress,
-                                            currentIdentityKey: Data,
-                                            preKeyBundle: SignalServiceKit.PreKeyBundle) {
+    class func willLikelyHaveUntrustedIdentityKeyError(for recipientId: AccountId) -> Bool {
         assert(!Thread.isMainThread)
 
-        let newIdentityKey: Data
-        do {
-            newIdentityKey = try(preKeyBundle.identityKey as NSData).removeKeyType() as Data
-        } catch {
-            return owsFailDebug("Error: \(error)")
-        }
+        // Prekey rate limits are strict. Therefore, we want to avoid requesting
+        // prekey bundles that can't be processed. After a prekey request, we might
+        // not be able to process it if the new identity key isn't trusted. We
+        // therefore expect all subsequent fetches to fail until that key is
+        // trusted, so we don't bother sending them unless the key is trusted.
 
-        cacheQueue.sync {
-            staleIdentityCache[recipientAddress] = StaleIdentity(currentIdentityKey: currentIdentityKey,
-                                                                 newIdentityKey: newIdentityKey,
-                                                                 date: Date())
-        }
-    }
-
-    class func isPrekeyIdentityKeySafe(accountId: String, recipientAddress: SignalServiceAddress) -> Bool {
-        assert(!Thread.isMainThread)
-
-        // Prekey rate limits are strict. Therefore,
-        // we want to avoid requesting prekey bundles that can't be
-        // processed.  After a prekey request, we try to process the
-        // prekey bundle which can fail if the new identity key is
-        // untrusted. When that happens, we record the current identity
-        // key.  So long as a) the current identity key hasn't changed
-        // and b) the new identity key still isn't trusted, we can
-        // anticipate that a new prekey bundles will also be untrusted.
-        guard let staleIdentity = (cacheQueue.sync { () -> StaleIdentity? in
-            return staleIdentityCache[recipientAddress]
-        }) else {
-            // If we haven't record any untrusted identity errors for this user,
-            // it is safe to proceed.
-            return true
+        guard let mostRecentErrorDate = staleIdentityCache[recipientId] else {
+            // We don't have a recent error, so a fetch will probably work.
+            return false
         }
 
         let staleIdentityLifetime = kMinuteInterval * 5
-        guard abs(staleIdentity.date.timeIntervalSinceNow) >= staleIdentityLifetime else {
-            // If the untrusted identity was recorded more than N minutes ago,
-            // try another prekey fetch.  It's conceivable that the recipient
-            // device has re-registered _again_.
-            return true
+        guard abs(mostRecentErrorDate.timeIntervalSinceNow) < staleIdentityLifetime else {
+            // It's been more than five minutes since our last fetch. It's reasonable
+            // to try again, even if we don't think it will work. (This helps us
+            // discover if there's yet another new identity key.)
+            return false
         }
 
-        return databaseStorage.read { transaction in
-            guard let currentRecipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: accountId,
-                                                                               transaction: transaction) else {
-                owsFailDebug("Missing currentRecipientIdentity.")
-                return true
+        let identityManager = DependenciesBridge.shared.identityManager
+        return databaseStorage.read { tx in
+            guard let recipient = SignalRecipient.anyFetch(uniqueId: recipientId, transaction: tx) else {
+                return false
             }
-            let currentIdentityKey = currentRecipientIdentity.identityKey
-            guard currentIdentityKey == staleIdentity.currentIdentityKey else {
-                // If the currentIdentityKey has changed, try another prekey
-                // fetch.
-                return true
-            }
-            let newIdentityKey = staleIdentity.newIdentityKey
-            // If the newIdentityKey is now trusted, try another prekey
-            // fetch.
-            let identityManager = DependenciesBridge.shared.identityManager
-            return identityManager.isTrustedIdentityKey(
-                newIdentityKey,
-                address: recipientAddress,
-                direction: .outgoing,
+            // Otherwise, skip the request if we don't trust the identity.
+            let untrustedIdentity = identityManager.untrustedIdentityForSending(
+                to: recipient.address,
                 untrustedThreshold: OWSIdentityManagerImpl.Constants.minimumUntrustedThreshold,
-                tx: transaction.asV2Read
+                tx: tx.asV2Read
             )
+            return untrustedIdentity != nil
         }
     }
 }

@@ -180,10 +180,10 @@ class MessageSenderNoSessionForTransientMessageError: NSObject, CustomNSError, I
 // MARK: -
 
 public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
-    public let address: SignalServiceAddress
+    public let serviceId: ServiceId
 
-    init(address: SignalServiceAddress) {
-        self.address = address
+    init(serviceId: ServiceId) {
+        self.serviceId = serviceId
     }
 
     // NSError bridging: the domain of the error.
@@ -201,7 +201,7 @@ public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvide
             "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
             comment: "action sheet header when re-sending message which failed because of untrusted identity keys"
         )
-        return String(format: format, contactsManager.displayName(for: address))
+        return String(format: format, contactsManager.displayName(for: SignalServiceAddress(serviceId)))
     }
 
     // NSError bridging: the error code within the given domain.

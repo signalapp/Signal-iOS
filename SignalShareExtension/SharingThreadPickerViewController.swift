@@ -460,10 +460,10 @@ extension SharingThreadPickerViewController {
         let failureTitle = OWSLocalizedString("SHARE_EXTENSION_SENDING_FAILURE_TITLE", comment: "Alert title")
 
         if let untrustedIdentityError = error as? UntrustedIdentityError {
-            let untrustedAddress = untrustedIdentityError.address
+            let untrustedServiceId = untrustedIdentityError.serviceId
             let failureFormat = OWSLocalizedString("SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
                                                   comment: "alert body when sharing file failed because of untrusted/changed identity keys")
-            let displayName = self.contactsManager.displayName(for: untrustedAddress)
+            let displayName = self.contactsManager.displayName(for: SignalServiceAddress(untrustedServiceId))
             let failureMessage = String(format: failureFormat, displayName)
 
             let actionSheet = ActionSheetController(title: failureTitle, message: failureMessage)
@@ -479,7 +479,7 @@ extension SharingThreadPickerViewController {
                 self.databaseStorage.write { transaction in
                     let identityManager = DependenciesBridge.shared.identityManager
                     let verificationState = identityManager.verificationState(
-                        for: untrustedAddress,
+                        for: SignalServiceAddress(untrustedServiceId),
                         tx: transaction.asV2Write
                     )
                     switch verificationState {
@@ -491,16 +491,16 @@ extension SharingThreadPickerViewController {
                         // marked as "Verified".
                         Logger.info("recipient has acceptable verification status. Next send will succeed.")
                     case .noLongerVerified:
-                        Logger.info("marked recipient: \(untrustedAddress) as default verification status.")
+                        Logger.info("marked recipient: \(untrustedServiceId) as default verification status.")
                         guard let indentityKey = identityManager.identityKey(
-                            for: untrustedAddress,
+                            for: SignalServiceAddress(untrustedServiceId),
                             tx: transaction.asV2Write
                         ) else { return owsFailDebug("missing identity key") }
 
                         identityManager.setVerificationState(
                             .default,
                             identityKey: indentityKey,
-                            address: untrustedAddress,
+                            address: SignalServiceAddress(untrustedServiceId),
                             isUserInitiatedChange: true,
                             tx: transaction.asV2Write
                         )
