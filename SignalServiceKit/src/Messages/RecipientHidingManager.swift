@@ -217,7 +217,7 @@ private extension RecipientHidingManagerImpl {
             Logger.info("[Recipient hiding][side effects] Remove from whitelist.")
             profileManager.removeUser(
                 fromProfileWhitelist: recipient.address,
-                userProfileWriter: .storageService,
+                userProfileWriter: .localUser,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
             Logger.info("[Recipient hiding][side effects] Remove from story distribution lists.")
@@ -272,7 +272,7 @@ private extension RecipientHidingManagerImpl {
             Logger.info("[Recipient hiding][side effects] Add to whitelist.")
             profileManager.addUser(
                 toProfileWhitelist: recipient.address,
-                userProfileWriter: .storageService,
+                userProfileWriter: .localUser,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
             Logger.info("[Recipient hiding][side effects] Sync with storage service.")
