@@ -1181,6 +1181,9 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapIndividualCall(_ call: TSCall) {}
 
     // TODO:
+    func didTapLearnMoreMissedCallFromBlockedContact(_ call: TSCall) {}
+
+    // TODO:
     func didTapGroupCall() {}
 
     // TODO:

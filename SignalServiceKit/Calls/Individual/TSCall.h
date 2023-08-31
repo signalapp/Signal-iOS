@@ -23,7 +23,8 @@ typedef NS_ENUM(NSUInteger, RPRecentCallType) {
     RPRecentCallTypeIncomingAnsweredElsewhere,
     RPRecentCallTypeIncomingDeclinedElsewhere,
     RPRecentCallTypeIncomingBusyElsewhere,
-    RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb
+    RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb,
+    RPRecentCallTypeIncomingMissedBecauseBlockedSystemContact
 };
 
 typedef NS_CLOSED_ENUM(NSUInteger, TSRecentCallOfferType) {

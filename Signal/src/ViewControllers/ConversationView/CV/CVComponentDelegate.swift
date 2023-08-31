@@ -179,6 +179,8 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     func didTapIndividualCall(_ call: TSCall)
 
+    func didTapLearnMoreMissedCallFromBlockedContact(_ call: TSCall)
+
     func didTapGroupCall()
 
     func didTapPendingOutgoingMessage(_ message: TSOutgoingMessage)
@@ -243,6 +245,7 @@ struct CVMessageAction: Equatable {
         case didTapUpdateSystemContact(address: SignalServiceAddress, newNameComponents: PersonNameComponents)
         case didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String)
         case didTapIndividualCall(call: TSCall)
+        case didTapLearnMoreMissedCallFromBlockedContact(call: TSCall)
         case didTapGroupCall
         case didTapSendMessage(contactShare: ContactShareViewModel)
         case didTapSendInvite(contactShare: ContactShareViewModel)
@@ -287,6 +290,8 @@ struct CVMessageAction: Equatable {
                 delegate.didTapPhoneNumberChange(aci: aci, phoneNumberOld: phoneNumberOld, phoneNumberNew: phoneNumberNew)
             case .didTapIndividualCall(let call):
                 delegate.didTapIndividualCall(call)
+            case .didTapLearnMoreMissedCallFromBlockedContact(let call):
+                delegate.didTapLearnMoreMissedCallFromBlockedContact(call)
             case .didTapGroupCall:
                 delegate.didTapGroupCall()
             case .didTapSendMessage(let contactShare):

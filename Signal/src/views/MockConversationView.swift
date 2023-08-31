@@ -407,6 +407,8 @@ extension MockConversationView: CVComponentDelegate {
 
     func didTapIndividualCall(_ call: TSCall) {}
 
+    func didTapLearnMoreMissedCallFromBlockedContact(_ call: TSCall) {}
+
     func didTapGroupCall() {}
 
     func didTapPendingOutgoingMessage(_ message: TSOutgoingMessage) {}

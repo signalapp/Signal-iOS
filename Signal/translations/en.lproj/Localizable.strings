@@ -3991,6 +3991,18 @@
 /* info message text in conversation view */
 "MISSED_AUDIO_CALL" = "Missed voice call";
 
+/* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
+"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Missed call from contact blocked in phone settings";
+
+/* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Also Block Contact in Signal";
+
+/* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "You missed their call because they are blocked in your phone settings. Go to Settings > Phone and tap Blocked Contacts to manage this.";
+
+/* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ is Blocked in Phone Settings";
+
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
 

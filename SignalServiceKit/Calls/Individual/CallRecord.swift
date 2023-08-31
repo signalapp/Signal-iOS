@@ -506,7 +506,8 @@ extension RPRecentCallType {
              .incomingDeclinedElsewhere,
              .incomingAnsweredElsewhere,
              .incomingMissedBecauseOfDoNotDisturb,
-             .incomingMissedBecauseOfChangedIdentity:
+             .incomingMissedBecauseOfChangedIdentity,
+             .incomingMissedBecauseBlockedSystemContact:
             return .incoming
         case .outgoing,
              .outgoingIncomplete,
@@ -535,6 +536,7 @@ extension RPRecentCallType {
         case .incomingMissed,
              .incomingMissedBecauseOfChangedIdentity,
              .incomingMissedBecauseOfDoNotDisturb,
+             .incomingMissedBecauseBlockedSystemContact,
              .incomingBusyElsewhere:
             // Note "busy elsewhere" means we should display the call
             // as missed, but the linked device that was busy _won't_

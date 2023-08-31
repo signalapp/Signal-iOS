@@ -37,6 +37,8 @@ NSString *NSStringFromCallType(RPRecentCallType callType)
             return @"RPRecentCallTypeIncomingBusyElsewhere";
         case RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb:
             return @"RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb";
+        case RPRecentCallTypeIncomingMissedBecauseBlockedSystemContact:
+            return @"RPRecentCallTypeIncomingMissedBecauseBlockedSystemContact";
     }
 }
 
@@ -77,6 +79,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         case RPRecentCallTypeIncomingMissed:
         case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
         case RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb:
+        case RPRecentCallTypeIncomingMissedBecauseBlockedSystemContact:
             _read = NO;
             break;
         default:
@@ -207,6 +210,10 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
                     @"info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and "
                     @"older)");
             }
+        case RPRecentCallTypeIncomingMissedBecauseBlockedSystemContact:
+            return OWSLocalizedString(@"MISSED_CALL_BLOCKED_SYSTEM_CONTACT",
+                @"info message text in conversation view for when a call was dropped because the contact is blocked in "
+                @"iOS settings");
     }
 }
 

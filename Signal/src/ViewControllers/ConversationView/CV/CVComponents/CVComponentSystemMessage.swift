@@ -1405,6 +1405,15 @@ extension CVComponentSystemMessage {
                                                    comment: "Label for button that lets users call a contact again."),
                           accessibilityIdentifier: "call_again",
                           action: .didTapIndividualCall(call: call))
+        case .incomingMissedBecauseBlockedSystemContact:
+            guard !blockingManager.isThreadBlocked(thread, transaction: transaction) else {
+                return nil
+            }
+            return Action(
+                title: CommonStrings.learnMore,
+                accessibilityIdentifier: "learn_more_call_blocked_system_contact",
+                action: .didTapLearnMoreMissedCallFromBlockedContact(call: call)
+            )
         case .outgoingIncomplete,
              .incomingIncomplete:
             return nil

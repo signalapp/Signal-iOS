@@ -652,7 +652,7 @@ final public class IndividualCallService: NSObject {
 
             if let callType = call.individualCall.callType {
                 switch callType {
-                case .outgoingMissed, .incomingDeclined, .incomingMissed, .incomingMissedBecauseOfChangedIdentity, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb:
+                case .outgoingMissed, .incomingDeclined, .incomingMissed, .incomingMissedBecauseOfChangedIdentity, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb, .incomingMissedBecauseBlockedSystemContact:
                     // already handled and ended, don't update the call record.
                     break
                 case .incomingIncomplete, .incoming:
@@ -989,6 +989,8 @@ final public class IndividualCallService: NSObject {
         switch error {
         case .doNotDisturbEnabled?:
             callType = .incomingMissedBecauseOfDoNotDisturb
+        case .contactIsBlocked:
+            callType = .incomingMissedBecauseBlockedSystemContact
         default:
             if call.individualCall?.direction == .outgoing {
                 callType = .outgoingMissed
@@ -1007,7 +1009,7 @@ final public class IndividualCallService: NSObject {
             callService.callUIAdapter.reportMissedCall(call)
         case .outgoingIncomplete, .incomingDeclined, .incomingDeclinedElsewhere, .incomingAnsweredElsewhere:
             break
-        case .incomingMissedBecauseOfChangedIdentity, .outgoingMissed, .outgoing, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb:
+        case .incomingMissedBecauseOfChangedIdentity, .outgoingMissed, .outgoing, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb, .incomingMissedBecauseBlockedSystemContact:
             owsFailDebug("unexpected RPRecentCallType: \(String(describing: oldCallType))")
         @unknown default:
             owsFailDebug("unknown RPRecentCallType: \(String(describing: oldCallType))")

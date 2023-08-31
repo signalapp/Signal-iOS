@@ -692,6 +692,56 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentActionSheet(alert)
     }
 
+    public func didTapLearnMoreMissedCallFromBlockedContact(_ call: TSCall) {
+        AssertIsOnMainThread()
+
+        guard let contactThread = thread as? TSContactThread else {
+            owsFailDebug("Invalid thread.")
+            return
+        }
+        let address = contactThread.contactAddress
+
+        let displayName = contactsManager.displayName(for: contactThread.contactAddress)
+
+        let alert = ActionSheetController(
+            title: String(
+                format: OWSLocalizedString(
+                    "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE",
+                    comment: "Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }}"
+                ),
+                displayName
+            ),
+            message: OWSLocalizedString(
+                "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE",
+                comment: "Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings.")
+        )
+
+        alert.addAction(
+            ActionSheetAction(
+                title: OWSLocalizedString(
+                    "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION",
+                    comment: "Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings."
+                ),
+                accessibilityIdentifier: "block_contact",
+                style: .destructive
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.databaseStorage.write { tx in
+                    self.blockingManager.addBlockedAddress(
+                        address,
+                        blockMode: .localShouldLeaveGroups,
+                        transaction: tx
+                    )
+                }
+            }
+        )
+        alert.addAction(OWSActionSheets.okayAction)
+
+        inputToolbar?.clearDesiredKeyboard()
+        dismissKeyBoard()
+        self.presentActionSheet(alert)
+    }
+
     public func didTapGroupCall() {
         AssertIsOnMainThread()
 
