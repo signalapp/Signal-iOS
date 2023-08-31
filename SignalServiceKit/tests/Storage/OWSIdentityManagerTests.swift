@@ -40,9 +40,10 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
 
     func testAlreadyRegisteredKey() {
         let newKey = Randomness.generateRandomBytes(32)
-        let address = SignalServiceAddress(phoneNumber: "+12223334444")
+        let aci = Aci.randomForTesting()
+        let address = SignalServiceAddress(aci)
         write { transaction in
-            identityManager.saveIdentityKey(newKey, for: address, tx: transaction.asV2Write)
+            identityManager.saveIdentityKey(newKey, for: aci, tx: transaction.asV2Write)
             XCTAssert(identityManager.isTrustedIdentityKey(
                 newKey,
                 address: address,
@@ -62,9 +63,10 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
 
     func testChangedKey() {
         let originalKey = Randomness.generateRandomBytes(32)
-        let address = SignalServiceAddress(phoneNumber: "+12223334444")
+        let aci = Aci.randomForTesting()
+        let address = SignalServiceAddress(aci)
         write { transaction in
-            identityManager.saveIdentityKey(originalKey, for: address, tx: transaction.asV2Write)
+            identityManager.saveIdentityKey(originalKey, for: aci, tx: transaction.asV2Write)
 
             XCTAssert(identityManager.isTrustedIdentityKey(
                 originalKey,

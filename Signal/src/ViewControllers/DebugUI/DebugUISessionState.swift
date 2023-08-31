@@ -83,20 +83,22 @@ class DebugUISessionState: DebugUIPage, Dependencies {
     // MARK: -
 
     private static func toggleKeyChange(for thread: TSContactThread) {
+        guard let serviceId = thread.contactAddress.serviceId else {
+            return
+        }
         Logger.error("Flipping identity Key. Flip again to return.")
 
-        let address = thread.contactAddress
         let identityManager = DependenciesBridge.shared.identityManager
 
         databaseStorage.write { tx in
-            guard let currentKey = identityManager.identityKey(for: address, tx: tx.asV2Read) else { return }
+            guard let currentKey = identityManager.identityKey(for: SignalServiceAddress(serviceId), tx: tx.asV2Read) else { return }
 
             var flippedKey = Data(count: currentKey.count)
             for i in 0..<flippedKey.count {
                 flippedKey[i] = currentKey[i] ^ 0xFF
             }
             owsAssertDebug(flippedKey.count == currentKey.count)
-            identityManager.saveIdentityKey(flippedKey, for: address, tx: tx.asV2Write)
+            identityManager.saveIdentityKey(flippedKey, for: serviceId, tx: tx.asV2Write)
         }
     }
 

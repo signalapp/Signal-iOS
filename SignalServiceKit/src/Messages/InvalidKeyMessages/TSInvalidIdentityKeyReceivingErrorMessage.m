@@ -197,8 +197,14 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    ServiceIdObjC *_Nullable serviceId = self.envelope.sourceAddress.serviceIdObjC;
+    if (!serviceId) {
+        OWSFailDebug(@"Couldn't extract ServiceId to accept");
+        return;
+    }
+
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *tx) {
-        [OWSIdentityManagerObjCBridge saveIdentityKey:newKey forAddress:self.envelope.sourceAddress transaction:tx];
+        [OWSIdentityManagerObjCBridge saveIdentityKey:newKey forServiceId:serviceId transaction:tx];
     });
 
     __block NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *_Nullable messagesToDecrypt;

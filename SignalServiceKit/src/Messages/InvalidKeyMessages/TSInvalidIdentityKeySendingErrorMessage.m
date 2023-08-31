@@ -131,7 +131,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *tx) {
-        [OWSIdentityManagerObjCBridge saveIdentityKey:newIdentityKey forAddress:self.recipientAddress transaction:tx];
+        NSString *recipientId = [OWSAccountIdFinder ensureAccountIdForAddress:self.recipientAddress transaction:tx];
+        [OWSIdentityManagerObjCBridge saveIdentityKey:newIdentityKey forRecipientId:recipientId transaction:tx];
     });
 }
 

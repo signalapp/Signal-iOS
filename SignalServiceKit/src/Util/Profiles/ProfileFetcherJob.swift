@@ -552,11 +552,8 @@ public class ProfileFetcherJob: NSObject {
                 transaction: transaction
             )
 
-            self.verifyIdentityUpToDate(
-                address: SignalServiceAddress(serviceId),
-                latestIdentityKey: profile.identityKey,
-                transaction: transaction
-            )
+            let identityManager = DependenciesBridge.shared.identityManager
+            identityManager.saveIdentityKey(profile.identityKey, for: serviceId, tx: transaction.asV2Write)
 
             self.paymentsHelper.setArePaymentsEnabled(
                 for: ServiceIdObjC.wrapValue(serviceId),
@@ -607,15 +604,6 @@ public class ProfileFetcherJob: NSObject {
         }
 
         udManager.setUnidentifiedAccessMode(.enabled, address: address)
-    }
-
-    private func verifyIdentityUpToDate(
-        address: SignalServiceAddress,
-        latestIdentityKey: Data,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        let identityManager = DependenciesBridge.shared.identityManager
-        identityManager.saveIdentityKey(latestIdentityKey, for: address, tx: transaction.asV2Write)
     }
 
     private func lastFetchDate() -> Date? {

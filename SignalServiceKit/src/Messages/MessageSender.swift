@@ -190,7 +190,7 @@ private extension MessageSender {
     ) throws {
         assert(!Thread.isMainThread)
 
-        Logger.info("Creating session for  \(serviceId), deviceId: \(deviceId)")
+        Logger.info("Creating session for \(serviceId), deviceId: \(deviceId)")
 
         let containsActiveSession = { () -> Bool in
             DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.containsActiveSession(
