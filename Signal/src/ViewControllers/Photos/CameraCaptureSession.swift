@@ -17,6 +17,7 @@ enum PhotoCaptureError: Error {
     case initializationFailed
     case captureFailed
     case invalidVideo
+    case videoTooLarge
 }
 
 extension PhotoCaptureError: LocalizedError, UserErrorDescriptionProvider {
@@ -26,6 +27,12 @@ extension PhotoCaptureError: LocalizedError, UserErrorDescriptionProvider {
             return OWSLocalizedString("PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA", comment: "alert title")
         case .captureFailed:
             return OWSLocalizedString("PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE", comment: "alert title")
+        case .videoTooLarge:
+            return OWSLocalizedString(
+                "PHOTO_CAPTURE_VIDEO_SIZE_ERROR",
+                comment: "alert title, generic error preventing user from capturing a video that is too long"
+            )
+
         case .assertionError, .invalidVideo:
             return OWSLocalizedString("PHOTO_CAPTURE_GENERIC_ERROR", comment: "alert title, generic error preventing user from capturing a photo")
         }
@@ -822,6 +829,13 @@ class CameraCaptureSession: NSObject {
 
         guard let delegate else { return }
 
+        // TODO: showing an error here feels bad; maybe break the
+        // video up into segments like we do for stories. For now
+        // this is better than the old behavior (fail silently).
+        guard OWSMediaUtils.isVideoOfValidSize(path: outputUrl.path) else {
+            return handleVideoCaptureError(PhotoCaptureError.videoTooLarge)
+        }
+
         guard OWSMediaUtils.isValidVideo(path: outputUrl.path) else {
             return handleVideoCaptureError(PhotoCaptureError.invalidVideo)
         }
@@ -837,9 +851,10 @@ class CameraCaptureSession: NSObject {
     private func handleVideoCaptureError(_ error: Error) {
         AssertIsOnMainThread()
 
-        if case PhotoCaptureError.invalidVideo = error {
+        switch error {
+        case PhotoCaptureError.invalidVideo, PhotoCaptureError.videoTooLarge:
             Logger.warn("Error: \(error)")
-        } else {
+        default:
             owsFailDebug("Error: \(error)")
         }
 

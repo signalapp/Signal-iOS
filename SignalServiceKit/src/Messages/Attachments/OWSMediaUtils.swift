@@ -139,6 +139,11 @@ public class OWSMediaUtils: NSObject {
     }
 
     public class func isVideoOfValidContentTypeAndSize(path: String) -> Bool {
+        return isVideoOfValidContentType(path: path)
+            && isVideoOfValidSize(path: path)
+    }
+
+    public class func isVideoOfValidContentType(path: String) -> Bool {
         guard FileManager.default.fileExists(atPath: path) else {
             Logger.error("Media file missing.")
             return false
@@ -152,7 +157,10 @@ public class OWSMediaUtils: NSObject {
             Logger.error("Media file has invalid content type.")
             return false
         }
+        return true
+    }
 
+    public class func isVideoOfValidSize(path: String) -> Bool {
         guard let fileSize = OWSFileSystem.fileSize(ofPath: path) else {
             Logger.error("Media file has unknown length.")
             return false
