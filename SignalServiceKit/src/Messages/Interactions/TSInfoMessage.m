@@ -307,12 +307,21 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                 @"Indicates that another user has changed their phone number. Embeds: {{ the user's name}}".);
             return [NSString stringWithFormat:format, userName];
         }
-        case TSInfoMessageContactHidden:
+        case TSInfoMessageContactHidden: {
             /// This does not control whether to show the info message in the chat
             /// preview. To control that, see ``TSInteraction.shouldAppearInInbox``.
-            return OWSLocalizedString(@"INFO_MESSAGE_CONTACT_REMOVED",
-                @"Indicates that the recipient has been removed from the current user's contacts and that messaging "
-                @"them will re-add them.");
+            SignalServiceAddress *address = [TSContactThread contactAddressFromThreadId:self.uniqueThreadId
+                                                                            transaction:transaction];
+            if ([RecipientHidingManagerObjcBridge isHiddenAddress:address tx:transaction]) {
+                return OWSLocalizedString(@"INFO_MESSAGE_CONTACT_REMOVED",
+                    @"Indicates that the recipient has been removed from the current user's contacts and that "
+                    @"messaging them will re-add them.");
+            } else {
+                return OWSLocalizedString(@"INFO_MESSAGE_CONTACT_REINSTATED",
+                    @"Indicates that a previously-removed recipient has been added back to the current user's "
+                    @"contacts.");
+            }
+        }
         case TSInfoMessagePaymentsActivationRequest:
             return [self paymentsActivationRequestDescriptionWithTransaction:transaction];
         case TSInfoMessagePaymentsActivated:
