@@ -202,7 +202,7 @@ private extension RecipientHidingManagerImpl {
             recipient.address,
             transaction: SDSDB.shimOnlyBridge(tx)
         ) {
-            let message = TSInfoMessage(thread: thread, messageType: .contactHidden)
+            let message = TSInfoMessage(thread: thread, messageType: .recipientHidden)
             Logger.info("[Recipient hiding][side effects] Posting TSInfoMessage.")
             message.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
 

@@ -307,7 +307,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                 @"Indicates that another user has changed their phone number. Embeds: {{ the user's name}}".);
             return [NSString stringWithFormat:format, userName];
         }
-        case TSInfoMessageContactHidden: {
+        case TSInfoMessageRecipientHidden: {
             /// This does not control whether to show the info message in the chat
             /// preview. To control that, see ``TSInteraction.shouldAppearInInbox``.
             SignalServiceAddress *address = [TSContactThread contactAddressFromThreadId:self.uniqueThreadId
@@ -351,7 +351,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageSyncedThread:
         case TSInfoMessageProfileUpdate:
         case TSInfoMessagePhoneNumberChange:
-        case TSInfoMessageContactHidden:
+        case TSInfoMessageRecipientHidden:
         case TSInfoMessagePaymentsActivationRequest:
         case TSInfoMessagePaymentsActivated:
             return NO;

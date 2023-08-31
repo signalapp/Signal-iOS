@@ -785,7 +785,7 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.profile16)
             case .phoneNumberChange:
                 return Theme.iconImage(.phone16)
-            case .contactHidden:
+            case .recipientHidden:
                 return Theme.iconImage(.info16)
             case .paymentsActivationRequest, .paymentsActivated:
                 return Theme.iconImage(.settingsPayments)
@@ -1264,7 +1264,7 @@ extension CVComponentSystemMessage {
              .verificationStateChange,
              .userJoinedSignal,
              .syncedThread,
-             .contactHidden:
+             .recipientHidden:
             return nil
         case .profileUpdate:
             guard let profileChangeAddress = infoMessage.profileChangeAddress else {

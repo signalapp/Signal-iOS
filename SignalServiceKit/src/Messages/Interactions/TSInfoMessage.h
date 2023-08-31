@@ -29,7 +29,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageSyncedThread,
     TSInfoMessageProfileUpdate,
     TSInfoMessagePhoneNumberChange,
-    TSInfoMessageContactHidden,
+    TSInfoMessageRecipientHidden,
     TSInfoMessagePaymentsActivationRequest,
     TSInfoMessagePaymentsActivated
 };
