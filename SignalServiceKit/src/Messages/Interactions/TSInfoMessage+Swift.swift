@@ -173,8 +173,8 @@ extension TSInfoMessage {
 extension TSInfoMessage {
 
     private enum PaymentsInfoMessageType {
-        case incoming(Aci)
-        case outgoing(Aci)
+        case incoming(from: Aci)
+        case outgoing(to: Aci)
     }
 
     private func paymentsActivationRequestType(transaction: SDSAnyReadTransaction) -> PaymentsInfoMessageType? {
@@ -185,9 +185,15 @@ extension TSInfoMessage {
             return nil
         }
         if paymentActivationRequestSenderAci == localAci {
-            return .outgoing(paymentActivationRequestSenderAci)
+            guard let peerAci = TSContactThread.contactAddress(
+                fromThreadId: self.uniqueThreadId,
+                transaction: transaction
+            )?.aci else {
+                return nil
+            }
+            return .outgoing(to: peerAci)
         } else {
-            return .incoming(paymentActivationRequestSenderAci)
+            return .incoming(from: paymentActivationRequestSenderAci)
         }
     }
 
@@ -199,9 +205,15 @@ extension TSInfoMessage {
             return nil
         }
         if paymentActivatedAci == localAci {
-            return .outgoing(paymentActivatedAci)
+            guard let peerAci = TSContactThread.contactAddress(
+                fromThreadId: self.uniqueThreadId,
+                transaction: transaction
+            )?.aci else {
+                return nil
+            }
+            return .outgoing(to: peerAci)
         } else {
-            return .incoming(paymentActivatedAci)
+            return .incoming(from: paymentActivatedAci)
         }
     }
 
@@ -230,14 +242,14 @@ extension TSInfoMessage {
         switch paymentsActivationRequestType(transaction: transaction) {
         case .none:
             return nil
-        case .incoming(let _aci):
-            aci = _aci
+        case .incoming(let fromAci):
+            aci = fromAci
             formatString = OWSLocalizedString(
                 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED",
                 comment: "Shown when a user receives a payment activation request. Embeds: {{ the user's name}}"
             )
-        case .outgoing(let _aci):
-            aci = _aci
+        case .outgoing(let toAci):
+            aci = toAci
             formatString = OWSLocalizedString(
                 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT",
                 comment: "Shown when requesting a user activates payments. Embeds: {{ the user's name}}"
