@@ -58,8 +58,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             return true
         }
 
-        return lastSuccessDate.timeIntervalSinceNow >= Constants.SignedPreKeyMaxRotationDuration
-
+        return lastSuccessDate.addingTimeInterval(Constants.SignedPreKeyMaxRotationDuration) < Date()
     }
 
     private func needsLastResortPreKeyRotation(identity: OWSIdentity, tx: DBReadTransaction) -> Bool {
@@ -69,7 +68,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             return true
         }
 
-        return lastSuccessDate.timeIntervalSinceNow >= Constants.SignedPreKeyMaxRotationDuration
+        return lastSuccessDate.addingTimeInterval(Constants.SignedPreKeyMaxRotationDuration) < Date()
     }
 
     public func isAppLockedDueToPreKeyUpdateFailures(tx: DBReadTransaction) -> Bool {
