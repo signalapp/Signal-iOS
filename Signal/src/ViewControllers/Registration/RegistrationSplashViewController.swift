@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import PureLayout
 import SafariServices
 import SignalMessaging
 import SignalUI
@@ -13,6 +14,7 @@ public protocol RegistrationSplashPresenter: AnyObject {
     func continueFromSplash()
 
     func switchToDeviceLinkingMode()
+    func transferDevice()
 }
 
 // MARK: - RegistrationSplashViewController
@@ -48,6 +50,8 @@ public class RegistrationSplashViewController: OWSViewController {
         stackView.autoPinEdgesToSuperviewMargins()
 
         let canSwitchModes = UIDevice.current.isIPad || FeatureFlags.linkedPhones
+        var transferButtonTrailingView: UIView = self.view
+        var transferButtonTrailingEdge: ALEdge = .trailing
         if canSwitchModes {
             let modeSwitchButton = UIButton()
 
@@ -62,6 +66,26 @@ public class RegistrationSplashViewController: OWSViewController {
             modeSwitchButton.autoSetDimensions(to: CGSize(square: 40))
             modeSwitchButton.autoPinEdge(toSuperviewMargin: .trailing)
             modeSwitchButton.autoPinEdge(toSuperviewMargin: .top)
+
+            transferButtonTrailingEdge = .leading
+            transferButtonTrailingView = modeSwitchButton
+        }
+
+        if FeatureFlags.preRegDeviceTransfer {
+            let transferButton = UIButton()
+
+            transferButton.setImage(Theme.iconImage(.transfer), animated: false)
+            transferButton.addTarget(self, action: #selector(didTapTransfer), for: .touchUpInside)
+            transferButton.accessibilityIdentifier = "onboarding.splash.transfer"
+
+            view.addSubview(transferButton)
+            transferButton.autoSetDimensions(to: CGSize(square: 40))
+            transferButton.autoPinEdge(
+                .trailing,
+                to: transferButtonTrailingEdge,
+                of: transferButtonTrailingView
+            )
+            transferButton.autoPinEdge(toSuperviewMargin: .top)
         }
 
         let heroImage = UIImage(named: "onboarding_splash_hero")
@@ -129,6 +153,13 @@ public class RegistrationSplashViewController: OWSViewController {
         Logger.info("")
 
         presenter?.switchToDeviceLinkingMode()
+    }
+
+    @objc
+    private func didTapTransfer() {
+        Logger.info("")
+
+        presenter?.transferDevice()
     }
 
     @objc

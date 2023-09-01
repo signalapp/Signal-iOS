@@ -73,6 +73,8 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let linkedPhones = build.includes(.internal)
 
+    public static let preRegDeviceTransfer = build.includes(.dev)
+
     // We keep this feature flag around as we may want to
     // ship a build that disables the dependency on KBS
     // during registration. Features cannot be toggled

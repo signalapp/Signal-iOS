@@ -125,6 +125,10 @@ class QRCodeView: UIView {
             }
         }()
 
+        defer {
+            qrCodeView = qrCodeImageView
+        }
+
         // Don't antialias QR Codes.
         qrCodeImageView.layer.magnificationFilter = .nearest
         qrCodeImageView.layer.minificationFilter = .nearest

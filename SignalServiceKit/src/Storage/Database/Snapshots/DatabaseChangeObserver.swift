@@ -174,7 +174,7 @@ public class DatabaseChangeObserver: NSObject {
         }
 
         let shouldBeActive: Bool = {
-            guard AppReadiness.isAppReady else {
+            guard AppReadiness.isAppReady, !tsAccountManager.isTransferInProgress else {
                 return false
             }
             guard !CurrentAppContext().isInBackground() else {
@@ -457,6 +457,7 @@ extension DatabaseChangeObserver: TransactionObserver {
 
         guard !tsAccountManager.isTransferInProgress else {
             Logger.info("Skipping publishing of updates; transfer in progress.")
+            displayLink?.invalidate()
             return
         }
 

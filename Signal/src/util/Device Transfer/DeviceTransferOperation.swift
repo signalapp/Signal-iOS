@@ -8,6 +8,8 @@ import SignalServiceKit
 
 class DeviceTransferOperation: OWSOperation {
 
+    public struct CancelError: Error {}
+
     let file: DeviceTransferProtoFile
 
     let promise: Promise<Void>
@@ -44,6 +46,13 @@ class DeviceTransferOperation: OWSOperation {
     override func didFail(error: Error) {
         super.didFail(error: error)
         future.reject(error)
+    }
+
+    override func cancel() {
+        super.cancel()
+        if !future.isSealed {
+            future.reject(CancelError())
+        }
     }
 
     override public func run() {

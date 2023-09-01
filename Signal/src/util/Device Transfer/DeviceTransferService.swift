@@ -239,7 +239,7 @@ class DeviceTransferService: NSObject {
     // MARK: -
 
     func failTransfer(_ error: Error, _ reason: String) {
-        owsFailDebug(reason)
+        Logger.error("Failed transfer \(reason)")
 
         stopTransfer()
 
@@ -330,7 +330,9 @@ class DeviceTransferService: NSObject {
             }
             try self.sendDoneMessage(to: newDevicePeerId)
         }.catch { error in
-            self.failTransfer(.assertion, "\(error)")
+            if !(error is DeviceTransferOperation.CancelError) {
+                self.failTransfer(.assertion, "\(error)")
+            }
         }
     }
 
