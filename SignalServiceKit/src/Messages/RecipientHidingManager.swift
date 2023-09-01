@@ -123,7 +123,6 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         }
 
         do {
-            Logger.info("[Recipient hiding] Checking whether a particular recipient his hidden.")
             let sql = """
             SELECT EXISTS(
                 SELECT 1
@@ -170,8 +169,8 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction
     ) {
-        Logger.info("[Recipient hiding] Initiating recipient unhide.")
         if let id = recipient.id, isHiddenRecipient(recipient, tx: tx) {
+            Logger.info("[Recipient hiding] Initiating recipient unhide.")
             let sql = """
                 DELETE FROM \(HiddenRecipient.databaseTableName)
                 WHERE \(HiddenRecipient.CodingKeys.recipientId.stringValue) = ?
@@ -251,7 +250,6 @@ private extension RecipientHidingManagerImpl {
                 withTx: SDSDB.shimOnlyBridge(tx)
             )
         }
-        Logger.info("[Recipient hiding][side effects] Ending side effects of setting as hidden.")
     }
 
     /// Callback performing side effects of removing a hide
@@ -295,7 +293,6 @@ private extension RecipientHidingManagerImpl {
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         }
-        Logger.info("[Recipient hiding][side effects] Ending side effects of setting as unhidden.")
     }
 }
 
