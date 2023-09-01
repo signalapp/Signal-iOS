@@ -359,7 +359,7 @@ extension ConversationViewController: MessageRequestDelegate {
             proceedTitle: OWSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON",
                                             comment: "Button label for the 'unblock' button")
         ) { _ in
-            self.messageRequestViewDidTapAccept(mode: mode, unblockThread: true, unhideRecipient: false)
+            self.messageRequestViewDidTapAccept(mode: mode, unblockThread: true, unhideRecipient: true)
         }
     }
 
