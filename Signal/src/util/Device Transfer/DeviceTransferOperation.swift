@@ -38,18 +38,18 @@ class DeviceTransferOperation: OWSOperation {
 
     // MARK: - Run
 
-    override func didSucceed() {
-        super.didSucceed()
+    override func reportSuccess() {
+        super.reportSuccess()
         future.resolve()
     }
 
-    override func didFail(error: Error) {
-        super.didFail(error: error)
+    override func didReportError(_ error: Error) {
+        super.didReportError(error)
         future.reject(error)
     }
 
-    override func cancel() {
-        super.cancel()
+    override func reportCancelled() {
+        super.reportCancelled()
         if !future.isSealed {
             future.reject(CancelError())
         }

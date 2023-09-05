@@ -268,7 +268,35 @@ extension SignalApp {
         }
 
         DebugLogger.shared().wipeLogsAlways(appContext: CurrentAppContext() as! MainAppContext)
-        exit(0)
+
+        guard CurrentAppContext().isMainApp else {
+            exit(0)
+        }
+
+        DispatchQueue.main.async {
+            let actionSheet = ActionSheetController(
+                title: OWSLocalizedString(
+                    "OUTGOING_TRANSFER_COMPLETE_TITLE",
+                    comment: "Title for action sheet shown when device transfer completes"
+                ),
+                message: OWSLocalizedString(
+                    "OUTGOING_TRANSFER_COMPLETE_MESSAGE",
+                    comment: "Message for action sheet shown when device transfer completes"
+                )
+            )
+            actionSheet.addAction(.init(
+                title: OWSLocalizedString(
+                    "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION",
+                    comment: "Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch)."
+                ),
+                style: .destructive,
+                handler: { _ in
+                    exit(0)
+                }
+            ))
+            actionSheet.isCancelable = false
+            CurrentAppContext().frontmostViewController()?.present(actionSheet, animated: true)
+        }
     }
 }
 

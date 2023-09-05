@@ -4417,6 +4417,15 @@
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Unanswered video call";
 
+/* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
+"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Exit Signal";
+
+/* Message for action sheet shown when device transfer completes */
+"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal will now exit on this device";
+
+/* Title for action sheet shown when device transfer completes */
+"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Transfer complete!";
+
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "Outgoing video call";
 
