@@ -248,20 +248,6 @@ private class MockOutgoingMessage: TSOutgoingMessage {
         owsFailDebug("shouldn't save mock message")
     }
 
-    class MockOutgoingMessageRecipientState: TSOutgoingMessageRecipientState {
-        override var state: OWSOutgoingMessageRecipientState {
-            return OWSOutgoingMessageRecipientState.sent
-        }
-
-        override var deliveryTimestamp: NSNumber? {
-            return NSNumber(value: NSDate.ows_millisecondTimeStamp())
-        }
-
-        override var readTimestamp: NSNumber? {
-            return NSNumber(value: NSDate.ows_millisecondTimeStamp())
-        }
-    }
-
     override var messageState: TSOutgoingMessageState { .sent }
 
     override func readRecipientAddresses() -> [SignalServiceAddress] {
@@ -270,7 +256,11 @@ private class MockOutgoingMessage: TSOutgoingMessage {
     }
 
     override func recipientState(for recipientAddress: SignalServiceAddress) -> TSOutgoingMessageRecipientState? {
-        return MockOutgoingMessageRecipientState()
+        let result = TSOutgoingMessageRecipientState()!
+        result.state = .sent
+        result.deliveryTimestamp = NSNumber(value: NSDate.ows_millisecondTimeStamp())
+        result.readTimestamp = NSNumber(value: NSDate.ows_millisecondTimeStamp())
+        return result
     }
 }
 

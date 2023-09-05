@@ -6,15 +6,16 @@
 import Foundation
 
 @objc
-protocol DeliveryReceiptContext: AnyObject {
+public protocol DeliveryReceiptContext: AnyObject {
     @objc(addUpdateForMessage:transaction:update:)
-    func addUpdate(message: TSOutgoingMessage,
-                   transaction: SDSAnyWriteTransaction,
-                   update: @escaping (TSOutgoingMessage) -> Void)
+    func addUpdate(
+        message: TSOutgoingMessage,
+        transaction: SDSAnyWriteTransaction,
+        update: @escaping (TSOutgoingMessage) -> Void
+    )
 
     @objc(messagesWithTimestamp:transaction:)
-    func messages(_ timestamps: UInt64,
-                  transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage]
+    func messages(_ timestamps: UInt64, transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage]
 }
 
 private struct Update {
@@ -41,9 +42,11 @@ fileprivate extension TSOutgoingMessage {
 @objc
 public class PassthroughDeliveryReceiptContext: NSObject, DeliveryReceiptContext {
     @objc(addUpdateForMessage:transaction:update:)
-    func addUpdate(message: TSOutgoingMessage,
-                   transaction: SDSAnyWriteTransaction,
-                   update: @escaping (TSOutgoingMessage) -> Void) {
+    public func addUpdate(
+        message: TSOutgoingMessage,
+        transaction: SDSAnyWriteTransaction,
+        update: @escaping (TSOutgoingMessage) -> Void
+    ) {
         let deferredUpdate = Update(message: message, update: update)
         message.anyUpdateOutgoingMessage(transaction: transaction) { message in
             deferredUpdate.update(message)
@@ -51,8 +54,7 @@ public class PassthroughDeliveryReceiptContext: NSObject, DeliveryReceiptContext
     }
 
     @objc(messagesWithTimestamp:transaction:)
-    func messages(_ timestamp: UInt64,
-                  transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
+    public func messages(_ timestamp: UInt64, transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
         return TSOutgoingMessage.fetch(timestamp, transaction: transaction)
     }
 }
@@ -78,14 +80,16 @@ public class BatchingDeliveryReceiptContext: NSObject, DeliveryReceiptContext {
     // Adds a closure to run that mutates a message. Note that it will be run twice - once for the
     // in-memory instance and a second time for the most up-to-date copy in the database.
     @objc(addUpdateForMessage:transaction:update:)
-    func addUpdate(message: TSOutgoingMessage,
-                   transaction: SDSAnyWriteTransaction,
-                   update: @escaping (TSOutgoingMessage) -> Void) {
+    public func addUpdate(
+        message: TSOutgoingMessage,
+        transaction: SDSAnyWriteTransaction,
+        update: @escaping (TSOutgoingMessage) -> Void
+    ) {
         deferredUpdates.append(Update(message: message, update: update))
     }
 
     @objc(messagesWithTimestamp:transaction:)
-    func messages(_ timestamp: UInt64, transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
+    public func messages(_ timestamp: UInt64, transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
         if let result = messages[timestamp] {
             return result
         }

@@ -5,6 +5,7 @@
 
 import Foundation
 import LibSignalClient
+import SignalCoreKit
 
 // Every time we add a new property to TSOutgoingMessage, we should:
 //
@@ -214,8 +215,7 @@ public extension TSOutgoingMessage {
         return builder.buildInfallibly()
     }
 
-    @objc(maybeClearShouldSharePhoneNumberForRecipient:recipientDeviceId:transaction:)
-    func maybeClearShouldSharePhoneNumber(
+    fileprivate func maybeClearShouldSharePhoneNumber(
         for recipientAddress: SignalServiceAddress,
         recipientDeviceId deviceId: UInt32,
         transaction: SDSAnyWriteTransaction
@@ -276,7 +276,82 @@ public extension TSOutgoingMessage {
     }
 }
 
-// MARK: Sender Key + Message Send Log
+// MARK: - Receipts
+
+extension TSOutgoingMessage {
+    public func update(
+        withDeliveredRecipient recipientAddress: SignalServiceAddress,
+        deviceId: UInt32,
+        deliveryTimestamp timestamp: UInt64,
+        context: DeliveryReceiptContext,
+        tx: SDSAnyWriteTransaction
+    ) {
+        handleReceipt(
+            from: recipientAddress,
+            deviceId: deviceId,
+            type: \.deliveryTimestamp,
+            timestamp: timestamp,
+            tryToClearPhoneNumberSharing: true,
+            tx: tx
+        )
+    }
+
+    public func update(
+        withReadRecipient recipientAddress: SignalServiceAddress,
+        deviceId: UInt32,
+        readTimestamp timestamp: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) {
+        handleReceipt(from: recipientAddress, deviceId: deviceId, type: \.readTimestamp, timestamp: timestamp, tx: tx)
+    }
+
+    public func update(
+        withViewedRecipient recipientAddress: SignalServiceAddress,
+        deviceId: UInt32,
+        viewedTimestamp timestamp: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) {
+        handleReceipt(from: recipientAddress, deviceId: deviceId, type: \.viewedTimestamp, timestamp: timestamp, tx: tx)
+    }
+
+    private func handleReceipt(
+        from recipientAddress: SignalServiceAddress,
+        deviceId: UInt32,
+        type timestampProperty: ReferenceWritableKeyPath<TSOutgoingMessageRecipientState, NSNumber?>,
+        timestamp: UInt64,
+        tryToClearPhoneNumberSharing: Bool = false,
+        tx: SDSAnyWriteTransaction
+    ) {
+        owsAssertDebug(recipientAddress.isValid)
+
+        // Ignore receipts for messages that have been deleted. They are no longer
+        // relevant to this message.
+        if wasRemotelyDeleted {
+            return
+        }
+
+        // Note that this relies on the Message Send Log, so we have to execute it first.
+        if tryToClearPhoneNumberSharing {
+            maybeClearShouldSharePhoneNumber(for: recipientAddress, recipientDeviceId: deviceId, transaction: tx)
+        }
+
+        // This is only necessary for delivery receipts, but while we're here with
+        // an open write transaction, we check it for other receipts as well.
+        clearMessageSendLogEntry(forRecipient: recipientAddress, deviceId: deviceId, tx: tx)
+
+        anyUpdateOutgoingMessage(transaction: tx) { message in
+            guard let recipientState = message.recipientAddressStates?[recipientAddress] else {
+                owsFailDebug("Missing recipient state for \(recipientAddress)")
+                return
+            }
+            recipientState.state = .sent
+            recipientState[keyPath: timestampProperty] = NSNumber(value: timestamp)
+            recipientState.errorCode = nil
+        }
+    }
+}
+
+// MARK: - Sender Key + Message Send Log
 
 extension TSOutgoingMessage {
 

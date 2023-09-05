@@ -684,10 +684,10 @@ extension OWSReceiptManager {
                 for message in messages {
                     message.update(
                         withDeliveredRecipient: SignalServiceAddress(recipientServiceId.wrappedValue),
-                        recipientDeviceId: recipientDeviceId,
+                        deviceId: recipientDeviceId,
                         deliveryTimestamp: deliveryTimestamp,
                         context: context,
-                        transaction: tx
+                        tx: tx
                     )
                 }
                 return true
@@ -719,9 +719,9 @@ extension OWSReceiptManager {
                 for message in messages {
                     message.update(
                         withReadRecipient: SignalServiceAddress(recipientAci.wrappedValue),
-                        recipientDeviceId: recipientDeviceId,
+                        deviceId: recipientDeviceId,
                         readTimestamp: readTimestamp,
-                        transaction: tx
+                        tx: tx
                     )
                 }
                 return true
@@ -749,9 +749,9 @@ extension OWSReceiptManager {
                     for message in messages {
                         message.update(
                             withViewedRecipient: SignalServiceAddress(recipientAci.wrappedAciValue),
-                            recipientDeviceId: recipientDeviceId,
+                            deviceId: recipientDeviceId,
                             viewedTimestamp: viewedTimestamp,
-                            transaction: tx
+                            tx: tx
                         )
                     }
                 } else {

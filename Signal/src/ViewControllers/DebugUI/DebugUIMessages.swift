@@ -3292,16 +3292,16 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 outgoingMessage.update(withSentRecipient: ServiceIdObjC.wrapValue(incomingSenderAci), wasSentByUD: false, transaction: transaction)
                 outgoingMessage.update(
                     withDeliveredRecipient: SignalServiceAddress(incomingSenderAci),
-                    recipientDeviceId: 0,
+                    deviceId: 0,
                     deliveryTimestamp: timestamp,
                     context: PassthroughDeliveryReceiptContext(),
-                    transaction: transaction
+                    tx: transaction
                 )
                 outgoingMessage.update(
                     withReadRecipient: SignalServiceAddress(incomingSenderAci),
-                    recipientDeviceId: 0,
+                    deviceId: 0,
                     readTimestamp: timestamp,
-                    transaction: transaction
+                    tx: transaction
                 )
             }
         }
@@ -3930,10 +3930,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 owsAssertDebug(address.isValid)
                 message.update(
                     withDeliveredRecipient: address,
-                    recipientDeviceId: 0,
+                    deviceId: 0,
                     deliveryTimestamp: Date.ows_millisecondTimestamp(),
                     context: PassthroughDeliveryReceiptContext(),
-                    transaction: transaction
+                    tx: transaction
                 )
             }
         }
@@ -3943,9 +3943,9 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 owsAssertDebug(address.isValid)
                 message.update(
                     withReadRecipient: address,
-                    recipientDeviceId: 0,
+                    deviceId: 0,
                     readTimestamp: Date.ows_millisecondTimestamp(),
-                    transaction: transaction
+                    tx: transaction
                 )
             }
         }

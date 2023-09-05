@@ -221,17 +221,17 @@ final class DisappearingMessageFinderTest: SSKBaseTestSwift {
             )
             expiringDeliveredOutgoingMessage.update(
                 withDeliveredRecipient: otherAddress,
-                recipientDeviceId: 0,
+                deviceId: 0,
                 deliveryTimestamp: Date.ows_millisecondTimestamp(),
                 context: PassthroughDeliveryReceiptContext(),
-                transaction: transaction
+                tx: transaction
             )
             let nowMs = Date.ows_millisecondTimestamp()
             expiringDeliveredAndReadOutgoingMessage.update(
                 withReadRecipient: otherAddress,
-                recipientDeviceId: 0,
+                deviceId: 0,
                 readTimestamp: nowMs,
-                transaction: transaction
+                tx: transaction
             )
         }
 

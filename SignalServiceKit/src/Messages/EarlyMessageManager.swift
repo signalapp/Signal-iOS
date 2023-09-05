@@ -370,9 +370,9 @@ public class EarlyMessageManager: NSObject {
                 }
                 message.update(
                     withReadRecipient: sender,
-                    recipientDeviceId: deviceId,
+                    deviceId: deviceId,
                     readTimestamp: timestamp,
-                    transaction: transaction
+                    tx: transaction
                 )
             case .outgoingMessageViewed(let sender, let deviceId, let timestamp):
                 Logger.info("Applying early viewed receipt from \(sender):\(deviceId) for outgoing message \(identifier)")
@@ -383,9 +383,9 @@ public class EarlyMessageManager: NSObject {
                 }
                 message.update(
                     withViewedRecipient: sender,
-                    recipientDeviceId: deviceId,
+                    deviceId: deviceId,
                     viewedTimestamp: timestamp,
-                    transaction: transaction
+                    tx: transaction
                 )
             case .outgoingMessageDelivered(let sender, let deviceId, let timestamp):
                 Logger.info("Applying early delivery receipt from \(sender):\(deviceId) for outgoing message \(identifier)")
@@ -396,10 +396,10 @@ public class EarlyMessageManager: NSObject {
                 }
                 message.update(
                     withDeliveredRecipient: sender,
-                    recipientDeviceId: deviceId,
+                    deviceId: deviceId,
                     deliveryTimestamp: timestamp,
                     context: PassthroughDeliveryReceiptContext(),
-                    transaction: transaction
+                    tx: transaction
                 )
             case .messageReadOnLinkedDevice(let timestamp):
                 Logger.info("Applying early read receipt from linked device for message \(identifier)")

@@ -77,15 +77,17 @@ typedef NS_ENUM(NSInteger, EncryptionStyle) {
 
 @interface TSOutgoingMessageRecipientState : MTLModel
 
-@property (atomic, readonly) OWSOutgoingMessageRecipientState state;
+// These properties are mutable for Swift interop.
+
+@property (atomic) OWSOutgoingMessageRecipientState state;
 // This property should only be set if state == .sent.
-@property (atomic, nullable, readonly) NSNumber *deliveryTimestamp;
+@property (atomic, nullable) NSNumber *deliveryTimestamp;
 // This property should only be set if state == .sent.
-@property (atomic, nullable, readonly) NSNumber *readTimestamp;
+@property (atomic, nullable) NSNumber *readTimestamp;
 // This property should only be set if state == .sent.
-@property (atomic, nullable, readonly) NSNumber *viewedTimestamp;
+@property (atomic, nullable) NSNumber *viewedTimestamp;
 // This property should only be set if state == .failed or state == .sending (with a prior failure)
-@property (atomic, nullable, readonly) NSNumber *errorCode;
+@property (atomic, nullable) NSNumber *errorCode;
 
 @property (atomic, readonly) BOOL wasSentByUD;
 
@@ -319,28 +321,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction;
 
-// This method is used to record a successful delivery to one recipient.
-- (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
-                   recipientDeviceId:(uint32_t)deviceId
-                   deliveryTimestamp:(uint64_t)deliveryTimestamp
-                             context:(id<DeliveryReceiptContext>)deliveryReceiptContext
-                         transaction:(SDSAnyWriteTransaction *)transaction;
-
 - (void)updateWithWasSentFromLinkedDeviceWithUDRecipients:(nullable NSArray<ServiceIdObjC *> *)udRecipients
                                           nonUdRecipients:(nullable NSArray<ServiceIdObjC *> *)nonUdRecipients
                                              isSentUpdate:(BOOL)isSentUpdate
                                               transaction:(SDSAnyWriteTransaction *)transaction;
-
-// This method is used to record a successful "read" by one recipient.
-- (void)updateWithReadRecipient:(SignalServiceAddress *)recipientAddress
-              recipientDeviceId:(uint32_t)deviceId
-                  readTimestamp:(uint64_t)readTimestamp
-                    transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (void)updateWithViewedRecipient:(SignalServiceAddress *)recipientAddress
-                recipientDeviceId:(uint32_t)deviceId
-                  viewedTimestamp:(uint64_t)viewedTimestamp
-                      transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (nullable NSNumber *)firstRecipientReadTimestamp;
 

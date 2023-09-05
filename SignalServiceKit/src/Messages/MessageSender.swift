@@ -953,16 +953,16 @@ extension MessageSender {
                 for sendingAddress in message.sendingRecipientAddresses() {
                     message.update(
                         withReadRecipient: sendingAddress,
-                        recipientDeviceId: self.tsAccountManager.storedDeviceId,
+                        deviceId: self.tsAccountManager.storedDeviceId,
                         readTimestamp: message.timestamp,
-                        transaction: tx
+                        tx: tx
                     )
                     if message.isVoiceMessage || message.isViewOnceMessage {
                         message.update(
                             withViewedRecipient: sendingAddress,
-                            recipientDeviceId: self.tsAccountManager.storedDeviceId,
+                            deviceId: self.tsAccountManager.storedDeviceId,
                             viewedTimestamp: message.timestamp,
-                            transaction: tx
+                            tx: tx
                         )
                     }
                 }

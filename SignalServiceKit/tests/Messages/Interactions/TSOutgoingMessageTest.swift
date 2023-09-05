@@ -144,11 +144,13 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             // Nothing changed yet...
             XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
 
-            message.update(withDeliveredRecipient: otherAddress,
-                           recipientDeviceId: 1,
-                           deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                           context: PassthroughDeliveryReceiptContext(),
-                           transaction: transaction)
+            message.update(
+                withDeliveredRecipient: otherAddress,
+                deviceId: 1,
+                deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                context: PassthroughDeliveryReceiptContext(),
+                tx: transaction
+            )
 
             XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
         }
@@ -188,20 +190,24 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             // Nothing changed yet...
             XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
 
-            message.update(withDeliveredRecipient: otherAddress,
-                           recipientDeviceId: 1,
-                           deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                           context: PassthroughDeliveryReceiptContext(),
-                           transaction: transaction)
+            message.update(
+                withDeliveredRecipient: otherAddress,
+                deviceId: 1,
+                deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                context: PassthroughDeliveryReceiptContext(),
+                tx: transaction
+            )
 
             // Still waiting on device #2!
             XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
 
-            message.update(withDeliveredRecipient: otherAddress,
-                           recipientDeviceId: 2,
-                           deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                           context: PassthroughDeliveryReceiptContext(),
-                           transaction: transaction)
+            message.update(
+                withDeliveredRecipient: otherAddress,
+                deviceId: 2,
+                deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                context: PassthroughDeliveryReceiptContext(),
+                tx: transaction
+            )
 
             // There we go.
             XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
@@ -235,11 +241,13 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             // Nothing changed yet...
             XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
 
-            message.update(withDeliveredRecipient: otherAddress,
-                           recipientDeviceId: 1,
-                           deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                           context: PassthroughDeliveryReceiptContext(),
-                           transaction: transaction)
+            message.update(
+                withDeliveredRecipient: otherAddress,
+                deviceId: 1,
+                deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                context: PassthroughDeliveryReceiptContext(),
+                tx: transaction
+            )
 
             // Still not changed!
             XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
@@ -273,11 +281,13 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
             identityManager.setShouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Write)
 
-            message.update(withDeliveredRecipient: otherAddress,
-                           recipientDeviceId: 1,
-                           deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                           context: PassthroughDeliveryReceiptContext(),
-                           transaction: transaction)
+            message.update(
+                withDeliveredRecipient: otherAddress,
+                deviceId: 1,
+                deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                context: PassthroughDeliveryReceiptContext(),
+                tx: transaction
+            )
 
             // ...it should stay active.
             XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
@@ -322,11 +332,13 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
             identityManager.setShouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Write)
 
-            message.update(withDeliveredRecipient: otherAddress,
-                           recipientDeviceId: 1,
-                           deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                           context: PassthroughDeliveryReceiptContext(),
-                           transaction: transaction)
+            message.update(
+                withDeliveredRecipient: otherAddress,
+                deviceId: 1,
+                deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                context: PassthroughDeliveryReceiptContext(),
+                tx: transaction
+            )
 
             // Still on, because our PNI changed!
             XCTAssert(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction.asV2Read))
