@@ -1368,10 +1368,9 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return userProfile.avatarUrlPath;
 }
 
-- (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTransaction:
-    (SDSAnyReadTransaction *)transaction
+- (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTx:(SDSAnyReadTransaction *)tx
 {
-    return [self objc_allWhitelistedRegisteredAddressesWithTransaction:transaction];
+    return [self objc_allWhitelistedRegisteredAddressesWithTx:tx];
 }
 
 - (nullable NSString *)profileBioForDisplayForAddress:(SignalServiceAddress *)address

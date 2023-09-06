@@ -692,7 +692,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         )
     }
 
-    public func setVerificationState(
+    private func setVerificationState(
         _ verificationState: OWSVerificationState,
         identityKey: Data,
         signalRecipient: SignalRecipient,
@@ -715,6 +715,8 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         if recipientIdentity.verificationState == verificationState {
             return
         }
+
+        // PNI TODO: Ensure that we only mark Acis as verified.
 
         Logger.info("setVerificationState for \(recipientId): \(recipientIdentity.verificationState) -> \(verificationState)")
 

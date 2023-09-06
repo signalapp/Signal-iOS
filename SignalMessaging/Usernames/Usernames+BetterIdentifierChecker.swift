@@ -11,7 +11,6 @@ extension Usernames {
     /// contact, or if we have a better identifier.
     public struct BetterIdentifierChecker {
         private let recipient: SignalRecipient
-        private var address: SignalServiceAddress { recipient.address }
 
         private var hasE164: Bool = false
         private var hasProfileGivenName: Bool = false

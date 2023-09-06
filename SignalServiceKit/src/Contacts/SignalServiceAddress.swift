@@ -487,8 +487,7 @@ public class SignalServiceAddressCache: NSObject {
     func updateRecipient(_ signalRecipient: SignalRecipient) {
         updateRecipient(
             aci: signalRecipient.aci,
-            // PNI TODO: Fetch the recipientPNI once that property is available.
-            pni: nil,
+            pni: signalRecipient.pni,
             phoneNumber: signalRecipient.phoneNumber
         )
     }

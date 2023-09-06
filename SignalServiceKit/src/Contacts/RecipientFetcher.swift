@@ -22,8 +22,7 @@ class RecipientFetcherImpl: RecipientFetcher {
         if let serviceIdRecipient = recipientStore.fetchRecipient(serviceId: serviceId, transaction: tx) {
             return serviceIdRecipient
         }
-        // PNI TODO: Put the PNI in the PNI column.
-        let newInstance = SignalRecipient(aci: Aci(fromUUID: serviceId.temporary_rawUUID), phoneNumber: nil)
+        let newInstance = SignalRecipient(aci: serviceId as? Aci, pni: serviceId as? Pni, phoneNumber: nil)
         recipientStore.insertRecipient(newInstance, transaction: tx)
         return newInstance
     }
@@ -32,7 +31,7 @@ class RecipientFetcherImpl: RecipientFetcher {
         if let result = recipientStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx) {
             return result
         }
-        let result = SignalRecipient(aci: nil, phoneNumber: phoneNumber)
+        let result = SignalRecipient(aci: nil, pni: nil, phoneNumber: phoneNumber)
         recipientStore.insertRecipient(result, transaction: tx)
         return result
     }

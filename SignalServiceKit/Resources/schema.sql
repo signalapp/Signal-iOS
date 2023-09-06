@@ -358,6 +358,7 @@ CREATE
             ,"recipientPhoneNumber" TEXT
             ,"recipientUUID" TEXT
             ,"unregisteredAtTimestamp" INTEGER
+            ,"pni" TEXT
         )
 ;
 
@@ -1480,5 +1481,11 @@ CREATE
 CREATE
     INDEX "index_TSPaymentsActivationRequestModel_on_threadUniqueId"
         ON "TSPaymentsActivationRequestModel"("threadUniqueId"
+)
+;
+
+CREATE
+    UNIQUE INDEX "index_signal_recipients_on_pni"
+        ON "model_SignalRecipient"("pni"
 )
 ;

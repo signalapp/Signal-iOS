@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-protocol RecipientDataStore {
+public protocol RecipientDataStore {
     func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient?
     func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient?
 

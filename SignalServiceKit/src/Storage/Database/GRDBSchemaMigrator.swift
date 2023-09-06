@@ -233,6 +233,7 @@ public class GRDBSchemaMigrator: NSObject {
         case editRecordReadState
         case addPaymentModelInteractionUniqueId
         case addPaymentsActivationRequestModel
+        case addRecipientPniColumn
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2328,6 +2329,19 @@ public class GRDBSchemaMigrator: NSObject {
                 index: "index_TSPaymentsActivationRequestModel_on_threadUniqueId",
                 on: "TSPaymentsActivationRequestModel",
                 columns: ["threadUniqueId"]
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addRecipientPniColumn) { transaction in
+            try transaction.database.alter(table: "model_SignalRecipient") { table in
+                table.add(column: "pni", .text)
+            }
+            try transaction.database.create(
+                index: "index_signal_recipients_on_pni",
+                on: "model_SignalRecipient",
+                columns: ["pni"],
+                options: [.unique]
             )
             return .success(())
         }

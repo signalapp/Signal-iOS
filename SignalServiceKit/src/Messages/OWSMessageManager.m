@@ -319,7 +319,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSIncomingMessage *_Nullable message = nil;
     if ((dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0) {
-        [self handleEndSessionMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
+        [self handleIncomingEndSessionEnvelope:decryptedEnvelope withDataMessage:dataMessage tx:transaction];
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0) {
         [self handleExpirationTimerUpdateMessageWithEnvelope:decryptedEnvelope
                                                  dataMessage:dataMessage
@@ -786,33 +786,6 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
     });
-}
-
-- (void)handleEndSessionMessageWithEnvelope:(SSKProtoEnvelope *)envelope
-                                dataMessage:(SSKProtoDataMessage *)dataMessage
-                                transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!envelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!dataMessage) {
-        OWSFailDebug(@"Missing dataMessage.");
-        return;
-    }
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
-        return;
-    }
-
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
-                                                                       transaction:transaction];
-
-    [[[TSInfoMessage alloc] initWithThread:thread
-                               messageType:TSInfoMessageTypeSessionDidEnd] anyInsertWithTransaction:transaction];
-
-    // PNI TODO: this should end the PNI session if it was sent to our PNI.
-    [self archiveSessionsFor:envelope.sourceAddress transaction:transaction];
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(DecryptedIncomingEnvelope *)decryptedEnvelope

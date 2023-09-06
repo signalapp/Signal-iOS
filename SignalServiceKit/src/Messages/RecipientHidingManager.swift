@@ -235,7 +235,7 @@ private extension RecipientHidingManagerImpl {
         if
             tsAccountManager.isPrimaryDevice(transaction: SDSDB.shimOnlyBridge(tx)),
             let recipientServiceId = recipient.address.serviceId,
-            let localAci = self.tsAccountManager.localAddress(with: SDSDB.shimOnlyBridge(tx))?.aci,
+            let localAci = self.tsAccountManager.localIdentifiers(transaction: SDSDB.shimOnlyBridge(tx))?.aci,
             !GroupManager.hasMutualGroupThread(
                 with: recipientServiceId,
                 localAci: localAci,

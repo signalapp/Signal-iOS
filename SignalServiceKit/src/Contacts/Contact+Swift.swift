@@ -8,10 +8,16 @@ import Foundation
 @objc
 public extension Contact {
 
-    func signalRecipients(transaction: SDSAnyReadTransaction) -> [SignalRecipient] {
-        e164sForIntersection.compactMap { e164Number in
-            let address = SignalServiceAddress(phoneNumber: e164Number)
-            return SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: true, tx: transaction)
+    func signalRecipients(tx: SDSAnyReadTransaction) -> [SignalRecipient] {
+        let recipientStore = DependenciesBridge.shared.recipientStore
+        return e164sForIntersection.compactMap { e164Number in
+            guard let recipient = recipientStore.fetchRecipient(phoneNumber: e164Number, transaction: tx.asV2Read) else {
+                return nil
+            }
+            guard recipient.isRegistered else {
+                return nil
+            }
+            return recipient
         }
     }
 

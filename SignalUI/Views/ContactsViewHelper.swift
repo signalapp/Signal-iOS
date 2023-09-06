@@ -23,6 +23,60 @@ public extension ContactsViewHelper {
     }
 }
 
+// MARK: - Updating Contacts
+
+extension ContactsViewHelper {
+    @objc
+    func updateContacts() {
+        AssertIsOnMainThread()
+        owsAssertDebug(!CurrentAppContext().isNSE)
+
+        let (systemContacts, signalConnections) = databaseStorage.read { tx in
+            // All "System Contact"s that we believe are registered.
+            let systemContacts = self.contactsManagerImpl.unsortedSignalAccounts(transaction: tx)
+
+            // All Signal Connections that we believe are registered. In theory, this
+            // should include your system contacts and the people you chat with.
+            let signalConnections = self.profileManagerImpl.allWhitelistedRegisteredAddresses(tx: tx)
+            return (systemContacts, signalConnections)
+        }
+
+        var signalAccounts = systemContacts
+        var seenAddresses = Set(signalAccounts.lazy.map { $0.recipientAddress })
+        for address in signalConnections {
+            guard seenAddresses.insert(address).inserted else {
+                // We prefer the copy from contactsManager which will appear first in
+                // accountsToProcess; don't overwrite it.
+                continue
+            }
+            signalAccounts.append(SignalAccount(address: address))
+        }
+
+        var phoneNumberMap = [String: SignalAccount]()
+        var serviceIdMap = [ServiceIdObjC: SignalAccount]()
+
+        for signalAccount in signalAccounts {
+            if let phoneNumber = signalAccount.recipientPhoneNumber {
+                phoneNumberMap[phoneNumber] = signalAccount
+            }
+            if let serviceId = signalAccount.recipientServiceIdObjc {
+                serviceIdMap[serviceId] = signalAccount
+            }
+        }
+
+        self.phoneNumberSignalAccountMap = phoneNumberMap
+        self.serviceIdSignalAccountMap = serviceIdMap
+        self.signalAccounts = self.contactsManagerImpl.sortSignalAccountsWithSneakyTransaction(signalAccounts)
+        self.fireDidUpdateContacts()
+    }
+
+    private func fireDidUpdateContacts() {
+        for delegate in observers.allObjects {
+            delegate.contactsViewHelperDidUpdateContacts()
+        }
+    }
+}
+
 // MARK: - Presenting Permission-Gated Views
 
 public extension ContactsViewHelper {

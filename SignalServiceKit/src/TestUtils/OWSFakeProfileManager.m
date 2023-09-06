@@ -372,8 +372,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
-- (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTransaction:
-    (SDSAnyReadTransaction *)transaction
+- (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTx:(SDSAnyReadTransaction *)tx
 {
     return @[];
 }

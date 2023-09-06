@@ -142,6 +142,7 @@ public class MockSSKEnvironment: SSKEnvironment {
             db: dependenciesBridge.db,
             recipientFetcher: dependenciesBridge.recipientFetcher,
             recipientMerger: dependenciesBridge.recipientMerger,
+            recipientStore: dependenciesBridge.recipientStore,
             tsAccountManager: tsAccountManager,
             udManager: udManager,
             websocketFactory: webSocketFactory

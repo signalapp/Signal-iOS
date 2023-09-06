@@ -141,7 +141,7 @@ class GRDBFinderTest: SignalBaseTest {
 
         self.write { transaction in
             [address1, address2, address3, address4].forEach {
-                SignalRecipient(aci: $0.aci, phoneNumber: $0.e164)
+                SignalRecipient(aci: $0.aci, pni: nil, phoneNumber: $0.e164)
                     .anyInsert(transaction: transaction)
             }
         }

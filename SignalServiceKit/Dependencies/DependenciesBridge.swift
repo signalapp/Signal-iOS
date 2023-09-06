@@ -67,6 +67,7 @@ public class DependenciesBridge {
 
     public let recipientFetcher: RecipientFetcher
     public let recipientMerger: RecipientMerger
+    public let recipientStore: RecipientDataStore
 
     public let recipientHidingManager: RecipientHidingManager
 
@@ -185,7 +186,7 @@ public class DependenciesBridge {
             schedulers: schedulers
         )
 
-        let recipientStore = RecipientDataStoreImpl()
+        self.recipientStore = RecipientDataStoreImpl()
         self.recipientFetcher = RecipientFetcherImpl(recipientStore: recipientStore)
 
         self.identityManager = OWSIdentityManagerImpl(

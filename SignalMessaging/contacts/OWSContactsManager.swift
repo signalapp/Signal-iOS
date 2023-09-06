@@ -616,25 +616,24 @@ extension OWSContactsManager {
         transaction: SDSAnyReadTransaction
     ) -> [SignalAccount] {
         var signalAccounts = [SignalAccount]()
-        var seenAddresses = Set<SignalServiceAddress>()
+        var seenServiceIds = Set<ServiceId>()
         for contact in systemContacts {
-            var signalRecipients = contact.signalRecipients(transaction: transaction)
-            guard !signalRecipients.isEmpty else {
-                continue
-            }
+            var signalRecipients = contact.signalRecipients(tx: transaction)
             // TODO: Confirm ordering.
             signalRecipients.sort { $0.address.compare($1.address) == .orderedAscending }
+            let relatedAddresses = signalRecipients.map { $0.address }
             for signalRecipient in signalRecipients {
-                // PNI TODO: if the recipient does not have an ACI, make sure we use their PNI here instead.
-
-                if seenAddresses.contains(signalRecipient.address) {
+                guard let recipientServiceId = signalRecipient.aci ?? signalRecipient.pni else {
+                    owsFailDebug("Can't be registered without a ServiceId.")
                     continue
                 }
-                seenAddresses.insert(signalRecipient.address)
-
+                guard seenServiceIds.insert(recipientServiceId).inserted else {
+                    // We've already created a SignalAccount for this number.
+                    continue
+                }
                 let multipleAccountLabelText = contact.uniquePhoneNumberLabel(
                     for: signalRecipient.address,
-                    relatedAddresses: signalRecipients.map { $0.address }
+                    relatedAddresses: relatedAddresses
                 )
                 let contactAvatarHash = Self.buildContactAvatarHash(contact: contact)
                 let signalAccount = SignalAccount(
@@ -642,7 +641,7 @@ extension OWSContactsManager {
                     contactAvatarHash: contactAvatarHash,
                     multipleAccountLabelText: multipleAccountLabelText,
                     recipientPhoneNumber: signalRecipient.phoneNumber,
-                    recipientServiceId: signalRecipient.aci
+                    recipientServiceId: recipientServiceId
                 )
                 signalAccounts.append(signalAccount)
             }
@@ -650,8 +649,7 @@ extension OWSContactsManager {
         return signalAccounts.stableSort()
     }
 
-    @objc
-    func buildSignalAccountsAndUpdatePersistedState(forFetchedSystemContacts localSystemContacts: [Contact]) {
+    fileprivate func buildSignalAccountsAndUpdatePersistedState(forFetchedSystemContacts localSystemContacts: [Contact]) {
         intersectionQueue.async {
             let (oldSignalAccounts, newSignalAccounts) = Self.databaseStorage.read { transaction in
                 let oldSignalAccounts = SignalAccount.anyFetchAll(transaction: transaction)

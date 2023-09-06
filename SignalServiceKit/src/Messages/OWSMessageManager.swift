@@ -592,6 +592,9 @@ extension OWSMessageManager {
         let sourceDeviceId = decryptedEnvelope.sourceDeviceId
 
         do {
+            guard decryptedEnvelope.localIdentity == .aci else {
+                throw OWSGenericError("Can't receive DEMs at our PNI.")
+            }
             let errorMessage = try DecryptionErrorMessage(bytes: bytes)
             guard errorMessage.deviceId == tsAccountManager.storedDeviceId(transaction: writeTx) else {
                 Logger.info("Received a DecryptionError message targeting a linked device. Ignoring.")
@@ -604,7 +607,6 @@ extension OWSMessageManager {
             if let ratchetKey = errorMessage.ratchetKey {
                 // If a ratchet key is included, this was a 1:1 session message
                 // Archive the session if the current key matches.
-                // PNI TODO: We should never get a DEM for our PNI, but we should check that anyway.
                 let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
                 let sessionRecord = try sessionStore.loadSession(for: protocolAddress, context: writeTx)
                 if try sessionRecord?.currentRatchetKeyMatches(ratchetKey) == true {
@@ -932,12 +934,24 @@ extension OWSMessageManager {
     }
 
     @objc
-    func archiveSessions(for address: SignalServiceAddress?, transaction: SDSAnyWriteTransaction) {
-        guard let address else { return }
+    func handleIncomingEndSessionEnvelope(
+        _ decryptedEnvelope: DecryptedIncomingEnvelope,
+        withDataMessage dataMessage: SSKProtoDataMessage,
+        tx: SDSAnyWriteTransaction
+    ) {
+        guard decryptedEnvelope.localIdentity == .aci else {
+            owsFailDebug("Can't receive end session messages to our PNI.")
+            return
+        }
 
-        // PNI TODO: this should end the PNI session if it was sent to our PNI.
+        let thread = TSContactThread.getOrCreateThread(
+            withContactAddress: SignalServiceAddress(decryptedEnvelope.sourceAci),
+            transaction: tx
+        )
+        TSInfoMessage(thread: thread, messageType: .typeSessionDidEnd).anyInsert(transaction: tx)
+
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        sessionStore.archiveAllSessions(for: address, tx: transaction.asV2Write)
+        sessionStore.archiveAllSessions(for: SignalServiceAddress(decryptedEnvelope.sourceAci), tx: tx.asV2Write)
     }
 }
 

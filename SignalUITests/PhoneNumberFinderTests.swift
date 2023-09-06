@@ -87,7 +87,13 @@ final class PhoneNumberFinderTests: XCTestCase {
                 localNumber: "+16505550100",
                 contactDiscoveryManager: MockContactDiscoveryManager(lookUpBlock: { phoneNumbers in
                     XCTAssertTrue(testCase.isValid)
-                    return .value(testCase.isFound ? [SignalRecipient(aci: Aci.randomForTesting(), phoneNumber: nil)] : [])
+                    return .value(testCase.isFound ? [
+                        SignalRecipient(
+                            aci: Aci.randomForTesting(),
+                            pni: Pni.randomForTesting(),
+                            phoneNumber: E164(phoneNumbers.first)!
+                        )
+                    ] : [])
                 })
             )
             let resultPromise = finder.lookUp(phoneNumber: testCase.searchResult)

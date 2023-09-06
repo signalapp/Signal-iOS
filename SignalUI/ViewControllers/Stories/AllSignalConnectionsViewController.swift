@@ -31,7 +31,7 @@ public class AllSignalConnectionsViewController: OWSTableViewController2 {
         defer { self.contents = contents }
 
         let allConnections = databaseStorage.read { transaction in
-            profileManager.allWhitelistedRegisteredAddresses(with: transaction)
+            profileManager.allWhitelistedRegisteredAddresses(tx: transaction)
                 .lazy
                 .filter { !$0.isLocalAddress }
                 .map { ConnectionModel(address: $0, transaction: transaction) }

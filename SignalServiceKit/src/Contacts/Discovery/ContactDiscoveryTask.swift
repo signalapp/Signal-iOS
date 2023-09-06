@@ -15,6 +15,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     private let db: DB
     private let recipientFetcher: RecipientFetcher
     private let recipientMerger: RecipientMerger
+    private let recipientStore: RecipientDataStore
     private let tsAccountManager: TSAccountManager
     private let udManager: OWSUDManager
     private let websocketFactory: WebSocketFactory
@@ -23,6 +24,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         db: DB,
         recipientFetcher: RecipientFetcher,
         recipientMerger: RecipientMerger,
+        recipientStore: RecipientDataStore,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
         websocketFactory: WebSocketFactory
@@ -30,6 +32,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         self.db = db
         self.recipientFetcher = recipientFetcher
         self.recipientMerger = recipientMerger
+        self.recipientStore = recipientStore
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
         self.websocketFactory = websocketFactory
@@ -108,12 +111,8 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             // *only* mark the addresses without any UUIDs as unregistered. Everything
             // else we ignore; we will identify their current registration status
             // either when attempting to send a message or when fetching their profile.
-            let recipient = SignalRecipientFinder().signalRecipientForPhoneNumber(
-                phoneNumber.stringValue,
-                tx: SDSDB.shimOnlyBridge(tx)
-            )
-            // PNI TODO: Also check for PNIs here.
-            guard let recipient, recipient.aci == nil else {
+            let recipient = recipientStore.fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
+            guard let recipient, recipient.aci == nil, recipient.pni == nil else {
                 return
             }
             recipient.markAsUnregisteredAndSave(tx: SDSDB.shimOnlyBridge(tx))

@@ -382,8 +382,10 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         if !senderIdsResetDuringCurrentBatch.contains(senderId) {
             senderIdsResetDuringCurrentBatch.add(senderId)
 
+            // We don't reset sessions for messages sent to our PNI because those are
+            // receive-only & we don't send retries FROM our PNI back to the sender.
+
             Logger.warn("Archiving session for undecryptable message from \(senderId)")
-            // PNI TODO: make this dependent on destinationUuid
             DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.archiveSession(
                 for: SignalServiceAddress(sourceAci),
                 deviceId: Int32(sourceDeviceId),

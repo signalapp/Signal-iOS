@@ -5,6 +5,7 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 
 extension OWSRecipientIdentity {
     public class func groupContainsUnverifiedMember(
@@ -19,7 +20,6 @@ extension OWSRecipientIdentity {
         return !members.isEmpty
     }
 
-    @objc(noLongerVerifiedAddressesInGroup:limit:transaction:)
     public class func noLongerVerifiedAddresses(
         inGroup groupThreadID: String,
         limit: Int,
@@ -52,27 +52,32 @@ extension OWSRecipientIdentity {
         let groupMember_serviceIdString = TSGroupMember.columnName(.serviceId, fullyQualified: true)
 
         let recipient_id = "\(signalRecipientColumnFullyQualified: .id)"
-        let recipient_recipientPhoneNumber = "\(signalRecipientColumnFullyQualified: .phoneNumber)"
-        let recipient_recipientAciString = "\(signalRecipientColumnFullyQualified: .aciString)"
-        // PNI TODO: Also check against the PNI column here.
+        let recipient_phoneNumber = "\(signalRecipientColumnFullyQualified: .phoneNumber)"
+        let recipient_aciString = "\(signalRecipientColumnFullyQualified: .aciString)"
+        let recipient_pniString = "\(signalRecipientColumnFullyQualified: .pni)"
         let recipient_uniqueID = "\(signalRecipientColumnFullyQualified: .uniqueId)"
 
         let recipientIdentity_uniqueID = "\(recipientIdentityColumnFullyQualified: .uniqueId)"
-        let exceptClause = "\(recipient_recipientAciString) != ?"
+        let exceptClause = "\(recipient_aciString) != ?"
         let sql =
         """
-        SELECT \(recipient_recipientAciString), \(recipient_recipientPhoneNumber)
-        FROM \(SignalRecipient.databaseTableName),
-             \(RecipientIdentityRecord.databaseTableName),
-             \(TSGroupMember.databaseTableName)
-        WHERE  \(recipient_uniqueID) = \(recipientIdentity_uniqueID) AND
-               \(groupMember_groupThreadID) = ? AND
-               (\(groupMember_serviceIdString) = \(recipient_recipientAciString) OR
-                \(groupMember_phoneNumber) = \(recipient_recipientPhoneNumber)) AND
-               \(exceptClause) AND
-               \(stateClause)
-        ORDER BY \(recipient_id)
-        \(limitClause)
+            SELECT \(recipient_aciString), \(recipient_phoneNumber), \(recipient_pniString)
+            FROM
+                \(SignalRecipient.databaseTableName),
+                \(RecipientIdentityRecord.databaseTableName),
+                \(TSGroupMember.databaseTableName)
+            WHERE
+                \(recipient_uniqueID) = \(recipientIdentity_uniqueID)
+                AND \(groupMember_groupThreadID) = ?
+                AND (
+                    \(groupMember_serviceIdString) = \(recipient_aciString)
+                    OR \(groupMember_serviceIdString) = \(recipient_pniString)
+                    OR \(groupMember_phoneNumber) = \(recipient_phoneNumber)
+                )
+                AND \(exceptClause)
+                AND \(stateClause)
+            ORDER BY \(recipient_id)
+            \(limitClause)
         """
         return sql
     }
@@ -99,7 +104,7 @@ extension OWSRecipientIdentity {
                 let args = [groupUniqueID, localRecipientAci?.serviceIdUppercaseString ?? "fake"]
                 let cursor = try Row.fetchCursor(grdbTransaction.database, sql: sql, arguments: StatementArguments(args))
                 let mapped = cursor.map { row in
-                    return SignalServiceAddress(aciString: row[0], phoneNumber: row[1])
+                    return SignalServiceAddress(serviceIdString: row[0] ?? row[2], phoneNumber: row[1])
                 }
                 return try Array(mapped)
             } catch {

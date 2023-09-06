@@ -34,7 +34,18 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
     public var id: RowId?
     public let uniqueId: String
+    /// Represents the ACI for this SignalRecipient.
+    ///
+    /// This value has historically been represented as a String (from the ObjC
+    /// days). If we change its type to Aci, then we may fail to fetch database
+    /// rows. To avoid introducing new failure points, it should remain a String
+    /// whose contents we validate at time-of-use rather than time-of-fetch.
     public var aciString: String?
+    /// Represents the PNI for this SignalRecipient.
+    ///
+    /// These have always been strongly typed for their entire existence, so
+    /// it's safe to check it at time-of-fetch and throw an error.
+    public var pni: Pni?
     public var phoneNumber: String?
     private(set) public var deviceIds: [UInt32]
     private(set) public var unregisteredAtTimestamp: UInt64?
@@ -45,18 +56,19 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     }
 
     public var address: SignalServiceAddress {
-        SignalServiceAddress(aciString: aciString, phoneNumber: phoneNumber)
+        SignalServiceAddress(serviceId: aci ?? pni, phoneNumber: phoneNumber)
     }
 
-    public convenience init(aci: Aci?, phoneNumber: E164?) {
-        self.init(aci: aci, phoneNumber: phoneNumber, deviceIds: [])
+    public convenience init(aci: Aci?, pni: Pni?, phoneNumber: E164?) {
+        self.init(aci: aci, pni: pni, phoneNumber: phoneNumber, deviceIds: [])
     }
 
-    public convenience init(aci: Aci?, phoneNumber: E164?, deviceIds: [UInt32]) {
+    public convenience init(aci: Aci?, pni: Pni?, phoneNumber: E164?, deviceIds: [UInt32]) {
         self.init(
             id: nil,
             uniqueId: UUID().uuidString,
             aciString: aci?.serviceIdUppercaseString,
+            pni: pni,
             phoneNumber: phoneNumber?.stringValue,
             deviceIds: deviceIds,
             unregisteredAtTimestamp: deviceIds.isEmpty ? Constants.distantPastUnregisteredTimestamp : nil
@@ -67,6 +79,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         id: RowId?,
         uniqueId: String,
         aciString: String?,
+        pni: Pni?,
         phoneNumber: String?,
         deviceIds: [UInt32],
         unregisteredAtTimestamp: UInt64?
@@ -74,6 +87,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         self.id = id
         self.uniqueId = uniqueId
         self.aciString = aciString
+        self.pni = pni
         self.phoneNumber = phoneNumber
         self.deviceIds = deviceIds
         self.unregisteredAtTimestamp = unregisteredAtTimestamp
@@ -84,6 +98,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
             id: id,
             uniqueId: uniqueId,
             aciString: aciString,
+            pni: pni,
             phoneNumber: phoneNumber,
             deviceIds: deviceIds,
             unregisteredAtTimestamp: unregisteredAtTimestamp
@@ -97,6 +112,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         guard id == otherRecipient.id else { return false }
         guard uniqueId == otherRecipient.uniqueId else { return false }
         guard aciString == otherRecipient.aciString else { return false }
+        guard pni == otherRecipient.pni else { return false }
         guard phoneNumber == otherRecipient.phoneNumber else { return false }
         guard deviceIds == otherRecipient.deviceIds else { return false }
         guard unregisteredAtTimestamp == otherRecipient.unregisteredAtTimestamp else { return false }
@@ -108,6 +124,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         hasher.combine(id)
         hasher.combine(uniqueId)
         hasher.combine(aciString)
+        hasher.combine(pni)
         hasher.combine(phoneNumber)
         hasher.combine(deviceIds)
         hasher.combine(unregisteredAtTimestamp)
@@ -119,6 +136,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         case recordType
         case uniqueId
         case aciString = "recipientUUID"
+        case pni
         case phoneNumber = "recipientPhoneNumber"
         case deviceIds = "devices"
         case unregisteredAtTimestamp
@@ -136,6 +154,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
         aciString = try container.decodeIfPresent(String.self, forKey: .aciString)
+        pni = try container.decodeIfPresent(String.self, forKey: .pni).map { try Pni.parseFrom(serviceIdString: $0) }
         phoneNumber = try container.decodeIfPresent(String.self, forKey: .phoneNumber)
         let encodedDeviceIds = try container.decode(Data.self, forKey: .deviceIds)
         let deviceSetObjC: NSOrderedSet = try LegacySDSSerializer().deserializeLegacySDSData(encodedDeviceIds, propertyName: "devices")
@@ -153,6 +172,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encodeIfPresent(aciString, forKey: .aciString)
+        try container.encodeIfPresent(pni?.serviceIdUppercaseString, forKey: .pni)
         try container.encodeIfPresent(phoneNumber, forKey: .phoneNumber)
         let deviceSetObjC = NSOrderedSet(array: deviceIds.map { NSNumber(value: $0) })
         let encodedDevices = LegacySDSSerializer().serializeAsLegacySDSData(property: deviceSetObjC)

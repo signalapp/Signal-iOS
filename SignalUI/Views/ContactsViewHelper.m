@@ -17,17 +17,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactsViewHelper ()
-
-@property (nonatomic) NSHashTable<id<ContactsViewHelperObserver>> *observers;
-
-@property (nonatomic) NSDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap;
-@property (nonatomic) NSDictionary<ServiceIdObjC *, SignalAccount *> *serviceIdSignalAccountMap;
-
-@property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
-
-@end
-
 #pragma mark -
 
 @implementation ContactsViewHelper
@@ -112,15 +101,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.observers addObject:observer];
 }
 
-- (void)fireDidUpdateContacts
-{
-    OWSAssertIsOnMainThread();
-
-    for (id<ContactsViewHelperObserver> delegate in self.observers) {
-        [delegate contactsViewHelperDidUpdateContacts];
-    }
-}
-
 - (void)blockListDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
@@ -169,62 +149,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(!CurrentAppContext().isNSE);
 
     return self.contactsManagerImpl.hasLoadedSystemContacts;
-}
-
-- (void)updateContacts
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    NSMutableDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap = [NSMutableDictionary new];
-    NSMutableDictionary<ServiceIdObjC *, SignalAccount *> *serviceIdSignalAccountMap = [NSMutableDictionary new];
-
-    __block NSArray<SignalAccount *> *systemContactSignalAccounts;
-    __block NSArray<SignalServiceAddress *> *signalConnectionAddresses;
-
-    [self.databaseStorage
-        readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            // All "System Contact"s that we believe are registered.
-            systemContactSignalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithTransaction:transaction];
-
-            // All Signal Connections that we believe are registered. In theory, this
-            // should include your system contacts and the people you chat with.
-            signalConnectionAddresses =
-                [self.profileManagerImpl allWhitelistedRegisteredAddressesWithTransaction:transaction];
-        }
-                 file:__FILE__
-             function:__FUNCTION__
-                 line:__LINE__];
-
-    NSMutableArray<SignalAccount *> *accountsToProcess = [systemContactSignalAccounts mutableCopy];
-    for (SignalServiceAddress *address in signalConnectionAddresses) {
-        [accountsToProcess addObject:[[SignalAccount alloc] initWithContact:nil address:address]];
-    }
-
-    NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
-    NSMutableSet<SignalServiceAddress *> *addressSet = [NSMutableSet new];
-    for (SignalAccount *signalAccount in accountsToProcess) {
-        if ([addressSet containsObject:signalAccount.recipientAddress]) {
-            OWSLogVerbose(@"Ignoring duplicate: %@", signalAccount.recipientAddress);
-            // We prefer the copy from contactsManager which will appear first in
-            // accountsToProcess; don't overwrite it.
-            continue;
-        }
-        [addressSet addObject:signalAccount.recipientAddress];
-        if (signalAccount.recipientPhoneNumber) {
-            phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
-        }
-        if (signalAccount.recipientServiceIdObjc) {
-            serviceIdSignalAccountMap[signalAccount.recipientServiceIdObjc] = signalAccount;
-        }
-        [signalAccounts addObject:signalAccount];
-    }
-
-    self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
-    self.serviceIdSignalAccountMap = [serviceIdSignalAccountMap copy];
-    self.signalAccounts = [self.contactsManagerImpl sortSignalAccountsWithSneakyTransaction:signalAccounts];
-
-    [self fireDidUpdateContacts];
 }
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText

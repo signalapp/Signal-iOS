@@ -282,7 +282,7 @@ class RecipientMergerImpl: RecipientMerger {
             dataStore.updateRecipient(mergedRecipient, transaction: transaction)
             storageServiceManager.recordPendingUpdates(updatedAccountIds: [mergedRecipient.accountId])
         case .none:
-            mergedRecipient = SignalRecipient(aci: aci, phoneNumber: phoneNumber)
+            mergedRecipient = SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber)
             dataStore.insertRecipient(mergedRecipient, transaction: transaction)
         }
 

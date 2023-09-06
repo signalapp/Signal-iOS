@@ -103,6 +103,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         db: DB,
         recipientFetcher: RecipientFetcher,
         recipientMerger: RecipientMerger,
+        recipientStore: RecipientDataStore,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
         websocketFactory: WebSocketFactory
@@ -112,6 +113,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
                 db: db,
                 recipientFetcher: recipientFetcher,
                 recipientMerger: recipientMerger,
+                recipientStore: recipientStore,
                 tsAccountManager: tsAccountManager,
                 udManager: udManager,
                 websocketFactory: websocketFactory

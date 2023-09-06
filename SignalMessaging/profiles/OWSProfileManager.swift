@@ -125,7 +125,7 @@ public extension OWSProfileManager {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    func objc_allWhitelistedRegisteredAddresses(transaction tx: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+    func objc_allWhitelistedRegisteredAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         var addresses = Set<SignalServiceAddress>()
         for serviceIdString in whitelistedServiceIdsStore.allKeys(transaction: tx) {
             addresses.insert(SignalServiceAddress(serviceIdString: serviceIdString))

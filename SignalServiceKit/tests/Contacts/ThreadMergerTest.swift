@@ -309,7 +309,7 @@ final class ThreadMergerTest: XCTestCase {
                     oldPhoneNumber: nil,
                     newPhoneNumber: phoneNumber,
                     isLocalRecipient: false,
-                    signalRecipient: SignalRecipient(aci: aci, phoneNumber: phoneNumber)
+                    signalRecipient: SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber)
                 ),
                 transaction: tx
             )

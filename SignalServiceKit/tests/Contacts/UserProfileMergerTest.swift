@@ -46,7 +46,7 @@ class UserProfileMergerTest: XCTestCase {
                     oldPhoneNumber: nil,
                     newPhoneNumber: phoneNumber,
                     isLocalRecipient: true,
-                    signalRecipient: SignalRecipient(aci: aci, phoneNumber: phoneNumber)
+                    signalRecipient: SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber)
                 ),
                 transaction: tx
             )
@@ -78,7 +78,7 @@ class UserProfileMergerTest: XCTestCase {
                     oldPhoneNumber: nil,
                     newPhoneNumber: phoneNumber,
                     isLocalRecipient: false,
-                    signalRecipient: SignalRecipient(aci: aci, phoneNumber: phoneNumber)
+                    signalRecipient: SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber)
                 ),
                 transaction: tx
             )

@@ -14,8 +14,7 @@ private class MockRecipientDataStore: RecipientDataStore {
     var recipientTable: [Int: SignalRecipient] = [:]
 
     func fetchRecipient(serviceId: ServiceId, transaction: DBReadTransaction) -> SignalRecipient? {
-        // PNI TODO: Check the PNI once it exists.
-        copyRecipient(recipientTable.values.first(where: { $0.aci == serviceId }) ?? nil)
+        copyRecipient(recipientTable.values.first(where: { $0.aci == serviceId || $0.pni == serviceId }) ?? nil)
     }
 
     func fetchRecipient(phoneNumber: String, transaction: DBReadTransaction) -> SignalRecipient? {
@@ -144,6 +143,7 @@ class RecipientMergerTest: XCTestCase {
                     mockDataStore.insertRecipient(
                         SignalRecipient(
                             aci: initialRecipient.aci,
+                            pni: nil,
                             phoneNumber: initialRecipient.phoneNumber
                         ),
                         transaction: transaction

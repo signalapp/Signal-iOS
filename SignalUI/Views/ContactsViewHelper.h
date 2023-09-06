@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class Contact;
 @class ContactsViewHelper;
 @class SDSAnyReadTransaction;
+@class ServiceIdObjC;
 @class SignalAccount;
 @class TSThread;
 
@@ -48,6 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
                                              editImmediately:(BOOL)shouldEditImmediately
                                       addToExistingCnContact:(CNContact *_Nullable)existingContact
                                        updatedNameComponents:(nullable NSPersonNameComponents *)updatedNameComponents;
+
+// Exposed for Swift interop
+
+@property (nonatomic) NSHashTable<id<ContactsViewHelperObserver>> *observers;
+@property (nonatomic) NSDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap;
+@property (nonatomic) NSDictionary<ServiceIdObjC *, SignalAccount *> *serviceIdSignalAccountMap;
+@property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
 
 @end
 

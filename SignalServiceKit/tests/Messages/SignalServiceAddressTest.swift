@@ -22,7 +22,7 @@ class SignalServiceAddressTest: XCTestCase {
     }
 
     private func makeHighTrustAddress(aci: Aci? = nil, phoneNumber: String? = nil) -> SignalServiceAddress {
-        cache.updateRecipient(SignalRecipient(aci: aci, phoneNumber: phoneNumber.flatMap { E164($0) }))
+        cache.updateRecipient(SignalRecipient(aci: aci, pni: nil, phoneNumber: phoneNumber.flatMap { E164($0) }))
         return makeAddress(serviceId: aci, phoneNumber: phoneNumber)
     }
 
@@ -741,7 +741,7 @@ class SignalServiceAddressTest: XCTestCase {
         let pn_a = E164("+16505550101")!
         let pn_b = E164("+16505550102")!
 
-        cache.updateRecipient(SignalRecipient(aci: aci, phoneNumber: pn_a))
+        cache.updateRecipient(SignalRecipient(aci: aci, pni: nil, phoneNumber: pn_a))
 
         let address1 = SignalServiceAddress(
             serviceId: aci,
@@ -812,7 +812,7 @@ class SignalServiceAddressTest: XCTestCase {
         XCTAssertEqual(address8.e164, pn_a)
         XCTAssertEqual(address9.e164, pn_b)
 
-        cache.updateRecipient(SignalRecipient(aci: aci, phoneNumber: pn_b))
+        cache.updateRecipient(SignalRecipient(aci: aci, pni: nil, phoneNumber: pn_b))
 
         XCTAssertEqual(address1.e164, pn_b)
         XCTAssertEqual(address2.e164, pn_b)
@@ -831,7 +831,7 @@ class SignalServiceAddressTest: XCTestCase {
         let serviceId = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
         let phoneNumber = E164("+16505550101")!
 
-        cache.updateRecipient(SignalRecipient(aci: serviceId, phoneNumber: phoneNumber))
+        cache.updateRecipient(SignalRecipient(aci: serviceId, pni: nil, phoneNumber: phoneNumber))
 
         var addresses = [SignalServiceAddress]()
         addresses.reserveCapacity(iterations)

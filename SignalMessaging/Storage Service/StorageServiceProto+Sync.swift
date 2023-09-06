@@ -148,6 +148,7 @@ struct StorageServiceContact {
         }
         self.init(
             aci: signalRecipient.aci,
+            // PNI TODO: Add the PNI if it's available.
             serviceE164: E164.expectNilOrValid(stringValue: signalRecipient.phoneNumber),
             unregisteredAtTimestamp: unregisteredAtTimestamp
         )

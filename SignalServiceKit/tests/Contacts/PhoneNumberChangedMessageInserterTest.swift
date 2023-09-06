@@ -161,7 +161,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
             oldPhoneNumber: oldPhoneNumber?.stringValue,
             newPhoneNumber: newPhoneNumber,
             isLocalRecipient: isLocalRecipient,
-            signalRecipient: SignalRecipient(aci: aci, phoneNumber: newPhoneNumber)
+            signalRecipient: SignalRecipient(aci: aci, pni: nil, phoneNumber: newPhoneNumber)
         )
     }
 

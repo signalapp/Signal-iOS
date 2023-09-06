@@ -11,10 +11,16 @@ public class SignalRecipientFinder {
     public init() {}
 
     public func signalRecipientForServiceId(_ serviceId: ServiceId?, tx: SDSAnyReadTransaction) -> SignalRecipient? {
-        // PNI TODO: Check the PNI column if this is a PNI.
-        guard let uuidString = serviceId?.temporary_rawUUID.uuidString else { return nil }
-        let sql = "SELECT * FROM \(SignalRecipient.databaseTableName) WHERE \(signalRecipientColumn: .aciString) = ?"
-        return SignalRecipient.anyFetch(sql: sql, arguments: [uuidString], transaction: tx)
+        guard let serviceId else { return nil }
+        let serviceIdColumn: SignalRecipient.CodingKeys
+        switch serviceId.kind {
+        case .aci:
+            serviceIdColumn = .aciString
+        case .pni:
+            serviceIdColumn = .pni
+        }
+        let sql = "SELECT * FROM \(SignalRecipient.databaseTableName) WHERE \(signalRecipientColumn: serviceIdColumn) = ?"
+        return SignalRecipient.anyFetch(sql: sql, arguments: [serviceId.serviceIdUppercaseString], transaction: tx)
     }
 
     public func signalRecipientForPhoneNumber(_ phoneNumber: String?, tx: SDSAnyReadTransaction) -> SignalRecipient? {
@@ -34,17 +40,35 @@ public class SignalRecipientFinder {
     }
 
     public func signalRecipients(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [SignalRecipient] {
-        guard !addresses.isEmpty else { return [] }
+        let phoneNumbersToLookUp = addresses.compactMap { $0.phoneNumber }
+        let aciStringsToLookUp = addresses.compactMap { ($0.serviceId as? Aci)?.serviceIdUppercaseString }
+        let pniStringsToLookUp = addresses.compactMap { ($0.serviceId as? Pni)?.serviceIdUppercaseString }
 
-        let phoneNumbersToLookup = addresses.compactMap { $0.phoneNumber }.map { "'\($0)'" }.joined(separator: ",")
-        // PNI TODO: Check the PNI column if this is a PNI.
-        let uuidsToLookup = addresses.compactMap { $0.serviceId?.temporary_rawUUID.uuidString }.map { "'\($0)'" }.joined(separator: ",")
+        func orClause(column: SignalRecipient.CodingKeys, values: [String]) -> String? {
+            if values.isEmpty {
+                return nil
+            }
+            let wrappedValues = values.lazy.map { "'\($0)'" }.joined(separator: ",")
+            return "\(signalRecipientColumn: column) IN (\(wrappedValues))"
+        }
 
-        let sql = """
-            SELECT * FROM \(SignalRecipient.databaseTableName)
-            WHERE \(signalRecipientColumn: .phoneNumber) IN (\(phoneNumbersToLookup))
-            OR \(signalRecipientColumn: .aciString) IN (\(uuidsToLookup))
-        """
+        // A SQL query for "Col1 IN (v1, v2, v3)" will use an index that's
+        // available. A SQL query for "Col1 IN ()" will *not* use an index and will
+        // fall back to a full table scan. If you have a series of OR clauses that
+        // are all indexed and any of them includes "IN ()", the entire query will
+        // bypass all indexes. Therefore, we omit OR clauses that won't return any
+        // matches, and we return no results if we're left without any OR clauses.
+        let orClauses: [String] = [
+            orClause(column: .phoneNumber, values: phoneNumbersToLookUp),
+            orClause(column: .aciString, values: aciStringsToLookUp),
+            orClause(column: .pni, values: pniStringsToLookUp),
+        ].compacted()
+
+        if orClauses.isEmpty {
+            return []
+        }
+
+        let sql = "SELECT * FROM \(SignalRecipient.databaseTableName) WHERE \(orClauses.joined(separator: " OR "))"
 
         var result = [SignalRecipient]()
         SignalRecipient.anyEnumerate(transaction: tx, sql: sql, arguments: []) { signalRecipient, _ in

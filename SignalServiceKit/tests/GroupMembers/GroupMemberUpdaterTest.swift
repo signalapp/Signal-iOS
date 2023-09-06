@@ -105,6 +105,7 @@ class GroupMemberUpdaterTest: XCTestCase {
         for signalRecipient in signalRecipients {
             mockSignalServiceAddressCache.updateRecipient(SignalRecipient(
                 aci: Aci.constantForTesting(signalRecipient.serviceId),
+                pni: nil,
                 phoneNumber: E164(signalRecipient.phoneNumber)
             ))
         }

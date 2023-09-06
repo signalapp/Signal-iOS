@@ -36,7 +36,7 @@ public extension TSPrivateStoryThread {
         case .explicit, .disabled:
             return addresses
         case .blockList:
-            return profileManager.allWhitelistedRegisteredAddresses(with: transaction).filter { !addresses.contains($0) && !$0.isLocalAddress }
+            return profileManager.allWhitelistedRegisteredAddresses(tx: transaction).filter { !addresses.contains($0) && !$0.isLocalAddress }
         }
     }
 
