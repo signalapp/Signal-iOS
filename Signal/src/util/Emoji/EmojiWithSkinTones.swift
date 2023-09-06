@@ -31,6 +31,17 @@ public struct EmojiWithSkinTones: Hashable {
     }
 }
 
+extension EmojiWithSkinTones {
+    init?(rawValue: String) {
+        guard rawValue.isSingleEmoji else { return nil }
+        if let result = Self.emojiToSkinToneComponents(emoji: rawValue) {
+            self.init(baseEmoji: result.0, skinTones: result.1)
+        } else if let emoji = Emoji(rawValue: rawValue) {
+            self.init(baseEmoji: emoji, skinTones: nil)
+        } else { return nil }
+    }
+}
+
 extension Emoji {
     private static let keyValueStore = SDSKeyValueStore(collection: "Emoji+PreferredSkinTonePermutation")
 
