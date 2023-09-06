@@ -10,6 +10,7 @@ extension PreKeyTasks {
     internal class Upload {
         enum UploadResult {
             case success
+            case skipped
             /// An error in which we, a linked device, attempted an upload and
             /// were told by the server that the identity key in our bundle was
             /// incorrect.
@@ -35,7 +36,9 @@ extension PreKeyTasks {
             auth: ChatServiceAuth
         ) -> Guarantee<UploadResult> {
             // If there is nothing to update, skip this step.
-            guard !bundle.isEmpty() else { return .value(.success) }
+            guard !bundle.isEmpty() else { return .value(.skipped) }
+
+            PreKey.logger.info("[\(bundle.identity)] uploading prekeys")
 
             return self.serviceClient.setPreKeys(
                 for: bundle.identity,

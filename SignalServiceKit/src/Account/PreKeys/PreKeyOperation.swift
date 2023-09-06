@@ -5,7 +5,9 @@
 
 import Foundation
 
-public enum PreKey {}
+public enum PreKey {
+    static let logger = PrefixedLogger(prefix: "[PreKey]")
+}
 
 extension PreKey {
     public enum Operation {
@@ -107,6 +109,7 @@ public class PreKeyOperation: OWSOperation {
     }
 
     public override func run() {
+        PreKey.logger.info("")
         firstly(on: context.schedulers.global()) {
             self.preKeyTask.runPreKeyTask()
         } .done(on: self.context.schedulers.global()) {
@@ -177,6 +180,7 @@ internal class PreKeyCreateForRegistrationOperation: OWSOperation {
     }
 
     public override func run() {
+        PreKey.logger.info("Create for registration")
         firstly(on: scheduler) { () -> RegistrationPreKeyUploadBundles in
             let aciBundle = try self.aciGenerateTask.runTask(identity: .aci)
             try self.aciPersistTask.runTask(bundle: aciBundle)
@@ -253,6 +257,7 @@ internal class PreKeyCreateForProvisioningOperation: OWSOperation {
     }
 
     public override func run() {
+        PreKey.logger.info("Create for provisioning")
         firstly(on: scheduler) { () -> RegistrationPreKeyUploadBundles in
             let aciBundle = try self.aciGenerateTask.runTask(identity: .aci, identityKeyPair: self.aciIdentityKeyPair)
             try self.aciPersistTask.runTask(bundle: aciBundle)
@@ -311,6 +316,7 @@ internal class PreKeyPersistAfterRegistrationOperation: OWSOperation {
     }
 
     public override func run() {
+        PreKey.logger.info("Persist after provisioning")
         firstly(on: scheduler) {
             try self.aciPersistTask.runTask(bundle: self.bundles.aci, uploadDidSucceed: self.uploadDidSucceed)
             try self.pniPersistTask.runTask(bundle: self.bundles.pni, uploadDidSucceed: self.uploadDidSucceed)

@@ -98,7 +98,8 @@ extension PreKeyTasks {
             )
 
             switch action {
-            case .refresh(_, let targets):
+            case .refresh(let identity, let targets):
+                PreKey.logger.info("[\(identity)] Refresh [\(targets)]")
                 bundlePromise = GenerateForRefresh
                     .init(
                         dateProvider: context.dateProvider,
@@ -111,7 +112,8 @@ extension PreKeyTasks {
                         targets: targets
                     )
                     .map(on: SyncScheduler()) { $0 }
-            case .rotate(_, let targets):
+            case .rotate(let identity, let targets):
+                PreKey.logger.info("[\(identity)] Rotate [\(targets)]")
                 bundlePromise = GenerateForRotation
                     .init(
                         context: generateContext,
@@ -123,10 +125,12 @@ extension PreKeyTasks {
                     )
                     .map(on: SyncScheduler()) { $0 }
             case .createOneTimePreKeys:
+                PreKey.logger.info("[\(action.identity)] Create one-time prekeys")
                 bundlePromise = CreateOneTimePreKeys(context: generateContext)
                     .runTask(identity: action.identity)
                     .map(on: SyncScheduler()) { $0 }
             case .createOrRotatePniKeys(let targets):
+                PreKey.logger.info("[PNI] Create or Rotate PNI [\(targets)]")
                 bundlePromise = GenerateForPNIRotation
                     .init(
                         context: generateContext,
@@ -134,7 +138,8 @@ extension PreKeyTasks {
                     )
                     .runTask(targets: targets)
                     .map(on: SyncScheduler()) { $0 }
-            case .legacy_create(_, let targets):
+            case .legacy_create(let identity, let targets):
+                PreKey.logger.info("[\(identity)] Legacy prekey operation [\(targets)]")
                 bundlePromise = Legacy_Generate
                     .init(
                         accountManager: context.accountManager,
@@ -155,7 +160,10 @@ extension PreKeyTasks {
                 .runTask(bundle: bundle, auth: self.auth)
                 .map(on: globalQueue()) { uploadResult throws in
                     switch uploadResult {
+                    case .skipped:
+                        PreKey.logger.info("[\(self.action.identity)] No keys to upload")
                     case .success:
+                        PreKey.logger.info("[\(self.action.identity)] Successfully uploaded prekeys")
                         try PersistSuccesfulUpload(
                             dateProvider: self.context.dateProvider,
                             db: self.context.db,
@@ -178,6 +186,7 @@ extension PreKeyTasks {
                                 .recordSuspectedIssueWithPniIdentityKey(tx: tx)
                         }
                     case let .failure(error):
+                        PreKey.logger.info("[\(self.action.identity)] Failed to upload prekeys")
                         throw error
                     }
                 }

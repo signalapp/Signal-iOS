@@ -325,6 +325,7 @@ extension PreKeyTasks {
                             )
                         }
                 }.map(on: context.scheduler) { targets in
+                    PreKey.logger.info("[\(identity)] Refresh(filtered): [\(targets)]")
                     return try self.createPartialBundle(
                         identity: identity,
                         identityKeyPair: identityKeyPair,
