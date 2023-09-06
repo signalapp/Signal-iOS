@@ -161,6 +161,11 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
+            key = "USE_STAGING"
+            value = "1"
+            isEnabled = "NO">
+         </EnvironmentVariable>
+         <EnvironmentVariable
             key = "UBSAN_OPTIONS"
             value = "suppressions=SignalUBSan.supp"
             isEnabled = "YES">
