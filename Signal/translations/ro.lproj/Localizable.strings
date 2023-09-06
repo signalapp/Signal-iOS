@@ -1196,7 +1196,7 @@
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Redirecționează";
 
 /* Context menu button title */
-"CONTEXT_MENU_PAYMENT_DETAILS" = "Payment Details";
+"CONTEXT_MENU_PAYMENT_DETAILS" = "Detalii de plată";
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "Răspunde";
@@ -1691,7 +1691,7 @@
 "DELETE_CONTACT_BUTTON" = "Șterge Contactul";
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
-"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ was deleted from your contacts and removed.";
+"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ a fost șters din agenda ta și eliminat.";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Te-am deconectat din Signal pe acest dispozitiv.";
@@ -2156,13 +2156,13 @@
 "EDIT_ITEM_COPY_ACTION" = "Copiază";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "If you edit a message, it will only be visible to people who are on the latest versions of Signal. They will be able to see you edited a message.";
+"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "Dacă editezi un mesaj, acesta va fi vizibil numai pentru persoanele care au cea mai recentă versiune de Signal beta. Ei vor putea să vadă că ai editat un mesaj.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Trimite";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Edit Message";
+"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Editează Mesajul";
 
 /* Error message to display to user when a message is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Modificările pot fi aplicate numai în termen de 3 de ore din momentul în care ai trimis acest mesaj.";
@@ -3251,7 +3251,7 @@
 "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Nu s-a putut elimina %1$@";
 
 /* An explanation of why the user cannot be removed on a linked device. */
-"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "This person is saved to your phone’s Contacts. Delete them from your Contacts on your phone and try again.";
+"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Această persoană este salvată în Agenda dispozitivului tău. Șterge-o din Agenda dispozitivului mobil și încearcă din nou.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Conversații arhivate";
@@ -3368,16 +3368,16 @@
 "INFO_MESSAGE_CONTACT_REMOVED" = "Ai eliminat această persoană, să îi dai mesaj din nou va reveni din nou în lista ta.";
 
 /* Shown when a user activates payments from a chat */
-"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "You activated Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Ai activat Plăți.";
 
 /* Shown when a user activates payments from a chat. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ can now accept Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ poate să accepte acum Plăți.";
 
 /* Shown when a user receives a payment activation request. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ wants you to activate Payments. Only send payments to people you trust.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ vrea să activezi Plăți. Trimite plăți doar persoanelor în care ai încredere.";
 
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "You sent %1$@ a request to activate Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "I-ai trimis lui %1$@ o cerere de activare a Plăților.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3710,7 +3710,7 @@
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Vezi pachetul de autocolante";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_PAYMENT_DETAILS" = "Payment Details";
+"MESSAGE_ACTION_PAYMENT_DETAILS" = "Detalii de plată";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Apelează";
@@ -4436,13 +4436,13 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Invalid";
 
 /* Payments in-chat message shown if a payment fails to send, bottom half. */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Tap for details";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Apasă pentru detalii";
 
 /* Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }} */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB Not sent";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB nu a fost trimis";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "UNAVAILABLE";
+"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "INDISPONIBIL";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Autentificarea nu a putut fi accesată.";
@@ -4577,16 +4577,16 @@
 "PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%1$@ notificări noi de plată";
 
 /* Payment status context with contact name, failed. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Payment to %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Plată către %1$@";
 
 /* Payment status context while sending */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Processing payment…";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Se procesează plata…";
 
 /* Payment status context with contact name, incoming. Embeds {{ Name of sending contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ sent you";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ ți-a trimis";
 
 /* Payment status context with contact name, sent. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "You sent %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "Ai trimis %1$@";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Plată finalizată";
@@ -4649,10 +4649,10 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Eroare necunoscută";
 
 /* Payments Preview Text shown in quoted replies, for payments. Embeds {{ Amount sent (number), Currency (e.g. 'MOB') }} */
-"PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "Payment: %1$@ %2$@";
+"PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "Plată: %1$@ %2$@";
 
 /* Payments Preview Text shown in quoted replies, for unknown payments. */
-"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Unknown Payment";
+"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Plată necunoscută";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Pentru a trimite o plată către acest utilizator, acesta trebuie să accepte o solicitare de mesaj din partea ta.";
@@ -4664,16 +4664,16 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Nu se poate trimite plata";
 
 /* The label for the 'send request' button in alerts and action sheets. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Send Request";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Trimite cererea";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Do you want to send them a request to activate Payments?";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Vrei să le trimitem o cerere pentru a activa Plățile?";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }} */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ hasn't activated Payments";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ nu a activat Plățile";
 
 /* Payments Preview Text shown in chat list for payments. */
-"PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 Payment";
+"PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 Plata";
 
 /* Label for 'transfer out' payments. */
 "PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfer emis";
@@ -6005,7 +6005,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activare";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Poți folosi Signal pentru a trimite și a primi MobileCoin. Toate plățile sunt supuse Termenilor de utilizare pentru MobileCoins și MobileCoin Wallet.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activare";
@@ -6161,7 +6161,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivează Plățile";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Îți prezentăm Plăți";
 
 /* Button when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Sari peste fraza de recuperare";
@@ -6200,13 +6200,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Trimis de";
 
 /* Label for the sender in the payment details view in the app settings. Followed by sender name. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Attempted By";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Încercat de";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ la %2$@";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Sending to %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Se trimite la %1$@";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Trimis";
@@ -6476,7 +6476,7 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Frază de recuperare";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "Plăți";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Adresa portofelului tău";
@@ -6710,10 +6710,10 @@
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Finalizați verificarea";
 
 /* The name for the sticker category 'Featured' */
-"STICKER_CATEGORY_FEATURED_NAME" = "Featured";
+"STICKER_CATEGORY_FEATURED_NAME" = "Promovate";
 
 /* The name for the sticker category 'Recents' */
-"STICKER_CATEGORY_RECENTS_NAME" = "Recents";
+"STICKER_CATEGORY_RECENTS_NAME" = "Recente";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Mesaj cu autocolant";
@@ -6974,7 +6974,7 @@
 "STORY_SEND_FAILED" = "Trimitere eșuată";
 
 /* Body for notification shown when a story fails to send. */
-"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Story failed to send";
+"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Nu s-a trimis povestea";
 
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "Atinge și reîncearcă";

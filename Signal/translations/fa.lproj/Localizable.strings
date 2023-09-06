@@ -1196,7 +1196,7 @@
 "CONTEXT_MENU_FORWARD_MESSAGE" = "بازارسال";
 
 /* Context menu button title */
-"CONTEXT_MENU_PAYMENT_DETAILS" = "Payment Details";
+"CONTEXT_MENU_PAYMENT_DETAILS" = "جزئیات پرداخت";
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "پاسخ";
@@ -1691,7 +1691,7 @@
 "DELETE_CONTACT_BUTTON" = "پاک کردن مخاطب";
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
-"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ was deleted from your contacts and removed.";
+"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ از مخاطبان شما پاک شد.";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "در این دستگاه از سیگنال خارج شده‌اید.";
@@ -2156,13 +2156,13 @@
 "EDIT_ITEM_COPY_ACTION" = "کپی";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "If you edit a message, it will only be visible to people who are on the latest versions of Signal. They will be able to see you edited a message.";
+"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "اگر پیامی را ویرایش کنید، فقط برای افرادی که از تازه‌ترین نسخه سیگنال استفاده می‌کنند قابل مشاهده خواهد بود. آن‌ها می‌توانند ببینند که پیامی را ویرایش کرده‌اید.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "ارسال";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Edit Message";
+"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "ویرایش پیام";
 
 /* Error message to display to user when a message is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "ویرایش‌ها فقط تا ۳ ساعت بعد از ارسال این پیام قابل اعمال هستند.";
@@ -3251,7 +3251,7 @@
 "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "حذف %1$@ امکان‌پذیر نیست";
 
 /* An explanation of why the user cannot be removed on a linked device. */
-"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "This person is saved to your phone’s Contacts. Delete them from your Contacts on your phone and try again.";
+"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "این فرد در مخاطبان تلفن شما ذخیره شده است. او را از مخاطبان تلفن خود پاک کنید و دوباره تلاش کنید.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "گفتگوهای بایگانی‌شده";
@@ -3368,16 +3368,16 @@
 "INFO_MESSAGE_CONTACT_REMOVED" = "این شخص را حذف کرده‌اید، ارسال مجدد پیام به او موجب افزودن دوباره او به لیست شما می‌شود.";
 
 /* Shown when a user activates payments from a chat */
-"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "You activated Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "شما پرداخت‌ها را فعال کردید.";
 
 /* Shown when a user activates payments from a chat. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ can now accept Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ اکنون می‌تواند پرداخت‌ها را بپذیرد.";
 
 /* Shown when a user receives a payment activation request. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ wants you to activate Payments. Only send payments to people you trust.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ از شما می‌خواهد که پرداخت‌ها را فعال کنید. فقط به افراد مورد اعتمادتان پرداخت کنید.";
 
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "You sent %1$@ a request to activate Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "شما به %1$@ درخواستی برای فعال کردن پرداخت‌ها ارسال کردید.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3710,7 +3710,7 @@
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "مشاهدهٔ بستهٔ استیکر";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_PAYMENT_DETAILS" = "Payment Details";
+"MESSAGE_ACTION_PAYMENT_DETAILS" = "جزئیات پرداخت";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "تماس";
@@ -4436,13 +4436,13 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "نامعتبر";
 
 /* Payments in-chat message shown if a payment fails to send, bottom half. */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Tap for details";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "برای جزئیات بیشتر ضربه بزنید";
 
 /* Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }} */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB Not sent";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB ارسال نشد";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "UNAVAILABLE";
+"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "خارج از دسترس";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "دسترسی به احراز هویت ممکن نبود.";
@@ -4577,16 +4577,16 @@
 "PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%1$@ اعلان پرداخت جدید";
 
 /* Payment status context with contact name, failed. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Payment to %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "پرداخت به %1$@";
 
 /* Payment status context while sending */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Processing payment…";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "در حال پردازش پرداخت…";
 
 /* Payment status context with contact name, incoming. Embeds {{ Name of sending contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ sent you";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ به شما ارسال کرد";
 
 /* Payment status context with contact name, sent. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "You sent %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "به %1$@ ارسال کردید";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "پرداخت کامل";
@@ -4649,10 +4649,10 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "خطای ناشناخته";
 
 /* Payments Preview Text shown in quoted replies, for payments. Embeds {{ Amount sent (number), Currency (e.g. 'MOB') }} */
-"PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "Payment: %1$@ %2$@";
+"PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "پرداخت: %1$@ %2$@";
 
 /* Payments Preview Text shown in quoted replies, for unknown payments. */
-"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Unknown Payment";
+"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "پرداخت نامعلوم";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "برای ارسال یک پرداخت به این کاربر آن‌ها نیاز دارند تا یک درخواست تبادل پیام از شما بپذیرند.";
@@ -4664,16 +4664,16 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "ارسال پرداخت ممکن نیست";
 
 /* The label for the 'send request' button in alerts and action sheets. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Send Request";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "فرستادن درخواست";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Do you want to send them a request to activate Payments?";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "می‌خواهید به او یک درخواست فعال کردن پرداخت‌ها ارسال کنید؟";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }} */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ hasn't activated Payments";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ پرداخت‌ها را فعال نکرده است";
 
 /* Payments Preview Text shown in chat list for payments. */
-"PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 Payment";
+"PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 پرداخت";
 
 /* Label for 'transfer out' payments. */
 "PAYMENTS_TRANSFER_OUT_PAYMENT" = "انتقال به بیرون";
@@ -6005,7 +6005,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "فعال کردن";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "می‌توانید برای ارسال و دریافت MobileCoin از سیگنال استفاده کنید. همه پرداخت‌ها مشمول شرایط استفاده MobileCoins و کیف پول MobileCoin هستند.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "فعال کردن";
@@ -6161,7 +6161,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "فعال کردن دوباره پرداخت‌ها";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "با معرفی پرداخت‌ها";
 
 /* Button when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "رد شدن از عبارت بازیابی";
@@ -6200,13 +6200,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "ارسال شده توسط";
 
 /* Label for the sender in the payment details view in the app settings. Followed by sender name. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Attempted By";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "تلاش توسط";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ در %2$@";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Sending to %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "در حال ارسال به %1$@";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "ارسال شد";
@@ -6476,7 +6476,7 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "عبارت بازیابی";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "پرداخت‌ها";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "نشانی کیف پول شما";
@@ -6710,10 +6710,10 @@
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "وارسی را کامل کنید";
 
 /* The name for the sticker category 'Featured' */
-"STICKER_CATEGORY_FEATURED_NAME" = "Featured";
+"STICKER_CATEGORY_FEATURED_NAME" = "ویژه";
 
 /* The name for the sticker category 'Recents' */
-"STICKER_CATEGORY_RECENTS_NAME" = "Recents";
+"STICKER_CATEGORY_RECENTS_NAME" = "تماس‌های اخیر";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "استیکر";
@@ -6974,7 +6974,7 @@
 "STORY_SEND_FAILED" = "ارسال انجام نشد";
 
 /* Body for notification shown when a story fails to send. */
-"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Story failed to send";
+"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️استوری ارسال نشد";
 
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "جهت تکرار ضربه بزنید";

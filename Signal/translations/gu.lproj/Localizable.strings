@@ -1196,7 +1196,7 @@
 "CONTEXT_MENU_FORWARD_MESSAGE" = "ફોરવર્ડ";
 
 /* Context menu button title */
-"CONTEXT_MENU_PAYMENT_DETAILS" = "Payment Details";
+"CONTEXT_MENU_PAYMENT_DETAILS" = "પેમેન્ટની વિગતો";
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "જવાબ";
@@ -1691,7 +1691,7 @@
 "DELETE_CONTACT_BUTTON" = "સંપર્ક ડિલીટ કરો";
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
-"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ was deleted from your contacts and removed.";
+"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ને તમારા સંપર્કોમાંથી ડિલીટ કર્યા અને દૂર કર્યા હતા.";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "તમે આ ડિવાઇસ પર Signalમાંથી લૉગ આઉટ થઈ ગયા છો.";
@@ -2156,13 +2156,13 @@
 "EDIT_ITEM_COPY_ACTION" = "કૉપિ";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "If you edit a message, it will only be visible to people who are on the latest versions of Signal. They will be able to see you edited a message.";
+"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "જો તમે મેસેજમાં ફેરફાર કરો છો, તો તે ફક્ત Signalના લેટેસ્ટ વર્ઝન પર હોય તે લોકોને જ દેખાશે. તેઓ જોઈ શકશે કે તમે મેસેજમાં ફેરફાર કર્યો છે.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "મોકલો";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Edit Message";
+"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "મેસેજમાં ફેરફાર કરો";
 
 /* Error message to display to user when a message is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "તમે આ મેસેજ મોકલ્યો હોય ત્યારથી માત્ર 3 કલાકની અંદર જ ફેરફારો લાગુ કરી શકાય છે.";
@@ -3251,7 +3251,7 @@
 "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "%1$@ને દૂર ન કરી શક્યા";
 
 /* An explanation of why the user cannot be removed on a linked device. */
-"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "This person is saved to your phone’s Contacts. Delete them from your Contacts on your phone and try again.";
+"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "આ વ્યક્તિ તમારા ફોનના સંપર્કોમાં સેવ કરેલ છે. તેમને તમારા ફોન પર તમારા સંપર્કોમાંથી ડિલીટ કરો અને ફરી પ્રયાસ કરો.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "આર્કાઇવ કરેલી ચેટ";
@@ -3368,16 +3368,16 @@
 "INFO_MESSAGE_CONTACT_REMOVED" = "તમે આ વ્યક્તિને દૂર કરી છે, તેમને ફરીથી મેસેજ કરવાથી તેઓ તમારી સૂચિમાં પાછા ઉમેરાઈ જશે.";
 
 /* Shown when a user activates payments from a chat */
-"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "You activated Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "તમે ચુકવણીઓ સક્રિય કરી.";
 
 /* Shown when a user activates payments from a chat. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ can now accept Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ હવે ચુકવણીઓ સ્વીકારી શકે છે.";
 
 /* Shown when a user receives a payment activation request. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ wants you to activate Payments. Only send payments to people you trust.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ ઇચ્છે છે કે તમે પેમેન્ટ સક્રિય કરો. તમને ભરોસો હોય તેવા લોકોને જ પેમેન્ટ મોકલો.";
 
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "You sent %1$@ a request to activate Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "તમે %1$@ ને ચુકવણીઓ સક્રિય કરવાની વિનંતી મોકલી.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3710,7 +3710,7 @@
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "સ્ટીકર પેક જુઓ";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_PAYMENT_DETAILS" = "Payment Details";
+"MESSAGE_ACTION_PAYMENT_DETAILS" = "પેમેન્ટની વિગતો";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "કૉલ";
@@ -4436,13 +4436,13 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "અમાન્ય";
 
 /* Payments in-chat message shown if a payment fails to send, bottom half. */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Tap for details";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "વિગતો માટે ટેપ કરો";
 
 /* Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }} */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB Not sent";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB મોકલાયા નથી";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "UNAVAILABLE";
+"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "અનુપલબ્ધ";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "પ્રમાણીકરણ ઍક્સેસ કરી શકાતું નથી.";
@@ -4577,16 +4577,16 @@
 "PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%1$@ નવી પેમેન્ટ સૂચનાઓ";
 
 /* Payment status context with contact name, failed. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Payment to %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "%1$@ ને ચુકવણી";
 
 /* Payment status context while sending */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Processing payment…";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "પેમેન્ટ પ્રક્રિયા થઈ રહી છે…";
 
 /* Payment status context with contact name, incoming. Embeds {{ Name of sending contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ sent you";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@એ તમને મોકલ્યા";
 
 /* Payment status context with contact name, sent. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "You sent %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "તમે %1$@ને મોકલ્યા";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "પેમેન્ટ પૂર્ણ";
@@ -4649,10 +4649,10 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "અજ્ઞાત નિષ્ફળતા";
 
 /* Payments Preview Text shown in quoted replies, for payments. Embeds {{ Amount sent (number), Currency (e.g. 'MOB') }} */
-"PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "Payment: %1$@ %2$@";
+"PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "ચુકવણી: %1$@ %2$@";
 
 /* Payments Preview Text shown in quoted replies, for unknown payments. */
-"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Unknown Payment";
+"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "અજ્ઞાત ચુકવણી";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "આ ઉપયોગકર્તાને પેમેન્ટ મોકલવા માટે તેઓએ તમારી પાસેથી મેસેજ વિનંતી સ્વીકારવાની જરૂર છે.";
@@ -4664,16 +4664,16 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "પેમેન્ટ મોકલી શકાતું નથી";
 
 /* The label for the 'send request' button in alerts and action sheets. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Send Request";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "વિનંતી મોકલો";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Do you want to send them a request to activate Payments?";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "શું તમે તેમને ચુકવણીઓ સક્રિય કરવા માટે વિનંતી મોકલવા માંગો છો?";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }} */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ hasn't activated Payments";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@એ પેમેન્ટ સક્રિય કરેલ નથી";
 
 /* Payments Preview Text shown in chat list for payments. */
-"PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 Payment";
+"PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 ચુકવણી";
 
 /* Label for 'transfer out' payments. */
 "PAYMENTS_TRANSFER_OUT_PAYMENT" = "સ્થાનાંતરિત આઉટ";
@@ -6005,7 +6005,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "સક્રિય કરો";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "તમે હવે MobileCoin મોકલવા અને પ્રાપ્ત કરવા માટે Signalનો ઉપયોગ કરી શકો છો. તમામ ચુકવણીઓ MobileCoins અને MobileCoin Walletની ઉપયોગની શરતોને આધીન છે.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "સક્રિય કરો";
@@ -6161,7 +6161,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "પેમેન્ટને ફરીથી સક્રિય કરો";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "પ્રસ્તુત છે ચુકવણીઓ";
 
 /* Button when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "રિકવરી ફ્રેઝને અવગણો";
@@ -6200,13 +6200,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "દ્વારા મોકલવામાં આવેલ";
 
 /* Label for the sender in the payment details view in the app settings. Followed by sender name. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Attempted By";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "આમણે પ્રયાસ કર્યો";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%2$@ પર %1$@";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Sending to %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "%1$@ ને મોકલાય છે";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "મોકલ્યો";
@@ -6476,7 +6476,7 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "રિકવરી ફ્રેઝ";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "ચુકવણીઓ";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "તમારું વૉલેટ એડ્રેસ";
@@ -6710,10 +6710,10 @@
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "ચકાસણી પૂર્ણ કરો";
 
 /* The name for the sticker category 'Featured' */
-"STICKER_CATEGORY_FEATURED_NAME" = "Featured";
+"STICKER_CATEGORY_FEATURED_NAME" = "ફીચર્ડ";
 
 /* The name for the sticker category 'Recents' */
-"STICKER_CATEGORY_RECENTS_NAME" = "Recents";
+"STICKER_CATEGORY_RECENTS_NAME" = "તાજેતરનું";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "સ્ટીકર મેસેજ";
@@ -6974,7 +6974,7 @@
 "STORY_SEND_FAILED" = "મોકલવામાં નિષ્ફળ";
 
 /* Body for notification shown when a story fails to send. */
-"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Story failed to send";
+"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️સ્ટોરી મોકલવાનું નિષ્ફળ થયું";
 
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "પ્રયાસ કરવા ટેપ કરો";

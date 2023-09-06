@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal heeft toegang tot je locatie nodig
 NSMicrophoneUsageDescription = "Signal heeft toestemming nodig om je microfoon te gebruiken, om audio- en video-oproepen te kunnen maken en om spraakberichten op te kunnen nemen.";
 NSPhotoLibraryAddUsageDescription = "Signal zal foto's opslaan naar je fotobibliotheek.";
 NSPhotoLibraryUsageDescription = "Signal laat je kiezen welke foto's uit je fotobibliotheek je wilt verzenden.";
-NSLocalNetworkUsageDescription = "Signal gebruikt het lokale netwerk om het mogelijk te maken je gegevens rechtstreeks naar een nieuwe telefoon over te zetten. Het lokale netwerk zal niet worden gebruikt totdat je zelf een overdracht naar een nieuwe telefoon te starten initieert.";
+NSLocalNetworkUsageDescription = "Signal gebruikt het lokale netwerk om je account rechtstreeks naar een nieuwe telefoon over te zetten. Het lokale netwerk zal niet worden gebruikt totdat je zelf een overdracht naar een nieuwe telefoon initieert.";

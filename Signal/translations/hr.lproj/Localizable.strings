@@ -1196,7 +1196,7 @@
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Proslijedi";
 
 /* Context menu button title */
-"CONTEXT_MENU_PAYMENT_DETAILS" = "Payment Details";
+"CONTEXT_MENU_PAYMENT_DETAILS" = "Pojedinosti o plaćanju";
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "Odgovori";
@@ -1691,7 +1691,7 @@
 "DELETE_CONTACT_BUTTON" = "Izbriši kontakt";
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
-"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ was deleted from your contacts and removed.";
+"DELETE_CONTACT_CONFIRMATION_TOAST" = "Izbrisali ste osobu %1$@ iz svojih kontakata i uklonili je s popisa.";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Odjavljeni ste sa Signala na ovom uređaju.";
@@ -2156,13 +2156,13 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopiraj";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "If you edit a message, it will only be visible to people who are on the latest versions of Signal. They will be able to see you edited a message.";
+"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "Ako uredite poruku, izmjene će biti vidljive samo osobama koje koriste najnovije verzije Signala. Moći će vidjeti da ste uredili poruku.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Pošalji";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Edit Message";
+"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Uredi poruku";
 
 /* Error message to display to user when a message is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Poruke je moguće uređivati samo u roku od 3 sata od trenutka slanja.";
@@ -3251,7 +3251,7 @@
 "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Nije moguće ukloniti korisnika %1$@";
 
 /* An explanation of why the user cannot be removed on a linked device. */
-"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "This person is saved to your phone’s Contacts. Delete them from your Contacts on your phone and try again.";
+"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Ova je osoba spremljena u kontaktima vašeg telefona. Izbrišite je iz svojih kontakata i pokušajte ponovno.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arhivirani razgovori";
@@ -3368,16 +3368,16 @@
 "INFO_MESSAGE_CONTACT_REMOVED" = "Uklonili ste ovu osobu, ponovnim slanjem poruke vratit ćete je na svoj popis.";
 
 /* Shown when a user activates payments from a chat */
-"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "You activated Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Omogućili ste Plaćanja.";
 
 /* Shown when a user activates payments from a chat. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ can now accept Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ sada može primati uplate.";
 
 /* Shown when a user receives a payment activation request. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ wants you to activate Payments. Only send payments to people you trust.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ želi da omogućite Plaćanja. Uplate šaljite samo osobama kojima vjerujete.";
 
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "You sent %1$@ a request to activate Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Poslali ste korisniku %1$@ zahtjev za omogućavanje Plaćanja.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3710,7 +3710,7 @@
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Pogledaj paket naljepnica";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_PAYMENT_DETAILS" = "Payment Details";
+"MESSAGE_ACTION_PAYMENT_DETAILS" = "Pojedinosti o plaćanju";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Nazovi";
@@ -4436,13 +4436,13 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Nevažeće";
 
 /* Payments in-chat message shown if a payment fails to send, bottom half. */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Tap for details";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Pritisnite za više detalja";
 
 /* Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }} */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB Not sent";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "Slanje %1$@ MOB nije uspjelo";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "UNAVAILABLE";
+"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "NIJE DOSTUPNO";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Nije bilo moguće pristupiti provjeri autentičnosti.";
@@ -4577,16 +4577,16 @@
 "PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%1$@ nova obavijest o uplatama";
 
 /* Payment status context with contact name, failed. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Payment to %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Uplata korisniku %1$@";
 
 /* Payment status context while sending */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Processing payment…";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Obrada uplate…";
 
 /* Payment status context with contact name, incoming. Embeds {{ Name of sending contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ sent you";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "Korisnik %1$@ poslao vam je";
 
 /* Payment status context with contact name, sent. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "You sent %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "Poslali ste %1$@";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Plaćanje je dovršeno";
@@ -4649,10 +4649,10 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Nepoznati problem";
 
 /* Payments Preview Text shown in quoted replies, for payments. Embeds {{ Amount sent (number), Currency (e.g. 'MOB') }} */
-"PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "Payment: %1$@ %2$@";
+"PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "Plaćanje: %1$@ %2$@";
 
 /* Payments Preview Text shown in quoted replies, for unknown payments. */
-"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Unknown Payment";
+"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Nepoznato plaćanje";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Da bi ovom korisniku poslali uplatu, moraju prihvatiti zahtjev za razgovorom od vas.";
@@ -4664,16 +4664,16 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Neuspješno slanje uplate";
 
 /* The label for the 'send request' button in alerts and action sheets. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Send Request";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Pošalji zahtjev";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Do you want to send them a request to activate Payments?";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Želite li korisniku poslati zahtjev za omogućavanje plaćanja?";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }} */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ hasn't activated Payments";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Korisnik %1$@ nije omogućio Plaćanja";
 
 /* Payments Preview Text shown in chat list for payments. */
-"PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 Payment";
+"PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 Plaćanje";
 
 /* Label for 'transfer out' payments. */
 "PAYMENTS_TRANSFER_OUT_PAYMENT" = "Prijenos izvan";
@@ -6005,7 +6005,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Omogući";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Signal možete koristiti za slanje i primanje MobileCoina. Sva plaćanja podliježu Uvjetima korištenja za MobileCoins i MobileCoin Wallet.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Omogući";
@@ -6161,7 +6161,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Ponovno omogući plaćanja";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Predstavljamo Plaćanja";
 
 /* Button when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Preskoči frazu za oporavak";
@@ -6200,13 +6200,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Poslao/la";
 
 /* Label for the sender in the payment details view in the app settings. Followed by sender name. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Attempted By";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Pokušao korisnik";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ dana %2$@";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Sending to %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Šalje se korisniku %1$@";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Poslano";
@@ -6476,7 +6476,7 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Fraza za oporavak";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "Plaćanja";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Vaša adresa novčanika";
@@ -6710,10 +6710,10 @@
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Dovrši provjeru";
 
 /* The name for the sticker category 'Featured' */
-"STICKER_CATEGORY_FEATURED_NAME" = "Featured";
+"STICKER_CATEGORY_FEATURED_NAME" = "Istaknuto";
 
 /* The name for the sticker category 'Recents' */
-"STICKER_CATEGORY_RECENTS_NAME" = "Recents";
+"STICKER_CATEGORY_RECENTS_NAME" = "Nedavno";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Naljepnica";
@@ -6974,7 +6974,7 @@
 "STORY_SEND_FAILED" = "Slanje nije uspjelo";
 
 /* Body for notification shown when a story fails to send. */
-"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Story failed to send";
+"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Slanje priče nije uspjelo";
 
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "Pokušaj ponovno";
