@@ -1711,6 +1711,8 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     func textViewDidEndEditing(_ textView: UITextView) {
         text = text?.stripped
+        textView.text = text
+        updateTextAttributes()
         updateVisibilityOfComponents(animated: true)
         delegate?.textStoryComposerDidEndEditing(self)
     }
