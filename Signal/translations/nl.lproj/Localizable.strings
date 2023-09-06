@@ -230,7 +230,7 @@
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "De overgezette gegevens van je oude apparaat konden niet worden hersteld op dit apparaat. Stuur een foutopsporingslog naar support@signal.org zodat we we een oplossing kunnen zoeken voor dit probleem. Als je Signal opnieuw installeert, gaat je gespreksgeschiedenis misschien verloren.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "De overdracht van Signal-gegevens kon niet succesvol worden afgerond";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Het overzetten van je Signal-account kon niet succesvol worden afgerond";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Voer je naam in";
@@ -263,7 +263,7 @@
 "APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Ga na dat je betalingsmethode nog steeds juist is. Werk je betalingsinformatie bij in Apple Pay als dat nodig is. Probeer het daarna opnieuw. Neem contact op met je bank om hen om meer informatie te vragen als dit probleem aanhoud.";
 
 /* Apple Pay donation error for decline failures where the card is not supported. */
-"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Je betaalkaart ondersteunt dit type overschrijving niet. Probeer het via een andere betalingsmethode opnieuw, of neem contact op met je bank om hen om meer informatie te vragen.";
+"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Je betaalkaart ondersteunt dit type betaling niet. Probeer het via een andere betalingsmethode opnieuw, of neem contact op met je bank om hen om meer informatie te vragen.";
 
 /* Apple Pay donation error for decline failures where the card has expired. */
 "APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Je betaalkaart is verlopen. Werk je betalingsinformatie bij in Apple Pay. Probeer het daarna opnieuw.";
@@ -275,7 +275,7 @@
 "APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "De verificatiecode van je betaalkaart is onjuist. Werk je betalingsinformatie bij in Apple Pay. Probeer het daarna opnieuw.";
 
 /* Apple Pay donation error for decline failures where the card has insufficient funds. */
-"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Er staat onvoldoende krediet op je betaalkaart op deze overschrijving te doen. Probeer een andere betalingsmethode of neem contact op met je bank om hen om meer informatie te vragen.";
+"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Er staat onvoldoende krediet op je betaalkaart op deze betaling te doen. Probeer een andere betalingsmethode of neem contact op met je bank om hen om meer informatie te vragen.";
 
 /* Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect. */
 "APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "De maand waarop je betaalkaart verloopt is onjuist. Werk je betalingsinformatie bij in Apple Pay. Probeer het daarna opnieuw.";
@@ -902,7 +902,7 @@
 "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Je nieuwe telefoonnummer kan niet dezelfde zijn als je oude telefoonnummer. Voer een nieuw nummer in om je telefoonnummer te wijzigen.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
-"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Het telefoonnummer wat je hebt ingevuld komt niet overeen met het telefoonnummer wat je voor Signal gebruikt.";
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Het telefoonnummer dat je hebt ingevuld komt niet overeen met het telefoonnummer van je Signal-account.";
 
 /* Error indicating that the user's new phone number is not valid. */
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Je nieuwe telefoonnummer is ongeldig. Voer een geldig nummer in om je telefoonnummer te wijzigen.";
@@ -977,13 +977,13 @@
 "CONFIGURE_REACTIONS" = "Emoji-reactiebalk instellen";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "Hiermee zal de applicatie vernieuwd worden, waarbij alle gegevens inclusief alle berichten van dit apparaat worden gewist. De app zal zichzelf sluiten nadat je dit doet.";
+"CONFIRM_DELETE_DATA_TEXT" = "Hiermee zal de applicatie gereset worden, waarbij alle berichten van dit apparaat worden gewist. De app wordt gesloten nadat dit proces is voltooid.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "Weet je zeker dat je alle gegevens wilt wissen?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Dit zal de applicatie volledig opnieuw instellen door al je berichten te wissen van dit apparaat. Je kunt je telefoon altijd opnieuw koppelen, maar daarmee worden de gewiste berichten niet hersteld. De app sluit zichzelf als dit proces is voltooid.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Hiermee zal de applicatie gereset worden, waarbij alle berichten van dit apparaat worden gewist. Je kunt je telefoon altijd opnieuw koppelen, maar daarmee worden de gewiste berichten niet hersteld. De app wordt gesloten nadat dit proces is voltooid.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Weet je zeker dat je alle gegevens wilt wissen?";
@@ -1130,10 +1130,10 @@
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Anders";
 
 /* The localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Overschrijvingen";
+"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Betalingen";
 
 /* A brief localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Overschrijvingen";
+"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Betalingen";
 
 /* Prompt telling the user to select a filter for their support request. */
 "CONTACT_SUPPORT_FILTER_PROMPT" = "Waar kunnen we mee helpen?";
@@ -1196,7 +1196,7 @@
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Doorsturen";
 
 /* Context menu button title */
-"CONTEXT_MENU_PAYMENT_DETAILS" = "Payment Details";
+"CONTEXT_MENU_PAYMENT_DETAILS" = "Betalingsdetails";
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "Reageren";
@@ -1649,13 +1649,13 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Landcode";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Het verwijderen van je account is mislukt. Controleer dat wifi of mobiele data is ingeschakeld en probeer het daarna opnieuw.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Het verwijderen van je account is mislukt. Controleer of wifi of mobiele data is ingeschakeld en probeer het daarna opnieuw.";
 
 /* Description for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Hiermee worden alle gegevens, je profiel en al je berichten gewist.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Registratie aan het opzeggen en alle gegevens aan wissen …";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Account aan het verwijderen...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Je hebt geen verbinding met het internet. Ga na dat wifi of mobiele-dataoverdracht is ingeschakeld en probeer het daarna opnieuw.";
@@ -1670,7 +1670,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Account verwijderen";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Het telefoonnummer wat je hebt ingevuld komt niet overeen met het telefoonnummer wat je voor Signal gebruikt.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Het telefoonnummer dat je hebt ingevuld komt niet overeen met het telefoonnummer van je Signal-account.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Alle berichten in deze chat wissen?";
@@ -1691,7 +1691,7 @@
 "DELETE_CONTACT_BUTTON" = "Contact verwijderen";
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
-"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ was deleted from your contacts and removed.";
+"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ is verwijderd uit je contacten en van je apparaat.";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Je bent uitgelogd bij Signal op dit apparaat.";
@@ -1730,10 +1730,10 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Overzetten annuleren?";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Als je in het verleden Signal hebt gebruikt op een gekoppelde iPad, dan kun je je instellingen en gespreksgeschiedenis op een beveiligde manier overzetten naar dit apparaat.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Als je in het verleden Signal hebt gebruikt op een gekoppelde iPad, dan kun je je account en gespreksgeschiedenis op een beveiligde manier overzetten naar dit apparaat.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Doorgaan zonder je instellingen en en berichten over te zetten";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Doorgaan zonder je account en berichten over te zetten";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Deze iPad als nieuw apparaat toevoegen zonder gespreksgeschiedenis over te zetten";
@@ -1745,13 +1745,13 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Registreren zonder overzetten";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "Instellingen & berichten overzetten";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "Account & berichten overzetten";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Je instellingen en gespreksgeschiedenis overzetten van je vorige iOS apparaat";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Zet je account en gespreksgeschiedenis over van je oude iOS apparaat";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Je instellingen en gespreksgeschiedenis overzetten vanaf je vorige iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Zet je account en gespreksgeschiedenis over van je oude iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Overzetten van een andere iPad";
@@ -1769,10 +1769,10 @@
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Overzetten is niet succesvol afgerond, ga na dat je apparaten bij elkaar in de buurt zijn en probeer het opnieuw";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Om deze iPad in te stellen als gekoppeld apparaat moet je de QR-code scannen met je vorige iPad";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Om deze iPad in te stellen als gekoppeld apparaat moet je de QR-code scannen met je oude iPad";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Om je gegevens over te zetten moet je de QR-code scannen met je iPhone";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Om je account over te zetten moet je de QR-code scannen met je iPhone";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Te weinig vrije opslagruimte om de gegevens over te zetten";
@@ -1781,13 +1781,13 @@
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Werk bij naar de meest recente versie van Signal en probeer het opnieuw";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Je Signal-instellingen overzetten naar een nieuw iOS apparaat. Zorg dat het nieuwe apparaat in de buurt is en aan staat.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Zet je account over naar een nieuw iOS apparaat. Zorg dat het nieuwe apparaat in de buurt is en aan staat.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Alle Signal-gegevens overzetten";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "Account overzetten";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal op je vorige apparaat, bren de apparaten bij elkaar in de buurt, en ga na dat zowel wifi als bluetooth op beide apparaten zijn ingeschakeld.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal op je oude apparaat, breng de apparaten bij elkaar in de buurt, en ga na dat zowel wifi als bluetooth op beide apparaten zijn ingeschakeld.";
 
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Positioneer deze QR code in het frame van het andere apparaat.";
@@ -1970,10 +1970,10 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "Eenmalige donatie";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Je overschrijving kon niet worden verwerkt, daarom is er geen geld overgemaakt. Probeer het opnieuw.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Je betaling kon niet worden verwerkt en er is geen geld overgemaakt. Probeer het opnieuw.";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Overschrijving is mislukt";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Betaling is mislukt";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Je betaling is verwerkt, maar Signal kan je donatiebericht niet versturen. Neem contact op met de ondersteuning.";
@@ -2045,7 +2045,7 @@
 "DONATION_RECEIPT_AMOUNT" = "Het bedrag";
 
 /* Section title for donation date on receipts */
-"DONATION_RECEIPT_DATE_PAID" = "Datum van overschrijving";
+"DONATION_RECEIPT_DATE_PAID" = "Datum van betaling";
 
 /* Title on the view where you can see a single receipt */
 "DONATION_RECEIPT_DETAILS" = "Details";
@@ -2156,16 +2156,16 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopiëren";
 
 /* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "If you edit a message, it will only be visible to people who are on the latest versions of Signal. They will be able to see you edited a message.";
+"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "Als je een bericht bewerkt, is dat alleen zichtbaar voor mensen met de laatste versie van Signal. Ze kunnen zien dat je een bericht hebt bewerkt.";
 
 /* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Send";
+"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Verzenden";
 
 /* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Edit Message";
+"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Bericht bewerken";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Dit bericht kan je alleen binnen 3 uur na verzending bewerken.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Dit bericht kan je alleen binnen 3 uur na verzenden bewerken.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -2435,7 +2435,7 @@
 "GET_STARTED_CARD_AVATAR_BUILDER" = "Profielfoto toevoegen";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Kennissen uitnodigen";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Vrienden uitnodigen";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Nieuwe groep aanmaken";
@@ -2549,13 +2549,13 @@
 "GROUP_CALL_LEAVE_BUTTON" = "Oproep verlaten";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Kan geen beeld & geluid van %1$@ ontvangen";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Kan geen audio & video van %1$@ ontvangen";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Dit kan zijn omdat ze jouw wijziging van het veiligheidsnummer niet hebben geverifieerd, er een probleem is met hun apparaat, of ze jou hebben geblokkeerd.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Kan geen beeld en geluid van %1$@ ontvangen";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Kan geen audio en video van %1$@ ontvangen";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Er is niemand behalve jij in deze oproep";
@@ -2828,13 +2828,13 @@
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Groepslink delen";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Je kunt een groepslink delen met kennissen zodat ze zelf gemakkelijk lid kunnen worden van deze groep.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Je kunt een groepslink delen met vrienden zodat ze zelf gemakkelijk lid kunnen worden van deze groep.";
 
 /* Title for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_TITLE" = "Kennissen uitnodigen";
+"GROUP_LINK_PROMOTION_ALERT_TITLE" = "Vrienden uitnodigen";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Je kunt vrienden en kennissen voor deze groep uitnodigen via een groepslink";
+"GROUP_LINK_PROMOTION_UPDATE" = "Je kunt vrienden voor deze groep uitnodigen via een groepslink";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Personen die deze code scannen zullen in staat zijn lid te worden van je groep. Als de optie ‘Beheerderstoestemming vereisen’ is ingeschakeld moet een beheerder eerst nog toestemming geven voor iemand lid mag worden van de groep.";
@@ -2954,7 +2954,7 @@
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Beheerder";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Je kan na het maken van deze groep kennissen uitnodigen of toevoegen.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Je kan na het maken van deze groep vrienden uitnodigen of toevoegen.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Leden";
@@ -3194,7 +3194,7 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%1$@ blokkeren";
 
 /* Label for 'invite friends to group' button. */
-"GROUPS_INVITE_FRIENDS_BUTTON" = "Kennissen uitnodigen";
+"GROUPS_INVITE_FRIENDS_BUTTON" = "Vrienden uitnodigen";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Verouderde groep";
@@ -3251,7 +3251,7 @@
 "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Kan %1$@ niet verwijderen";
 
 /* An explanation of why the user cannot be removed on a linked device. */
-"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "This person is saved to your phone’s Contacts. Delete them from your Contacts on your phone and try again.";
+"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Deze persoon is opgeslagen in de contactenlijst van je apparaat. Verwijder ze uit Contacten op je telefoon en probeer het opnieuw.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Gearchiveerde chats";
@@ -3364,20 +3364,23 @@
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "Inkomende video-oproep";
 
+/* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
+"INFO_MESSAGE_CONTACT_REINSTATED" = "This person was added back to your Signal contact list.";
+
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "Je hebt deze persoon verwijderd. Als je hen opnieuw een bericht stuurt, wordt diegene weer aan je lijst toegevoegd.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "You removed this person from your Signal contact list, messaging them will add them back.";
 
 /* Shown when a user activates payments from a chat */
-"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "You activated Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Je hebt Betalingen geactiveerd.";
 
 /* Shown when a user activates payments from a chat. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ can now accept Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ kan nu Betalingen accepteren.";
 
 /* Shown when a user receives a payment activation request. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ wants you to activate Payments. Only send payments to people you trust.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ wil graag dat je Betalingen activeert. Stuur alleen betalingen naar mensen die je vertrouwt.";
 
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "You sent %1$@ a request to activate Payments.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Je hebt %1$@ een verzoek gestuurd om Betalingen te activeren.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3413,19 +3416,19 @@
 "INVALID_PROXY_HOST_ERROR" = "Het door jou ingevoerde proxy-adres is ongeldig. Controleer het adres en probeer het opnieuw.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Je kunt toegang geven tot je contacten in de iOS-instellingenapp om je vrienden en kennissen uit te nodigen voor Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Je kunt toegang geven tot je contacten in de iOS-instellingenapp om je vrienden uit te nodigen voor Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Toegang tot contacten toestaan";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Kennissen uitnodigen voor Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Vrienden uitnodigen voor Signal";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Zoeken";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Kennissen uitnodigen";
+"INVITE_FRIENDS_PICKER_TITLE" = "Vrienden uitnodigen";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Door meerdere mensen tegelijkertijd uit te nodigen maak je een groepsbericht. De ontvangers kunnen elkaar zien.";
@@ -3557,7 +3560,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Koppelen van apparaat mislukt";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Je moet op beide apparaten toegang hebben tot het lokale netwerk om je Signal-gegevens over te kunnen zetten.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Je moet op beide apparaten toegang hebben tot het lokale netwerk om je Signal-account te kunnen overzetten.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Hulp nodig?";
@@ -3710,7 +3713,7 @@
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Stickerpakket weergeven";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_PAYMENT_DETAILS" = "Payment Details";
+"MESSAGE_ACTION_PAYMENT_DETAILS" = "Betalingsdetails";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Bellen";
@@ -3776,7 +3779,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Mislukt";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Verzending is gepauzeerd";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Verzenden is gepauzeerd";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Gelezen door";
@@ -3947,7 +3950,7 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Gedeeltelijk verzonden, tik hier voor details";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Verzending is gepauzeerd";
+"MESSAGE_STATUS_PENDING" = "Verzenden is gepauzeerd";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING_SHORT" = "Gepauzeerd";
@@ -3987,6 +3990,18 @@
 
 /* info message text in conversation view */
 "MISSED_AUDIO_CALL" = "Gemiste spraakoproep";
+
+/* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
+"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Missed call from contact blocked in phone settings";
+
+/* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Also Block Contact in Signal";
+
+/* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "You missed their call because they are blocked in your phone settings. Go to Settings > Phone and tap Blocked Contacts to manage this.";
+
+/* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ is Blocked in Phone Settings";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "Gemiste oproep tijdens Niet storen";
@@ -4253,7 +4268,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Overslaan en nieuwe pincode aanmaken";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Als je je je pincode niet kan herinneren, dan kun je een nieuwe pincode aanmaken. Je kunt Signal dan weer gebruiken, maar sommige instellingen waaronder je profielnaam, -foto en -omschrijving zullen dan niet bewaard blijven.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Als je je pincode niet kan herinneren, dan kun je een nieuwe pincode aanmaken. Je kunt je opnieuw registreren en je account gebruiken maar je verliest wel een aantal opgeslagen instellingen, zoals je profielinformatie.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Pincode invoeren overslaan?";
@@ -4265,7 +4280,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "iPhone koppelen";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Door te tikken op ‘iPad registreren’ kun je een nieuw Signal met een nieuw telefoonnummer registreren of je kunt Signal registreren met een telefoonnummer welke je al eerder voor Signal hebt gebruikt en je gesprekken naar deze iPad overplaatsen. Als je die laatst optie kiest, dan zal je daarmee Signal uitschakelen op elk ander apparaat welke momenteel met hetzelfde telefoonnummer geregistreerd staat.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Door te tikken op ‘iPad registreren’ kun je een nieuw Signal-account met een nieuw telefoonnummer registreren of je kunt een bestaand account overzetten naar deze iPad. Dit zal Signal uitschakelen op elk ander apparaat dat momenteel met hetzelfde telefoonnummer geregistreerd is.";
 
 /* explanation to the user they're switching from registering to linking flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Door op ‘iPhone koppelen’ te tikken kun je je gesprekken synchroniseren met Signal op een ander apparaat. Het koppelen van je telefoon wordt over het algemeen afgeraden omdat het sommige functionaliteit beperkt, zoals bellen via Signal.";
@@ -4307,7 +4322,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Dat telefoonnummer is ongeldig. Vul een geldig telefoonnummer in om je te registreren.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Je hebt geen pogingen resterend om je pincode te raden, maar je kunt nog wel gebruik blijven maken van Signal door een nieuwe pincode aan te maken. Ter beveiliging van je profielinformatie, zullen je instellingen, profielnaam en profielfoto niet worden hersteld.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Je hebt geen pogingen resterend om je pincode te raden, maar je kunt nog wel gebruik blijven maken van je Signal-account door een nieuwe pincode aan te maken. Voor je privacy en veiligheid wordt je account hersteld zonder opgeslagen profielinformatie of instellingen.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Lees meer over pincodes";
@@ -4391,7 +4406,7 @@
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Nu bijwerken";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Om overschrijvingen te kunnen blijven doen moet je Signal bijwerken. Jouw saldo is misschien niet up-to-date.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Om betalingen te kunnen blijven doen moet je Signal bijwerken. Je krediet is misschien niet up-to-date.";
 
 /* info message text in conversation view */
 "OUTGOING_AUDIO_CALL" = "Uitgaande spraakoproep";
@@ -4401,6 +4416,15 @@
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Onbeantwoorde video-oproep";
+
+/* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
+"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Exit Signal";
+
+/* Message for action sheet shown when device transfer completes */
+"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal will now exit on this device";
+
+/* Title for action sheet shown when device transfer completes */
+"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Transfer complete!";
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "Uitgaande video-oproep";
@@ -4436,13 +4460,13 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Ongeldig";
 
 /* Payments in-chat message shown if a payment fails to send, bottom half. */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Tap for details";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Tik voor meer informatie";
 
 /* Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }} */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB Not sent";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB Niet verzonden";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "UNAVAILABLE";
+"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "NIET BESCHIKBAAR";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Kon geen toegang tot authenticatie verkrijgen.";
@@ -4475,7 +4499,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Voeg een extra beveiligingslaag toe en vereis Touch ID om geld te versturen.";
 
 /* First time payments suggest payments lock title */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Wil je Betalingsslot aanzetten voor toekomstige betalingen?";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Wil je Betalingsvergrendeling aanzetten voor toekomstige betalingen?";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Vereis je toegangscode of Touch ID om te versturen";
@@ -4505,10 +4529,10 @@
 "PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Beschikbaar krediet: %1$@";
 
 /* Label for the 'confirm payment' button. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Overschrijving bevestigen";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Betaling bevestigen";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Overschrijven";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Betalen";
 
 /* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%2$@ %1$@";
@@ -4517,19 +4541,19 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Kon geen verbinding maken met servers";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Je hebt niet genoeg MOB om deze overschrijving te kunnen plaatsen.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Je hebt niet genoeg MOB om deze betaling te kunnen plaatsen.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Je hebt niet genoeg MOB om deze overschrijving te kunnen plaatsen. Je huidige krediet is %1$@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Je hebt niet genoeg MOB om deze betaling te kunnen plaatsen. Je huidige krediet is %1$@.";
 
 /* Indicates that a payment failed due to being invalid. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Overschrijving ongeldig";
+"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Transactie ongeldig";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Om overschrijvingen te kunnen doen moet je Signal bijwerken.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Om betalingen te kunnen doen moet je Signal bijwerken.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Overschrijving is nog niet bevestigd";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Betaling is nog niet bevestigd";
 
 /* Indicates that a payment failed because the payments lock attempt was cancelled. */
 "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Verificatie van Betalingsvergrendeling geannuleerd.";
@@ -4538,7 +4562,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Verificatiefout bij Betalingsvergrendeling.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "De overschrijving kan niet worden voltooid. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "De betaling kan niet worden voltooid. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Netwerkkosten";
@@ -4556,7 +4580,7 @@
 "PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Opmerking";
 
 /* Label for the 'new payment' button. */
-"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Overschrijven";
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Betalen";
 
 /* Label for the 'total payment amount' indicator. */
 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Totaalbedrag";
@@ -4568,28 +4592,28 @@
 "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "Naar %1$@";
 
 /* Label for the payments notification banner for a single payment notification. */
-"PAYMENTS_NOTIFICATION_BANNER_1" = "1 nieuwe overschrijving-melding";
+"PAYMENTS_NOTIFICATION_BANNER_1" = "1 nieuwe betalingsmelding";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
 "PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ heeft %2$@ naar je overgemaakt";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%1$@ nieuwe overschrijving-meldingen";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%1$@ nieuwe betalingsmeldingen";
 
 /* Payment status context with contact name, failed. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Payment to %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Betaling aan %1$@";
 
 /* Payment status context while sending */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Processing payment…";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Betaling wordt verwerkt…";
 
 /* Payment status context with contact name, incoming. Embeds {{ Name of sending contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ sent you";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ heeft naar jou overgemaakt";
 
 /* Payment status context with contact name, sent. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "You sent %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "Je hebt naar %1$@ overgemaakt";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Overschrijving succesvol afgerond";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Betaling succesvol afgerond";
 
 /* Status indicator for incoming payments which have not yet been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Nog niet geverifieerd";
@@ -4598,7 +4622,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "Geverifieerd";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Overschrijving succesvol afgerond";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Betaling succesvol afgerond";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Bezig met verzenden …";
@@ -4649,43 +4673,43 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Onbekende fout";
 
 /* Payments Preview Text shown in quoted replies, for payments. Embeds {{ Amount sent (number), Currency (e.g. 'MOB') }} */
-"PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "Payment: %1$@ %2$@";
+"PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "Betaling: %1$@%2$@";
 
 /* Payments Preview Text shown in quoted replies, for unknown payments. */
-"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Unknown Payment";
+"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Onbekende betaling";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Deze persoon moet eerst een gespreksverzoek van je aanvaarden voor je kunt overschrijven naar deze persoon.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Deze persoon moet eerst een gespreksverzoek van je aanvaarden voordat je een betaling kunt verzenden naar deze persoon.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Deze persoon moet eerst een gespreksverzoek van je aanvaarden voor je kunt overschrijven naar deze persoon.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Deze persoon moet eerst een gespreksverzoek van je aanvaarden voordat je een betaling kunt verzenden naar deze persoon.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Kan overschrijving niet verzenden";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Kan betaling niet verzenden";
 
 /* The label for the 'send request' button in alerts and action sheets. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Send Request";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Stuur verzoek";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Do you want to send them a request to activate Payments?";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Wil je ze een verzoek sturen om Betalingen te activeren?";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }} */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ hasn't activated Payments";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "%1$@ heeft Betalingen niet geactiveerd";
 
 /* Payments Preview Text shown in chat list for payments. */
-"PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 Payment";
+"PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 Betaling";
 
 /* Label for 'transfer out' payments. */
 "PAYMENTS_TRANSFER_OUT_PAYMENT" = "Uitgaande overschrijving";
 
 /* Indicator for unidentified incoming payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "Ontvangen overschrijving";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "Ontvangen betaling";
 
 /* Indicator for unidentified outgoing payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Verzonden overschrijving";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Verzonden betaling";
 
 /* Label for unknown payments. */
-"PAYMENTS_UNKNOWN_PAYMENT" = "Overschrijving ongeldig";
+"PAYMENTS_UNKNOWN_PAYMENT" = "Betaling ongeldig";
 
 /* The alert message if user tries to exit a task without saving changes. */
 "PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Wil je de wijzigingen verwerpen?";
@@ -4837,6 +4861,9 @@
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Afstemmen met camera mislukt.";
 
+/* alert title, generic error preventing user from capturing a video that is too long */
+"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Video too long.";
+
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Naamloos album";
 
@@ -4952,7 +4979,7 @@
 "PIN_RECRETION_ERROR_MESSAGE" = "Het aanmaken van een pincode is mislukt. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden vraagt Signal je periodiek om te bewijzen dat je je pincode nog weet. Als je je pincode een aantal keer juist invoert, dan zal Signal je minder vaak deze vraag stellen. Je kunt deze herinneringen uitschakelen via Instellingen > Jouw registratie.";
+"PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden, vragen we je regelmatig om je pincode in te voeren. We zullen dit na verloop van tijd minder vaak vragen. Je kunt deze herinneringen uitschakelen via Instellingen > Account.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "Tik hier als je je pincode bent vergeten.";
@@ -5027,7 +5054,7 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal kon geen veiligheidsnummer vinden in je klembord. Heb je het veiligheidsnummer wel juist gekopieerd?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Elk paar Signal-gebruikers deelt een apart veiligheidsnummer. Controleer dat %1$@ hetzelfde veiligheidsnummer ziet als jij.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Elk paar Signal-gebruikers deelt een apart veiligheidsnummer. Controleer of %1$@ hetzelfde veiligheidsnummer ziet als jij.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Je gebruikt een oude versie van Signal. Om te kunnen verifiëren moet je Signal eerst bijwerken.";
@@ -5294,13 +5321,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Hulp nodig?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Je pincode is een wachtwoord welke je zelf hebt aangemaakt bestaande uit 4 of meer cijfers of karakters. Als je je pincode niet hebt onthouden, dan zul je 7 dagen moeten wachten voor je je telefoonnummer opnieuw kunt registreren.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Je pincode is een wachtwoord welke je zelf hebt aangemaakt bestaande uit 4 of meer cijfers of karakters. Als je je pincode niet meer weet, dan zul je 7 dagen moeten wachten voordat je je telefoonnummer opnieuw kunt registreren.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Je pincode is een 4+ cijferige code die uit cijfers en/of letters bestaat. Pincode vergeten? Je kunt je registreren en je account gebruiken, maar verliest wel wat opgeslagen instellingen zoals je profielinformatie.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Je pincode is een 4+ cijferige code die uit cijfers en/of letters bestaat. Als je je pincode bent vergeten, kun je je opnieuw registreren en je account gebruiken maar je verliest wel een aantal opgeslagen instellingen, zoals je profielinformatie.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Je pincode is een code die je zelf hebt aangemaakt, bestaande uit vier of meer cijfers of een combinatie van cijfers en letters. Pincode vergeten? Maak dan een nieuwe aan. Je kunt je registreren en je account gebruiken, maar verliest wel wat opgeslagen instellingen zoals je profielinformatie.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Je pincode is een code die je zelf hebt aangemaakt, bestaande uit vier of meer cijfers of een combinatie van cijfers en letters. Pincode vergeten? Maak dan een nieuwe aan. Je kunt je opnieuw registreren en je account gebruiken maar je verliest wel een aantal opgeslagen instellingen, zoals je profielinformatie.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Foutieve pincode";
@@ -5339,7 +5366,7 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Als je doorgaat, zal de Signal-app worden afgesloten op andere apparaten die momenteel met hetzelfde telefoonnummer bij Signal zijn geregistreerd.";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
-"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Instellingen & berichten overzetten";
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Account & berichten overzetten";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Vul nummer in";
@@ -5348,7 +5375,7 @@
 "REGISTRATION_ERROR" = "Fout bij registreren";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Je account is vergrendeld om je privacy en veiligheid te beschermen. Na %1$@ niet actief te zijn geweest met je account, kun je dit telefoonnummer opnieuw registreren zonder je PIN. Alle content wordt verwijderd.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Je account is vergrendeld om je privacy en veiligheid te beschermen. Na %1$@ inactiviteit kun je je telefoonnummer opnieuw registreren zonder je pincode. In dat geval zal alle inhoud worden gewist.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
 "REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Lees meer over vergrendelde accounts";
@@ -5438,7 +5465,7 @@
 "REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Je hebt te vaak geprobeerd de code in te voeren. Probeer het opnieuw over %1$@";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Signal is al eerder geregistreerd met dit telefoonnummer maar je kunt wel de gegevens overzetten.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Signal is al eerder geregistreerd met dit telefoonnummer maar je kunt het account wel overzetten.";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "De ingevoerde code is niet geldig. Stuur de code nog eens en probeer het opnieuw.";
@@ -5495,10 +5522,10 @@
 "REREGISTER_FOR_PUSH" = "Pushmeldingen opnieuw registreren";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "Je hebt nog %1$@ pogingen over. Als je geen pogingen meer hebt, kun je een nieuwe PIN aanmaken. Je kunt je registreren en je account gebruiken maar je verliest wel een aantal opgeslagen instellingen, zoals je profielgegevens.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "Je hebt nog %1$@ pogingen over. Als je geen pogingen meer hebt, kun je een nieuwe PIN aanmaken. Je kunt je opnieuw registreren en je account gebruiken maar je verliest wel een aantal opgeslagen instellingen, zoals je profielinformatie.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Je hebt nog %1$@ pogingen over. Als je geen pogingen meer hebt, wordt je account 7 dagen geblokkeerd. Na 7 dagen inactiviteit kun je je opnieuw registreren zonder je PIN. Alle content wordt verwijderd.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Je hebt nog %1$@ pogingen over. Als je geen pogingen meer hebt, wordt je account 7 dagen vergrendeld. Na 7 dagen inactiviteit kun je je opnieuw registreren zonder je pincode. Alle inhoud wordt verwijderd.";
 
 /* Configure reactions reset button text */
 "RESET" = "Standaardinstelling herstellen";
@@ -5621,7 +5648,7 @@
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Alles wissen";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "De registratie komt niet overeen";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Account komt niet overeen";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Werk Signal bij op dit apparaat om het aan je telefoon te kunnen koppelen.";
@@ -5651,13 +5678,13 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Klaar met koppelen";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Open Signal op je telefoon om deze iPad te koppelen aan de Signal-app op een van je andere apparaten.";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Open Signal op je telefoon om deze iPad te koppelen aan je Signal-account";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Ik heb de Signal-app niet op mij telefoon …";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Je kunt de Signal-app alleen gebruiken op je iPad door het te koppelen aan de Signal op je telefoon.\n\nGa naar de app-winkel op je telefoon om Signal te installeren en open de app om je telefoonnummer te registreren. Daarna kun je de Signal-app op je iPad koppelen aan Signal op je telefoon.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Ga naar de app-winkel op je telefoon, installeer Signal en voltooi de registratie op je telefoon. Daarna kun je je iPad koppelen aan hetzelfde Signal-account.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installeer Signal op je telefoon";
@@ -5672,7 +5699,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan deze QR-code met je telefoon";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Open de Signal-app op je vorige iPad om je Signal-gegevens over te zetten";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Open de Signal-app op je vorige iPad om je Signal-account over te zetten";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Je beveiligde sessie werd opnieuw ingesteld.";
@@ -5729,7 +5756,7 @@
 "SET_WALLPAPER_TITLE" = "Gespreksachtergrond kiezen";
 
 /* Title for the 'account' link in settings. */
-"SETTINGS_ACCOUNT" = "Jouw registratie";
+"SETTINGS_ACCOUNT" = "Account";
 
 /* Label for button in settings to get your account data report */
 "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Jouw accountgegevens";
@@ -5930,7 +5957,7 @@
 "SETTINGS_HELP" = "Hulp";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Nodig kennissen uit";
+"SETTINGS_INVITE_TITLE" = "Nodig vrienden uit";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
 "SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Chatkleur & -achtergrond";
@@ -6005,7 +6032,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Inschakelen";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Inschakelen";
@@ -6023,25 +6050,25 @@
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Portemonnee-adres gekopieerd";
 
 /* Label for the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_ALL_RECORDS" = "Alle overschrijvingen";
+"SETTINGS_PAYMENTS_ALL_RECORDS" = "Alle betalingen";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ om %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Overschrijvingen via Signal zijn niet langer mogelijk. Je kunt nog wel je krediet omzetten naar een andere valuta maar je kunt niet langer overschrijvingen verzenden of ontvangen of krediet toevoegen.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Betalingen via Signal zijn niet langer mogelijk. Je kunt nog wel je krediet overschrijven naar een andere beurs maar je kunt niet langer betalingen verzenden of ontvangen of krediet toevoegen.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Kan overschrijvingen niet uitschakelen omdat je krediet niet beschikbaar is. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Kan betalingen niet uitschakelen omdat je krediet niet beschikbaar is. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Kan de overschrijving niet uitvoeren omdat je krediet niet beschikbaar is. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Kan de betaling niet uitvoeren omdat je krediet niet beschikbaar is. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Overschrijvingen via Signal zijn niet langer mogelijk. Je kunt nog wel je krediet omzetten naar een andere valuta maar je kunt niet langer overschrijvingen verzenden of ontvangen of krediet toevoegen.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Betalingen via Signal zijn niet langer mogelijk. Je kunt nog wel je krediet overschrijven naar een andere beurs maar je kunt niet langer betalingen verzenden of ontvangen of krediet toevoegen.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Overschrijvingen via Signal zijn niet langer mogelijk. Je kunt nog wel je krediet omzetten naar een andere valuta maar je kunt niet langer overschrijvingen verzenden of ontvangen of krediet toevoegen.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Betalingen via Signal zijn niet langer mogelijk. Je kunt nog wel je krediet overschrijven naar een andere beurs maar je kunt niet langer betalingen verzenden of ontvangen of krediet toevoegen.";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Omrekeningen zijn schattingen en zijn mogelijk niet nauwkeurig.";
@@ -6056,22 +6083,22 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Uitschakelen";
 
 /* Label for 'deactivate payments' button in the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Overschrijvingen uitschakelen";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Betalingen uitschakelen";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Je kunt niet langer MobileCoin ontvangen of verzenden als je overschrijvingen uitschakelt.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Je kunt niet langer MobileCoin ontvangen of verzenden als je betalingen uitschakelt.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Overschrijvingen uitschakelen?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Betalingen uitschakelen?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Overschrijvingen uitschakelen";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Betalingen uitschakelen";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Het is raadzaam om je saldo eerst naar een ander portemonnee-adres over te schrijven voordat je overschrijvingen uitzet. Als je er niet voor kiest om eerst je saldo over te schrijven, dan blijft je saldo in de portemonnee die je aan Signal hebt gekoppeld. Je kunt het dan weer gebruiken als je betalingen opnieuw aanzet.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Het is raadzaam om je krediet eerst naar een ander portemonnee-adres over te schrijven voordat je betalingen uitzet. Als je er niet voor kiest om eerst je krediet over te schrijven, dan blijft je krediet in de portemonnee die je aan Signal hebt gekoppeld. Je kunt het dan weer gebruiken als je betalingen opnieuw aanzet.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Je saldo is weer beschikbaar in de portemonnee die aan Signal is gekoppeld zodra je betalingen weer aanzet.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Je krediet is weer beschikbaar in de portemonnee die aan Signal is gekoppeld zodra je betalingen weer aanzet.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Zonder over te zetten uitschakelen?";
@@ -6080,13 +6107,13 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Uitschakelen zonder overschrijven";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Overschrijvingen uitschakelen is mislukt.";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Betalingen uitschakelen is mislukt.";
 
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "Details";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Overschrijvingen inschakelen";
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Betalingen inschakelen";
 
 /* Title for the 'enable payments lock' view of the payments activation flow. */
 "SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Betalingsvergrendeling";
@@ -6137,31 +6164,31 @@
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Er zijn nog geen recente gebeurtenissen.";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Wil je overschrijvingen inschakelen?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Wil je betalingen inschakelen?";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Overschrijving zijn uitgeschakeld";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Betalingen zijn uitgeschakeld";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Registreer je telefoonnummer opnieuw om overschrijvingen te kunnen doen.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Registreer je telefoonnummer opnieuw om betalingen te kunnen doen.";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Niet geregistreerd";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Overschrijvingen inschakelen";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Betalingen inschakelen";
 
 /* Message shown when payments are activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Overschrijvingen zijn ingeschakeld.";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Betalingen zijn ingeschakeld.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Je kunt Signal ook gebruiken om een nieuw privacygericht betaalmiddel genaamd MobileCoin te verzenden en ontvangen. Als je dat wilt, schakel dan overschrijvingen in.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Je kunt Signal ook gebruiken om een nieuw privacygericht betaalmiddel genaamd MobileCoin te verzenden en ontvangen. Als je dat wilt, schakel dan betalingen in.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Betalingen opnieuw aanzetten";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Signal introduceert Betalingen";
 
 /* Button when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Herstelzin overslaan";
@@ -6173,13 +6200,13 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Doorgaan zonder opslaan?";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Je krediet wordt automatisch hersteld als je bij het opnieuw installeren van de Signal-app je Signal-pincode invoert. Je kunt je krediet ook herstellen middels een unieke herstel-zin, die bestaat uit 24 woorden. Schrijf die zin op en bewaar hem op een veilige plaats.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Je krediet wordt automatisch hersteld als je bij het opnieuw installeren van de Signal-app je Signal-pincode invoert. Je kunt je krediet ook herstellen middels een unieke herstelzin, die bestaat uit 24 woorden. Schrijf die zin op en bewaar hem op een veilige plaats.";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "Je hebt tegoed! Tijd om je herstelzin op te slaan—Dit is een wachtwoord van 24 woorden die je kunt gebruiken om je tegoed te herstellen.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "Je hebt krediet! Tijd om je herstelzin op te slaan. Dit is een wachtwoord van 24 woorden die je kunt gebruiken om je tegoed te herstellen.";
 
 /* Explanation of the 'payments passphrase' when from the help card. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Tijd om je herstelzin op te slaan.—Dit is een wachtwoord van 24 woorden die je kunt gebruiken om je krediet te herstellen.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Tijd om je herstelzin op te slaan. Dit is een wachtwoord van 24 woorden die je kunt gebruiken om je krediet te herstellen.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Krediet toevoegen";
@@ -6200,13 +6227,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Verzonden door";
 
 /* Label for the sender in the payment details view in the app settings. Followed by sender name. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Attempted By";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Geprobeerd door";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ op %2$@";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Sending to %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "Verzonden naar %1$@";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Verzonden";
@@ -6218,13 +6245,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Status";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Overschrijvingsdetails waaronder de hoeveelheid en het tijdstip van de betaling zijn onderdeel van het kasboek van MobileCoin.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transactiegegevens, waaronder het bedrag en het tijdstip van de transactie, zijn onderdeel van het kasboek van MobileCoin.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Er worden “afrondingskosten” in rekening gebracht wanneer de munten die je bezit niet kunnen worden samengevoegd om een overschrijving te voltooien. Door deze afrondingskosten kunnen je toch overschrijvingen blijven doen.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Er worden “samenvoegingskosten” in rekening gebracht wanneer de munten die je bezit niet kunnen worden samengevoegd tot de nieuwe gewenste betaling. Door deze samenvoeging kun je toch betalingen blijven verzenden.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Je hebt niet genoeg MOB om deze overschrijving te kunnen plaatsen. Je huidige krediet is %1$@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Je hebt niet genoeg MOB om deze betaling te kunnen plaatsen. Je huidige krediet is %1$@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Onvoldoende vermogen beschikbaar";
@@ -6236,7 +6263,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "Naar %1$@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Overschrijvingen zijn uitgeschakeld.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Betalingen zijn uitgeschakeld.";
 
 /* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Als je deze stap overslaat, kan iemand met fysieke toegang tot je telefoon geld overmaken of je herstelzin bekijken.";
@@ -6272,10 +6299,10 @@
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Signal bijwerken";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Een update is nodig om betalingen te blijven verzenden en ontvangen, en om jouw actuele betalingssaldo te bekijken.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Een update is nodig om betalingen te blijven verzenden en ontvangen, en om je actuele krediet te bekijken.";
 
 /* Title for payments outdated sheet saying cant send. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Kan overschrijving niet verzenden";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Kan betaling niet verzenden";
 
 /* Title for payments outdated sheet saying update required. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update vereist";
@@ -6290,16 +6317,16 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "Verzonden";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recente overschrijvingen";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recente betalingen";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Je moet een herstel-zin opnemen voordat je overschrijvingen kan uitschakelen, zodat het mogelijk wordt om je overschrijvingen-account te herstellen.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Voordat je je pincode kunt uitschakelen, moet je je herstelzin voor betalingen vastleggen zodat je je betalingsaccount kunt herstellen.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Herstel-zin voor overschrijvingen vastleggen";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Herstelzin voor betalingen vastleggen";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Herstel-zin voor overschrijvingen vastleggen";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Herstelzin voor betalingen vastleggen";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Resterend krediet";
@@ -6308,16 +6335,16 @@
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Verwijderen";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Overschrijvingsaccount herstellen";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Betalingsaccount herstellen";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Ga na dat je de zin juist hebt ingevuld.";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Bevestig je herstel-zin";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Bevestig je herstelzin";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Account voor overschrijvingen is hersteld.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Betalingsaccount is hersteld.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Handmatig invullen";
@@ -6326,7 +6353,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Herstellen is mislukt";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "Dit is geen geldige herstel-zin.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "Dit is geen geldige herstelzin.";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Zin in niet juist";
@@ -6335,37 +6362,37 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Plakken uit klembord";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Herstel-zin";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Herstelzin";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Herstel-zin plakken";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Herstelzin plakken";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "De herstel-zin is voor iedereen uniek en bestaat uit 24 woorden. Je kunt deze zin gebruiken om je krediet te herstellen als je toegang hebt verloren.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "De herstelzin is voor iedereen uniek en bestaat uit 24 woorden. Je kunt deze zin gebruiken om je betalingsaccount te herstellen.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Vul je herstel-zin in";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Vul je herstelzin in";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Herstel-zin";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Herstelzin";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Vul woord %1$@ in";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Herstel-zin ongeldig.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Herstelzin ongeldig.";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Een woord is niet juist gespeld.";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Vul je herstel-zin in";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Vul je herstelzin in";
 
 /* Title for the first step of the 'save payments passphrase' views. */
 "SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Herstelzin opslaan";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan de QR-code van der persoon of organisatie naar wie je wilt overschrijven.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan de QR-code van de persoon of organisatie naar wie je wilt overschrijven.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Adres ongeldig";
@@ -6389,7 +6416,7 @@
 "SETTINGS_PAYMENTS_SECURITY_TITLE" = "Betalingen";
 
 /* Label for 'send payment' button in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_PAYMENT" = "Overschrijving verzenden";
+"SETTINGS_PAYMENTS_SEND_PAYMENT" = "Betaling verzenden";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Kies een ontvanger";
@@ -6398,7 +6425,7 @@
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Valuta omrekenen";
 
 /* Label for the 'payments' section of the app settings. */
-"SETTINGS_PAYMENTS_TITLE" = "Overschrijvingen";
+"SETTINGS_PAYMENTS_TITLE" = "Betalingen";
 
 /* Error indicating that it is not valid to send yourself a payment. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Je kunt niet vanuit Signal overschrijven naar je eigen Signal portemonnee-adres. Vul het portemonnee-adres van je account bij de beurs in.";
@@ -6422,13 +6449,13 @@
 "SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Overschrijven naar een beurs";
 
 /* Message indicating that 'payments passphrase review' is complete. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Het opnemen van een herstel-zin is succesvol afgerond.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Het opnemen van een herstelzin is succesvol afgerond.";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "Bevestigen";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Vul de woorden %1$@ en %2$@ van je herstel-zin in.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Vul de woorden %1$@ en %2$@ van je herstelzin in.";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "Er is een woord onjuist. Probeer het opnieuw.";
@@ -6440,16 +6467,16 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Woord %1$@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Bevestig je herstel-zin";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Bevestig je herstelzin";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Herstel-zin gekopieerd";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Herstelzin gekopieerd";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Kopiëren naar klembord";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Als je er voor kiest om je herstel-zin digitaal op te slaan, zorg er dan voor dat je het beveiligd / versleuteld opslaat op een plek waarvan je weet dat niemand anders er bij kan.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Als je er voor kiest om je herstelzin digitaal op te slaan, zorg er dan voor dat je het beveiligd / versleuteld opslaat op een plek waarvan je weet dat niemand anders er bij kan.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Kopiëren naar klembord?";
@@ -6458,10 +6485,10 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "De zin opnieuw weergeven";
 
 /* Title for the first step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "Herstel-zin weergeven";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "Herstelzin weergeven";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Herstel-zin";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Herstelzin";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Schijf de volgende 24 woorden op in dezelfde volgorde en bewaar ze op een veilige plaats.";
@@ -6473,10 +6500,10 @@
 "SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "Een extra beschermingslaag";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Herstel-zin";
+"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Herstelzin";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "Betalingen";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Het adres van je portemonnee";
@@ -6497,7 +6524,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Herinneringen uitschakelen";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Zorg er voor dat je je Signal-pincode onthoud of op een goed beveiligd manier opslaat, want je kunt de pincode later niet opnieuw instellen. Als je je pincode toch vergeet, dan verlies je mogelijk je Signal-gegevens wanneer je in de toekomst je telefoonnummer opnieuw registreert.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Zorg ervoor dat je je Signal-pincode onthoudt of op een goed beveiligde manier opslaat, want je kunt je pincode niet herstellen. Als je je pincode toch vergeet, dan verlies je mogelijk gegevens bij het opnieuw registrereren van je Signal-account.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Je Signal-pincode bevestigen";
@@ -6710,10 +6737,10 @@
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Verificatie voltooien";
 
 /* The name for the sticker category 'Featured' */
-"STICKER_CATEGORY_FEATURED_NAME" = "Featured";
+"STICKER_CATEGORY_FEATURED_NAME" = "Uitgelicht";
 
 /* The name for the sticker category 'Recents' */
-"STICKER_CATEGORY_RECENTS_NAME" = "Recents";
+"STICKER_CATEGORY_RECENTS_NAME" = "Recentelijk gebruikt";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Stickerbericht";
@@ -6974,7 +7001,7 @@
 "STORY_SEND_FAILED" = "Verzenden is mislukt";
 
 /* Body for notification shown when a story fails to send. */
-"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Story failed to send";
+"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️Verhaal kan niet worden verzonden";
 
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "Opnieuw proberen";
@@ -7115,7 +7142,7 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Het toevoegen van de badge is mislukt. %1$@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "De badge kan niet worden toegevoegd aan je profiel. Neem contact op met ondersteuning.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "De badge kan niet worden toegevoegd aan je account. Neem contact op met ondersteuning.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Het toevoegen van de badge is mislukt";
@@ -7124,25 +7151,25 @@
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "Neem contact op met de ondersteuning.";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Fout bij het verwerken van een overschrijving";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Fout bij het verwerken van betaling";
 
 /* Payment error occurred text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "Fout bij het verwerken van een overschrijving. %1$@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Fout bij het verwerken van betaling. %1$@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%1$@/maand";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Overschrijving aan het verwerken …";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Betaling aan het verwerken …";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Overschrijving aan het verwerken …";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Transactie aan het verwerken …";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Hernieuwt %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Je overschrijving wordt nog verwerkt. Dit kan een paar minuten duren afhankelijk van je internetverbinding.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Je betaling wordt nog verwerkt. Dit kan een paar minuten duren afhankelijk van je internetverbinding.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Je maandelijkse donaties zijn stopgezet";
@@ -7220,7 +7247,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Lid van %1$@, %2$@ en nog %3$lu andere groepen";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Je kunt in deze speciale chat notities voor jezelf achterlaten. Je kunt notities toevoegen en teruglezen vanaf al je gekoppelde apparaten, want noties die zijn verzonden na het moment van koppelen worden gesynchroniseerd.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Je kunt in deze chat notities voor jezelf achterlaten. Alle nieuwe notities worden gesynchroniseerd met apparaten die gekoppeld zijn met je account.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Lid van %1$@";
