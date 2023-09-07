@@ -495,9 +495,9 @@ extension ConversationSettingsViewController {
                 contentRow.autoPinHeightToSuperview(withMargin: 7)
 
                 return cell
-                }) { [weak self] in
+            }, actionBlock: { [weak self] in
                                         self?.showAddMembersView()
-            })
+            }))
         }
 
         let totalMemberCount = sortedGroupMembers.count
@@ -571,9 +571,9 @@ extension ConversationSettingsViewController {
                 cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: cellName)
 
                 return cell
-                }) { [weak self] in
+            }, actionBlock: { [weak self] in
                                         self?.didSelectGroupMember(memberAddress)
-            })
+            }))
         }
 
         if hasMoreMembers {

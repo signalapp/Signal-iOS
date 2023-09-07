@@ -1211,7 +1211,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
                 AVVideoAverageBitRateKey: 2000000,
                 AVVideoProfileLevelKey: AVVideoProfileLevelH264Baseline41,
                 AVVideoMaxKeyFrameIntervalKey: 90
-            ]
+            ] as [String: Any]
         ]
         videoSettings.merge(customSettings) { $1 }
 

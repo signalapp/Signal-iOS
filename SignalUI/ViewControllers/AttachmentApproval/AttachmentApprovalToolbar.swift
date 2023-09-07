@@ -225,7 +225,7 @@ class AttachmentApprovalToolbar: UIView {
     private func updateFirstResponder() {
         if configuration.isViewOnceOn {
             if isEditingMediaMessage {
-                attachmentTextToolbar.textView.resignFirstResponder()
+                _ = attachmentTextToolbar.textView.resignFirstResponder()
             }
         }
         // NOTE: We don't automatically make attachmentTextToolbar.textView

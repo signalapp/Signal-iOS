@@ -462,7 +462,7 @@ extension SignalCall: GroupCallDelegate {
         if let peekInfo = groupCall.peekInfo {
             // Note that we track this regardless of whether ringing is available.
             // There are other places that use this.
-            ringRestrictions.update(.callInProgress, present: peekInfo.deviceCount > 0)
+            ringRestrictions.update(.callInProgress, present: peekInfo.deviceCountExcludingPendingDevices > 0)
         }
         observers.elements.forEach { $0.groupCallPeekChanged(self) }
     }
@@ -522,7 +522,7 @@ extension SignalCall: CallNotificationInfo {
 extension GroupCall {
     public var isFull: Bool {
         guard let peekInfo = peekInfo, let maxDevices = peekInfo.maxDevices else { return false }
-        return peekInfo.deviceCount >= maxDevices
+        return peekInfo.deviceCountExcludingPendingDevices >= maxDevices
     }
     public var maxDevices: UInt32? {
         guard let peekInfo = peekInfo, let maxDevices = peekInfo.maxDevices else { return nil }

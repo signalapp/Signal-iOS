@@ -9,6 +9,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSSyncRequestMessage ()
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+
 
 /// This property represents a ``SSKProtoSyncMessageRequestType`` case.
 ///

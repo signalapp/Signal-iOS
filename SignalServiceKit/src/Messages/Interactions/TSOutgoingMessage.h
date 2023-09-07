@@ -109,7 +109,7 @@ typedef NS_ENUM(NSInteger, EncryptionStyle) {
                             body:(nullable NSString *)body
                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                     contactShare:(nullable OWSContact *)contactShare
-                            edit:(unsigned int)edit
+                       editState:(unsigned int)editState
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds

@@ -18,7 +18,6 @@ public class MessagePipelineSupervisor: NSObject {
     // MARK: - Lifecycle
 
     /// Initializes a MessagePipelineSupervisor
-    /// - Parameter isolated: If set true, the returned instance is not configured to be a singleton.
     ///   Only to be used by tests.
     @objc
     public override init() {

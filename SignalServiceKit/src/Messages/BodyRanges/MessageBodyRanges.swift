@@ -271,7 +271,8 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             // Styles always apply to an entire mention. This means when we find
             // a mention we have to do two things:
             // 1) any styles that start later in the mention are treated as if they start now.
-            for var (styleIndex, style) in enumeratedStyles {
+            for (styleIndex, enumeratedStyle) in enumeratedStyles {
+                var style = enumeratedStyle
                 if style.range.location > mention.range.location && style.range.location < mention.range.upperBound {
                     // Starts inside, move it to start at the beginning.
                     style = NSRangedValue(

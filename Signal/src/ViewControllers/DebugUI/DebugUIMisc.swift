@@ -143,10 +143,6 @@ class DebugUIMisc: DebugUIPage, Dependencies {
                 DebugUIMisc.logSignalAccounts()
             }),
 
-            OWSTableItem(title: "Log ContactThreads", actionBlock: {
-                DebugUIMisc.logContactThreads()
-            }),
-
             OWSTableItem(title: "Clear Profile Key Credentials", actionBlock: {
                 DebugUIMisc.clearProfileKeyCredentials()
             }),
@@ -406,16 +402,6 @@ class DebugUIMisc: DebugUIPage, Dependencies {
         Self.databaseStorage.read { transaction in
             SignalAccount.anyEnumerate(transaction: transaction, batchingPreference: .batched(32)) { (signalAccount, _) in
                 Logger.verbose("SignalAccount: \(signalAccount.addressComponentsDescription)")
-            }
-        }
-    }
-
-    private static func logContactThreads() {
-        Self.databaseStorage.read { transaction in
-            TSContactThread.anyEnumerate(transaction: transaction, batchSize: 32) { (thread, _) in
-                guard let thread = thread as? TSContactThread else {
-                    return
-                }
             }
         }
     }

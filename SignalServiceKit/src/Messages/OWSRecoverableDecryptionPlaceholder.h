@@ -11,7 +11,39 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSRecoverableDecryptionPlaceholder : TSErrorMessage <OWSReadTracking>
 
-- (instancetype)initErrorMessageWithBuilder:(TSErrorMessageBuilder *)errorMessageBuilder NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                        uniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                      bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                    contactShare:(nullable OWSContact *)contactShare
+                       editState:(TSEditState)editState
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+                       giftBadge:(nullable OWSGiftBadge *)giftBadge
+               isGroupStoryReply:(BOOL)isGroupStoryReply
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+           storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
+                  storyTimestamp:(nullable NSNumber *)storyTimestamp
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+                       errorType:(TSErrorMessageType)errorType
+                            read:(BOOL)read
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+                          sender:(nullable SignalServiceAddress *)sender
+             wasIdentityVerified:(BOOL)wasIdentityVerified NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initErrorMessageWithBuilder:(TSErrorMessageBuilder *)errorMessageBuilder NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithFailedEnvelopeTimestamp:(uint64_t)timestamp
                                                sourceAci:(AciObjC *)sourceAci
                                         untrustedGroupId:(nullable NSData *)untrustedGroupId

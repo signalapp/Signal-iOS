@@ -195,7 +195,7 @@ extension MessageBodyRanges {
         }
 
         public static func flatten(_ collapsedStyles: [NSRangedValue<CollapsedStyle>]) -> [NSRangedValue<SingleStyle>] {
-            var coveredIds = Set<StyleIdType>()
+            let coveredIds = Set<StyleIdType>()
             return collapsedStyles.flatMap { collapsedStyle in
                 return collapsedStyle.value.originals.compactMap { original in
                     guard !coveredIds.contains(original.value.id) else {

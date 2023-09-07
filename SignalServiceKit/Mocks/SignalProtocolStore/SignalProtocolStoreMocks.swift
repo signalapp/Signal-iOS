@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 import LibSignalClient
 
 internal class MockSignalProtocolStore: SignalProtocolStore {

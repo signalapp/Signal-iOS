@@ -86,9 +86,9 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
             contentRow.autoPinHeightToSuperview(withMargin: 7)
 
             return cell
-        }) { [weak self] in
+        }, actionBlock: { [weak self] in
             self?.showAddViewerView()
-        })
+        }))
 
         let totalViewersCount = thread.addresses.count
         let maxViewersToShow = 6
@@ -117,9 +117,9 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
                 }
 
                 return cell
-            }) { [weak self] in
+            }, actionBlock: { [weak self] in
                 self?.didSelectViewer(viewerAddress)
-            })
+            }))
         }
 
         if hasMoreViewers {

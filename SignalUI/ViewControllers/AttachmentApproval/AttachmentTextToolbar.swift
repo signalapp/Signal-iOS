@@ -313,7 +313,7 @@ extension AttachmentTextToolbar {
     @objc
     private func didTapFinishEditing() {
         textView.acceptAutocorrectSuggestion()
-        textView.resignFirstResponder()
+        _ = textView.resignFirstResponder()
     }
 
     @objc

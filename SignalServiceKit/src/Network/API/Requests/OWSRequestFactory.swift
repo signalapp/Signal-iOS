@@ -267,7 +267,7 @@ extension OWSRequestFactory {
         let accountAttributesData = try! jsonEncoder.encode(attributes)
         let accountAttributesDict = try! JSONSerialization.jsonObject(with: accountAttributesData, options: .fragmentsAllowed) as! [String: Any]
 
-        var parameters: [String: Any] = [
+        let parameters: [String: Any] = [
             "verificationCode": verificationCode,
             "accountAttributes": accountAttributesDict,
             "aciSignedPreKey": OWSRequestFactory.signedPreKeyRequestParameters(prekeyBundles.aci.signedPreKey),

@@ -3224,14 +3224,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             TSErrorMessage.nonblockingIdentityChange(in: thread, address: incomingSenderAddress, wasIdentityVerified: true)
         ]
 
-        if let blockingSNChangeMessage = TSInvalidIdentityKeyReceivingErrorMessage.untrustedKey(
-            with: createEnvelopeForThread(thread),
-            fakeSourceE164: "+13215550123",
-            with: transaction
-        ) {
-            results.append(blockingSNChangeMessage)
-        }
-
         return results
     }
 

@@ -210,7 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSInteraction *message =
         [[OWSUnknownProtocolVersionMessage alloc] initWithThread:transcript.thread
                                                           sender:nil
-                                                 protocolVersion:transcript.requiredProtocolVersion.intValue];
+                                                 protocolVersion:transcript.requiredProtocolVersion.unsignedIntValue];
     [message anyInsertWithTransaction:transaction];
 }
 

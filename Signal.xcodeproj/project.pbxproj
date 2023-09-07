@@ -849,7 +849,6 @@
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
 		668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09A28B923A4008B9071 /* Bool+SSK.swift */; };
 		668FE09F28B947ED008B9071 /* StoryContextMenuGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09E28B947ED008B9071 /* StoryContextMenuGenerator.swift */; };
-		6691E7EC2996E62B0032A68A /* SVRAuthCredentialStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6691E7EB2996E62B0032A68A /* SVRAuthCredentialStorageMock.swift */; };
 		6691E7EF2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6691E7EE2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift */; };
 		6691E7F22996E9BC0032A68A /* RegistrationSessionManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6691E7F12996E9BC0032A68A /* RegistrationSessionManagerMock.swift */; };
 		6691E7F72996EAD70032A68A /* SecureValueRecoveryMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6691E7F62996EAD70032A68A /* SecureValueRecoveryMock.swift */; };
@@ -1280,6 +1279,8 @@
 		C17345BB2A5E000300C6426D /* PreKeyOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17345BA2A5E000300C6426D /* PreKeyOperation.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
+		C18E3C722A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */; };
+		C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */; };
 		C1939F6F2A844E4D003BAEF0 /* SignalProtocolStoreMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */; };
 		C198FDD62A37C905000BCAC9 /* SSKKyberPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */; };
 		C19AFAB82A6598D800FE3ECF /* PreKeyOperation+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19AFAB72A6598D800FE3ECF /* PreKeyOperation+Shims.swift */; };
@@ -1401,7 +1402,6 @@
 		D9C2D77E299D750200D79715 /* UsernameEducationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */; };
 		D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */; };
 		D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */; };
-		D9C2D78729A80C9C00D79715 /* PniDistributionSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D78629A80C9C00D79715 /* PniDistributionSyncMessage.swift */; };
 		D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C30DDA2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift */; };
 		D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */; };
 		D9C7CECB28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */; };
@@ -3390,7 +3390,6 @@
 		668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePlaybackRateView.swift; sourceTree = "<group>"; };
 		668FE09A28B923A4008B9071 /* Bool+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+SSK.swift"; sourceTree = "<group>"; };
 		668FE09E28B947ED008B9071 /* StoryContextMenuGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextMenuGenerator.swift; sourceTree = "<group>"; };
-		6691E7EB2996E62B0032A68A /* SVRAuthCredentialStorageMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageMock.swift; sourceTree = "<group>"; };
 		6691E7EE2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequestOWSURLSessionMock.swift; sourceTree = "<group>"; };
 		6691E7F12996E9BC0032A68A /* RegistrationSessionManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationSessionManagerMock.swift; sourceTree = "<group>"; };
 		6691E7F62996EAD70032A68A /* SecureValueRecoveryMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecoveryMock.swift; sourceTree = "<group>"; };
@@ -3900,6 +3899,8 @@
 		C179B01D29ED94FA00275AD1 /* EditRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecord.swift; sourceTree = "<group>"; };
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
+		C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PniDistributionSyncMessage.swift; sourceTree = "<group>"; };
+		C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageMock.swift; sourceTree = "<group>"; };
 		C198FDD52A37C905000BCAC9 /* SSKKyberPreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStore.swift; sourceTree = "<group>"; };
 		C19AFAB72A6598D800FE3ECF /* PreKeyOperation+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreKeyOperation+Shims.swift"; sourceTree = "<group>"; };
 		C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerShims.swift; sourceTree = "<group>"; };
@@ -4021,7 +4022,6 @@
 		D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationManager.swift; sourceTree = "<group>"; };
 		D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUsernameMegaphone.swift; sourceTree = "<group>"; };
 		D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameSelectionCoordinator.swift; sourceTree = "<group>"; };
-		D9C2D78629A80C9C00D79715 /* PniDistributionSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniDistributionSyncMessage.swift; sourceTree = "<group>"; };
 		D9C30DDA2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyGroupLearnMoreViewController.swift; sourceTree = "<group>"; };
 		D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgrade.swift; sourceTree = "<group>"; };
 		D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManifest.swift; sourceTree = "<group>"; };
@@ -6817,7 +6817,7 @@
 			isa = PBXGroup;
 			children = (
 				6691E7F62996EAD70032A68A /* SecureValueRecoveryMock.swift */,
-				6691E7EB2996E62B0032A68A /* SVRAuthCredentialStorageMock.swift */,
+				C18E3C732AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift */,
 			);
 			path = KeyBackupService;
 			sourceTree = "<group>";
@@ -9112,7 +9112,7 @@
 				5033D46629D76BD0007FEADA /* LocalIdentifiers.swift */,
 				50B815852A5E14FF0009D42D /* OWSIdentity.h */,
 				D9CAF74F2A0ACFF20049193A /* PniDistributionParameterBuilder.swift */,
-				D9C2D78629A80C9C00D79715 /* PniDistributionSyncMessage.swift */,
+				C18E3C712A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift */,
 				D9CAF7482A09CCE50049193A /* PniHelloWorldManager.swift */,
 				D9F399AC2A95798A001599EC /* PniIdentityKeyChecker.swift */,
 				507CD5E429660D5100E47DAC /* ServiceId.swift */,
@@ -12575,8 +12575,7 @@
 				F9C5CE2A289453B400548EEE /* Platform.swift in Sources */,
 				F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */,
 				D9CAF7502A0ACFF20049193A /* PniDistributionParameterBuilder.swift in Sources */,
-				D9C2D78729A80C9C00D79715 /* PniDistributionSyncMessage.swift in Sources */,
-				D9C2D78729A80C9C00D79715 /* PniDistributionSyncMessage.swift in Sources */,
+				C18E3C722A9FF65D003D1CF1 /* PniDistributionSyncMessage.swift in Sources */,
 				D9CAF7492A09CCE50049193A /* PniHelloWorldManager.swift in Sources */,
 				D9F399AD2A95798A001599EC /* PniIdentityKeyChecker.swift in Sources */,
 				D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */,
@@ -12741,8 +12740,7 @@
 				66C2B1382A0DB6A9008DDE72 /* SVRAuthCredential.swift in Sources */,
 				6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */,
 				6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */,
-				6691E7EC2996E62B0032A68A /* SVRAuthCredentialStorageMock.swift in Sources */,
-				6691E7EC2996E62B0032A68A /* SVRAuthCredentialStorageMock.swift in Sources */,
+				C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */,
 				662C44132A1835F4001F83E2 /* SVRLocalStorage.swift in Sources */,
 				66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */,
 				F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */,

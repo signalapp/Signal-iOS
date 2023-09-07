@@ -9,10 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSIncomingPaymentMessage ()
-
-@end
-
 #pragma mark -
 
 @implementation OWSIncomingPaymentMessage

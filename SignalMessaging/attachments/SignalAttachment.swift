@@ -1004,7 +1004,7 @@ public class SignalAttachment: NSObject {
                 kCGImageSourceShouldCacheImmediately: true,
                 kCGImageSourceCreateThumbnailWithTransform: true,
                 kCGImageSourceThumbnailMaxPixelSize: maxSize
-            ] as CFDictionary
+            ] as [CFString: Any] as CFDictionary
             guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
                 owsFailDebug("Failed to downsample attachment")
                 return nil

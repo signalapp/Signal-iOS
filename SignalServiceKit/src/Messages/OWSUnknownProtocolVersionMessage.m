@@ -205,7 +205,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
 
 - (BOOL)isProtocolVersionUnknown
 {
-    return self.protocolVersion > SSKProtos.currentProtocolVersion;
+    return self.protocolVersion > (unsigned int)SSKProtos.currentProtocolVersion;
 }
 
 @end

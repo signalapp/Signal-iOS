@@ -9,10 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSOutgoingPaymentMessage ()
-
-@end
-
 #pragma mark -
 
 @implementation OWSOutgoingPaymentMessage

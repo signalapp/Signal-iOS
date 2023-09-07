@@ -105,9 +105,9 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
                 }
 
                 return cell
-            }) { [weak self] in
+            }, actionBlock: { [weak self] in
                 self?.didSelectViewer(viewerAddress)
-            })
+            }))
         }
 
         if hasMoreViewers {

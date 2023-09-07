@@ -18,7 +18,7 @@ final class StripeTest: XCTestCase {
                 "next_action": [
                     "type": "incorrect type",
                     "redirect_to_url": ["url": "https://example.com"]
-                ]
+                ] as [String: Any]
             ],
             [
                 "next_action": [
@@ -30,7 +30,7 @@ final class StripeTest: XCTestCase {
                 "next_action": [
                     "type": "redirect_to_url",
                     "redirect_to_url": ["url": "invalid URL"]
-                ]
+                ] as [String: Any]
             ]
         ]
         for input in notFoundTestCases {
@@ -41,7 +41,7 @@ final class StripeTest: XCTestCase {
             "next_action": [
                 "type": "redirect_to_url",
                 "redirect_to_url": ["url": "https://example.com"]
-            ]
+            ] as [String: Any]
         ])
         let expected = URL(string: "https://example.com")!
         XCTAssertEqual(actual, expected)

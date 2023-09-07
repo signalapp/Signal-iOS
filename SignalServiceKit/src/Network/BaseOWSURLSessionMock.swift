@@ -137,7 +137,7 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
     ) -> Promise<OWSUrlDownloadResponse> {
         // Want different behavior? Write a custom mock class
         return .value(OWSUrlDownloadResponse(
-            task: URLSessionTask(),
+            task: URLSession.shared.dataTask(with: request),
             httpUrlResponse: HTTPURLResponse(),
             downloadUrl: URL(fileURLWithPath: request.url!.lastPathComponent)
         ))
@@ -150,7 +150,7 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
     ) -> Promise<OWSUrlDownloadResponse> {
         // Want different behavior? Write a custom mock class
         return .value(OWSUrlDownloadResponse(
-            task: URLSessionTask(),
+            task: URLSession.shared.downloadTask(with: URLRequest(url: requestUrl)),
             httpUrlResponse: HTTPURLResponse(),
             downloadUrl: URL(fileURLWithPath: requestUrl.lastPathComponent)
         ))

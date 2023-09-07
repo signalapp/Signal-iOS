@@ -368,7 +368,7 @@ class CallHeader: UIView {
 
     func updateGroupMembersButton() {
         let isJoined = call.groupCall.localDeviceState.joinState == .joined
-        let remoteMemberCount = isJoined ? call.groupCall.remoteDeviceStates.count : Int(call.groupCall.peekInfo?.deviceCount ?? 0)
+        let remoteMemberCount = isJoined ? call.groupCall.remoteDeviceStates.count : Int(call.groupCall.peekInfo?.deviceCountExcludingPendingDevices ?? 0)
         groupMembersButton.updateMemberCount(remoteMemberCount + (isJoined ? 1 : 0))
     }
 

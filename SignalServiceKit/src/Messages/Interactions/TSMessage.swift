@@ -421,7 +421,7 @@ public extension TSMessage {
             return .infoMessage(infoMessage.infoMessagePreviewText(with: tx))
         }
 
-        if let message = self as? OWSPaymentMessage {
+        if self is OWSPaymentMessage {
             return .paymentMessage(OWSLocalizedString(
                 "PAYMENTS_THREAD_PREVIEW_TEXT",
                 comment: "Payments Preview Text shown in chat list for payments."

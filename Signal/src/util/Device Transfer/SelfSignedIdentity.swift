@@ -92,7 +92,7 @@ struct SelfSignedIdentity {
                 kSecAttrKeyType: kSecAttrKeyTypeRSA,
                 kSecAttrKeyClass: kSecAttrKeyClassPrivate,
                 kSecAttrKeySizeInBits: 4096
-            ] as CFDictionary,
+            ] as [CFString: Any] as CFDictionary,
             nil
         ) else {
             throw OWSAssertionError("Failed to initialize SecKey")

@@ -47,6 +47,87 @@ NS_ASSUME_NONNULL_BEGIN
     return builder;
 }
 
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                        uniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                      bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                    contactShare:(nullable OWSContact *)contactShare
+                       editState:(TSEditState)editState
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+                       giftBadge:(nullable OWSGiftBadge *)giftBadge
+               isGroupStoryReply:(BOOL)isGroupStoryReply
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+           storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
+                  storyTimestamp:(nullable NSNumber *)storyTimestamp
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+                   customMessage:(nullable NSString *)customMessage
+                groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+           hasLegacyMessageState:(BOOL)hasLegacyMessageState
+             hasSyncedTranscript:(BOOL)hasSyncedTranscript
+              isFromLinkedDevice:(BOOL)isFromLinkedDevice
+                  isVoiceMessage:(BOOL)isVoiceMessage
+              legacyMessageState:(TSOutgoingMessageState)legacyMessageState
+              legacyWasDelivered:(BOOL)legacyWasDelivered
+           mostRecentFailureText:(nullable NSString *)mostRecentFailureText
+          recipientAddressStates:
+              (nullable NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientAddressStates
+              storedMessageState:(TSOutgoingMessageState)storedMessageState
+{
+    self = [super initWithGrdbId:grdbId
+                            uniqueId:uniqueId
+                 receivedAtTimestamp:receivedAtTimestamp
+                              sortId:sortId
+                           timestamp:timestamp
+                      uniqueThreadId:uniqueThreadId
+                       attachmentIds:attachmentIds
+                                body:body
+                          bodyRanges:bodyRanges
+                        contactShare:contactShare
+                           editState:editState
+                     expireStartedAt:expireStartedAt
+                           expiresAt:expiresAt
+                    expiresInSeconds:expiresInSeconds
+                           giftBadge:giftBadge
+                   isGroupStoryReply:isGroupStoryReply
+                  isViewOnceComplete:isViewOnceComplete
+                   isViewOnceMessage:isViewOnceMessage
+                         linkPreview:linkPreview
+                      messageSticker:messageSticker
+                       quotedMessage:quotedMessage
+        storedShouldStartExpireTimer:storedShouldStartExpireTimer
+               storyAuthorUuidString:storyAuthorUuidString
+                  storyReactionEmoji:storyReactionEmoji
+                      storyTimestamp:storyTimestamp
+                  wasRemotelyDeleted:wasRemotelyDeleted
+                       customMessage:customMessage
+                    groupMetaMessage:groupMetaMessage
+               hasLegacyMessageState:hasLegacyMessageState
+                 hasSyncedTranscript:hasSyncedTranscript
+                  isFromLinkedDevice:isFromLinkedDevice
+                      isVoiceMessage:isVoiceMessage
+                  legacyMessageState:legacyMessageState
+                  legacyWasDelivered:legacyWasDelivered
+               mostRecentFailureText:mostRecentFailureText
+              recipientAddressStates:recipientAddressStates
+                  storedMessageState:storedMessageState];
+
+    return self;
+}
+
+
 - (SealedSenderContentHint)contentHint
 {
     return SealedSenderContentHintImplicit;

@@ -248,11 +248,17 @@ public class OWSFingerprint {
                 owsFail("Oversize data")
             }
 
-            _ = digestData.withUnsafeMutableBytes { digestBytes in
-                hash.withUnsafeBytes { hashBytes in
-                    CC_SHA512(hashBytes, CC_LONG(hash.count), digestBytes)
+            digestData.withUnsafeMutableBytes({ mutableBufferPointer in
+                let bufferPointer = mutableBufferPointer.bindMemory(to: UInt8.self)
+                if let bufferAddress = bufferPointer.baseAddress {
+                    hash.withUnsafeBytes { hashBytesPointer in
+                        let hashPointer = hashBytesPointer.bindMemory(to: UInt8.self)
+                        if let hashAddress = hashPointer.baseAddress {
+                            CC_SHA512(hashAddress, CC_LONG(hash.count), bufferAddress)
+                        }
+                    }
                 }
-            }
+            })
             hash = digestData
         }
 
