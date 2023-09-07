@@ -1762,6 +1762,9 @@
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
 
+/* Button shown to contract a QR code and exit the fullscreen view. */
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";
+
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Unable to verify your new device, please try again";
 
@@ -1780,6 +1783,9 @@
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Update to the latest version of Signal and try again";
 
+/* Button shown to expand a QR code and view it fullscreen. */
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "View larger";
+
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
 
@@ -1787,16 +1793,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Transfer Account";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bring your old device nearby, make sure Wi-Fi and Bluetooth are enabled on it, and scan this QR code with it.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other iOS device.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Waiting for Other Device...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Scan QR Code";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";

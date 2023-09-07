@@ -65,6 +65,8 @@ public enum ThemeIcon: UInt {
     case arrowRight
     case chevronUp
     case chevronDown
+    case maximize
+    case minimize
     case refresh
     case official
     case qrCode
@@ -293,6 +295,10 @@ public extension Theme {
             return "chevron-up"
         case .chevronDown:
             return "chevron-down"
+        case .maximize:
+            return "maximize"
+        case .minimize:
+            return "minimize"
         case .refresh:
             return "refresh"
         case .official:

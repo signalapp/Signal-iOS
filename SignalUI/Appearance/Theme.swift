@@ -247,7 +247,15 @@ final public class Theme: NSObject {
     }
 
     public class var secondaryBackgroundColor: UIColor {
-        isDarkThemeEnabled ? .ows_gray80 : .ows_gray02
+        isDarkThemeEnabled ? darkThemeSecondaryBackgroundColor : lightThemeSecondaryBackgroundColor
+    }
+
+    public class var lightThemeSecondaryBackgroundColor: UIColor {
+        .ows_gray02
+    }
+
+    public class var darkThemeSecondaryBackgroundColor: UIColor {
+        .ows_gray80
     }
 
     public class var washColor: UIColor {

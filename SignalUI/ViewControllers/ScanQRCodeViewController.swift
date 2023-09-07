@@ -77,6 +77,12 @@ public class QRCodeScanViewController: OWSViewController {
 
     private var scanner: QRCodeScanner?
 
+    public var prefersFrontFacingCamera = false {
+        didSet {
+            scanner?.prefersFrontFacingCamera = prefersFrontFacingCamera
+        }
+    }
+
     public required init(appearance: Appearance) {
         self.appearance = appearance
         super.init()
@@ -190,7 +196,10 @@ public class QRCodeScanViewController: OWSViewController {
             return
         }
 
-        let scanner = QRCodeScanner(sampleBufferDelegate: self)
+        let scanner = QRCodeScanner(
+            prefersFrontFacingCamera: self.prefersFrontFacingCamera,
+            sampleBufferDelegate: self
+        )
         self.scanner = scanner
 
         view.removeAllSubviews()
@@ -619,7 +628,11 @@ private class QRCodeScanner {
 
     private var hasRequestedDeviceOrientationNotifications = false
 
-    required init(sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate) {
+    required init(
+        prefersFrontFacingCamera: Bool,
+        sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate
+    ) {
+        self.prefersFrontFacingCamera = prefersFrontFacingCamera
         output = QRCodeScanOutput(sampleBufferDelegate: sampleBufferDelegate)
     }
 
@@ -660,6 +673,20 @@ private class QRCodeScanner {
             return
         }
         videoConnection.videoOrientation = orientation
+    }
+
+    public var prefersFrontFacingCamera: Bool {
+        didSet {
+            sessionQueue.async {
+                guard self.session.isRunning else {
+                    // No need to update yet.
+                    return
+                }
+                self.session.beginConfiguration()
+                try? self.setCurrentInput()
+                self.session.commitConfiguration()
+            }
+        }
     }
 
     public func startVideoCapture() -> Promise<Void> {
@@ -745,6 +772,10 @@ private class QRCodeScanner {
 
         let newInput = try AVCaptureDeviceInput(device: device)
 
+        // Remove any existing inputs.
+        session.inputs.forEach {
+            session.removeInput($0)
+        }
         session.addInput(newInput)
     }
 
@@ -773,18 +804,25 @@ private class QRCodeScanner {
             return nil
         }
 
-        // Prefer a back-facing camera.
-        let backSession = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes,
-                                                           mediaType: .video,
-                                                           position: .back)
-        if let device = selectDevice(session: backSession) {
+        let preferredPosition: AVCaptureDevice.Position =
+            prefersFrontFacingCamera ? .front : .back
+        let preferredSession = AVCaptureDevice.DiscoverySession(
+            deviceTypes: deviceTypes,
+            mediaType: .video,
+            position: preferredPosition
+        )
+        if let device = selectDevice(session: preferredSession) {
             return device
         }
-        // Failover to a front-facing camera.
-        let frontSession = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes,
-                                                            mediaType: .video,
-                                                            position: .front)
-        if let device = selectDevice(session: frontSession) {
+        // Failover to other camera.
+        let failoverPosition: AVCaptureDevice.Position =
+            prefersFrontFacingCamera ? .back : .front
+        let failoverSession = AVCaptureDevice.DiscoverySession(
+            deviceTypes: deviceTypes,
+            mediaType: .video,
+            position: failoverPosition
+        )
+        if let device = selectDevice(session: failoverSession) {
             return device
         }
 
