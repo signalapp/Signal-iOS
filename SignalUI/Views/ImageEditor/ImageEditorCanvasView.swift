@@ -357,6 +357,45 @@ class ImageEditorCanvasView: UIView {
     // MARK: - Text Selection Frame
 
     private var selectedTextFrameLayer: TextFrameLayer?
+    private lazy var tooltipView: UIView = {
+        let hMargin: CGFloat = 9
+        let vMargin: CGFloat = 5
+        let label = UILabel()
+        let text = NSAttributedString(
+            string: OWSLocalizedString(
+                "MEDIA_EDITOR_TAP_FOR_MORE",
+                comment: "Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles"
+            ),
+            attributes: [
+                .font: UIFont.dynamicTypeBody,
+                .foregroundColor: UIColor.ows_white,
+            ]
+        )
+        label.attributedText = text
+        label.frame = .init(
+            origin: .init(
+                x: hMargin,
+                y: vMargin
+            ),
+            size: text.boundingRect(
+                with: .init(
+                    width: self.width,
+                    height: .greatestFiniteMagnitude
+                ),
+                options: [.usesLineFragmentOrigin],
+                context: nil
+            )
+            .size
+        )
+        let background = UIView()
+        background.backgroundColor = .ows_blackAlpha40
+        background.layer.cornerRadius = 8
+        background.addSubview(label)
+        background.frame.size = label.frame.size.plus(.init(width: hMargin * 2, height: vMargin * 2))
+        label.frame.origin = .init(x: 9, y: 5)
+        return background
+    }()
+    private var tooltipTimer: Timer?
 
     // Negative insets because text object frame is larger than object itself.
     private static let textFrameInsets = UIEdgeInsets(hMargin: -16, vMargin: -4)
@@ -395,6 +434,53 @@ class ImageEditorCanvasView: UIView {
         selectedTextFrameLayer.opacity = shouldFadeTransformableItem ? 0.5 : 1
 
         CATransaction.commit()
+    }
+
+    func hideTooltip() {
+        guard tooltipView.superview != nil else { return }
+        UIView.animate(withDuration: 0.2) {
+            self.tooltipView.layer.opacity = 0
+        } completion: { _ in
+            self.tooltipView.removeFromSuperview()
+        }
+        tooltipTimer?.invalidate()
+        tooltipTimer = nil
+    }
+
+    func updateTooltip() {
+        guard
+            let selectedItemID = selectedTransformableItemID,
+            let stickerItem = model.item(forId: selectedItemID) as? ImageEditorStickerItem,
+            case .story = stickerItem.sticker,
+            let stickerLayer = contentLayerMap[selectedItemID],
+            let selectedTextFrameLayer
+        else {
+            hideTooltip()
+            return
+        }
+
+        if tooltipView.superview == nil {
+            contentView.addSubview(tooltipView)
+            tooltipView.layer.zPosition = ImageEditorCanvasView.selectionFrameLayerZ
+        }
+
+        if self.tooltipView.layer.opacity < 1 {
+            // Fade in the tooltip if it wasn't already showing
+            UIView.animate(withDuration: 0.2) {
+                self.tooltipView.layer.opacity = 1
+            }
+        }
+        tooltipTimer?.invalidate()
+        tooltipTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [weak self] timer in
+            UIView.animate(withDuration: 0.2) {
+                self?.tooltipView.layer.opacity = 0
+            }
+        }
+
+        tooltipView.layer.position = stickerLayer.position.offsetBy(
+            dx: 0,
+            dy: -(selectedTextFrameLayer.bounds.height/2 + tooltipView.frame.height/2 + 8)
+        )
     }
 
     // MARK: - Content

@@ -99,8 +99,12 @@ extension EditorSticker.StorySticker {
             date: Date,
             scaleFactor: CGFloat = 1.0
         ) -> NSAttributedString {
+            let is12HourTime = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: .current)?.contains("a") ?? true
+            let timeFormat = is12HourTime ? "h:mm" : "HH:mm"
+            let amPMFormat = is12HourTime ? " a" : nil
+
             let timeFormatter = DateFormatter()
-            timeFormatter.dateFormat = "h:mm"
+            timeFormatter.dateFormat = timeFormat
             let timeString = timeFormatter.string(from: date)
             let timeFont = UIFont.digitalClockFont(withPointSize: 96 * scaleFactor)
             let timeAttributedString = NSAttributedString(
@@ -111,19 +115,22 @@ extension EditorSticker.StorySticker {
                 ]
             )
 
-            let amPMFormatter = DateFormatter()
-            amPMFormatter.dateFormat = " a"
-            let amPMString = amPMFormatter.string(from: date)
-            let amPMFont = UIFont.regularFont(ofSize: 24 * scaleFactor)
-            let amPMAttributedString = NSAttributedString(
-                string: amPMString,
-                attributes: [
-                    .font: amPMFont,
-                    .foregroundColor: self.foregroundColor,
-                ]
-            )
+            if let amPMFormat {
+                let amPMFormatter = DateFormatter()
+                amPMFormatter.dateFormat = amPMFormat
+                let amPMString = amPMFormatter.string(from: date)
+                let amPMFont = UIFont.regularFont(ofSize: 24 * scaleFactor)
+                let amPMAttributedString = NSAttributedString(
+                    string: amPMString,
+                    attributes: [
+                        .font: amPMFont,
+                        .foregroundColor: self.foregroundColor,
+                    ]
+                )
+                return timeAttributedString + amPMAttributedString
+            }
 
-            return timeAttributedString + amPMAttributedString
+            return timeAttributedString
         }
 
         func nextStyle() -> DigitalClockStyle {

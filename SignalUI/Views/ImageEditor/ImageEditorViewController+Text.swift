@@ -10,8 +10,8 @@ import SignalCoreKit
 extension ImageEditorViewController {
     func selectStickerItem(_ stickerItem: ImageEditorStickerItem) {
         mode = .sticker
-        imageEditorView.selectedTransformableItemID = stickerItem.itemId
         model.append(item: stickerItem)
+        imageEditorView.selectedTransformableItemID = stickerItem.itemId
     }
 }
 

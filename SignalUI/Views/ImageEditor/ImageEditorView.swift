@@ -32,19 +32,23 @@ class ImageEditorView: UIView {
     let canvasView: ImageEditorCanvasView
 
     private let trashViewSize: CGFloat = 42
-    private let trashViewHoverSize: CGFloat = 56
-    private var trashSizeContstraints = [NSLayoutConstraint]()
     private lazy var trashView: UIView = {
-        let image = UIImage(named: "trash-circle")
+        let backgroundView = UIView()
+        backgroundView.layoutMargins = .init(margin: 9)
+
+        let image = UIImage(named: "trash")
         let imageView = UIImageView(image: image)
         imageView.tintColor = .white
         imageView.contentMode = .scaleAspectFill
-
-        imageView.layer.cornerRadius = trashViewSize / 2
-        imageView.backgroundColor = .ows_blackAlpha40
         imageView.isUserInteractionEnabled = false
 
-        return imageView
+        backgroundView.layer.cornerRadius = trashViewSize / 2
+        backgroundView.backgroundColor = .ows_blackAlpha40
+        backgroundView.isUserInteractionEnabled = false
+        backgroundView.addSubview(imageView)
+        imageView.autoPinEdgesToSuperviewMargins()
+
+        return backgroundView
     }()
     private var isTrashShowing: Bool {
         get {
@@ -110,7 +114,7 @@ class ImageEditorView: UIView {
         .isActive = true
 
         trashView.autoHCenterInSuperview()
-        trashSizeContstraints = trashView.autoSetDimensions(to: .square(trashViewSize))
+        trashView.autoSetDimensions(to: .square(trashViewSize))
         trashView.layer.zPosition = ImageEditorCanvasView.trashLazerZ
         isTrashShowing = false
 
@@ -160,12 +164,8 @@ class ImageEditorView: UIView {
     private func updateTrash(isHoveringOverTrash: Bool) {
         canvasView.shouldFadeTransformableItem = isHoveringOverTrash
 
-        let size = isHoveringOverTrash ? self.trashViewHoverSize : self.trashViewSize
-        self.trashSizeContstraints.forEach { $0.constant = size }
-
         UIView.animate(withDuration: 0.15) {
-            self.trashView.layer.cornerRadius = size / 2
-            self.layoutIfNeeded()
+            self.trashView.transform = isHoveringOverTrash ? .scale(4/3) : .identity
         }
 
         if isHoveringOverTrash {
@@ -202,7 +202,14 @@ class ImageEditorView: UIView {
             canvasView.selectedTransformableItemID
         }
         set {
+            let newValueIsDifferent = canvasView.selectedTransformableItemID != newValue
             canvasView.selectedTransformableItemID = newValue
+            // Update the tooltip when a new item is selected.
+            // Dragging a sticker hides the tooltip, so avoid
+            // showing it if it was selected by a drag.
+            if newValueIsDifferent && movingItem == nil {
+                canvasView.updateTooltip()
+            }
         }
     }
 
@@ -326,6 +333,8 @@ class ImageEditorView: UIView {
                 let newStickerItem = stickerItem.copy(sticker: newSticker)
                 model.replace(item: newStickerItem)
             }
+            ImpactHapticFeedback.impactOccurred(style: .medium)
+            canvasView.hideTooltip()
         }
     }
 
@@ -448,14 +457,15 @@ class ImageEditorView: UIView {
                 return
             }
 
+            movingItem = item
+            movingTextStartUnitCenter = item.unitCenter
+            movingTextHasMoved = false
+            canvasView.hideTooltip()
+
             // Automatically make item selected if selections are allowed.
             if textInteractionModes.contains(.select) {
                 selectedTransformableItemID = item.itemId
             }
-
-            movingItem = item
-            movingTextStartUnitCenter = item.unitCenter
-            movingTextHasMoved = false
 
         case .changed, .ended:
             guard let item = movingItem else {
