@@ -450,7 +450,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         takePictureOrVideo()
     }
 
-    public func galleryButtonPressed() {
+    public func photosButtonPressed() {
         AssertIsOnMainThread()
 
         chooseFromLibrary()

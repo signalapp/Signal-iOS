@@ -39,7 +39,7 @@ protocol ConversationInputToolbarDelegate: AnyObject {
 
     func cameraButtonPressed()
 
-    func galleryButtonPressed()
+    func photosButtonPressed()
 
     func gifButtonPressed()
 
@@ -1849,8 +1849,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         if let attachmentKeyboard = _attachmentKeyboard {
             return attachmentKeyboard
         }
-        let keyboard = AttachmentKeyboard()
-        keyboard.delegate = self
+        let keyboard = AttachmentKeyboard(delegate: self)
         keyboard.registerWithView(self)
         _attachmentKeyboard = keyboard
         return keyboard
@@ -2177,8 +2176,8 @@ extension ConversationInputToolbar: AttachmentKeyboardDelegate {
         inputToolbarDelegate?.didSelectRecentPhoto(asset: asset, attachment: attachment)
     }
 
-    func didTapGalleryButton() {
-        inputToolbarDelegate?.galleryButtonPressed()
+    func didTapPhotos() {
+        inputToolbarDelegate?.photosButtonPressed()
     }
 
     func didTapCamera() {

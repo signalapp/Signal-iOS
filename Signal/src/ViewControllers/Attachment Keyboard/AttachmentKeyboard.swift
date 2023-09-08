@@ -9,8 +9,7 @@ import SignalUI
 
 protocol AttachmentKeyboardDelegate: AnyObject {
     func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment)
-    func didTapGalleryButton()
-    func didTapCamera()
+    func didTapPhotos()
     func didTapGif()
     func didTapFile()
     func didTapContact()
@@ -26,9 +25,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
     private let recentPhotosCollectionView = RecentPhotosCollectionView()
     private let recentPhotosErrorView = RecentPhotosErrorView()
-    private let galleryButton = UIButton()
-
-    private let attachmentFormatPickerView = AttachmentFormatPickerView()
+    private lazy var attachmentFormatPickerView = AttachmentFormatPickerView(isGroup: delegate?.isGroup ?? false)
 
     private lazy var hasRecentsHeightConstraint = attachmentFormatPickerView.autoMatch(
         .height,
@@ -55,9 +52,12 @@ class AttachmentKeyboard: CustomKeyboard {
 
     // MARK: -
 
-    override init() {
+    init(delegate: AttachmentKeyboardDelegate?) {
+        self.delegate = delegate
+
         super.init()
 
+        // TODO: (igor) Temporarily until I figure out how to do translucent background.
         backgroundColor = Theme.backgroundColor
 
         mainStackView.axis = .vertical
@@ -65,11 +65,10 @@ class AttachmentKeyboard: CustomKeyboard {
 
         contentView.addSubview(mainStackView)
         mainStackView.autoPinWidthToSuperview()
-        mainStackView.autoPinEdge(toSuperviewEdge: .top, withInset: UIDevice.current.isIPad ? 8 : 0)
-        mainStackView.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 8)
+        mainStackView.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
+        mainStackView.autoPinEdge(toSuperviewSafeArea: .bottom)
 
         setupRecentPhotos()
-        setupGalleryButton()
         setupFormatPicker()
     }
 
@@ -92,7 +91,6 @@ class AttachmentKeyboard: CustomKeyboard {
             return showRecentPhotosError()
         }
 
-        galleryButton.isHidden = false
         recentPhotosErrorHeightConstraint.isActive = false
         hasRecentsHeightConstraint.isActive = true
         recentPhotosErrorView.isHidden = true
@@ -102,33 +100,10 @@ class AttachmentKeyboard: CustomKeyboard {
     private func showRecentPhotosError() {
         recentPhotosErrorView.hasMediaLibraryAccess = isMediaLibraryAccessGranted
 
-        galleryButton.isHidden = true
         hasRecentsHeightConstraint.isActive = false
         recentPhotosErrorHeightConstraint.isActive = true
         recentPhotosCollectionView.isHidden = true
         recentPhotosErrorView.isHidden = false
-    }
-
-    // MARK: Gallery Button
-
-    private func setupGalleryButton() {
-        addSubview(galleryButton)
-        galleryButton.setTemplateImageName("album-tilt-28", tintColor: .white)
-        galleryButton.setBackgroundImage(UIImage(color: UIColor.black.withAlphaComponent(0.7)), for: .normal)
-
-        galleryButton.autoSetDimensions(to: CGSize(square: 48))
-        galleryButton.clipsToBounds = true
-        galleryButton.layer.cornerRadius = 24
-
-        galleryButton.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 16)
-        galleryButton.autoPinEdge(.bottom, to: .bottom, of: recentPhotosCollectionView, withOffset: -8)
-
-        galleryButton.addTarget(self, action: #selector(didTapGalleryButton), for: .touchUpInside)
-    }
-
-    @objc
-    private func didTapGalleryButton() {
-        delegate?.didTapGalleryButton()
     }
 
     // MARK: Format Picker
@@ -138,7 +113,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
         mainStackView.addArrangedSubview(attachmentFormatPickerView)
         NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            attachmentFormatPickerView.autoSetDimension(.height, toSize: 80)
+            attachmentFormatPickerView.autoSetDimension(.height, toSize: AttachmentFormatPickerView.itemSize.height)
         }
 
         attachmentFormatPickerView.setCompressionResistanceLow()
@@ -163,16 +138,13 @@ class AttachmentKeyboard: CustomKeyboard {
         // If we have space we will show two rows of recent photos (e.g. iPad in landscape).
         if recentPhotosCollectionView.height > 250 {
             recentPhotosCollectionView.itemSize = CGSize(square:
-                (recentPhotosCollectionView.height - recentPhotosCollectionView.spaceBetweenRows) / 2
+                (recentPhotosCollectionView.height - RecentPhotosCollectionView.itemSpacing) / 2
             )
 
         // Otherwise, assume the recent photos take up the full height of the collection view.
         } else {
             recentPhotosCollectionView.itemSize = CGSize(square: recentPhotosCollectionView.height)
         }
-
-        // There is only ever one row for the attachment format picker.
-        attachmentFormatPickerView.itemSize = CGSize(square: attachmentFormatPickerView.height)
     }
 
     private func checkPermissions() {
@@ -211,8 +183,8 @@ extension AttachmentKeyboard: RecentPhotosDelegate {
 }
 
 extension AttachmentKeyboard: AttachmentFormatPickerDelegate {
-    func didTapCamera() {
-        delegate?.didTapCamera()
+    func didTapPhotos() {
+        delegate?.didTapPhotos()
     }
 
     func didTapGif() {
@@ -234,14 +206,6 @@ extension AttachmentKeyboard: AttachmentFormatPickerDelegate {
     func didTapPayment() {
         delegate?.didTapPayment()
     }
-
-    var isGroup: Bool {
-        guard let delegate = delegate else {
-            owsFailDebug("Missing delegate.")
-            return false
-        }
-        return delegate.isGroup
-    }
 }
 
 private class RecentPhotosErrorView: UIView {
@@ -261,9 +225,6 @@ private class RecentPhotosErrorView: UIView {
         layoutMargins = UIEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)
 
         let stackView = UIStackView()
-
-        stackView.addBackgroundView(withBackgroundColor: Theme.attachmentKeyboardItemBackgroundColor, cornerRadius: 4)
-
         stackView.axis = .vertical
         stackView.spacing = 8
         stackView.distribution = .fill

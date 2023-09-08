@@ -15,8 +15,8 @@ protocol RecentPhotosDelegate: AnyObject {
 }
 
 class RecentPhotosCollectionView: UICollectionView {
-    let maxRecentPhotos = 96
-    let spaceBetweenRows: CGFloat = 6
+    static let maxRecentPhotos = 96
+    static let itemSpacing: CGFloat = 12
 
     var isReadyForPhotoLibraryAccess: Bool {
         return recentPhotosDelegate?.isMediaLibraryAccessGranted == true
@@ -49,7 +49,7 @@ class RecentPhotosCollectionView: UICollectionView {
         return library
     }()
     private lazy var collection = photoLibrary.defaultPhotoAlbum()
-    private lazy var collectionContents = collection.contents(ascending: false, limit: maxRecentPhotos)
+    private lazy var collectionContents = collection.contents(ascending: false, limit: RecentPhotosCollectionView.maxRecentPhotos)
 
     var itemSize: CGSize = .zero {
         didSet {
@@ -64,25 +64,25 @@ class RecentPhotosCollectionView: UICollectionView {
         return size
     }
 
-    private let collectionViewFlowLayout = RTLEnabledCollectionViewFlowLayout()
+    private let collectionViewFlowLayout: UICollectionViewFlowLayout = {
+        let layout = RTLEnabledCollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = itemSpacing
+        layout.minimumInteritemSpacing = itemSpacing
+        return layout
+    }()
 
     init() {
         super.init(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
 
         dataSource = self
         delegate = self
-        showsHorizontalScrollIndicator = false
-
-        contentInset = UIEdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6)
 
         backgroundColor = .clear
-
+        showsHorizontalScrollIndicator = false
+        let horizontalInset = OWSTableViewController2.defaultHOuterMargin
+        contentInset = UIEdgeInsets(top: 0, leading: horizontalInset, bottom: 0, trailing: horizontalInset)
         register(RecentPhotoCell.self, forCellWithReuseIdentifier: RecentPhotoCell.reuseIdentifier)
-        register(SelectMorePhotosCell.self, forCellWithReuseIdentifier: SelectMorePhotosCell.reuseIdentifier)
-
-        collectionViewFlowLayout.scrollDirection = .horizontal
-        collectionViewFlowLayout.minimumLineSpacing = 6
-        collectionViewFlowLayout.minimumInteritemSpacing = spaceBetweenRows
 
         updateLayout()
     }
@@ -106,8 +106,9 @@ class RecentPhotosCollectionView: UICollectionView {
 }
 
 extension RecentPhotosCollectionView: PhotoLibraryDelegate {
+
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
-        collectionContents = collection.contents(ascending: false, limit: maxRecentPhotos)
+        collectionContents = collection.contents(ascending: false, limit: RecentPhotosCollectionView.maxRecentPhotos)
         reloadData()
     }
 }
@@ -115,7 +116,7 @@ extension RecentPhotosCollectionView: PhotoLibraryDelegate {
 // MARK: - UICollectionViewDelegate
 
 extension RecentPhotosCollectionView: UICollectionViewDelegate {
-    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard fetchingAttachmentIndex == nil else { return }
 
         guard indexPath.row < collectionContents.assetCount else {
@@ -143,27 +144,16 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate {
 
 extension RecentPhotosCollectionView: UICollectionViewDataSource {
 
-    public func numberOfSections(in collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
 
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
         guard isReadyForPhotoLibraryAccess else { return 0 }
-        return collectionContents.assetCount + (recentPhotosDelegate?.isMediaLibraryAccessLimited == true ? 1 : 0)
+        return collectionContents.assetCount
     }
 
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard indexPath.row < collectionContents.assetCount else {
-            // If the index is beyond the asset count, we should be rendering the "select more photos" prompt.
-            owsAssertDebug(recentPhotosDelegate?.isMediaLibraryAccessLimited == true)
-
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SelectMorePhotosCell.reuseIdentifier, for: indexPath) as? SelectMorePhotosCell else {
-                owsFail("cell was unexpectedly nil")
-            }
-
-            return cell
-        }
-
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentPhotoCell.reuseIdentifier, for: indexPath) as? RecentPhotoCell else {
             owsFail("cell was unexpectedly nil")
         }
@@ -179,110 +169,25 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
     }
 }
 
-private class SelectMorePhotosCell: UICollectionViewCell {
-
-    static let reuseIdentifier = "SelectMorePhotosCell"
-
-    override init(frame: CGRect) {
-
-        super.init(frame: frame)
-
-        clipsToBounds = true
-        layer.cornerRadius = 4
-        backgroundColor = Theme.washColor
-
-        // There's very little space for text here, so we stick with
-        // a fixed font size.
-        let fixedFont = UIFont.systemFont(ofSize: 13)
-
-        let titleLabel = UILabel()
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.textAlignment = .center
-        titleLabel.font = fixedFont.semibold()
-        titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.text = OWSLocalizedString(
-            "IMAGE_PICKER_CHANGE_PHOTOS_TITLE",
-            comment: "Title show that the user has granted limited access to their photos and can change that in the Settings app."
-        )
-
-        let explanationLabel = UILabel()
-        explanationLabel.numberOfLines = 0
-        explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.textAlignment = .center
-        explanationLabel.font = fixedFont
-        explanationLabel.textColor = Theme.secondaryTextAndIconColor
-        explanationLabel.text = OWSLocalizedString(
-            "IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION",
-            comment: "Explanation showing that the user has granted limited access to their photos and can change that in the Settings app."
-        )
-
-        let button = OWSFlatButton()
-        button.useDefaultCornerRadius()
-        button.setTitle(
-            title: OWSLocalizedString(
-                "IMAGE_PICKER_CHANGE_PHOTOS",
-                comment: "Button that will present a view for the user to change the photos Signal has access to."
-            ),
-            font: fixedFont,
-            titleColor: .ows_white
-        )
-        button.contentEdgeInsets = UIEdgeInsets(top: 5, leading: 12, bottom: 5, trailing: 12)
-        button.setBackgroundColors(upColor: .ows_accentBlue)
-
-        let buttonContainer = UIView()
-        buttonContainer.addSubview(button)
-        button.autoPinEdge(toSuperviewEdge: .top, withInset: 4)
-        button.autoPinEdge(toSuperviewEdge: .bottom, withInset: 4)
-        button.autoHCenterInSuperview()
-        button.autoMatch(.width, to: .width, of: buttonContainer, withOffset: 0, relation: .lessThanOrEqual)
-        button.setPressedBlock {
-            guard #available(iOS 14, *),
-                let frontmostVC = CurrentAppContext().frontmostViewController() else { return }
-            PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: frontmostVC)
-        }
-
-        let topSpacer = UIView.vStretchingSpacer()
-        let bottomSpacer = UIView.vStretchingSpacer()
-
-        let stackView = UIStackView(arrangedSubviews: [topSpacer, titleLabel, explanationLabel, buttonContainer, bottomSpacer])
-        stackView.axis = .vertical
-        stackView.spacing = 4
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-
-        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
-
-        contentView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewEdges()
-    }
-
-    @available(*, unavailable, message: "Unimplemented")
-    required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
 private class RecentPhotoCell: UICollectionViewCell {
 
     static let reuseIdentifier = "RecentPhotoCell"
 
-    let imageView = UIImageView()
+    private let imageView = UIImageView()
     private var contentTypeBadgeView: UIImageView?
     private var durationLabel: UILabel?
     private var durationLabelBackground: UIView?
-    let loadingIndicator = UIActivityIndicatorView(style: .large)
+    private let loadingIndicator = UIActivityIndicatorView(style: .large)
 
-    var item: PhotoGridItem?
+    private var item: PhotoGridItem?
 
     override init(frame: CGRect) {
 
         super.init(frame: frame)
 
-        imageView.contentMode = .scaleAspectFill
         clipsToBounds = true
-        layer.cornerRadius = 4
 
+        imageView.contentMode = .scaleAspectFill
         contentView.addSubview(imageView)
         imageView.autoPinEdgesToSuperviewEdges()
 
@@ -296,8 +201,26 @@ private class RecentPhotoCell: UICollectionViewCell {
     }
 
     @available(*, unavailable, message: "Unimplemented")
-    required public init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override var frame: CGRect {
+        didSet {
+            updateCornerRadius()
+        }
+    }
+
+    override var bounds: CGRect {
+        didSet {
+            updateCornerRadius()
+        }
+    }
+
+    private func updateCornerRadius() {
+        let cellSize = min(bounds.width, bounds.height)
+        guard cellSize > 0 else { return }
+        layer.cornerRadius = (cellSize * 13 / 84).rounded()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -309,7 +232,7 @@ private class RecentPhotoCell: UICollectionViewCell {
         }
     }
 
-    var image: UIImage? {
+    private var image: UIImage? {
         get { return imageView.image }
         set {
             imageView.image = newValue
@@ -390,7 +313,7 @@ private class RecentPhotoCell: UICollectionViewCell {
         durationLabel.sizeToFit()
     }
 
-    public func configure(item: PhotoGridItem, isLoading: Bool) {
+    func configure(item: PhotoGridItem, isLoading: Bool) {
         self.item = item
 
         image = item.asyncThumbnail { [weak self] image in
@@ -410,7 +333,7 @@ private class RecentPhotoCell: UICollectionViewCell {
         if isLoading { startLoading() }
     }
 
-    override public func prepareForReuse() {
+    override func prepareForReuse() {
         super.prepareForReuse()
 
         item = nil
@@ -418,11 +341,11 @@ private class RecentPhotoCell: UICollectionViewCell {
         stopLoading()
     }
 
-    func startLoading() {
+    private func startLoading() {
         loadingIndicator.startAnimating()
     }
 
-    func stopLoading() {
+    private func stopLoading() {
         loadingIndicator.stopAnimating()
     }
 }

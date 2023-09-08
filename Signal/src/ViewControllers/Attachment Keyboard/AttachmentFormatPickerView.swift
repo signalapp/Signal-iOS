@@ -9,64 +9,42 @@ import SignalUI
 import UIKit
 
 protocol AttachmentFormatPickerDelegate: AnyObject {
-    func didTapCamera()
+    func didTapPhotos()
     func didTapGif()
     func didTapFile()
     func didTapContact()
     func didTapLocation()
     func didTapPayment()
-
-    var isGroup: Bool { get }
 }
 
 class AttachmentFormatPickerView: UICollectionView {
     weak var attachmentFormatPickerDelegate: AttachmentFormatPickerDelegate?
 
-    var itemSize: CGSize = .zero {
-        didSet {
-            guard oldValue != itemSize else { return }
-            updateLayout()
-        }
-    }
+    static let itemSize = CGSize(width: 76, height: 122)
 
-    private let collectionViewFlowLayout = RTLEnabledCollectionViewFlowLayout()
+    private let collectionViewFlowLayout: UICollectionViewFlowLayout = {
+        let layout = RTLEnabledCollectionViewFlowLayout()
+        layout.itemSize = AttachmentFormatPickerView.itemSize
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 12
+        return layout
+    }()
 
-    private var isGroup: Bool {
-        guard let attachmentFormatPickerDelegate else {
-            owsFailDebug("Missing attachmentFormatPickerDelegate.")
-            return false
-        }
-        return attachmentFormatPickerDelegate.isGroup
-    }
+    private let isGroup: Bool
 
-    init() {
+    init(isGroup: Bool) {
+        self.isGroup = isGroup
+
         super.init(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
 
-        dataSource = self
         delegate = self
-        showsHorizontalScrollIndicator = false
-
-        contentInset = UIEdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6)
+        dataSource = self
 
         backgroundColor = .clear
-
+        showsHorizontalScrollIndicator = false
+        let horizontalInset = OWSTableViewController2.defaultHOuterMargin
+        contentInset = UIEdgeInsets(top: 0, leading: horizontalInset, bottom: 0, trailing: horizontalInset)
         register(AttachmentFormatCell.self, forCellWithReuseIdentifier: AttachmentFormatCell.reuseIdentifier)
-
-        collectionViewFlowLayout.scrollDirection = .horizontal
-        collectionViewFlowLayout.minimumLineSpacing = 6
-
-        updateLayout()
-    }
-
-    private func updateLayout() {
-        AssertIsOnMainThread()
-
-        guard itemSize.height > 0, itemSize.width > 0 else { return }
-
-        collectionViewFlowLayout.itemSize = itemSize
-        collectionViewFlowLayout.invalidateLayout()
-
-        reloadData()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -74,15 +52,15 @@ class AttachmentFormatPickerView: UICollectionView {
     }
 }
 
-enum AttachmentType: String, CaseIterable, Dependencies {
-    case camera
+private enum AttachmentType: String, CaseIterable, Dependencies {
+    case photo
     case gif
     case file
     case payment
     case contact
     case location
 
-    static var contactCases: [AttachmentType] {
+    private static var contactCases: [AttachmentType] {
         if payments.shouldShowPaymentsUI {
             return allCases
         } else {
@@ -90,11 +68,11 @@ enum AttachmentType: String, CaseIterable, Dependencies {
         }
     }
 
-    static var groupCases: [AttachmentType] {
+    private static var groupCases: [AttachmentType] {
         everythingExceptPayments
     }
 
-    static var everythingExceptPayments: [AttachmentType] {
+    private static var everythingExceptPayments: [AttachmentType] {
         return allCases.filter { (value: AttachmentType) in
             value != .payment
         }
@@ -110,8 +88,8 @@ enum AttachmentType: String, CaseIterable, Dependencies {
 extension AttachmentFormatPickerView: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch AttachmentType.cases(isGroup: isGroup)[indexPath.row] {
-        case .camera:
-            attachmentFormatPickerDelegate?.didTapCamera()
+        case .photo:
+            attachmentFormatPickerDelegate?.didTapPhotos()
         case .contact:
             attachmentFormatPickerDelegate?.didTapContact()
         case .file:
@@ -153,46 +131,42 @@ private class AttachmentFormatCell: UICollectionViewCell {
 
     static let reuseIdentifier = "AttachmentFormatCell"
 
-    let imageView = UIImageView()
-    let label = UILabel()
-
-    var attachmentType: AttachmentType?
-
-    override init(frame: CGRect) {
-
-        super.init(frame: frame)
-
-        backgroundColor = Theme.attachmentKeyboardItemBackgroundColor
-
-        clipsToBounds = true
-        layer.cornerRadius = 4
-
-        contentView.addSubview(imageView)
-        imageView.autoHCenterInSuperview()
-        imageView.autoSetDimensions(to: CGSize(square: 32))
-        imageView.contentMode = .scaleAspectFit
-
-        label.font = UIFont.dynamicTypeFootnoteClamped.semibold()
-        label.textColor = Theme.attachmentKeyboardItemImageColor
+    private lazy var imageViewPillBox: UIView = {
+        let pillView = PillView()
+        pillView.backgroundColor = UIColor(dynamicProvider: { _ in
+            Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.16) : UIColor(white: 0, alpha: 0.08)
+        })
+        pillView.autoSetDimension(.height, toSize: 50)
+        return pillView
+    }()
+    private lazy var imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .center
+        return imageView
+    }()
+    private lazy var textLabel: UILabel = {
+        let label = UILabel()
+        label.font = .dynamicTypeFootnoteClamped.semibold()
+        label.textColor = Theme.secondaryTextAndIconColor
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
-        contentView.addSubview(label)
-        label.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: 3)
-        label.autoPinWidthToSuperviewMargins()
+        return label
+    }()
 
-        // Vertically center things
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
-        let topSpacer = UILayoutGuide()
-        let bottomSpacer = UILayoutGuide()
-        contentView.addLayoutGuide(topSpacer)
-        contentView.addLayoutGuide(bottomSpacer)
+        imageViewPillBox.addSubview(imageView)
+        imageView.autoPinEdgesToSuperviewEdges()
 
-        topSpacer.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-        bottomSpacer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
-        topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor).isActive = true
+        let stackView = UIStackView(arrangedSubviews: [imageViewPillBox, textLabel])
+        stackView.axis = .vertical
+        stackView.spacing = 8
 
-        imageView.topAnchor.constraint(equalTo: topSpacer.bottomAnchor).isActive = true
-        label.bottomAnchor.constraint(equalTo: bottomSpacer.topAnchor).isActive = true
+        contentView.addSubview(stackView)
+        stackView.autoPinWidthToSuperview()
+        stackView.autoPinHeightToSuperview(relation: .lessThanOrEqual)
+        stackView.autoAlignAxis(toSuperviewAxis: .horizontal)
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -200,16 +174,14 @@ private class AttachmentFormatCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func configure(type: AttachmentType) {
-        self.attachmentType = type
-
+    func configure(type: AttachmentType) {
         let imageName: String
         let text: String
 
         switch type {
-        case .camera:
-            text = OWSLocalizedString("ATTACHMENT_KEYBOARD_CAMERA", comment: "A button to open the camera from the Attachment Keyboard")
-            imageName = "camera-28"
+        case .photo:
+            text = OWSLocalizedString("ATTACHMENT_KEYBOARD_PHOTOS", comment: "A button to open the photo picker from the Attachment Keyboard")
+            imageName = "album-tilt-28"
         case .contact:
             text = OWSLocalizedString("ATTACHMENT_KEYBOARD_CONTACT", comment: "A button to select a contact from the Attachment Keyboard")
             imageName = "person-circle-28"
@@ -227,20 +199,9 @@ private class AttachmentFormatCell: UICollectionViewCell {
             imageName = "payment-28"
         }
 
-        label.text = text
+        textLabel.text = text
         imageView.image = UIImage(imageLiteralResourceName: imageName)
-        imageView.tintColor = Theme.isDarkThemeEnabled ? Theme.attachmentKeyboardItemImageColor : Theme.primaryIconColor
-
-        self.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "format-\(type.rawValue)")
-    }
-
-    override public func prepareForReuse() {
-        super.prepareForReuse()
-
-        attachmentType = nil
-        imageView.image = nil
-
-        label.textColor = Theme.attachmentKeyboardItemImageColor
-        backgroundColor = Theme.attachmentKeyboardItemBackgroundColor
+        imageView.tintColor = Theme.isDarkThemeEnabled ? .white : .black
+        accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "format-\(type.rawValue)")
     }
 }
