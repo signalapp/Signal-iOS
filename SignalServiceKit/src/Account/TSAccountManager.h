@@ -117,17 +117,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 @property (nonatomic, copy, nullable) void (^didStoreLocalNumber)(LocalIdentifiersObjC *);
 
-#pragma mark - Re-registration
-
-// Re-registration is the process of re-registering _with the same phone number_.
-
-// Returns YES on success.
-- (BOOL)resetForReregistration;
-- (void)resetForReregistrationWithLocalPhoneNumber:(E164ObjC *)localPhoneNumber
-                                          localAci:(AciObjC *)localAci
-                                  wasPrimaryDevice:(BOOL)wasPrimaryDevice
-                                       transaction:(SDSAnyWriteTransaction *)transaction;
-
 #pragma mark - Change Phone Number
 
 /// Update local state concerning the phone number.

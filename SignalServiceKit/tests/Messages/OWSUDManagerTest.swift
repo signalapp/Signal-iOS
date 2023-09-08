@@ -239,7 +239,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
         }.done { senderCertificates in
             let sendingAccess = self.udManagerImpl.udSendingAccess(
-                for: bobRecipientAddress.serviceIdObjC!,
+                for: bobRecipientAddress.serviceId!,
                 requireSyncAccess: false,
                 senderCertificates: senderCertificates
             )!
@@ -260,7 +260,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
         }.done { senderCertificates in
             let sendingAccess = self.udManagerImpl.udSendingAccess(
-                for: bobRecipientAddress.serviceIdObjC!,
+                for: bobRecipientAddress.serviceId!,
                 requireSyncAccess: false,
                 senderCertificates: senderCertificates
             )!
@@ -302,7 +302,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
         }.done { senderCertificates in
             let sendingAccess = self.udManagerImpl.udSendingAccess(
-                for: AciObjC(bobAci),
+                for: bobAci,
                 requireSyncAccess: false,
                 senderCertificates: senderCertificates
             )!
@@ -321,7 +321,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
         }.done { senderCertificates in
             let sendingAccess = self.udManagerImpl.udSendingAccess(
-                for: AciObjC(bobAci),
+                for: bobAci,
                 requireSyncAccess: false,
                 senderCertificates: senderCertificates
             )!
@@ -343,7 +343,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
         }.done { senderCertificates in
             let sendingAccess = self.udManagerImpl.udSendingAccess(
-                for: bobRecipientAddress.serviceIdObjC!,
+                for: bobRecipientAddress.serviceId!,
                 requireSyncAccess: false,
                 senderCertificates: senderCertificates
             )!

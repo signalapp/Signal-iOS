@@ -354,6 +354,78 @@ public extension TSAccountManager {
         return state.isTransferInProgress || state.wasTransferred || state.isDeregistered
     }
 
+    // MARK: - Re-Registration
+
+    func resetForReregistration() -> Bool {
+        let oldAccountState = getOrLoadAccountStateWithSneakyTransaction()
+        guard let localNumber = E164(oldAccountState.localNumber) else {
+            owsFailDebug("Can't re-register without valid phone number.")
+            return false
+        }
+        guard let localAci = oldAccountState.localAci?.wrappedAciValue else {
+            owsFailDebug("Can't re-register without valid aci.")
+            return false
+        }
+        let wasPrimaryDevice = oldAccountState.deviceId == OWSDevice.primaryDeviceId
+        databaseStorage.write { tx in
+            resetForReregistration(
+                localPhoneNumber: localNumber,
+                localAci: localAci,
+                wasPrimaryDevice: wasPrimaryDevice,
+                transaction: tx
+            )
+        }
+        return true
+    }
+
+    func resetForReregistration(
+        localPhoneNumber: E164,
+        localAci: Aci,
+        wasPrimaryDevice: Bool,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        do {
+            objc_sync_enter(self)
+            defer { objc_sync_exit(self) }
+
+            self.phoneNumberAwaitingVerification = nil
+            self.aciAwaitingVerification = nil
+            self.pniAwaitingVerification = nil
+
+            keyValueStore.removeAll(transaction: tx)
+            resetSessionStores(transaction: tx)
+            senderKeyStore.resetSenderKeyStore(transaction: tx)
+            udManager.removeSenderCertificates(transaction: tx)
+            versionedProfiles.clearProfileKeyCredentials(transaction: tx)
+            groupsV2.clearTemporalCredentials(transaction: tx)
+            keyValueStore.setObject(
+                localPhoneNumber.stringValue,
+                key: TSAccountManager_ReregisteringPhoneNumberKey,
+                transaction: tx
+            )
+            keyValueStore.setObject(
+                localAci.serviceIdUppercaseString,
+                key: TSAccountManager_ReregisteringUUIDKey,
+                transaction: tx
+            )
+            keyValueStore.setBool(false, key: TSAccountManager_IsOnboardedKey, transaction: tx)
+
+            if wasPrimaryDevice {
+                // Don't reset payments state at this time.
+            } else {
+                // PaymentsEvents will dispatch this event to the appropriate singletons.
+                paymentsEvents.clearState(transaction: tx)
+            }
+
+            loadAccountState(with: tx)
+        }
+
+        tx.addAsyncCompletionOnMain {
+            self.postRegistrationStateDidChangeNotification()
+            self.postOnboardingStateDidChangeNotification()
+        }
+    }
+
     // MARK: - Account Attributes & Capabilities
 
     private static var aciRegistrationIdKey: String { "TSStorageLocalRegistrationId" }

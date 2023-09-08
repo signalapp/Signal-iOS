@@ -526,6 +526,61 @@ public extension OWSProfileManager {
     private static let hasUpdatedStorageServiceKey = "hasUpdatedStorageServiceKey"
 }
 
+// MARK: - Other User's Profiles
+
+extension OWSProfileManager {
+    @objc
+    func setProfileKeyData(
+        _ profileKeyData: Data,
+        forAddress addressParam: SignalServiceAddress,
+        onlyFillInIfMissing: Bool,
+        userProfileWriter: UserProfileWriter,
+        authedAccount: AuthedAccount,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        let address = OWSUserProfile.resolve(addressParam)
+
+        guard let profileKey = OWSAES256Key(data: profileKeyData) else {
+            owsFailDebug("Invalid profile key data.")
+            return
+        }
+
+        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: address, authedAccount: authedAccount, transaction: tx)
+
+        if onlyFillInIfMissing, userProfile.profileKey != nil {
+            return
+        }
+
+        if profileKey.keyData == userProfile.profileKey?.keyData {
+            return
+        }
+
+        if let addressAci = addressParam.serviceId as? Aci {
+            // Whenever a user's profile key changes, we need to fetch a new
+            // profile key credential for them.
+            versionedProfiles.clearProfileKeyCredential(for: AciObjC(addressAci), transaction: tx)
+        }
+
+        userProfile.update(
+            profileKey: profileKey,
+            userProfileWriter: userProfileWriter,
+            authedAccount: authedAccount,
+            transaction: tx,
+            completion: {
+                DispatchQueue.global().async {
+                    // If this is the profile for the local user, we always want to defer to local state
+                    // so skip the update profile for address call.
+                    if OWSUserProfile.isLocalProfileAddress(address) || authedAccount.isAddressForLocalUser(address) {
+                        return
+                    }
+                    self.udManager.setUnidentifiedAccessMode(.unknown, address: address)
+                    self.fetchProfile(for: address, authedAccount: authedAccount)
+                }
+            }
+        )
+    }
+}
+
 // MARK: - Bulk Fetching
 
 extension OWSProfileManager {

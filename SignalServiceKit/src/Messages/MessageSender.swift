@@ -410,17 +410,7 @@ extension MessageSender {
             // re-enable message sending.
             return DependenciesBridge.shared.preKeyManager.rotateSignedPreKeys()
         }.then(on: DispatchQueue.global()) { () -> Promise<SenderCertificates> in
-            let (promise, future) = Promise<SenderCertificates>.pending()
-            self.udManager.ensureSenderCertificates(
-                certificateExpirationPolicy: .permissive,
-                success: { senderCertificates in
-                    future.resolve(senderCertificates)
-                },
-                failure: { error in
-                    future.reject(error)
-                }
-            )
-            return promise
+            self.udManager.ensureSenderCertificates(certificateExpirationPolicy: .permissive)
         }
     }
 
@@ -769,8 +759,8 @@ extension MessageSender {
             }
             sendingAccessMap[serviceId] = (
                 message.isStorySend
-                ? udManager.storySendingAccess(for: ServiceIdObjC.wrapValue(serviceId), senderCertificates: senderCertificates)
-                : udManager.udSendingAccess(for: ServiceIdObjC.wrapValue(serviceId), requireSyncAccess: true, senderCertificates: senderCertificates)
+                ? udManager.storySendingAccess(for: serviceId, senderCertificates: senderCertificates)
+                : udManager.udSendingAccess(for: serviceId, requireSyncAccess: true, senderCertificates: senderCertificates)
             )
         }
 

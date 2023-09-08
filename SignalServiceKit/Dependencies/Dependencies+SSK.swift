@@ -191,10 +191,12 @@ public extension NSObject {
         SSKEnvironment.shared.typingIndicatorsRef
     }
 
+    @nonobjc
     final var udManager: OWSUDManager {
         SSKEnvironment.shared.udManagerRef
     }
 
+    @nonobjc
     static var udManager: OWSUDManager {
         SSKEnvironment.shared.udManagerRef
     }

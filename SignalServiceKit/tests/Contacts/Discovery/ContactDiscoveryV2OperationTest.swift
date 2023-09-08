@@ -13,7 +13,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
     // MARK: - Mocks
 
     private class MockUDManager: ContactDiscoveryV2Operation.Shims.UDManager {
-        func fetchAllAciUakPairsWithSneakyTransaction() -> [AciObjC: SMKUDAccessKey] { return [:] }
+        func fetchAllAciUakPairsWithSneakyTransaction() -> [Aci: SMKUDAccessKey] { return [:] }
     }
 
     private class MockContactDiscoveryV2PersistentState: ContactDiscoveryV2PersistentState {

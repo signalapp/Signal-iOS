@@ -169,7 +169,7 @@ final class ContactDiscoveryV2Operation {
         request.aciUakPairs = { () -> Data in
             var result = Data()
             for (aci, uak) in udManager.fetchAllAciUakPairsWithSneakyTransaction() {
-                result.append(contentsOf: aci.wrappedAciValue.serviceIdBinary)
+                result.append(contentsOf: aci.serviceIdBinary)
                 result.append(uak.keyData)
             }
             return result
@@ -458,7 +458,7 @@ extension ContactDiscoveryV2Operation {
 }
 
 protocol _ContactDiscoveryV2Operation_UDManagerShim {
-    func fetchAllAciUakPairsWithSneakyTransaction() -> [AciObjC: SMKUDAccessKey]
+    func fetchAllAciUakPairsWithSneakyTransaction() -> [Aci: SMKUDAccessKey]
 }
 
 class _ContactDiscoveryV2Operation_UDManagerWrapper: _ContactDiscoveryV2Operation_UDManagerShim {
@@ -470,7 +470,7 @@ class _ContactDiscoveryV2Operation_UDManagerWrapper: _ContactDiscoveryV2Operatio
         self.udManager = udManager
     }
 
-    func fetchAllAciUakPairsWithSneakyTransaction() -> [AciObjC: SMKUDAccessKey] {
+    func fetchAllAciUakPairsWithSneakyTransaction() -> [Aci: SMKUDAccessKey] {
         db.read { tx in udManager.fetchAllAciUakPairs(tx: SDSDB.shimOnlyBridge(tx)) }
     }
 }

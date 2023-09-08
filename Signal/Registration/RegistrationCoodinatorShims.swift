@@ -499,8 +499,8 @@ public class _RegistrationCoordinator_TSAccountManagerWrapper: _RegistrationCoor
         _ tx: DBWriteTransaction
     ) {
         manager.resetForReregistration(
-            withLocalPhoneNumber: .init(e164),
-            localAci: AciObjC(aci),
+            localPhoneNumber: e164,
+            localAci: aci,
             wasPrimaryDevice: true,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
