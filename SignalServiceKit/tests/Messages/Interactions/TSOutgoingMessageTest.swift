@@ -135,7 +135,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
-                recipientServiceId: otherAci,
+                recipientAci: otherAci,
                 recipientDeviceId: 1,
                 message: message,
                 tx: transaction
@@ -174,14 +174,14 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
-                recipientServiceId: otherAci,
+                recipientAci: otherAci,
                 recipientDeviceId: 1,
                 message: message,
                 tx: transaction
             )
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
-                recipientServiceId: otherAci,
+                recipientAci: otherAci,
                 recipientDeviceId: 2,
                 message: message,
                 tx: transaction
@@ -232,7 +232,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
-                recipientServiceId: otherAci,
+                recipientAci: otherAci,
                 recipientDeviceId: 1,
                 message: message,
                 tx: transaction
@@ -271,7 +271,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
-                recipientServiceId: otherAci,
+                recipientAci: otherAci,
                 recipientDeviceId: 1,
                 message: message,
                 tx: transaction
@@ -314,7 +314,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let payloadId = messageSendLog.recordPayload(messageData, for: message, tx: transaction)!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
-                recipientServiceId: otherAci,
+                recipientAci: otherAci,
                 recipientDeviceId: 1,
                 message: message,
                 tx: transaction

@@ -173,7 +173,7 @@ public class MessageSendLog {
     }
 
     func fetchPayload(
-        recipientServiceId: ServiceId,
+        recipientAci: Aci,
         recipientDeviceId: UInt32,
         timestamp: UInt64,
         tx: SDSAnyReadTransaction
@@ -192,7 +192,7 @@ public class MessageSendLog {
             let request = Payload
                 .joining(required: Payload.hasMany(Recipient.self).aliased(recipientAlias))
                 .filter(Column("sentTimestamp") == timestamp)
-                .filter(recipientAlias[Column("recipientUUID")] == recipientServiceId.serviceIdUppercaseString)
+                .filter(recipientAlias[Column("recipientUUID")] == recipientAci.serviceIdUppercaseString)
                 .filter(recipientAlias[Column("recipientDeviceId")] == Int64(recipientDeviceId))
             existingValue = try fetchUniquePayload(query: request, tx: tx)
         } catch {
@@ -271,13 +271,13 @@ public class MessageSendLog {
 
     func deviceIdsPendingDelivery(
         for payloadId: Int64,
-        recipientServiceId: ServiceId,
+        recipientAci: Aci,
         tx: SDSAnyReadTransaction
     ) -> [UInt32?]? {
         do {
             return try Recipient
                 .filter(Column("payloadId") == payloadId)
-                .filter(Column("recipientUuid") == recipientServiceId.serviceIdUppercaseString)
+                .filter(Column("recipientUuid") == recipientAci.serviceIdUppercaseString)
                 .select(Column("recipientDeviceId"), as: Int64.self)
                 .fetchAll(tx.unwrapGrdbRead.database)
                 .map { UInt32(exactly: $0) }
@@ -289,7 +289,7 @@ public class MessageSendLog {
 
     func recordPendingDelivery(
         payloadId: Int64,
-        recipientServiceId: ServiceId,
+        recipientAci: Aci,
         recipientDeviceId: UInt32,
         message: TSOutgoingMessage,
         tx: SDSAnyWriteTransaction
@@ -300,7 +300,7 @@ public class MessageSendLog {
         do {
             try Recipient(
                 payloadId: payloadId,
-                recipientUUID: recipientServiceId.serviceIdUppercaseString,
+                recipientUUID: recipientAci.serviceIdUppercaseString,
                 recipientDeviceId: Int64(recipientDeviceId)
             ).insert(tx.unwrapGrdbWrite.database)
         } catch let error as DatabaseError where error.extendedResultCode == .SQLITE_CONSTRAINT_FOREIGNKEY {
@@ -311,7 +311,7 @@ public class MessageSendLog {
 
             // This block of code just avoids a spurious assert by only asserting if the message has not been marked delivered:
             let dbCopy = TSOutgoingMessage.anyFetchOutgoingMessage(uniqueId: message.uniqueId, transaction: tx)
-            owsAssertDebug(dbCopy?.recipientState(for: SignalServiceAddress(recipientServiceId))?.deliveryTimestamp != nil)
+            owsAssertDebug(dbCopy?.recipientState(for: SignalServiceAddress(recipientAci))?.deliveryTimestamp != nil)
         } catch {
             owsFailDebug("Failed to record pending delivery \(error)")
         }
@@ -319,7 +319,7 @@ public class MessageSendLog {
 
     func recordSuccessfulDelivery(
         message: TSOutgoingMessage,
-        recipientServiceId: ServiceId,
+        recipientAci: Aci,
         recipientDeviceId: UInt32,
         tx: SDSAnyWriteTransaction
     ) {
@@ -334,7 +334,7 @@ public class MessageSendLog {
             let db = tx.unwrapGrdbWrite.database
             try Recipient
                 .filter(Column("payloadId") == payloadId)
-                .filter(Column("recipientUuid") == recipientServiceId.serviceIdUppercaseString)
+                .filter(Column("recipientUuid") == recipientAci.serviceIdUppercaseString)
                 .filter(Column("recipientDeviceId") == recipientDeviceId)
                 .deleteAll(db)
 

@@ -19,7 +19,7 @@ extension OWSOutgoingResendResponse {
 
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
         if let payloadRecord = messageSendLog.fetchPayload(
-            recipientServiceId: aci,
+            recipientAci: aci,
             recipientDeviceId: deviceId,
             timestamp: failedTimestamp,
             tx: tx

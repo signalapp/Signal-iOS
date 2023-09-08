@@ -220,8 +220,8 @@ public extension TSOutgoingMessage {
         recipientDeviceId deviceId: UInt32,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard let serviceId = recipientAddress.serviceId else {
-            // We can't be sharing our phone number b/c there's no ServiceId.
+        guard let aci = recipientAddress.serviceId as? Aci else {
+            // We can't be sharing our phone number b/c there's no ACI.
             return
         }
 
@@ -232,14 +232,14 @@ public extension TSOutgoingMessage {
         }
 
         let identityManager = DependenciesBridge.shared.identityManager
-        guard identityManager.shouldSharePhoneNumber(with: serviceId, tx: transaction.asV2Read) else {
+        guard identityManager.shouldSharePhoneNumber(with: aci, tx: transaction.asV2Read) else {
             // Not currently sharing anyway!
             return
         }
 
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
         let messagePayload = messageSendLog.fetchPayload(
-            recipientServiceId: serviceId,
+            recipientAci: aci,
             recipientDeviceId: deviceId,
             timestamp: timestamp,
             tx: transaction
@@ -251,7 +251,7 @@ public extension TSOutgoingMessage {
 
         let deviceIdsPendingDelivery = messageSendLog.deviceIdsPendingDelivery(
             for: payloadId,
-            recipientServiceId: serviceId,
+            recipientAci: aci,
             tx: transaction
         )
         guard let deviceIdsPendingDelivery, deviceIdsPendingDelivery == [deviceId] else {
@@ -271,7 +271,7 @@ public extension TSOutgoingMessage {
         }
 
         if messagePniData == currentPni.rawUUID.data {
-            identityManager.clearShouldSharePhoneNumber(with: serviceId, tx: transaction.asV2Write)
+            identityManager.clearShouldSharePhoneNumber(with: aci, tx: transaction.asV2Write)
         }
     }
 }
@@ -405,14 +405,14 @@ extension TSOutgoingMessage {
 
     @objc
     func clearMessageSendLogEntry(forRecipient address: SignalServiceAddress, deviceId: UInt32, tx: SDSAnyWriteTransaction) {
-        // MSL entries will only exist for addresses with UUIDs
-        guard let serviceId = address.serviceId else {
+        // MSL entries will only exist for addresses with ACIs
+        guard let aci = address.serviceId as? Aci else {
             return
         }
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
         messageSendLog.recordSuccessfulDelivery(
             message: self,
-            recipientServiceId: serviceId,
+            recipientAci: aci,
             recipientDeviceId: deviceId,
             tx: tx
         )

@@ -59,7 +59,7 @@ public protocol OWSIdentityManager {
 
     func shouldSharePhoneNumber(with serviceId: ServiceId, tx: DBReadTransaction) -> Bool
     func setShouldSharePhoneNumber(with recipient: Aci, tx: DBWriteTransaction)
-    func clearShouldSharePhoneNumber(with recipient: ServiceId, tx: DBWriteTransaction)
+    func clearShouldSharePhoneNumber(with recipient: Aci, tx: DBWriteTransaction)
     func clearShouldSharePhoneNumberForEveryone(tx: DBWriteTransaction)
 
     func batchUpdateIdentityKeys(for serviceIds: [ServiceId]) -> Promise<Void>
@@ -984,9 +984,12 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     // MARK: - Phone Number Sharing
 
-    public func shouldSharePhoneNumber(with serviceId: ServiceId, tx: DBReadTransaction) -> Bool {
-        let serviceIdString = serviceId.serviceIdUppercaseString
-        return shareMyPhoneNumberStore.getBool(serviceIdString, defaultValue: false, transaction: tx)
+    public func shouldSharePhoneNumber(with recipient: ServiceId, tx: DBReadTransaction) -> Bool {
+        guard let recipient = recipient as? Aci else {
+            return false
+        }
+        let aciString = recipient.serviceIdUppercaseString
+        return shareMyPhoneNumberStore.getBool(aciString, defaultValue: false, transaction: tx)
     }
 
     public func setShouldSharePhoneNumber(with recipient: Aci, tx: DBWriteTransaction) {
@@ -994,9 +997,9 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         shareMyPhoneNumberStore.setBool(true, key: aciString, transaction: tx)
     }
 
-    public func clearShouldSharePhoneNumber(with recipient: ServiceId, tx: DBWriteTransaction) {
-        let serviceIdString = recipient.serviceIdUppercaseString
-        shareMyPhoneNumberStore.removeValue(forKey: serviceIdString, transaction: tx)
+    public func clearShouldSharePhoneNumber(with recipient: Aci, tx: DBWriteTransaction) {
+        let aciString = recipient.serviceIdUppercaseString
+        shareMyPhoneNumberStore.removeValue(forKey: aciString, transaction: tx)
     }
 
     public func clearShouldSharePhoneNumberForEveryone(tx: DBWriteTransaction) {

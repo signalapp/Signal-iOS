@@ -269,12 +269,12 @@ extension MessageSender {
                             transaction: tx
                         )
 
-                        guard let payloadId = payloadId else { return }
+                        guard let payloadId = payloadId, let recipientAci = recipient.serviceId as? Aci else { return }
                         recipient.devices.forEach { deviceId in
                             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
                             messageSendLog.recordPendingDelivery(
                                 payloadId: payloadId,
-                                recipientServiceId: recipient.serviceId,
+                                recipientAci: recipientAci,
                                 recipientDeviceId: deviceId,
                                 message: message,
                                 tx: tx

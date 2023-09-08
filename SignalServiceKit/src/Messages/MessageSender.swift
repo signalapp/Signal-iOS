@@ -1364,11 +1364,11 @@ extension MessageSender {
             }
 
             deviceMessages.forEach { deviceMessage in
-                if let payloadId = messageSend.plaintextPayloadId {
+                if let payloadId = messageSend.plaintextPayloadId, let recipientAci = messageSend.serviceId as? Aci {
                     let messageSendLog = SSKEnvironment.shared.messageSendLogRef
                     messageSendLog.recordPendingDelivery(
                         payloadId: payloadId,
-                        recipientServiceId: messageSend.serviceId,
+                        recipientAci: recipientAci,
                         recipientDeviceId: deviceMessage.destinationDeviceId,
                         message: message,
                         tx: transaction
