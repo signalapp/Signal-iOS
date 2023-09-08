@@ -227,15 +227,13 @@ extension MessageSender {
             return firstly { () -> Promise<SenderKeySendResult> in
                 Logger.info("Sending sender key message with timestamp \(message.timestamp) to \(senderKeyRecipients)")
 
-                let senderCertificate = Self.senderCertificate(from: senderCertificates)
-
                 return self.sendSenderKeyRequest(
                     message: message,
                     plaintext: plaintextContent,
                     thread: thread,
                     serviceIds: senderKeyRecipients,
                     udAccessMap: udAccessMap,
-                    senderCertificate: senderCertificate
+                    senderCertificates: senderCertificates
                 )
             }.done(on: self.senderKeyQueue) { (sendResult: SenderKeySendResult) in
                 Logger.info("Sender key message with timestamp \(message.timestamp) sent! Recipients: \(sendResult.successServiceIds). Unregistered: \(sendResult.unregisteredServiceIds)")
@@ -300,8 +298,8 @@ extension MessageSender {
         }
     }
 
-    private static func senderCertificate(from senderCertificates: SenderCertificates) -> SenderCertificate {
-        switch udManager.phoneNumberSharingMode {
+    private static func senderCertificate(from senderCertificates: SenderCertificates, tx: SDSAnyReadTransaction) -> SenderCertificate {
+        switch udManager.phoneNumberSharingMode(tx: tx) {
         case .everybody:
             return senderCertificates.defaultCert
         case .nobody:
@@ -474,9 +472,10 @@ extension MessageSender {
         thread: TSThread,
         serviceIds: [ServiceId],
         udAccessMap: [ServiceId: OWSUDSendingAccess],
-        senderCertificate: SenderCertificate
+        senderCertificates: SenderCertificates
     ) -> Promise<SenderKeySendResult> {
         return self.databaseStorage.write(.promise) { writeTx -> ([Recipient], Data) in
+            let senderCertificate = Self.senderCertificate(from: senderCertificates, tx: writeTx)
             let recipients = serviceIds.map { Recipient(serviceId: $0, transaction: writeTx) }
             let ciphertext = try self.senderKeyMessageBody(
                 plaintext: plaintext,
@@ -498,7 +497,6 @@ extension MessageSender {
                 thread: thread,
                 recipients: recipients,
                 udAccessMap: udAccessMap,
-                senderCertificate: senderCertificate,
                 remainingAttempts: 3
             )
         }
@@ -514,7 +512,6 @@ extension MessageSender {
         thread: TSThread,
         recipients: [Recipient],
         udAccessMap: [ServiceId: OWSUDSendingAccess],
-        senderCertificate: SenderCertificate,
         remainingAttempts: UInt
     ) -> Promise<SenderKeySendResult> {
         return firstly { () -> Promise<HTTPResponse> in
@@ -549,7 +546,6 @@ extension MessageSender {
                         thread: thread,
                         recipients: recipients,
                         udAccessMap: udAccessMap,
-                        senderCertificate: senderCertificate,
                         remainingAttempts: remainingAttempts-1
                     )
                 } else {

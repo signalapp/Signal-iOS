@@ -232,7 +232,6 @@ public class SSKEnvironment: NSObject {
         warmCachesForObject("signalServiceAddressCache", signalServiceAddressCache.warmCaches)
         warmCachesForObject("signalService", signalService.warmCaches)
         warmCachesForObject("remoteConfigManager", remoteConfigManager.warmCaches)
-        warmCachesForObject("udManager", udManager.warmCaches)
         warmCachesForObject("blockingManager", blockingManager.warmCaches)
         warmCachesForObject("profileManager", profileManager.warmCaches)
         warmCachesForObject("receiptManager", receiptManager.prepareCachedValues)

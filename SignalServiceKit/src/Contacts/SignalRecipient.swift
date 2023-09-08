@@ -416,22 +416,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         } else {
             owsFailDebug("Missing or invalid UUID")
         }
-
-        if let obsoleteAddress {
-            transaction.addAsyncCompletion(queue: .global()) {
-                Self.udManager.setUnidentifiedAccessMode(.unknown, address: obsoleteAddress)
-            }
-        }
-
-        if aci != nil {
-            transaction.addAsyncCompletion(queue: .global()) {
-                Self.udManager.setUnidentifiedAccessMode(.unknown, address: newAddress)
-
-                if !CurrentAppContext().isRunningTests {
-                    ProfileFetcherJob.fetchProfile(address: newAddress, ignoreThrottling: true)
-                }
-            }
-        }
     }
 
     @objc

@@ -10,13 +10,15 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
 
     private var sharingFeatureEnabled: Bool = false
     private var discoverabilityFeatureEnabled: Bool = false
+    private var phoneNumberSharingMode: PhoneNumberSharingMode = .nobody
 
     // MARK: View Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        discoverabilityFeatureEnabled = FeatureFlags.phoneNumberDiscoverability && tsAccountManager.isPrimaryDevice
         sharingFeatureEnabled = FeatureFlags.phoneNumberSharing
+        discoverabilityFeatureEnabled = FeatureFlags.phoneNumberDiscoverability && tsAccountManager.isPrimaryDevice
+        phoneNumberSharingMode = databaseStorage.read { tx in udManager.phoneNumberSharingMode(tx: tx) }
         title = OWSLocalizedString(
             "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE",
             comment: "The title for phone number privacy settings.")
@@ -39,7 +41,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
             seeMyNumberSection.headerTitle = OWSLocalizedString(
                 "SETTINGS_PHONE_NUMBER_SHARING_TITLE",
                 comment: "The title for the phone number sharing setting section.")
-            seeMyNumberSection.footerTitle = Self.descriptionForCurrentMode
+            seeMyNumberSection.footerTitle = descriptionForCurrentPhoneNumberSharingMode
             seeMyNumberSection.add(sharingItem(.everybody))
             seeMyNumberSection.add(sharingItem(.nobody))
             sections.append(seeMyNumberSection)
@@ -53,10 +55,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
             findByNumberSection.footerTitle = Self.descriptionForCurrentDiscoverability
             findByNumberSection.add(discoverabilityItem(true))
 
-            if
-                FeatureFlags.phoneNumberSharing,
-                udManager.phoneNumberSharingMode != .everybody
-            {
+            if sharingFeatureEnabled, phoneNumberSharingMode != .everybody {
                 // By design, only include the 'nobody' option if
                 // phone number sharing is disabled.
                 findByNumberSection.add(discoverabilityItem(false))
@@ -83,13 +82,12 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
     }
 
     private func sharingItem(_ mode: PhoneNumberSharingMode) -> OWSTableItem {
-        let currentMode = udManager.phoneNumberSharingMode
         return OWSTableItem(
             text: Self.nameForMode(mode),
             actionBlock: { [weak self] in
-                self?.updateSharing(mode)
+                self?.updatePhoneNumberSharing(mode)
             },
-            accessoryType: currentMode == mode ? .checkmark : .none
+            accessoryType: phoneNumberSharingMode == mode ? .checkmark : .none
         )
     }
 
@@ -112,16 +110,11 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
         }
     }
 
-    private func updateSharing(_ mode: PhoneNumberSharingMode) {
-        guard udManager.phoneNumberSharingMode != mode else { return }
+    private func updatePhoneNumberSharing(_ mode: PhoneNumberSharingMode) {
+        guard phoneNumberSharingMode != mode else { return }
 
         databaseStorage.asyncWrite(block: { [weak self] transaction in
-
-            self?.udManager.setPhoneNumberSharingMode(
-                mode,
-                updateStorageService: true,
-                transaction: transaction.unwrapGrdbWrite
-            )
+            self?.udManager.setPhoneNumberSharingMode(mode, updateStorageService: true, tx: transaction)
 
             // If sharing is set to `everybody`, discovery needs to be
             // updated to match this.
@@ -133,9 +126,10 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
                     transaction: transaction
                 )
             }
-
         }) { [weak self] in
-            self?.updateTableContents()
+            guard let self else { return }
+            self.phoneNumberSharingMode = self.databaseStorage.read { tx in self.udManager.phoneNumberSharingMode(tx: tx) }
+            self.updateTableContents()
         }
     }
 }
@@ -171,8 +165,8 @@ extension PhoneNumberPrivacySettingsViewController {
         return PhoneNumberDiscoverability.descriptionForDiscoverability(tsAccountManager.isDiscoverableByPhoneNumber())
     }
 
-    fileprivate class var descriptionForCurrentMode: String {
-        switch udManager.phoneNumberSharingMode {
+    fileprivate var descriptionForCurrentPhoneNumberSharingMode: String {
+        switch phoneNumberSharingMode {
         case .everybody:
             return OWSLocalizedString(
                 "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION",

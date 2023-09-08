@@ -621,7 +621,13 @@ extension MessageSender {
         case lookUpPhoneNumbersAndTryAgain([E164])
 
         /// Perform the `sendMessageToService` step.
-        case sendMessage(serializedMessage: SerializedMessage, serviceIds: [ServiceId], thread: TSThread)
+        case sendMessage(
+            serializedMessage: SerializedMessage,
+            thread: TSThread,
+            serviceIds: [ServiceId],
+            udAccess: [ServiceId: OWSUDSendingAccess],
+            localIdentifiers: LocalIdentifiers
+        )
     }
 
     private func sendMessageToService(
@@ -711,7 +717,41 @@ extension MessageSender {
                 throw OWSAssertionError("Couldn't build message.")
             }
 
-            return .sendMessage(serializedMessage: serializedMessage, serviceIds: serviceIds, thread: thread)
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx) else {
+                throw OWSAssertionError("Not registered.")
+            }
+
+            // 2. Gather "ud sending access".
+            var sendingAccessMap = [ServiceId: OWSUDSendingAccess]()
+            let phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: tx)
+            for serviceId in serviceIds {
+                if localIdentifiers.contains(serviceId: serviceId) {
+                    continue
+                }
+                sendingAccessMap[serviceId] = (
+                    message.isStorySend
+                    ? udManager.storySendingAccess(
+                        for: serviceId,
+                        phoneNumberSharingMode: phoneNumberSharingMode,
+                        senderCertificates: senderCertificates,
+                        tx: tx
+                    )
+                    : udManager.udSendingAccess(
+                        for: serviceId,
+                        phoneNumberSharingMode: phoneNumberSharingMode,
+                        senderCertificates: senderCertificates,
+                        tx: tx
+                    )
+                )
+            }
+
+            return .sendMessage(
+                serializedMessage: serializedMessage,
+                thread: thread,
+                serviceIds: serviceIds,
+                udAccess: sendingAccessMap,
+                localIdentifiers: localIdentifiers
+            )
         }
 
         switch nextAction {
@@ -721,13 +761,15 @@ extension MessageSender {
             return Self.lookUpPhoneNumbers(phoneNumbers).then(on: DispatchQueue.global()) {
                 return try self.sendMessageToService(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
             }
-        case .sendMessage(let serializedMessage, let serviceIds, let thread):
+        case .sendMessage(let serializedMessage, let thread, let serviceIds, let udAccess, let localIdentifiers):
             let allErrors = AtomicArray<(serviceId: ServiceId, error: Error)>(lock: AtomicLock())
             return sendMessage(
                 message,
                 serializedMessage: serializedMessage,
                 in: thread,
                 to: serviceIds,
+                udAccess: udAccess,
+                localIdentifiers: localIdentifiers,
                 senderCertificates: senderCertificates,
                 sendErrorBlock: { serviceId, error in
                     allErrors.append((serviceId, error))
@@ -744,26 +786,11 @@ extension MessageSender {
         serializedMessage: SerializedMessage,
         in thread: TSThread,
         to serviceIds: [ServiceId],
+        udAccess sendingAccessMap: [ServiceId: OWSUDSendingAccess],
+        localIdentifiers: LocalIdentifiers,
         senderCertificates: SenderCertificates,
         sendErrorBlock: @escaping (ServiceId, Error) -> Void
     ) -> Promise<Void> {
-        guard let localIdentifiers = tsAccountManager.localIdentifiers else {
-            return Promise(error: OWSAssertionError("Not registered."))
-        }
-
-        // 2. Gather "ud sending access".
-        var sendingAccessMap = [ServiceId: OWSUDSendingAccess]()
-        for serviceId in serviceIds {
-            if localIdentifiers.contains(serviceId: serviceId) {
-                continue
-            }
-            sendingAccessMap[serviceId] = (
-                message.isStorySend
-                ? udManager.storySendingAccess(for: serviceId, senderCertificates: senderCertificates)
-                : udManager.udSendingAccess(for: serviceId, requireSyncAccess: true, senderCertificates: senderCertificates)
-            )
-        }
-
         // 3. If we have any participants that support sender key, build a promise
         // for their send.
         let senderKeyStatus = senderKeyStatus(for: thread, intendedRecipients: serviceIds, udAccessMap: sendingAccessMap)

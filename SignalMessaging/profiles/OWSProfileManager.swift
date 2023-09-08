@@ -561,22 +561,22 @@ extension OWSProfileManager {
             versionedProfiles.clearProfileKeyCredential(for: AciObjC(addressAci), transaction: tx)
         }
 
+        // If this is the profile for the local user, we always want to defer to local state
+        // so skip the update profile for address call.
+        let isLocalAddress = OWSUserProfile.isLocalProfileAddress(address) || authedAccount.isAddressForLocalUser(address)
+        if !isLocalAddress, let serviceId = address.serviceId {
+            udManager.setUnidentifiedAccessMode(.unknown, for: serviceId, tx: tx)
+            tx.addAsyncCompletionOffMain {
+                self.fetchProfile(for: address, authedAccount: authedAccount)
+            }
+        }
+
         userProfile.update(
             profileKey: profileKey,
             userProfileWriter: userProfileWriter,
             authedAccount: authedAccount,
             transaction: tx,
-            completion: {
-                DispatchQueue.global().async {
-                    // If this is the profile for the local user, we always want to defer to local state
-                    // so skip the update profile for address call.
-                    if OWSUserProfile.isLocalProfileAddress(address) || authedAccount.isAddressForLocalUser(address) {
-                        return
-                    }
-                    self.udManager.setUnidentifiedAccessMode(.unknown, address: address)
-                    self.fetchProfile(for: address, authedAccount: authedAccount)
-                }
-            }
+            completion: nil
         )
     }
 }

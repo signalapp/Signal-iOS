@@ -1104,7 +1104,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         builder.setLinkPreviews(linkPreviewsEnabled)
 
-        let phoneNumberSharingMode = udManager.phoneNumberSharingMode
+        let phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction)
         builder.setPhoneNumberSharingMode(phoneNumberSharingMode.asProtoMode)
 
         let notDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber(with: transaction)
@@ -1305,14 +1305,10 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             SSKPreferences.setAreLegacyLinkPreviewsEnabled(record.proxiedLinkPreviews, transaction: transaction)
         }
 
-        let localPhoneNumberSharingMode = udManager.phoneNumberSharingMode
+        let localPhoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction)
         if record.phoneNumberSharingMode != localPhoneNumberSharingMode.asProtoMode {
             if let localMode = record.phoneNumberSharingMode?.asLocalMode {
-                udManager.setPhoneNumberSharingMode(
-                    localMode,
-                    updateStorageService: false,
-                    transaction: transaction.unwrapGrdbWrite
-                )
+                udManager.setPhoneNumberSharingMode(localMode, updateStorageService: false, tx: transaction)
             } else {
                 Logger.error("Unknown phone number sharing mode \(String(describing: record.phoneNumberSharingMode))")
             }

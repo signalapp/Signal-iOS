@@ -112,25 +112,29 @@ public class OWSUDSendingAccess: NSObject {
 
 public protocol OWSUDManager {
 
-    func warmCaches()
-
     var trustRoot: ECPublicKey { get }
 
     // MARK: - Recipient State
 
-    func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, address: SignalServiceAddress)
+    func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, for serviceId: ServiceId, tx: SDSAnyWriteTransaction)
 
-    func udAccessKey(forAddress address: SignalServiceAddress) -> SMKUDAccessKey?
+    func udAccessKey(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> SMKUDAccessKey?
 
-    func udAccess(forAddress address: SignalServiceAddress, requireSyncAccess: Bool) -> OWSUDAccess?
+    func udAccess(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> OWSUDAccess?
 
     func udSendingAccess(
         for serviceId: ServiceId,
-        requireSyncAccess: Bool,
-        senderCertificates: SenderCertificates
+        phoneNumberSharingMode: PhoneNumberSharingMode,
+        senderCertificates: SenderCertificates,
+        tx: SDSAnyReadTransaction
     ) -> OWSUDSendingAccess?
 
-    func storySendingAccess(for serviceId: ServiceId, senderCertificates: SenderCertificates) -> OWSUDSendingAccess
+    func storySendingAccess(
+        for serviceId: ServiceId,
+        phoneNumberSharingMode: PhoneNumberSharingMode,
+        senderCertificates: SenderCertificates,
+        tx: SDSAnyReadTransaction
+    ) -> OWSUDSendingAccess
 
     func fetchAllAciUakPairs(tx: SDSAnyReadTransaction) -> [Aci: SMKUDAccessKey]
 
@@ -148,12 +152,12 @@ public protocol OWSUDManager {
 
     func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
 
-    var phoneNumberSharingMode: PhoneNumberSharingMode { get }
+    func phoneNumberSharingMode(tx: SDSAnyReadTransaction) -> PhoneNumberSharingMode
 
     func setPhoneNumberSharingMode(
         _ mode: PhoneNumberSharingMode,
         updateStorageService: Bool,
-        transaction: GRDBWriteTransaction
+        tx: SDSAnyWriteTransaction
     )
 }
 
@@ -162,7 +166,6 @@ public protocol OWSUDManager {
 public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     private let keyValueStore = SDSKeyValueStore(collection: "kUDCollection")
-    private let phoneNumberAccessStore = SDSKeyValueStore(collection: "kUnidentifiedAccessCollection")
     private let serviceIdAccessStore = SDSKeyValueStore(collection: "kUnidentifiedAccessUUIDCollection")
 
     // MARK: Local Configuration State
@@ -179,16 +182,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // Exposed for testing
     public internal(set) var trustRoot: ECPublicKey
 
-    // To avoid deadlock, never open a database transaction while
-    // unfairLock is acquired.
-    private let unfairLock = UnfairLock()
-
-    // These two caches should only be accessed using unfairLock.
-    //
-    // TODO: We might not want to use comprehensive caches here.
-    private var phoneNumberAccessCache = [String: UnidentifiedAccessMode]()
-    private var serviceIdAccessCache = [ServiceId: UnidentifiedAccessMode]()
-
     public required override init() {
         self.trustRoot = OWSUDManagerImpl.trustRoot()
 
@@ -198,59 +191,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.setup()
-        }
-    }
-
-    public func warmCaches() {
-        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
-
-        let parseUnidentifiedAccessMode = { (anyValue: Any) -> UnidentifiedAccessMode? in
-            guard let nsNumber = anyValue as? NSNumber else {
-                owsFailDebug("Invalid value.")
-                return nil
-            }
-            guard let value = UnidentifiedAccessMode(rawValue: nsNumber.intValue) else {
-                owsFailDebug("Couldn't parse mode value: (nsNumber.intValue).")
-                return nil
-            }
-            return value
-        }
-
-        databaseStorage.read { transaction in
-            self.cachePhoneNumberSharingMode(transaction: transaction.unwrapGrdbRead)
-
-            self.unfairLock.withLock {
-                self.phoneNumberAccessStore.enumerateKeysAndObjects(transaction: transaction) { (phoneNumber: String, anyValue: Any, _) in
-                    guard let mode = parseUnidentifiedAccessMode(anyValue) else {
-                        databaseStorage.asyncWrite { tx in
-                            self.phoneNumberAccessStore.removeValue(forKey: phoneNumber, transaction: tx)
-                        }
-                        return
-                    }
-                    self.phoneNumberAccessCache[phoneNumber] = mode
-                }
-                var serviceIdAccessCache = [ServiceId: UnidentifiedAccessMode]()
-                self.serviceIdAccessStore.enumerateKeysAndObjects(transaction: transaction) { (serviceIdString: String, anyValue: Any, _) in
-                    guard
-                        let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString),
-                        serviceIdAccessCache[serviceId] == nil,
-                        let mode = parseUnidentifiedAccessMode(anyValue)
-                    else {
-                        // If it's not valid, or if there's duplicates, remove them. (It's possible
-                        // to have duplicates because of lowercase/uppercase UUID strings.)
-                        databaseStorage.asyncWrite { tx in
-                            self.serviceIdAccessStore.removeValue(forKey: serviceIdString, transaction: tx)
-                        }
-                        return
-                    }
-                    serviceIdAccessCache[serviceId] = mode
-                }
-                self.serviceIdAccessCache.merge(serviceIdAccessCache, uniquingKeysWith: { _, new in new })
-
-                if DebugFlags.internalLogging {
-                    Logger.info("phoneNumberAccessCache: \(phoneNumberAccessCache.count), serviceIdAccessCache: \(serviceIdAccessCache.count), ")
-                }
-            }
         }
     }
 
@@ -299,121 +239,47 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         return SMKUDAccessKey(randomKeyData: ())
     }
 
-    private func unidentifiedAccessMode(forAddress address: SignalServiceAddress) -> UnidentifiedAccessMode {
-        // Read from caches.
-        var existingServiceIdValue: UnidentifiedAccessMode?
-        var existingPhoneNumberValue: UnidentifiedAccessMode?
-        unfairLock.withLock {
-            if let serviceId = address.serviceId {
-                existingServiceIdValue = self.serviceIdAccessCache[serviceId]
+    private func unidentifiedAccessMode(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> UnidentifiedAccessMode {
+        let existingValue: UnidentifiedAccessMode? = {
+            guard let rawValue = serviceIdAccessStore.getInt(serviceId.serviceIdUppercaseString, transaction: tx) else {
+                return nil
             }
-            if let phoneNumber = address.phoneNumber {
-                existingPhoneNumberValue = self.phoneNumberAccessCache[phoneNumber]
-            }
-        }
-
-        // Resolve current value; determine if we need to update cache and database.
-        let existingValue: UnidentifiedAccessMode?
-        var shouldUpdateValues = false
-        if let existingServiceIdValue, let existingPhoneNumberValue {
-            // If ServiceId and Phone Number setting don't align, use .disabled and refresh it.
-            if existingPhoneNumberValue != existingServiceIdValue {
-                Logger.warn("Unexpected UD value mismatch; updating UD state.")
-                shouldUpdateValues = true
-                existingValue = .disabled
-
-                // Fetch profile for this user to determine current UD state.
-                self.bulkProfileFetch.fetchProfile(address: address)
-            } else {
-                existingValue = existingServiceIdValue
-            }
-        } else if let existingPhoneNumberValue {
-            existingValue = existingPhoneNumberValue
-
-            // We had phone number entry but not ServiceId, update ServiceId value.
-            if address.serviceId != nil {
-                shouldUpdateValues = true
-            }
-        } else if let existingServiceIdValue {
-            existingValue = existingServiceIdValue
-
-            // We had ServiceId entry but not phone number, update phone number value.
-            if address.phoneNumber != nil {
-                shouldUpdateValues = true
-            }
-        } else {
-            existingValue = nil
-        }
-
-        if let existingValue, shouldUpdateValues {
-            setUnidentifiedAccessMode(existingValue, address: address)
-        }
-
-        let defaultValue: UnidentifiedAccessMode =  address.isLocalAddress ? .enabled : .unknown
-        return existingValue ?? defaultValue
+            return UnidentifiedAccessMode(rawValue: rawValue)
+        }()
+        return existingValue ?? .unknown
     }
 
-    public func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, address: SignalServiceAddress) {
-        if address.isLocalAddress {
-            Logger.info("Setting local UD access mode: \(mode)")
-        }
-
-        // Update cache immediately.
-        var didChange = false
-        self.unfairLock.withLock {
-            if let serviceId = address.serviceId {
-                if self.serviceIdAccessCache[serviceId] != mode {
-                    didChange = true
-                }
-                self.serviceIdAccessCache[serviceId] = mode
-            }
-            if let phoneNumber = address.phoneNumber {
-                if self.phoneNumberAccessCache[phoneNumber] != mode {
-                    didChange = true
-                }
-                self.phoneNumberAccessCache[phoneNumber] = mode
-            }
-        }
-        guard didChange else {
-            return
-        }
-        // Update database async.
-        databaseStorage.asyncWrite { tx in
-            if let serviceId = address.serviceId {
-                self.serviceIdAccessStore.setInt(mode.rawValue, key: serviceId.serviceIdUppercaseString, transaction: tx)
-            }
-            if let phoneNumber = address.phoneNumber {
-                self.phoneNumberAccessStore.setInt(mode.rawValue, key: phoneNumber, transaction: tx)
-            }
-        }
+    public func setUnidentifiedAccessMode(
+        _ mode: UnidentifiedAccessMode,
+        for serviceId: ServiceId,
+        tx: SDSAnyWriteTransaction
+    ) {
+        serviceIdAccessStore.setInt(mode.rawValue, key: serviceId.serviceIdUppercaseString, transaction: tx)
     }
 
     public func fetchAllAciUakPairs(tx: SDSAnyReadTransaction) -> [Aci: SMKUDAccessKey] {
-        let acis = self.unfairLock.withLock {
-            self.serviceIdAccessCache.compactMap { (serviceId, mode) -> Aci? in
-                switch mode {
-                case .enabled, .unrestricted, .unknown:
-                    return serviceId as? Aci
-                case .disabled:
-                    return nil
-                }
+        let acis: [Aci] = serviceIdAccessStore.allKeys(transaction: tx).compactMap { serviceIdString in
+            guard let aci = try? ServiceId.parseFrom(serviceIdString: serviceIdString) as? Aci else {
+                return nil
+            }
+            switch unidentifiedAccessMode(for: aci, tx: tx) {
+            case .enabled, .unrestricted, .unknown:
+                return aci
+            case .disabled:
+                return nil
             }
         }
         var result = [Aci: SMKUDAccessKey]()
         for aci in acis {
-            result[aci] = udAccessKey(for: SignalServiceAddress(aci), tx: tx)
+            result[aci] = udAccessKey(for: aci, tx: tx)
         }
         return result
     }
 
     // Returns the UD access key for a given recipient
     // if we have a valid profile key for them.
-    public func udAccessKey(forAddress address: SignalServiceAddress) -> SMKUDAccessKey? {
-        return databaseStorage.read { tx in udAccessKey(for: address, tx: tx) }
-    }
-
-    private func udAccessKey(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> SMKUDAccessKey? {
-        guard let profileKey = profileManager.profileKeyData(for: address, transaction: tx) else {
+    public func udAccessKey(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> SMKUDAccessKey? {
+        guard let profileKey = profileManager.profileKeyData(for: SignalServiceAddress(serviceId), transaction: tx) else {
             return nil
         }
         do {
@@ -425,21 +291,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     // Returns the UD access key for sending to a given recipient or fetching a profile
-    public func udAccess(forAddress address: SignalServiceAddress, requireSyncAccess: Bool) -> OWSUDAccess? {
-        if requireSyncAccess {
-            guard tsAccountManager.localAddress != nil else {
-                owsFailDebug("Missing local number.")
-                return nil
-            }
-            if address.isLocalAddress {
-                let selfAccessMode = unidentifiedAccessMode(forAddress: address)
-                guard selfAccessMode != .disabled else {
-                    return nil
-                }
-            }
-        }
-
-        let accessMode = unidentifiedAccessMode(forAddress: address)
+    public func udAccess(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> OWSUDAccess? {
+        let accessMode = unidentifiedAccessMode(for: serviceId, tx: tx)
 
         switch accessMode {
         case .unrestricted:
@@ -449,18 +302,18 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         case .unknown:
             // Unknown users should use a derived key if possible,
             // and otherwise use a random key.
-            if let udAccessKey = udAccessKey(forAddress: address) {
+            if let udAccessKey = udAccessKey(for: serviceId, tx: tx) {
                 return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
             } else {
                 let udAccessKey = randomUDAccessKey()
                 return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: true)
             }
         case .enabled:
-            guard let udAccessKey = udAccessKey(forAddress: address) else {
+            guard let udAccessKey = udAccessKey(for: serviceId, tx: tx) else {
                 // Not an error.
                 // We can only use UD if the user has UD enabled _and_
                 // we know their profile key.
-                Logger.warn("Missing profile key for UD-enabled user: \(address).")
+                Logger.warn("Missing profile key for UD-enabled user: \(serviceId).")
                 return nil
             }
             return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
@@ -472,40 +325,57 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // Returns the UD access key and appropriate sender certificate for sending to a given recipient
     public func udSendingAccess(
         for serviceId: ServiceId,
-        requireSyncAccess: Bool,
-        senderCertificates: SenderCertificates
+        phoneNumberSharingMode: PhoneNumberSharingMode,
+        senderCertificates: SenderCertificates,
+        tx: SDSAnyReadTransaction
     ) -> OWSUDSendingAccess? {
-        let address = SignalServiceAddress(serviceId)
-        guard let udAccess = self.udAccess(forAddress: address, requireSyncAccess: requireSyncAccess) else {
+        guard let udAccess = self.udAccess(for: serviceId, tx: tx) else {
             return nil
         }
-        return udSendingAccess(for: serviceId, udAccess: udAccess, senderCertificates: senderCertificates)
+        return udSendingAccess(
+            for: serviceId,
+            udAccess: udAccess,
+            phoneNumberSharingMode: phoneNumberSharingMode,
+            senderCertificates: senderCertificates,
+            tx: tx
+        )
     }
 
-    public func storySendingAccess(for serviceId: ServiceId, senderCertificates: SenderCertificates) -> OWSUDSendingAccess {
+    public func storySendingAccess(
+        for serviceId: ServiceId,
+        phoneNumberSharingMode: PhoneNumberSharingMode,
+        senderCertificates: SenderCertificates,
+        tx: SDSAnyReadTransaction
+    ) -> OWSUDSendingAccess {
         let udAccess = OWSUDAccess(udAccessKey: randomUDAccessKey(), udAccessMode: .unrestricted, isRandomKey: true)
-        return udSendingAccess(for: serviceId, udAccess: udAccess, senderCertificates: senderCertificates)
+        return udSendingAccess(
+            for: serviceId,
+            udAccess: udAccess,
+            phoneNumberSharingMode: phoneNumberSharingMode,
+            senderCertificates: senderCertificates,
+            tx: tx
+        )
     }
 
     private func udSendingAccess(
         for serviceId: ServiceId,
         udAccess: OWSUDAccess,
-        senderCertificates: SenderCertificates
+        phoneNumberSharingMode: PhoneNumberSharingMode,
+        senderCertificates: SenderCertificates,
+        tx: SDSAnyReadTransaction
     ) -> OWSUDSendingAccess {
-        let identityManager = DependenciesBridge.shared.identityManager
-        return databaseStorage.read { tx in
-            let shouldSharePhoneNumber: Bool
-            switch phoneNumberSharingMode {
-            case .everybody:
-                shouldSharePhoneNumber = true
-            case .nobody:
-                shouldSharePhoneNumber = identityManager.shouldSharePhoneNumber(with: serviceId, tx: tx.asV2Read)
-            }
-            return OWSUDSendingAccess(
-                udAccess: udAccess,
-                senderCertificate: shouldSharePhoneNumber ? senderCertificates.defaultCert : senderCertificates.uuidOnlyCert
-            )
+        let shouldSharePhoneNumber: Bool
+        switch phoneNumberSharingMode {
+        case .everybody:
+            shouldSharePhoneNumber = true
+        case .nobody:
+            let identityManager = DependenciesBridge.shared.identityManager
+            shouldSharePhoneNumber = identityManager.shouldSharePhoneNumber(with: serviceId, tx: tx.asV2Read)
         }
+        return OWSUDSendingAccess(
+            udAccess: udAccess,
+            senderCertificate: shouldSharePhoneNumber ? senderCertificates.defaultCert : senderCertificates.uuidOnlyCert
+        )
     }
 
     // MARK: - Sender Certificate
@@ -704,31 +574,33 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: - Phone Number Sharing
 
     private static var phoneNumberSharingModeKey: String { "phoneNumberSharingMode" }
-    private var phoneNumberSharingModeCached = AtomicOptional<PhoneNumberSharingMode>(nil)
 
-    public var phoneNumberSharingMode: PhoneNumberSharingMode {
-        guard FeatureFlags.phoneNumberSharing else { return .everybody }
-        return phoneNumberSharingModeCached.get() ?? .everybody
-    }
-
-    private func cachePhoneNumberSharingMode(transaction: GRDBReadTransaction) {
-        guard let rawMode = keyValueStore.getInt(Self.phoneNumberSharingModeKey, transaction: transaction.asAnyRead),
-            let mode = PhoneNumberSharingMode(rawValue: rawMode) else { return }
-        phoneNumberSharingModeCached.set(mode)
+    public func phoneNumberSharingMode(tx: SDSAnyReadTransaction) -> PhoneNumberSharingMode {
+        let result: PhoneNumberSharingMode? = {
+            guard FeatureFlags.phoneNumberSharing else {
+                return nil
+            }
+            guard let rawMode = keyValueStore.getInt(Self.phoneNumberSharingModeKey, transaction: tx) else {
+                return nil
+            }
+            return PhoneNumberSharingMode(rawValue: rawMode)
+        }()
+        return result ?? .everybody
     }
 
     public func setPhoneNumberSharingMode(
         _ mode: PhoneNumberSharingMode,
         updateStorageService: Bool,
-        transaction: GRDBWriteTransaction
+        tx: SDSAnyWriteTransaction
     ) {
-        guard FeatureFlags.phoneNumberSharing else { return }
+        guard FeatureFlags.phoneNumberSharing else {
+            return
+        }
 
-        keyValueStore.setInt(mode.rawValue, key: Self.phoneNumberSharingModeKey, transaction: transaction.asAnyWrite)
-        phoneNumberSharingModeCached.set(mode)
+        keyValueStore.setInt(mode.rawValue, key: Self.phoneNumberSharingModeKey, transaction: tx)
 
         if updateStorageService {
-            transaction.addSyncCompletion {
+            tx.addSyncCompletion {
                 Self.storageServiceManager.recordPendingLocalAccountUpdates()
             }
         }

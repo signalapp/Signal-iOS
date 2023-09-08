@@ -280,7 +280,7 @@ public class ProfileFetcherJob: NSObject {
             // Don't use UD for "self" profile fetches.
             udAccess = nil
         } else {
-            udAccess = udManager.udAccess(forAddress: SignalServiceAddress(serviceId), requireSyncAccess: false)
+            udAccess = databaseStorage.read { tx in udManager.udAccess(for: serviceId, tx: tx) }
         }
 
         var currentVersionedProfileRequest: VersionedProfileRequest?
@@ -508,14 +508,14 @@ public class ProfileFetcherJob: NSObject {
             )
         }
 
-        // This calls databaseStorage.asyncWrite { }
-        Self.updateUnidentifiedAccess(
-            address: SignalServiceAddress(serviceId),
-            verifier: profile.unidentifiedAccessVerifier,
-            hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess
-        )
-
         return databaseStorage.write(.promise) { transaction in
+            Self.updateUnidentifiedAccess(
+                serviceId: serviceId,
+                verifier: profile.unidentifiedAccessVerifier,
+                hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess,
+                tx: transaction
+            )
+
             // First, we add ensure we have a copy of any new badge in our badge store
             let badgeModels = fetchedProfile.profile.badges.map { $0.1 }
             let persistedBadgeIds: [String] = badgeModels.compactMap {
@@ -570,40 +570,41 @@ public class ProfileFetcherJob: NSObject {
         }
     }
 
-    private static func updateUnidentifiedAccess(address: SignalServiceAddress,
-                                                 verifier: Data?,
-                                                 hasUnrestrictedAccess: Bool) {
-        guard let verifier = verifier else {
-            // If there is no verifier, at least one of this user's devices
-            // do not support UD.
-            udManager.setUnidentifiedAccessMode(.disabled, address: address)
-            return
-        }
+    private static func updateUnidentifiedAccess(
+        serviceId: ServiceId,
+        verifier: Data?,
+        hasUnrestrictedAccess: Bool,
+        tx: SDSAnyWriteTransaction
+    ) {
+        let unidentifiedAccessMode: UnidentifiedAccessMode = {
+            guard let verifier else {
+                // If there is no verifier, at least one of this user's devices
+                // do not support UD.
+                return .disabled
+            }
 
-        if hasUnrestrictedAccess {
-            udManager.setUnidentifiedAccessMode(.unrestricted, address: address)
-            return
-        }
+            if hasUnrestrictedAccess {
+                return .unrestricted
+            }
 
-        guard let udAccessKey = udManager.udAccessKey(forAddress: address) else {
-            udManager.setUnidentifiedAccessMode(.disabled, address: address)
-            return
-        }
+            guard let udAccessKey = udManager.udAccessKey(for: serviceId, tx: tx) else {
+                return .disabled
+            }
 
-        let dataToVerify = Data(count: 32)
-        guard let expectedVerifier = Cryptography.computeSHA256HMAC(dataToVerify, key: udAccessKey.keyData) else {
-            owsFailDebug("could not compute verification")
-            udManager.setUnidentifiedAccessMode(.disabled, address: address)
-            return
-        }
+            let dataToVerify = Data(count: 32)
+            guard let expectedVerifier = Cryptography.computeSHA256HMAC(dataToVerify, key: udAccessKey.keyData) else {
+                owsFailDebug("could not compute verification")
+                return .disabled
+            }
 
-        guard expectedVerifier.ows_constantTimeIsEqual(to: verifier) else {
-            Logger.verbose("verifier mismatch, new profile key?")
-            udManager.setUnidentifiedAccessMode(.disabled, address: address)
-            return
-        }
+            guard expectedVerifier.ows_constantTimeIsEqual(to: verifier) else {
+                Logger.verbose("verifier mismatch, new profile key?")
+                return .disabled
+            }
 
-        udManager.setUnidentifiedAccessMode(.enabled, address: address)
+            return .enabled
+        }()
+        udManager.setUnidentifiedAccessMode(unidentifiedAccessMode, for: serviceId, tx: tx)
     }
 
     private func lastFetchDate() -> Date? {

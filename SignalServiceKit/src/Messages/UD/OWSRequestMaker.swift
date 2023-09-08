@@ -146,19 +146,25 @@ public final class RequestMaker: Dependencies {
         if let udAccess, (error.httpStatusCode == 401 || error.httpStatusCode == 403) {
             // If a UD request fails due to service response (as opposed to network
             // failure), mark recipient as _not_ in UD mode, then retry.
-            switch udAccess.udAccessMode {
-            case .unrestricted:
-                // If it was unrestricted, we *might* have the right profile key.
-                self.udManager.setUnidentifiedAccessMode(.unknown, address: self.address)
-            case .unknown, .enabled, .disabled:
-                // If it was unknown, we may have tried the real key (if we had it) or a
-                // random key. In either of these cases, we don't want to try again because
-                // it won't work.
-                self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
+            let newUdAccessMode: UnidentifiedAccessMode = {
+                switch udAccess.udAccessMode {
+                case .unrestricted:
+                    // If it was unrestricted, we *might* have the right profile key.
+                    return .unknown
+                case .unknown, .enabled, .disabled:
+                    // If it was unknown, we may have tried the real key (if we had it) or a
+                    // random key. In either of these cases, we don't want to try again because
+                    // it won't work.
+                    return .disabled
+                }
+            }()
+            databaseStorage.write { tx in
+                self.udManager.setUnidentifiedAccessMode(newUdAccessMode, for: self.serviceId, tx: tx)
             }
             if !self.options.contains(.isProfileFetch) {
                 self.profileManager.fetchProfile(for: self.address, authedAccount: self.authedAccount)
             }
+
             self.udAuthFailureBlock()
 
             if self.options.contains(.allowIdentifiedFallback) {
@@ -180,16 +186,20 @@ public final class RequestMaker: Dependencies {
         guard udAccess.udAccessMode == .unknown else {
             return
         }
-        if udAccess.isRandomKey {
-            // If a UD request succeeds for an unknown user with a random key,
-            // mark address as .unrestricted.
-            udManager.setUnidentifiedAccessMode(.unrestricted, address: address)
-        } else {
-            // If a UD request succeeds for an unknown user with a non-random key,
-            // mark address as .enabled.
-            udManager.setUnidentifiedAccessMode(.enabled, address: address)
+        let newUdAccessMode: UnidentifiedAccessMode = {
+            if udAccess.isRandomKey {
+                // If a UD request succeeds for an unknown user with a random key,
+                // mark address as .unrestricted.
+                return .unrestricted
+            } else {
+                // If a UD request succeeds for an unknown user with a non-random key,
+                // mark address as .enabled.
+                return .enabled
+            }
+        }()
+        databaseStorage.write { tx in
+            self.udManager.setUnidentifiedAccessMode(newUdAccessMode, for: self.serviceId, tx: tx)
         }
-
         if !self.options.contains(.isProfileFetch) {
             // If this request isn't a profile fetch, kick off a profile fetch. If it
             // is a profile fetch, don't bother fetching it *again*.

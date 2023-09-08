@@ -234,6 +234,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addPaymentModelInteractionUniqueId
         case addPaymentsActivationRequestModel
         case addRecipientPniColumn
+        case deletePhoneNumberAccessStore
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2343,6 +2344,13 @@ public class GRDBSchemaMigrator: NSObject {
                 columns: ["pni"],
                 options: [.unique]
             )
+            return .success(())
+        }
+
+        migrator.registerMigration(.deletePhoneNumberAccessStore) { tx in
+            try tx.database.execute(sql: """
+                DELETE FROM "keyvalue" WHERE "collection" = 'kUnidentifiedAccessCollection'
+            """)
             return .success(())
         }
 
