@@ -209,59 +209,51 @@ final class ThreadMerger: RecipientMergeObserver {
         }
     }
 
-    private func mergeThreads(aci: Aci, phoneNumber: E164, tx: DBWriteTransaction) {
+    private func mergeThreads(for recipient: SignalRecipient, tx: DBWriteTransaction) {
         // Fetch all the threads related to the new recipient. Because we don't
         // have UNIQUE constraints on the TSThread table, there might be many
-        // duplicate threads that we need to merge. We fetch the ServiceId threads
-        // first to ensure we merge *into* one of those threads where possible.
+        // duplicate threads that we need to merge. We fetch the ACI threads first
+        // to ensure we merge *into* one of those threads where possible.
 
-        var threadsToMerge = [TSContactThread]()
-
-        // We include all ServiceId threads in the merge.
-        threadsToMerge.append(contentsOf: threadStore.fetchContactThreads(serviceId: aci, tx: tx))
-
-        for thread in threadStore.fetchContactThreads(phoneNumber: phoneNumber.stringValue, tx: tx) {
-            if thread.contactUUID == nil {
-                // We only include phone number threads that don't already have some other
-                // ServiceId. (This check also excludes any threads that were included in
-                // `serviceIdThreads` because those must have a nonnil `contactUUID`.)
-                threadsToMerge.append(thread)
-            } else if thread.contactUUID == aci.serviceIdUppercaseString {
-                // This is already in `threadsToMerge`, so do nothing.
-            } else {
-                // If they do have some other UUID, we clear the phone number because we've
-                // just learned that that phone number has moved to another account.
-                thread.contactPhoneNumber = nil
-                threadStore.updateThread(thread, tx: tx)
-                Logger.info("Cleared outdated phone number for thread \(thread.uniqueId)")
-            }
-        }
+        let serviceId: ServiceId? = recipient.aci ?? recipient.pni
+        let threadsToMerge: [TSContactThread] = UniqueRecipientObjectMerger.fetchAndExpunge(
+            for: recipient,
+            serviceIdField: \.contactUUID,
+            phoneNumberField: \.contactPhoneNumber,
+            uniqueIdField: \.uniqueId,
+            fetchObjectsForServiceId: { threadStore.fetchContactThreads(serviceId: $0, tx: tx) },
+            fetchObjectsForPhoneNumber: { threadStore.fetchContactThreads(phoneNumber: $0.stringValue, tx: tx) },
+            updateObject: { threadStore.updateThread($0, tx: tx) }
+        )
 
         mergeAllThreads(threadsToMerge, tx: tx)
         if threadsToMerge.count >= 2 {
-            Logger.info("Merged \(threadsToMerge.count) threads for \(aci)")
+            Logger.info("Merged \(threadsToMerge.count) threads for \(serviceId?.logString ?? "nil")")
         }
 
-        // After we merge all threads, we're left with just one. Make sure that that thread has the new ACI/E164 pair.
+        // After we merge all threads, we're left with just one. Make sure that
+        // that thread has the new (ACI/PNI, Phone Number) pair.
         if let finalThread = threadsToMerge.first {
-            finalThread.contactUUID = aci.serviceIdUppercaseString
-            finalThread.contactPhoneNumber = phoneNumber.stringValue
+            finalThread.contactUUID = serviceId?.serviceIdUppercaseString
+            finalThread.contactPhoneNumber = recipient.phoneNumber
             threadStore.updateThread(finalThread, tx: tx)
         }
     }
 
-    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction tx: DBWriteTransaction) {
-        mergeThreads(aci: aci, phoneNumber: phoneNumber, tx: tx)
+    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {
+        mergeThreads(for: recipientAssociation.signalRecipient, tx: tx)
     }
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
-        mergeThreads(aci: mergedRecipient.aci, phoneNumber: mergedRecipient.newPhoneNumber, tx: tx)
+        mergeThreads(for: mergedRecipient.signalRecipient, tx: tx)
     }
 }
 
 // MARK: - SDS Merges
 
-/// There are a bunch of types that can't be easily mocked out for testing purposes. Until they can be, this serves as a dumping ground for code that's skipped during unit tests.
+/// There are a bunch of types that can't be easily mocked out for testing
+/// purposes. Until they can be, this serves as a dumping ground for code
+/// that's skipped during unit tests.
 class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
     func mergeThread(_ thread: TSContactThread, into targetThread: TSContactThread, tx: DBWriteTransaction) {
         let threadPair = MergePair<TSContactThread>(fromValue: thread, intoValue: targetThread)

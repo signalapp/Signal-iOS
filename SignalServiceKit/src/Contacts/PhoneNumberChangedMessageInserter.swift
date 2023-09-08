@@ -24,7 +24,7 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
         self.threadStore = threadStore
     }
 
-    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction: DBWriteTransaction) {}
+    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
         guard !mergedRecipient.isLocalRecipient else {

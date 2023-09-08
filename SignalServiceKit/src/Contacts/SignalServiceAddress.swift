@@ -68,12 +68,40 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     /// If you initialize an address with the wrong phone number, that address
     /// will keep that phone number. This method will update that phone number
     /// to match what's currently in the cache (ie what's on SignalRecipient).
-    public func normalized() -> SignalServiceAddress {
-        if let serviceId {
-            return SignalServiceAddress(serviceId)
+    public func withNormalizedPhoneNumber(cache: SignalServiceAddressCache? = nil) -> SignalServiceAddress {
+        let identifiers = cachedAddress.identifiers.get()
+        return SignalServiceAddress(
+            serviceId: identifiers.serviceId,
+            // If there's no ServiceId, then we look up the phone number in the cache.
+            phoneNumber: (identifiers.serviceId == nil) ? identifiers.phoneNumber : nil,
+            cache: cache ?? Self.signalServiceAddressCache,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
+    }
+
+    /// Returns a source-of-truth canonicalized address.
+    ///
+    /// If an address is initialized with the wrong phone number, it'll keep it
+    /// until the phone number for the ACI changes; this method will update it
+    /// immediately. If you initialize an address with a PNI, it'll keep the PNI
+    /// forever; this method will update it to the ACI (but only if the ACI,
+    /// PNI, and phone number are all known and linked to one another).
+    public func withNormalizedPhoneNumberAndServiceId(cache: SignalServiceAddressCache? = nil) -> SignalServiceAddress {
+        return withNormalizedPhoneNumber(cache: cache).withNormalizedServiceId(cache: cache)
+    }
+
+    private func withNormalizedServiceId(cache: SignalServiceAddressCache?) -> SignalServiceAddress {
+        let identifiers = cachedAddress.identifiers.get()
+        guard let phoneNumber = identifiers.phoneNumber, identifiers.serviceId is Pni else {
+            // This is a private method, and `self` is already built against `cache`.
+            return self
         }
-        // If there's no ServiceId, then we just have a phone number & can use that address.
-        return self
+        return SignalServiceAddress(
+            serviceId: nil,
+            phoneNumber: phoneNumber,
+            cache: cache ?? Self.signalServiceAddressCache,
+            cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
+        )
     }
 
     // MARK: - Initializers

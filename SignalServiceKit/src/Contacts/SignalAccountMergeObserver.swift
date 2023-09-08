@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 
 class SignalAccountMergeObserver: RecipientMergeObserver {
-    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction: DBWriteTransaction) {}
+    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
         // SignalAccounts are "merged" differently than most other types because
@@ -71,7 +71,18 @@ class SignalAccountMergeObserver: RecipientMergeObserver {
         // that's the ServiceId that's now associated with that system contact. In
         // the above example, we are replacing the ServiceId for SA2.
         if let claimedAccount = fetch(for: mergedRecipient.newPhoneNumber.stringValue, tx: tx) {
-            claimedAccount.updateServiceId(mergedRecipient.aci, tx: tx)
+            let oldServiceId = claimedAccount.recipientServiceId
+            let newServiceId = mergedRecipient.signalRecipient.aci ?? mergedRecipient.signalRecipient.pni
+            // We prefer to use ACIs instead of PNIs. If we're processing an update
+            // that adds a PNI to a SignalRecipient whose ACI we already know, that ACI
+            // should be on the SignalAccount, and there's no reason to change it.
+            //
+            // If for some reason the ServiceId on the SignalAccount is wrong
+            // (unexpectedly an ACI, the wrong PNI, etc.), `newServiceId` will contain
+            // the correct value (the one that `buildSignalAccounts` uses).
+            if let newServiceId, newServiceId != oldServiceId {
+                claimedAccount.updateServiceId(newServiceId, tx: tx)
+            }
         }
     }
 

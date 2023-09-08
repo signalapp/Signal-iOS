@@ -38,16 +38,8 @@ public class UserProfileFinder: NSObject {
                 tx: tx
             ))
         }
-        var result = [OWSUserProfile]()
-        var uniqueIds = Set<String>()
-        for userProfile in userProfiles {
-            // We might get back the exact same profile instance twice.
-            guard uniqueIds.insert(userProfile.uniqueId).inserted else {
-                continue
-            }
-            userProfile.loadBadgeContent(with: tx)
-            result.append(userProfile)
-        }
+        let result = userProfiles.removingDuplicates(uniquingElementsBy: \.uniqueId)
+        result.forEach { $0.loadBadgeContent(with: tx) }
         return result
     }
 

@@ -16,6 +16,20 @@ public extension Array where Element == String? {
     }
 }
 
+extension Array {
+    func removingDuplicates<T: Hashable>(uniquingElementsBy uniqueValue: (Element) -> T) -> [Element] {
+        var result = [Element]()
+        var uniqueValues = Set<T>()
+        for element in self {
+            guard uniqueValues.insert(uniqueValue(element)).inserted else {
+                continue
+            }
+            result.append(element)
+        }
+        return result
+    }
+}
+
 public extension Array where Element == SSKMaybeString {
     var sequenceWithNils: AnySequence<String?> {
         return AnySequence(lazy.map { $0.stringOrNil })

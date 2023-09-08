@@ -13,14 +13,15 @@ public class SignalAccountFinder: NSObject {
     ) -> SignalAccount? {
         if
             let serviceId = address.serviceId,
-            let uuidMatch = signalAccountWhere(
+            let serviceIdMatch = signalAccountWhere(
                 column: SignalAccount.columnName(.recipientServiceId),
                 matches: serviceId.serviceIdUppercaseString,
                 tx: tx
             )
         {
-            return uuidMatch
-        } else if
+            return serviceIdMatch
+        }
+        if
             let phoneNumber = address.phoneNumber,
             let phoneNumberMatch = signalAccountWhere(
                 column: SignalAccount.columnName(.recipientPhoneNumber),

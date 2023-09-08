@@ -24,6 +24,20 @@ extension Aci {
 }
 
 extension ServiceId {
+    public enum ConcreteType {
+        case aci(Aci)
+        case pni(Pni)
+    }
+
+    public var concreteType: ConcreteType {
+        switch kind {
+        case .aci: return .aci(self as! Aci)
+        case .pni: return .pni(self as! Pni)
+        }
+    }
+}
+
+extension ServiceId {
     public var temporary_rawUUID: UUID { rawUUID }
 }
 

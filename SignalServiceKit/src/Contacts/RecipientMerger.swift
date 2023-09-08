@@ -48,7 +48,7 @@ protocol RecipientMergeObserver {
     /// We are about to learn a new association between identifiers.
     ///
     /// This is called for the identifiers that will no longer be linked.
-    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction: DBWriteTransaction)
+    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction)
 
     /// We just learned a new association between identifiers.
     ///
@@ -57,6 +57,12 @@ protocol RecipientMergeObserver {
     /// two or more identifiers, and if it's the first time we've learned that
     /// they're linked, this callback will be invoked.
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction)
+}
+
+struct RecipientAssociation {
+    let serviceId: ServiceId
+    let phoneNumber: E164
+    let signalRecipient: SignalRecipient
 }
 
 struct MergedRecipient {
@@ -265,7 +271,11 @@ class RecipientMergerImpl: RecipientMerger {
         // After this point, everything new will be associated with ACI_B.
         if let phoneNumberRecipient, let oldAci = phoneNumberRecipient.aci {
             for observer in observers {
-                observer.willBreakAssociation(aci: oldAci, phoneNumber: phoneNumber, transaction: transaction)
+                observer.willBreakAssociation(RecipientAssociation(
+                    serviceId: oldAci,
+                    phoneNumber: phoneNumber,
+                    signalRecipient: phoneNumberRecipient
+                ), tx: transaction)
             }
         }
 
@@ -430,7 +440,7 @@ class RecipientMergerImpl: RecipientMerger {
 // MARK: - SignalServiceAddressCache
 
 extension SignalServiceAddressCache: RecipientMergeObserver {
-    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction: DBWriteTransaction) {}
+    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
         updateRecipient(mergedRecipient.signalRecipient)

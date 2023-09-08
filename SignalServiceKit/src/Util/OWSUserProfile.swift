@@ -76,6 +76,10 @@ public class OWSUserProfileBadgeInfo: NSObject, SDSSwiftSerializable {
     }
 }
 
+extension OWSUserProfile {
+    public var serviceId: ServiceId? { recipientUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) } }
+}
+
 @objc
 public extension OWSUserProfile {
 
@@ -292,7 +296,7 @@ public extension OWSUserProfile {
         authedAccount: AuthedAccount,
         transaction tx: SDSAnyWriteTransaction
     ) -> OWSUserProfile {
-        let address = resolve(address.normalized())
+        let address = resolve(address.withNormalizedPhoneNumber())
         owsAssertDebug(address.isValid)
 
         // If we already have a profile for this address, return it.

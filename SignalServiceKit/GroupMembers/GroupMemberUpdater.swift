@@ -55,26 +55,14 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
         // we sort group members based on their most recent interaction, we'll
         // always keep the preferred group member.
 
-        // PNI TODO: Ensure that the ACI & PNI are never added to the same group.
-
         // This is the source of truth; we want to make the TSGroupMember objects
         // on disk match this list of addresses. However, `fullMembers` is decoded
         // from disk, so it may have outdated phone number information. Re-create
         // each address without specifying a phone number to ensure that we only
         // use values contained in the cache.
-        var expectedAddresses = Set<SignalServiceAddress>()
-        for fullMemberAddress in groupThread.groupMembership.fullMembers {
-            if let serviceId = fullMemberAddress.serviceId {
-                expectedAddresses.insert(SignalServiceAddress(
-                    serviceId: serviceId,
-                    phoneNumber: nil,
-                    cache: signalServiceAddressCache,
-                    cachePolicy: .preferInitialPhoneNumberAndListenForUpdates
-                ))
-            } else {
-                expectedAddresses.insert(fullMemberAddress)
-            }
-        }
+        var expectedAddresses = Set(groupThread.groupMembership.fullMembers.lazy.map { address in
+            address.withNormalizedPhoneNumberAndServiceId(cache: self.signalServiceAddressCache)
+        })
 
         for groupMember in groupMemberStore.sortedFullGroupMembers(in: groupThreadId, tx: transaction) {
             let serviceId = groupMember.serviceId

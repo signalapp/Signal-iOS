@@ -8,8 +8,18 @@ import GRDB
 import LibSignalClient
 
 class AuthorMergeObserver: RecipientMergeObserver {
-    func willBreakAssociation(aci: Aci, phoneNumber: E164, transaction: DBWriteTransaction) {
-        populateMissingAcis(phoneNumber: phoneNumber, aci: aci, tx: transaction)
+    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {
+        switch recipientAssociation.serviceId.concreteType {
+        case .aci(let aci):
+            populateMissingAcis(phoneNumber: recipientAssociation.phoneNumber, aci: aci, tx: tx)
+        case .pni:
+            // We don't receive messages from PNIs, so this isn't relevant. If this
+            // changes in the future, we still won't need to do this because we'd never
+            // save an incoming message from a phone number that needs to be changed to
+            // a PNI. (This is similar to how all incoming messages have an ACI so
+            // newly-added messages don't need to be run through this logic.)
+            break
+        }
     }
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
