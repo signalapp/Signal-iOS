@@ -384,11 +384,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
         if let aci {
             if !newAddress.isLocalAddress {
-                self.versionedProfiles.clearProfileKeyCredential(
-                    for: AciObjC(aci),
-                    transaction: transaction
-                )
-
                 if let obsoleteAddress {
                     // Remove old address from profile whitelist.
                     profileManager.removeUser(
