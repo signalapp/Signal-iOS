@@ -738,7 +738,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     }
 
     public func buildHeaderTextView(forSection section: OWSTableSection) -> UITextView {
-        buildHeaderTextView(withDeepInsets: section.hasBackground)
+        let textView = buildHeaderTextView(withDeepInsets: section.hasBackground)
+        textView.delegate = section.headerTextViewDelegate
+        return textView
     }
 
     public func buildHeaderTextView(withDeepInsets: Bool) -> UITextView {
@@ -752,7 +754,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     }
 
     public func buildFooterTextView(forSection section: OWSTableSection) -> UITextView {
-        buildFooterTextView(withDeepInsets: section.hasBackground)
+        let textView = buildFooterTextView(withDeepInsets: section.hasBackground)
+        textView.delegate = section.footerTextViewDelegate
+        return textView
     }
 
     public func buildFooterTextView(withDeepInsets: Bool) -> UITextView {

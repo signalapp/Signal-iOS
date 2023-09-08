@@ -17,6 +17,9 @@ public class OWSTableSection {
     public var headerAttributedTitle: NSAttributedString?
     public var footerAttributedTitle: NSAttributedString?
 
+    public var headerTextViewDelegate: UITextViewDelegate?
+    public var footerTextViewDelegate: UITextViewDelegate?
+
     public var customHeaderView: UIView?
     public var customHeaderHeight: CGFloat?
 

@@ -44,6 +44,25 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
             let vc = ColorAndWallpaperSettingsViewController()
             self.navigationController?.pushViewController(vc, animated: true)
         })
+        firstSection.add(
+            OWSTableItem(
+                customCellBlock: { [weak self] in
+                    OWSTableItem.buildCell(
+                        itemName: OWSLocalizedString(
+                            "SETTINGS_APPEARANCE_APP_ICON",
+                            comment: "The title for the app icon section in the appearance settings."
+                        ),
+                        accessoryType: .disclosureIndicator,
+                        accessoryContentView: self?.buildCurrentAppIconView())
+                },
+                actionBlock: { [weak self] in
+                    guard let self else { return }
+                    let vc = AppIconSettingsTableViewController()
+                    vc.iconDelegate = self
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            )
+        )
 
         contents.add(firstSection)
 
@@ -54,33 +73,20 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    private func appearanceItem(_ mode: Theme.Mode) -> OWSTableItem {
-        return OWSTableItem(
-            text: nameForThemeMode(mode),
-            actionBlock: { [weak self] in
-                self?.changeThemeMode(mode)
-            },
-            accessoryType: Theme.getOrFetchCurrentMode() == mode ? .checkmark : .none
-        )
+    private func buildCurrentAppIconView() -> UIView {
+        let image = UIImage(named: CustomAppIcon.currentIconImageName)
+        let imageView = UIImageView(image: image)
+        imageView.autoSetDimensions(to: .square(24))
+        // 60x60 icons have corner radius 12
+        // 12 * (24/60) = 4.8
+        imageView.layer.cornerRadius = 4.8
+        imageView.clipsToBounds = true
+        return imageView
     }
+}
 
-    private func changeThemeMode(_ mode: Theme.Mode) {
-        Theme.setCurrentMode(mode)
+extension AppearanceSettingsTableViewController: AppIconSettingsTableViewControllerDelegate {
+    func didChangeIcon() {
         updateTableContents()
-    }
-
-    private var currentThemeName: String {
-        return nameForThemeMode(Theme.getOrFetchCurrentMode())
-    }
-
-    private func nameForThemeMode(_ mode: Theme.Mode) -> String {
-        switch mode {
-        case .dark:
-            return OWSLocalizedString("APPEARANCE_SETTINGS_DARK_THEME_NAME", comment: "Name indicating that the dark theme is enabled.")
-        case .light:
-            return OWSLocalizedString("APPEARANCE_SETTINGS_LIGHT_THEME_NAME", comment: "Name indicating that the light theme is enabled.")
-        case .system:
-            return OWSLocalizedString("APPEARANCE_SETTINGS_SYSTEM_THEME_NAME", comment: "Name indicating that the system theme is enabled.")
-        }
     }
 }
