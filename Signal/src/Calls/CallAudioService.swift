@@ -166,12 +166,12 @@ class CallAudioService: NSObject, CallObserver {
             // The user is capturing video or wants to use the speaker for an
             // audio call, so choose the VideoChat mode, which enables the speaker
             // with the proximity sensor disabled.
-            setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
+            setAudioSession(category: .playAndRecord, mode: .videoChat, options: [.allowBluetooth, .allowBluetoothA2DP])
         } else {
             // The user is not capturing video and doesn't want to use the speaker
             // for an audio call, so choose VoiceChat mode, which uses the receiver
             // with the proximity sensor enabled.
-            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
+            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: [.allowBluetooth, .allowBluetoothA2DP])
         }
     }
 
@@ -199,13 +199,13 @@ class CallAudioService: NSObject, CallObserver {
                 // The user is capturing video or wants to use the speaker for an
                 // audio call, so choose the VideoChat mode, which enables the speaker
                 // with the proximity sensor disabled.
-                setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
+                setAudioSession(category: .playAndRecord, mode: .videoChat, options: [.allowBluetooth, .allowBluetoothA2DP])
             }
         } else {
             // The user is not capturing video and doesn't want to use the speaker
             // for an audio call, so choose VoiceChat mode, which uses the receiver
             // with the proximity sensor enabled.
-            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
+            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: [.allowBluetooth, .allowBluetoothA2DP])
         }
     }
 
