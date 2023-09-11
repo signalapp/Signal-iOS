@@ -915,7 +915,6 @@ extension MessageSender {
     private func handleMessageSentLocally(_ message: TSOutgoingMessage) -> Promise<Void> {
         databaseStorage.write { tx in
             if
-                FeatureFlags.recipientHiding,
                 let thread = message.thread(tx: tx) as? TSContactThread,
                 self.shouldMessageSendUnhideRecipient(message),
                 let localAddress = tsAccountManager.localAddress(with: tx),

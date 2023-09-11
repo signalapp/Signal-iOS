@@ -669,9 +669,8 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     for (SignalServiceAddress *address in addresses) {
 
         // If the address is blocked, we don't want to include it
-        if ([self.blockingManager isAddressBlocked:address transaction:transaction]
-            || (SSKFeatureFlags.recipientHiding &&
-                [RecipientHidingManagerObjcBridge isHiddenAddress:address tx:transaction])) {
+        if ([self.blockingManager isAddressBlocked:address transaction:transaction] ||
+            [RecipientHidingManagerObjcBridge isHiddenAddress:address tx:transaction]) {
             continue;
         }
 
@@ -831,8 +830,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSAssertDebug(address.isValid);
 
     if ([self.blockingManager isAddressBlocked:address transaction:transaction]
-        || (SSKFeatureFlags.recipientHiding &&
-            [RecipientHidingManagerObjcBridge isHiddenAddress:address tx:transaction])) {
+        || ([RecipientHidingManagerObjcBridge isHiddenAddress:address tx:transaction])) {
         return NO;
     }
 

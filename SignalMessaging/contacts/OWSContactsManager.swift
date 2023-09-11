@@ -1033,9 +1033,6 @@ extension OWSContactsManager {
         addressBookPhoneNumbers: Set<String>?,
         tx: DBWriteTransaction
     ) {
-        guard FeatureFlags.recipientHiding else {
-            return
-        }
         guard let addressBookPhoneNumbers else {
             return
         }

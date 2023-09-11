@@ -473,7 +473,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         }
 
         // If our local hidden state differs from the service state, use the service's value.
-        if FeatureFlags.recipientHiding && record.hidden != localIsHidden {
+        if record.hidden != localIsHidden {
             if record.hidden {
                 do {
                     try recipientHidingManager.addHiddenRecipient(address, wasLocallyInitiated: false, tx: transaction.asV2Write)

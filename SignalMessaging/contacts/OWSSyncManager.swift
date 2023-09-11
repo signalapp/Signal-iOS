@@ -132,7 +132,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         switch syncMessage.type {
         case .accept:
             blockingManager.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
-            if let thread = thread as? TSContactThread, FeatureFlags.recipientHiding {
+            if let thread = thread as? TSContactThread {
                 /// When we accept a message request on a linked device,
                 /// we unhide the message sender. We will eventually also
                 /// learn about the unhide via a StorageService contact sync,

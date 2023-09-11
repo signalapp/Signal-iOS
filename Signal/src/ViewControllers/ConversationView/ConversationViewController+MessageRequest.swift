@@ -286,7 +286,7 @@ extension ConversationViewController: MessageRequestDelegate {
                 if unblockThread {
                     self.blockingManager.removeBlockedThread(thread, wasLocallyInitiated: true, transaction: transaction)
                 }
-                if FeatureFlags.recipientHiding, unhideRecipient, let thread = thread as? TSContactThread {
+                if unhideRecipient, let thread = thread as? TSContactThread {
                     DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
                         thread.contactAddress,
                         wasLocallyInitiated: true,

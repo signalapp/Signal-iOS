@@ -112,7 +112,7 @@ class MessageRequestView: UIStackView {
         let isGroupV2Thread = thread.isGroupV2Thread
         let isThreadBlocked = blockingManager.isThreadBlocked(thread, transaction: transaction)
         var isThreadFromHiddenRecipient = false
-        if let thread = thread as? TSContactThread, FeatureFlags.recipientHiding {
+        if let thread = thread as? TSContactThread {
             isThreadFromHiddenRecipient = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
                 thread.contactAddress,
                 tx: transaction.asV2Read
@@ -197,7 +197,7 @@ class MessageRequestView: UIStackView {
                     "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT",
                     comment: "A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}."
                 )
-            } else if FeatureFlags.recipientHiding && isThreadFromHiddenRecipient {
+            } else if isThreadFromHiddenRecipient {
                 formatString = OWSLocalizedString("MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT", comment: "A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}.")
 
             } else if hasSentMessages {
@@ -249,7 +249,7 @@ class MessageRequestView: UIStackView {
                               titleColor: Theme.accentBlueColor) { [weak self] in
                                 self?.delegate?.messageRequestViewDidTapUnblock(mode: mode)
                 }]
-        } else if FeatureFlags.recipientHiding && isThreadFromHiddenRecipient {
+        } else if isThreadFromHiddenRecipient {
             buttons = [
                 prepareButton(title: OWSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
                                                        comment: "A button used to block a user on an incoming message request."),
