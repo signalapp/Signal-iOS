@@ -326,8 +326,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                                              isSentUpdate:(BOOL)isSentUpdate
                                               transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (nullable NSNumber *)firstRecipientReadTimestamp;
-
 - (void)updateWithRecipientAddressStates:
             (nullable NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientAddressStates
                              transaction:(SDSAnyWriteTransaction *)transaction

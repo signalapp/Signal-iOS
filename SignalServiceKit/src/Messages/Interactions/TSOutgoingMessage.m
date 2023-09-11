@@ -821,20 +821,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                           }];
 }
 
-- (nullable NSNumber *)firstRecipientReadTimestamp
-{
-    NSNumber *result = nil;
-    for (TSOutgoingMessageRecipientState *recipientState in self.recipientAddressStates.allValues) {
-        if (!recipientState.readTimestamp) {
-            continue;
-        }
-        if (!result || (result.unsignedLongLongValue > recipientState.readTimestamp.unsignedLongLongValue)) {
-            result = recipientState.readTimestamp;
-        }
-    }
-    return result;
-}
-
 - (void)updateWithRecipientAddressStates:
             (nullable NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientAddressStates
                              transaction:(SDSAnyWriteTransaction *)transaction
