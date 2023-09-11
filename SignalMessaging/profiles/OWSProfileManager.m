@@ -585,6 +585,11 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                 completion:nil];
 }
 
+- (void)normalizeRecipientInProfileWhitelist:(SignalRecipient *)recipient tx:(SDSAnyWriteTransaction *)tx
+{
+    [self swift_normalizeRecipientInProfileWhitelist:recipient tx:tx];
+}
+
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
                 userProfileWriter:(UserProfileWriter)userProfileWriter
                       transaction:(SDSAnyWriteTransaction *)transaction
@@ -592,10 +597,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
 
-    NSSet *addressesToAdd = [self addressesNotBlockedOrInWhitelist:@[ address ] transaction:transaction];
-    [self addConfirmedUnwhitelistedAddresses:addressesToAdd
-                           userProfileWriter:userProfileWriter
-                                 transaction:transaction];
+    [self addUsersToProfileWhitelist:@[ address ] userProfileWriter:userProfileWriter transaction:transaction];
 }
 
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
@@ -607,11 +609,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     NSSet<SignalServiceAddress *> *addressesToAdd = [self addressesNotBlockedOrInWhitelist:addresses
                                                                                transaction:transaction];
-
-    if (addressesToAdd.count < 1) {
-        return;
-    }
-
     [self addConfirmedUnwhitelistedAddresses:addressesToAdd
                            userProfileWriter:userProfileWriter
                                  transaction:transaction];
@@ -660,42 +657,20 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 }
 
 - (NSSet<SignalServiceAddress *> *)addressesNotBlockedOrInWhitelist:(NSArray<SignalServiceAddress *> *)addresses
-                                                        transaction:(SDSAnyReadTransaction *)transaction
+                                                        transaction:(SDSAnyReadTransaction *)tx
 {
     OWSAssertDebug(addresses);
 
     NSMutableSet<SignalServiceAddress *> *notBlockedOrInWhitelist = [NSMutableSet new];
 
     for (SignalServiceAddress *address in addresses) {
-
         // If the address is blocked, we don't want to include it
-        if ([self.blockingManager isAddressBlocked:address transaction:transaction]
-            || (SSKFeatureFlags.recipientHiding &&
-                [RecipientHidingManagerObjcBridge isHiddenAddress:address tx:transaction])) {
+        if ([self.blockingManager isAddressBlocked:address transaction:tx]
+            || (SSKFeatureFlags.recipientHiding && [RecipientHidingManagerObjcBridge isHiddenAddress:address tx:tx])) {
             continue;
         }
 
-        // We want to include both the UUID and the phone number in the white list.
-        // It's possible we white listed one but not both, so we check each.
-
-        BOOL notInWhitelist = NO;
-        if (address.serviceIdUppercaseString) {
-            BOOL currentlyWhitelisted = [self.whitelistedServiceIdsStore hasValueForKey:address.serviceIdUppercaseString
-                                                                            transaction:transaction];
-            if (!currentlyWhitelisted) {
-                notInWhitelist = YES;
-            }
-        }
-
-        if (address.phoneNumber) {
-            BOOL currentlyWhitelisted = [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber
-                                                                              transaction:transaction];
-            if (!currentlyWhitelisted) {
-                notInWhitelist = YES;
-            }
-        }
-
-        if (notInWhitelist) {
+        if (![self isAddressInWhitelist:address tx:tx]) {
             [notBlockedOrInWhitelist addObject:address];
         }
     }
@@ -704,36 +679,14 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 }
 
 - (NSSet<SignalServiceAddress *> *)addressesInWhitelist:(NSArray<SignalServiceAddress *> *)addresses
-                                            transaction:(SDSAnyReadTransaction *)transaction
+                                            transaction:(SDSAnyReadTransaction *)tx
 {
     OWSAssertDebug(addresses);
 
     NSMutableSet<SignalServiceAddress *> *whitelistedAddresses = [NSMutableSet new];
 
     for (SignalServiceAddress *address in addresses) {
-
-        // We only consider an address whitelisted if either the UUID and phone
-        // number are represented. It's possible we white listed one but not both,
-        // so we check each.
-
-        BOOL isInWhitelist = NO;
-        if (address.serviceIdUppercaseString) {
-            BOOL currentlyWhitelisted = [self.whitelistedServiceIdsStore hasValueForKey:address.serviceIdUppercaseString
-                                                                            transaction:transaction];
-            if (currentlyWhitelisted) {
-                isInWhitelist = YES;
-            }
-        }
-
-        if (address.phoneNumber) {
-            BOOL currentlyWhitelisted = [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber
-                                                                              transaction:transaction];
-            if (currentlyWhitelisted) {
-                isInWhitelist = YES;
-            }
-        }
-
-        if (isInWhitelist) {
+        if ([self isAddressInWhitelist:address tx:tx]) {
             [whitelistedAddresses addObject:address];
         }
     }
@@ -741,9 +694,26 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return [whitelistedAddresses copy];
 }
 
+- (BOOL)isAddressInWhitelist:(SignalServiceAddress *)address tx:(SDSAnyReadTransaction *)tx
+{
+    if (address.serviceIdUppercaseString) {
+        if ([self.whitelistedServiceIdsStore hasValueForKey:address.serviceIdUppercaseString transaction:tx]) {
+            return YES;
+        }
+    }
+
+    if (address.phoneNumber) {
+        if ([self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber transaction:tx]) {
+            return YES;
+        }
+    }
+
+    return NO;
+}
+
 - (void)removeConfirmedWhitelistedAddresses:(NSSet<SignalServiceAddress *> *)addressesToRemove
                           userProfileWriter:(UserProfileWriter)userProfileWriter
-                                transaction:(SDSAnyWriteTransaction *)transaction
+                                transaction:(SDSAnyWriteTransaction *)tx
 {
     if (addressesToRemove.count == 0) {
         // Do nothing.
@@ -751,22 +721,23 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 
     for (SignalServiceAddress *address in addressesToRemove) {
+        // Historically we put both the ACI and phone number into their respective
+        // stores. We currently save only the best identifier, but we should still
+        // try and remove both to handle these historical cases.
         if (address.serviceIdUppercaseString) {
-            [self.whitelistedServiceIdsStore removeValueForKey:address.serviceIdUppercaseString
-                                                   transaction:transaction];
+            [self.whitelistedServiceIdsStore removeValueForKey:address.serviceIdUppercaseString transaction:tx];
         }
-
         if (address.phoneNumber) {
-            [self.whitelistedPhoneNumbersStore removeValueForKey:address.phoneNumber transaction:transaction];
+            [self.whitelistedPhoneNumbersStore removeValueForKey:address.phoneNumber transaction:tx];
         }
 
-        TSThread *_Nullable thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
+        TSThread *_Nullable thread = [TSContactThread getThreadWithContactAddress:address transaction:tx];
         if (thread) {
-            [self.databaseStorage touchThread:thread shouldReindex:NO transaction:transaction];
+            [self.databaseStorage touchThread:thread shouldReindex:NO transaction:tx];
         }
     }
 
-    [transaction addSyncCompletion:^{
+    [tx addSyncCompletion:^{
         // Mark the removed whitelisted addresses for update
         if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
             [self.storageServiceManagerObjc recordPendingUpdatesWithUpdatedAddresses:addressesToRemove.allObjects];
@@ -786,7 +757,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (void)addConfirmedUnwhitelistedAddresses:(NSSet<SignalServiceAddress *> *)addressesToAdd
                          userProfileWriter:(UserProfileWriter)userProfileWriter
-                               transaction:(SDSAnyWriteTransaction *)transaction
+                               transaction:(SDSAnyWriteTransaction *)tx
 {
     if (addressesToAdd.count == 0) {
         // Do nothing.
@@ -794,21 +765,23 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 
     for (SignalServiceAddress *address in addressesToAdd) {
-        if (address.serviceIdUppercaseString) {
-            [self.whitelistedServiceIdsStore setBool:YES key:address.serviceIdUppercaseString transaction:transaction];
+        ServiceIdObjC *serviceId = address.serviceIdObjC;
+
+        if ([serviceId isKindOfClass:[AciObjC class]]) {
+            [self.whitelistedServiceIdsStore setBool:YES key:serviceId.serviceIdUppercaseString transaction:tx];
+        } else if (address.phoneNumber) {
+            [self.whitelistedPhoneNumbersStore setBool:YES key:address.phoneNumber transaction:tx];
+        } else if ([serviceId isKindOfClass:[PniObjC class]]) {
+            [self.whitelistedServiceIdsStore setBool:YES key:serviceId.serviceIdUppercaseString transaction:tx];
         }
 
-        if (address.phoneNumber) {
-            [self.whitelistedPhoneNumbersStore setBool:YES key:address.phoneNumber transaction:transaction];
-        }
-
-        TSThread *_Nullable thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
+        TSThread *_Nullable thread = [TSContactThread getThreadWithContactAddress:address transaction:tx];
         if (thread) {
-            [self.databaseStorage touchThread:thread shouldReindex:NO transaction:transaction];
+            [self.databaseStorage touchThread:thread shouldReindex:NO transaction:tx];
         }
     }
 
-    [transaction addSyncCompletion:^{
+    [tx addSyncCompletion:^{
         // Mark the new whitelisted addresses for update
         if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
             [self.storageServiceManagerObjc recordPendingUpdatesWithUpdatedAddresses:addressesToAdd.allObjects];
@@ -826,26 +799,16 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }];
 }
 
-- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
+- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)tx
 {
     OWSAssertDebug(address.isValid);
 
-    if ([self.blockingManager isAddressBlocked:address transaction:transaction]
-        || (SSKFeatureFlags.recipientHiding &&
-            [RecipientHidingManagerObjcBridge isHiddenAddress:address tx:transaction])) {
+    if ([self.blockingManager isAddressBlocked:address transaction:tx]
+        || (SSKFeatureFlags.recipientHiding && [RecipientHidingManagerObjcBridge isHiddenAddress:address tx:tx])) {
         return NO;
     }
 
-    BOOL result = NO;
-    if (address.serviceIdUppercaseString) {
-        result = [self.whitelistedServiceIdsStore hasValueForKey:address.serviceIdUppercaseString
-                                                     transaction:transaction];
-    }
-
-    if (!result && address.phoneNumber) {
-        result = [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber transaction:transaction];
-    }
-    return result;
+    return [self isAddressInWhitelist:address tx:tx];
 }
 
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId

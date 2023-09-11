@@ -113,6 +113,10 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
+- (void)normalizeRecipientInProfileWhitelist:(SignalRecipient *)recipient
+                                          tx:(SDSAnyWriteTransaction *)tx
+    NS_SWIFT_NAME(normalizeRecipientInProfileWhitelist(_:tx:));
+
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction;
@@ -147,11 +151,9 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (void)fetchProfileForAddress:(SignalServiceAddress *)address authedAccount:(AuthedAccount *)authedAccount;
 
-// Profile fetches will make a best effort
-// to download and decrypt avatar data,
-// but optionalAvatarFileUrl may
-// not be populated due to network failures,
-// decryption errors, service issues, etc.
+// Profile fetches will make a best effort to download and decrypt avatar
+// data, but optionalAvatarFileUrl may not be populated due to network
+// failures, decryption errors, service issues, etc.
 - (void)updateProfileForAddress:(SignalServiceAddress *)address
                       givenName:(nullable NSString *)givenName
                      familyName:(nullable NSString *)familyName

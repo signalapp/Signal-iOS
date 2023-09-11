@@ -348,22 +348,11 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
     ) {
         let aci = Aci.parseFrom(aciString: aciString)
 
-        let oldAddress = SignalServiceAddress(
-            serviceId: aci,
-            phoneNumber: oldPhoneNumber,
-            ignoreCache: true
-        )
         let newAddress = SignalServiceAddress(
             serviceId: aci,
             phoneNumber: newPhoneNumber,
             ignoreCache: true
         )
-
-        // The "obsolete" address is the address with *only* the just-removed phone
-        // number. (We *just* removed it, so we don't know its serviceId.)
-        let obsoleteAddress = oldPhoneNumber.map { SignalServiceAddress(serviceId: nil, phoneNumber: $0, ignoreCache: true) }
-
-        let isWhitelisted = profileManager.isUser(inProfileWhitelist: oldAddress, transaction: transaction)
 
         transaction.addAsyncCompletion(queue: .global()) {
             let phoneNumbers: [String] = [oldPhoneNumber, newPhoneNumber].compactMap { $0 }
@@ -380,36 +369,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
         if let contactThread = ContactThreadFinder().contactThread(for: newAddress, tx: transaction) {
             SDSDatabaseStorage.shared.touch(thread: contactThread, shouldReindex: true, transaction: transaction)
-        }
-
-        if let aci {
-            if !newAddress.isLocalAddress {
-                if let obsoleteAddress {
-                    // Remove old address from profile whitelist.
-                    profileManager.removeUser(
-                        fromProfileWhitelist: obsoleteAddress,
-                        userProfileWriter: .changePhoneNumber,
-                        transaction: transaction
-                    )
-                }
-
-                // Ensure new address reflects old address' profile whitelist state.
-                if isWhitelisted {
-                    profileManager.addUser(
-                        toProfileWhitelist: newAddress,
-                        userProfileWriter: .changePhoneNumber,
-                        transaction: transaction
-                    )
-                } else {
-                    profileManager.removeUser(
-                        fromProfileWhitelist: newAddress,
-                        userProfileWriter: .changePhoneNumber,
-                        transaction: transaction
-                    )
-                }
-            }
-        } else {
-            owsFailDebug("Missing or invalid UUID")
         }
     }
 

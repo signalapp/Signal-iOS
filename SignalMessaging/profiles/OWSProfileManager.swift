@@ -193,7 +193,7 @@ public extension OWSProfileManager {
 
     private enum RotateProfileKeyTrigger {
         /// We need to rotate because one or more whitelist members is also on the blocklist.
-        /// Those members may be a phone numbers, uuids, or groupIds, which are provided.
+        /// Those members may be phone numbers, ACIs, PNIs, or groupIds, which are provided.
         /// Once rotation is complete, these members should be removed from the whitelist;
         /// their presence in the whitelist _and_ blocklist is what durably determines a rotation
         /// is needed, so prematurely removing them and then failing to rotate means we won't retry.
@@ -275,22 +275,20 @@ public extension OWSProfileManager {
 
         Logger.info("Beginning profile key rotation.")
 
-        // The order of operations here is very important to prevent races
-        // between when we rotate our profile key and reupload our profile.
-        // It's essential we avoid a case where other devices are operating
-        // with a *new* profile key that we have yet to upload a profile for.
+        // The order of operations here is very important to prevent races between
+        // when we rotate our profile key and reupload our profile. It's essential
+        // we avoid a case where other devices are operating with a *new* profile
+        // key that we have yet to upload a profile for.
 
         return firstly(on: DispatchQueue.global()) { () -> Promise<OWSAES256Key> in
             Logger.info("Reuploading profile with new profile key")
 
-            // We re-upload our local profile with the new profile key
-            // *before* we persist it. This is safe, because versioned
-            // profiles allow other clients to continue using our old
-            // profile key with the old version of our profile. It is
-            // possible this operation will fail, in which case we will
-            // try to rotate your profile key again on the next app
-            // launch or blocklist change and continue to use the old
-            // profile key.
+            // We re-upload our local profile with the new profile key *before* we
+            // persist it. This is safe, because versioned profiles allow other clients
+            // to continue using our old profile key with the old version of our
+            // profile. It is possible this operation will fail, in which case we will
+            // try to rotate your profile key again on the next app launch or blocklist
+            // change and continue to use the old profile key.
 
             let newProfileKey = OWSAES256Key.generateRandom()
             return self.reuploadLocalProfilePromise(unsavedRotatedProfileKey: newProfileKey, authedAccount: authedAccount).map { newProfileKey }
@@ -309,12 +307,13 @@ public extension OWSProfileManager {
                     transaction: transaction
                 )
 
-                // Whenever a user's profile key changes, we need to fetch a new
-                // profile key credential for them.
+                // Whenever a user's profile key changes, we need to fetch a new profile
+                // key credential for them.
                 self.versionedProfiles.clearProfileKeyCredential(for: AciObjC(localAci), transaction: transaction)
 
-                // We schedule the updates here but process them below using processProfileKeyUpdates.
-                // It's more efficient to process them after the intermediary steps are done.
+                // We schedule the updates here but process them below using
+                // processProfileKeyUpdates. It's more efficient to process them after the
+                // intermediary steps are done.
                 self.groupsV2.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: transaction)
 
                 triggers.forEach { trigger in
@@ -448,6 +447,58 @@ public extension OWSProfileManager {
         } else {
             owsFailDebug("Parsed group id has unexpected length: \(groupId.hexadecimalString) (\(groupId.count))")
             return nil
+        }
+    }
+
+    @objc
+    func swift_normalizeRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: SDSAnyWriteTransaction) {
+        Self.swift_normalizeRecipientInProfileWhitelist(
+            recipient,
+            serviceIdStore: whitelistedServiceIdsStore,
+            phoneNumberStore: whitelistedPhoneNumbersStore,
+            tx: tx.asV2Write
+        )
+    }
+
+    static func swift_normalizeRecipientInProfileWhitelist(
+        _ recipient: SignalRecipient,
+        serviceIdStore: KeyValueStore,
+        phoneNumberStore: KeyValueStore,
+        tx: DBWriteTransaction
+    ) {
+        // First, we figure out which identifiers are whitelisted.
+        let orderedIdentifiers: [(store: KeyValueStore, key: String, isInWhitelist: Bool)] = [
+            (serviceIdStore, recipient.aci?.serviceIdUppercaseString),
+            (phoneNumberStore, recipient.phoneNumber),
+            (serviceIdStore, recipient.pni?.serviceIdUppercaseString)
+        ].compactMap { (store, key) -> (KeyValueStore, String, Bool)? in
+            guard let key else { return nil }
+            return (store, key, store.hasValue(key, transaction: tx))
+        }
+
+        guard let preferredIdentifier = orderedIdentifiers.first else {
+            return
+        }
+
+        // If any identifier is in the whitelist, make sure the preferred
+        // identifier is in the whitelist.
+        let isAnyInWhitelist = orderedIdentifiers.contains(where: { $0.isInWhitelist })
+        if isAnyInWhitelist {
+            if !preferredIdentifier.isInWhitelist {
+                preferredIdentifier.store.setBool(true, key: preferredIdentifier.key, transaction: tx)
+            }
+        } else {
+            if preferredIdentifier.isInWhitelist {
+                preferredIdentifier.store.removeValue(forKey: preferredIdentifier.key, transaction: tx)
+            }
+        }
+
+        // Always remove all the other identifiers from the whitelist. If the user
+        // should be in the whitelist, we add the preferred identifier above.
+        for remainingIdentifier in orderedIdentifiers.dropFirst() {
+            if remainingIdentifier.isInWhitelist {
+                remainingIdentifier.store.removeValue(forKey: remainingIdentifier.key, transaction: tx)
+            }
         }
     }
 }

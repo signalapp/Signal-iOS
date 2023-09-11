@@ -47,9 +47,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedGroupsStore;
 @property (nonatomic, readonly) BadgeStore *badgeStore;
 
-// This property is used by the Swift extension to ensure that
-// only one profile update is in flight at a time.  It should
-// only be accessed on the main thread.
+// This property is used by the Swift extension to ensure that only one
+// profile update is in flight at a time. It should only be accessed on the
+// main thread.
 @property (nonatomic) BOOL isUpdatingProfileOnService;
 
 + (instancetype)new NS_UNAVAILABLE;

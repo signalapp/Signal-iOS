@@ -148,6 +148,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self.profileKeys[address];
 }
 
+- (void)normalizeRecipientInProfileWhitelist:(SignalRecipient *)recipient tx:(SDSAnyWriteTransaction *)tx
+{
+}
+
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.recipientWhitelist containsObject:address];

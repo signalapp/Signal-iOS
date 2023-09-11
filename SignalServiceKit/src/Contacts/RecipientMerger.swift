@@ -116,6 +116,7 @@ class RecipientMergerImpl: RecipientMerger {
         groupMemberUpdater: GroupMemberUpdater,
         groupMemberStore: GroupMemberStore,
         interactionStore: InteractionStore,
+        profileManager: ProfileManagerProtocol,
         signalServiceAddressCache: SignalServiceAddressCache,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadRemover: ThreadRemover,
@@ -129,6 +130,7 @@ class RecipientMergerImpl: RecipientMerger {
             signalServiceAddressCache,
             AuthorMergeObserver(),
             SignalAccountMergeObserver(),
+            ProfileWhitelistMerger(profileManager: profileManager),
             UserProfileMerger(userProfileStore: userProfileStore),
             ThreadMerger(
                 chatColorSettingStore: chatColorSettingStore,

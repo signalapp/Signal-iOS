@@ -364,6 +364,7 @@ public class DependenciesBridge {
                 groupMemberUpdater: self.groupMemberUpdater,
                 groupMemberStore: groupMemberStore,
                 interactionStore: interactionStore,
+                profileManager: profileManager,
                 signalServiceAddressCache: signalServiceAddressCache,
                 threadAssociatedDataStore: self.threadAssociatedDataStore,
                 threadRemover: self.threadRemover,
