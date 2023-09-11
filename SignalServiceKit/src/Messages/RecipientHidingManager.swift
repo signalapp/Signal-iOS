@@ -96,9 +96,6 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
     }
 
     public func hiddenRecipients(tx: DBReadTransaction) -> Set<SignalRecipient> {
-        guard FeatureFlags.recipientHiding else {
-            return Set()
-        }
         do {
             let sql = """
                 SELECT \(SignalRecipient.databaseTableName).*
@@ -118,10 +115,9 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
     }
 
     public func isHiddenRecipient(_ recipient: SignalRecipient, tx: DBReadTransaction) -> Bool {
-        guard FeatureFlags.recipientHiding, let id = recipient.id else {
+        guard let id = recipient.id else {
             return false
         }
-
         do {
             let sql = """
             SELECT EXISTS(

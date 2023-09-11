@@ -99,8 +99,7 @@ extension OWSOutgoingReceiptManager {
             owsFailDebug("Invalid timestamp.")
             return
         }
-        let isHiddenRecipient = FeatureFlags.recipientHiding
-            && DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: tx.asV2Read)
+        let isHiddenRecipient = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: tx.asV2Read)
         guard !isHiddenRecipient else {
             // Don't send receipts to hidden recipients.
             return

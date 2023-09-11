@@ -190,9 +190,8 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
             NSMutableDictionary *receiptSetsToSend = [[self fetchAllReceiptSetsWithType:receiptType
                                                                             transaction:transaction] mutableCopy];
             NSArray *excludedAddresses = [receiptSetsToSend.allKeys filter:^BOOL(SignalServiceAddress *address) {
-                return [self.blockingManager isAddressBlocked:address transaction:transaction]
-                    || (SSKFeatureFlags.recipientHiding &&
-                        [RecipientHidingManagerObjcBridge isHiddenAddress:address tx:transaction]);
+                return [self.blockingManager isAddressBlocked:address transaction:transaction] ||
+                    [RecipientHidingManagerObjcBridge isHiddenAddress:address tx:transaction];
             }];
 
             for (SignalServiceAddress *address in excludedAddresses) {
