@@ -9,24 +9,22 @@ import SignalMessaging
 import SignalUI
 
 protocol RecentPhotosDelegate: AnyObject {
-    var isMediaLibraryAccessGranted: Bool { get }
-    var isMediaLibraryAccessLimited: Bool { get }
     func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment)
 }
 
 class RecentPhotosCollectionView: UICollectionView {
+
     static let maxRecentPhotos = 96
     static let itemSpacing: CGFloat = 12
 
-    var isReadyForPhotoLibraryAccess: Bool {
-        return recentPhotosDelegate?.isMediaLibraryAccessGranted == true
-    }
-
-    var hasPhotos: Bool {
-        guard isReadyForPhotoLibraryAccess else { return false }
-        return collectionContents.assetCount > 0
-    }
     weak var recentPhotosDelegate: RecentPhotosDelegate?
+
+    var mediaLibraryAuthorizationStatus: PHAuthorizationStatus = .notDetermined {
+        didSet {
+            guard oldValue != mediaLibraryAuthorizationStatus else { return }
+            reloadUIOnMediaLibraryAuthorizationStatusChange()
+        }
+    }
 
     private var fetchingAttachmentIndex: IndexPath? {
         didSet {
@@ -83,33 +81,177 @@ class RecentPhotosCollectionView: UICollectionView {
         let horizontalInset = OWSTableViewController2.defaultHOuterMargin
         contentInset = UIEdgeInsets(top: 0, leading: horizontalInset, bottom: 0, trailing: horizontalInset)
         register(RecentPhotoCell.self, forCellWithReuseIdentifier: RecentPhotoCell.reuseIdentifier)
-
-        updateLayout()
+        register(UICollectionViewCell.self, forCellWithReuseIdentifier: "SelectMorePhotosCell")
     }
 
     private func updateLayout() {
         AssertIsOnMainThread()
 
-        // We don't want to do anything until media library permission is granted.
-        guard isReadyForPhotoLibraryAccess else { return }
-        guard itemSize.height > 0, itemSize.width > 0 else { return }
+        guard itemSize.isNonEmpty else { return }
 
         collectionViewFlowLayout.itemSize = itemSize
         collectionViewFlowLayout.invalidateLayout()
-
         reloadData()
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    // Background view
+
+    private var hasPhotos: Bool {
+        guard hasAccessToPhotos else { return false }
+        return collectionContents.assetCount > 0
+    }
+
+    private var hasAccessToPhotos: Bool {
+        guard #available(iOS 14, *) else {
+            return mediaLibraryAuthorizationStatus == .authorized
+        }
+        return [.authorized, .limited].contains(mediaLibraryAuthorizationStatus)
+    }
+
+    private var isAccessToPhotosLimited: Bool {
+        guard #available(iOS 14, *) else { return false }
+        return mediaLibraryAuthorizationStatus == .limited
+    }
+
+    private func reloadUIOnMediaLibraryAuthorizationStatusChange() {
+        guard hasPhotos else {
+            backgroundView = noPhotosBackgroundView()
+            reloadData()
+            return
+        }
+        backgroundView = nil
+        reloadData()
+    }
+
+    private func noPhotosBackgroundView() -> UIView {
+        let contentView: UIView
+        if !hasAccessToPhotos {
+            contentView = noAccessToPhotosView()
+        } else if isAccessToPhotosLimited {
+            contentView = limitedAccessView()
+        } else {
+            contentView = noPhotosView()
+        }
+
+        let view = UIView()
+        view.addSubview(contentView)
+        contentView.autoPinHeightToSuperviewMargins(relation: .lessThanOrEqual)
+        contentView.autoCenterInSuperview()
+        contentView.widthAnchor.constraint(lessThanOrEqualTo: view.layoutMarginsGuide.widthAnchor, multiplier: 0.75).isActive = true
+        return view
+    }
+
+    private func noPhotosView() -> UIView {
+        let titleLabel = titleLabel(text: OWSLocalizedString(
+            "ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE",
+            comment: "First block of text in chat attachment panel when there's no recent photos to show."
+        ))
+        let bodyLabel = textLabel(text: OWSLocalizedString(
+            "ATTACHMENT_KEYBOARD_NO_MEDIA_BODY",
+            comment: "Second block of text in chat attachment panel when there's no recent photos to show."
+        ))
+        let stackView = UIStackView(arrangedSubviews: [ titleLabel, bodyLabel ])
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 4
+        return stackView
+    }
+
+    private func limitedAccessView() -> UIView {
+        let textLabel = textLabel(text: OWSLocalizedString(
+            "ATTACHMENT_KEYBOARD_LIMITED_ACCESS",
+            comment: "Text in chat attachment panel when Signal only has access to some photos/videos."
+        ))
+        let button = button(title: OWSLocalizedString(
+            "ATTACHMENT_KEYBOARD_BUTTON_MANAGE",
+            comment: "Button in chat attachment panel that allows to select photos/videos Signal has access to."
+        ))
+        button.block = {
+            guard #available(iOS 14, *),
+                let frontmostVC = CurrentAppContext().frontmostViewController() else { return }
+            PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: frontmostVC)
+        }
+        let stackView = UIStackView(arrangedSubviews: [ textLabel, button ])
+        stackView.axis = .vertical
+        stackView.spacing = 16
+        stackView.alignment = .center
+        return stackView
+    }
+
+    private func noAccessToPhotosView() -> UIView {
+        let textLabel = textLabel(text: OWSLocalizedString(
+            "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS",
+            comment: "Text in chat attachment panel explaining that user needs to give Signal permission to access photos."
+        ))
+        let button = button(title: OWSLocalizedString(
+            "ATTACHMENT_KEYBOARD_OPEN_SETTINGS",
+            comment: "Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos."
+        ))
+        button.block = {
+            let openAppSettingsUrl = URL(string: UIApplication.openSettingsURLString)!
+            UIApplication.shared.open(openAppSettingsUrl)
+        }
+        let stackView = UIStackView(arrangedSubviews: [ textLabel, button ])
+        stackView.axis = .vertical
+        stackView.spacing = 16
+        stackView.alignment = .center
+        return stackView
+    }
+
+    private func titleLabel(text: String) -> UILabel {
+        let label = UILabel()
+        label.font = .dynamicTypeHeadlineClamped
+        label.textColor = Theme.isDarkThemeEnabled ? .ows_gray20 : UIColor(rgbHex: 0x434343).withAlphaComponent(0.8)
+        label.textAlignment = .center
+        label.numberOfLines = 2
+        label.text = text
+        return label
+    }
+
+    private func textLabel(text: String) -> UILabel {
+        let label = UILabel()
+        label.font = .dynamicTypeSubheadlineClamped
+        label.textColor = Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_blackAlpha50
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.text = text
+        return label
+    }
+
+    private func button(title: String) -> OWSButton {
+        let button = OWSButton()
+
+        let backgroundColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.16) : UIColor(white: 0, alpha: 0.08)
+        button.setBackgroundImage(UIImage(color: backgroundColor), for: .normal)
+
+        let highlightedBgColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.26) : UIColor(white: 0, alpha: 0.18)
+        button.setBackgroundImage(UIImage(color: highlightedBgColor), for: .highlighted)
+
+        button.contentEdgeInsets = UIEdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16)
+        button.heightAnchor.constraint(greaterThanOrEqualToConstant: 32).isActive = true
+        button.layer.masksToBounds = true
+        button.layer.cornerRadius = 16
+
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(Theme.isDarkThemeEnabled ? .ows_gray05 : .black, for: .normal)
+        button.titleLabel?.font = .dynamicTypeSubheadlineClamped.semibold()
+        return button
+    }
 }
 
 extension RecentPhotosCollectionView: PhotoLibraryDelegate {
 
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
+        let hadPhotos = hasPhotos
         collectionContents = collection.contents(ascending: false, limit: RecentPhotosCollectionView.maxRecentPhotos)
         reloadData()
+        if hasPhotos != hadPhotos {
+            reloadUIOnMediaLibraryAuthorizationStatusChange()
+        }
     }
 }
 
@@ -145,15 +287,36 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate {
 extension RecentPhotosCollectionView: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
+        guard hasPhotos else { return 0 }
         return 1
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
-        guard isReadyForPhotoLibraryAccess else { return 0 }
-        return collectionContents.assetCount
+        guard hasPhotos else { return 0 }
+
+        var cellCount = collectionContents.assetCount
+        if isAccessToPhotosLimited {
+            cellCount += 1
+        }
+        return cellCount
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard indexPath.row < collectionContents.assetCount else {
+            // If the index is beyond the asset count, we should be rendering the "select more photos" prompt.
+            owsAssertDebug(isAccessToPhotosLimited)
+
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SelectMorePhotosCell", for: indexPath)
+            if cell.contentView.subviews.isEmpty {
+                let limitedAccessView = limitedAccessView()
+                cell.contentView.addSubview(limitedAccessView)
+                limitedAccessView.autoVCenterInSuperview()
+                limitedAccessView.autoPinHeightToSuperviewMargins(relation: .lessThanOrEqual)
+                limitedAccessView.autoPinWidthToSuperviewMargins()
+            }
+            return cell
+        }
+
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentPhotoCell.reuseIdentifier, for: indexPath) as? RecentPhotoCell else {
             owsFail("cell was unexpectedly nil")
         }
