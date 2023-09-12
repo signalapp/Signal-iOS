@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 import SignalCoreKit
 
 @objc
@@ -35,9 +36,13 @@ public class SDSDatabaseStorage: SDSTransactable {
         if let storage = _grdbStorage {
             return storage
         } else {
-            let storage = createGrdbStorage()
-            _grdbStorage = storage
-            return storage
+            do {
+                let storage = try createGrdbStorage()
+                _grdbStorage = storage
+                return storage
+            } catch {
+                owsFail("Unable to initialize storage \(error.grdbErrorForLogging)")
+            }
         }
     }
 
@@ -120,13 +125,17 @@ public class SDSDatabaseStorage: SDSTransactable {
         Logger.info("didPerformIncrementalMigrations: \(didPerformIncrementalMigrations)")
 
         if didPerformIncrementalMigrations {
-            reopenGRDBStorage(completion: completion)
+            do {
+                try reopenGRDBStorage(completion: completion)
+            } catch {
+                owsFail("Unable to reopen storage \(error.grdbErrorForLogging)")
+            }
         } else {
             DispatchQueue.main.async(execute: completion)
         }
     }
 
-    public func reopenGRDBStorage(completion: @escaping () -> Void = {}) {
+    public func reopenGRDBStorage(completion: @escaping () -> Void = {}) throws {
         // There seems to be a rare issue where at least one reader or writer
         // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
         // a schema migration and does not reflect the migrations.
@@ -135,7 +144,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         weak var weakGrdbStorage = grdbStorage
         owsAssertDebug(weakPool != nil)
         owsAssertDebug(weakGrdbStorage != nil)
-        _grdbStorage = createGrdbStorage()
+        _grdbStorage = try createGrdbStorage()
 
         DispatchQueue.main.async {
             // We want to make sure all db connections from the old adapter/pool are closed.
@@ -149,7 +158,33 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func reloadAsMainDatabase() -> Guarantee<Void> {
+    public enum TransferredDbReloadResult {
+        /// Doesn't ever actually happen, but one can hope I guess?
+        /// Should just relaunch the app anyway.
+        case success
+        /// DB did its thing, but crashed when reading, due to SQLCipher
+        /// key caching. Should be counted as a "successful" transfer, as
+        /// closing and relaunching the app should resolve issues.
+        ///
+        /// Some context on this: this is resolvable in that we can make it not crash with
+        /// some more investigation/effort. The root issue is the old DB (that we set up before
+        /// transferring) and the new DB (from the source device) don't use the same SQLCipher
+        /// keys, and we need to tell GRDB and SQLCipher to wipe their in memory caches and
+        /// use the new keys. But even if that's done, a ton of in memory caches everywhere,
+        /// from the SQLite level up to our own classes, keep stale information and cause all
+        /// kinds of downstream chaos.
+        /// The real fix here is to not set up the full database prior
+        /// to transfer and/or registration; we should have a limited DB (just a key value store, really)
+        /// for that flow, so we have no state to reset when transferring the "real" DB.
+        case relaunchRequired
+
+        /// Fatal errors; do not count as a success. Likely due to
+        /// developer error.
+        case failedMigration(error: Error)
+        case unknownError(error: Error)
+    }
+
+    public func reloadTransferredDatabase() -> Guarantee<TransferredDbReloadResult> {
         AssertIsOnMainThread()
         assert(storageCoordinatorState == .GRDB)
 
@@ -157,15 +192,16 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         let wasRegistered = TSAccountManager.shared.isRegistered
 
-        let (promise, future) = Guarantee<Void>.pending()
-        reopenGRDBStorage {
+        let (promise, future) = Guarantee<TransferredDbReloadResult>.pending()
+        let completion: () -> Void = {
             do {
                 try GRDBSchemaMigrator.migrateDatabase(
                     databaseStorage: self,
                     isMainDatabase: true
                 )
             } catch {
-                owsFail("Database migration failed. Error: \(error.grdbErrorForLogging)")
+                owsFailDebug("Database migration failed. Error: \(error.grdbErrorForLogging)")
+                future.resolve(.failedMigration(error: error))
             }
 
             self.grdbStorage.publishUpdatesImmediately()
@@ -178,14 +214,31 @@ public class SDSDatabaseStorage: SDSTransactable {
             if wasRegistered != TSAccountManager.shared.isRegistered {
                 NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
             }
-            future.resolve()
+            future.resolve(.success)
+        }
+        do {
+            try reopenGRDBStorage(completion: completion)
+        } catch {
+            // A SQL logic error when reading the master table
+            // is probably (but not necessarily! this is a hack!)
+            // due to SQLCipher key cache mismatch, which should
+            // resolve on relaunch.
+            if
+                let grdbError = error as? GRDB.DatabaseError,
+                grdbError.resultCode.rawValue == 1,
+                grdbError.sql == "SELECT * FROM sqlite_master LIMIT 1"
+            {
+                future.resolve(.relaunchRequired)
+            } else {
+                future.resolve(.unknownError(error: error))
+            }
         }
         return promise
     }
 
-    func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
-        return Bench(title: "Creating GRDB storage") {
-            return GRDBDatabaseStorageAdapter(databaseFileUrl: databaseFileUrl)
+    func createGrdbStorage() throws -> GRDBDatabaseStorageAdapter {
+        return try Bench(title: "Creating GRDB storage") {
+            return try GRDBDatabaseStorageAdapter(databaseFileUrl: databaseFileUrl)
         }
     }
 

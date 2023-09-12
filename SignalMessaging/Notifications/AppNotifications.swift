@@ -35,6 +35,7 @@ public enum AppNotificationCategory: CaseIterable {
     case incomingMessageGeneric
     case incomingGroupStoryReply
     case failedStorySend
+    case transferRelaunch
     case deregistration
 }
 
@@ -50,6 +51,7 @@ public enum AppNotificationAction: String, CaseIterable {
     case showCallLobby
     case submitDebugLogs
     case reregister
+    case showChatList
 }
 
 public struct AppNotificationUserInfoKey {
@@ -100,6 +102,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.incomingGroupStoryReply"
         case .failedStorySend:
             return "Signal.AppNotificationCategory.failedStorySend"
+        case .transferRelaunch:
+            return "Signal.AppNotificationCategory.transferRelaunch"
         case .deregistration:
             return "Signal.AppNotificationCategory.authErrorLogout"
         }
@@ -142,6 +146,8 @@ extension AppNotificationCategory {
             return [.reply]
         case .failedStorySend:
             return []
+        case .transferRelaunch:
+            return []
         case .deregistration:
             return []
         }
@@ -173,6 +179,8 @@ extension AppNotificationAction {
             return "Signal.AppNotifications.Action.submitDebugLogs"
         case .reregister:
             return "Signal.AppNotifications.Action.reregister"
+        case .showChatList:
+            return "Signal.AppNotifications.Action.showChatList"
         }
     }
 }
@@ -1152,6 +1160,33 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 interaction: interaction,
                 sound: self.requestGlobalSound(),
                 completion: completion
+            )
+        }
+    }
+
+    public func notifyUserToRelaunchAfterTransfer(completion: (() -> Void)? = nil) {
+        let notificationBody = OWSLocalizedString(
+            "TRANSFER_RELAUNCH_NOTIFICATION",
+            comment: "Notification prompting the user to relaunch Signal after a device transfer completed."
+        )
+        performNotificationActionAsync { innerCompletion in
+            self.presenter.notify(
+                category: .transferRelaunch,
+                title: nil,
+                body: notificationBody,
+                threadIdentifier: nil,
+                userInfo: [
+                    AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showChatList.rawValue
+                ],
+                interaction: nil,
+                // Use a default sound so we don't read from
+                // the db (which doesn't work until we relaunch)
+                sound: .standard(.note),
+                forceBeforeOnboarded: true,
+                completion: {
+                    innerCompletion()
+                    completion?()
+                }
             )
         }
     }

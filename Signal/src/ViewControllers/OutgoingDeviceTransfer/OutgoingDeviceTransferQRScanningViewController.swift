@@ -274,4 +274,8 @@ extension OutgoingDeviceTransferQRScanningViewController: DeviceTransferServiceO
             )
         }
     }
+
+    func deviceTransferServiceDidRequestAppRelaunch() {
+        owsFail("Relaunch not supported for outgoing transfer; only on the receiving device during transfer")
+    }
 }

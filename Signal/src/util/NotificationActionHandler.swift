@@ -78,6 +78,9 @@ public class NotificationActionHandler: Dependencies {
             return submitDebugLogs()
         case .reregister:
             return reregister()
+        case .showChatList:
+            // No need to do anything.
+            return .value(())
         }
     }
 

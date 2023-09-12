@@ -189,4 +189,8 @@ extension ProvisioningTransferQRCodeViewController: DeviceTransferServiceObserve
             owsFailDebug("unexpected error while rendering QR code \(error)")
         }
     }
+
+    func deviceTransferServiceDidRequestAppRelaunch() {
+        owsFail("Relaunch not supported for provisioning; only on the receiving device during transfer")
+    }
 }

@@ -217,14 +217,21 @@ public extension TSAccountManager {
             if newValue == isTransferInProgress {
                 return
             }
-            databaseStorage.write { transaction in
-                objc_sync_enter(self)
-                defer { objc_sync_exit(self) }
-
-                keyValueStore.setBool(newValue, key: TSAccountManager_IsTransferInProgressKey, transaction: transaction)
-                loadAccountState(with: transaction)
-            }
+            setIsTransferInProgressWithoutNotification(newValue)
             postRegistrationStateDidChangeNotification()
+        }
+    }
+
+    func setIsTransferInProgressWithoutNotification(_ newValue: Bool) {
+        if newValue == isTransferInProgress {
+            return
+        }
+        databaseStorage.write { transaction in
+            objc_sync_enter(self)
+            defer { objc_sync_exit(self) }
+
+            keyValueStore.setBool(newValue, key: TSAccountManager_IsTransferInProgressKey, transaction: transaction)
+            loadAccountState(with: transaction)
         }
     }
 

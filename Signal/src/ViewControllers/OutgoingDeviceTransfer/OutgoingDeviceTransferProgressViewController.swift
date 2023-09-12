@@ -110,4 +110,8 @@ extension OutgoingDeviceTransferProgressViewController: DeviceTransferServiceObs
             owsFailDebug("this should never happen")
         }
     }
+
+    func deviceTransferServiceDidRequestAppRelaunch() {
+        owsFail("Relaunch not supported for outgoing transfer; only on the receiving device during transfer")
+    }
 }

@@ -685,4 +685,6 @@ extension ConversationSplitViewController: DeviceTransferServiceObserver {
     func deviceTransferServiceDidStartTransfer(progress: Progress) {}
 
     func deviceTransferServiceDidEndTransfer(error: DeviceTransferService.Error?) {}
+
+    func deviceTransferServiceDidRequestAppRelaunch() {}
 }

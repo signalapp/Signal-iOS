@@ -81,6 +81,10 @@ public class UserNotificationConfig {
             // Currently, .reregister is only used as a default action.
             owsFailDebug("Reregister is not supported as a UNNotificationAction")
             return nil
+        case .showChatList:
+            // Currently, .showChatList is only used as a default action.
+            owsFailDebug("ShowChatList is not supported as a UNNotificationAction")
+            return nil
         }
     }
 
@@ -178,9 +182,10 @@ class UserNotificationPresenter: Dependencies {
         interaction: INInteraction?,
         sound: Sound?,
         replacingIdentifier: String? = nil,
+        forceBeforeOnboarded: Bool = false,
         completion: NotificationActionCompletion?
     ) {
-        guard tsAccountManager.isOnboarded else {
+        guard forceBeforeOnboarded || tsAccountManager.isOnboarded else {
             Logger.info("suppressing notification since user hasn't yet completed onboarding.")
             completion?()
             return
@@ -311,6 +316,7 @@ class UserNotificationPresenter: Dependencies {
              .missedCallWithActions,
              .missedCallWithoutActions,
              .missedCallFromNoLongerVerifiedIdentity,
+             .transferRelaunch,
              .deregistration:
             // Always show these notifications
             return true

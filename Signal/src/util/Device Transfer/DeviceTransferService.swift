@@ -12,6 +12,8 @@ protocol DeviceTransferServiceObserver: AnyObject {
 
     func deviceTransferServiceDidStartTransfer(progress: Progress)
     func deviceTransferServiceDidEndTransfer(error: DeviceTransferService.Error?)
+
+    func deviceTransferServiceDidRequestAppRelaunch()
 }
 
 ///
@@ -246,7 +248,7 @@ class DeviceTransferService: NSObject {
         notifyObservers { $0.deviceTransferServiceDidEndTransfer(error: error) }
     }
 
-    func stopTransfer() {
+    func stopTransfer(notifyRegState: Bool = true) {
         switch transferState {
         case .outgoing:
             DeviceTransferOperation.cancelAllOperations()
@@ -266,7 +268,11 @@ class DeviceTransferService: NSObject {
         // simply return in the .idle case above since none of the values being
         // reset should have values if we are idle, but I am scared of it.
         if case .idle = transferState {} else {
-            tsAccountManager.isTransferInProgress = false
+            if notifyRegState {
+                tsAccountManager.isTransferInProgress = false
+            } else {
+                tsAccountManager.setIsTransferInProgressWithoutNotification(false)
+            }
         }
 
         transferState = .idle

@@ -484,4 +484,10 @@ extension RegistrationTransferQRCodeViewController: DeviceTransferServiceObserve
             owsFailDebug("unexpected error while rendering QR code \(error)")
         }
     }
+
+    func deviceTransferServiceDidRequestAppRelaunch() {
+        if CurrentAppContext().frontmostViewController() == self {
+            owsFail("Relaunch not supported from QR screen")
+        }
+    }
 }

@@ -146,4 +146,8 @@ extension ProvisioningTransferProgressViewController: DeviceTransferServiceObser
             owsFailDebug("This should never happen on the new device")
         }
     }
+
+    func deviceTransferServiceDidRequestAppRelaunch() {
+        owsFail("Relaunch not supported for provisioning; only on the receiving device during transfer")
+    }
 }

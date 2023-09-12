@@ -55,6 +55,7 @@ open class InteractiveSheetViewController: OWSViewController {
 
     open var dismissesWithHighVelocitySwipe: Bool { false }
     open var shrinksWithHighVelocitySwipe: Bool { false }
+    open var canBeDismissed: Bool { true }
 
     open var sheetBackgroundColor: UIColor { Theme.actionSheetBackgroundColor }
 
@@ -134,6 +135,9 @@ open class InteractiveSheetViewController: OWSViewController {
 
     @objc
     private func didTapBackdrop(_ sender: UITapGestureRecognizer) {
+        guard canBeDismissed else {
+            return
+        }
         willDismissInteractively()
         dismiss(animated: true)
     }
@@ -353,7 +357,11 @@ open class InteractiveSheetViewController: OWSViewController {
 
             if currentVelocity <= -Constants.maximizeVelocityThreshold {
                 completionState = .growing
-            } else if currentVelocity >= Constants.dismissVelocityThreshold && (dismissesWithHighVelocitySwipe || isInInteractiveTransition) {
+            } else if
+                canBeDismissed,
+                currentVelocity >= Constants.dismissVelocityThreshold,
+                (dismissesWithHighVelocitySwipe || isInInteractiveTransition)
+            {
                 completionState = .dismissing
             } else if currentHeight >= minHeight {
                 if
@@ -370,10 +378,10 @@ open class InteractiveSheetViewController: OWSViewController {
                 }
             } else {
                 if abs(currentVelocity) > Constants.baseVelocityThreshhold {
-                    completionState = currentVelocity > 0 ? .dismissing : .shrinking
+                    completionState = currentVelocity > 0 && canBeDismissed ? .dismissing : .shrinking
                 } else {
                     completionState =
-                        currentHeight < minHeight / 2
+                        currentHeight < minHeight / 2 && canBeDismissed
                         ? .dismissing : .shrinking
                 }
             }
@@ -409,7 +417,7 @@ open class InteractiveSheetViewController: OWSViewController {
                 self.sheetCurrentHeightConstraint.constant = finalHeight
                 self.view.layoutIfNeeded()
 
-                if completionState == .dismissing {
+                if completionState == .dismissing && self.canBeDismissed {
                     self.willDismissInteractively()
                     self.dismiss(animated: true, completion: { [weak self] in
                         self?.isDismissingFromPanGesture = false

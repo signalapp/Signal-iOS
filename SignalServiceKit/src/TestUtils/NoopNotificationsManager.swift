@@ -63,6 +63,10 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
         Logger.warn("skipping failed story send notification")
     }
 
+    public func notifyUserToRelaunchAfterTransfer(completion: (() -> Void)? = nil) {
+        Logger.warn("skipping transfer relaunch notification")
+    }
+
     public func notifyUserOfDeregistration(transaction: SDSAnyWriteTransaction) {
         Logger.warn("skipping deregistration notification")
     }

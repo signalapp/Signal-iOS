@@ -67,6 +67,9 @@ NS_ASSUME_NONNULL_BEGIN
                          transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(notifyUser(forFailedStorySend:to:transaction:));
 
+/// Notify user to relaunch the app after we deliberately terminate when an incoming device transfer completes.
+- (void)notifyUserToRelaunchAfterTransferWithCompletion:(void (^__nullable)(void))completion;
+
 /// Notify user of an auth error that has caused their device to be logged out (e.g. a 403 from the chat server).
 - (void)notifyUserOfDeregistration:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(notifyUserOfDeregistration(transaction:));

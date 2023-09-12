@@ -104,7 +104,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return storage.pool
     }
 
-    init(databaseFileUrl: URL) {
+    init(databaseFileUrl: URL) throws {
         self.databaseFileUrl = databaseFileUrl
 
         do {
@@ -122,7 +122,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 userDefaults: CurrentAppContext().appUserDefaults(),
                 error: error
             )
-            owsFail("\(error.grdbErrorForLogging)")
+            throw error
         }
 
         super.init()
