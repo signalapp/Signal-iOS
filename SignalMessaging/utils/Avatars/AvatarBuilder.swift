@@ -1067,27 +1067,6 @@ public class AvatarBuilder: NSObject {
         }
     }
 
-    private static func buildAvatar(
-        icon: UIImage,
-        iconSizePixels: CGSize,
-        iconColor: UIColor,
-        backgroundColor: UIColor,
-        diameterPixels: CGFloat
-    ) -> UIImage? {
-        buildAvatar(
-            diameterPixels: diameterPixels,
-            backgroundColor: backgroundColor
-        ) { context in
-            drawIconInAvatar(
-                icon: icon,
-                iconSizePixels: iconSizePixels,
-                iconColor: iconColor,
-                diameterPixels: diameterPixels,
-                context: context
-            )
-        }
-    }
-
     private static func buildAvatar(diameterPixels: CGFloat,
                                     backgroundColor: UIColor,
                                     drawBlock: (CGContext) -> Void) -> UIImage? {
