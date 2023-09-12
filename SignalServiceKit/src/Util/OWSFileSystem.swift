@@ -62,6 +62,29 @@ public extension OWSFileSystem {
         #endif
     }
 
+    class func copyFile(from fromUrl: URL, to toUrl: URL) throws {
+        guard FileManager.default.fileExists(atPath: fromUrl.path) else {
+            throw OWSAssertionError("Source file does not exist.")
+        }
+        guard !FileManager.default.fileExists(atPath: toUrl.path) else {
+            throw OWSAssertionError("Destination file already exists.")
+        }
+        try FileManager.default.copyItem(at: fromUrl, to: toUrl)
+
+        // Ensure all files copied have the proper data protection class.
+        // On large directories this can take a while, so we dispatch async
+        // since we're in the launch path.
+        DispatchQueue.global().async {
+            self.protectRecursiveContents(atPath: toUrl.path)
+        }
+
+        #if TESTABLE_BUILD
+        guard FileManager.default.fileExists(atPath: toUrl.path) else {
+            throw OWSAssertionError("Destination file not created.")
+        }
+        #endif
+    }
+
     class func recursiveFilesInDirectory(_ dirPath: String) throws -> [String] {
         owsAssertDebug(!dirPath.isEmpty)
 
@@ -85,20 +108,47 @@ public extension OWSFileSystem {
 @objc
 public extension OWSFileSystem {
 
-    class func temporaryFileUrl(fileExtension: String? = nil,
-                                isAvailableWhileDeviceLocked: Bool = false) -> URL {
-        return URL(fileURLWithPath: temporaryFilePath(fileExtension: fileExtension,
-                                                      isAvailableWhileDeviceLocked: isAvailableWhileDeviceLocked))
+    class func temporaryFileUrl(
+        fileExtension: String? = nil,
+        isAvailableWhileDeviceLocked: Bool = false
+    ) -> URL {
+        return URL(fileURLWithPath: temporaryFilePath(
+            fileName: nil,
+            fileExtension: fileExtension,
+            isAvailableWhileDeviceLocked: isAvailableWhileDeviceLocked
+        ))
     }
 
-    class func temporaryFilePath(fileExtension: String? = nil) -> String {
-        temporaryFilePath(fileExtension: fileExtension, isAvailableWhileDeviceLocked: false)
+    class func temporaryFileUrl(
+        fileName: String,
+        fileExtension: String? = nil,
+        isAvailableWhileDeviceLocked: Bool = false
+    ) -> URL {
+        return URL(fileURLWithPath: temporaryFilePath(
+            fileName: fileName,
+            fileExtension: fileExtension,
+            isAvailableWhileDeviceLocked: isAvailableWhileDeviceLocked
+        ))
     }
 
-    class func temporaryFilePath(fileExtension: String? = nil,
-                                 isAvailableWhileDeviceLocked: Bool = false) -> String {
+    class func temporaryFilePath(
+        fileName: String? = nil,
+        fileExtension: String? = nil
+    ) -> String {
+        temporaryFilePath(
+            fileName: fileName,
+            fileExtension: fileExtension,
+            isAvailableWhileDeviceLocked: false
+        )
+    }
+
+    class func temporaryFilePath(
+        fileName: String? = nil,
+        fileExtension: String? = nil,
+        isAvailableWhileDeviceLocked: Bool = false
+    ) -> String {
         let tempDirPath = tempDirPath(availableWhileDeviceLocked: isAvailableWhileDeviceLocked)
-        var fileName = UUID().uuidString
+        var fileName = fileName ?? UUID().uuidString
         if let fileExtension = fileExtension,
             !fileExtension.isEmpty {
             fileName = String(format: "\(fileName).\(fileExtension)")

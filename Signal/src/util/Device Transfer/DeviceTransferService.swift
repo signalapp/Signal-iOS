@@ -307,22 +307,42 @@ class DeviceTransferService: NSObject {
 
         var promises = [Promise<Void>]()
 
-        let (databasePromise, databaseFuture) = Promise<Void>.pending()
-        promises.append(databasePromise)
+        struct DatabaseCopy {
+            let db: DeviceTransferProtoFile
+            let wal: DeviceTransferProtoFile
+        }
 
-        // Transfer the database files within a write transaction so we can be confident
-        // they aren't mutated during the transfer. We add them to the queue with high
-        // priority so they transfer ASAP, so we only have to block the database for a
-        // minimal amount of time.
+        let (databaseCopyPromise, databaseCopyFuture) = Promise<DatabaseCopy>.pending()
+
+        let databaseTransferPromise = databaseCopyPromise.then { dbCopy in
+            return Promise.when(fulfilled: [
+                DeviceTransferOperation.scheduleTransfer(file: dbCopy.db, priority: .high).ensure {
+                    // Delete the copy (but don't block on it if it fails).
+                    if let copyURL = try? Self.urlForCopy(databaseFile: dbCopy.db) {
+                        try? OWSFileSystem.deleteFile(url: copyURL)
+                    }
+                },
+                DeviceTransferOperation.scheduleTransfer(file: dbCopy.wal, priority: .high).ensure {
+                    // Delete the copy (but don't block on it if it fails).
+                    if let copyURL = try? Self.urlForCopy(databaseFile: dbCopy.wal) {
+                        try? OWSFileSystem.deleteFile(url: copyURL)
+                    }
+                },
+            ])
+        }
+
+        promises.append(databaseTransferPromise)
+
+        // Make a copy of the database files within a write transaction so we can be confident
+        // they aren't mutated during the copy. We then transfer these copies.
         databaseStorage.asyncWrite { _ in
             do {
-                try Promise.when(fulfilled: [
-                    DeviceTransferOperation.scheduleTransfer(file: database.database, priority: .high),
-                    DeviceTransferOperation.scheduleTransfer(file: database.wal, priority: .high)
-                ]).wait()
-                databaseFuture.resolve()
+                let dbCopy = try Self.makeLocalCopy(databaseFile: database.database)
+                let walCopy = try Self.makeLocalCopy(databaseFile: database.wal)
+                databaseCopyFuture.resolve(.init(db: dbCopy, wal: walCopy))
             } catch {
-                databaseFuture.reject(error)
+                Logger.error("Failed to copy database files!")
+                databaseCopyFuture.reject(error)
             }
         }
 
@@ -340,6 +360,55 @@ class DeviceTransferService: NSObject {
                 self.failTransfer(.assertion, "\(error)")
             }
         }
+    }
+
+    private static let dbCopyFilename = "db_copy_for_transfer"
+    private static let walCopyFilename = "wal_copy_for_transfer"
+
+    private static func urlForCopy(
+        databaseFile: DeviceTransferProtoFile
+    ) throws -> URL {
+        let newFileName: String
+        let newFileExtension: String
+        if databaseFile.identifier == databaseIdentifier {
+            newFileName = Self.dbCopyFilename
+            newFileExtension = ".sqlite"
+        } else if databaseFile.identifier == databaseWALIdentifier {
+            newFileName = Self.walCopyFilename
+            newFileExtension = ".sqlite-wal"
+        } else {
+            throw OWSAssertionError("Unknown db file being copied")
+        }
+        owsAssertDebug(databaseFile.relativePath.hasSuffix(newFileExtension))
+        return OWSFileSystem.temporaryFileUrl(fileName: newFileName, fileExtension: newFileExtension)
+    }
+
+    private static func makeLocalCopy(
+        databaseFile: DeviceTransferProtoFile
+    ) throws -> DeviceTransferProtoFile {
+        let url = URL(
+            fileURLWithPath: databaseFile.relativePath,
+            relativeTo: DeviceTransferService.appSharedDataDirectory
+        )
+
+        if !OWSFileSystem.fileOrFolderExists(url: url) {
+            throw OWSAssertionError("Mandatory database file is missing for transfer")
+        }
+
+        let copyUrl = try Self.urlForCopy(databaseFile: databaseFile)
+
+        if OWSFileSystem.fileOrFolderExists(url: copyUrl) {
+            // We might have partially copied before. Delete it.
+            try OWSFileSystem.deleteFile(url: copyUrl)
+        }
+        try OWSFileSystem.copyFile(from: url, to: copyUrl)
+
+        // Note that the receiver doesn't care about the relative path
+        // for database files (it does care for other files!) because it
+        // forces the path to be that to its own local database.
+        var protoBuilder = databaseFile.asBuilder()
+        protoBuilder.setRelativePath(copyUrl.relativePath)
+        return try protoBuilder.build()
     }
 
     static let doneMessage = "Transfer Complete".data(using: .utf8)!
