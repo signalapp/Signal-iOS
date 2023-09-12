@@ -783,27 +783,7 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
             }
         }
 
-        // --- Change action insertion point --- //
-
-        /// This should remain the last change action we consider adding.
-        /// The reason is that we will modify the `groupUpdateMessageBehavior`
-        /// _only_ when the local profile key update is the _sole_ change
-        /// action in this proto.
         if shouldUpdateLocalProfileKey {
-            if !didChange {
-                /// When the profile key rotation is the sole change action
-                /// in this proto, we skip the optimization of sending messages
-                /// notifying all group members of this change, instead opting
-                /// for them to pull down shared group state from the server
-                /// at their leisure.
-                ///
-                /// The reason we remove this optimization is that recipient
-                /// hiding and blocking trigger profile key rotations, and
-                /// sending messages (particularly receiving all the receipts
-                /// in return) creates noticeable lagginess for users with
-                /// many groups.
-                groupUpdateMessageBehavior = .sendNothing
-            }
             guard let profileKeyCredential = profileKeyCredentialMap[localAci] else {
                 throw OWSAssertionError("Missing profile key credential: \(localAci)")
             }
