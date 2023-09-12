@@ -86,7 +86,7 @@ class _PreKey_AccountServiceClientMock: FakeAccountServiceClient {
 
     var setPreKeysResult: ConsumableMockPromise<Void> = .unset
     var identity: OWSIdentity?
-    var identityKey: IdentityKey?
+    var identityKey: Data?
     var signedPreKeyRecord: SignedPreKeyRecord?
     var preKeyRecords: [PreKeyRecord]?
     var pqLastResortPreKeyRecord: KyberPreKeyRecord?
@@ -105,7 +105,7 @@ class _PreKey_AccountServiceClientMock: FakeAccountServiceClient {
 
     override func setPreKeys(
         for identity: OWSIdentity,
-        identityKey: IdentityKey,
+        identityKey: Data,
         signedPreKeyRecord: SignedPreKeyRecord?,
         preKeyRecords: [PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,

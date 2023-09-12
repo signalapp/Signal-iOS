@@ -194,7 +194,7 @@ extension OWSRequestFactory {
     /// TSAccountManager).
     static func registerPrekeysRequest(
         identity: OWSIdentity,
-        identityKey: IdentityKey,
+        identityKey: Data,
         signedPreKeyRecord: SignedPreKeyRecord?,
         prekeyRecords: [PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,

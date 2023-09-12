@@ -133,7 +133,7 @@ public typealias SignalAccountIdentifier = String
 /// a remote client.
 public protocol TestSignalClient {
     var identityKeyPair: ECKeyPair { get }
-    var identityKey: IdentityKey { get }
+    var identityKey: Data { get }
     var e164Identifier: SignalE164Identifier? { get }
     var serviceId: ServiceId { get }
     var deviceId: UInt32 { get }
@@ -148,7 +148,7 @@ public protocol TestSignalClient {
 }
 
 public extension TestSignalClient {
-    var identityKey: IdentityKey {
+    var identityKey: Data {
         return identityKeyPair.publicKey
     }
 

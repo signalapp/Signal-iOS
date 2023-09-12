@@ -12,7 +12,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
     private let recipientAddress: SignalServiceAddress
     private let recipientIdentity: OWSRecipientIdentity
     private let contactName: String
-    private let identityKey: IdentityKey
+    private let identityKey: Data
     private let fingerprints: [OWSFingerprint]
 
     private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .masked())

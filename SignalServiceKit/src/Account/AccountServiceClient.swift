@@ -5,9 +5,6 @@
 
 import Foundation
 
-// TODO define actual type, and validate length
-public typealias IdentityKey = Data
-
 public enum AccountServiceClientError: Error {
     case captchaRequired
 }
@@ -24,7 +21,7 @@ public class AccountServiceClient: NSObject {
 
     public func setPreKeys(
         for identity: OWSIdentity,
-        identityKey: IdentityKey,
+        identityKey: Data,
         signedPreKeyRecord: SignedPreKeyRecord?,
         preKeyRecords: [PreKeyRecord]?,
         pqLastResortPreKeyRecord: KyberPreKeyRecord?,

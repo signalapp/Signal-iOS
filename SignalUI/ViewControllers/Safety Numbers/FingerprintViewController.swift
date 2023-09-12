@@ -90,7 +90,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     private let recipientAddress: SignalServiceAddress
     private let recipientIdentity: OWSRecipientIdentity
     private let contactName: String
-    private let identityKey: IdentityKey
+    private let identityKey: Data
     private let fingerprints: [OWSFingerprint]
     private var selectedIndex: Int
 
