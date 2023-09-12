@@ -721,35 +721,35 @@ extension MessageSender {
                 throw OWSAssertionError("Not registered.")
             }
 
+            let senderCertificate: SenderCertificate = {
+                switch udManager.phoneNumberSharingMode(tx: tx) {
+                case .everybody:
+                    return senderCertificates.defaultCert
+                case .nobody:
+                    return senderCertificates.uuidOnlyCert
+                }
+            }()
+
             // 2. Gather "ud sending access".
-            var sendingAccessMap = [ServiceId: OWSUDSendingAccess]()
-            let phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: tx)
+            var udAccessMap = [ServiceId: OWSUDSendingAccess]()
             for serviceId in serviceIds {
                 if localIdentifiers.contains(serviceId: serviceId) {
                     continue
                 }
-                sendingAccessMap[serviceId] = (
-                    message.isStorySend
-                    ? udManager.storySendingAccess(
-                        for: serviceId,
-                        phoneNumberSharingMode: phoneNumberSharingMode,
-                        senderCertificates: senderCertificates,
-                        tx: tx
-                    )
-                    : udManager.udSendingAccess(
-                        for: serviceId,
-                        phoneNumberSharingMode: phoneNumberSharingMode,
-                        senderCertificates: senderCertificates,
-                        tx: tx
-                    )
+                let udAccess = (
+                    message.isStorySend ? udManager.storyUdAccess() : udManager.udAccess(for: serviceId, tx: tx)
                 )
+                guard let udAccess else {
+                    continue
+                }
+                udAccessMap[serviceId] = OWSUDSendingAccess(udAccess: udAccess, senderCertificate: senderCertificate)
             }
 
             return .sendMessage(
                 serializedMessage: serializedMessage,
                 thread: thread,
                 serviceIds: serviceIds,
-                udAccess: sendingAccessMap,
+                udAccess: udAccessMap,
                 localIdentifiers: localIdentifiers
             )
         }

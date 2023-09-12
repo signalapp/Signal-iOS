@@ -122,19 +122,7 @@ public protocol OWSUDManager {
 
     func udAccess(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> OWSUDAccess?
 
-    func udSendingAccess(
-        for serviceId: ServiceId,
-        phoneNumberSharingMode: PhoneNumberSharingMode,
-        senderCertificates: SenderCertificates,
-        tx: SDSAnyReadTransaction
-    ) -> OWSUDSendingAccess?
-
-    func storySendingAccess(
-        for serviceId: ServiceId,
-        phoneNumberSharingMode: PhoneNumberSharingMode,
-        senderCertificates: SenderCertificates,
-        tx: SDSAnyReadTransaction
-    ) -> OWSUDSendingAccess
+    func storyUdAccess() -> OWSUDAccess
 
     func fetchAllAciUakPairs(tx: SDSAnyReadTransaction) -> [Aci: SMKUDAccessKey]
 
@@ -322,60 +310,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
     }
 
-    // Returns the UD access key and appropriate sender certificate for sending to a given recipient
-    public func udSendingAccess(
-        for serviceId: ServiceId,
-        phoneNumberSharingMode: PhoneNumberSharingMode,
-        senderCertificates: SenderCertificates,
-        tx: SDSAnyReadTransaction
-    ) -> OWSUDSendingAccess? {
-        guard let udAccess = self.udAccess(for: serviceId, tx: tx) else {
-            return nil
-        }
-        return udSendingAccess(
-            for: serviceId,
-            udAccess: udAccess,
-            phoneNumberSharingMode: phoneNumberSharingMode,
-            senderCertificates: senderCertificates,
-            tx: tx
-        )
-    }
-
-    public func storySendingAccess(
-        for serviceId: ServiceId,
-        phoneNumberSharingMode: PhoneNumberSharingMode,
-        senderCertificates: SenderCertificates,
-        tx: SDSAnyReadTransaction
-    ) -> OWSUDSendingAccess {
-        let udAccess = OWSUDAccess(udAccessKey: randomUDAccessKey(), udAccessMode: .unrestricted, isRandomKey: true)
-        return udSendingAccess(
-            for: serviceId,
-            udAccess: udAccess,
-            phoneNumberSharingMode: phoneNumberSharingMode,
-            senderCertificates: senderCertificates,
-            tx: tx
-        )
-    }
-
-    private func udSendingAccess(
-        for serviceId: ServiceId,
-        udAccess: OWSUDAccess,
-        phoneNumberSharingMode: PhoneNumberSharingMode,
-        senderCertificates: SenderCertificates,
-        tx: SDSAnyReadTransaction
-    ) -> OWSUDSendingAccess {
-        let shouldSharePhoneNumber: Bool
-        switch phoneNumberSharingMode {
-        case .everybody:
-            shouldSharePhoneNumber = true
-        case .nobody:
-            let identityManager = DependenciesBridge.shared.identityManager
-            shouldSharePhoneNumber = identityManager.shouldSharePhoneNumber(with: serviceId, tx: tx.asV2Read)
-        }
-        return OWSUDSendingAccess(
-            udAccess: udAccess,
-            senderCertificate: shouldSharePhoneNumber ? senderCertificates.defaultCert : senderCertificates.uuidOnlyCert
-        )
+    public func storyUdAccess() -> OWSUDAccess {
+        return OWSUDAccess(udAccessKey: randomUDAccessKey(), udAccessMode: .unrestricted, isRandomKey: true)
     }
 
     // MARK: - Sender Certificate
