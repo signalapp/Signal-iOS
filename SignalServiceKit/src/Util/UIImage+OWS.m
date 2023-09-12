@@ -232,13 +232,11 @@ NS_ASSUME_NONNULL_BEGIN
         drawRect.origin.y = 0;
         drawRect.size.height = dstSize.height;
         drawRect.size.width = dstSize.height * srcSize.width / srcSize.height;
-        OWSAssertDebug(drawRect.size.width > dstSize.width);
         drawRect.origin.x = (drawRect.size.width - dstSize.width) * -0.5f;
     } else {
         drawRect.origin.x = 0;
         drawRect.size.width = dstSize.width;
         drawRect.size.height = dstSize.width * srcSize.height / srcSize.width;
-        OWSAssertDebug(drawRect.size.height >= dstSize.height);
         drawRect.origin.y = (drawRect.size.height - dstSize.height) * -0.5f;
     }
 
