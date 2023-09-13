@@ -27,12 +27,11 @@ class AttachmentKeyboard: CustomKeyboard {
         collectionView.recentPhotosDelegate = self
         return collectionView
     }()
-    private lazy var attachmentFormatPickerView: UIView = {
+    private lazy var attachmentFormatPickerView: AttachmentFormatPickerView = {
         let pickerView = AttachmentFormatPickerView(isGroup: delegate?.isGroup ?? false)
         pickerView.attachmentFormatPickerDelegate = self
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            pickerView.autoSetDimension(.height, toSize: AttachmentFormatPickerView.itemSize.height)
-        }
+        pickerView.setContentHuggingVerticalHigh()
+        pickerView.setCompressionResistanceVerticalHigh()
         return pickerView
     }()
 
@@ -63,6 +62,14 @@ class AttachmentKeyboard: CustomKeyboard {
     override func willPresent() {
         super.willPresent()
         checkPermissions()
+        recentPhotosCollectionView.prepareForPresentation()
+        attachmentFormatPickerView.prepareForPresentation()
+    }
+
+    override func wasPresented() {
+        super.wasPresented()
+        recentPhotosCollectionView.performPresentationAnimation()
+        attachmentFormatPickerView.performPresentationAnimation()
     }
 
     override func layoutSubviews() {

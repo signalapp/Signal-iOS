@@ -178,6 +178,10 @@ public extension UIColor {
         return UIColor(white: 1.0, alpha: 0)
     }
 
+    class var ows_whiteAlpha10: UIColor {
+        return UIColor(white: 1.0, alpha: 0.1)
+    }
+
     class var ows_whiteAlpha20: UIColor {
         return UIColor(white: 1.0, alpha: 0.2)
     }

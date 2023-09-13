@@ -98,6 +98,22 @@ class RecentPhotosCollectionView: UICollectionView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // Presentation Animations
+
+    func prepareForPresentation() {
+        UIView.performWithoutAnimation {
+            self.alpha = 0
+        }
+    }
+
+    func performPresentationAnimation() {
+        let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 1, springResponse: 0.3)
+        animator.addAnimations({
+            self.alpha = 1
+        })
+        animator.startAnimation()
+    }
+
     // Background view
 
     private var hasPhotos: Bool {
