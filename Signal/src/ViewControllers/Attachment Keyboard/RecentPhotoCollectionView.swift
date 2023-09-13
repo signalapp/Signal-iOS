@@ -420,8 +420,8 @@ private class RecentPhotoCell: UICollectionViewCell {
     }
 
     private static func durationLabelFont() -> UIFont {
-        let fontDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1)
-        return UIFont.semiboldFont(ofSize: max(12, fontDescriptor.pointSize))
+        let fontDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .footnote)
+        return UIFont.semiboldFont(ofSize: max(13, fontDescriptor.pointSize))
     }
 
     private func setContentTypeBadge(image: UIImage?) {
@@ -433,8 +433,8 @@ private class RecentPhotoCell: UICollectionViewCell {
         if contentTypeBadgeView == nil {
             let contentTypeBadgeView = UIImageView()
             contentView.addSubview(contentTypeBadgeView)
-            contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 4)
-            contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 4)
+            contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 12)
+            contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 12)
             self.contentTypeBadgeView = contentTypeBadgeView
         }
         contentTypeBadgeView?.isHidden = false
@@ -475,8 +475,8 @@ private class RecentPhotoCell: UICollectionViewCell {
 
         if durationLabel.superview == nil {
             contentView.addSubview(durationLabel)
-            durationLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
-            durationLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: 4)
+            durationLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 12)
+            durationLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: 12)
         }
         if durationLabelBackground.superview == nil {
             contentView.insertSubview(durationLabelBackground, belowSubview: durationLabel)
