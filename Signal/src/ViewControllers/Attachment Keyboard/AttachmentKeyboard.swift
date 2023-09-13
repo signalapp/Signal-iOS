@@ -48,7 +48,6 @@ class AttachmentKeyboard: CustomKeyboard {
 
         let stackView = UIStackView(arrangedSubviews: [ recentPhotosCollectionView, attachmentFormatPickerView ])
         stackView.axis = .vertical
-        stackView.spacing = 8
         contentView.addSubview(stackView)
         stackView.autoPinWidthToSuperview()
         stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
