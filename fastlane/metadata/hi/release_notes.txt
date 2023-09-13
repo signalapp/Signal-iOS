@@ -1,1 +1,1 @@
-• We fixed a few bugs in the device transfer process just in case anyone is getting ready to announce some new phones soon.
+• हमने डिवाइस ट्रांसफर प्रक्रिया में कुछ बग ठीक कर दिए हैं, ताकि यदि किसी ने नया फोन लिया है, तो उसे कोई परेशानी न हो।

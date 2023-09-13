@@ -1,1 +1,1 @@
-• We fixed a few bugs in the device transfer process just in case anyone is getting ready to announce some new phones soon.
+• การอัปเดตครั้งนี้มาพร้อมการแก้ไขบั๊กในขั้นตอนการถ่ายโอนอุปกรณ์

@@ -1,1 +1,1 @@
-• We fixed a few bugs in the device transfer process just in case anyone is getting ready to announce some new phones soon.
+• V tejto aktualizácii sme opravili niekoľko chýb pri prenose účtov medzi zariadeniami.

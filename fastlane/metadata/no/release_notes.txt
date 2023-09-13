@@ -1,1 +1,1 @@
-• We fixed a few bugs in the device transfer process just in case anyone is getting ready to announce some new phones soon.
+• Denne oppdateringen retter opp i et par feil med overføringer mellom enheter.

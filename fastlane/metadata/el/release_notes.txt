@@ -1,1 +1,1 @@
-• We fixed a few bugs in the device transfer process just in case anyone is getting ready to announce some new phones soon.
+• Διορθώσαμε μερικά σφάλματα στη διαδικασία μεταφοράς συσκευής σε περίπτωση που κάποιος ετοιμάζεται να ανακοινώσει σύντομα κάποια νέα τηλέφωνα.

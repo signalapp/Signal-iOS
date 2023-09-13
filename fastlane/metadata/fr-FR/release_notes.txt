@@ -1,1 +1,1 @@
-• We fixed a few bugs in the device transfer process just in case anyone is getting ready to announce some new phones soon.
+• Nous avons corrigé quelques bugs qui se produisaient lors du processus de transferts entre deux appareils, au cas où une marque s’apprêtait à annoncer la sortie de ces nouveaux téléphones.

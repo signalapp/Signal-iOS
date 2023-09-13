@@ -1,1 +1,1 @@
-• We fixed a few bugs in the device transfer process just in case anyone is getting ready to announce some new phones soon.
+• Deze update lost een aantal bugs op bij het overzetten van een account naar een nieuw apparaat.

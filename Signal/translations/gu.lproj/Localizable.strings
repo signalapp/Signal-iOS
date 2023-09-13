@@ -3365,10 +3365,10 @@
 "INCOMING_VIDEO_CALL" = "ઇનકમિંગ વિડિયો કૉલ";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
-"INFO_MESSAGE_CONTACT_REINSTATED" = "This person was added back to your Signal contact list.";
+"INFO_MESSAGE_CONTACT_REINSTATED" = "આ વ્યક્તિ તમારી Signal સંપર્ક સૂચિમાં ફરીથી ઉમેરવામાં આવી છે.";
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "You removed this person from your Signal contact list, messaging them will add them back.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "તમે આ વ્યક્તિને તમારી Signal સંપર્ક સૂચિમાંથી દૂર કરી છે, તેમને મેસેજ કરવાથી તેઓ પાછા ઉમેરાઈ જશે.";
 
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "તમે ચુકવણીઓ સક્રિય કરી.";
@@ -3992,16 +3992,16 @@
 "MISSED_AUDIO_CALL" = "મિસ્ડ વૉઇસ કૉલ";
 
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
-"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Missed call from contact blocked in phone settings";
+"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "ફોન સેટિંગ્સમાં બ્લૉક કરવામાં આવેલ સંપર્ક તરફથી મિસ્ડ કોલ";
 
 /* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Also Block Contact in Signal";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Signalમાં પણ સંપર્કને બ્લૉક કરો";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "You missed their call because they are blocked in your phone settings. Go to Settings > Phone and tap Blocked Contacts to manage this.";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "તમે તેમનો કૉલ ચૂકી ગયા છો કારણ કે તેઓને તમારા ફોન સેટિંગ્સમાં બ્લૉક કરેલ છે. આને મેનેજ કરવા માટે સેટિંગ્સ > ફોન પર જાઓ અને બ્લૉક કરેલ સંપર્કો પર ટેપ કરો.";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ is Blocked in Phone Settings";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ને ફોન સેટિંગ્સમાં બ્લૉક કરેલ છે";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "'ખલેલ ન કરશો'માં હતા ત્યારે મિસ્ડ કોલ આવ્યો";
@@ -4418,13 +4418,13 @@
 "OUTGOING_MISSED_VIDEO_CALL" = "ન ઉપાડેલો વિડિયો કૉલ";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
-"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Exit Signal";
+"OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Signalમાંથી બહાર નીકળો";
 
 /* Message for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal will now exit on this device";
+"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal હવે આ ડિવાઇસ પરથી બહાર નીકળી જશે";
 
 /* Title for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Transfer complete!";
+"OUTGOING_TRANSFER_COMPLETE_TITLE" = "ટ્રાન્સફર પૂર્ણ!";
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "આઉટગોઇંગ વિડિયો કૉલ";
@@ -4862,7 +4862,7 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "કૅમેરો કનફિગર કરવામાં નિષ્ફળ.";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
-"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Video too long.";
+"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "વીડિયો બહુ લાંબો છે.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "અનામી આલ્બમ";
@@ -6032,7 +6032,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "સક્રિય કરો";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "તમે હવે MobileCoin મોકલવા અને મેળવવા માટે Signalનો ઉપયોગ કરી શકો છો. તમામ ચુકવણીઓ MobileCoins અને MobileCoin Walletની ઉપયોગની શરતોને આધીન છે. તમને થોડી સમસ્યાઓ આવી શકે છે અને તમે ગુમાવી શકો તેવી ચુકવણીઓ કે બેલેન્સ પાછું ન પણ આવી શકે.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "સક્રિય કરો";
@@ -6233,13 +6233,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%2$@ પર %1$@";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "%1$@ ને મોકલાય છે";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDING_FORMAT" = "%1$@ને મોકલાઈ રહ્યું છે";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "મોકલ્યો";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%1$@ ને મોકલવામાં આવેલ છે";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%1$@ને મોકલવામાં આવ્યું";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "સ્થિતિ";

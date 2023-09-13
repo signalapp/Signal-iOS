@@ -1,1 +1,1 @@
-• We fixed a few bugs in the device transfer process just in case anyone is getting ready to announce some new phones soon.
+• 이 업데이트는 기기 전송 프로세스의 몇 가지 버그를 수정합니다.
