@@ -49,29 +49,63 @@ class RecentPhotosCollectionView: UICollectionView {
     private lazy var collection = photoLibrary.defaultPhotoAlbum()
     private lazy var collectionContents = collection.contents(ascending: false, limit: RecentPhotosCollectionView.maxRecentPhotos)
 
-    var itemSize: CGSize = .zero {
+    // Cell Sizing
+
+    private static let initialCellSize: CGSize = .square(50)
+
+    private var cellSize: CGSize = initialCellSize {
         didSet {
-            guard oldValue != itemSize else { return }
-            updateLayout()
+            guard oldValue != cellSize else { return }
+            // Replacing the collection view layout is the only reliable way
+            // to change cell size when `collectionView(_:layout:sizeForItemAt:)` is implemented.
+            // That delegate method is necessary to allow custom size for "manage access" helper UI.
+            setCollectionViewLayout(RecentPhotosCollectionView.collectionViewLayout(itemSize: cellSize), animated: false)
+            reloadData() // Needed in order to reload photos with better quality on size change.
+        }
+    }
+    private var limitedAccessViewCellSizeCache: [CGFloat: CGSize] = [:]
+
+    private var lastKnownHeight: CGFloat = 0
+
+    override var bounds: CGRect {
+        didSet {
+            let height = frame.height
+            guard height != lastKnownHeight, height > 0 else { return }
+
+            lastKnownHeight = height
+            recalculateCellSize()
+        }
+    }
+
+    private func recalculateCellSize() {
+        guard lastKnownHeight > 0 else { return }
+
+        if lastKnownHeight > 250 {
+            cellSize = CGSize(square: 0.5 * (lastKnownHeight - RecentPhotosCollectionView.itemSpacing))
+        // Otherwise, assume the recent photos take up the full height of the collection view.
+        } else {
+            cellSize = CGSize(square: lastKnownHeight)
         }
     }
 
     private var photoMediaSize: PhotoMediaSize {
         let size = PhotoMediaSize()
-        size.thumbnailSize = itemSize
+        size.thumbnailSize = cellSize
         return size
     }
 
-    private let collectionViewFlowLayout: UICollectionViewFlowLayout = {
+    private static func collectionViewLayout(itemSize: CGSize) -> UICollectionViewFlowLayout {
         let layout = RTLEnabledCollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = itemSpacing
         layout.minimumInteritemSpacing = itemSpacing
+        layout.itemSize = itemSize
         return layout
-    }()
+    }
 
     init() {
-        super.init(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
+        let layout = RecentPhotosCollectionView.collectionViewLayout(itemSize: RecentPhotosCollectionView.initialCellSize)
+        super.init(frame: .zero, collectionViewLayout: layout)
 
         dataSource = self
         delegate = self
@@ -82,16 +116,6 @@ class RecentPhotosCollectionView: UICollectionView {
         contentInset = UIEdgeInsets(top: 0, leading: horizontalInset, bottom: 0, trailing: horizontalInset)
         register(RecentPhotoCell.self, forCellWithReuseIdentifier: RecentPhotoCell.reuseIdentifier)
         register(UICollectionViewCell.self, forCellWithReuseIdentifier: "SelectMorePhotosCell")
-    }
-
-    private func updateLayout() {
-        AssertIsOnMainThread()
-
-        guard itemSize.isNonEmpty else { return }
-
-        collectionViewFlowLayout.itemSize = itemSize
-        collectionViewFlowLayout.invalidateLayout()
-        reloadData()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -231,6 +255,7 @@ class RecentPhotosCollectionView: UICollectionView {
     private func textLabel(text: String) -> UILabel {
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
+        label.lineBreakMode = .byWordWrapping
         label.textColor = Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_blackAlpha50
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -273,7 +298,8 @@ extension RecentPhotosCollectionView: PhotoLibraryDelegate {
 
 // MARK: - UICollectionViewDelegate
 
-extension RecentPhotosCollectionView: UICollectionViewDelegate {
+extension RecentPhotosCollectionView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard fetchingAttachmentIndex == nil else { return }
 
@@ -295,6 +321,51 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate {
             Logger.error("Error: \(error)")
             OWSActionSheets.showActionSheet(title: OWSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
         }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+
+        // Custom size for "manage access" cell.
+        guard indexPath.row < collectionContents.assetCount else {
+            let defaultCellSize = cellSize
+            guard defaultCellSize.isNonEmpty else { return .zero }
+
+            let cellHeight = defaultCellSize.height
+            if let cachedSize = limitedAccessViewCellSizeCache[cellHeight] {
+                return cachedSize
+            }
+
+            let cellMargin: CGFloat = 8
+            let view = limitedAccessView()
+
+            // I couldn't figure out how to make `systemLayoutSizeFitting()` work for multi-line text.
+            // Size (width) that method returns is always for text being one line.
+            // Therefore the logic is as follows:
+            // 1. Check if UI fits standard cell width.
+            // 2a. If it does - all good and we use default cell size.
+            // 2b. If it doesn't - we calculate size (width) with default cell size being restricted.
+            //     Unfortunately in this case width is always for one line of text like I mentioned above.
+            // If you read this and have some free time - feel free to attempt to fix.
+            let size = view.systemLayoutSizeFitting(
+                CGSize(width: defaultCellSize.width - 2*cellMargin, height: .greatestFiniteMagnitude),
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .fittingSizeLevel
+            )
+            let cellWidth: CGFloat
+            if size.height > cellHeight {
+                view.addConstraint(view.heightAnchor.constraint(equalToConstant: cellHeight))
+
+                let widerSize = view.systemLayoutSizeFitting(.square(.greatestFiniteMagnitude))
+                cellWidth = widerSize.width + 2*cellMargin
+            } else {
+                cellWidth = defaultCellSize.width
+            }
+            let cellSize = CGSize(width: cellWidth, height: cellHeight)
+            limitedAccessViewCellSizeCache[cellHeight] = cellSize
+            return cellSize
+        }
+
+        return cellSize
     }
 }
 
@@ -327,7 +398,7 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
                 let limitedAccessView = limitedAccessView()
                 cell.contentView.addSubview(limitedAccessView)
                 limitedAccessView.autoVCenterInSuperview()
-                limitedAccessView.autoPinHeightToSuperviewMargins(relation: .lessThanOrEqual)
+                limitedAccessView.autoPinHeightToSuperview(relation: .lessThanOrEqual)
                 limitedAccessView.autoPinWidthToSuperviewMargins()
             }
             return cell
