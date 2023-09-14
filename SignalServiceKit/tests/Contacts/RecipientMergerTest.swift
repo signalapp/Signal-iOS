@@ -52,8 +52,6 @@ private class MockRecipientDataStore: RecipientDataStore {
 }
 
 private class MockRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
-    func didUpdatePhoneNumber(aciString: String, oldPhoneNumber: String?, newPhoneNumber: E164?, transaction: DBWriteTransaction) {}
-
     func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool { false }
 }
 
@@ -173,5 +171,50 @@ class RecipientMergerTest: XCTestCase {
             }
             mockDB.write { run(transaction: $0) }
         }
+    }
+
+    func testNotifier() {
+        let mockDB = MockDB()
+        let mockDataStore = MockRecipientDataStore()
+        let recipientFetcher = RecipientFetcherImpl(recipientStore: mockDataStore)
+        let recipientMergeNotifier = RecipientMergeNotifier(scheduler: SyncScheduler())
+        let recipientMerger = RecipientMergerImpl(
+            temporaryShims: MockRecipientMergerTemporaryShims(),
+            observers: [recipientMergeNotifier],
+            recipientFetcher: recipientFetcher,
+            dataStore: mockDataStore,
+            storageServiceManager: MockStorageServiceManager()
+        )
+        let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
+        let phoneNumber = E164("+16505550101")!
+
+        var notificationCount = 0
+        let observer = NotificationCenter.default.addObserver(
+            forName: .didLearnRecipientAssociation,
+            object: recipientMergeNotifier,
+            queue: nil,
+            using: { note in
+                notificationCount += 1
+            }
+        )
+        mockDB.write { tx in
+            _ = recipientMerger.applyMergeFromSealedSender(
+                localIdentifiers: .forUnitTests,
+                aci: aci,
+                phoneNumber: nil,
+                tx: tx
+            )
+        }
+        XCTAssertEqual(notificationCount, 0)
+        mockDB.write { tx in
+            _ = recipientMerger.applyMergeFromContactDiscovery(
+                localIdentifiers: .forUnitTests,
+                aci: aci,
+                phoneNumber: phoneNumber,
+                tx: tx
+            )
+        }
+        XCTAssertEqual(notificationCount, 1)
+        NotificationCenter.default.removeObserver(observer)
     }
 }

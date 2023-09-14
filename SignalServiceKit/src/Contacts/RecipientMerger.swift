@@ -74,12 +74,6 @@ struct MergedRecipient {
 }
 
 protocol RecipientMergerTemporaryShims {
-    func didUpdatePhoneNumber(
-        aciString: String,
-        oldPhoneNumber: String?,
-        newPhoneNumber: E164?,
-        transaction: DBWriteTransaction
-    )
     func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool
 }
 
@@ -117,6 +111,7 @@ class RecipientMergerImpl: RecipientMerger {
         groupMemberStore: GroupMemberStore,
         interactionStore: InteractionStore,
         profileManager: ProfileManagerProtocol,
+        recipientMergeNotifier: RecipientMergeNotifier,
         signalServiceAddressCache: SignalServiceAddressCache,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadRemover: ThreadRemover,
@@ -157,7 +152,8 @@ class RecipientMergerImpl: RecipientMerger {
                 interactionStore: interactionStore,
                 threadAssociatedDataStore: threadAssociatedDataStore,
                 threadStore: threadStore
-            )
+            ),
+            recipientMergeNotifier
         ]
     }
 
@@ -255,6 +251,8 @@ class RecipientMergerImpl: RecipientMerger {
             return aciRecipient
         }
 
+        Logger.info("Updating \(aci)'s phone number")
+
         // In every other case, we need to change *something*. The goal of the
         // remainder of this method is to ensure there's a `SignalRecipient` such
         // that calling this method again, immediately, with the same parameters
@@ -287,7 +285,7 @@ class RecipientMergerImpl: RecipientMerger {
             phoneNumber: phoneNumber,
             aciRecipient: aciRecipient,
             phoneNumberRecipient: phoneNumberRecipient,
-            transaction: transaction
+            tx: transaction
         ) {
         case .some(let updatedRecipient):
             mergedRecipient = updatedRecipient
@@ -319,70 +317,49 @@ class RecipientMergerImpl: RecipientMerger {
         phoneNumber: E164,
         aciRecipient: SignalRecipient?,
         phoneNumberRecipient: SignalRecipient?,
-        transaction tx: DBWriteTransaction
+        tx: DBWriteTransaction
     ) -> SignalRecipient? {
         if let aciRecipient {
-            if let phoneNumberRecipient {
-                guard let phoneNumberRecipientAciString = phoneNumberRecipient.aciString else {
-                    return mergeRecipients(
-                        aci: aci,
-                        aciRecipient: aciRecipient,
-                        phoneNumber: phoneNumber,
-                        phoneNumberRecipient: phoneNumberRecipient,
-                        transaction: tx
-                    )
-                }
-
-                // Ordering is critical here. We must remove the phone number from the old
-                // recipient *before* we assign the phone number to the new recipient in
-                // case there are any legacy phone number-only records in the database.
-
-                updatePhoneNumber(for: phoneNumberRecipient, aciString: phoneNumberRecipientAciString, to: nil, tx: tx)
-                dataStore.updateRecipient(phoneNumberRecipient, transaction: tx)
-
-                // Fall through now that we've cleaned up `phoneNumberRecipient`.
+            guard let phoneNumberRecipient else {
+                aciRecipient.phoneNumber = phoneNumber.stringValue
+                return aciRecipient
             }
 
-            updatePhoneNumber(for: aciRecipient, aciString: aci.serviceIdUppercaseString, to: phoneNumber, tx: tx)
+            guard phoneNumberRecipient.aciString != nil else {
+                return mergeRecipients(
+                    aci: aci,
+                    aciRecipient: aciRecipient,
+                    phoneNumber: phoneNumber,
+                    phoneNumberRecipient: phoneNumberRecipient,
+                    transaction: tx
+                )
+            }
+
+            // Ordering is critical here. We must save the cleared phone number on the
+            // old recipient *before* we save the phone number on the new recipient.
+
+            aciRecipient.phoneNumber = phoneNumberRecipient.phoneNumber
+            phoneNumberRecipient.phoneNumber = nil
+            dataStore.updateRecipient(phoneNumberRecipient, transaction: tx)
             return aciRecipient
         }
 
         if let phoneNumberRecipient {
-            if let phoneNumberRecipientAciString = phoneNumberRecipient.aciString {
+            if phoneNumberRecipient.aciString != nil {
                 // We can't change the ACI because it's non-empty. Instead, we must create
                 // a new SignalRecipient. We clear the phone number here since it will
                 // belong to the new SignalRecipient.
-                updatePhoneNumber(for: phoneNumberRecipient, aciString: phoneNumberRecipientAciString, to: nil, tx: tx)
+                phoneNumberRecipient.phoneNumber = nil
                 dataStore.updateRecipient(phoneNumberRecipient, transaction: tx)
                 return nil
             }
 
-            Logger.info("Learned \(aci) is associated with phoneNumber \(phoneNumber)")
             phoneNumberRecipient.aci = aci
             return phoneNumberRecipient
         }
 
         // We couldn't find a recipient, so create a new one.
         return nil
-    }
-
-    private func updatePhoneNumber(
-        for recipient: SignalRecipient,
-        aciString: String,
-        to newPhoneNumber: E164?,
-        tx: DBWriteTransaction
-    ) {
-        let oldPhoneNumber = recipient.phoneNumber?.nilIfEmpty
-        recipient.phoneNumber = newPhoneNumber?.stringValue
-
-        Logger.info("Updating phone number; \(aciString), phoneNumber: \(oldPhoneNumber ?? "nil") -> \(newPhoneNumber?.stringValue ?? "nil")")
-
-        temporaryShims.didUpdatePhoneNumber(
-            aciString: aciString,
-            oldPhoneNumber: oldPhoneNumber,
-            newPhoneNumber: newPhoneNumber,
-            transaction: tx
-        )
     }
 
     private func mergeRecipients(
@@ -451,5 +428,27 @@ extension SignalServiceAddressCache: RecipientMergeObserver {
         // reload them from disk. This allows us to rebuild the addresses with the
         // proper hash values.
         modelReadCaches.evacuateAllCaches()
+    }
+}
+
+// MARK: - RecipientMergeNotifier
+
+extension Notification.Name {
+    public static let didLearnRecipientAssociation = Notification.Name("didLearnRecipientAssociation")
+}
+
+public class RecipientMergeNotifier: RecipientMergeObserver {
+    private let scheduler: Scheduler
+
+    public init(scheduler: Scheduler) {
+        self.scheduler = scheduler
+    }
+
+    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {}
+
+    func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
+        scheduler.async {
+            NotificationCenter.default.post(name: .didLearnRecipientAssociation, object: self)
+        }
     }
 }

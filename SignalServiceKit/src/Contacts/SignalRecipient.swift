@@ -334,44 +334,6 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         modelReadCaches.signalRecipientReadCache.didReadSignalRecipient(self, transaction: tx)
     }
 
-    // MARK: - Contact Merging
-
-    public static let phoneNumberDidChange = Notification.Name("phoneNumberDidChange")
-    public static let notificationKeyPhoneNumber = "phoneNumber"
-    public static let notificationKeyAciString = "aciString"
-
-    fileprivate static func didUpdatePhoneNumber(
-        aciString: String,
-        oldPhoneNumber: String?,
-        newPhoneNumber: String?,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        let aci = Aci.parseFrom(aciString: aciString)
-
-        let newAddress = SignalServiceAddress(
-            serviceId: aci,
-            phoneNumber: newPhoneNumber,
-            ignoreCache: true
-        )
-
-        transaction.addAsyncCompletion(queue: .global()) {
-            let phoneNumbers: [String] = [oldPhoneNumber, newPhoneNumber].compactMap { $0 }
-            for phoneNumber in phoneNumbers {
-                let userInfo: [AnyHashable: Any] = [
-                    Self.notificationKeyAciString: aciString,
-                    Self.notificationKeyPhoneNumber: phoneNumber
-                ]
-                NotificationCenter.default.postNotificationNameAsync(Self.phoneNumberDidChange,
-                                                                     object: nil,
-                                                                     userInfo: userInfo)
-            }
-        }
-
-        if let contactThread = ContactThreadFinder().contactThread(for: newAddress, tx: transaction) {
-            SDSDatabaseStorage.shared.touch(thread: contactThread, shouldReindex: true, transaction: transaction)
-        }
-    }
-
     @objc
     public var addressComponentsDescription: String {
         SignalServiceAddress.addressComponentsDescription(uuidString: aciString, phoneNumber: phoneNumber)
@@ -396,20 +358,6 @@ class SignalRecipientMergerTemporaryShims: RecipientMergerTemporaryShims {
 
     init(sessionStore: SignalSessionStore) {
         self.sessionStore = sessionStore
-    }
-
-    func didUpdatePhoneNumber(
-        aciString: String,
-        oldPhoneNumber: String?,
-        newPhoneNumber: E164?,
-        transaction: DBWriteTransaction
-    ) {
-        SignalRecipient.didUpdatePhoneNumber(
-            aciString: aciString,
-            oldPhoneNumber: oldPhoneNumber,
-            newPhoneNumber: newPhoneNumber?.stringValue,
-            transaction: SDSDB.shimOnlyBridge(transaction)
-        )
     }
 
     func hasActiveSignalProtocolSession(recipientId: String, deviceId: Int32, transaction: DBWriteTransaction) -> Bool {

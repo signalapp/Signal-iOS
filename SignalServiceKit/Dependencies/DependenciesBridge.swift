@@ -365,6 +365,7 @@ public class DependenciesBridge {
                 groupMemberStore: groupMemberStore,
                 interactionStore: interactionStore,
                 profileManager: profileManager,
+                recipientMergeNotifier: RecipientMergeNotifier(scheduler: schedulers.main),
                 signalServiceAddressCache: signalServiceAddressCache,
                 threadAssociatedDataStore: self.threadAssociatedDataStore,
                 threadRemover: self.threadRemover,

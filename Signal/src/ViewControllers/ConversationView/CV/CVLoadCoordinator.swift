@@ -167,8 +167,8 @@ public class CVLoadCoordinator: NSObject {
                                                name: ChatColors.chatColorsDidChangeNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(phoneNumberDidChange),
-                                               name: SignalRecipient.phoneNumberDidChange,
+                                               selector: #selector(didLearnRecipientAssociation(notification:)),
+                                               name: .didLearnRecipientAssociation,
                                                object: nil)
         callService.addObserver(observer: self, syncStateImmediately: false)
     }
@@ -236,30 +236,9 @@ public class CVLoadCoordinator: NSObject {
     }
 
     @objc
-    private func phoneNumberDidChange(notification: Notification) {
+    private func didLearnRecipientAssociation(notification: Notification) {
         AssertIsOnMainThread()
-
-        var notificationAddressKeys = Set<String>()
-        if let phoneNumber = notification.userInfo?[SignalRecipient.notificationKeyPhoneNumber] as? String {
-            notificationAddressKeys.insert(phoneNumber)
-        }
-        if let aciString = notification.userInfo?[SignalRecipient.notificationKeyAciString] as? String {
-            notificationAddressKeys.insert(aciString)
-        }
-
-        var threadAddressKeys = Set<String>()
-        for address in thread.recipientAddressesWithSneakyTransaction {
-            if let serviceIdString = address.serviceIdUppercaseString {
-                threadAddressKeys.insert(serviceIdString)
-            }
-            if let phoneNumber = address.phoneNumber {
-                threadAddressKeys.insert(phoneNumber)
-            }
-        }
-        let shouldReload = !notificationAddressKeys.isDisjoint(with: threadAddressKeys)
-        if shouldReload {
-            enqueueReloadWithoutCaches()
-        }
+        enqueueReloadWithoutCaches()
     }
 
     @objc
