@@ -68,18 +68,29 @@ extension TSInteraction {
             }
         case let infoMessage as TSInfoMessage:
             switch infoMessage.messageType {
-            case .verificationStateChange,
-                 .profileUpdate,
-                 .phoneNumberChange,
-                 .recipientHidden:
-                return false
+            case .verificationStateChange: return false
+            case .profileUpdate: return false
+            case .phoneNumberChange: return false
+            case .recipientHidden: return false
+            case .threadMerge: return false
             case .typeGroupUpdate:
                 guard let updates = infoMessage.groupUpdateItems(transaction: transaction) else {
                     return true
                 }
                 return updates.contains { $0.shouldAppearInInbox }
-            default:
-                return true
+            case .typeSessionDidEnd: return true
+            case .userNotRegistered: return true
+            case .typeUnsupportedMessage: return true
+            case .typeGroupQuit: return true
+            case .typeDisappearingMessagesUpdate: return true
+            case .addToContactsOffer: return true
+            case .addUserToProfileWhitelistOffer: return true
+            case .addGroupToProfileWhitelistOffer: return true
+            case .unknownProtocolVersion: return true
+            case .userJoinedSignal: return true
+            case .syncedThread: return true
+            case .paymentsActivationRequest: return true
+            case .paymentsActivated: return true
             }
         case let message as TSMessage:
             // skip considering this message if it's a group story reply, or a past edit revision

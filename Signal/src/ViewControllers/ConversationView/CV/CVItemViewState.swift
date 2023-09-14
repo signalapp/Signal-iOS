@@ -677,7 +677,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                 return
             }
             switch infoMessage.messageType {
-            case .verificationStateChange, .typeGroupUpdate:
+            case .verificationStateChange, .typeGroupUpdate, .threadMerge:
                 return // never collapse
             case .phoneNumberChange:
                 // Only collapse if the previous message was a change number for the same user

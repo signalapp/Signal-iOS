@@ -14,6 +14,7 @@ final class ThreadMergerTest: XCTestCase {
     private var db: MockDB!
     private var disappearingMessagesConfigurationManager: MockDisappearingMessagesConfigurationManager!
     private var disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore!
+    private var interactionStore: MockInteractionStore!
     private var pinnedThreadManager: MockPinnedThreadManager!
     private var threadAssociatedDataManager: MockThreadAssociatedDataManager!
     private var threadAssociatedDataStore: MockThreadAssociatedDataStore!
@@ -41,6 +42,7 @@ final class ThreadMergerTest: XCTestCase {
         disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
         disappearingMessagesConfigurationManager = MockDisappearingMessagesConfigurationManager(disappearingMessagesConfigurationStore)
         pinnedThreadManager = MockPinnedThreadManager()
+        interactionStore = MockInteractionStore()
         threadAssociatedDataStore = MockThreadAssociatedDataStore()
         threadAssociatedDataManager = MockThreadAssociatedDataManager(threadAssociatedDataStore)
         threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: keyValueStoreFactory)
@@ -63,6 +65,7 @@ final class ThreadMergerTest: XCTestCase {
             chatColorSettingStore: chatColorSettingStore,
             disappearingMessagesConfigurationManager: disappearingMessagesConfigurationManager,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+            interactionStore: interactionStore,
             pinnedThreadManager: pinnedThreadManager,
             sdsThreadMerger: MockSDSThreadMerger(),
             threadAssociatedDataManager: threadAssociatedDataManager,
@@ -287,6 +290,40 @@ final class ThreadMergerTest: XCTestCase {
             XCTAssertEqual(threadReplyInfoStore.fetch(for: serviceIdThread.uniqueId, tx: tx)?.timestamp, 3)
             XCTAssertNil(threadReplyInfoStore.fetch(for: phoneNumberThread.uniqueId, tx: tx))
         }
+    }
+
+    // MARK: - Thread Merge Events
+
+    func testThreadMergeEvent() throws {
+        serviceIdThread.shouldThreadBeVisible = true
+        phoneNumberThread.shouldThreadBeVisible = true
+        threadStore.threads = [serviceIdThread, phoneNumberThread]
+        performDefaultMerge()
+        let threadMergeEvent = try XCTUnwrap(interactionStore.insertedInteractions.first as? TSInfoMessage)
+        XCTAssertEqual(interactionStore.insertedInteractions.count, 1)
+        XCTAssertEqual(threadMergeEvent.messageType, .threadMerge)
+        XCTAssertEqual(threadMergeEvent.infoMessageUserInfo?[.threadMergePhoneNumber] as? String, phoneNumber.stringValue)
+    }
+
+    func testThreadMergeEventInvisibleThread() {
+        serviceIdThread.shouldThreadBeVisible = true
+        phoneNumberThread.shouldThreadBeVisible = false
+        threadStore.threads = [serviceIdThread, phoneNumberThread]
+        performDefaultMerge()
+        XCTAssertEqual(interactionStore.insertedInteractions.count, 0)
+    }
+
+    func testThreadMergeEventTwoAcis() throws {
+        let thread1 = makeThread(aci: aci, phoneNumber: nil)
+        thread1.shouldThreadBeVisible = true
+        let thread2 = makeThread(aci: aci, phoneNumber: nil)
+        thread2.shouldThreadBeVisible = true
+        threadStore.threads = [thread1, thread2]
+        performDefaultMerge()
+        let threadMergeEvent = try XCTUnwrap(interactionStore.insertedInteractions.first as? TSInfoMessage)
+        XCTAssertEqual(interactionStore.insertedInteractions.count, 1)
+        XCTAssertEqual(threadMergeEvent.messageType, .threadMerge)
+        XCTAssertNil(threadMergeEvent.infoMessageUserInfo?[.threadMergePhoneNumber])
     }
 
     // MARK: - Raw SDS Migrations

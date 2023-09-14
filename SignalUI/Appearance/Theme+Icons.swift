@@ -131,6 +131,7 @@ public enum ThemeIcon: UInt {
     case timerDisabled16
     case timer16
     case refresh16
+    case merge16
 
     case transfer
     case register
@@ -427,6 +428,8 @@ public extension Theme {
             return "timer-compact"
         case .refresh16:
             return "refresh-compact"
+        case .merge16:
+            return "merge-compact"
 
         case .transfer:
             return "transfer-\(UIDevice.current.isIPad ? "ipad" : "phone")-outline-60-\(isDarkThemeEnabled ? "dark" : "light")"

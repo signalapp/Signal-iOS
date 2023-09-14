@@ -789,6 +789,8 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.info16)
             case .paymentsActivationRequest, .paymentsActivated:
                 return Theme.iconImage(.settingsPayments)
+            case .threadMerge:
+                return Theme.iconImage(.merge16)
             }
         } else if let call = interaction as? TSCall {
             switch call.offerType {
@@ -1366,6 +1368,18 @@ extension CVComponentSystemMessage {
             } else {
                 return nil
             }
+        case .threadMerge:
+            guard
+                let userInfo = infoMessage.infoMessageUserInfo,
+                let phoneNumber = userInfo[.threadMergePhoneNumber] as? String
+            else {
+                return nil
+            }
+            return CVMessageAction(
+                title: CommonStrings.learnMore,
+                accessibilityIdentifier: "learn_more",
+                action: .didTapThreadMergeLearnMore(phoneNumber: phoneNumber)
+            )
         }
     }
 

@@ -430,10 +430,31 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
         needsToClearArchived = NO;
     }
 
-    // Shouldn't clear archived during thread import.
-    if ([message isKindOfClass:TSInfoMessage.class]
-        && ((TSInfoMessage *)message).messageType == TSInfoMessageSyncedThread) {
-        needsToClearArchived = NO;
+    if ([message isKindOfClass:TSInfoMessage.class]) {
+        switch (((TSInfoMessage *)message).messageType) {
+            case TSInfoMessageSyncedThread: // Shouldn't clear archived during thread import.
+            case TSInfoMessageThreadMerge:
+                needsToClearArchived = NO;
+                break;
+            case TSInfoMessageTypeSessionDidEnd:
+            case TSInfoMessageUserNotRegistered:
+            case TSInfoMessageTypeUnsupportedMessage:
+            case TSInfoMessageTypeGroupUpdate:
+            case TSInfoMessageTypeGroupQuit:
+            case TSInfoMessageTypeDisappearingMessagesUpdate:
+            case TSInfoMessageAddToContactsOffer:
+            case TSInfoMessageVerificationStateChange:
+            case TSInfoMessageAddUserToProfileWhitelistOffer:
+            case TSInfoMessageAddGroupToProfileWhitelistOffer:
+            case TSInfoMessageUnknownProtocolVersion:
+            case TSInfoMessageUserJoinedSignal:
+            case TSInfoMessageProfileUpdate:
+            case TSInfoMessagePhoneNumberChange:
+            case TSInfoMessageRecipientHidden:
+            case TSInfoMessagePaymentsActivationRequest:
+            case TSInfoMessagePaymentsActivated:
+                break;
+        }
     }
 
     // Shouldn't clear archived if:

@@ -984,4 +984,39 @@ extension ConversationViewController: CVComponentDelegate {
         // Same action as tapping on the attachment toolbar.
         paymentButtonPressed()
     }
+
+    public func didTapThreadMergeLearnMore(phoneNumber: String) {
+        guard let contactAddress = (thread as? TSContactThread)?.contactAddress else {
+            owsFailDebug("Can't handle a merge event in a group.")
+            return
+        }
+        let formattedMessage: String = {
+            let formatString = OWSLocalizedString(
+                "THREAD_MERGE_LEARN_MORE",
+                comment: "Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John)."
+            )
+            let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
+            let shortDisplayName = databaseStorage.read { tx in
+                return contactsManager.shortDisplayName(for: contactAddress, transaction: tx)
+            }
+            return String(format: formatString, formattedPhoneNumber, shortDisplayName)
+        }()
+        let customHeader: UIView = {
+            let imageView = UIImageView(image: UIImage(named: "merged-chat")!)
+            imageView.contentMode = .scaleAspectFit
+            imageView.autoSetDimensions(to: .square(88))
+
+            let stackView = UIStackView()
+            stackView.isLayoutMarginsRelativeArrangement = true
+            stackView.layoutMargins = UIEdgeInsets(top: 16, leading: 0, bottom: 0, trailing: 0)
+            stackView.axis = .vertical
+            stackView.alignment = .center
+            stackView.addArrangedSubview(imageView)
+            return stackView
+        }()
+        let actionSheet = ActionSheetController(message: formattedMessage)
+        actionSheet.customHeader = customHeader
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton))
+        presentActionSheet(actionSheet)
+    }
 }

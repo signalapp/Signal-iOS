@@ -131,6 +131,7 @@ class RecipientMergerImpl: RecipientMerger {
                 chatColorSettingStore: chatColorSettingStore,
                 disappearingMessagesConfigurationManager: ThreadMerger.Wrappers.DisappearingMessagesConfigurationManager(),
                 disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+                interactionStore: interactionStore,
                 pinnedThreadManager: ThreadMerger.Wrappers.PinnedThreadManager(),
                 sdsThreadMerger: ThreadMerger.Wrappers.SDSThreadMerger(),
                 threadAssociatedDataManager: ThreadMerger.Wrappers.ThreadAssociatedDataManager(),

@@ -70,6 +70,35 @@ public extension TSInfoMessage {
         return updateDescription
     }
 
+    @objc
+    func threadMergeDescription(tx: SDSAnyReadTransaction) -> String {
+        let displayName = contactThreadDisplayName(tx: tx)
+        if let phoneNumber = infoMessageUserInfo?[.threadMergePhoneNumber] as? String {
+            let formatString = OWSLocalizedString(
+                "THREAD_MERGE_PHONE_NUMBER",
+                comment: "A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100)."
+            )
+            let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
+            return String(format: formatString, displayName, formattedPhoneNumber)
+        } else {
+            let formatString = OWSLocalizedString(
+                "THREAD_MERGE_NO_PHONE_NUMBER",
+                comment: "A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe)."
+            )
+            return String(format: formatString, displayName)
+        }
+    }
+
+    private func contactThreadDisplayName(tx: SDSAnyReadTransaction) -> String {
+        let result: String? = {
+            guard let address = TSContactThread.contactAddress(fromThreadId: uniqueThreadId, transaction: tx) else {
+                return nil
+            }
+            return contactsManager.displayName(for: address, transaction: tx)
+        }()
+        return result ?? OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
+    }
+
     var profileChangeAddress: SignalServiceAddress? {
         return profileChanges?.address
     }

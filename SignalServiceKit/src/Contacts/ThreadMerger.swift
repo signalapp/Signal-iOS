@@ -23,6 +23,7 @@ final class ThreadMerger: RecipientMergeObserver {
     private let chatColorSettingStore: ChatColorSettingStore
     private let disappearingMessagesConfigurationManager: Shims.DisappearingMessagesConfigurationManager
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
+    private let interactionStore: InteractionStore
     private let pinnedThreadManager: Shims.PinnedThreadManager
     private let sdsThreadMerger: Shims.SDSThreadMerger
     private let threadAssociatedDataManager: Shims.ThreadAssociatedDataManager
@@ -36,6 +37,7 @@ final class ThreadMerger: RecipientMergeObserver {
         chatColorSettingStore: ChatColorSettingStore,
         disappearingMessagesConfigurationManager: Shims.DisappearingMessagesConfigurationManager,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
+        interactionStore: InteractionStore,
         pinnedThreadManager: Shims.PinnedThreadManager,
         sdsThreadMerger: Shims.SDSThreadMerger,
         threadAssociatedDataManager: Shims.ThreadAssociatedDataManager,
@@ -48,6 +50,7 @@ final class ThreadMerger: RecipientMergeObserver {
         self.chatColorSettingStore = chatColorSettingStore
         self.disappearingMessagesConfigurationManager = disappearingMessagesConfigurationManager
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
+        self.interactionStore = interactionStore
         self.pinnedThreadManager = pinnedThreadManager
         self.sdsThreadMerger = sdsThreadMerger
         self.threadAssociatedDataManager = threadAssociatedDataManager
@@ -67,9 +70,13 @@ final class ThreadMerger: RecipientMergeObserver {
         mergeChatColors(threadPair, tx: tx)
         mergeWallpaper(threadPair, tx: tx)
         sdsThreadMerger.mergeThread(thread, into: targetThread, tx: tx)
+        let shouldInsertEvent = shouldInsertThreadMergeEvent(threadPair)
         targetThread.merge(from: thread)
         threadStore.updateThread(targetThread, tx: tx)
         threadRemover.remove(thread, tx: tx)
+        if shouldInsertEvent {
+            insertThreadMergeEvent(threadPair, tx: tx)
+        }
         // TODO: [optional] Merge `lastVisibleInteractionStore` (we use `targetThread`s right now).
         // TODO: [optional] Merge BroadcastMediaMessageJobRecord (they are canceled right now).
         // TODO: [optional] Merge MessageSenderJobRecord (they are canceled right now).
@@ -194,6 +201,25 @@ final class ThreadMerger: RecipientMergeObserver {
                 owsFailDebug("Couldn't copy custom wallpaper image.")
             }
         }
+    }
+
+    private func shouldInsertThreadMergeEvent(_ threadPair: MergePair<TSContactThread>) -> Bool {
+        let isVisible = threadPair.map { $0.shouldThreadBeVisible }
+        return isVisible.intoValue && isVisible.fromValue
+    }
+
+    private func insertThreadMergeEvent(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
+        var userInfo = [InfoMessageUserInfoKey: Any]()
+        // We want to show the phone number only in the specific, very standardized
+        // case where you have a conversation with the phone number/PNI and you
+        // merge it into a chat with only the ACI. In all other cases, we show a
+        // generic thread merge event.
+        if let phoneNumber = threadPair.fromValue.contactPhoneNumber, threadPair.intoValue.contactPhoneNumber == nil {
+            userInfo[.threadMergePhoneNumber] = phoneNumber
+        }
+        let message = TSInfoMessage(thread: threadPair.intoValue, messageType: .threadMerge, infoMessageUserInfo: userInfo)
+        message.wasRead = true
+        interactionStore.insertInteraction(message, tx: tx)
     }
 
     private func mergeAllThreads(_ threadsToMerge: [TSContactThread], tx: DBWriteTransaction) {

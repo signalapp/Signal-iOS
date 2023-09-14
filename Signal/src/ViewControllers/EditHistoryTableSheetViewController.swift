@@ -447,4 +447,6 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
 
     func didTapActivatePayments() {}
     func didTapSendPayment() {}
+
+    func didTapThreadMergeLearnMore(phoneNumber: String) {}
 }
