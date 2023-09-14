@@ -34,8 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(contactsManager);
 
     SSKProtoContactDetailsBuilder *contactBuilder = [SSKProtoContactDetails builder];
-    [contactBuilder setContactE164:signalAccount.recipientAddress.phoneNumber];
-    [contactBuilder setAci:signalAccount.recipientAddress.aciString];
+    [contactBuilder setContactE164:signalAccount.recipientPhoneNumber];
+    if ([signalAccount.recipientServiceIdObjc isKindOfClass:[AciObjC class]]) {
+        [contactBuilder setAci:signalAccount.recipientServiceIdObjc.serviceIdString];
+    }
 
     // TODO: this should be removed after a 90-day timer from when Desktop stops
     // relying on names in contact sync messages, and is instead using the
