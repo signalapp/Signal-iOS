@@ -229,6 +229,7 @@ public class SSKEnvironment: NSObject {
         }
         warmCachesForObject("signalProxy", SignalProxy.warmCaches)
         warmCachesForObject("tsAccountManager", tsAccountManager.warmCaches)
+        warmCachesForObject("fixLocalRecipient", fixLocalRecipientIfNeeded)
         warmCachesForObject("signalServiceAddressCache", signalServiceAddressCache.warmCaches)
         warmCachesForObject("signalService", signalService.warmCaches)
         warmCachesForObject("remoteConfigManager", remoteConfigManager.warmCaches)
@@ -249,6 +250,29 @@ public class SSKEnvironment: NSObject {
         }
 
         NotificationCenter.default.post(name: SSKEnvironment.warmCachesNotification, object: nil)
+    }
+
+    /// Ensures the local SignalRecipient is correct.
+    ///
+    /// This primarily serves to ensure the local SignalRecipient has its own
+    /// Pni (a one-time migration), but it also helps ensure that the value is
+    /// always consistent with TSAccountManager's values.
+    private func fixLocalRecipientIfNeeded() {
+        databaseStorage.write { tx in
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(transaction: tx) else {
+                return  // Not registered yet.
+            }
+            guard let phoneNumber = E164(localIdentifiers.phoneNumber) else {
+                return  // Registered with an invalid phone number.
+            }
+            let recipientMerger = DependenciesBridge.shared.recipientMerger
+            _ = recipientMerger.applyMergeForLocalAccount(
+                aci: localIdentifiers.aci,
+                phoneNumber: phoneNumber,
+                pni: localIdentifiers.pni,
+                tx: tx.asV2Write
+            )
+        }
     }
 
     #if TESTABLE_BUILD

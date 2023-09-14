@@ -493,19 +493,6 @@ public class SignalServiceAddressCache: NSObject {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
         databaseStorage.read { transaction in
-            if let localIdentifiers = tsAccountManager.localIdentifiers(transaction: transaction) {
-                updateRecipient(
-                    aci: localIdentifiers.aci,
-                    // PNI TODO: Fetch our own PNI once it's stored on our SignalRecipient.
-                    //
-                    // (Even though our own PNI may be available at this point, we should have
-                    // a recipient for ourselves, so we'd immediately overwrite it during the
-                    // `anyEnumerate` below.)
-                    pni: nil,
-                    phoneNumber: localIdentifiers.phoneNumber
-                )
-            }
-
             SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
                 self.updateRecipient(recipient)
             }

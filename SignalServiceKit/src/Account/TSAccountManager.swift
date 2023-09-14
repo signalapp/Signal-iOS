@@ -303,8 +303,8 @@ public extension TSAccountManager {
 
         let localRecipient = DependenciesBridge.shared.recipientMerger.applyMergeForLocalAccount(
             aci: newAci.wrappedAciValue,
-            pni: newPni?.wrappedPniValue,
             phoneNumber: newLocalNumber.wrappedValue,
+            pni: newPni?.wrappedPniValue,
             tx: transaction.asV2Write
         )
         localRecipient.markAsRegisteredAndSave(tx: transaction)

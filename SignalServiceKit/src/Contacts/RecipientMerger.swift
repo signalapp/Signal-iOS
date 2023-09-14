@@ -12,8 +12,8 @@ public protocol RecipientMerger {
     /// time we're allowed to "merge" the identifiers for our own account.
     func applyMergeForLocalAccount(
         aci: Aci,
-        pni: Pni?,
         phoneNumber: E164,
+        pni: Pni?,
         tx: DBWriteTransaction
     ) -> SignalRecipient
 
@@ -160,8 +160,8 @@ class RecipientMergerImpl: RecipientMerger {
 
     func applyMergeForLocalAccount(
         aci: Aci,
-        pni: Pni?,
         phoneNumber: E164,
+        pni: Pni?,
         tx: DBWriteTransaction
     ) -> SignalRecipient {
         return mergeAlways(aci: aci, phoneNumber: phoneNumber, isLocalRecipient: true, tx: tx)
