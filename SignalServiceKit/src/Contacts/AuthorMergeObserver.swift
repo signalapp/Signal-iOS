@@ -8,18 +8,17 @@ import GRDB
 import LibSignalClient
 
 class AuthorMergeObserver: RecipientMergeObserver {
-    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {
-        switch recipientAssociation.serviceId.concreteType {
-        case .aci(let aci):
-            populateMissingAcis(phoneNumber: recipientAssociation.phoneNumber, aci: aci, tx: tx)
-        case .pni:
-            // We don't receive messages from PNIs, so this isn't relevant. If this
-            // changes in the future, we still won't need to do this because we'd never
-            // save an incoming message from a phone number that needs to be changed to
-            // a PNI. (This is similar to how all incoming messages have an ACI so
-            // newly-added messages don't need to be run through this logic.)
-            break
+    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {
+        guard let aciString = recipient.aciString, let phoneNumber = recipient.phoneNumber else {
+            // We don't receive messages from PNIs, so we don't need to consider the
+            // PNI in this method. If this changes in the future, we still won't need
+            // to do this because we'd never save an incoming message from a phone
+            // number that needs to be changed to a PNI. (This is similar to how all
+            // incoming messages have an ACI so newly-added messages *also* don't need
+            // to be run through this logic.)
+            return
         }
+        populateMissingAcis(phoneNumber: phoneNumber, aciString: aciString, tx: tx)
     }
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
@@ -30,7 +29,7 @@ class AuthorMergeObserver: RecipientMergeObserver {
         // able to fetch based on the phone number.
     }
 
-    private func populateMissingAcis(phoneNumber: E164, aci: Aci, tx: DBWriteTransaction) {
+    private func populateMissingAcis(phoneNumber: String, aciString: String, tx: DBWriteTransaction) {
         for table in AuthorDatabaseTable.all {
             let sql = """
                 UPDATE "\(table.name)"
@@ -38,7 +37,7 @@ class AuthorMergeObserver: RecipientMergeObserver {
                 WHERE "\(table.phoneNumberColumn)" = ?
                 AND "\(table.aciColumn)" IS NULL
             """
-            let arguments: StatementArguments = [aci.serviceIdUppercaseString, phoneNumber.stringValue]
+            let arguments: StatementArguments = [aciString, phoneNumber]
             SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.execute(sql: sql, arguments: arguments)
         }
         ModelReadCaches.shared.evacuateAllCaches()

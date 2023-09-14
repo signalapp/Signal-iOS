@@ -48,7 +48,7 @@ protocol RecipientMergeObserver {
     /// We are about to learn a new association between identifiers.
     ///
     /// This is called for the identifiers that will no longer be linked.
-    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction)
+    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction)
 
     /// We just learned a new association between identifiers.
     ///
@@ -57,12 +57,6 @@ protocol RecipientMergeObserver {
     /// two or more identifiers, and if it's the first time we've learned that
     /// they're linked, this callback will be invoked.
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction)
-}
-
-struct RecipientAssociation {
-    let serviceId: ServiceId
-    let phoneNumber: E164
-    let signalRecipient: SignalRecipient
 }
 
 struct MergedRecipient {
@@ -270,15 +264,11 @@ class RecipientMergerImpl: RecipientMerger {
         // point in time, everything we've saved locally with PN_1 is associated
         // with the ACI_A account, so we should mark it as such in the database.
         // After this point, everything new will be associated with ACI_B.
-        if let phoneNumberRecipient, let oldAci = phoneNumberRecipient.aci {
-            for observer in observers {
-                observer.willBreakAssociation(RecipientAssociation(
-                    serviceId: oldAci,
-                    phoneNumber: phoneNumber,
-                    signalRecipient: phoneNumberRecipient
-                ), tx: transaction)
-            }
-        }
+        postWillBreakAssociationNotification(for: phoneNumberRecipient, tx: transaction)
+        // If PN_2 is associated with ACI_B when this method starts, and if we're
+        // trying to associate PN_1 with ACI_B, then we also should ensure
+        // everything that currently references PN_2 is updated to reference ACI_B.
+        postWillBreakAssociationNotification(for: aciRecipient, tx: transaction)
 
         let mergedRecipient: SignalRecipient
         switch _mergeHighTrust(
@@ -415,12 +405,21 @@ class RecipientMergerImpl: RecipientMerger {
 
         return winningRecipient
     }
+
+    private func postWillBreakAssociationNotification(for recipient: SignalRecipient?, tx: DBWriteTransaction) {
+        guard let recipient else {
+            return
+        }
+        for observer in observers {
+            observer.willBreakAssociation(for: recipient, tx: tx)
+        }
+    }
 }
 
 // MARK: - SignalServiceAddressCache
 
 extension SignalServiceAddressCache: RecipientMergeObserver {
-    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {}
+    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
         updateRecipient(mergedRecipient.signalRecipient)
@@ -445,7 +444,7 @@ public class RecipientMergeNotifier: RecipientMergeObserver {
         self.scheduler = scheduler
     }
 
-    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {}
+    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction: DBWriteTransaction) {
         scheduler.async {

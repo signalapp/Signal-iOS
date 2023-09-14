@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 
 class SignalAccountMergeObserver: RecipientMergeObserver {
-    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {}
+    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
         // SignalAccounts are "merged" differently than most other types because

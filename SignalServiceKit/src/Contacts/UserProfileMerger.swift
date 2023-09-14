@@ -36,8 +36,8 @@ class UserProfileMerger: RecipientMergeObserver {
         )
     }
 
-    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {
-        mergeUserProfiles(for: recipientAssociation.signalRecipient, tx: tx)
+    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {
+        mergeUserProfiles(for: recipient, tx: tx)
     }
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
