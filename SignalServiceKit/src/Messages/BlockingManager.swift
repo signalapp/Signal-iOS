@@ -103,7 +103,7 @@ extension BlockingManager {
             if let phoneNumber = address.phoneNumber, state.blockedPhoneNumbers.contains(phoneNumber) {
                 return true
             }
-            if let aci = address.aci, state.blockedAcis.contains(aci) {
+            if let aci = address.serviceId as? Aci, state.blockedAcis.contains(aci) {
                 return true
             }
             return false
