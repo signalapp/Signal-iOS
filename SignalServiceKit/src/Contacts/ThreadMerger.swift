@@ -240,8 +240,8 @@ final class ThreadMerger: RecipientMergeObserver {
         }
     }
 
-    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {
-        mergeThreads(for: recipientAssociation.signalRecipient, tx: tx)
+    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {
+        mergeThreads(for: recipient, tx: tx)
     }
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {

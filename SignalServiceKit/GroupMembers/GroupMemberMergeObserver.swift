@@ -22,7 +22,7 @@ class GroupMemberMergeObserverImpl: RecipientMergeObserver {
         self.groupMemberStore = groupMemberStore
     }
 
-    func willBreakAssociation(_ recipientAssociation: RecipientAssociation, tx: DBWriteTransaction) {}
+    func willBreakAssociation(for recipient: SignalRecipient, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, transaction tx: DBWriteTransaction) {
         var groupThreadIds = [String]()
